@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Validate the canonical evidence-aware physics+AI card structure."""
+"""Validate the canonical eight-section evidence-aware physics+AI card structure."""
 
 from __future__ import annotations
 
@@ -11,16 +11,15 @@ ROOT = Path(__file__).resolve().parents[1]
 PAPERS_MD = ROOT / "papers.md"
 REQUIRED = [
     "作者信息",
-    "一眼看懂",
-    "问题与定位",
-    "系统、模型与假设",
-    "方法",
+    "摘要",
+    "背景",
+    "模型与方法",
     "核心结果与证据",
     "有效性与局限",
     "复现与资源",
     "阅读指南",
 ]
-FORBIDDEN = ["评级", "研究单位", "论文概述", "核心贡献", "方法描述", "评估与结果", "主要限制", "作者", "arXiv"]
+FORBIDDEN = ["评级", "研究单位", "一眼看懂", "问题与定位", "系统、模型与假设", "论文概述", "核心贡献", "方法描述", "评估与结果", "主要限制", "作者", "arXiv"]
 
 
 def main() -> int:
@@ -40,7 +39,7 @@ def main() -> int:
             errors.append(f"row {index}: missing epistemic status")
     if errors:
         raise SystemExit("\n".join(errors))
-    print(f"Validated {len(rows)} cards against the canonical nine-section schema")
+    print(f"Validated {len(rows)} cards against the canonical eight-section schema")
     return 0
 
 

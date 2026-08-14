@@ -143,22 +143,27 @@ def enrich_row(
         abstract = extract_section(details, "核心贡献") or extract_section(details, "论文概述")
     sentences = split_sentences(abstract)
     contribution = extract_section(details, "核心贡献") or extract_section(details, "论文概述")
-    limitation = extract_section(details, "主要限制") or "请结合论文正文判断方法适用范围。"
+    if not contribution:
+        prior_results = extract_section(details, "核心结果与证据")
+        match = re.search(r"摘要层面的核心陈述：(.+?)(?:\s+-\s+当前证据状态：|$)", prior_results)
+        contribution = match.group(1).strip() if match else "核心结果需从全文核验。"
+    limitation = extract_section(details, "主要限制")
+    if not limitation:
+        prior_limits = extract_section(details, "有效性与局限")
+        match = re.search(r"已知局限：(.+?)(?:\s+-\s+有效性范围|$)", prior_limits)
+        limitation = match.group(1).strip() if match else "请结合论文正文判断方法适用范围。"
     authors = [str(author) for author in meta["authors"]]
     categories = [str(category) for category in meta["categories"]]
 
     overview = sentences[:3] or [abstract]
     paper_class = classify_paper(title_en, str(meta["abstract"]), categories)
-    question = overview[0] if overview else "研究问题需从全文核验。"
-    abstract_evidence = sentences[-1] if sentences else "摘要未提供可独立核验的证据描述。"
 
     expanded = (
         "<details><summary>展开</summary>"
         f"## 作者信息<br>- 作者：{'、'.join(authors)}<br>- 研究机构：当前元数据未提供可核验的机构信息，暂不推测；需以论文首页为准。<br><br>"
-        f"## 一眼看懂<br>- 研究问题：{question}<br>- 主要结果：{contribution}<br>- 条件与范围：{limitation}<br>- 证据概况：{abstract_evidence}<br>- 重要性：该工作被 arXiv Daily 选入 physics+AI 交叉论文列表；具体影响需结合全文证据判断。<br><br>"
-        f"## 问题与定位<br>{bullets(overview)}<br>- 交叉分类：{paper_class}<br>- 与前人工作的精确差异：待从 Introduction 与 Related Work 逐项核验，不根据摘要补写。<br><br>"
-        "## 系统、模型与假设<br>- 物理系统、数据集、模型架构或数学对象：待从全文定义与方法部分核验。<br>- 控制参数、边界/初始条件、近似和适用范围：待从全文核验，不根据摘要推断。<br><br>"
-        "## 方法<br>- 全文证据抽取尚未完成；在核验推导、算法、实验协议或训练配置之前，不发布方法性结论。<br><br>"
+        f"## 摘要<br>{abstract}<br><br>"
+        f"## 背景<br>{bullets(overview)}<br>- 交叉分类：{paper_class}<br>- 与前人工作的精确差异：待从 Introduction 与 Related Work 逐项核验，不根据摘要补写。<br><br>"
+        "## 模型与方法<br>- 物理系统、数据集、模型架构或数学对象：待从全文定义与方法部分核验。<br>- 理论、推导、数值方法、实验或训练流程：待从全文核验，不根据摘要推断。<br>- 控制参数、边界/初始条件、近似、基线、计算资源与适用范围：待从全文核验。<br><br>"
         f"## 核心结果与证据<br>- 摘要层面的核心陈述：{contribution}<br>- 当前证据状态：摘要陈述，尚未逐项绑定定理、方程、图、表、模拟或实验。<br>- 结论类型：待全文核验后标注为严格证明、受控渐近、微扰、数值观察、实验观察或物理解释。<br><br>"
         f"## 有效性与局限<br>- 已知局限：{limitation}<br>- 有效性范围、有限尺寸/数据集/架构限制与失败模式：待全文核验。<br><br>"
         f"## 复现与资源<br>- arXiv 分类：{', '.join(categories)}<br>- Code、data、checkpoint、模拟参数与硬件：当前尚未从全文和项目链接完成核验；缺失项明确保留为缺失。<br><br>"

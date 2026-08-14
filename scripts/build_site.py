@@ -100,11 +100,13 @@ SECTION_TITLE_ALIASES = {
     "论文研究单位": "作者信息",
     "研究单位": "作者信息",
     "作者信息": "作者信息",
-    "论文概述": "论文概述",
-    "论文总结": "论文概述",
-    "一眼看懂": "一眼看懂",
-    "问题与定位": "问题与定位",
-    "系统、模型与假设": "系统、模型与假设",
+    "论文概述": "摘要",
+    "论文总结": "摘要",
+    "摘要": "摘要",
+    "问题与定位": "背景",
+    "背景": "背景",
+    "系统、模型与假设": "模型与方法",
+    "模型与方法": "模型与方法",
     "方法": "方法",
     "核心结果与证据": "核心结果与证据",
     "有效性与局限": "有效性与局限",
@@ -413,7 +415,7 @@ def extract_research_unit(sections: List[Dict[str, str]]) -> str:
 
 
 def build_preview(sections: List[Dict[str, str]]) -> str:
-    overview = find_section(sections, "一眼看懂", "论文概述", "摘要")
+    overview = find_section(sections, "摘要", "论文概述")
     if overview and overview["plain_text"]:
         return overview["plain_text"].strip()
 
@@ -426,9 +428,9 @@ def build_preview(sections: List[Dict[str, str]]) -> str:
 
 def build_key_points(sections: List[Dict[str, str]], preview_text: str) -> List[str]:
     preferred_sections = [
-        find_section(sections, "一眼看懂"),
+        find_section(sections, "摘要"),
         find_section(sections, "核心结果与证据", "核心贡献"),
-        find_section(sections, "问题与定位"),
+        find_section(sections, "背景"),
     ]
 
     points: List[str] = []
@@ -561,24 +563,8 @@ def render_paper_figure(record: Dict[str, object], image_src: str, context: str)
 """.strip()
 
 
-def render_detail_intro(record: Dict[str, object]) -> str:
-    point_items = "".join(f"<li>{escape(point)}</li>" for point in record["key_points"])  # type: ignore[index]
-    cover_link = f"../../covers/{record['page_dir']}/"
-
-    return f"""
-<section class="reading-card reading-card-intro">
-  <div class="reading-card-topline">
-    <span class="reading-badge">一眼看懂</span>
-    <a class="cover-preview-link" href="{escape(cover_link, quote=True)}">封面预览</a>
-  </div>
-  <p class="reading-intro-hook">{escape(str(record["hook_text"]))}</p>
-  <ul class="reading-intro-points">{point_items}</ul>
-</section>
-""".strip()
-
-
 def render_detail_sections(record: Dict[str, object]) -> str:
-    parts = [render_detail_intro(record)]
+    parts: List[str] = []
     sections: List[Dict[str, str]] = record["sections"]  # type: ignore[assignment]
 
     for index, section in enumerate(sections, start=1):
