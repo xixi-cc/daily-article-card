@@ -17,6 +17,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 PAPERS_MD = ROOT / "papers.md"
 TRANSLATIONS_ZH = ROOT / "data" / "arxiv_zh.json"
+CURATED_CARDS_DIR = ROOT / "data" / "curated_cards"
 ATOM = {"a": "http://www.w3.org/2005/Atom"}
 
 PROPER_NOUN_GLOSSARY = {
@@ -96,6 +97,42 @@ def bullets(items: list[str]) -> str:
     return "<br>".join(f"- {item}" for item in items if item)
 
 
+def load_curated_cards() -> dict[str, dict[str, object]]:
+    cards: dict[str, dict[str, object]] = {}
+    if not CURATED_CARDS_DIR.exists():
+        return cards
+    for path in sorted(CURATED_CARDS_DIR.glob("*.json")):
+        card = json.loads(path.read_text(encoding="utf-8"))
+        arxiv_id = str(card.get("arxiv_id", "")).strip()
+        if not arxiv_id:
+            raise ValueError(f"Curated card has no arxiv_id: {path}")
+        cards[arxiv_id] = card
+    return cards
+
+
+def render_curated_details(card: dict[str, object]) -> str:
+    rendered: list[str] = ["<details><summary>展开</summary>"]
+    sections = card.get("sections", [])
+    if not isinstance(sections, list):
+        raise ValueError(f"Invalid curated sections for {card.get('arxiv_id')}")
+    for index, section in enumerate(sections):
+        if not isinstance(section, dict) or not section.get("title"):
+            raise ValueError(f"Invalid curated section for {card.get('arxiv_id')}")
+        if index:
+            rendered.append("<br><br>")
+        rendered.append(f"## {section['title']}<br>")
+        blocks: list[str] = []
+        paragraphs = section.get("paragraphs", [])
+        section_bullets = section.get("bullets", [])
+        if isinstance(paragraphs, list):
+            blocks.extend(str(value) for value in paragraphs if value)
+        if isinstance(section_bullets, list):
+            blocks.extend(f"- {value}" for value in section_bullets if value)
+        rendered.append("<br>".join(blocks))
+    rendered.append("</details>")
+    return "".join(rendered)
+
+
 def classify_paper(title: str, abstract: str, categories: list[str]) -> str:
     text = f"{title} {abstract}".lower()
     has_ai = any(category.startswith(("cs.", "stat.ML")) for category in categories)
@@ -124,6 +161,7 @@ def enrich_row(
     line: str,
     metadata: dict[str, dict[str, object]],
     translations: dict[str, dict[str, str]],
+    curated_cards: dict[str, dict[str, object]],
 ) -> str:
     match = re.match(r"^\|\s*([^|]+)\|\s*([^|]+)\|\s*(https?://[^|]+)\|\s*(.*?)\s*\|$", line)
     if not match:
@@ -134,6 +172,14 @@ def enrich_row(
         return line
 
     arxiv_id = id_match.group(1)
+    curated = curated_cards.get(arxiv_id)
+    if curated:
+        title_en = str(curated.get("title_en", "")).strip() or re.split(
+            r"\s*<br\s*/?>\s*", title, flags=re.IGNORECASE
+        )[-1].strip()
+        title_zh = str(curated.get("title_zh", "")).strip() or title_en
+        return f"| {date} | {title_zh}<br>{title_en} | {link} | {render_curated_details(curated)} |"
+
     meta = metadata[arxiv_id]
     translation = translations.get(arxiv_id, {})
     title_en = re.split(r"\s*<br\s*/?>\s*", title, flags=re.IGNORECASE)[-1].strip()
@@ -178,12 +224,15 @@ def main() -> None:
     args = parser.parse_args()
     text = args.input.read_text(encoding="utf-8")
     translations = json.loads(TRANSLATIONS_ZH.read_text(encoding="utf-8"))
+    curated_cards = load_curated_cards()
     ids = list(dict.fromkeys(re.findall(r"arxiv.org/abs/(\d{4}\.\d{4,5})", text)))
     metadata = fetch_metadata(ids)
     missing = sorted(set(ids) - set(metadata))
     if missing:
         raise SystemExit(f"arXiv metadata missing for: {', '.join(missing)}")
-    output = "\n".join(enrich_row(line, metadata, translations) for line in text.splitlines()) + "\n"
+    output = "\n".join(
+        enrich_row(line, metadata, translations, curated_cards) for line in text.splitlines()
+    ) + "\n"
     args.input.write_text(output, encoding="utf-8")
     print(f"Expanded {len(ids)} paper cards with arXiv metadata")
 

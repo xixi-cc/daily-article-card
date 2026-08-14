@@ -3447,8 +3447,19 @@ def optimize_paper_images() -> Dict[str, str]:
     跳过已经是 WebP 且缩略图已存在的文件。
     """
     if not HAS_PIL:
-        print("警告: 未安装 Pillow，跳过图片优化")
-        return {}
+        # GitHub Pages artifacts already keep committed WebP thumbnails.  Reuse
+        # them when Pillow is unavailable so a local rebuild does not silently
+        # replace every list thumbnail with its heavier full-size image.
+        existing_thumbs: Dict[str, str] = {}
+        if THUMB_DIR.exists():
+            for thumb_path in sorted(THUMB_DIR.glob("*.webp")):
+                full_path = IMAGE_DIR / thumb_path.name
+                if full_path.exists():
+                    existing_thumbs[
+                        f"assets/paper-images/{thumb_path.name}"
+                    ] = f"assets/paper-images/thumbs/{thumb_path.name}"
+        print(f"警告: 未安装 Pillow，复用 {len(existing_thumbs)} 张现有缩略图")
+        return existing_thumbs
 
     if not IMAGE_DIR.exists():
         return {}
