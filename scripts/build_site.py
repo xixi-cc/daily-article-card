@@ -102,6 +102,14 @@ SECTION_TITLE_ALIASES = {
     "作者信息": "作者信息",
     "论文概述": "论文概述",
     "论文总结": "论文概述",
+    "一眼看懂": "一眼看懂",
+    "问题与定位": "问题与定位",
+    "系统、模型与假设": "系统、模型与假设",
+    "方法": "方法",
+    "核心结果与证据": "核心结果与证据",
+    "有效性与局限": "有效性与局限",
+    "复现与资源": "复现与资源",
+    "阅读指南": "阅读指南",
     "核心贡献": "核心贡献",
     "论文核心贡献点": "核心贡献",
     "论文核心贡献": "核心贡献",
@@ -405,7 +413,7 @@ def extract_research_unit(sections: List[Dict[str, str]]) -> str:
 
 
 def build_preview(sections: List[Dict[str, str]]) -> str:
-    overview = find_section(sections, "论文概述", "摘要")
+    overview = find_section(sections, "一眼看懂", "论文概述", "摘要")
     if overview and overview["plain_text"]:
         return overview["plain_text"].strip()
 
@@ -418,10 +426,9 @@ def build_preview(sections: List[Dict[str, str]]) -> str:
 
 def build_key_points(sections: List[Dict[str, str]], preview_text: str) -> List[str]:
     preferred_sections = [
-        find_section(sections, "论文概述", "摘要"),
-        find_section(sections, "核心贡献"),
-        find_section(sections, "评估与结果"),
-        find_section(sections, "方法描述"),
+        find_section(sections, "一眼看懂"),
+        find_section(sections, "核心结果与证据", "核心贡献"),
+        find_section(sections, "问题与定位"),
     ]
 
     points: List[str] = []

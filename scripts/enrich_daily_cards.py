@@ -96,6 +96,30 @@ def bullets(items: list[str]) -> str:
     return "<br>".join(f"- {item}" for item in items if item)
 
 
+def classify_paper(title: str, abstract: str, categories: list[str]) -> str:
+    text = f"{title} {abstract}".lower()
+    has_ai = any(category.startswith(("cs.", "stat.ML")) for category in categories)
+    has_physics = any(
+        category.startswith(("cond-mat", "physics", "hep-", "nucl-", "astro-ph", "quant-ph"))
+        for category in categories
+    )
+    physics_of_ai_terms = (
+        "phase transition", "criticality", "statistical mechanics", "attractor",
+        "learning dynamics", "scaling law", "entropy production", "correlation flow",
+    )
+    ai_for_physics_terms = (
+        "pde", "operator learning", "force field", "physical state", "simulation",
+        "scientific machine learning", "phase diagram",
+    )
+    if has_ai and any(term in text for term in physics_of_ai_terms):
+        return "physics of AI"
+    if has_ai and (has_physics or any(term in text for term in ai_for_physics_terms)):
+        return "AI for physics"
+    if has_ai:
+        return "pure AI"
+    return "pure physics"
+
+
 def enrich_row(
     line: str,
     metadata: dict[str, dict[str, object]],
@@ -124,20 +148,21 @@ def enrich_row(
     categories = [str(category) for category in meta["categories"]]
 
     overview = sentences[:3] or [abstract]
-    method = sentences[3:6] or sentences[1:3] or ["方法细节请参阅论文正文。"]
-    results = sentences[6:] or sentences[-2:] or ["实验与理论结果请参阅论文正文。"]
-    resources = [f"arXiv 分类：{', '.join(categories)}"]
-    resources.append("计算资源、数据集和实现细节以论文正文及补充材料为准。")
+    paper_class = classify_paper(title_en, str(meta["abstract"]), categories)
+    question = overview[0] if overview else "研究问题需从全文核验。"
+    abstract_evidence = sentences[-1] if sentences else "摘要未提供可独立核验的证据描述。"
 
     expanded = (
         "<details><summary>展开</summary>"
         f"## 作者信息<br>- 作者：{'、'.join(authors)}<br>- 研究机构：当前元数据未提供可核验的机构信息，暂不推测；需以论文首页为准。<br><br>"
-        f"## 论文概述<br>{bullets(overview)}<br><br>"
-        f"## 核心贡献<br>- {contribution}<br><br>"
-        f"## 方法描述<br>{bullets(method)}<br><br>"
-        f"## 数据集与资源<br>{bullets(resources)}<br><br>"
-        f"## 评估与结果<br>{bullets(results)}<br><br>"
-        f"## 主要限制<br>- {limitation}</details>"
+        f"## 一眼看懂<br>- 研究问题：{question}<br>- 主要结果：{contribution}<br>- 条件与范围：{limitation}<br>- 证据概况：{abstract_evidence}<br>- 重要性：该工作被 arXiv Daily 选入 physics+AI 交叉论文列表；具体影响需结合全文证据判断。<br><br>"
+        f"## 问题与定位<br>{bullets(overview)}<br>- 交叉分类：{paper_class}<br>- 与前人工作的精确差异：待从 Introduction 与 Related Work 逐项核验，不根据摘要补写。<br><br>"
+        "## 系统、模型与假设<br>- 物理系统、数据集、模型架构或数学对象：待从全文定义与方法部分核验。<br>- 控制参数、边界/初始条件、近似和适用范围：待从全文核验，不根据摘要推断。<br><br>"
+        "## 方法<br>- 全文证据抽取尚未完成；在核验推导、算法、实验协议或训练配置之前，不发布方法性结论。<br><br>"
+        f"## 核心结果与证据<br>- 摘要层面的核心陈述：{contribution}<br>- 当前证据状态：摘要陈述，尚未逐项绑定定理、方程、图、表、模拟或实验。<br>- 结论类型：待全文核验后标注为严格证明、受控渐近、微扰、数值观察、实验观察或物理解释。<br><br>"
+        f"## 有效性与局限<br>- 已知局限：{limitation}<br>- 有效性范围、有限尺寸/数据集/架构限制与失败模式：待全文核验。<br><br>"
+        f"## 复现与资源<br>- arXiv 分类：{', '.join(categories)}<br>- Code、data、checkpoint、模拟参数与硬件：当前尚未从全文和项目链接完成核验；缺失项明确保留为缺失。<br><br>"
+        "## 阅读指南<br>- 最重要的图：待完成全文 figure-candidate 比较后确定，禁止默认采用第一张图。<br>- 最重要的方程或定理：待核验全文编号与上下文后确定。<br>- 快速阅读与深入阅读路径：待根据论文实际论证结构生成。</details>"
     )
     return f"| {date} | {title_zh}<br>{title_en} | {link} | {expanded} |"
 
