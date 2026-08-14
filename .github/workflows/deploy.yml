@@ -4,9 +4,6 @@ on:
   workflow_dispatch:
   push:
     branches: [ master, main ]
-  schedule:
-    # 每日北京时间中午12点（UTC 4:00）运行爬取和构建任务
-    - cron: '0 4 * * *'
 
 permissions:
   contents: write
@@ -43,17 +40,6 @@ jobs:
           npm install
           npx playwright install --with-deps chromium
           
-      - name: 运行 arXiv 爬虫
-        run: |
-          python scripts/arxiv_crawler.py
-        env:
-          ARXIV_QUERY_KEYWORD: 'all:"VLA" OR all:"Vision-Language-Action" OR all:"World Action Model" OR all:"World-Action Model" OR all:"action world model"'
-          ARXIV_DAILY_RESULTS: 80
-          ARXIV_PAGE_SIZE: 10
-          ARXIV_DELAY_SECONDS: 15
-          ARXIV_RETRY_BASE_SECONDS: 60
-          ARXIV_MAX_RETRIES: 4
-
       - name: 抓取论文首图
         run: |
           python scripts/fetch_paper_images.py --max-items 30
@@ -73,8 +59,6 @@ jobs:
       - name: 构建网站
         run: |
           python scripts/build_site.py
-        env:
-          ARXIV_QUERY_KEYWORD: 'all:"VLA" OR all:"Vision-Language-Action" OR all:"World Action Model" OR all:"World-Action Model" OR all:"action world model"'
 
       - name: 提交更改
         run: |
