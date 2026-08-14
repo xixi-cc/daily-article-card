@@ -1,211 +1,55 @@
-# ArXiv Papers 网站
+# physics+AI Daily Paper Cards
 
-这是一个展示 AI+Physics arXiv 论文精选的静态网站，支持搜索和独立详情页查看功能。项目根据每日 GPT 精选报告生成论文卡片与中文摘要。
+一个展示 physics+AI arXiv 精选论文的静态网站。每日 Codex 自动任务从 GPT 筛选的 `arXiv 物理与AI日报` 中提取 S 级和 A 级论文，核对 arXiv 元数据，生成中文论文卡片并触发 GitHub Pages 部署。
 
-## 功能特性
+## 功能
 
-- 🤖 **自动精选**: 每日从 GPT 筛选的 AI+Physics arXiv 报告生成论文卡片
-- 🧠 **AI摘要生成**: 使用ModelScope API自动为论文生成中文摘要
-- 📚 从 `papers.md` 自动解析论文信息
-- 🔍 实时搜索功能
-- 📱 响应式设计，支持移动端
-- 🎨 现代化暗色主题界面
-- 📄 每篇论文生成独立静态详情页
-- 🖼️ 自动从论文 HTML 提取首图，优先作为论文卡封面
-- 🎭 当 HTML 原图不可直接下载时，自动使用 Playwright 截取页面里的首个 figure 作为兜底封面
-- 💾 按 arXiv ID 独立记录论文页滚动进度
-- ⏰ **定时任务**: 每日中午12点自动更新内容
+- 每日自动收录 GPT 明确评为 S 或 A 的论文
+- 按无版本号 arXiv ID 去重
+- 展示中文概述、核心贡献、方法、证据与局限
+- 自动抓取论文首图，并提供截图兜底
+- 支持标题、机构、摘要亮点和 arXiv ID 搜索
+- 为每篇论文生成独立详情页
+- 响应式界面与亮色、暗色主题
 
-## 本地开发
+本项目不在 GitHub Actions 中调用外部 LLM API，也不需要 ModelScope token。GPT 筛选来自用户已有的 ChatGPT 计划任务；Codex 自动任务负责提取、验证、构建与发布。
 
-### 环境配置
-
-首先需要配置环境变量：
+## 本地构建
 
 ```bash
-# 复制示例配置文件
-cp .env.example .env
-
-# 编辑 .env 文件，填入你的 API 密钥
-# MODELSCOPE_ACCESS_TOKEN=你的API密钥
-```
-
-可配置的环境变量：
-
-**必需配置：**
-- `MODELSCOPE_ACCESS_TOKEN`: ModelScope API 密钥
-
-**可选配置：**
-- `MODELSCOPE_BASE_URL`: API 基础 URL（默认：https://api-inference.modelscope.cn/v1/）
-- `MODELSCOPE_MODEL`: 使用的模型（默认：deepseek-ai/DeepSeek-V3.2）
-- `ARXIV_QUERY_KEYWORD`: 搜索关键词，支持 arXiv 查询语法（默认同时检索 VLA 与 World Action Model 相关短语）
-- `ARXIV_INIT_RESULTS`: 初始化抓取数量（默认：500）
-- `ARXIV_DAILY_RESULTS`: 每日抓取数量（默认：20）
-- `ARXIV_MAX_RETRIES`: arXiv 搜索重试次数（默认：3）
-- `HTTP_MAX_RETRIES`: HTTP 请求重试次数（默认：3）
-- `HTTP_TIMEOUT`: HTTP 请求超时时间（秒，默认：30）
-- `HTML_MAX_CHARS`: HTML 内容最大字符数（默认：180000）
-- `API_MAX_RETRIES`: API 调用重试次数（默认：3）
-- `BATCH_WRITE_SIZE`: 批量写入大小，每生成 N 篇摘要写入一次文件（默认：5）
-
-### 爬取论文数据
-
-```bash
-# 初始化爬取（首次运行）
-python scripts/arxiv_crawler.py
-
-# 生成论文摘要
-python scripts/generate_summaries.py
-
-# 抓取论文首图（可选，GitHub Actions 会自动执行）
-python scripts/fetch_paper_images.py --max-items 30
-
-# 为剩余缺图论文生成 Playwright 截图兜底队列
-python scripts/build_paper_image_fallback_queue.py --max-items 20
-
-# 安装 Playwright 并执行截图兜底
-npm install
+python3 -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt
+npm ci
 npx playwright install chromium
-npm run paper-image:fallbacks
-
-# 将截图结果注册进 manifest
-python scripts/register_paper_image_fallbacks.py
+python scripts/build_site.py
+cd site && python -m http.server 8000
 ```
 
-### 构建网站
+主页面文件为 `site/physics_AI.html`。`site/index.html` 仅作为 GitHub Pages 的入口重定向。
+
+## 数据与构建
+
+- `papers.md`：经过 GPT 筛选并由 Codex 验证的论文数据源
+- `scripts/fetch_paper_images.py`：抓取论文首图
+- `scripts/build_paper_image_fallback_queue.py`：生成截图兜底队列
+- `scripts/render_paper_image_fallbacks.mjs`：渲染兜底截图
+- `scripts/register_paper_image_fallbacks.py`：登记论文图片
+- `scripts/build_site.py`：生成主页、数据、详情页和封面
+- `site/`：GitHub Pages 静态产物
+
+运行完整的确定性构建：
 
 ```bash
+python scripts/fetch_paper_images.py --max-items 30
+python scripts/build_paper_image_fallback_queue.py --max-items 20
+npm run paper-image:fallbacks
+python scripts/register_paper_image_fallbacks.py
 python scripts/build_site.py
 ```
 
-这将在 `site/` 目录下生成静态网站文件，包括首页、轻量数据文件、论文首图资源，以及每篇论文对应的独立静态详情页。
+## 部署
 
-### 本地预览
+推送到 `master` 或 `main` 后，`.github/workflows/deploy.yml` 会构建并部署 `site/`。论文选择由 Codex 的每日自动任务完成；GitHub Actions 只执行确定性的图片处理、构建和 Pages 发布。
 
-可以使用任何静态文件服务器预览网站：
-
-```bash
-# 使用Python内置服务器
-cd site
-python -m http.server 8000
-
-# 或使用Node.js serve
-npx serve site
-```
-
-## GitHub Pages 部署
-
-### 1. 配置仓库
-
-1. 确保你的仓库是公开的
-2. 在仓库设置中启用 GitHub Pages
-3. 选择 "GitHub Actions" 作为部署源
-
-### 2. 配置环境变量
-
-在仓库设置中添加以下Secret：
-- `MODELSCOPE_ACCESS_TOKEN`: 你的ModelScope API密钥（必需）
-
-**可选配置：** 如果需要修改默认配置（如搜索关键词、模型等），可以在 `.github/workflows/deploy.yml` 中添加环境变量：
-
-```yaml
-- name: 运行 arXiv 爬虫
-  run: python scripts/arxiv_crawler.py
-  env:
-    MODELSCOPE_ACCESS_TOKEN: ${{ secrets.MODELSCOPE_ACCESS_TOKEN }}
-    ARXIV_QUERY_KEYWORD: "your_keyword"  # 可选：修改搜索关键词
-    ARXIV_DAILY_RESULTS: "30"            # 可选：修改每日抓取数量
-```
-
-默认配置：
-- 搜索关键词：`all:"VLA" OR all:"Vision-Language-Action" OR all:"World Action Model" OR all:"World-Action Model" OR all:"action world model"`
-- 每日抓取：20篇（GitHub Actions 中可覆盖）
-- 模型：deepseek-ai/DeepSeek-V3.2
-- 其他配置见 `.env.example`
-
-### 3. 自动部署
-
-每次推送到 `master` 或 `main` 分支时，GitHub Actions 会自动：
-
-1. 检出代码
-2. 爬取新论文并生成摘要
-3. 抓取最新论文的首图
-4. 对无法直接下载原图的论文执行 Playwright 截图兜底
-5. 运行构建脚本
-6. 部署到 GitHub Pages
-
-### 4. 定时任务
-
-GitHub Actions 还会在每日中午12点自动执行：
-
-1. 爬取ArXiv上的新论文
-2. 为待生成的论文生成AI摘要
-3. 抓取最新论文的首图
-4. 对无法直接下载原图的论文执行 Playwright 截图兜底
-5. 提交更改到仓库
-6. 重新构建和部署网站
-
-### 5. 访问网站
-
-部署完成后，你的网站将在以下地址可访问：
-```
-https://你的用户名.github.io/仓库名
-```
-
-例如：`https://username.github.io/arxiv`
-
-## 自定义配置
-
-### 修改网站标题
-
-编辑 `scripts/build_site.py` 中的 `generate_index_html()` 函数来修改网站标题。
-
-## 项目结构
-
-```
-arxiv/
-├── papers.md                    # 论文数据源文件
-├── scripts/
-│   ├── arxiv_crawler.py         # ArXiv论文爬虫
-│   ├── generate_summaries.py    # AI摘要生成脚本
-│   ├── fetch_paper_images.py    # 从论文HTML提取首图
-│   ├── build_paper_image_fallback_queue.py
-│   ├── register_paper_image_fallbacks.py
-│   ├── render_paper_image_fallbacks.mjs
-│   └── build_site.py            # 网站构建脚本
-├── site/                        # 生成的静态网站
-│   ├── index.html
-│   ├── papers/
-│   │   └── <arxiv-id>/
-│   │       └── index.html
-│   └── assets/
-│       ├── paper-images/        # 下载到本地的论文首图
-│       ├── paper-images.json    # 论文首图 manifest
-│       ├── style.css
-│       ├── app.js
-│       ├── paper.js
-│       └── data.json
-└── .github/
-    └── workflows/
-        └── deploy.yml           # GitHub Actions 部署配置
-```
-
-## 数据格式
-
-`papers.md` 文件应包含以下格式的表格：
-
-```markdown
-| 日期 | 标题 | 链接 | 简要总结 |
-|------|------|------|----------|
-| 2024-01-01 | 论文标题 | https://arxiv.org/abs/xxx | <details><summary>点击查看</summary>详细内容...</details> |
-```
-
-## 技术栈
-
-- **后端**: Python 3.9+
-- **爬虫**: arxiv Python库
-- **AI摘要**: ModelScope API
-- **前端**: 原生 HTML/CSS/JavaScript
-- **部署**: GitHub Pages + GitHub Actions
-- **定时任务**: GitHub Actions Cron
-- **字体**: Google Fonts (Inter)
+站点地址：<https://xixi-cc.github.io/physics_AI/>

@@ -161,7 +161,7 @@ def http_get(url: str, timeout: int = 30) -> tuple[bytes, str, str]:
     request = Request(
         url,
         headers={
-            "User-Agent": "daily-arxiv-vla/paper-image-fetcher (+https://arxiv.org)",
+            "User-Agent": "physics-ai-paper-cards/paper-image-fetcher (+https://arxiv.org)",
         },
     )
     with urlopen(request, timeout=timeout) as response:

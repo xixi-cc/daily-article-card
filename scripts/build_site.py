@@ -36,12 +36,8 @@ PAPERS_DIR = SITE_DIR / "papers"
 COVERS_DIR = SITE_DIR / "covers"
 IMAGE_DIR = ASSETS_DIR / "paper-images"
 PAPER_IMAGES_MANIFEST = ASSETS_DIR / "paper-images.json"
-DEFAULT_ARXIV_QUERY = (
-    'all:"VLA" OR all:"Vision-Language-Action" OR '
-    'all:"World Action Model" OR all:"World-Action Model" OR '
-    'all:"action world model"'
-)
-DEFAULT_ARXIV_KEYWORD_LABEL = "AI+Physics"
+SITE_TOPIC_LABEL = "physics+AI"
+SITE_DOCUMENT_NAME = "physics_AI.html"
 
 COVER_THEMES = [
     {
@@ -140,10 +136,7 @@ def load_json(path: Path) -> object:
 
 
 def get_arxiv_keyword_label() -> str:
-    keyword = os.getenv("ARXIV_QUERY_KEYWORD") or DEFAULT_ARXIV_QUERY
-    if keyword == DEFAULT_ARXIV_QUERY:
-        return DEFAULT_ARXIV_KEYWORD_LABEL
-    return keyword
+    return SITE_TOPIC_LABEL
 
 
 def parse_markdown_table(md_text: str) -> List[Dict[str, str]]:
@@ -751,8 +744,8 @@ def generate_index_html() -> str:
     <header class="header">
       <div class="container">
         <nav class="site-nav" aria-label="站点导航">
-          <a class="site-brand" href="index.html" aria-label="返回首页">
-            <span class="site-brand-mark">AI+PHY</span>
+          <a class="site-brand" href="{SITE_DOCUMENT_NAME}" aria-label="返回首页">
+            <span class="site-brand-mark">PHY+AI</span>
             <span>Research Brief</span>
           </a>
           <div class="site-nav-actions">
@@ -765,7 +758,7 @@ def generate_index_html() -> str:
         </nav>
         <div class="header-content">
           <div class="header-copy">
-            <p class="eyebrow">AI + Physics Feed</p>
+            <p class="eyebrow">Physics + AI Feed</p>
             <h1 class="site-title">{escape(keyword)} <span class="site-title-nowrap">每日论文卡</span></h1>
             <p class="site-subtitle">聚合最新论文，提炼核心贡献、方法与实验结果，用更清晰的阅读路径持续跟进前沿研究。</p>
             <div class="hero-tags" aria-label="站点特点">
@@ -853,7 +846,7 @@ def generate_paper_html(record: Dict[str, object], prev_record: Dict[str, object
     <header class="header detail-page-header">
       <div class="container">
         <div class="detail-page-topbar">
-          <a class="back-link" href="../../index.html">返回列表</a>
+          <a class="back-link" href="../../{SITE_DOCUMENT_NAME}">返回列表</a>
           <div class="detail-topbar-actions">
             <span class="detail-site-name">{escape(site_title)}</span>
             {render_theme_toggle()}
@@ -3559,7 +3552,16 @@ def main() -> int:
     shutil.rmtree(PAPERS_DIR, ignore_errors=True)
     shutil.rmtree(COVERS_DIR, ignore_errors=True)
 
-    write_text(SITE_DIR / "index.html", generate_index_html())
+    write_text(SITE_DIR / SITE_DOCUMENT_NAME, generate_index_html())
+    write_text(
+        SITE_DIR / "index.html",
+        '<!doctype html><html lang="zh-CN"><head><meta charset="utf-8">'
+        f'<meta http-equiv="refresh" content="0; url={SITE_DOCUMENT_NAME}">'
+        f'<link rel="canonical" href="{SITE_DOCUMENT_NAME}">'
+        f'<title>{SITE_TOPIC_LABEL}</title></head><body>'
+        f'<a href="{SITE_DOCUMENT_NAME}">进入 {SITE_TOPIC_LABEL} 每日论文卡</a>'
+        '</body></html>\n',
+    )
     write_text(ASSETS_DIR / "style.css", generate_style_css())
     write_text(ASSETS_DIR / "theme.js", generate_theme_js())
     write_text(ASSETS_DIR / "media.js", generate_media_js())
