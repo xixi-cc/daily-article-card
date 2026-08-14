@@ -4,7 +4,7 @@
 - Fork: <https://github.com/xixi-cc/daily-arxiv-vla>
 - Pages: <https://xixi-cc.github.io/daily-arxiv-vla/>
 - Default branch: `master`
-- Required GitHub Actions secret: `MODELSCOPE_ACCESS_TOKEN` (ModelScope API token)
+- Required GitHub Actions secrets: none
 
 ## Local setup and build
 
@@ -25,11 +25,10 @@ uv venv .venv
 uv pip install --python .venv/bin/python -r requirements.txt
 ```
 
-## Data update and deployment
+## Automated data update and deployment
 
 ```bash
 python scripts/arxiv_crawler.py
-python scripts/generate_summaries.py
 python scripts/fetch_paper_images.py --max-items 30
 python scripts/build_paper_image_fallback_queue.py --max-items 20
 npm run paper-image:fallbacks
@@ -37,9 +36,13 @@ python scripts/register_paper_image_fallbacks.py
 python scripts/build_site.py
 ```
 
-The workflow is `.github/workflows/deploy.yml`. It runs on pushes to `master` or `main` and at `0 4 * * *` UTC, commits updated `papers.md` and `site/`, uploads `site/` as a Pages artifact, and deploys it with GitHub Actions.
+The workflow is `.github/workflows/deploy.yml`. It supports manual dispatch, runs on pushes to `master` or `main`, and runs at `0 4 * * *` UTC. It crawls arXiv, fetches images, builds the site, commits updated `papers.md` and `site/`, uploads `site/` as a Pages artifact, and deploys it with GitHub Actions. It does not call an LLM and requires no API secret.
 
-Add `MODELSCOPE_ACCESS_TOKEN` under **Settings -> Secrets and variables -> Actions -> New repository secret**. On a new public fork, enable inherited workflows from the repository's **Actions** tab; scheduled workflows are disabled by default until enabled.
+## Manual summaries with Codex
+
+New crawler entries retain the upstream `待生成` placeholder. To summarize them with the ChatGPT/Codex subscription, open this repository in Codex and ask it to process a bounded number of pending entries, update `papers.md`, rebuild `site/`, verify the diff, and commit/push the result. This is an interactive workflow; the ChatGPT subscription is not exposed to GitHub Actions.
+
+On a new public fork, enable inherited workflows from the repository's **Actions** tab; scheduled workflows are disabled by default until enabled.
 
 ## Sync from upstream
 
@@ -50,4 +53,4 @@ git merge upstream/master
 git push origin master
 ```
 
-Fork-specific code/configuration changes: none. This file is documentation only; GitHub Pages is configured in repository settings with **Source: GitHub Actions**.
+Fork-specific configuration change: the ModelScope summary step is disabled, and `workflow_dispatch` is enabled. GitHub Pages is configured in repository settings with **Source: GitHub Actions**.

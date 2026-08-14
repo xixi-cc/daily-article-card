@@ -1,10 +1,11 @@
 name: 部署到 GitHub Pages
 
 on:
+  workflow_dispatch:
   push:
     branches: [ master, main ]
   schedule:
-    # 每日北京时间中午12点（UTC 4:00）运行爬取和生成任务
+    # 每日北京时间中午12点（UTC 4:00）运行爬取和构建任务
     - cron: '0 4 * * *'
 
 permissions:
@@ -46,20 +47,12 @@ jobs:
         run: |
           python scripts/arxiv_crawler.py
         env:
-          MODELSCOPE_ACCESS_TOKEN: ${{ secrets.MODELSCOPE_ACCESS_TOKEN }}
           ARXIV_QUERY_KEYWORD: 'all:"VLA" OR all:"Vision-Language-Action" OR all:"World Action Model" OR all:"World-Action Model" OR all:"action world model"'
           ARXIV_DAILY_RESULTS: 80
           ARXIV_PAGE_SIZE: 10
           ARXIV_DELAY_SECONDS: 15
           ARXIV_RETRY_BASE_SECONDS: 60
           ARXIV_MAX_RETRIES: 4
-
-      - name: 生成论文摘要
-        run: |
-          python scripts/generate_summaries.py
-        env:
-          MODELSCOPE_ACCESS_TOKEN: ${{ secrets.MODELSCOPE_ACCESS_TOKEN }}
-          MODELSCOPE_MODELS: moonshotai/Kimi-K2.6,deepseek-ai/DeepSeek-V4-Pro,ZhipuAI/GLM-5.1,XiaomiMiMo/MiMo-V2.5-Pro,stepfun-ai/Step-3.7-Flash
 
       - name: 抓取论文首图
         run: |
@@ -93,7 +86,7 @@ jobs:
             echo "没有更改需要提交"
           else
             CURRENT_DATE=$(date '+%Y-%m-%d')
-            git commit -m "自动更新：爬取新论文并生成摘要 - $CURRENT_DATE [skip ci]"
+            git commit -m "自动更新：爬取新论文并构建网站 - $CURRENT_DATE [skip ci]"
             git push
           fi
           
