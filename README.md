@@ -1,10 +1,10 @@
 # ArXiv Papers 网站
 
-这是一个展示ArXiv论文精选的静态网站，支持搜索和独立详情页查看功能。项目会自动爬取包含 VLA / Vision-Language-Action 以及 World Action Model 相关关键词的论文，并使用 AI 生成摘要。
+这是一个展示 AI+Physics arXiv 论文精选的静态网站，支持搜索和独立详情页查看功能。项目根据每日 GPT 精选报告生成论文卡片与中文摘要。
 
 ## 功能特性
 
-- 🤖 **自动爬取**: 每日自动从 ArXiv 爬取 VLA 与 World Action Model 相关最新论文
+- 🤖 **自动精选**: 每日从 GPT 筛选的 AI+Physics arXiv 报告生成论文卡片
 - 🧠 **AI摘要生成**: 使用ModelScope API自动为论文生成中文摘要
 - 📚 从 `papers.md` 自动解析论文信息
 - 🔍 实时搜索功能
