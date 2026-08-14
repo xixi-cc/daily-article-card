@@ -342,7 +342,7 @@
   function buildSearchText(item){
     return [
       item.title || '',
-      item.title_en || '',
+      item.title_zh || '',
       item.preview_text || '',
       item.research_unit || '',
       item.arxiv_id || '',
@@ -437,20 +437,13 @@
       meta.appendChild(org);
     }
 
-    if(item.arxiv_id){
-      const id = document.createElement('span');
-      id.className = 'feed-chip subtle';
-      id.textContent = item.arxiv_id;
-      meta.appendChild(id);
-    }
-
     const bodyTitle = document.createElement('div');
     bodyTitle.className = 'feed-card-title';
     bodyTitle.textContent = item.title || '未命名论文';
 
-    const bodyTitleEn = document.createElement('div');
-    bodyTitleEn.className = 'feed-card-title-en';
-    bodyTitleEn.textContent = item.title_en || '';
+    const bodyTitleZh = document.createElement('div');
+    bodyTitleZh.className = 'feed-card-title-zh';
+    bodyTitleZh.textContent = item.title_zh || '';
 
     const preview = document.createElement('div');
     preview.className = 'feed-card-preview';
@@ -474,8 +467,8 @@
       cardBody.appendChild(meta);
     }
     cardBody.appendChild(bodyTitle);
-    if(item.title_en){
-      cardBody.appendChild(bodyTitleEn);
+    if(item.title_zh){
+      cardBody.appendChild(bodyTitleZh);
     }
     cardBody.appendChild(preview);
     cardBody.appendChild(footer);

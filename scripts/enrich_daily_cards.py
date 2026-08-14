@@ -118,7 +118,6 @@ def enrich_row(
     if not abstract:
         abstract = extract_section(details, "核心贡献") or extract_section(details, "论文概述")
     sentences = split_sentences(abstract)
-    grade = extract_section(details, "评级") or "来自 arXiv Daily"
     contribution = extract_section(details, "核心贡献") or extract_section(details, "论文概述")
     limitation = extract_section(details, "主要限制") or "请结合论文正文判断方法适用范围。"
     authors = [str(author) for author in meta["authors"]]
@@ -132,16 +131,13 @@ def enrich_row(
 
     expanded = (
         "<details><summary>展开</summary>"
-        f"## 评级<br>{grade}<br><br>"
-        "## 研究单位<br>- arXiv 元数据未结构化提供作者单位，请以论文首页为准。<br><br>"
+        f"## 作者信息<br>- 作者：{'、'.join(authors)}<br>- 研究机构：当前元数据未提供可核验的机构信息，暂不推测；需以论文首页为准。<br><br>"
         f"## 论文概述<br>{bullets(overview)}<br><br>"
         f"## 核心贡献<br>- {contribution}<br><br>"
         f"## 方法描述<br>{bullets(method)}<br><br>"
         f"## 数据集与资源<br>{bullets(resources)}<br><br>"
         f"## 评估与结果<br>{bullets(results)}<br><br>"
-        f"## 主要限制<br>- {limitation}<br><br>"
-        f"## 作者<br>- {'、'.join(authors)}<br><br>"
-        f"## arXiv<br>- {arxiv_id}</details>"
+        f"## 主要限制<br>- {limitation}</details>"
     )
     return f"| {date} | {title_zh}<br>{title_en} | {link} | {expanded} |"
 
