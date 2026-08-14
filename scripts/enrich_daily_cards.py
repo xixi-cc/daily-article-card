@@ -5,6 +5,7 @@ from __future__ import annotations
 
 import argparse
 import html
+import json
 import re
 import time
 import urllib.parse
@@ -15,11 +16,43 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 PAPERS_MD = ROOT / "papers.md"
+TRANSLATIONS_ZH = ROOT / "data" / "arxiv_zh.json"
 ATOM = {"a": "http://www.w3.org/2005/Atom"}
+
+PROPER_NOUN_GLOSSARY = {
+    "人工智能": "AI",
+    "变形金刚": "Transformer",
+    "威尔逊-费希尔": "Wilson–Fisher",
+    "别列津斯基-科斯特利茨-托利斯": "Berezinskii–Kosterlitz–Thouless",
+    "爱德华兹-威尔金森": "Edwards–Wilkinson",
+    "卡达尔-帕里西-张": "Kardar–Parisi–Zhang",
+    "哈密顿-雅可比-贝尔曼": "Hamilton–Jacobi–Bellman",
+    "朗之万": "Langevin",
+    "李-杨": "Lee–Yang",
+    "库拉莫托": "Kuramoto",
+    "布朗粒子": "Brownian 粒子",
+    "沃瑟斯坦": "Wasserstein",
+    "瓦瑟斯坦": "Wasserstein",
+    "利普希茨": "Lipschitz",
+    "希尔伯特-施密特": "Hilbert–Schmidt",
+    "艾伦-卡恩": "Allen–Cahn",
+    "莱维": "Lévy",
+    "狄利克雷": "Dirichlet",
+    "柯普曼": "Koopman",
+    "海森": "Hessian",
+    "马尔可夫": "Markov",
+    "奥恩斯坦-乌伦贝克": "Ornstein–Uhlenbeck",
+}
 
 
 def compact(value: str) -> str:
     return " ".join(html.unescape(value).split())
+
+
+def preserve_proper_nouns(value: str) -> str:
+    for translated, original in PROPER_NOUN_GLOSSARY.items():
+        value = value.replace(translated, original)
+    return value
 
 
 def fetch_metadata(ids: list[str]) -> dict[str, dict[str, object]]:
@@ -47,7 +80,7 @@ def fetch_metadata(ids: list[str]) -> dict[str, dict[str, object]]:
 
 
 def split_sentences(abstract: str) -> list[str]:
-    sentences = re.split(r"(?<=[.!?])\s+(?=[A-Z0-9])", abstract)
+    sentences = re.split(r"(?<=[。！？])|(?<=[.!?])\s+(?=[A-Z0-9])", abstract)
     return [sentence.strip() for sentence in sentences if sentence.strip()]
 
 
@@ -63,7 +96,11 @@ def bullets(items: list[str]) -> str:
     return "<br>".join(f"- {item}" for item in items if item)
 
 
-def enrich_row(line: str, metadata: dict[str, dict[str, object]]) -> str:
+def enrich_row(
+    line: str,
+    metadata: dict[str, dict[str, object]],
+    translations: dict[str, dict[str, str]],
+) -> str:
     match = re.match(r"^\|\s*([^|]+)\|\s*([^|]+)\|\s*(https?://[^|]+)\|\s*(.*?)\s*\|$", line)
     if not match:
         return line
@@ -74,23 +111,24 @@ def enrich_row(line: str, metadata: dict[str, dict[str, object]]) -> str:
 
     arxiv_id = id_match.group(1)
     meta = metadata[arxiv_id]
-    abstract = str(meta["abstract"])
+    translation = translations.get(arxiv_id, {})
+    title_en = re.split(r"\s*<br\s*/?>\s*", title, flags=re.IGNORECASE)[-1].strip()
+    title_zh = preserve_proper_nouns(translation.get("title_zh", "").strip()) or title_en
+    abstract = preserve_proper_nouns(translation.get("abstract_zh", "").strip())
+    if not abstract:
+        abstract = extract_section(details, "核心贡献") or extract_section(details, "论文概述")
     sentences = split_sentences(abstract)
     grade = extract_section(details, "评级") or "来自 arXiv Daily"
     contribution = extract_section(details, "核心贡献") or extract_section(details, "论文概述")
     limitation = extract_section(details, "主要限制") or "请结合论文正文判断方法适用范围。"
     authors = [str(author) for author in meta["authors"]]
     categories = [str(category) for category in meta["categories"]]
-    comment = str(meta["comment"])
 
     overview = sentences[:3] or [abstract]
     method = sentences[3:6] or sentences[1:3] or ["方法细节请参阅论文正文。"]
     results = sentences[6:] or sentences[-2:] or ["实验与理论结果请参阅论文正文。"]
     resources = [f"arXiv 分类：{', '.join(categories)}"]
-    if comment:
-        resources.append(f"作者备注：{comment}")
-    else:
-        resources.append("计算资源、数据集和实现细节以论文正文及补充材料为准。")
+    resources.append("计算资源、数据集和实现细节以论文正文及补充材料为准。")
 
     expanded = (
         "<details><summary>展开</summary>"
@@ -105,7 +143,7 @@ def enrich_row(line: str, metadata: dict[str, dict[str, object]]) -> str:
         f"## 作者<br>- {'、'.join(authors)}<br><br>"
         f"## arXiv<br>- {arxiv_id}</details>"
     )
-    return f"| {date} | {title} | {link} | {expanded} |"
+    return f"| {date} | {title_zh}<br>{title_en} | {link} | {expanded} |"
 
 
 def main() -> None:
@@ -113,12 +151,13 @@ def main() -> None:
     parser.add_argument("--input", type=Path, default=PAPERS_MD)
     args = parser.parse_args()
     text = args.input.read_text(encoding="utf-8")
+    translations = json.loads(TRANSLATIONS_ZH.read_text(encoding="utf-8"))
     ids = list(dict.fromkeys(re.findall(r"arxiv.org/abs/(\d{4}\.\d{4,5})", text)))
     metadata = fetch_metadata(ids)
     missing = sorted(set(ids) - set(metadata))
     if missing:
         raise SystemExit(f"arXiv metadata missing for: {', '.join(missing)}")
-    output = "\n".join(enrich_row(line, metadata) for line in text.splitlines()) + "\n"
+    output = "\n".join(enrich_row(line, metadata, translations) for line in text.splitlines()) + "\n"
     args.input.write_text(output, encoding="utf-8")
     print(f"Expanded {len(ids)} paper cards with arXiv metadata")
 

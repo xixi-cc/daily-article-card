@@ -466,9 +466,11 @@ def normalize_arxiv_id(value: str) -> str:
     return arxiv_id
 
 
-def get_translation_link(link: str) -> str:
-    arxiv_id = normalize_arxiv_id(link)
-    return f"https://hjfy.top/arxiv/{arxiv_id}" if arxiv_id else ""
+def split_bilingual_title(value: str) -> tuple[str, str]:
+    parts = re.split(r"\s*<br\s*/?>\s*", value, maxsplit=1, flags=re.IGNORECASE)
+    if len(parts) == 2:
+        return parts[0].strip(), parts[1].strip()
+    return value.strip(), ""
 
 
 def load_paper_image_manifest() -> Dict[str, Dict[str, object]]:
@@ -533,6 +535,7 @@ def render_note_cover(record: Dict[str, object], standalone: bool = False) -> st
   <div class="note-cover-mesh"></div>
   <div class="note-cover-title-shell">
     <h1 class="note-cover-title">{escape(str(record["title"]))}</h1>
+    {f'<p class="note-cover-title-en">{escape(str(record["title_en"]))}</p>' if record.get("title_en") else ''}
   </div>
 </article>
 """.strip()
@@ -591,14 +594,15 @@ def build_site_records(records: List[Dict[str, str]], paper_image_manifest: Dict
     built: List[Dict[str, object]] = []
 
     for record in records:
+        title_zh, title_en = split_bilingual_title(record["title"])
         summary_markdown = auto_add_linebreaks(record["details_raw"])
         sections = parse_markdown_sections(summary_markdown)
         preview_text = build_preview(sections)
         key_points = build_key_points(sections, preview_text)
         hook_text = build_hook_text(key_points, preview_text)
         arxiv_id = normalize_arxiv_id(record["link"])
-        page_dir = make_page_dir_name(arxiv_id, record["title"])
-        cover_theme = pick_cover_theme(arxiv_id or record["title"])
+        page_dir = make_page_dir_name(arxiv_id, title_en or title_zh)
+        cover_theme = pick_cover_theme(arxiv_id or title_en or title_zh)
         reading_minutes = estimate_reading_minutes(summary_markdown)
         research_unit = extract_research_unit(sections)
         paper_image_path = get_paper_image_path(paper_image_manifest, arxiv_id)
@@ -606,14 +610,14 @@ def build_site_records(records: List[Dict[str, str]], paper_image_manifest: Dict
         built.append(
             {
                 "date": record["date"],
-                "title": record["title"],
+                "title": title_zh,
+                "title_en": title_en,
                 "link": record["link"],
                 "arxiv_id": arxiv_id,
                 "page_dir": page_dir,
                 "detail_path": f"papers/{page_dir}/",
                 "cover_path": f"covers/{page_dir}/",
                 "paper_image_path": paper_image_path,
-                "translation_link": get_translation_link(record["link"]),
                 "summary_markdown": summary_markdown,
                 "sections": sections,
                 "preview_text": preview_text,
@@ -635,6 +639,7 @@ def build_list_data(records: List[Dict[str, object]], thumb_map: Dict[str, str] 
         {
             "date": record["date"],
             "title": record["title"],
+            "title_en": record["title_en"],
             "link": record["link"],
             "arxiv_id": record["arxiv_id"],
             "detail_path": record["detail_path"],
@@ -656,10 +661,6 @@ def build_list_data(records: List[Dict[str, object]], thumb_map: Dict[str, str] 
 def render_detail_meta(record: Dict[str, object]) -> str:
     parts = [escape(str(record["date"]))]
     parts.append(f'<a href="{escape(str(record["link"]), quote=True)}" target="_blank" rel="noopener noreferrer">原文</a>')
-    if record["translation_link"]:
-        parts.append(
-            f'<a href="{escape(str(record["translation_link"]), quote=True)}" target="_blank" rel="noopener noreferrer">翻译</a>'
-        )
     if record["arxiv_id"]:
         parts.append(f'<span class="meta-pill">{escape(str(record["arxiv_id"]))}</span>')
     return " · ".join(parts)
@@ -858,6 +859,7 @@ def generate_paper_html(record: Dict[str, object], prev_record: Dict[str, object
           <div class="detail-hero-copy">
             <p class="eyebrow">论文详情</p>
             <h1 class="detail-page-title">{escape(page_title)}</h1>
+            {f'<p class="detail-page-title-en">{escape(str(record["title_en"]))}</p>' if record.get("title_en") else ''}
             <div class="detail-meta">{meta_html}</div>
             <p class="detail-summary">{escape(str(record["preview_text"]))}</p>
             <div class="detail-micro-meta">
@@ -2740,6 +2742,7 @@ def generate_app_js() -> str:
   function buildSearchText(item){
     return [
       item.title || '',
+      item.title_en || '',
       item.preview_text || '',
       item.research_unit || '',
       item.arxiv_id || '',
@@ -2845,6 +2848,10 @@ def generate_app_js() -> str:
     bodyTitle.className = 'feed-card-title';
     bodyTitle.textContent = item.title || '未命名论文';
 
+    const bodyTitleEn = document.createElement('div');
+    bodyTitleEn.className = 'feed-card-title-en';
+    bodyTitleEn.textContent = item.title_en || '';
+
     const preview = document.createElement('div');
     preview.className = 'feed-card-preview';
     preview.textContent = item.hook_text || item.preview_text || '摘要还在生成中';
@@ -2867,6 +2874,9 @@ def generate_app_js() -> str:
       cardBody.appendChild(meta);
     }
     cardBody.appendChild(bodyTitle);
+    if(item.title_en){
+      cardBody.appendChild(bodyTitleEn);
+    }
     cardBody.appendChild(preview);
     cardBody.appendChild(footer);
 

@@ -342,6 +342,7 @@
   function buildSearchText(item){
     return [
       item.title || '',
+      item.title_en || '',
       item.preview_text || '',
       item.research_unit || '',
       item.arxiv_id || '',
@@ -447,6 +448,10 @@
     bodyTitle.className = 'feed-card-title';
     bodyTitle.textContent = item.title || '未命名论文';
 
+    const bodyTitleEn = document.createElement('div');
+    bodyTitleEn.className = 'feed-card-title-en';
+    bodyTitleEn.textContent = item.title_en || '';
+
     const preview = document.createElement('div');
     preview.className = 'feed-card-preview';
     preview.textContent = item.hook_text || item.preview_text || '摘要还在生成中';
@@ -469,6 +474,9 @@
       cardBody.appendChild(meta);
     }
     cardBody.appendChild(bodyTitle);
+    if(item.title_en){
+      cardBody.appendChild(bodyTitleEn);
+    }
     cardBody.appendChild(preview);
     cardBody.appendChild(footer);
 
