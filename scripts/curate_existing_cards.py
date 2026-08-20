@@ -12,6 +12,7 @@ from __future__ import annotations
 import json
 import re
 import subprocess
+import argparse
 from pathlib import Path
 
 
@@ -106,6 +107,44 @@ def first_url(text: str) -> str | None:
     return None
 
 
+def compact_lines(text: str) -> list[str]:
+    """Discard PDF-layout whitespace without claiming to translate its content."""
+    return [re.sub(r"\s+", " ", line).strip() for line in text.splitlines() if line.strip()]
+
+
+def conclude_from_pdf(paper: Path, pages: int) -> tuple[str, str, str]:
+    """Return conclusion-side source evidence and its physical page range."""
+    start = max(1, pages - 4)
+    text = pdf_text(paper, start, pages)
+    lines = compact_lines(text)
+    marker = next(
+        (index for index, line in enumerate(lines) if re.search(r"(?i)\b(conclusion|discussion|summary|outlook)\b", line)),
+        0,
+    )
+    excerpt = " ".join(lines[marker : marker + 7])
+    excerpt = re.sub(r"\s+", " ", excerpt).strip()
+    return excerpt[:1200], f"pp. {start}-{pages}", text
+
+
+def affiliations_from_pdf(first_pages: str) -> str:
+    """Keep only visible first-page affiliation-like lines; do not infer institutions."""
+    candidates = []
+    for line in compact_lines(first_pages)[:45]:
+        if re.search(r"(?i)(university|institute|department|laboratory|school|centre|center|cnrs|research)", line):
+            if line not in candidates:
+                candidates.append(line)
+    return "；".join(candidates[:3])
+
+
+def chinese_sentences(text: str) -> list[str]:
+    return [sentence.strip() for sentence in re.split(r"(?<=[。！？])", text) if sentence.strip()]
+
+
+def select_sentences(sentences: list[str], terms: tuple[str, ...], fallback: slice) -> list[str]:
+    selected = [sentence for sentence in sentences if any(term in sentence for term in terms)]
+    return (selected or sentences[fallback])[:3]
+
+
 def build_card(row: dict[str, str]) -> dict[str, object]:
     paper = PDF_DIR / row["arxiv_id"] / "paper.pdf"
     if not paper.exists():
@@ -116,6 +155,25 @@ def build_card(row: dict[str, str]) -> dict[str, object]:
     headings = section_titles(first_pages)
     outline = "、".join(headings) if headings else "引言、方法/理论、结果与结论"
     resource = first_url(first_pages + "\n" + final_pages)
+    affiliation = affiliations_from_pdf(first_pages)
+    conclusion_excerpt, conclusion_pages, conclusion_text = conclude_from_pdf(paper, pages)
+    limitation_sentences = [
+        line for line in compact_lines(conclusion_text)
+        if re.search(r"(?i)(limit|future|remain|open problem|challenge|assum|scope|beyond)", line)
+    ]
+    limitation = " ".join(limitation_sentences[:2])[:900]
+    abstract_sentences = chinese_sentences(row["abstract"])
+    background = abstract_sentences[:2]
+    methods = select_sentences(
+        abstract_sentences,
+        ("提出", "引入", "使用", "通过", "构建", "开发", "推导", "训练", "建立", "框架", "模型", "方法"),
+        slice(2, 5),
+    )
+    results = select_sentences(
+        abstract_sentences,
+        ("结果", "证明", "显示", "发现", "实现", "优于", "一致", "收敛", "恢复", "获得", "匹配", "验证"),
+        slice(-3, None),
+    )
     resource_note = (
         f"论文文本中出现的非 arXiv 链接：{resource}。链接可用性未在本次静态卡片构建中代为保证。"
         if resource
@@ -133,7 +191,7 @@ def build_card(row: dict[str, str]) -> dict[str, object]:
                 "title": "作者信息",
                 "bullets": [
                     f"作者：{row['authors']}。",
-                    "作者姓名与论文标题已由本地 arXiv PDF 首页核对；机构、通讯作者与资助信息不从姓名或网页摘要推断，请以论文首页和致谢为准。",
+                    f"论文首页可见的机构行：{affiliation or '未能从 PDF 文本层可靠提取；请以首页版式为准。'}",
                     f"来源版本：arXiv {row['arxiv_id']} {source_version(first_pages)}。",
                 ],
             },
@@ -141,33 +199,32 @@ def build_card(row: dict[str, str]) -> dict[str, object]:
             {
                 "title": "背景",
                 "bullets": [
-                    f"研究问题由论文摘要界定：{row['abstract']}",
-                    "该卡片将论文自身的研究动机与结果分开记录；不把标题关键词或跨论文类比当作作者已证明的结论。",
-                    f"正文结构已检查，主要章节线索为：{outline}。",
+                    *background,
+                    f"论文的章节线索：{outline}。",
                 ],
             },
             {
                 "title": "模型与方法",
                 "bullets": [
-                    f"方法与对象应按正文的实际论证路径阅读：{outline}。",
-                    "本卡片的技术信息来自论文 PDF，而非搜索摘要；定量设定、假设、训练/数值细节应与相应公式、算法或实验小节一起解读。",
-                    "若论文同时包含理论与实验，二者在此仅构成互补证据；实验吻合不自动提升理论结论的适用范围。",
+                    *methods,
+                    f"技术对象：{row['title_zh']}。",
+                    f"正文导航：{outline}。",
                 ],
             },
             {
                 "title": "核心结果与证据",
                 "bullets": [
-                    f"论文在摘要中陈述的中心结果：{row['abstract']}",
-                    "当前证据状态：已检查全文 PDF 的首页、目录/前置结构与结论附近页面，并将卡片结论限定为作者在摘要中明确陈述的范围；不以二手摘要替代原文。",
-                    "结论类型：请按正文中对应的证明、数值计算、基准实验或物理解读分别判断；本卡片不把它们合并为同一证据等级。",
+                    *results,
+                    f"PDF 证据定位：结论/讨论候选区域 {conclusion_pages}；该区域用于回查，不以自动文本抽取替代原文版式。",
+                    f"当前证据状态：本栏具体句子直接整理自 arXiv:{row['arxiv_id']} 的摘要，并以本地 PDF 的 {conclusion_pages} 为回查位置。",
+                    "结论类型：论文摘要所报告的理论推导、数值计算或实验结果；未在本站进行独立复现。",
                 ],
             },
             {
                 "title": "有效性与局限",
                 "bullets": [
-                    "适用范围由论文采用的模型、数据、参数区间和假设共同限定；不能从题目或摘要外推到未研究的体系、数据集或部署条件。",
-                    "本轮完成的是来源文本核验与结构化整理，不是独立复现或同行评审；页面中的性能、定理与物理解读均应保持为论文作者的主张。",
-                    "涉及预印本的结果尚可能随版本更新而变化，引用或复现实验前应再次核对 arXiv 的最新版本与勘误信息。",
+                    f"结论/讨论候选区域（{conclusion_pages}）的限制、范围或未来工作关键词：{limitation or '自动文本抽取未检出明确关键词；摘要也未单列限制，不能据此制造不存在的限制结论。'}",
+                    "证据边界：本站未独立复现；性能、定理或物理解读均为该预印本作者的主张。",
                 ],
             },
             {
@@ -191,18 +248,26 @@ def build_card(row: dict[str, str]) -> dict[str, object]:
             "paper.pdf p. 1: title, authors, arXiv version, and abstract",
             "paper.pdf pp. 1-3: table of contents or initial section structure",
             f"paper.pdf pp. {max(1, pages - 2)}-{pages}: conclusion/discussion vicinity and resource scan",
+            f"paper.pdf {conclusion_pages}: conclusion/discussion evidence extracted for the card.",
             "Evidence status: source-text verification; no independent reproduction performed.",
         ],
     }
 
 
 def main() -> None:
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--refresh-source-text", action="store_true")
+    args = parser.parse_args()
     CARDS_DIR.mkdir(parents=True, exist_ok=True)
     created = 0
     for row in card_rows():
         destination = CARDS_DIR / f"{row['arxiv_id']}.json"
-        if destination.exists():
+        if destination.exists() and not args.refresh_source_text:
             continue
+        if destination.exists() and args.refresh_source_text:
+            existing = json.loads(destination.read_text(encoding="utf-8"))
+            if existing.get("curation_status") == "full_text_verified":
+                continue
         card = build_card(row)
         if [section["title"] for section in card["sections"]] != REQUIRED_TITLES:
             raise ValueError(f"Schema mismatch: {row['arxiv_id']}")
