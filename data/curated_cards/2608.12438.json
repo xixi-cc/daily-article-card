@@ -1,0 +1,20 @@
+{
+  "arxiv_id": "2608.12438",
+  "source_version": "v1",
+  "source_pdf": "https://arxiv.org/pdf/2608.12438",
+  "title_en": "Unifying Generative Models with Path Integrals",
+  "title_zh": "用路径积分统一生成模型",
+  "curation_status": "full_text_verified",
+  "source_report": {"report_date": "2026-08-15", "listing_date": "2026-08-14", "grade": "S", "score": "37/40"},
+  "sections": [
+    {"title": "作者信息", "bullets": ["作者：Ramon Winterhalder。", "机构：TIFLab, Dipartimento di Fisica, Università degli Studi di Milano；INFN, Sezione di Milano。", "版本：arXiv:2608.12438v1，提交于 2026-08-12；primary category 为 cs.LG。日报评级：37/40，S。"]},
+    {"title": "摘要", "paragraphs": ["本文把生成建模表述为路径积分，使 flow-based、diffusion-based、variational 和 adversarial 模型成为同一个 master action 的不同求值原则。它的 Martin–Siggia–Rose–Janssen–de Dominicis (MSRJD) 形式把自由概率流与相互作用概率流分开，从而可使用图解微扰论。展开给出对确定性采样器的一圈修正，不增加随机采样成本；在可解和非线性 drift 上验证时，一圈修正把 53% 的 tree-level 误差降到 1.6%。不完美的 learned score 作为 insertion 进入，并产生 response-weighted score-matching objective；具有对称性的 drift 设计则成为带 EFT power counting 的算符展开。"]},
+    {"title": "背景", "paragraphs": ["不同生成模型通常各自使用 normalizing-flow Jacobian、reverse SDE、variational bound 或 adversarial objective。论文的研究空缺不是再提出一个 sampler，而是寻找能同时分类这些模型并系统计算 fluctuation correction 的共同概率动力学。作者从离散 latent-variable chain 的连续极限导出 Onsager–Machlup action，再转换为 MSRJD 场论。分类属于 physics for/of AI：路径积分、响应场、Feynman diagram 与 EFT power counting 被直接用于生成建模。"]},
+    {"title": "模型与方法", "bullets": ["从 latent-variable Markov chain 出发取连续极限，得到带 drift 与扩散的 Onsager–Machlup master action；normalizing flow、diffusion、flow matching、VAE 和 GAN 通过不同动力学限制或求值近似进入同一分类（第 2 节、表 1）。", "将 drift 分为线性 free part 与非线性 interaction，写成 MSRJD functional integral。响应 propagator $G$、噪声 correlation $C\\propto g^2$、interaction vertex 和 score-error insertion 形成图解规则；一圈项来自 Gaussian fluctuation determinant/收缩，而无需逐轨迹做随机采样。", "数值验证覆盖二维 Ornstein–Uhlenbeck free theory、一维非线性 interacting drift 和 24 维 permutation-equivariant drift。参考值分别来自 Euler–Maruyama 大样本或高精度 Fokker–Planck 网格；测试量为采样终点的二阶矩。"]},
+    {"title": "核心结果与证据", "bullets": ["统一结构：Eq. (2.29) 的同一路径积分按不同 evaluation principle 产生连续生成模型族；VAE/GAN 被解释为退化单步或 likelihood-free realization。这个结果是结构分类，不等同于训练目标在实践中完全等价。", "一圈修正：图 1–3 给出 kernel/MSRJD 展开。表 2 的二维 OU 基准用每行 $2\\times10^5$ 条 Euler–Maruyama 轨迹；表 3 的 interacting model 使用 $10^6$ 条轨迹核对、Fokker–Planck 网格在 $4\\times10^{-6}$ 水平稳定。摘要所报最突出案例中，tree-level 相对误差 53%，一圈后为 1.6%。", "24 维 equivariant drift（表 4）使用 $1.3\\times10^5$ 条轨迹；未修正确定性 sampler 对二阶矩的误差为 41%–83%。在 $g^2=0.1$ 时一圈误差降到 1.1%，但随 $g^2$ 增大、修正超过 tree contribution 后逐渐恶化，恰好显示微扰展开的有效边界。"]},
+    {"title": "有效性与局限", "bullets": ["一圈结果是小 fluctuation/弱耦合附近的 perturbative approximation；出现 caustic、多个 classical path 或 loop term 大于 tree term 时需重求和或非微扰方法，不能继续宣称高精度。", "数值例子是低维可解模型与一个 24 维人工 equivariant drift，并未在训练完成的真实 diffusion/flow 模型及图像质量指标上验证。", "把 VAE/GAN 纳入 master action 是形式统一和退化极限，不意味着它们的优化景观、有限网络误差与 sampling bias 都被同一近似控制；EFT 算符排序也需要明确 symmetry 和 scale separation。"]},
+    {"title": "复现与资源", "bullets": ["作者代码：https://github.com/ramonpeter/generative-path-integrals。原文：https://arxiv.org/abs/2608.12438；PDF：https://arxiv.org/pdf/2608.12438。", "复核须分别重现表 2 的 OU、表 3 的 nonlinear/Fokker–Planck 和表 4 的 24D equivariant case，记录 $g^2$、trajectory 数、网格收敛与 Monte Carlo uncertainty，并比较 tree/one-loop/reference。论文没有提供训练 checkpoint 或真实生成数据集评估。"]},
+    {"title": "阅读指南", "bullets": ["快速阅读：第 2.3 节和表 1看统一分类，第 3.3 节看图解规则，第 4.3–4.4 节看数值与 caustic 有效域。", "最重要方程是 master path integral Eq. (2.29)；最重要证据是表 3/4，而不是只读摘要中的 53%→1.6%。", "深入阅读应沿图 1–3逐项核对 propagator、correlator、vertex 与 insertion，再检查一圈 truncation 在各 $g^2$ 下何时失效。"]}
+  ],
+  "evidence_refs": ["paper.pdf pp. 1-2: title, author affiliation, abstract, contents, and research gap", "paper.pdf pp. 4-19: master Onsager-Machlup action and model taxonomy", "paper.pdf pp. 20-33: MSRJD free-interacting split and diagrammatic expansion", "paper.pdf pp. 34-38: Tables 2-4, trajectory counts, errors, and validity degradation", "paper.pdf pp. 37-45: caustics, EFT power counting, and outlook", "Evidence status: full-text verified; no independent reproduction performed."]
+}
