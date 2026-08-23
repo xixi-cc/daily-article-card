@@ -1,0 +1,166 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Bridge Graphical Models: Coupling, Projection, and Current-Preserving Dynamics for Generative Modeling - physics+AI 每日论文卡</title>
+    <meta name="description" content="连续时间生成模型常由 endpoint-conditioned bridge 构造，但生成时需要的是只观察当前状态和时间、非预见的 Markov decoder。本文把这种 bridge-to-decoder compression 识别为 diffusion、flow matching、rectified flow、Schrödinger bridge 和 field-based model 共有的结构瓶颈，并定义 Markovization gap：给定 Markov 状态后 bridge velocity 的条件方差对时间积分。它等于用 sampler 可见信息预测 endpoint-conditioned motion 的 MMSE，是神经网络训练之前就存在的不可约损失。Bridge Graphical Model (BGM) 将 endpoint coupling、bridge law、Markovian projection 与 current-preserving dynamics representation 分成独立设计项；Poisson/electrostatic model 也被表示为 field-line bridge kernel。CIFAR-10、Fashion-MNIST、latent 和合成 pilot 中，训练前数分钟计算的 feature-space proxy gap 在固定架构、bridge、sampler 和 compute 下与训练 loss/FID 的排序方向一致。" />
+    <script>
+      (function() {
+        try {
+          var themePreference = window.localStorage.getItem('color-theme') || 'system';
+          var systemUsesDarkTheme = window.matchMedia('(prefers-color-scheme: dark)').matches;
+          var resolvedTheme = themePreference === 'system'
+            ? (systemUsesDarkTheme ? 'dark' : 'light')
+            : themePreference;
+          document.documentElement.dataset.theme = resolvedTheme;
+          document.documentElement.dataset.themePreference = themePreference;
+          document.documentElement.style.colorScheme = resolvedTheme;
+        } catch (error) {
+          document.documentElement.dataset.theme = 'light';
+          document.documentElement.dataset.themePreference = 'system';
+        }
+      })();
+    </script>
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='18' fill='%23111827'/%3E%3Ctext x='50%25' y='55%25' text-anchor='middle' dominant-baseline='middle' font-size='30' font-family='Arial, sans-serif' fill='white'%3EV%3C/text%3E%3C/svg%3E" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700;800&family=Noto+Sans+SC:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="../../assets/style.css" />
+  </head>
+  <body class="detail-page" data-paper-id="2608.19144">
+    <div class="page-noise"></div>
+    <div class="page-blur page-blur-a"></div>
+    <div class="page-blur page-blur-b"></div>
+
+    <header class="header detail-page-header">
+      <div class="container">
+        <div class="detail-page-topbar">
+          <a class="back-link" href="../../physics_AI.html">返回列表</a>
+          <div class="detail-topbar-actions">
+            <span class="detail-site-name">physics+AI 每日论文卡</span>
+            <button class="theme-toggle" type="button" data-theme-toggle aria-label="当前主题：设备，点击切换主题" title="当前主题：设备">
+  <span class="theme-toggle-icons" aria-hidden="true">
+    <svg class="theme-toggle-icon theme-toggle-icon-light" viewBox="0 0 24 24" fill="none">
+      <circle cx="12" cy="12" r="3.5" stroke="currentColor" stroke-width="1.8"/>
+      <path d="M12 2.5v2M12 19.5v2M2.5 12h2M19.5 12h2M5.3 5.3l1.4 1.4M17.3 17.3l1.4 1.4M18.7 5.3l-1.4 1.4M6.7 17.3l-1.4 1.4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+    </svg>
+    <svg class="theme-toggle-icon theme-toggle-icon-dark" viewBox="0 0 24 24" fill="none">
+      <path d="M20 15.2A8.1 8.1 0 0 1 8.8 4a8.2 8.2 0 1 0 11.2 11.2z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>
+    </svg>
+    <svg class="theme-toggle-icon theme-toggle-icon-system" viewBox="0 0 24 24" fill="none">
+      <rect x="3" y="4" width="18" height="13" rx="2.5" stroke="currentColor" stroke-width="1.8"/>
+      <path d="M8 21h8M12 17v4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+    </svg>
+  </span>
+  <span class="theme-toggle-label" data-theme-toggle-label>设备</span>
+</button>
+          </div>
+        </div>
+
+        <div class="detail-hero-grid">
+          <div class="detail-hero-cover"><figure class="paper-figure-card paper-figure-card-detail">
+  <img class="paper-figure-image" src="../../assets/paper-images/2608.19144.png" alt="Bridge Graphical Models: Coupling, Projection, and Current-Preserving Dynamics for Generative Modeling" loading="lazy" onclick="window.openPaperFigureImage && window.openPaperFigureImage(this)" />
+  <figcaption class="paper-figure-caption">连续时间生成模型常由 endpoint-conditioned bridge 构造，但生成时需要的是只观察当前状态和时间、非预见的 Markov decoder。本文把这种 bridge-to-decoder compression 识别为 diffusion、flow matching、rectified flow、Schrödinger bridge 和 field-based model 共有的结构瓶颈，并定义 Markovization gap：给定 Markov 状态后 bridge velocity 的条件方差对时间积分。它等于用 sampler 可见信息预测 endpoint-conditioned motion 的 MMSE，是神经网络训练之前就存在的不可约损失。Bridge Graphical Model (BGM) 将 endpoint coupling、bridge law、Markovian projection 与 current-preserving dynamics representation 分成独立设计项；Poisson/electrostatic model 也被表示为 field-line bridge kernel。CIFAR-10、Fashion-MNIST、latent 和合成 pilot 中，训练前数分钟计算的 feature-space proxy gap 在固定架构、bridge、sampler 和 compute 下与训练 loss/FID 的排序方向一致。</figcaption>
+</figure></div>
+          <div class="detail-hero-copy">
+            <p class="eyebrow">论文详情</p>
+            <h1 class="detail-page-title">Bridge Graphical Models: Coupling, Projection, and Current-Preserving Dynamics for Generative Modeling</h1>
+            <p class="detail-page-title-zh">桥图模型：生成建模中的耦合、投影与流守恒动力学</p>
+            <div class="detail-meta">2026-08-21 · <a href="https://arxiv.org/abs/2608.19144" target="_blank" rel="noopener noreferrer">原文</a></div>
+            <p class="detail-summary">连续时间生成模型常由 endpoint-conditioned bridge 构造，但生成时需要的是只观察当前状态和时间、非预见的 Markov decoder。本文把这种 bridge-to-decoder compression 识别为 diffusion、flow matching、rectified flow、Schrödinger bridge 和 field-based model 共有的结构瓶颈，并定义 Markovization gap：给定 Markov 状态后 bridge velocity 的条件方差对时间积分。它等于用 sampler 可见信息预测 endpoint-conditioned motion 的 MMSE，是神经网络训练之前就存在的不可约损失。Bridge Graphical Model (BGM) 将 endpoint coupling、bridge law、Markovian projection 与 current-preserving dynamics representation 分成独立设计项；Poisson/electrostatic model 也被表示为 field-line bridge kernel。CIFAR-10、Fashion-MNIST、latent 和合成 pilot 中，训练前数分钟计算的 feature-space proxy gap 在固定架构、bridge、sampler 和 compute 下与训练 loss/FID 的排序方向一致。</p>
+            <div class="detail-micro-meta">
+              <span class="meta-pill">12 分钟读完</span>
+              <span class="meta-pill">8 张阅读卡</span>
+              <span class="meta-pill">作者：Tiantian Zhang。</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <main class="container detail-layout">
+      <div class="detail-shell">
+        <article id="detail-body" class="reading-flow"><section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 01</span>
+    <span class="reading-step-note">作者信息</span>
+  </div>
+  <h2>作者信息</h2>
+  <div class="reading-card-content"><ul><li>作者：Tiantian Zhang。</li><li>机构：Columbia University, New York, NY, USA；邮箱 t.zhang8@columbia.edu。</li><li>版本：arXiv:2608.19144v1；官方首次提交 2026-06-16T00:02:11Z；primary category cs.LG。论文标注 Preprint / Work in progress。日报评级：38/40，S。</li></ul></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 02</span>
+    <span class="reading-step-note">摘要</span>
+  </div>
+  <h2>摘要</h2>
+  <div class="reading-card-content"><p>连续时间生成模型常由 endpoint-conditioned bridge 构造，但生成时需要的是只观察当前状态和时间、非预见的 Markov decoder。本文把这种 bridge-to-decoder compression 识别为 diffusion、flow matching、rectified flow、Schrödinger bridge 和 field-based model 共有的结构瓶颈，并定义 Markovization gap：给定 Markov 状态后 bridge velocity 的条件方差对时间积分。它等于用 sampler 可见信息预测 endpoint-conditioned motion 的 MMSE，是神经网络训练之前就存在的不可约损失。Bridge Graphical Model (BGM) 将 endpoint coupling、bridge law、Markovian projection 与 current-preserving dynamics representation 分成独立设计项；Poisson/electrostatic model 也被表示为 field-line bridge kernel。CIFAR-10、Fashion-MNIST、latent 和合成 pilot 中，训练前数分钟计算的 feature-space proxy gap 在固定架构、bridge、sampler 和 compute 下与训练 loss/FID 的排序方向一致。</p></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 03</span>
+    <span class="reading-step-note">背景</span>
+  </div>
+  <h2>背景</h2>
+  <div class="reading-card-content"><p>训练 bridge 可以知道起终点，部署 sampler 却只能知道 $(X_t,t)$。若同一中间状态对应许多方向不同的 endpoint-conditioned velocity，任何 Markov 网络都无法恢复丢失信息。论文把这一误差同函数逼近、优化和 sampler discretization 分开，目标是训练前比较 coupling/bridge 设计。分类为 physics of/for generative AI：概率流、conditional variance、Markov projection 和 current representation 构成统一结构。</p></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 04</span>
+    <span class="reading-step-note">模型与方法</span>
+  </div>
+  <h2>模型与方法</h2>
+  <div class="reading-card-content"><ul><li>对 coupling $Q$ 采样端点并由 bridge 产生 $(X_t,U_t)$；最优 Markov velocity 为 $v_t(X_t)=\mathbb E[U_t|X_t]$。gap 是 $G(Q)=\int\mathbb E\|U_t-\mathbb E(U_t|X_t)\|^2dt$，即 Markov vector field 上回归风险的 infimum。</li><li>BGM 图 1 将 coupling、bridge、projection 与实现同一 probability current 的 ODE/SDE/field dynamics 解耦。理论还给出 gap 与 path-space objective、Girsanov/ELBO 及终点 Wasserstein 误差之间的条件关系；这些 bound 需要文中 regularity 假设。</li><li>经验 proxy 用有限样本 kNN 条件方差；合成实验比较 independent 与 minibatch OT coupling；latent benchmark 固定 architecture/optimizer/32-step Euler；pixel pilot 用 64 维 PCA feature，在 CIFAR-10 每配置 CPU 约 9 分钟。</li></ul></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 05</span>
+    <span class="reading-step-note">核心结果与证据</span>
+  </div>
+  <h2>核心结果与证据</h2>
+  <div class="reading-card-content"><ul><li>图 2：$n=1000$ 的一次合成实验中 independent gap 4.877、minibatch-OT gap 0.038；$n\in\{500,1000\}$ 的 5-seed 复核显示 OT 约降低两个数量级。</li><li>表 2（三个 latent seeds，mean±SD）：在 bridge、architecture、optimizer 和 sampling budget 相同时，minibatch OT 约把 gap 减半、velocity-regression error 降 67%–69%、terminal latent MMD 降 45%–51%；但 1NN statistic 仍远离理想 0.5，说明生成分布并未解决。</li><li>表 3/4：feature proxy 在 coupling 排序上与固定条件下 pixel-space training loss、FID（Fashion-MNIST 还包括 KID）方向一致。作者明确 proxy 不是 pixel-space certified lower bound，跨 dataset 的绝对值也不可比较。结论是预训练 diagnostic 的 pilot 支持，而不是普适性能定理。</li></ul></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 06</span>
+    <span class="reading-step-note">有效性与局限</span>
+  </div>
+  <h2>有效性与局限</h2>
+  <div class="reading-card-content"><ul><li>Markovization gap 只隔离 bridge compression；低 gap 不保证有限网络可逼近、不保证 optimizer 收敛，也不控制 discretization 和 perceptual quality。</li><li>真实数据 proxy 依赖 PCA/feature normalization、kNN 和有限样本；CIFAR/Fashion pixel pilots 是受控单次运行，规模远小于现代生成模型。</li><li>论文是 work in progress；现场页未提供作者代码仓库，表中结果尚无外部独立复现。Poisson/electrostatic field-line 扩展主要是形式统一。</li></ul></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 07</span>
+    <span class="reading-step-note">复现与资源</span>
+  </div>
+  <h2>复现与资源</h2>
+  <div class="reading-card-content"><ul><li>原文：https://arxiv.org/abs/2608.19144；PDF：https://arxiv.org/pdf/2608.19144。全文未给出可核验代码仓库。</li><li>复核必须保存 endpoint pairing、bridge、feature transform、kNN 参数、随机种子、训练预算和 sampler steps；先复现图 2 五个 seeds，再复现表 2 三个 seeds，pixel pilot 应标注 single-run scope。</li></ul></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 08</span>
+    <span class="reading-step-note">阅读指南</span>
+  </div>
+  <h2>阅读指南</h2>
+  <div class="reading-card-content"><ul><li>快速阅读：图 1 → Markovian projection/gap 定义 → 图 2和表 2 → 表 3/4 → limitations。</li><li>最重要公式是 conditional-variance/MMSE 定义；最重要证据是表 2，因为它同时报告 proxy、训练误差和 distribution metric。</li><li>深入阅读应核对从 process-side gap 到 terminal $W_2$ 的每个 regularity assumption，避免把 rank correlation 当作因果保证。</li></ul></div>
+</section></article>
+        <aside id="detail-toc" class="detail-toc hidden" aria-label="内容目录">
+          <p class="detail-toc-title">阅读目录</p>
+          <nav id="detail-toc-nav" class="detail-toc-nav"></nav>
+        </aside>
+      </div>
+      <nav class="paper-nav"><a class="paper-nav-link paper-nav-next" href="../../papers/2608.18415/"><span class="paper-nav-label">下一篇 →</span><span class="paper-nav-title">The Road Taken: The Role of Optimizers at the Edge of Stability</span></a></nav>
+    </main>
+
+    <footer class="footer">
+      <div class="container">
+        <p>内容来自 <a href="https://arxiv.org" target="_blank" rel="noopener noreferrer">arXiv.org</a>，阅读卡片由静态站点生成器构建。</p>
+      </div>
+    </footer>
+
+    <script src="../../assets/theme.js"></script>
+    <script src="../../assets/media.js"></script>
+    <script src="../../assets/paper.js"></script>
+  </body>
+</html>
