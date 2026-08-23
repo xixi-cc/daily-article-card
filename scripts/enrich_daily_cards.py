@@ -19,6 +19,7 @@ PAPERS_MD = ROOT / "papers.md"
 TRANSLATIONS_ZH = ROOT / "data" / "arxiv_zh.json"
 CURATED_CARDS_DIR = ROOT / "data" / "curated_cards"
 ATOM = {"a": "http://www.w3.org/2005/Atom"}
+ARXIV = {"arxiv": "http://arxiv.org/schemas/atom"}
 
 PROPER_NOUN_GLOSSARY = {
     "人工智能": "AI",
@@ -68,11 +69,19 @@ def fetch_metadata(ids: list[str]) -> dict[str, dict[str, object]]:
         with urllib.request.urlopen(request, timeout=60) as response:
             root = ET.fromstring(response.read())
         for entry in root.findall("a:entry", ATOM):
-            arxiv_id = entry.findtext("a:id", default="", namespaces=ATOM).rsplit("/", 1)[-1].split("v")[0]
+            versioned_id = entry.findtext("a:id", default="", namespaces=ATOM).rsplit("/", 1)[-1]
+            version_match = re.search(r"(v\d+)$", versioned_id)
+            arxiv_id = re.sub(r"v\d+$", "", versioned_id)
+            primary = entry.find("arxiv:primary_category", {**ATOM, **ARXIV})
             records[arxiv_id] = {
+                "arxiv_id": arxiv_id,
+                "version": version_match.group(1) if version_match else "",
+                "title": compact(entry.findtext("a:title", default="", namespaces=ATOM)),
                 "abstract": compact(entry.findtext("a:summary", default="", namespaces=ATOM)),
                 "authors": [compact(author.findtext("a:name", default="", namespaces=ATOM)) for author in entry.findall("a:author", ATOM)],
                 "categories": [category.attrib.get("term", "") for category in entry.findall("a:category", ATOM)],
+                "primary_category": primary.attrib.get("term", "") if primary is not None else "",
+                "published": compact(entry.findtext("a:published", default="", namespaces=ATOM)),
                 "comment": compact(entry.findtext("a:comment", default="", namespaces=ATOM)),
             }
         if offset + 20 < len(ids):
@@ -133,6 +142,61 @@ def render_curated_details(card: dict[str, object]) -> str:
     return "".join(rendered)
 
 
+def verified_local_metadata(card: dict[str, object]) -> dict[str, object] | None:
+    """Return complete committed arXiv evidence, or fail closed on malformed evidence."""
+    raw = card.get("verified_metadata")
+    if raw is None:
+        return None
+    if not isinstance(raw, dict):
+        raise ValueError(f"{card.get('arxiv_id')}: verified_metadata must be an object")
+    required_strings = (
+        "arxiv_id", "version", "title", "published", "primary_category", "abstract",
+    )
+    missing = [key for key in required_strings if not str(raw.get(key, "")).strip()]
+    authors = raw.get("authors")
+    categories = raw.get("categories")
+    if not isinstance(authors, list) or not all(str(value).strip() for value in authors):
+        missing.append("authors")
+    if not isinstance(categories, list) or not all(str(value).strip() for value in categories):
+        missing.append("categories")
+    if missing:
+        raise ValueError(
+            f"{card.get('arxiv_id')}: incomplete verified_metadata fields {sorted(set(missing))}"
+        )
+    arxiv_id = str(card.get("arxiv_id", "")).strip()
+    if str(raw["arxiv_id"]).strip() != arxiv_id:
+        raise ValueError(f"{arxiv_id}: verified_metadata arxiv_id mismatch")
+    if compact(str(raw["title"])) != compact(str(card.get("title_en", ""))):
+        raise ValueError(f"{arxiv_id}: verified_metadata title mismatch")
+    if str(raw["version"]).strip() != str(card.get("source_version", "")).strip():
+        raise ValueError(f"{arxiv_id}: verified_metadata version mismatch")
+    if str(raw["primary_category"]).strip() not in {str(value).strip() for value in categories}:
+        raise ValueError(f"{arxiv_id}: primary category missing from categories")
+    if not re.fullmatch(r"v\d+", str(raw["version"]).strip()):
+        raise ValueError(f"{arxiv_id}: invalid verified version")
+    if not re.fullmatch(r"\d{4}-\d{2}-\d{2}T[^\s]+Z", str(raw["published"]).strip()):
+        raise ValueError(f"{arxiv_id}: invalid verified publication timestamp")
+    return raw
+
+
+def canonical_curated_row(date: str, link: str, card: dict[str, object]) -> str:
+    title_en = str(card.get("title_en", "")).strip()
+    title_zh = str(card.get("title_zh", "")).strip() or title_en
+    return f"| {date} | {title_zh}<br>{title_en} | {link} | {render_curated_details(card)} |"
+
+
+def verify_remote_curated_metadata(card: dict[str, object], meta: dict[str, object]) -> None:
+    """Use official arXiv only as a gate; never fill unknown curated fields."""
+    arxiv_id = str(card.get("arxiv_id", "")).strip()
+    if str(meta.get("arxiv_id", "")).strip() != arxiv_id:
+        raise ValueError(f"{arxiv_id}: official arXiv ID mismatch")
+    if compact(str(meta.get("title", ""))) != compact(str(card.get("title_en", ""))):
+        raise ValueError(f"{arxiv_id}: official arXiv title mismatch")
+    source_version = str(card.get("source_version", "")).strip()
+    if source_version and str(meta.get("version", "")).strip() != source_version:
+        raise ValueError(f"{arxiv_id}: official arXiv version mismatch")
+
+
 def classify_paper(title: str, abstract: str, categories: list[str]) -> str:
     text = f"{title} {abstract}".lower()
     has_ai = any(category.startswith(("cs.", "stat.ML")) for category in categories)
@@ -168,17 +232,22 @@ def enrich_row(
         return line
     date, title, link, details = (part.strip() for part in match.groups())
     id_match = re.search(r"(\d{4}\.\d{4,5})", link)
-    if not id_match or id_match.group(1) not in metadata:
+    if not id_match:
         return line
 
     arxiv_id = id_match.group(1)
     curated = curated_cards.get(arxiv_id)
     if curated:
-        title_en = str(curated.get("title_en", "")).strip() or re.split(
-            r"\s*<br\s*/?>\s*", title, flags=re.IGNORECASE
-        )[-1].strip()
-        title_zh = str(curated.get("title_zh", "")).strip() or title_en
-        return f"| {date} | {title_zh}<br>{title_en} | {link} | {render_curated_details(curated)} |"
+        canonical = canonical_curated_row(date, link, curated)
+        if verified_local_metadata(curated) is not None or line.strip() == canonical:
+            return canonical
+        if arxiv_id not in metadata:
+            raise ValueError(f"{arxiv_id}: local evidence incomplete and official arXiv unavailable")
+        verify_remote_curated_metadata(curated, metadata[arxiv_id])
+        return canonical
+
+    if arxiv_id not in metadata:
+        return line
 
     meta = metadata[arxiv_id]
     translation = translations.get(arxiv_id, {})
@@ -218,6 +287,40 @@ def enrich_row(
     return f"| {date} | {title_zh}<br>{title_en} | {link} | {expanded} |"
 
 
+def enrich_text(
+    source: str,
+    translations: dict[str, dict[str, str]],
+    curated_cards: dict[str, dict[str, object]],
+    fetcher=fetch_metadata,
+) -> str:
+    lines = source.splitlines()
+    remote_ids: list[str] = []
+    for line in lines:
+        match = re.match(r"^\|\s*([^|]+)\|\s*([^|]+)\|\s*(https?://[^|]+)\|\s*(.*?)\s*\|$", line)
+        if not match:
+            continue
+        date, _title, link, _details = (part.strip() for part in match.groups())
+        id_match = re.search(r"(\d{4}\.\d{4,5})", link)
+        if not id_match:
+            continue
+        arxiv_id = id_match.group(1)
+        curated = curated_cards.get(arxiv_id)
+        if curated:
+            canonical = canonical_curated_row(date, link, curated)
+            if verified_local_metadata(curated) is not None or line.strip() == canonical:
+                continue
+        if arxiv_id not in remote_ids:
+            remote_ids.append(arxiv_id)
+
+    metadata = fetcher(remote_ids) if remote_ids else {}
+    missing = sorted(set(remote_ids) - set(metadata))
+    if missing:
+        raise RuntimeError(f"Official arXiv metadata missing for: {', '.join(missing)}")
+    return "\n".join(
+        enrich_row(line, metadata, translations, curated_cards) for line in lines
+    ) + "\n"
+
+
 def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--input", type=Path, default=PAPERS_MD)
@@ -225,16 +328,9 @@ def main() -> None:
     text = args.input.read_text(encoding="utf-8")
     translations = json.loads(TRANSLATIONS_ZH.read_text(encoding="utf-8"))
     curated_cards = load_curated_cards()
-    ids = list(dict.fromkeys(re.findall(r"arxiv.org/abs/(\d{4}\.\d{4,5})", text)))
-    metadata = fetch_metadata(ids)
-    missing = sorted(set(ids) - set(metadata))
-    if missing:
-        raise SystemExit(f"arXiv metadata missing for: {', '.join(missing)}")
-    output = "\n".join(
-        enrich_row(line, metadata, translations, curated_cards) for line in text.splitlines()
-    ) + "\n"
+    output = enrich_text(text, translations, curated_cards)
     args.input.write_text(output, encoding="utf-8")
-    print(f"Expanded {len(ids)} paper cards with arXiv metadata")
+    print("Rendered paper cards from committed evidence; official arXiv queried only when required")
 
 
 if __name__ == "__main__":
