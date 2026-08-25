@@ -1,0 +1,207 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Score-based Data Assimilation - physics+AI Collection 随机精选</title>
+    <meta name="description" content="作者：François Rozet、Gilles Louppe。本卡核对 arXiv:2306.10574v2；工作把数据同化写成随机动力系统整条轨迹的贝叶斯后验采样问题。" />
+    <script>
+      (function() {
+        try {
+          var themePreference = window.localStorage.getItem('color-theme') || 'system';
+          var systemUsesDarkTheme = window.matchMedia('(prefers-color-scheme: dark)').matches;
+          var resolvedTheme = themePreference === 'system'
+            ? (systemUsesDarkTheme ? 'dark' : 'light')
+            : themePreference;
+          document.documentElement.dataset.theme = resolvedTheme;
+          document.documentElement.dataset.themePreference = themePreference;
+          document.documentElement.style.colorScheme = resolvedTheme;
+        } catch (error) {
+          document.documentElement.dataset.theme = 'light';
+          document.documentElement.dataset.themePreference = 'system';
+        }
+      })();
+    </script>
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='18' fill='%23111827'/%3E%3Ctext x='50%25' y='55%25' text-anchor='middle' dominant-baseline='middle' font-size='30' font-family='Arial, sans-serif' fill='white'%3EV%3C/text%3E%3C/svg%3E" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700;800&family=Noto+Sans+SC:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <script>document.documentElement.classList.add('math-pending');</script>
+    <script>
+      window.MathJax = {
+        tex: {
+          inlineMath: [['$', '$'], ['\\(', '\\)']],
+          displayMath: [['$$', '$$'], ['\\[', '\\]']],
+          processEscapes: true
+        },
+        options: {
+          skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+        },
+        chtml: {
+          scale: 1,
+          displayAlign: 'center'
+        },
+        startup: {
+          ready: function() {
+            MathJax.startup.defaultReady();
+            MathJax.startup.promise.then(function() {
+              document.documentElement.classList.remove('math-pending');
+              document.documentElement.dataset.mathReady = 'true';
+            });
+          }
+        }
+      };
+    </script>
+    <script defer src="../../assets/vendor/mathjax/tex-chtml.js"></script>
+    <link rel="stylesheet" href="../../assets/style.css" />
+  </head>
+  <body class="detail-page" data-paper-id="2306.10574">
+    <div class="page-noise"></div>
+    <div class="page-blur page-blur-a"></div>
+    <div class="page-blur page-blur-b"></div>
+
+    <header class="header detail-page-header">
+      <div class="container">
+        <div class="detail-page-topbar">
+          <a class="back-link" href="../../collection.html">返回列表</a>
+          <div class="detail-topbar-actions">
+            <span class="detail-site-name">physics+AI Collection 随机精选</span>
+            <button class="theme-toggle" type="button" data-theme-toggle aria-label="当前主题：设备，点击切换主题" title="当前主题：设备">
+  <span class="theme-toggle-icons" aria-hidden="true">
+    <svg class="theme-toggle-icon theme-toggle-icon-light" viewBox="0 0 24 24" fill="none">
+      <circle cx="12" cy="12" r="3.5" stroke="currentColor" stroke-width="1.8"/>
+      <path d="M12 2.5v2M12 19.5v2M2.5 12h2M19.5 12h2M5.3 5.3l1.4 1.4M17.3 17.3l1.4 1.4M18.7 5.3l-1.4 1.4M6.7 17.3l-1.4 1.4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+    </svg>
+    <svg class="theme-toggle-icon theme-toggle-icon-dark" viewBox="0 0 24 24" fill="none">
+      <path d="M20 15.2A8.1 8.1 0 0 1 8.8 4a8.2 8.2 0 1 0 11.2 11.2z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>
+    </svg>
+    <svg class="theme-toggle-icon theme-toggle-icon-system" viewBox="0 0 24 24" fill="none">
+      <rect x="3" y="4" width="18" height="13" rx="2.5" stroke="currentColor" stroke-width="1.8"/>
+      <path d="M8 21h8M12 17v4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+    </svg>
+  </span>
+  <span class="theme-toggle-label" data-theme-toggle-label>设备</span>
+</button>
+          </div>
+        </div>
+
+        <div class="detail-hero-grid">
+          <div class="detail-hero-cover"><figure class="paper-figure-card paper-figure-card-detail">
+  <img class="paper-figure-image" src="../../assets/collection-figures/2306.10574/figure-4-vorticity-assimilation.webp" alt="参考、观测、SDA 与 DPS 的二维涡量轨迹随时间演化对比。" loading="lazy" onclick="window.openPaperFigureImage && window.openPaperFigureImage(this)" />
+  <figcaption class="paper-figure-caption">稀疏且含噪的观测只约束部分自由度；SDA 依靠轨迹先验补全连续涡量演化，并明显优于直接 DPS guidance。</figcaption>
+</figure></div>
+          <div class="detail-hero-copy">
+            <p class="eyebrow">Collection 全文卡</p>
+            <h1 class="detail-page-title">Score-based Data Assimilation</h1>
+            <p class="detail-page-title-zh">基于得分模型的全轨迹数据同化</p>
+            <div class="detail-meta">Paper Collection · Generative Models · <a href="https://arxiv.org/abs/2306.10574" target="_blank" rel="noopener noreferrer">原文</a></div>
+            <p class="detail-summary">作者：François Rozet、Gilles Louppe。本卡核对 arXiv:2306.10574v2；工作把数据同化写成随机动力系统整条轨迹的贝叶斯后验采样问题。</p>
+            <div class="detail-micro-meta">
+              <span class="meta-pill">8 分钟读完</span>
+              <span class="meta-pill">8 张阅读卡</span>
+              <span class="meta-pill">作者：François Rozet、Gilles Louppe。本卡核对 arXiv:2306.105…</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <main class="container detail-layout">
+      <div class="detail-shell">
+        <article id="detail-body" class="reading-flow"><section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 01</span>
+    <span class="reading-step-note">作者信息</span>
+  </div>
+  <h2>作者信息</h2>
+  <div class="reading-card-content"><ul><li>作者：François Rozet、Gilles Louppe。本卡核对 arXiv:2306.10574v2；工作把数据同化写成随机动力系统整条轨迹的贝叶斯后验采样问题。</li></ul></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 02</span>
+    <span class="reading-step-note">研究问题</span>
+  </div>
+  <h2>研究问题</h2>
+  <div class="reading-card-content"><ul><li>给定稀疏、含噪甚至非线性的观测 \(y\)，目标不是恢复一条最优轨迹，而是采样 \(p(x_{1:L}\mid y)\)，从而保留混沌系统中不可约的多模态不确定性。困难在于长轨迹维数随 \(L\) 线性增长，且传统粒子法或变分法通常需要反复调用或微分物理推进器。</li><li>论文问能否只从短轨迹片段学习局部得分，在推断时把它们拼成任意长轨迹的先验得分，并将训练阶段未见过的观测算子仅作为似然力加入反向扩散。</li></ul></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 03</span>
+    <span class="reading-step-note">背景</span>
+  </div>
+  <h2>背景</h2>
+  <div class="reading-card-content"><ul><li>Bayes 分解把后验得分写成 \(</li></ul>
+<p>abla_{x(t)}\log p(x(t)\mid y)=</p>
+<p>abla_{x(t)}\log p(x(t))+</p>
+<p>abla_{x(t)}\log p(y\mid x(t))\)。前一项承载动力学先验，后一项承载测量模型，因此同一个无条件 score network 可用于不同传感器和缺测模式。</p>
+<ul><li>关键物理结构是时间马尔可夫性：状态 \(x_i\) 的 Markov blanket 只含邻近时刻。加噪后严格条件独立性消失，但作者提出宽度 \(2k+1\) 的 pseudo-blanket，用局部窗口近似全轨迹得分。</li></ul></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 04</span>
+    <span class="reading-step-note">模型与方法</span>
+  </div>
+  <h2>模型与方法</h2>
+  <div class="reading-card-content"><ul><li>局部网络在片段 \(x_{i-k:i+k}(t)\) 上训练，推断时像卷积核一样滑过全部时刻并组合输出；计算图不需要展开真实动力学，也不自回归生成，因此所有状态可并行更新。窗口 \(k\) 控制局部性误差与成本。</li><li>为避免低信噪比下 likelihood guidance 发散，论文在高斯测量近似中保留扩散诱导的不确定性：协方差包含 \(\Sigma_y+\sigma(t)^2\mu(t)^{-2}A\Gamma A^{\mathsf T}\)，而不是把观测噪声粗暴替成单位阵。反向 SDE 的 predictor 步与若干 Langevin corrector 步交替执行。</li><li>实验含 Lorenz-63 与二维 Kolmogorov flow；后者每个状态具有上万维，并测试低频、高频、空间粗化、间歇、非线性以及稀有终态等零样本观测。</li></ul></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 05</span>
+    <span class="reading-step-note">核心结果与证据</span>
+  </div>
+  <h2>核心结果与证据</h2>
+  <div class="reading-card-content"><ul><li>Figure 4 直观展示困难设置：从每隔若干步、空间降采样且含噪的观测出发，SDA 同时生成整条涡量轨迹；与直接 DPS guidance 相比，恢复的涡旋位置和细丝结构更接近参考动力学。图像不是逐点确定性重建，而是后验样本。</li><li>Lorenz 实验用 64 组观测比较后验均值、标准差、偏度和峰度；增大窗口 \(k\) 与 corrector 数 \(C\) 会把统计量推近由 1024 个样本估计的参考后验，但收益递减且采样更慢。</li><li>Kolmogorov flow 的 1024 条、每条 1024 状态轨迹按 80/10/10 划分训练验证测试。Figure 5 的稀有终态检验把生成样本初态送回物理模拟器，得到近乎相同的后续演化，支持样本遵守学习到的动力学，而不只是对观测做图像插值。</li></ul><figure class="evidence-figure">
+  <button class="evidence-figure-image-button" type="button" aria-label="放大查看 Figure 4" onclick="window.openPaperFigureImage && window.openPaperFigureImage(this.querySelector('img'))">
+    <img class="paper-figure-image evidence-figure-image" src="../../assets/collection-figures/2306.10574/figure-4-vorticity-assimilation.webp" alt="四行涡量快照分别表示参考轨迹、粗观测、SDA 与 DPS。" loading="lazy" />
+  </button>
+  <figcaption>
+    <strong>Figure 4</strong> · SDA 恢复了跨时刻连贯的涡旋和细丝，而观测本身仅给出粗像素。
+    <span class="evidence-figure-reading">物理解读：最重要的增益是维持动力学可行的轨迹后验，而非单帧超分辨率。</span>
+    <span class="evidence-figure-source">来源：arXiv:2306.10574v2, paper.pdf p. 8, Figure 4</span>
+  </figcaption>
+</figure></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 06</span>
+    <span class="reading-step-note">有效性与局限</span>
+  </div>
+  <h2>有效性与局限</h2>
+  <div class="reading-card-content"><ul><li>pseudo-blanket 与 perturbed-likelihood 都是近似；论文展示经验准确性，但没有给出它们对最终后验偏差的完整非渐近界。窗口过小会遗漏长程相关，窗口过大则失去训练和并行优势。</li><li>Kolmogorov 案例虽为上万维，仍小于业务天气或海洋系统的百万维尺度；反向 SDE 需要许多离散步和 corrector，推断成本可能成为主要瓶颈。若训练轨迹来自有偏的物理模型，SDA 只能继承该模型的可信域。</li><li>方法假定不同轨迹共享动力学参数，不能直接联合同化未知参数；比较也主要针对 DPS 与有限设置，并不意味着替代成熟的 EnKF、4D-Var 或粒子平滑器。该卡 no independent reproduction performed。</li></ul></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 07</span>
+    <span class="reading-step-note">复现与资源</span>
+  </div>
+  <h2>复现与资源</h2>
+  <div class="reading-card-content"><ul><li>原文：https://arxiv.org/abs/2306.10574；PDF：https://arxiv.org/pdf/2306.10574。全文快照 SHA-256：d1123cac5a26b6506598493e15e89d2aa3cf0198a7ef27cd5ef8e19917491ba8；PDF 共 22 页。</li><li>复现应固定轨迹生成器、时间步长、训练切分、窗口 \(k\)、扩散噪声日程、reverse-SDE 离散步、Langevin corrector 数 \(C\) 与步长 \(	au\)、观测算子和 posterior-summary 样本数。</li><li>Evidence status: full-text verified; no independent reproduction performed.</li></ul></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 08</span>
+    <span class="reading-step-note">阅读指南</span>
+  </div>
+  <h2>阅读指南</h2>
+  <div class="reading-card-content"><ul><li>先读 Eqs. (7)、(13)、(15)：它们分别给出 Bayes 力分解、时间局部性和稳定似然；再用 Figure 4/5 判断模型是否重建了动力学自由度，而非只让观测点误差变小。</li><li>面向物理学家，最值得追问的是 learned prior 的作用范围：它相当于从轨迹系综中学习一个非局域有效作用量的梯度，而观测只在采样阶段施加外场。</li></ul></div>
+</section></article>
+        <aside id="detail-toc" class="detail-toc hidden" aria-label="内容目录">
+          <p class="detail-toc-title">阅读目录</p>
+          <nav id="detail-toc-nav" class="detail-toc-nav"></nav>
+        </aside>
+      </div>
+      <nav class="paper-nav"><a class="paper-nav-link paper-nav-prev" href="../../collection-papers/2303.16852/"><span class="paper-nav-label">← 上一篇</span><span class="paper-nav-title">Diffusion Schrödinger Bridge Matching</span></a>
+      <a class="paper-nav-link paper-nav-next" href="../../collection-papers/2309.03350/"><span class="paper-nav-label">下一篇 →</span><span class="paper-nav-title">Relay Diffusion: Unifying diffusion process across resolutions for image synthesis</span></a></nav>
+    </main>
+
+    <footer class="footer">
+      <div class="container">
+        <p>内容来自 <a href="https://arxiv.org" target="_blank" rel="noopener noreferrer">arXiv.org</a>，阅读卡片由静态站点生成器构建。</p>
+      </div>
+    </footer>
+
+    <script src="../../assets/theme.js"></script>
+    <script src="../../assets/media.js"></script>
+    <script src="../../assets/paper.js"></script>
+  </body>
+</html>

@@ -1,0 +1,140 @@
+{
+  "arxiv_id": "2306.10574",
+  "source_version": "v2",
+  "source_pdf": "https://arxiv.org/pdf/2306.10574",
+  "title_en": "Score-based Data Assimilation",
+  "title_zh": "基于得分模型的全轨迹数据同化",
+  "curation_status": "full_text_verified",
+  "sections": [
+    {
+      "title": "作者信息",
+      "bullets": [
+        "作者：François Rozet、Gilles Louppe。本卡核对 arXiv:2306.10574v2；工作把数据同化写成随机动力系统整条轨迹的贝叶斯后验采样问题。"
+      ]
+    },
+    {
+      "title": "研究问题",
+      "bullets": [
+        "给定稀疏、含噪甚至非线性的观测 \\(y\\)，目标不是恢复一条最优轨迹，而是采样 \\(p(x_{1:L}\\mid y)\\)，从而保留混沌系统中不可约的多模态不确定性。困难在于长轨迹维数随 \\(L\\) 线性增长，且传统粒子法或变分法通常需要反复调用或微分物理推进器。",
+        "论文问能否只从短轨迹片段学习局部得分，在推断时把它们拼成任意长轨迹的先验得分，并将训练阶段未见过的观测算子仅作为似然力加入反向扩散。"
+      ]
+    },
+    {
+      "title": "背景",
+      "bullets": [
+        "Bayes 分解把后验得分写成 \\(\nabla_{x(t)}\\log p(x(t)\\mid y)=\nabla_{x(t)}\\log p(x(t))+\nabla_{x(t)}\\log p(y\\mid x(t))\\)。前一项承载动力学先验，后一项承载测量模型，因此同一个无条件 score network 可用于不同传感器和缺测模式。",
+        "关键物理结构是时间马尔可夫性：状态 \\(x_i\\) 的 Markov blanket 只含邻近时刻。加噪后严格条件独立性消失，但作者提出宽度 \\(2k+1\\) 的 pseudo-blanket，用局部窗口近似全轨迹得分。"
+      ]
+    },
+    {
+      "title": "模型与方法",
+      "bullets": [
+        "局部网络在片段 \\(x_{i-k:i+k}(t)\\) 上训练，推断时像卷积核一样滑过全部时刻并组合输出；计算图不需要展开真实动力学，也不自回归生成，因此所有状态可并行更新。窗口 \\(k\\) 控制局部性误差与成本。",
+        "为避免低信噪比下 likelihood guidance 发散，论文在高斯测量近似中保留扩散诱导的不确定性：协方差包含 \\(\\Sigma_y+\\sigma(t)^2\\mu(t)^{-2}A\\Gamma A^{\\mathsf T}\\)，而不是把观测噪声粗暴替成单位阵。反向 SDE 的 predictor 步与若干 Langevin corrector 步交替执行。",
+        "实验含 Lorenz-63 与二维 Kolmogorov flow；后者每个状态具有上万维，并测试低频、高频、空间粗化、间歇、非线性以及稀有终态等零样本观测。"
+      ]
+    },
+    {
+      "title": "核心结果与证据",
+      "bullets": [
+        "Figure 4 直观展示困难设置：从每隔若干步、空间降采样且含噪的观测出发，SDA 同时生成整条涡量轨迹；与直接 DPS guidance 相比，恢复的涡旋位置和细丝结构更接近参考动力学。图像不是逐点确定性重建，而是后验样本。",
+        "Lorenz 实验用 64 组观测比较后验均值、标准差、偏度和峰度；增大窗口 \\(k\\) 与 corrector 数 \\(C\\) 会把统计量推近由 1024 个样本估计的参考后验，但收益递减且采样更慢。",
+        "Kolmogorov flow 的 1024 条、每条 1024 状态轨迹按 80/10/10 划分训练验证测试。Figure 5 的稀有终态检验把生成样本初态送回物理模拟器，得到近乎相同的后续演化，支持样本遵守学习到的动力学，而不只是对观测做图像插值。"
+      ]
+    },
+    {
+      "title": "有效性与局限",
+      "bullets": [
+        "pseudo-blanket 与 perturbed-likelihood 都是近似；论文展示经验准确性，但没有给出它们对最终后验偏差的完整非渐近界。窗口过小会遗漏长程相关，窗口过大则失去训练和并行优势。",
+        "Kolmogorov 案例虽为上万维，仍小于业务天气或海洋系统的百万维尺度；反向 SDE 需要许多离散步和 corrector，推断成本可能成为主要瓶颈。若训练轨迹来自有偏的物理模型，SDA 只能继承该模型的可信域。",
+        "方法假定不同轨迹共享动力学参数，不能直接联合同化未知参数；比较也主要针对 DPS 与有限设置，并不意味着替代成熟的 EnKF、4D-Var 或粒子平滑器。该卡 no independent reproduction performed。"
+      ]
+    },
+    {
+      "title": "复现与资源",
+      "bullets": [
+        "原文：https://arxiv.org/abs/2306.10574；PDF：https://arxiv.org/pdf/2306.10574。全文快照 SHA-256：d1123cac5a26b6506598493e15e89d2aa3cf0198a7ef27cd5ef8e19917491ba8；PDF 共 22 页。",
+        "复现应固定轨迹生成器、时间步长、训练切分、窗口 \\(k\\)、扩散噪声日程、reverse-SDE 离散步、Langevin corrector 数 \\(C\\) 与步长 \\(\tau\\)、观测算子和 posterior-summary 样本数。",
+        "Evidence status: full-text verified; no independent reproduction performed."
+      ]
+    },
+    {
+      "title": "阅读指南",
+      "bullets": [
+        "先读 Eqs. (7)、(13)、(15)：它们分别给出 Bayes 力分解、时间局部性和稳定似然；再用 Figure 4/5 判断模型是否重建了动力学自由度，而非只让观测点误差变小。",
+        "面向物理学家，最值得追问的是 learned prior 的作用范围：它相当于从轨迹系综中学习一个非局域有效作用量的梯度，而观测只在采样阶段施加外场。"
+      ]
+    }
+  ],
+  "cover": {
+    "mode": "source_figure",
+    "asset_path": "assets/collection-figures/2306.10574/figure-4-vorticity-assimilation.webp",
+    "label": "Figure 4",
+    "visual_type": "trajectory",
+    "evidence": "arXiv:2306.10574v2, paper.pdf p. 8, Figure 4",
+    "alt_text": "参考、观测、SDA 与 DPS 的二维涡量轨迹随时间演化对比。",
+    "caption": "稀疏且含噪的观测只约束部分自由度；SDA 依靠轨迹先验补全连续涡量演化，并明显优于直接 DPS guidance。",
+    "selection_rationale": "这幅涡量时空图直接把后验轨迹采样与流体动力学一致性可视化，比误差汇总图更能说明方法的物理含义。"
+  },
+  "figure_refs": [
+    {
+      "label": "Figure 4",
+      "asset_path": "assets/collection-figures/2306.10574/figure-4-vorticity-assimilation.webp",
+      "section": "核心结果与证据",
+      "role": "compare trajectory reconstruction under sparse noisy observations",
+      "evidence": "arXiv:2306.10574v2, paper.pdf p. 8, Figure 4",
+      "alt_text": "四行涡量快照分别表示参考轨迹、粗观测、SDA 与 DPS。",
+      "caption": "SDA 恢复了跨时刻连贯的涡旋和细丝，而观测本身仅给出粗像素。",
+      "interpretation": "最重要的增益是维持动力学可行的轨迹后验，而非单帧超分辨率。"
+    }
+  ],
+  "evidence_refs": [
+    "paper.pdf pp. 2-5, Eqs. (7), (13), (15): posterior-score decomposition, pseudo-blanket and stable likelihood",
+    "paper.pdf pp. 6-9, Figures 2-5: Lorenz posterior statistics and Kolmogorov trajectory tests",
+    "source PDF SHA-256 d1123cac5a26b6506598493e15e89d2aa3cf0198a7ef27cd5ef8e19917491ba8",
+    "Evidence status: full-text verified; no independent reproduction performed."
+  ],
+  "verified_metadata": {
+    "arxiv_id": "2306.10574",
+    "version": "v2",
+    "title": "Score-based Data Assimilation",
+    "abstract": "Data assimilation, in its most comprehensive form, addresses the Bayesian inverse problem of identifying plausible state trajectories that explain noisy or incomplete observations of stochastic dynamical systems. Various approaches have been proposed to solve this problem, including particle-based and variational methods. However, most algorithms depend on the transition dynamics for inference, which becomes intractable for long time horizons or for high-dimensional systems with complex dynamics, such as oceans or atmospheres. In this work, we introduce score-based data assimilation for trajectory inference. We learn a score-based generative model of state trajectories based on the key insight that the score of an arbitrarily long trajectory can be decomposed into a series of scores over short segments. After training, inference is carried out using the score model, in a non-autoregressive manner by generating all states simultaneously. Quite distinctively, we decouple the observation model from the training procedure and use it only at inference to guide the generative process, which enables a wide range of zero-shot observation scenarios. We present theoretical and empirical evidence supporting the effectiveness of our method.",
+    "authors": ["François Rozet", "Gilles Louppe"],
+    "categories": ["cs.LG", "stat.ML"],
+    "primary_category": "cs.LG",
+    "published": "2023-06-18T14:22:03Z",
+    "comment": ""
+  },
+  "card_standard_version": "2.3",
+  "paper_profile": "ai_empirical",
+  "style_reference": "physicist_daily_arxiv",
+  "provenance": {
+    "program": "Collection",
+    "catalog": "Paper Collection",
+    "catalog_record_id": "6fbd8b62646ecbe8",
+    "catalog_topic": "Generative Models",
+    "collection_date": "2026-08-24",
+    "sampled_at": "2026-08-26",
+    "selected_by": "deterministic_random_sample",
+    "sampling_seed": "paper-collection-random50-2026-08-26-v1",
+    "candidate_count": 272
+  },
+  "equation_refs": [
+    {
+      "label": "Posterior score decomposition",
+      "latex": "\\nabla_{x(t)}\\log p(x(t)\\mid y)=\\nabla_{x(t)}\\log p(x(t))+\\nabla_{x(t)}\\log p(y\\mid x(t))",
+      "role": "separate learned dynamics from the observation model",
+      "symbols": {"x(t)": "diffusion-perturbed state trajectory", "y": "observations", "p(x(t))": "trajectory prior"},
+      "evidence": "paper.pdf p. 3, Eq. (7)",
+      "interpretation": "The same learned prior can be reused while the measurement operator changes at inference time."
+    },
+    {
+      "label": "Pseudo-Markov-blanket approximation",
+      "latex": "\\nabla_{x_i(t)}\\log p(x_{1:L}(t))\\approx\\nabla_{x_i(t)}\\log p(x_i(t),x_{\\bar b_i}(t))",
+      "role": "replace a global trajectory score with local-window scores",
+      "symbols": {"x_i": "state at time index i", "L": "trajectory length", "bar_b_i": "pseudo-blanket indices"},
+      "evidence": "paper.pdf p. 4, Eq. (13)",
+      "interpretation": "Temporal locality makes training cost depend on a window rather than the full assimilation horizon."
+    }
+  ]
+}
