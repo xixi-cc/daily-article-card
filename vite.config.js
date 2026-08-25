@@ -26,9 +26,11 @@ function sitesStaticAssets() {
       await mkdir(clientDirectory, { recursive: true });
       for (const entry of entries) {
         if (['.openai', 'client', 'server'].includes(entry.name)) continue;
-        await cp(resolve(outputDirectory, entry.name), resolve(clientDirectory, entry.name), {
+        const rootEntry = resolve(outputDirectory, entry.name);
+        await cp(rootEntry, resolve(clientDirectory, entry.name), {
           recursive: entry.isDirectory(),
         });
+        await rm(rootEntry, { recursive: true, force: true });
       }
     },
   };
