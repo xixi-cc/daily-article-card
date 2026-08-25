@@ -1,10 +1,10 @@
 # physics+AI Daily Paper Cards
 
-一个展示 physics+AI arXiv 精选论文的静态网站。每日 Codex 自动任务从 GPT 筛选的 `arXiv 物理与AI日报` 中提取 S 级和 A 级论文，核对 arXiv 元数据，生成中文论文卡片并触发 GitHub Pages 部署。
+一个展示 physics+AI arXiv 精选论文的静态网站。每日 Codex 自动任务从 GPT 筛选的 `arXiv 物理与AI日报` 中提取明确标为 S 级的论文，核对 arXiv 元数据和全文证据，生成中文论文卡片并触发 GitHub Pages 部署。
 
 ## 功能
 
-- 每日自动收录 GPT 明确评为 S 或 A 的论文
+- 每日自动收录 GPT 明确评为 S 的论文
 - 按无版本号 arXiv ID 去重
 - 展示中文概述、核心贡献、方法、证据与局限
 - 自动抓取论文首图，并提供截图兜底
@@ -13,6 +13,8 @@
 - 响应式界面与亮色、暗色主题
 
 本项目不在 GitHub Actions 中调用外部 LLM API，也不需要 ModelScope token。GPT 筛选来自用户已有的 ChatGPT 计划任务；Codex 自动任务负责提取、验证、构建与发布。
+
+论文卡片的 canonical 编辑、证据、数据与发布标准见 [`docs/PAPER_CARD_STANDARD.md`](docs/PAPER_CARD_STANDARD.md)。Paper Collection 的长期补卡与 Daily feed 是两个独立数据流；Collection 卡不得进入 Daily 时间线或继承日报评级。
 
 ## 本地构建
 
