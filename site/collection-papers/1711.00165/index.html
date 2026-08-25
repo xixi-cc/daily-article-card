@@ -26,6 +26,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700;800&family=Noto+Sans+SC:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <script>document.documentElement.classList.add('math-pending');</script>
     <script>
       window.MathJax = {
         tex: {
@@ -39,10 +40,19 @@
         chtml: {
           scale: 1,
           displayAlign: 'center'
+        },
+        startup: {
+          ready: function() {
+            MathJax.startup.defaultReady();
+            MathJax.startup.promise.then(function() {
+              document.documentElement.classList.remove('math-pending');
+              document.documentElement.dataset.mathReady = 'true';
+            });
+          }
         }
       };
     </script>
-    <script defer src="https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-chtml.js"></script>
+    <script defer src="../../assets/vendor/mathjax/tex-chtml.js"></script>
     <link rel="stylesheet" href="../../assets/style.css" />
   </head>
   <body class="detail-page" data-paper-id="1711.00165">
@@ -131,7 +141,7 @@
     <span class="reading-step-note">模型与方法</span>
   </div>
   <h2>模型与方法</h2>
-  <div class="reading-card-content"><ul><li>网络第l层 z_i^l=b_i^l+Σ_j W^l_{ij}φ(z_j^{l−1})，W variance σw²/N_l、bias variance σb²；CLT令每个有限输入集合的z_i^l在N_l→∞时联合Gaussian。</li><li>深层证明按N1→∞、N2→∞依次取极限；Appendix在Gaussian weights下用marginalization给不依赖极限次序的替代推导，并引用并行工作讨论同时增宽的收敛率。</li><li>kernel 递推为 $$K^{l}(x,x')=\sigma_b^2+\sigma_w^2\,\mathbb E_{(u,v)\sim\mathcal N(0,K^{l-1})}[\phi(u)\phi(v)],$$ 只需上一层 $K(x,x)$、$K(x',x')$、$K(x,x')$ 三个值。</li><li>base kernel K^0=σb²+σw² x·x'/d_in；depth、activation、σw²和σb²共同定义function prior。无限宽不消除这些hyperparameter choices。</li><li>Gaussian observation noise 下，posterior mean 为 $K_{*D}(K_{DD}+\sigma^2I)^{-1}t$，posterior covariance 为 $K_{**}-K_{*D}(K_{DD}+\sigma^2I)^{-1}K_{D*}$；论文把十类标签编码为错误类 $-0.1$、正确类 $0.9$，再以 regression argmax 分类。</li><li>实验对MNIST 50k/10k/10k、CIFAR 45k/5k/10k；有限NN为全连接等宽ReLU/Tanh、MSE、Adam、无dropout；NN超参数平均约250 random trials，GP每depth评估30×30的σw²–σb² grid。</li></ul></div>
+  <div class="reading-card-content"><ul><li>网络第l层 z_i^l=b_i^l+Σ_j W^l_{ij}φ(z_j^{l−1})，W variance σw²/N_l、bias variance σb²；CLT令每个有限输入集合的z_i^l在N_l→∞时联合Gaussian。</li><li>深层证明按N1→∞、N2→∞依次取极限；Appendix在Gaussian weights下用marginalization给不依赖极限次序的替代推导，并引用并行工作讨论同时增宽的收敛率。</li><li>kernel 递推只依赖上一层两输入的 $2\times2$ covariance：</li><li>\[K^{l}(x,x')=\sigma_b^2+\sigma_w^2\,\mathbb E_{(u,v)\sim\mathcal N(0,K^{l-1})}[\phi(u)\phi(v)].\]</li><li>因此计算 $K^l(x,x')$ 只需 $K^{l-1}(x,x)$、$K^{l-1}(x',x')$ 与 $K^{l-1}(x,x')$；无限宽把随机网络 prior 约化为闭合的 kernel recursion。</li><li>base kernel K^0=σb²+σw² x·x'/d_in；depth、activation、σw²和σb²共同定义function prior。无限宽不消除这些hyperparameter choices。</li><li>Gaussian observation noise 下，posterior mean 为 $K_{*D}(K_{DD}+\sigma^2I)^{-1}t$，posterior covariance 为 $K_{**}-K_{*D}(K_{DD}+\sigma^2I)^{-1}K_{D*}$；论文把十类标签编码为错误类 $-0.1$、正确类 $0.9$，再以 regression argmax 分类。</li><li>实验对MNIST 50k/10k/10k、CIFAR 45k/5k/10k；有限NN为全连接等宽ReLU/Tanh、MSE、Adam、无dropout；NN超参数平均约250 random trials，GP每depth评估30×30的σw²–σb² grid。</li></ul></div>
 </section>
 <section class="reading-card reading-card-section">
   <div class="reading-card-topline">
@@ -139,7 +149,16 @@
     <span class="reading-step-note">核心结果与证据</span>
   </div>
   <h2>核心结果与证据</h2>
-  <div class="reading-card-content"><ul><li>Table 1 full MNIST ReLU：best finite NN 98.64%，NNGP 98.75%；Tanh 98.57% vs 98.79%。差异约0.1–0.2 percentage points，属于同一全连接regression设定。</li><li>full CIFAR ReLU：finite NN 53.13%，NNGP 55.66%；Tanh 50.34% vs 55.58%。这远低于卷积网络，不应称为当时CIFAR state of the art。</li><li>小数据CIFAR优势更明显：1k训练样本ReLU 32.25% vs GP 36.08%，Tanh 33.78% vs 37.02%；但best model均经不同形式的大量validation selection。</li><li>Figure 1显示width从5到5000时finite NN accuracy/MSE趋近NNGP；这是经验趋势，不是SGD在无限宽下采样Bayesian posterior的证明。</li><li>Figure 2训练180个5-hidden-layer CIFAR networks后只保留100% training accuracy者，共125 Tanh、55 ReLU；在这个筛选集内wider networks generalization gap较小。</li><li>Figure 3按每100 test points分箱，posterior variance与realized MSE相关：full MNIST Tanh 0.9330、ReLU 0.9573；CIFAR 0.7428、0.8223。分箱相关不等于逐样本calibration。</li><li>Figure 4显示best NNGP hyperparameters多在signal-propagation critical line附近；远离criticality时deep kernel快速趋常数/退化并降到chance。</li><li>50k MNIST每层K_DD构造在64 CPUs约90–140 s；每1000 test points Cholesky solve约180–220 s。它展示当时可运行规模，也直接暴露exact GP扩展瓶颈。</li></ul></div>
+  <div class="reading-card-content"><ul><li>Table 1 full MNIST ReLU：best finite NN 98.64%，NNGP 98.75%；Tanh 98.57% vs 98.79%。差异约0.1–0.2 percentage points，属于同一全连接regression设定。</li><li>full CIFAR ReLU：finite NN 53.13%，NNGP 55.66%；Tanh 50.34% vs 55.58%。这远低于卷积网络，不应称为当时CIFAR state of the art。</li><li>小数据CIFAR优势更明显：1k训练样本ReLU 32.25% vs GP 36.08%，Tanh 33.78% vs 37.02%；但best model均经不同形式的大量validation selection。</li><li>Figure 1显示width从5到5000时finite NN accuracy/MSE趋近NNGP；这是经验趋势，不是SGD在无限宽下采样Bayesian posterior的证明。</li><li>Figure 2训练180个5-hidden-layer CIFAR networks后只保留100% training accuracy者，共125 Tanh、55 ReLU；在这个筛选集内wider networks generalization gap较小。</li><li>Figure 3按每100 test points分箱，posterior variance与realized MSE相关：full MNIST Tanh 0.9330、ReLU 0.9573；CIFAR 0.7428、0.8223。分箱相关不等于逐样本calibration。</li><li>Figure 4显示best NNGP hyperparameters多在signal-propagation critical line附近；远离criticality时deep kernel快速趋常数/退化并降到chance。</li><li>50k MNIST每层K_DD构造在64 CPUs约90–140 s；每1000 test points Cholesky solve约180–220 s。它展示当时可运行规模，也直接暴露exact GP扩展瓶颈。</li></ul><figure class="evidence-figure">
+  <button class="evidence-figure-image-button" type="button" aria-label="放大查看 Figure 1" onclick="window.openPaperFigureImage && window.openPaperFigureImage(this.querySelector('img'))">
+    <img class="paper-figure-image evidence-figure-image" src="../../assets/collection-figures/1711.00165/figure-1-width-convergence.webp" alt="MNIST 与 CIFAR-10 上，不同宽度有限神经网络和 NNGP 的准确率及均方误差随训练集大小变化。" loading="lazy" />
+  </button>
+  <figcaption>
+    <strong>Figure 1</strong> · 黑线为 NNGP，彩色线为不同宽度的有限全连接网络；宽度增加时，测试准确率和 MSE 在该实验设定下趋近 NNGP 曲线。
+    <span class="evidence-figure-reading">物理解读：图给出有限宽训练结果向无限宽 prior 基准靠近的经验趋势；它不证明 SGD 采样 GP posterior，也不适用于卷积或特征学习占主导的架构。</span>
+    <span class="evidence-figure-source">来源：arXiv:1711.00165v3, paper.pdf p. 7, Figure 1</span>
+  </figcaption>
+</figure></div>
 </section>
 <section class="reading-card reading-card-section">
   <div class="reading-card-topline">

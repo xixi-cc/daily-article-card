@@ -31,8 +31,12 @@ except ImportError:
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 INPUT_MD = PROJECT_ROOT / "papers.md"
 COLLECTION_CARDS_DIR = PROJECT_ROOT / "data" / "collection_cards"
+COLLECTION_FIGURES_DIR = PROJECT_ROOT / "data" / "collection_figures"
 SITE_DIR = PROJECT_ROOT / "site"
 ASSETS_DIR = SITE_DIR / "assets"
+COLLECTION_FIGURES_SITE_DIR = ASSETS_DIR / "collection-figures"
+MATHJAX_SITE_DIR = ASSETS_DIR / "vendor" / "mathjax"
+MATHJAX_SOURCE_DIR = PROJECT_ROOT / "node_modules" / "mathjax" / "es5"
 PAPERS_DIR = SITE_DIR / "papers"
 COVERS_DIR = SITE_DIR / "covers"
 COLLECTION_PAPERS_DIR = SITE_DIR / "collection-papers"
@@ -568,11 +572,40 @@ def render_paper_figure(record: Dict[str, object], image_src: str, context: str)
 """.strip()
 
 
+def render_evidence_figure(figure: Dict[str, object]) -> str:
+    asset_path = str(figure["asset_path"])
+    image_src = f"../../{asset_path}"
+    label = escape(str(figure["label"]))
+    alt_text = escape(str(figure["alt_text"]), quote=True)
+    caption = escape(str(figure["caption"]))
+    interpretation = escape(str(figure["interpretation"]))
+    evidence = escape(str(figure["evidence"]))
+    return f"""
+<figure class="evidence-figure">
+  <button class="evidence-figure-image-button" type="button" aria-label="放大查看 {label}" onclick="window.openPaperFigureImage && window.openPaperFigureImage(this.querySelector('img'))">
+    <img class="paper-figure-image evidence-figure-image" src="{escape(image_src, quote=True)}" alt="{alt_text}" loading="lazy" />
+  </button>
+  <figcaption>
+    <strong>{label}</strong> · {caption}
+    <span class="evidence-figure-reading">物理解读：{interpretation}</span>
+    <span class="evidence-figure-source">来源：{evidence}</span>
+  </figcaption>
+</figure>
+""".strip()
+
+
 def render_detail_sections(record: Dict[str, object]) -> str:
     parts: List[str] = []
     sections: List[Dict[str, str]] = record["sections"]  # type: ignore[assignment]
+    figure_refs = record.get("figure_refs", [])
 
     for index, section in enumerate(sections, start=1):
+        section_figures = [
+            render_evidence_figure(figure)
+            for figure in figure_refs
+            if isinstance(figure, dict) and figure.get("section") == section["title"]
+        ]
+        figures_html = "\n".join(section_figures)
         parts.append(
             f"""
 <section class="reading-card reading-card-section">
@@ -581,7 +614,7 @@ def render_detail_sections(record: Dict[str, object]) -> str:
     <span class="reading-step-note">{escape(section["title"])}</span>
   </div>
   <h2>{escape(section["title"])}</h2>
-  <div class="reading-card-content">{section["html"]}</div>
+  <div class="reading-card-content">{section["html"]}{figures_html}</div>
 </section>
 """.strip()
         )
@@ -681,6 +714,7 @@ def build_collection_records(paper_image_manifest: Dict[str, Dict[str, object]])
                 "program": "Collection",
                 "program_label": "Paper Collection",
                 "topic": str(topic),
+                "figure_refs": card.get("figure_refs", []),
                 "detail_path": f"collection-papers/{record['page_dir']}/",
                 "cover_path": f"collection-covers/{record['page_dir']}/",
             }
@@ -744,6 +778,7 @@ def generate_head(
     math_head = ""
     if include_math:
         math_head = f"""
+    <script>document.documentElement.classList.add('math-pending');</script>
     <script>
       window.MathJax = {{
         tex: {{
@@ -757,10 +792,19 @@ def generate_head(
         chtml: {{
           scale: 1,
           displayAlign: 'center'
+        }},
+        startup: {{
+          ready: function() {{
+            MathJax.startup.defaultReady();
+            MathJax.startup.promise.then(function() {{
+              document.documentElement.classList.remove('math-pending');
+              document.documentElement.dataset.mathReady = 'true';
+            }});
+          }}
         }}
       }};
     </script>
-    <script defer src="https://cdn.jsdelivr.net/npm/mathjax@{MATHJAX_VERSION}/es5/tex-chtml.js"></script>
+    <script defer src="{stylesheet_prefix}assets/vendor/mathjax/tex-chtml.js"></script>
 """.rstrip()
 
     return f"""
@@ -3663,6 +3707,23 @@ def main() -> int:
     if not INPUT_MD.exists():
         print(f"未找到 {INPUT_MD}", file=sys.stderr)
         return 1
+
+    if not (MATHJAX_SOURCE_DIR / "tex-chtml.js").exists():
+        print("未找到本地 MathJax；请先运行 npm install", file=sys.stderr)
+        return 1
+
+    shutil.rmtree(MATHJAX_SITE_DIR, ignore_errors=True)
+    MATHJAX_SITE_DIR.mkdir(parents=True, exist_ok=True)
+    shutil.copy2(MATHJAX_SOURCE_DIR / "tex-chtml.js", MATHJAX_SITE_DIR / "tex-chtml.js")
+    shutil.copy2(MATHJAX_SOURCE_DIR.parent / "LICENSE", MATHJAX_SITE_DIR / "LICENSE")
+    shutil.copytree(
+        MATHJAX_SOURCE_DIR / "output" / "chtml" / "fonts" / "woff-v2",
+        MATHJAX_SITE_DIR / "output" / "chtml" / "fonts" / "woff-v2",
+    )
+
+    shutil.rmtree(COLLECTION_FIGURES_SITE_DIR, ignore_errors=True)
+    if COLLECTION_FIGURES_DIR.exists():
+        shutil.copytree(COLLECTION_FIGURES_DIR, COLLECTION_FIGURES_SITE_DIR)
 
     # 优化图片：转 WebP + 生成缩略图
     thumb_map = optimize_paper_images()

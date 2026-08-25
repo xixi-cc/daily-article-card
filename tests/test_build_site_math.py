@@ -1,15 +1,17 @@
 import unittest
 
-from scripts.build_site import generate_head, markdown_to_html
+from scripts.build_site import generate_head, markdown_to_html, render_detail_sections
 from scripts.validate_paper_cards import validate_v2_card
 
 
 class MathRenderingTests(unittest.TestCase):
-    def test_head_loads_pinned_mathjax_with_dollar_delimiters(self):
-        head = generate_head("Title", "Description", include_math=True)
-        self.assertIn("mathjax@3.2.2/es5/tex-chtml.js", head)
+    def test_head_loads_site_local_mathjax_with_dollar_delimiters(self):
+        head = generate_head("Title", "Description", "../../", include_math=True)
+        self.assertIn("../../assets/vendor/mathjax/tex-chtml.js", head)
+        self.assertNotIn("cdn.jsdelivr.net", head)
         self.assertIn("inlineMath: [['$', '$']", head)
         self.assertIn("displayMath: [['$$', '$$']", head)
+        self.assertIn("dataset.mathReady = 'true'", head)
 
     def test_non_detail_head_does_not_load_mathjax(self):
         head = generate_head("Title", "Description")
@@ -20,8 +22,25 @@ class MathRenderingTests(unittest.TestCase):
         self.assertIn(r"$\partial_t\rho+\nabla\cdot\mathbf J=0$", rendered)
 
     def test_markdown_preserves_display_tex_for_mathjax(self):
-        rendered = markdown_to_html(r"$$S(k)\sim k^{-2+\eta}$$")
-        self.assertIn(r"$$S(k)\sim k^{-2+\eta}$$", rendered)
+        rendered = markdown_to_html(r"\[S(k)\sim k^{-2+\eta}\]")
+        self.assertIn(r"\[S(k)\sim k^{-2+\eta}\]", rendered)
+
+    def test_detail_section_places_evidence_figure_by_claim(self):
+        record = {
+            "sections": [{"title": "核心结果与证据", "html": "<p>claim</p>"}],
+            "figure_refs": [{
+                "label": "Figure 7",
+                "asset_path": "assets/collection-figures/test.webp",
+                "section": "核心结果与证据",
+                "alt_text": "test figure",
+                "caption": "what is plotted",
+                "interpretation": "physical reading",
+                "evidence": "paper.pdf p. 13, Figure 7",
+            }],
+        }
+        rendered = render_detail_sections(record)
+        self.assertIn("../../assets/collection-figures/test.webp", rendered)
+        self.assertIn("物理解读：physical reading", rendered)
 
     def test_v2_theory_card_has_no_formula_quota(self):
         card = {
