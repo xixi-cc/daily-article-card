@@ -1,0 +1,169 @@
+{
+  "arxiv_id": "2309.03350",
+  "source_version": "v1",
+  "source_pdf": "https://arxiv.org/pdf/2309.03350",
+  "title_en": "Relay Diffusion: Unifying diffusion process across resolutions for image synthesis",
+  "title_zh": "接力扩散：用频谱匹配跨分辨率连续生成",
+  "curation_status": "full_text_verified",
+  "sections": [
+    {
+      "title": "作者信息",
+      "bullets": [
+        "作者：Jiayan Teng、Wendi Zheng、Ming Ding、Wenyi Hong、Jianqiao Wangni、Zhuoyi Yang、Jie Tang。",
+        "机构：Tsinghua University、Zhipu AI。论文发表于 ICLR 2024；本卡核对 arXiv:2309.03350v1。",
+        "代码与 checkpoints：https://github.com/THUDM/RelayDiffusion。"
+      ]
+    },
+    {
+      "title": "研究问题",
+      "bullets": [
+        "相同像素噪声方差并不对应相同的物理破坏尺度：把分辨率从 64×64 提高到 256×256 后，低频信号的 SNR 更高，常用 schedule 在早期不能充分抹除大尺度结构。论文据此追问如何把低分辨率扩散的末态变成高分辨率扩散的等价中间态，而不重新从白噪声开始。",
+        "核心不是把低分辨率图作为额外 condition，而是匹配两个分辨率在频率空间中的随机场统计，使生成轨迹跨模型和分辨率“接力”。"
+      ]
+    },
+    {
+      "title": "背景",
+      "bullets": [
+        "级联扩散先生成低分辨率图，再由 super-resolution 模型恢复细节。它节省高分辨率早期步骤，却引入条件分布错配：训练时条件通常是真实低分辨率图，推断时却来自上一级生成器。",
+        "blurring diffusion 将热方程耗散与高斯噪声结合。在 Neumann 边界下，二维热核可由 DCT 对角化，低频模式衰减慢、高频模式衰减快；这给跨分辨率噪声匹配提供了明确的谱语言。"
+      ]
+    },
+    {
+      "title": "模型与方法",
+      "bullets": [
+        "在 DCT 坐标 u 中，模糊前向核写为",
+        "\\[q(u_t\\mid u_0)=\\mathcal N\\!\\left(u_t\\mid D_tu_0,\\sigma_t^2 I\\right),\\qquad D_t=e^{\\Lambda t}.\\]",
+        "分辨率放大 s 倍后，作者用相关长度约为 s 的 block noise 替代逐像素独立噪声。它由 s×s 独立高斯变量的局域平均构造，因此增强低频噪声，令高分辨率随机场的频谱更接近上采样后的低分辨率噪声。",
+        "RDM 的高分辨率阶段从“上采样低分辨率样本 + block noise”起步，再以 patch-wise blurring diffusion 逐渐转向独立高频噪声并去噪。训练目标沿用 EDM denoiser，但输入混合了模糊图、独立噪声和 block noise。"
+      ]
+    },
+    {
+      "title": "核心结果与证据",
+      "bullets": [
+        "Figure 2 直接比较 64×64 独立高斯噪声、256×256 同方差独立噪声和 256×256 block noise。中列的低频 SNR 整体抬高；右列 block noise 把谱形拉回低分辨率基准，这是方法的主要物理证据。",
+        "Figure 3 展示两阶段接力：64×64 模型生成到中间状态后，上采样并加入 block noise，把随机态交给 256×256 patch-wise blurring 模型；高频细节在第二阶段恢复，低频内容不必从头再生。",
+        "CelebA-HQ 256×256 上，RDM 报告 FID 3.15、precision 0.77、recall 0.55。ImageNet 256×256 上，无 guidance 的 FID/sFID 为 5.27/4.39；加入 CFG 与 class balance 后为 1.87/3.97。后者包含 guidance 和调参，不能与无 guidance 行直接混为单一算法效应。",
+        "block-noise 消融在训练充分后优于无 block noise 的版本；随机采样强度 η 在两个数据集上均存在中间最优值，说明 relay 的谱匹配仍与采样器离散化耦合。"
+      ]
+    },
+    {
+      "title": "有效性与局限",
+      "bullets": [
+        "作者的谱论证解释了为何同一像素噪声在高分辨率下留下更多低频信号，但它基于自然图像 PSD、DCT 和特定上采样结构，不是对任意数据流形或边界条件的普适定理。",
+        "主要比较是 CelebA-HQ 与 ImageNet 256×256 的 FID/sFID/IS/precision/recall；这些分布指标不直接测量语义一致性、文本条件可控性或单样本失真。ImageNet 指标用 50k 样本、CelebA-HQ 用 30k 样本。",
+        "作者明确报告尝试直接从数据推导最优 noise schedule 未成功，并推测 schedule 还依赖模型容量、inductive bias 与数据分布细节。因此“分辨率决定 schedule”只是部分状态描述。",
+        "该卡核对了公式、图和表；no independent reproduction performed，未重新训练 RDM、复算 FID 或验证公开 checkpoint。"
+      ]
+    },
+    {
+      "title": "复现与资源",
+      "bullets": [
+        "原文：https://arxiv.org/abs/2309.03350；PDF：https://arxiv.org/pdf/2309.03350；代码：https://github.com/THUDM/RelayDiffusion。",
+        "全文快照 SHA-256：dec25341223da6c08dcb4ec24720eadbf83e0d8a01a3eea334c4afe0d12b6d33；PDF 共 18 个实质页面。",
+        "复现需分别固定 64×64 与 256×256 模型、上采样倍率 s=4、block-noise 权重 α、patch-wise blur schedule、EDM sampler/NFE、CFG scale、样本数和指标实现。论文 Appendix B/Table 4 给出主要超参数。",
+        "Evidence status: full-text verified; no independent reproduction performed."
+      ]
+    },
+    {
+      "title": "阅读指南",
+      "bullets": [
+        "先看第 4 页 Figure 2：它把“分辨率改变有效 SNR”从口头解释变为可见的频谱比较；再看 Eq. (4)–(6) 理解 block noise 的空间相关。",
+        "随后读第 5–7 页 Figure 3、Eq. (7)–(8) 与 sampler，确认低分辨率末态如何映射为高分辨率前向核中的合法状态。",
+        "读结果表时分开看无 guidance、固定 CFG、动态 CFG 与 class balance，并用训练图像数/NFE 检查效率声明是否在同一计算口径。"
+      ]
+    }
+  ],
+  "cover": {
+    "mode": "source_figure",
+    "asset_path": "assets/collection-figures/2309.03350/figure-3-relay-pipeline.webp",
+    "label": "Figure 3",
+    "visual_type": "schematic",
+    "evidence": "arXiv:2309.03350v1, paper.pdf p. 5, Figure 3",
+    "alt_text": "低分辨率扩散从噪声生成 64×64 图像，随后上采样并加入块噪声，把中间态传给 256×256 模糊扩散模型恢复高频细节。",
+    "caption": "Relay Diffusion 的两阶段接力：跨分辨率匹配随机态，而不是以低分辨率图作为固定条件重新生成。",
+    "selection_rationale": "Figure 3 同时展示低分辨率生成、block-noise 接力和高分辨率去噪，是论文最重要且最直观的机制图；频谱定量依据另以 Figure 2 放入正文。"
+  },
+  "figure_refs": [
+    {
+      "label": "Figure 2",
+      "asset_path": "assets/collection-figures/2309.03350/figure-2-resolution-snr.webp",
+      "section": "核心结果与证据",
+      "role": "show why equal pixel-noise variance is not resolution invariant",
+      "evidence": "arXiv:2309.03350v1, paper.pdf p. 4, Figure 2",
+      "alt_text": "三列分别比较 64 像素高斯噪声、256 像素同方差高斯噪声和 256 像素块噪声的图像与频率 SNR 曲线。",
+      "caption": "同方差独立噪声在高分辨率下留下更高低频 SNR；块噪声恢复接近低分辨率的谱破坏尺度。",
+      "interpretation": "跨分辨率扩散需要匹配的是随机场的相关尺度与频谱，而不只是逐像素方差。"
+    },
+    {
+      "label": "Figure 3",
+      "asset_path": "assets/collection-figures/2309.03350/figure-3-relay-pipeline.webp",
+      "section": "核心结果与证据",
+      "role": "visualize the cross-resolution relay state",
+      "evidence": "arXiv:2309.03350v1, paper.pdf p. 5, Figure 3",
+      "alt_text": "低分辨率扩散从噪声生成 64×64 图像，随后上采样并加入块噪声，把中间态传给 256×256 模糊扩散模型恢复高频细节。",
+      "caption": "低分辨率模型完成低频结构后，将等价噪声态交给高分辨率模型。",
+      "interpretation": "relay 把级联条件生成重写为一条分段定义但统计连续的扩散路径。"
+    }
+  ],
+  "evidence_refs": [
+    "paper.pdf pp. 3-5: DCT blurring kernel, resolution-dependent SNR, block noise, and relay pipeline",
+    "paper.pdf pp. 5-7: patch-wise forward process, denoiser objective, and stochastic sampler",
+    "paper.pdf pp. 8-10: CelebA-HQ/ImageNet metrics, ablations, efficiency claims, and schedule limitation",
+    "source PDF SHA-256 dec25341223da6c08dcb4ec24720eadbf83e0d8a01a3eea334c4afe0d12b6d33",
+    "Evidence status: full-text verified; no independent reproduction performed."
+  ],
+  "verified_metadata": {
+    "arxiv_id": "2309.03350",
+    "version": "v1",
+    "title": "Relay Diffusion: Unifying diffusion process across resolutions for image synthesis",
+    "abstract": "Diffusion models achieved great success in image synthesis, but still face challenges in high-resolution generation. Through the lens of discrete cosine transformation, we find the main reason is that \\emph{the same noise level on a higher resolution results in a higher Signal-to-Noise Ratio in the frequency domain}. In this work, we present Relay Diffusion Model (RDM), which transfers a low-resolution image or noise into an equivalent high-resolution one for diffusion model via blurring diffusion and block noise. Therefore, the diffusion process can continue seamlessly in any new resolution or model without restarting from pure noise or low-resolution conditioning. RDM achieves state-of-the-art FID on CelebA-HQ and sFID on ImageNet 256$\\times$256, surpassing previous works such as ADM, LDM and DiT by a large margin. All the codes and checkpoints are open-sourced at \\url{https://github.com/THUDM/RelayDiffusion}.",
+    "authors": ["Jiayan Teng", "Wendi Zheng", "Ming Ding", "Wenyi Hong", "Jianqiao Wangni", "Zhuoyi Yang", "Jie Tang"],
+    "categories": ["cs.CV", "cs.LG"],
+    "primary_category": "cs.CV",
+    "published": "2023-09-04T15:00:33Z",
+    "comment": ""
+  },
+  "card_standard_version": "2.3",
+  "paper_profile": "ai_empirical",
+  "style_reference": "physicist_daily_arxiv",
+  "provenance": {
+    "program": "Collection",
+    "catalog": "Paper Collection",
+    "catalog_record_id": "3ef68ddd10603589",
+    "catalog_topic": "Flow Matching",
+    "collection_date": "2026-08-24",
+    "sampled_at": "2026-08-26",
+    "selected_by": "deterministic_random_sample",
+    "sampling_seed": "paper-collection-random50-2026-08-26-v1",
+    "candidate_count": 272
+  },
+  "equation_refs": [
+    {
+      "label": "DCT blurring diffusion",
+      "latex": "q(u_t\\mid u_0)=\\mathcal N\\!\\left(u_t\\mid D_tu_0,\\sigma_t^2 I\\right),\\qquad D_t=e^{\\Lambda t}",
+      "role": "frequency-space forward corruption kernel",
+      "symbols": {
+        "u_0,u_t": "clean and corrupted images in DCT coordinates",
+        "D_t": "diagonal heat-dissipation operator",
+        "Lambda": "DCT-space Laplacian spectrum",
+        "sigma_t": "Gaussian noise scale",
+        "I": "identity covariance"
+      },
+      "evidence": "paper.pdf p. 3, Eq. (3)",
+      "interpretation": "Heat diffusion damps spatial frequencies at mode-dependent rates, so the forward process has a physically interpretable spectral scale."
+    },
+    {
+      "label": "Block-noise construction",
+      "latex": "\\operatorname{Block}_{[s]}(\\epsilon)_{x,y}=\\frac{1}{s}\\sum_{i=0}^{s-1}\\sum_{j=0}^{s-1}\\epsilon_{x-i,y-j}",
+      "role": "construct correlated high-resolution noise from independent pixels",
+      "symbols": {
+        "epsilon": "independent Gaussian noise field",
+        "s": "upsampling and correlation length in pixels",
+        "x,y": "high-resolution pixel coordinates",
+        "Block": "locally averaged correlated noise field"
+      },
+      "evidence": "paper.pdf p. 4, Eq. (6)",
+      "interpretation": "Local averaging transfers noise power toward low spatial frequencies, matching the effect of upsampled low-resolution noise."
+    }
+  ]
+}

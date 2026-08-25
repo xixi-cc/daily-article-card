@@ -1,0 +1,179 @@
+{
+  "arxiv_id": "2406.02900",
+  "source_version": "v2",
+  "source_pdf": "https://arxiv.org/pdf/2406.02900",
+  "title_en": "Scaling Laws for Reward Model Overoptimization in Direct Alignment Algorithms",
+  "title_zh": "直接偏好对齐中的过优化标度律与欠约束机制",
+  "curation_status": "full_text_verified",
+  "sections": [
+    {
+      "title": "作者信息",
+      "bullets": [
+        "作者：Rafael Rafailov、Yaswanth Chittepu、Ryan Park、Harshit Sikchi、Joey Hejna、W. Bradley Knox、Chelsea Finn、Scott Niekum。",
+        "机构：Stanford University、University of Massachusetts Amherst、The University of Texas at Austin。论文发表于 NeurIPS 2024；本卡核对 arXiv:2406.02900v2。",
+        "研究对象是 DPO、IPO 与 SLiC 等离线直接对齐算法（DAA）的训练动力学，而不是经典在线 RLHF 中显式奖励模型的误差传播。"
+      ]
+    },
+    {
+      "title": "研究问题",
+      "bullets": [
+        "直接对齐跳过了独立奖励模型，却仍出现随优化加深而质量先升后降的现象。论文追问：这种“过优化”应以什么状态变量刻画，它是否跨目标函数和模型尺度稳定出现，以及有限偏好数据为何允许策略把概率质量转移到数据外响应。",
+        "作者把策略相对参考模型的 KL 偏离 $d=D_{\\mathrm{KL}}(\\pi_\\theta\\Vert\\pi_{\\mathrm{ref}})$ 当作比 epoch 更可比较的反应坐标，并用 GPT-4 对 held-out 摘要的胜率作为外部质量代理。"
+      ]
+    },
+    {
+      "title": "背景",
+      "bullets": [
+        "经典 RLHF 最大化学习到的代理奖励，同时以 $\\beta D_{\\mathrm{KL}}$ 约束策略偏离；奖励模型在分布外可能失真。DPO 类方法把隐式奖励消去并直接优化偏好对，但“没有显式奖励模型”并不消除有限数据覆盖和目标欠约束。",
+        "物理上可把训练看作在高维概率单纯形上的驱动过程：KL 是离开参考分布的位移尺度，偏好损失只约束少量方向；其余零空间方向可在几乎不改变训练损失时重排概率质量。"
+      ]
+    },
+    {
+      "title": "模型与方法",
+      "bullets": [
+        "统一的 DAA 目标写为",
+        "\\[\\mathcal L_{\\mathrm{DAA}}=\\mathbb E_{(x,y_w,y_l)\\sim\\mathcal D}\\,g\\!\\left[\\beta\\log\\frac{\\pi_\\theta(y_w\\mid x)}{\\pi_{\\mathrm{ref}}(y_w\\mid x)}-\\beta\\log\\frac{\\pi_\\theta(y_l\\mid x)}{\\pi_{\\mathrm{ref}}(y_l\\mid x)}\\right].\\]",
+        "不同凸函数 $g$ 给出 DPO、IPO 或 SLiC。实验扫描 7 个 $\\beta$、1B/2.8B/6.9B 三种 Pythia 尺度；在 TL;DR 的 92k 偏好对上训练一轮，并用固定的 256 个 held-out prompts 评估胜率、长度与 KL。",
+        "作者还把有限偏好比较写成查询矩阵 $Q$。由于响应空间维度远大于比较数，$Q$ 通常有非平凡零空间；这使偏好损失存在许多等价极小值，其中一些把显著概率放到未观测响应。"
+      ]
+    },
+    {
+      "title": "核心结果与证据",
+      "bullets": [
+        "Figure 2 显示 6.9B 模型在 DPO、SLiC、IPO 下常于约四分之一 epoch 达到最高胜率，随后 KL 继续增大而胜率下降。因而 epoch 不是单调的性能坐标，checkpoint 选择本身就是对齐控制变量。",
+        "作者用 $R(d)=d(\\alpha-\\beta\\log d)$ 拟合胜率—KL 曲线；相对直接用 KL 的二次拟合，该形式的 RMSE 约减半，但对 $\\sqrt d$ 作二次拟合得到相近误差。因此数据支持经验压缩关系，不足以证明该函数具有唯一机制地位。",
+        "Figure 6 的树形 MDP 把语言生成压缩为有限分支；Figure 7 随后显示三类 DAA 都可把概率质量推向偏好数据未覆盖的轨迹，同时降低数据内轨迹的概率。这给出“有限约束 + 大零空间”机制的可视化实例。"
+      ]
+    },
+    {
+      "title": "有效性与局限",
+      "bullets": [
+        "Proposition 1 的结论是条件性的：若 $\\mathcal N(Q)$ 与数据支持张成空间存在非平凡交，并且每个 prompt 都有数据外响应，则 DAA 目标存在无穷多个极小值，其中可有极小值对 OOD 响应赋权。它解释了可能性，而不证明大型语言模型必然沿该方向演化。",
+        "实验覆盖多种目标、KL 预算和三个尺度，但同一配置未运行多个随机种子；论文检查表明确说明没有误差条或显著性检验。GPT-4-turbo-2024-04-09 作为裁判也引入代理评价与位置偏差边界，尽管作者使用随机位置翻转。",
+        "主要 LLM 结果集中于 Pythia/TL;DR，附加 Gemma2-2b/Anthropic-HH 只用于检查趋势是否完全依赖单一模型与数据集。论文没有给出消除过优化的新算法，也未覆盖在线数据刷新或更大模型尺度。",
+        "该卡完成全文、公式和图证据核验；no independent reproduction performed，不能把曲线拟合、裁判胜率或 toy-MDP 结果当作独立复现实证。"
+      ]
+    },
+    {
+      "title": "复现与资源",
+      "bullets": [
+        "原文：https://arxiv.org/abs/2406.02900；PDF：https://arxiv.org/pdf/2406.02900；论文指向 DPO 基础代码 https://github.com/eric-mitchell/direct-preference-optimization。",
+        "全文快照 SHA-256：b92241e5714f35fb6f248429dc3735fe3d399a40609336a1b887cbffac3cee49；PDF 共 36 个实质页面，另含提取器末尾空页。",
+        "复现实验需固定模型尺度、$\beta$、checkpoint/epoch fraction、TL;DR 划分、生成温度 1.0、最大长度 512、裁判模型版本和位置翻转策略，并补做多随机种子统计。",
+        "Evidence status: full-text verified; no independent reproduction performed."
+      ]
+    },
+    {
+      "title": "阅读指南",
+      "bullets": [
+        "先读正文第 2–5 页：从统一 DAA 目标到 Figure 2 的 epoch 内非单调动力学；再读第 7–9 页的查询矩阵、Proposition 1 与 toy MDP。",
+        "Figure 2 回答“何时开始变差”，Figure 6–7 回答“有限偏好约束为何容许数据外质量增长”；二者分别是经验现象和机制实例，不能相互替代。",
+        "若关心标度律，应比较 Eq. (5) 与文中两个二次基线的残差，而不是只看拟合曲线；若关心因果机制，应重点检查零空间条件在真实数据和参数化策略中是否成立。"
+      ]
+    }
+  ],
+  "cover": {
+    "mode": "source_figure",
+    "asset_path": "assets/collection-figures/2406.02900/figure-6-tree-mdp.webp",
+    "label": "Figure 6",
+    "visual_type": "schematic",
+    "evidence": "arXiv:2406.02900v2, paper.pdf p. 10, Figure 6",
+    "alt_text": "一个从初态分叉、经多层动作到达共同吸收态的树形马尔可夫决策过程。",
+    "caption": "树形 MDP 将 token 生成抽象为有限分支，用来显示偏好数据只约束少数轨迹而大量数据外路径仍可吸收概率质量。",
+    "selection_rationale": "Figure 6 是论文最清楚的机制示意图，直接呈现欠约束的轨迹空间；它比胜率数据图更适合作为封面，定量证据则在正文保留 Figure 2。"
+  },
+  "figure_refs": [
+    {
+      "label": "Figure 2",
+      "asset_path": "assets/collection-figures/2406.02900/figure-2-intra-epoch-overoptimization.webp",
+      "section": "核心结果与证据",
+      "role": "show intra-epoch non-monotonic performance under increasing policy displacement",
+      "evidence": "arXiv:2406.02900v2, paper.pdf p. 5, Figure 2",
+      "alt_text": "上排为三种直接对齐目标在一个 epoch 内的 GPT-4 胜率，下排为相应 KL 偏离；多数曲线先升后降而 KL 总体增加。",
+      "caption": "DPO、SLiC 与 IPO 的 epoch 内胜率和 KL 演化。",
+      "interpretation": "训练损失继续优化并不保证外部质量继续提高；许多设置在约四分之一 epoch 后已越过最佳 checkpoint。"
+    },
+    {
+      "label": "Figure 6",
+      "asset_path": "assets/collection-figures/2406.02900/figure-6-tree-mdp.webp",
+      "section": "核心结果与证据",
+      "role": "visualize the underconstrained trajectory space used in the mechanism test",
+      "evidence": "arXiv:2406.02900v2, paper.pdf p. 10, Figure 6",
+      "alt_text": "一个从初态分叉、经多层动作到达共同吸收态的树形马尔可夫决策过程。",
+      "caption": "每个状态有三种动作，所有叶节点最终进入吸收态；训练数据只覆盖其中少数轨迹。",
+      "interpretation": "该图把真实语言空间的巨大未观测区域压缩为可计算 toy model，使零空间方向导致的 OOD 质量转移可以被直接追踪。"
+    }
+  ],
+  "evidence_refs": [
+    "paper.pdf pp. 2-5: DAA objective, experiment design, Figure 2, and scaling-law fit",
+    "paper.pdf pp. 7-10: finite-preference query matrix, Proposition 1, Tree MDP, and OOD mechanism",
+    "paper.pdf p. 15 and p. 33: limitations, compute boundary, and absence of multi-seed significance estimates",
+    "source PDF SHA-256 b92241e5714f35fb6f248429dc3735fe3d399a40609336a1b887cbffac3cee49",
+    "Evidence status: full-text verified; no independent reproduction performed."
+  ],
+  "verified_metadata": {
+    "arxiv_id": "2406.02900",
+    "version": "v2",
+    "title": "Scaling Laws for Reward Model Overoptimization in Direct Alignment Algorithms",
+    "abstract": "Reinforcement Learning from Human Feedback (RLHF) has been crucial to the recent success of Large Language Models (LLMs), however, it is often a complex and brittle process. In the classical RLHF framework, a reward model is first trained to represent human preferences, which is in turn used by an online reinforcement learning (RL) algorithm to optimize the LLM. A prominent issue with such methods is reward over-optimization or reward hacking, where performance as measured by the learned proxy reward model increases, but true quality plateaus or even deteriorates. Direct Alignment Algorithms (DDAs) like Direct Preference Optimization have emerged as alternatives to the classical RLHF pipeline by circumventing the reward modeling phase. However, although DAAs do not use a separate proxy reward model, they still commonly deteriorate from over-optimization. While the so-called reward hacking phenomenon is not well-defined for DAAs, we still uncover similar trends: at higher KL budgets, DAA algorithms exhibit similar degradation patterns to their classic RLHF counterparts. In particular, we find that DAA methods deteriorate not only across a wide range of KL budgets but also often before even a single epoch of the dataset is completed. Through extensive empirical experimentation, this work formulates and formalizes the reward over-optimization or hacking problem for DAAs and explores its consequences across objectives, training regimes, and model scales.",
+    "authors": [
+      "Rafael Rafailov",
+      "Yaswanth Chittepu",
+      "Ryan Park",
+      "Harshit Sikchi",
+      "Joey Hejna",
+      "Bradley Knox",
+      "Chelsea Finn",
+      "Scott Niekum"
+    ],
+    "categories": ["cs.LG", "cs.AI", "cs.CL"],
+    "primary_category": "cs.LG",
+    "published": "2024-06-05T03:41:37Z",
+    "comment": ""
+  },
+  "card_standard_version": "2.3",
+  "paper_profile": "ai_empirical",
+  "style_reference": "physicist_daily_arxiv",
+  "provenance": {
+    "program": "Collection",
+    "catalog": "Paper Collection",
+    "catalog_record_id": "ec8902d1b16568bd",
+    "catalog_topic": "Scaling Laws",
+    "collection_date": "2026-08-24",
+    "sampled_at": "2026-08-26",
+    "selected_by": "deterministic_random_sample",
+    "sampling_seed": "paper-collection-random50-2026-08-26-v1",
+    "candidate_count": 272
+  },
+  "equation_refs": [
+    {
+      "label": "Unified DAA objective",
+      "latex": "\\mathcal L_{\\mathrm{DAA}}=\\mathbb E_{(x,y_w,y_l)\\sim\\mathcal D}\\,g\\!\\left[\\beta\\log\\frac{\\pi_\\theta(y_w\\mid x)}{\\pi_{\\mathrm{ref}}(y_w\\mid x)}-\\beta\\log\\frac{\\pi_\\theta(y_l\\mid x)}{\\pi_{\\mathrm{ref}}(y_l\\mid x)}\\right]",
+      "role": "common objective for DPO, IPO, and SLiC",
+      "symbols": {
+        "x": "prompt",
+        "y_w,y_l": "preferred and dispreferred responses",
+        "pi_theta": "optimized policy",
+        "pi_ref": "reference policy",
+        "beta": "regularization or margin scale",
+        "g": "loss selecting the DAA variant"
+      },
+      "evidence": "paper.pdf p. 3, Eq. (4)",
+      "interpretation": "Finite comparisons constrain only log-probability differences on observed response pairs, leaving many directions in policy space weakly or not at all constrained."
+    },
+    {
+      "label": "Empirical overoptimization scaling law",
+      "latex": "R(d)=d\\left(\\alpha-\\beta\\log d\\right),\\qquad d=D_{\\mathrm{KL}}(\\pi_\\theta\\Vert\\pi_{\\mathrm{ref}})",
+      "role": "compress win-rate versus policy-displacement curves",
+      "symbols": {
+        "R": "GPT-4 judged win-rate proxy",
+        "d": "KL divergence from the reference policy",
+        "alpha,beta": "fitted constants",
+        "pi_theta": "aligned policy",
+        "pi_ref": "reference policy"
+      },
+      "evidence": "paper.pdf p. 5, Eq. (5)",
+      "interpretation": "The hump-shaped response encodes an optimal finite displacement from the reference model, but comparable alternative fits prevent a unique mechanistic reading."
+    }
+  ]
+}
