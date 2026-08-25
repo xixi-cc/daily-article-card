@@ -15,6 +15,7 @@ COLLECTION_CARDS_DIR = ROOT / "data" / "collection_cards"
 STANDARD_PATH = ROOT / "docs" / "PAPER_CARD_STANDARD.md"
 SITE_PAPERS_DIR = ROOT / "site" / "papers"
 SITE_COLLECTION_PAPERS_DIR = ROOT / "site" / "collection-papers"
+SITE_MATHJAX_PATH = ROOT / "site" / "assets" / "vendor" / "mathjax" / "tex-chtml.js"
 REQUIRED_CORE = {
     "作者信息",
     "模型与方法",
@@ -47,6 +48,14 @@ def is_v2_card(card: dict[str, object]) -> bool:
     version = str(card.get("card_standard_version", "1.0"))
     try:
         return tuple(int(part) for part in version.split(".")) >= (2, 0)
+    except ValueError:
+        return False
+
+
+def version_at_least(card: dict[str, object], target: tuple[int, int]) -> bool:
+    version = str(card.get("card_standard_version", "1.0"))
+    try:
+        return tuple(int(part) for part in version.split(".")) >= target
     except ValueError:
         return False
 
@@ -106,9 +115,49 @@ def validate_v2_card(card: dict[str, object], arxiv_id: str, program: str = "Dai
             if not isinstance(symbols, dict) or not symbols:
                 errors.append(f"{arxiv_id}: equation_ref {index} missing symbol definitions")
 
+    figure_refs = card.get("figure_refs", [])
+    if not isinstance(figure_refs, list):
+        errors.append(f"{arxiv_id}: figure_refs must be a list")
+    else:
+        for index, figure in enumerate(figure_refs, start=1):
+            if not isinstance(figure, dict):
+                errors.append(f"{arxiv_id}: figure_ref {index} is not an object")
+                continue
+            for field in (
+                "label",
+                "asset_path",
+                "section",
+                "role",
+                "evidence",
+                "alt_text",
+                "caption",
+                "interpretation",
+            ):
+                if not figure.get(field):
+                    errors.append(f"{arxiv_id}: figure_ref {index} missing {field}")
+            asset_path = str(figure.get("asset_path", ""))
+            if asset_path and not (ROOT / "site" / asset_path).is_file():
+                errors.append(f"{arxiv_id}: figure_ref {index} asset missing: {asset_path}")
+            section_names = {
+                str(section.get("title", ""))
+                for section in card.get("sections", [])
+                if isinstance(section, dict)
+            }
+            if figure.get("section") not in section_names:
+                errors.append(f"{arxiv_id}: figure_ref {index} targets a missing section")
+
     content = json.dumps(card.get("sections", []), ensure_ascii=False)
     if content.count("$$") % 2:
         errors.append(f"{arxiv_id}: unbalanced display-math delimiter")
+    if version_at_least(card, (2, 2)):
+        if "$$" in content:
+            errors.append(f"{arxiv_id}: v2.2 forbids legacy $$ display delimiters")
+        decoded_sections = json.dumps(card.get("sections", []), ensure_ascii=False)
+        if decoded_sections.count(r"\[") != decoded_sections.count(r"\]"):
+            errors.append(f"{arxiv_id}: unbalanced \\[...\\] display delimiters")
+        inline_delimiters = re.findall(r"(?<!\\)\$(?!\$)", decoded_sections)
+        if len(inline_delimiters) % 2:
+            errors.append(f"{arxiv_id}: unbalanced inline-math delimiter")
 
     return errors
 
@@ -200,12 +249,18 @@ def main() -> int:
         ]
         for detail_path in detail_paths:
             site_html = detail_path.read_text(encoding="utf-8")
-            if "tex-chtml.js" not in site_html or "window.MathJax" not in site_html:
+            if (
+                "assets/vendor/mathjax/tex-chtml.js" not in site_html
+                or "window.MathJax" not in site_html
+                or "cdn.jsdelivr.net/npm/mathjax" in site_html
+            ):
                 missing_math.append(detail_path.parent.name)
         if missing_math:
             errors.append(
                 f"generated detail pages missing MathJax: {missing_math[:5]}"
             )
+        if detail_paths and not SITE_MATHJAX_PATH.is_file():
+            errors.append("generated site missing packaged MathJax runtime")
     if errors:
         raise SystemExit("\n".join(errors))
     print(

@@ -1,7 +1,7 @@
 # Paper Card Standard
 
-Version: 2.1
-Effective date: 2026-08-25
+Version: 2.2
+Effective date: 2026-08-26
 Status: canonical
 
 This document is the authoritative editorial and evidence standard for physics+AI paper cards. Automation prompts and validators implement parts of this contract, but passing a structural validator alone does not establish scientific quality.
@@ -44,6 +44,7 @@ Use the following common structure. A more specific heading may be used only whe
    - Identify supporting page, equation, figure, table, theorem, simulation, or experiment.
    - State whether each central result is proved, perturbative, numerical, experimental, empirical, or interpretive.
    - Explain what changes physically when a control parameter, scale, symmetry, conservation law, or representation is varied.
+   - Prefer a decisive figure plus a short physical reading over several bullets that merely restate the same trend.
 6. `有效性与局限`
    - Controlled assumptions, applicability regime, finite-size or dataset limits, architecture and benchmark restrictions, failure modes, unresolved questions, and threats to generalization.
 7. `复现与资源`
@@ -69,39 +70,56 @@ Equations are part of the argument, not decoration.
 - Define every symbol at first use, including fields, observables, control parameters, indices, averages, dimensions, and normalization conventions needed to interpret the equation.
 - Introduce why the equation is needed, then state what follows from it and under which assumptions.
 - Preserve the paper's sign, coefficient, tensor/index, Fourier, stochastic-calculus, and nondimensionalization conventions. Do not silently simplify a load-bearing equation.
-- Use `$...$` for inline mathematics and `$$...$$` or `\[...\]` for displayed mathematics. Delimiters must be balanced. Do not put TeX in code spans.
+- Use `$...$` for inline mathematics and `\[...\]` for displayed mathematics. Treat legacy `$$...$$` as input requiring normalization before publication; do not author new cards with `$$`.
+- A display equation occupies its own paragraph or list continuation. Do not place prose on the same line as a display delimiter, nest math delimiters, or put TeX in code spans.
+- Delimiters must be balanced after JSON decoding and after Markdown rendering. Reject bare TeX commands outside math delimiters.
 - Do not impose a minimum or maximum equation count. Choose equations by their role in the paper's argument, not by a quota.
 - For theoretical work, retain enough of the load-bearing mathematical structure for a physicist to follow the model, mechanism, and principal result without guessing a hidden assumption. Depending on the paper, this may require one compact relation or a longer equation chain.
 - For numerical, experimental, and AI-empirical work, include an equation only when it materially clarifies the simulated model, objective, estimator, scaling law, conservation constraint, dynamical update, or measured claim. Do not invent or add ornamental equations.
 - Each machine-readable `equation_ref` records `label`, `latex`, `role`, `symbols`, `evidence`, and a short `interpretation`.
 - State whether a displayed relation is a definition, exact identity, exact model consequence, symmetry/conservation consequence, controlled asymptotic result, perturbative result, mean-field prediction, closure-dependent result, phenomenological ansatz, numerical observation, experimental observation, interpretation, or conjecture.
 
-The page must load a TeX renderer and visually render both inline and display mathematics. Literal math delimiters in the visible card are a publication failure.
+The page must load a pinned, site-local TeX renderer and visually render both inline and display mathematics. A CDN may be an optional fallback, never the only renderer. Literal math delimiters in the visible card are a publication failure.
 
-## 6. Physicist-style exposition
+## 6. Figure-first evidence
+
+A figure is evidence-bearing content, not decoration.
+
+- During full-text review, test whether one to three figures can replace a longer verbal account. Include a figure only when it carries a central mechanism, comparison, scaling law, phase structure, spatial pattern, or failure mode.
+- Preserve the paper's figure number, panel labels, axes, units, legends, and parameter regime needed for interpretation. Crop only surrounding page material; never crop away scientific context.
+- Place the figure next to the claim it supports. The card caption must state: what is plotted; the relevant variables and regime; the observed trend or contrast; the physical inference; and one limitation or non-inference.
+- Separate observation from interpretation. For example, a boundary-localized entropy-production map supports spatial localization in the simulated state; it does not by itself establish a universal mechanism.
+- Use the source figure when its license and legibility permit, with the public paper URL and explicit attribution. Otherwise describe the figure and link to it rather than redrawing it without permission.
+- Do not use title pages, graphical abstracts, or visually attractive panels when they do not carry a load-bearing claim.
+- A machine-readable `figure_ref` records `label`, `asset_path`, `section`, `role`, `evidence`, `alt_text`, `caption`, and `interpretation`. `asset_path` must resolve inside the public site; `evidence` must include the source page and figure number.
+- A card may have no figure when equations or a theorem carry the argument more faithfully. There is no figure quota.
+
+## 7. Physicist-style exposition
 
 Use the user's Daily arXiv tracking voice as the editorial reference, while grounding every technical detail independently in the full paper.
 
 - Lead with the physical or conceptual question, not a generic abstract summary.
-- Identify the correct degrees of freedom, state variables, observables, control parameters, and dynamical law.
-- Prefer the chain `question -> model -> equation -> mechanism -> prediction/result -> evidence -> limitation`.
+- Identify the degrees of freedom, state variables, observables, control parameters, symmetries or conservation laws, and dynamical law before discussing significance.
+- Prefer the chain `question -> degrees of freedom -> equation/model -> dominant balance or mechanism -> observable/prediction -> figure/equation evidence -> validity boundary`.
 - Use equations near the claims they support. After a central equation, give the shortest useful physical interpretation: dominant balance, conserved quantity, instability mechanism, timescale, length scale, information bottleneck, or observable consequence.
 - Explain why a result changes the formulation of the problem when it genuinely does. Do not add promotional importance language when it does not.
 - For AI papers, ask what is represented, what evolves, what information is sufficient, what intervention is possible, and what failure is structural rather than merely benchmark-level.
 - For physics-of-AI analogies, state the exact variable map and obstruction. Shared vocabulary such as energy, phase transition, or field does not establish physical equivalence.
 - Keep canonical technical terms stable. Prefer explicit subjects and concrete verbs; remove empty transitions and generic phrases such as `揭示复杂机制`, `具有重要意义`, or `提供全新视角` unless the next sentence specifies the mechanism and evidence.
 - Preserve the epistemic qualifier: `exact`, `to leading order`, `within mean field`, `for the simulated sizes`, `experimentally observed`, or `consistent with`.
+- Write each paragraph or bullet around one physical job. Remove dataset, architecture, or literature detail that does not change how a physicist should read the mechanism, observable, comparison, or limitation.
+- For a decisive figure, discuss axes/panels and the change of observable with control parameter before offering interpretation. Do not narrate every visible element.
 
 The Daily arXiv report is a style reference and selection artifact, not evidence for a card claim. The paper and its verified resources remain the source of truth.
 
-## 7. Type-specific emphasis
+## 8. Type-specific emphasis
 
 - Pure physics: equations, symmetries, conservation laws, approximation control, phases, scaling, predictions, and experimental or numerical validation.
 - Pure AI: task, architecture, objective, data, baselines, metrics, ablations, compute, robustness, and failure modes.
 - AI for physics: physical target, simulator or training data, physical constraints, uncertainty, generalization across regimes, and comparison with established solvers.
 - Physics of AI: explicit variable mapping, order and control parameters, dynamics, phase behavior, finite-size effects, and a clear boundary between analogy and demonstrated mechanism.
 
-## 8. Cover standard
+## 9. Cover standard
 
 - Use the scientifically decisive figure when licensing and legibility permit.
 - Preserve its meaning, original figure number, and a concise explanatory caption.
@@ -109,7 +127,7 @@ The Daily arXiv report is a style reference and selection artifact, not evidence
 - Use the title page only as a last fallback.
 - Do not crop away axes, legends, units, or other information needed to interpret the result.
 
-## 9. Machine-readable contract
+## 10. Machine-readable contract
 
 A final card must contain:
 
@@ -123,13 +141,14 @@ A final card must contain:
 - a Codex-direct `selection_record` for Daily cards;
 - provenance appropriate to Daily or Collection;
 - structured `equation_refs` for the equations actually used; the list may be empty when equations are not needed to explain the paper;
+- structured `figure_refs` for figures actually shown; the list may be empty when no figure improves the physical argument;
 - all required sections;
 - at least three page-addressable evidence references;
 - an explicit independent-reproduction boundary.
 
 Daily cards use `data/curated_cards/<arxiv-id>.json` as the source of truth. Generated Markdown and HTML must match the JSON exactly.
 
-## 10. Publication gate
+## 11. Publication gate
 
 Before publication:
 
@@ -137,11 +156,13 @@ Before publication:
 2. Confirm complete-paper access and authoritative metadata.
 3. Build page-addressable evidence before drafting prose.
 4. Reject generic abstract-derived methods, results, limitations, or reading advice.
-5. Run syntax checks, card validation, deterministic site build, JSON validation, unique-ID checks, and JSON/render parity checks.
-6. Load representative detail pages in a browser and verify that inline and display mathematics render without visible `$`, `$$`, `\(`, or `\[` delimiters; inspect narrow-screen overflow for long equations.
-7. Inspect representative cards manually for paper-specific scientific depth, symbol definitions, equation-to-prose consistency, and physicist-style causal logic. Structural validation and minimum length are necessary but not sufficient.
-8. Commit one independently auditable batch at a time.
-9. Verify push, build, deployment, the public index, and every new detail URL. A local build or green workflow alone is not publication proof.
+5. Run syntax checks, card validation, deterministic site build, JSON validation, unique-ID checks, JSON/render parity checks, figure-path checks, and delimiter checks on decoded source and generated HTML.
+6. Confirm that the site-local TeX renderer and its fonts are packaged. A network-only renderer fails the gate.
+7. Load representative detail pages in a browser and verify that inline and display mathematics render without visible `$`, `$$`, `\(`, or `\[` delimiters; inspect narrow-screen overflow for long equations.
+8. Inspect every newly added figure at card width. Verify its figure number, panels, axes, units, legend, caption, source attribution, and claim strength against the paper.
+9. Inspect representative cards manually for paper-specific scientific depth, symbol definitions, equation-to-prose consistency, figure-to-caption consistency, and physicist-style causal logic. Structural validation and minimum length are necessary but not sufficient.
+10. Commit one independently auditable batch at a time.
+11. Verify push, build, deployment, the public index, and every new detail URL. A local build or green workflow alone is not publication proof.
 
 Current validation command:
 
@@ -149,6 +170,6 @@ Current validation command:
 python3 scripts/validate_paper_cards.py
 ```
 
-## 11. Fail-closed conditions
+## 12. Fail-closed conditions
 
 Do not publish a card when the complete source report is unreadable, the full paper is unavailable, metadata conflicts remain unresolved, evidence locations are missing, the worktree contains unrelated changes that cannot be isolated, or deployment/public verification is ambiguous. Record the exact failure and preserve already completed independent batches.

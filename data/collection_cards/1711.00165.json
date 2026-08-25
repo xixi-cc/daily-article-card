@@ -56,7 +56,9 @@
       "bullets": [
         "网络第l层 z_i^l=b_i^l+Σ_j W^l_{ij}φ(z_j^{l−1})，W variance σw²/N_l、bias variance σb²；CLT令每个有限输入集合的z_i^l在N_l→∞时联合Gaussian。",
         "深层证明按N1→∞、N2→∞依次取极限；Appendix在Gaussian weights下用marginalization给不依赖极限次序的替代推导，并引用并行工作讨论同时增宽的收敛率。",
-        "kernel 递推为 $$K^{l}(x,x')=\\sigma_b^2+\\sigma_w^2\\,\\mathbb E_{(u,v)\\sim\\mathcal N(0,K^{l-1})}[\\phi(u)\\phi(v)],$$ 只需上一层 $K(x,x)$、$K(x',x')$、$K(x,x')$ 三个值。",
+        "kernel 递推只依赖上一层两输入的 $2\\times2$ covariance：",
+        "\\[K^{l}(x,x')=\\sigma_b^2+\\sigma_w^2\\,\\mathbb E_{(u,v)\\sim\\mathcal N(0,K^{l-1})}[\\phi(u)\\phi(v)].\\]",
+        "因此计算 $K^l(x,x')$ 只需 $K^{l-1}(x,x)$、$K^{l-1}(x',x')$ 与 $K^{l-1}(x,x')$；无限宽把随机网络 prior 约化为闭合的 kernel recursion。",
         "base kernel K^0=σb²+σw² x·x'/d_in；depth、activation、σw²和σb²共同定义function prior。无限宽不消除这些hyperparameter choices。",
         "Gaussian observation noise 下，posterior mean 为 $K_{*D}(K_{DD}+\\sigma^2I)^{-1}t$，posterior covariance 为 $K_{**}-K_{*D}(K_{DD}+\\sigma^2I)^{-1}K_{D*}$；论文把十类标签编码为错误类 $-0.1$、正确类 $0.9$，再以 regression argmax 分类。",
         "实验对MNIST 50k/10k/10k、CIFAR 45k/5k/10k；有限NN为全连接等宽ReLU/Tanh、MSE、Adam、无dropout；NN超参数平均约250 random trials，GP每depth评估30×30的σw²–σb² grid。"
@@ -110,6 +112,18 @@
       ]
     }
   ],
+  "figure_refs": [
+    {
+      "label": "Figure 1",
+      "asset_path": "assets/collection-figures/1711.00165/figure-1-width-convergence.webp",
+      "section": "核心结果与证据",
+      "role": "finite-width approach to the NNGP benchmark",
+      "evidence": "arXiv:1711.00165v3, paper.pdf p. 7, Figure 1",
+      "alt_text": "MNIST 与 CIFAR-10 上，不同宽度有限神经网络和 NNGP 的准确率及均方误差随训练集大小变化。",
+      "caption": "黑线为 NNGP，彩色线为不同宽度的有限全连接网络；宽度增加时，测试准确率和 MSE 在该实验设定下趋近 NNGP 曲线。",
+      "interpretation": "图给出有限宽训练结果向无限宽 prior 基准靠近的经验趋势；它不证明 SGD 采样 GP posterior，也不适用于卷积或特征学习占主导的架构。"
+    }
+  ],
   "evidence_refs": [
     "paper.pdf pp. 2-4: fully connected infinite-width GP derivation and kernel recursion",
     "paper.pdf pp. 4-6: exact GP regression posterior and numerical kernel pipeline",
@@ -119,7 +133,7 @@
     "paper.pdf pp. 14-17: splits, search budgets, compute times and further results",
     "Evidence status: full-text verified; no independent reproduction performed."
   ],
-  "card_standard_version": "2.1",
+  "card_standard_version": "2.2",
   "paper_profile": "theory_numerics",
   "style_reference": "physicist_daily_arxiv",
   "provenance": {
