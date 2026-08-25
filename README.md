@@ -7,14 +7,14 @@
 - 每日自动收录 Codex 按固定 40 分标准评为 S 的论文
 - 按无版本号 arXiv ID 去重
 - 展示中文概述、核心贡献、方法、证据与局限
-- 自动抓取论文首图，并提供截图兜底
+- 按 Paper Card Standard v2.3 选择论文最重要的物理可视化作为封面；无合适图片时使用题目与摘要封面
 - 支持标题、机构、摘要亮点和 arXiv ID 搜索
 - 为每篇论文生成独立详情页
 - 响应式界面与亮色、暗色主题
 
 本项目不在 GitHub Actions 中调用外部 LLM API，也不需要 ModelScope token。Codex 直接完成 arXiv 检索、筛选、全文卡片写作、验证与发布；GitHub Actions 只执行确定性图片处理、构建和 Pages 部署。
 
-Codex 的端到端筛选和发布合同见 [`docs/CODEX_DAILY_SCREENING_AND_PUBLICATION.md`](docs/CODEX_DAILY_SCREENING_AND_PUBLICATION.md)。论文卡片的 canonical 编辑、公式、证据、数据与发布标准见 [`docs/PAPER_CARD_STANDARD.md`](docs/PAPER_CARD_STANDARD.md)。Paper Collection 的长期补卡与 Daily feed 是两个独立数据流；Collection 卡不得进入 Daily 时间线或继承日报评级。
+Codex 的端到端筛选和发布合同见 [`docs/CODEX_DAILY_SCREENING_AND_PUBLICATION.md`](docs/CODEX_DAILY_SCREENING_AND_PUBLICATION.md)。论文卡片的 canonical 编辑、公式、证据、数据与发布标准见 [`docs/PAPER_CARD_STANDARD.md`](docs/PAPER_CARD_STANDARD.md)；所有制卡入口与校验、渲染、部署消费者见 [`docs/PAPER_CARD_STANDARD_INTEGRATION.md`](docs/PAPER_CARD_STANDARD_INTEGRATION.md)。Paper Collection 的长期补卡与 Daily feed 是两个独立数据流；Collection 卡不得进入 Daily 时间线或继承日报评级。
 
 ## 本地构建
 
@@ -43,11 +43,13 @@ cd site && python -m http.server 8000
 运行完整的确定性构建：
 
 ```bash
+python3 scripts/check_card_standard_sync.py
 python scripts/fetch_paper_images.py --max-items 30
 python scripts/build_paper_image_fallback_queue.py --max-items 20
 npm run paper-image:fallbacks
 python scripts/register_paper_image_fallbacks.py
 python scripts/build_site.py
+python scripts/validate_paper_cards.py
 ```
 
 ## 部署
