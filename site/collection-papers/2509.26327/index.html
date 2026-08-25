@@ -1,0 +1,203 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>A Generalized Information Bottleneck Theory of Deep Learning - physics+AI Collection 随机精选</title>
+    <meta name="description" content="作者：Charles Westphal、Stephen Hailes、Mirco Musolesi。本卡核对 arXiv:2509.26327v3；论文把深网表征的信息瓶颈重写为可估计的协同信息问题。" />
+    <script>
+      (function() {
+        try {
+          var themePreference = window.localStorage.getItem('color-theme') || 'system';
+          var systemUsesDarkTheme = window.matchMedia('(prefers-color-scheme: dark)').matches;
+          var resolvedTheme = themePreference === 'system'
+            ? (systemUsesDarkTheme ? 'dark' : 'light')
+            : themePreference;
+          document.documentElement.dataset.theme = resolvedTheme;
+          document.documentElement.dataset.themePreference = themePreference;
+          document.documentElement.style.colorScheme = resolvedTheme;
+        } catch (error) {
+          document.documentElement.dataset.theme = 'light';
+          document.documentElement.dataset.themePreference = 'system';
+        }
+      })();
+    </script>
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='18' fill='%23111827'/%3E%3Ctext x='50%25' y='55%25' text-anchor='middle' dominant-baseline='middle' font-size='30' font-family='Arial, sans-serif' fill='white'%3EV%3C/text%3E%3C/svg%3E" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700;800&family=Noto+Sans+SC:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <script>document.documentElement.classList.add('math-pending');</script>
+    <script>
+      window.MathJax = {
+        tex: {
+          inlineMath: [['$', '$'], ['\\(', '\\)']],
+          displayMath: [['$$', '$$'], ['\\[', '\\]']],
+          processEscapes: true
+        },
+        options: {
+          skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+        },
+        chtml: {
+          scale: 1,
+          displayAlign: 'center'
+        },
+        startup: {
+          ready: function() {
+            MathJax.startup.defaultReady();
+            MathJax.startup.promise.then(function() {
+              document.documentElement.classList.remove('math-pending');
+              document.documentElement.dataset.mathReady = 'true';
+            });
+          }
+        }
+      };
+    </script>
+    <script defer src="../../assets/vendor/mathjax/tex-chtml.js"></script>
+    <link rel="stylesheet" href="../../assets/style.css" />
+  </head>
+  <body class="detail-page" data-paper-id="2509.26327">
+    <div class="page-noise"></div>
+    <div class="page-blur page-blur-a"></div>
+    <div class="page-blur page-blur-b"></div>
+
+    <header class="header detail-page-header">
+      <div class="container">
+        <div class="detail-page-topbar">
+          <a class="back-link" href="../../collection.html">返回列表</a>
+          <div class="detail-topbar-actions">
+            <span class="detail-site-name">physics+AI Collection 随机精选</span>
+            <button class="theme-toggle" type="button" data-theme-toggle aria-label="当前主题：设备，点击切换主题" title="当前主题：设备">
+  <span class="theme-toggle-icons" aria-hidden="true">
+    <svg class="theme-toggle-icon theme-toggle-icon-light" viewBox="0 0 24 24" fill="none">
+      <circle cx="12" cy="12" r="3.5" stroke="currentColor" stroke-width="1.8"/>
+      <path d="M12 2.5v2M12 19.5v2M2.5 12h2M19.5 12h2M5.3 5.3l1.4 1.4M17.3 17.3l1.4 1.4M18.7 5.3l-1.4 1.4M6.7 17.3l-1.4 1.4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+    </svg>
+    <svg class="theme-toggle-icon theme-toggle-icon-dark" viewBox="0 0 24 24" fill="none">
+      <path d="M20 15.2A8.1 8.1 0 0 1 8.8 4a8.2 8.2 0 1 0 11.2 11.2z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>
+    </svg>
+    <svg class="theme-toggle-icon theme-toggle-icon-system" viewBox="0 0 24 24" fill="none">
+      <rect x="3" y="4" width="18" height="13" rx="2.5" stroke="currentColor" stroke-width="1.8"/>
+      <path d="M8 21h8M12 17v4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+    </svg>
+  </span>
+  <span class="theme-toggle-label" data-theme-toggle-label>设备</span>
+</button>
+          </div>
+        </div>
+
+        <div class="detail-hero-grid">
+          <div class="detail-hero-cover"><figure class="paper-figure-card paper-figure-card-detail">
+  <img class="paper-figure-image" src="../../assets/collection-figures/2509.26327/figure-1-information-plane.webp" alt="信息平面中的训练轨迹示意，标出拟合与压缩两个阶段。" loading="lazy" onclick="window.openPaperFigureImage && window.openPaperFigureImage(this)" />
+  <figcaption class="paper-figure-caption">训练先沿 prediction 方向拟合，再沿 complexity 方向压缩；GIB 的核心问题是这种两阶段轨迹能否在不同非线性和架构中稳定出现。</figcaption>
+</figure></div>
+          <div class="detail-hero-copy">
+            <p class="eyebrow">Collection 全文卡</p>
+            <h1 class="detail-page-title">A Generalized Information Bottleneck Theory of Deep Learning</h1>
+            <p class="detail-page-title-zh">深度学习的广义信息瓶颈理论</p>
+            <div class="detail-meta">Paper Collection · Information Theory · <a href="https://arxiv.org/abs/2509.26327" target="_blank" rel="noopener noreferrer">原文</a></div>
+            <p class="detail-summary">作者：Charles Westphal、Stephen Hailes、Mirco Musolesi。本卡核对 arXiv:2509.26327v3；论文把深网表征的信息瓶颈重写为可估计的协同信息问题。</p>
+            <div class="detail-micro-meta">
+              <span class="meta-pill">8 分钟读完</span>
+              <span class="meta-pill">8 张阅读卡</span>
+              <span class="meta-pill">作者：Charles Westphal、Stephen Hailes、Mirco Musolesi。本…</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <main class="container detail-layout">
+      <div class="detail-shell">
+        <article id="detail-body" class="reading-flow"><section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 01</span>
+    <span class="reading-step-note">作者信息</span>
+  </div>
+  <h2>作者信息</h2>
+  <div class="reading-card-content"><ul><li>作者：Charles Westphal、Stephen Hailes、Mirco Musolesi。本卡核对 arXiv:2509.26327v3；论文把深网表征的信息瓶颈重写为可估计的协同信息问题。</li></ul></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 02</span>
+    <span class="reading-step-note">研究问题</span>
+  </div>
+  <h2>研究问题</h2>
+  <div class="reading-card-content"><ul><li>标准 information bottleneck 用表示 T 对输入 X 的互信息衡量复杂度、用 T 对标签 Y 的互信息衡量预测性，但连续确定性网络中的互信息估计高度依赖分箱、噪声和估计器；ReLU 网络是否真的出现 compression 因而长期有争议。</li><li>作者追问：若真正有利于泛化的是多个特征联合处理才出现、任一单特征都不携带的 synergy，能否构造一个兼容标准 IB、又能逐层逐 epoch 稳定计算的广义瓶颈坐标？</li></ul></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 03</span>
+    <span class="reading-step-note">背景</span>
+  </div>
+  <h2>背景</h2>
+  <div class="reading-card-content"><ul><li>信息平面把训练轨迹画在 complexity–prediction 平面：早期 fitting 提高任务信息，晚期 compression 丢弃与任务无关的输入细节。问题在于互信息对确定性映射可能发散或不随可逆变换改变，有限样本估计还会制造或抹去压缩。</li><li>论文以 interaction information 描述某一特征与其余特征关于目标的联合贡献，并对特征求平均。物理类比是把单体可见量换成不可约多体关联：若响应只在联合自由度中出现，逐分量的信息量会漏掉它。</li></ul></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 04</span>
+    <span class="reading-step-note">模型与方法</span>
+  </div>
+  <h2>模型与方法</h2>
+  <div class="reading-card-content"><ul><li>作者定义由平均 interaction information 构成的 GIB prediction/complexity 坐标，并证明在完美训练 Q=Z=Y 的条件下，原 IB 目标受 GIB 上界约束；这给出兼容性，但不是对任意有限样本估计器的等价定理。</li><li>实验从受控二进制函数开始，改变函数的 synergy 与输入噪声；随后覆盖多种激活函数、五类数学函数、CIFAR-10 ResNet、AG News 上的 BERT fine-tuning/unlearning，以及 MNIST 的 FGSM 扰动。每条信息平面轨迹按 epoch 着色，并跨多个随机种子比较标准 IB 与 GIB。</li><li>Figure 1 是读图坐标系：纵轴是 prediction term，横轴是 complexity term；先向上是 fitting，随后向左才是 compression。后续图的结论必须建立在相同方向约定上。</li></ul><figure class="evidence-figure">
+  <button class="evidence-figure-image-button" type="button" aria-label="放大查看 Figure 1" onclick="window.openPaperFigureImage && window.openPaperFigureImage(this.querySelector('img'))">
+    <img class="paper-figure-image evidence-figure-image" src="../../assets/collection-figures/2509.26327/figure-1-information-plane.webp" alt="由浅到深着色的训练轨迹及 fitting/compression 箭头。" loading="lazy" />
+  </button>
+  <figcaption>
+    <strong>Figure 1</strong> · 信息平面把逐 epoch 学习动力学压缩为两个竞争坐标。
+    <span class="evidence-figure-reading">物理解读：向上表示获得任务信息，向左表示丢弃复杂度；轨迹形状本身不等同因果机制。</span>
+    <span class="evidence-figure-source">来源：paper.pdf p. 1, Figure 1</span>
+  </figcaption>
+</figure></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 05</span>
+    <span class="reading-step-note">核心结果与证据</span>
+  </div>
+  <h2>核心结果与证据</h2>
+  <div class="reading-card-content"><ul><li>Figure 2 显示标准 IB 只在 tanh 情形清楚压缩，而 GIB 在 tanh、ReLU、softplus、swish 与 leaky ReLU 中均给出向左的后期轨迹；Figure 4 的五类函数与五个种子保持同一趋势。</li><li>Figure 3 的受控实验把 synergy 与 generalization 分离：更强的协同处理降低输出对注入噪声的可访问信息，并对应更好的泛化；这是论文机制主张最直接的证据，而不只是深网散点的事后解释。</li><li>Figures 5–7 把该坐标推广到 ResNet、BERT 与对抗攻击。GIB complexity 对攻击强度有明显区分，标准 IB 的复杂度项变化较弱；作者据此主张 GIB 更贴合鲁棒性退化，但这些仍是诊断相关性而非因果控制。</li></ul></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 06</span>
+    <span class="reading-step-note">有效性与局限</span>
+  </div>
+  <h2>有效性与局限</h2>
+  <div class="reading-card-content"><ul><li>GIB 避开了一部分连续互信息估计难题，但 interaction information 本身仍依赖有限样本、离散化/密度估计与特征分解；高维强相关表示中的偏差和方差需要独立校准。</li><li>上界证明使用 perfect training 等条件，不能直接推出有限精度、分布外或带标签噪声情形中的普遍泛化定理。compression 的出现也不自动证明它是 generalization 的原因。</li><li>跨架构、多种子和对抗强度的证据提高了稳健性，但数据集与模型规模仍有限；BERT unlearning 的轨迹尤其可能混合初始化、优化路径和表征几何效应。该卡 no independent reproduction performed。</li></ul></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 07</span>
+    <span class="reading-step-note">复现与资源</span>
+  </div>
+  <h2>复现与资源</h2>
+  <div class="reading-card-content"><ul><li>原文：https://arxiv.org/abs/2509.26327；PDF：https://arxiv.org/pdf/2509.26327。全文 SHA-256：0f4f03c51d5efe2a41175d63a71b991da3582c08ba293de89a405dd0e4f33998；27 页。</li><li>复现需固定激活函数、网络宽深、信息估计器及其超参数、每层采样点、epoch 对齐、随机种子、FGSM epsilon、BERT unlearning 步骤与置信区间；应同时报告标准 IB 与 GIB 的原始轨迹。</li><li>Evidence status: full-text verified; no independent reproduction performed.</li></ul></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 08</span>
+    <span class="reading-step-note">阅读指南</span>
+  </div>
+  <h2>阅读指南</h2>
+  <div class="reading-card-content"><ul><li>先读 Figure 1 明确坐标与轨迹方向，再用 Figure 3 判断 synergy 是否真能隔离噪声；随后看 Theorem 1 的假设，最后检查 Figures 2、4–7 的跨体系稳定性。</li><li>面向物理学家，可把 GIB 看成从一体 observable 升级到不可约多体 correlation：论文的价值在于给出可画相图式训练轨迹的候选序参量，而不是已经建立普适的深度学习热力学。</li></ul></div>
+</section></article>
+        <aside id="detail-toc" class="detail-toc hidden" aria-label="内容目录">
+          <p class="detail-toc-title">阅读目录</p>
+          <nav id="detail-toc-nav" class="detail-toc-nav"></nav>
+        </aside>
+      </div>
+      <nav class="paper-nav"><a class="paper-nav-link paper-nav-prev" href="../../collection-papers/2507.21621/"><span class="paper-nav-label">← 上一篇</span><span class="paper-nav-title">What exactly is &#x27;active matter&#x27;?</span></a>
+      <a class="paper-nav-link paper-nav-next" href="../../collection-papers/2510.26887/"><span class="paper-nav-label">下一篇 →</span><span class="paper-nav-title">The Denario project: Deep knowledge AI agents for scientific discovery</span></a></nav>
+    </main>
+
+    <footer class="footer">
+      <div class="container">
+        <p>内容来自 <a href="https://arxiv.org" target="_blank" rel="noopener noreferrer">arXiv.org</a>，阅读卡片由静态站点生成器构建。</p>
+      </div>
+    </footer>
+
+    <script src="../../assets/theme.js"></script>
+    <script src="../../assets/media.js"></script>
+    <script src="../../assets/paper.js"></script>
+  </body>
+</html>

@@ -1,0 +1,203 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>An Introduction to Flow Matching and Diffusion Models - physics+AI Collection 随机精选</title>
+    <meta name="description" content="作者：Peter Holderrieth、Ezra Erives。本卡核对 arXiv:2506.02070v3；这是一份 85 页、从 ODE/SDE 第一原理贯通 flow matching、diffusion、guidance 与图像/视频架构的教程。" />
+    <script>
+      (function() {
+        try {
+          var themePreference = window.localStorage.getItem('color-theme') || 'system';
+          var systemUsesDarkTheme = window.matchMedia('(prefers-color-scheme: dark)').matches;
+          var resolvedTheme = themePreference === 'system'
+            ? (systemUsesDarkTheme ? 'dark' : 'light')
+            : themePreference;
+          document.documentElement.dataset.theme = resolvedTheme;
+          document.documentElement.dataset.themePreference = themePreference;
+          document.documentElement.style.colorScheme = resolvedTheme;
+        } catch (error) {
+          document.documentElement.dataset.theme = 'light';
+          document.documentElement.dataset.themePreference = 'system';
+        }
+      })();
+    </script>
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='18' fill='%23111827'/%3E%3Ctext x='50%25' y='55%25' text-anchor='middle' dominant-baseline='middle' font-size='30' font-family='Arial, sans-serif' fill='white'%3EV%3C/text%3E%3C/svg%3E" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700;800&family=Noto+Sans+SC:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <script>document.documentElement.classList.add('math-pending');</script>
+    <script>
+      window.MathJax = {
+        tex: {
+          inlineMath: [['$', '$'], ['\\(', '\\)']],
+          displayMath: [['$$', '$$'], ['\\[', '\\]']],
+          processEscapes: true
+        },
+        options: {
+          skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+        },
+        chtml: {
+          scale: 1,
+          displayAlign: 'center'
+        },
+        startup: {
+          ready: function() {
+            MathJax.startup.defaultReady();
+            MathJax.startup.promise.then(function() {
+              document.documentElement.classList.remove('math-pending');
+              document.documentElement.dataset.mathReady = 'true';
+            });
+          }
+        }
+      };
+    </script>
+    <script defer src="../../assets/vendor/mathjax/tex-chtml.js"></script>
+    <link rel="stylesheet" href="../../assets/style.css" />
+  </head>
+  <body class="detail-page" data-paper-id="2506.02070">
+    <div class="page-noise"></div>
+    <div class="page-blur page-blur-a"></div>
+    <div class="page-blur page-blur-b"></div>
+
+    <header class="header detail-page-header">
+      <div class="container">
+        <div class="detail-page-topbar">
+          <a class="back-link" href="../../collection.html">返回列表</a>
+          <div class="detail-topbar-actions">
+            <span class="detail-site-name">physics+AI Collection 随机精选</span>
+            <button class="theme-toggle" type="button" data-theme-toggle aria-label="当前主题：设备，点击切换主题" title="当前主题：设备">
+  <span class="theme-toggle-icons" aria-hidden="true">
+    <svg class="theme-toggle-icon theme-toggle-icon-light" viewBox="0 0 24 24" fill="none">
+      <circle cx="12" cy="12" r="3.5" stroke="currentColor" stroke-width="1.8"/>
+      <path d="M12 2.5v2M12 19.5v2M2.5 12h2M19.5 12h2M5.3 5.3l1.4 1.4M17.3 17.3l1.4 1.4M18.7 5.3l-1.4 1.4M6.7 17.3l-1.4 1.4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+    </svg>
+    <svg class="theme-toggle-icon theme-toggle-icon-dark" viewBox="0 0 24 24" fill="none">
+      <path d="M20 15.2A8.1 8.1 0 0 1 8.8 4a8.2 8.2 0 1 0 11.2 11.2z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>
+    </svg>
+    <svg class="theme-toggle-icon theme-toggle-icon-system" viewBox="0 0 24 24" fill="none">
+      <rect x="3" y="4" width="18" height="13" rx="2.5" stroke="currentColor" stroke-width="1.8"/>
+      <path d="M8 21h8M12 17v4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+    </svg>
+  </span>
+  <span class="theme-toggle-label" data-theme-toggle-label>设备</span>
+</button>
+          </div>
+        </div>
+
+        <div class="detail-hero-grid">
+          <div class="detail-hero-cover"><figure class="paper-figure-card paper-figure-card-detail">
+  <img class="paper-figure-image" src="../../assets/collection-figures/2506.02070/figure-4-noise-to-data.webp" alt="手写数字样本从高斯噪声逐渐变清晰的五阶段序列。" loading="lazy" onclick="window.openPaperFigureImage && window.openPaperFigureImage(this)" />
+  <figcaption class="paper-figure-caption">Gaussian conditional probability path 将易采样噪声连续输运到一个数据点；flow matching 学习的正是实现这条分布路径的速度场。</figcaption>
+</figure></div>
+          <div class="detail-hero-copy">
+            <p class="eyebrow">Collection 全文卡</p>
+            <h1 class="detail-page-title">An Introduction to Flow Matching and Diffusion Models</h1>
+            <p class="detail-page-title-zh">流匹配与扩散模型导论</p>
+            <div class="detail-meta">Paper Collection · Flow Matching · <a href="https://arxiv.org/abs/2506.02070" target="_blank" rel="noopener noreferrer">原文</a></div>
+            <p class="detail-summary">作者：Peter Holderrieth、Ezra Erives。本卡核对 arXiv:2506.02070v3；这是一份 85 页、从 ODE/SDE 第一原理贯通 flow matching、diffusion、guidance 与图像/视频架构的教程。</p>
+            <div class="detail-micro-meta">
+              <span class="meta-pill">9 分钟读完</span>
+              <span class="meta-pill">8 张阅读卡</span>
+              <span class="meta-pill">作者：Peter Holderrieth、Ezra Erives。本卡核对 arXiv:2506.02…</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <main class="container detail-layout">
+      <div class="detail-shell">
+        <article id="detail-body" class="reading-flow"><section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 01</span>
+    <span class="reading-step-note">作者信息</span>
+  </div>
+  <h2>作者信息</h2>
+  <div class="reading-card-content"><ul><li>作者：Peter Holderrieth、Ezra Erives。本卡核对 arXiv:2506.02070v3；这是一份 85 页、从 ODE/SDE 第一原理贯通 flow matching、diffusion、guidance 与图像/视频架构的教程。</li></ul></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 02</span>
+    <span class="reading-step-note">研究问题</span>
+  </div>
+  <h2>研究问题</h2>
+  <div class="reading-card-content"><ul><li>生成模型的共同任务是把易采样的初始分布 p_init 输运到数据分布 p_data。流匹配和扩散看似使用不同训练目标与采样器，能否在概率路径、连续性方程和随机微分方程的统一语言中推导？</li><li>教程进一步回答工程问题：如何从 conditional probability path 得到无需模拟完整条件轨迹的 regression target，如何在 ODE 与 SDE 之间转换，以及 guidance、latent representation 和 transformer architecture 如何接入同一动力系统。</li></ul></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 03</span>
+    <span class="reading-step-note">背景</span>
+  </div>
+  <h2>背景</h2>
+  <div class="reading-card-content"><ul><li>确定性 flow 由速度场 u_t(x) 生成微分同胚，密度满足 continuity equation；diffusion 则在 drift 上叠加 Brownian noise，密度满足 Fokker–Planck equation。两者都是对概率分布随时间演化的动力学描述。</li><li>困难不在指定端点，而在构造中间概率路径 p_t 及其可学习速度/score。直接拟合边缘场通常不可得，conditional path 则以单个数据 z 为终点，允许解析写出 target，再通过条件期望恢复 marginal field。</li></ul></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 04</span>
+    <span class="reading-step-note">模型与方法</span>
+  </div>
+  <h2>模型与方法</h2>
+  <div class="reading-card-content"><ul><li>Figure 4 用图像直观展示 Gaussian conditional path：t=0 是噪声，t=1 收缩到数据样本。教程随后区分 conditional 与 marginal probability path，并证明用 conditional vector field 做均方回归与边缘 flow matching 具有相同梯度。</li><li>ODE 采样积分 dX_t=u_t(X_t)dt；SDE 采样加入扩散项，并可借助 score 在保持同一边缘分布族的前提下改变 stochasticity。Diffusion 的 denoising、noise prediction 与 score prediction 被写成等价参数化，差异主要是时间权重和数值条件数。</li><li>后半部分把 classifier-free guidance 解释为放大 conditional 与 unconditional vector fields 的差，讨论 latent autoencoder、U-Net/DiT、attention、time/text conditioning、训练配方和视频生成。</li></ul><figure class="evidence-figure">
+  <button class="evidence-figure-image-button" type="button" aria-label="放大查看 Figure 4" onclick="window.openPaperFigureImage && window.openPaperFigureImage(this.querySelector('img'))">
+    <img class="paper-figure-image evidence-figure-image" src="../../assets/collection-figures/2506.02070/figure-4-noise-to-data.webp" alt="噪声图块逐步收缩为数字图像。" loading="lazy" />
+  </button>
+  <figcaption>
+    <strong>Figure 4</strong> · 每一列是同一 conditional path 在不同时间的样本。
+    <span class="evidence-figure-reading">物理解读：中间态是人为选择的概率路径；它影响 target field 与数值难度，但端点仍由 p_init 和数据样本规定。</span>
+    <span class="evidence-figure-source">来源：paper.pdf p. 14, Figure 4</span>
+  </figcaption>
+</figure></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 05</span>
+    <span class="reading-step-note">核心结果与证据</span>
+  </div>
+  <h2>核心结果与证据</h2>
+  <div class="reading-card-content"><ul><li>核心不是提出新 benchmark，而是给出统一推导链：选 p_t(x|z) → 求 target field → conditional regression → marginal field → 数值积分。Figure 6/7 用棋盘分布显示训练后的 ODE 复现给定 marginal path。</li><li>Figure 9 将同一概率路径改用 SDE 采样，说明确定性 flow 与随机 diffusion 可以共享边缘密度演化；Figure 12 则把 guidance 分解为基础场与条件校正，清楚展示 guidance scale 改变轨迹而非训练数据。</li><li>教程包含从最小 2D 例子到 image/video generator 的代码式算法框架，适合作为概念和实现之间的桥梁；但其‘结果’主要是教学性构造与已知定理的整合，不应当读成一篇宣称新 SOTA 的研究论文。</li></ul></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 06</span>
+    <span class="reading-step-note">有效性与局限</span>
+  </div>
+  <h2>有效性与局限</h2>
+  <div class="reading-card-content"><ul><li>统一框架依赖连续时间、足够正则的密度与向量场；真实网络只近似 target，有限步 ODE/SDE solver 会产生离散化误差，路径选择还强烈影响训练方差和采样刚性。</li><li>conditional flow matching 的目标等价是期望意义上的，不能保证有限容量网络、有限数据和特定优化器达到相同边缘场。classifier-free guidance 改善条件一致性通常牺牲 diversity，并会把 score/model error 放大。</li><li>教程覆盖面广，某些架构和系统细节必然随代际变化；读者应把数学骨架与具体模型名称分开。该卡 no independent reproduction performed。</li></ul></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 07</span>
+    <span class="reading-step-note">复现与资源</span>
+  </div>
+  <h2>复现与资源</h2>
+  <div class="reading-card-content"><ul><li>原文：https://arxiv.org/abs/2506.02070；PDF：https://arxiv.org/pdf/2506.02070。全文 SHA-256：22bc442a20981bd7a8d68f66176a70463df1f744d9d3d5c72992abc39eb9349a；85 页。</li><li>复现最小闭环应从二维分布开始：固定 probability path、时间采样、网络参数化、ODE/SDE solver 与 NFE；同时比较 ground-truth path histogram、生成 histogram 和轨迹。扩展到图像后再加入 latent encoder 与 guidance。</li><li>Evidence status: full-text verified; no independent reproduction performed.</li></ul></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 08</span>
+    <span class="reading-step-note">阅读指南</span>
+  </div>
+  <h2>阅读指南</h2>
+  <div class="reading-card-content"><ul><li>物理学家可按动力学顺序阅读：Section 2 的 flow/SDE → Section 3 的 probability path 与 continuity equation → Section 4 的 diffusion/score → Section 5 的 guidance；架构章节放在最后。</li><li>Figure 4 是最好的入口：它把‘从噪声生成数据’变成分布空间中的边界值输运问题。随后追问每个公式究竟规定路径、速度场、score，还是数值积分器，可避免术语混淆。</li></ul></div>
+</section></article>
+        <aside id="detail-toc" class="detail-toc hidden" aria-label="内容目录">
+          <p class="detail-toc-title">阅读目录</p>
+          <nav id="detail-toc-nav" class="detail-toc-nav"></nav>
+        </aside>
+      </div>
+      <nav class="paper-nav"><a class="paper-nav-link paper-nav-prev" href="../../collection-papers/2506.01844/"><span class="paper-nav-label">← 上一篇</span><span class="paper-nav-title">SmolVLA: A Vision-Language-Action Model for Affordable and Efficient Robotics</span></a>
+      <a class="paper-nav-link paper-nav-next" href="../../collection-papers/2506.15864/"><span class="paper-nav-label">下一篇 →</span><span class="paper-nav-title">Improving Rectified Flow with Boundary Conditions</span></a></nav>
+    </main>
+
+    <footer class="footer">
+      <div class="container">
+        <p>内容来自 <a href="https://arxiv.org" target="_blank" rel="noopener noreferrer">arXiv.org</a>，阅读卡片由静态站点生成器构建。</p>
+      </div>
+    </footer>
+
+    <script src="../../assets/theme.js"></script>
+    <script src="../../assets/media.js"></script>
+    <script src="../../assets/paper.js"></script>
+  </body>
+</html>
