@@ -30,14 +30,18 @@ except ImportError:
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 INPUT_MD = PROJECT_ROOT / "papers.md"
+COLLECTION_CARDS_DIR = PROJECT_ROOT / "data" / "collection_cards"
 SITE_DIR = PROJECT_ROOT / "site"
 ASSETS_DIR = SITE_DIR / "assets"
 PAPERS_DIR = SITE_DIR / "papers"
 COVERS_DIR = SITE_DIR / "covers"
+COLLECTION_PAPERS_DIR = SITE_DIR / "collection-papers"
+COLLECTION_COVERS_DIR = SITE_DIR / "collection-covers"
 IMAGE_DIR = ASSETS_DIR / "paper-images"
 PAPER_IMAGES_MANIFEST = ASSETS_DIR / "paper-images.json"
 SITE_TOPIC_LABEL = "physics+AI"
 SITE_DOCUMENT_NAME = "physics_AI.html"
+COLLECTION_DOCUMENT_NAME = "collection.html"
 MATHJAX_VERSION = "3.2.2"
 
 COVER_THEMES = [
@@ -630,10 +634,65 @@ def build_site_records(records: List[Dict[str, str]], paper_image_manifest: Dict
     return built
 
 
+def render_collection_card_markdown(card: Dict[str, object]) -> str:
+    chunks: List[str] = []
+    for section in card.get("sections", []):
+        if not isinstance(section, dict):
+            continue
+        title = str(section.get("title", "")).strip()
+        if not title:
+            continue
+        chunks.append(f"## {title}")
+        entries = section.get("bullets") or section.get("paragraphs") or []
+        if isinstance(entries, list):
+            chunks.extend(f"- {entry}" for entry in entries if str(entry).strip())
+        chunks.append("")
+    return "\n".join(chunks).strip()
+
+
+def build_collection_records(paper_image_manifest: Dict[str, Dict[str, object]]) -> List[Dict[str, object]]:
+    raw_records: List[Dict[str, str]] = []
+    cards: Dict[str, Dict[str, object]] = {}
+    for path in sorted(COLLECTION_CARDS_DIR.glob("*.json")):
+        card = load_json(path)
+        if not isinstance(card, dict):
+            continue
+        arxiv_id = str(card.get("arxiv_id", "")).strip()
+        if not arxiv_id:
+            continue
+        cards[arxiv_id] = card
+        raw_records.append(
+            {
+                "date": "Paper Collection · 随机精选",
+                "title": f'{card.get("title_zh", "")}<br>{card.get("title_en", "")}',
+                "link": f"https://arxiv.org/abs/{arxiv_id}",
+                "details_raw": render_collection_card_markdown(card),
+            }
+        )
+
+    records = build_site_records(raw_records, paper_image_manifest)
+    for record in records:
+        arxiv_id = str(record["arxiv_id"])
+        card = cards[arxiv_id]
+        provenance = card.get("provenance", {})
+        topic = provenance.get("catalog_topic", "") if isinstance(provenance, dict) else ""
+        record.update(
+            {
+                "program": "Collection",
+                "program_label": "Paper Collection",
+                "topic": str(topic),
+                "detail_path": f"collection-papers/{record['page_dir']}/",
+                "cover_path": f"collection-covers/{record['page_dir']}/",
+            }
+        )
+    return records
+
+
 def build_list_data(records: List[Dict[str, object]], thumb_map: Dict[str, str] | None = None) -> List[Dict[str, object]]:
     thumb_map = thumb_map or {}
-    return [
-        {
+    output: List[Dict[str, object]] = []
+    for record in records:
+        item = {
             "date": record["date"],
             "title": record["title"],
             "title_zh": record["title_zh"],
@@ -651,12 +710,18 @@ def build_list_data(records: List[Dict[str, object]], thumb_map: Dict[str, str] 
             "section_count": record["section_count"],
             "cover_theme": record["cover_theme"],
         }
-        for record in records
-    ]
+        if record.get("program") == "Collection":
+            item["program_label"] = record.get("program_label", "Paper Collection")
+            item["topic"] = record.get("topic", "")
+        output.append(item)
+    return output
 
 
 def render_detail_meta(record: Dict[str, object]) -> str:
-    parts = [escape(str(record["date"]))]
+    if record.get("program") == "Collection":
+        parts = ["Paper Collection", escape(str(record.get("topic", "随机精选")))]
+    else:
+        parts = [escape(str(record["date"]))]
     parts.append(f'<a href="{escape(str(record["link"]), quote=True)}" target="_blank" rel="noopener noreferrer">原文</a>')
     return " · ".join(parts)
 
@@ -749,10 +814,29 @@ def render_theme_toggle() -> str:
 """.strip()
 
 
-def generate_index_html() -> str:
+def generate_index_html(program: str = "Daily") -> str:
     keyword = get_arxiv_keyword_label()
-    site_title = f"{keyword} 每日论文卡"
-    site_description = f"{keyword} 论文精选卡片"
+    is_collection = program == "Collection"
+    site_title = f"{keyword} {'Collection 随机精选' if is_collection else '每日论文卡'}"
+    site_description = (
+        "从 Paper Collection 随机抽取并经全文证据核验的论文卡片"
+        if is_collection
+        else f"{keyword} 论文精选卡片"
+    )
+    eyebrow = "Paper Collection Sample" if is_collection else "Physics + AI Feed"
+    headline = "Collection <span class=\"site-title-nowrap\">随机精选</span>" if is_collection else f"{escape(keyword)} <span class=\"site-title-nowrap\">每日论文卡</span>"
+    subtitle = (
+        "从长期 Paper Collection 中随机抽取，逐篇核对全文、公式、证据位置与适用边界；这些卡片不继承 Daily 的日期、分数或 S 级评级。"
+        if is_collection
+        else "聚合最新论文，提炼核心贡献、方法与实验结果，用更清晰的阅读路径持续跟进前沿研究。"
+    )
+    status = "独立 Collection 来源" if is_collection else "每日自动更新"
+    script_name = "collection-app.js" if is_collection else "app.js"
+    hero_tags = (
+        ("全文证据", "公式与适用边界", "随机抽样")
+        if is_collection
+        else ("中文精读", "核心贡献提炼", "论文原图速览")
+    )
 
     return f"""<!doctype html>
 <html lang="zh-CN">
@@ -772,22 +856,26 @@ def generate_index_html() -> str:
             <span>Research Brief</span>
           </a>
           <div class="site-nav-actions">
+            <div class="program-nav" aria-label="论文卡来源">
+              <a href="{SITE_DOCUMENT_NAME}" {'aria-current="page"' if not is_collection else ''}>Daily</a>
+              <a href="{COLLECTION_DOCUMENT_NAME}" {'aria-current="page"' if is_collection else ''}>Collection</a>
+            </div>
             <span class="site-nav-status">
               <span class="site-nav-dot" aria-hidden="true"></span>
-              每日自动更新
+              {status}
             </span>
             {render_theme_toggle()}
           </div>
         </nav>
         <div class="header-content">
           <div class="header-copy">
-            <p class="eyebrow">Physics + AI Feed</p>
-            <h1 class="site-title">{escape(keyword)} <span class="site-title-nowrap">每日论文卡</span></h1>
-            <p class="site-subtitle">聚合最新论文，提炼核心贡献、方法与实验结果，用更清晰的阅读路径持续跟进前沿研究。</p>
+            <p class="eyebrow">{eyebrow}</p>
+            <h1 class="site-title">{headline}</h1>
+            <p class="site-subtitle">{subtitle}</p>
             <div class="hero-tags" aria-label="站点特点">
-              <span class="hero-tag">中文精读</span>
-              <span class="hero-tag">核心贡献提炼</span>
-              <span class="hero-tag">论文原图速览</span>
+              <span class="hero-tag">{hero_tags[0]}</span>
+              <span class="hero-tag">{hero_tags[1]}</span>
+              <span class="hero-tag">{hero_tags[2]}</span>
             </div>
           </div>
           <div class="search-panel">
@@ -821,7 +909,7 @@ def generate_index_html() -> str:
 
     <script src="assets/theme.js"></script>
     <script src="assets/media.js"></script>
-    <script src="assets/app.js"></script>
+    <script src="assets/{script_name}"></script>
   </body>
 </html>
 """.strip()
@@ -829,7 +917,10 @@ def generate_index_html() -> str:
 
 def generate_paper_html(record: Dict[str, object], prev_record: Dict[str, object] | None = None, next_record: Dict[str, object] | None = None) -> str:
     keyword = get_arxiv_keyword_label()
-    site_title = f"{keyword} 每日论文卡"
+    is_collection = record.get("program") == "Collection"
+    site_title = f"{keyword} {'Collection 随机精选' if is_collection else '每日论文卡'}"
+    back_document = COLLECTION_DOCUMENT_NAME if is_collection else SITE_DOCUMENT_NAME
+    detail_root = "collection-papers" if is_collection else "papers"
     page_title = str(record["title"])
     page_description = str(record["preview_text"] or f"{keyword} 论文详情")
     meta_html = render_detail_meta(record)
@@ -844,13 +935,13 @@ def generate_paper_html(record: Dict[str, object], prev_record: Dict[str, object
     nav_parts: List[str] = []
     if prev_record:
         nav_parts.append(
-            f'<a class="paper-nav-link paper-nav-prev" href="../../papers/{escape(str(prev_record["page_dir"]), quote=True)}/">'
+            f'<a class="paper-nav-link paper-nav-prev" href="../../{detail_root}/{escape(str(prev_record["page_dir"]), quote=True)}/">'
             f'<span class="paper-nav-label">\u2190 上一篇</span>'
             f'<span class="paper-nav-title">{escape(str(prev_record["title"]))}</span></a>'
         )
     if next_record:
         nav_parts.append(
-            f'<a class="paper-nav-link paper-nav-next" href="../../papers/{escape(str(next_record["page_dir"]), quote=True)}/">'
+            f'<a class="paper-nav-link paper-nav-next" href="../../{detail_root}/{escape(str(next_record["page_dir"]), quote=True)}/">'
             f'<span class="paper-nav-label">下一篇 \u2192</span>'
             f'<span class="paper-nav-title">{escape(str(next_record["title"]))}</span></a>'
         )
@@ -869,7 +960,7 @@ def generate_paper_html(record: Dict[str, object], prev_record: Dict[str, object
     <header class="header detail-page-header">
       <div class="container">
         <div class="detail-page-topbar">
-          <a class="back-link" href="../../{SITE_DOCUMENT_NAME}">返回列表</a>
+          <a class="back-link" href="../../{back_document}">返回列表</a>
           <div class="detail-topbar-actions">
             <span class="detail-site-name">{escape(site_title)}</span>
             {render_theme_toggle()}
@@ -879,7 +970,7 @@ def generate_paper_html(record: Dict[str, object], prev_record: Dict[str, object
         <div class="detail-hero-grid">
           <div class="detail-hero-cover">{cover_html}</div>
           <div class="detail-hero-copy">
-            <p class="eyebrow">论文详情</p>
+            <p class="eyebrow">{'Collection 全文卡' if is_collection else '论文详情'}</p>
             <h1 class="detail-page-title">{escape(page_title)}</h1>
             {f'<p class="detail-page-title-zh">{escape(str(record["title_zh"]))}</p>' if record.get("title_zh") else ''}
             <div class="detail-meta">{meta_html}</div>
@@ -2859,6 +2950,13 @@ def generate_app_js() -> str:
       meta.appendChild(org);
     }
 
+    if(item.program_label){
+      const program = document.createElement('span');
+      program.className = 'feed-chip feed-chip-program';
+      program.textContent = item.topic ? `${item.program_label} · ${item.topic}` : item.program_label;
+      meta.prepend(program);
+    }
+
     const bodyTitle = document.createElement('div');
     bodyTitle.className = 'feed-card-title';
     bodyTitle.textContent = item.title || '未命名论文';
@@ -3423,6 +3521,12 @@ def generate_paper_js() -> str:
 """.strip()
 
 
+def generate_collection_app_js() -> str:
+    return generate_app_js().replace("assets/data.json", "assets/collection-data.json").replace(
+        "无法读取 data.json", "无法读取 collection-data.json"
+    )
+
+
 THUMB_DIR = IMAGE_DIR / "thumbs"
 THUMB_MAX_WIDTH = 600
 WEBP_QUALITY = 82
@@ -3581,14 +3685,21 @@ def main() -> int:
         write_text(PAPER_IMAGES_MANIFEST, json.dumps(paper_image_manifest, ensure_ascii=False, indent=2))
 
     site_records = build_site_records(records, paper_image_manifest)
+    for record in site_records:
+        record["program"] = "Daily"
+    collection_records = build_collection_records(paper_image_manifest)
 
     # 为首页列表数据使用缩略图路径
     list_data = build_list_data(site_records, thumb_map)
+    collection_list_data = build_list_data(collection_records, thumb_map)
 
     shutil.rmtree(PAPERS_DIR, ignore_errors=True)
     shutil.rmtree(COVERS_DIR, ignore_errors=True)
+    shutil.rmtree(COLLECTION_PAPERS_DIR, ignore_errors=True)
+    shutil.rmtree(COLLECTION_COVERS_DIR, ignore_errors=True)
 
-    write_text(SITE_DIR / SITE_DOCUMENT_NAME, generate_index_html())
+    write_text(SITE_DIR / SITE_DOCUMENT_NAME, generate_index_html("Daily"))
+    write_text(SITE_DIR / COLLECTION_DOCUMENT_NAME, generate_index_html("Collection"))
     write_text(
         SITE_DIR / "index.html",
         '<!doctype html><html lang="zh-CN"><head><meta charset="utf-8">'
@@ -3602,14 +3713,22 @@ def main() -> int:
     write_text(ASSETS_DIR / "theme.js", generate_theme_js())
     write_text(ASSETS_DIR / "media.js", generate_media_js())
     write_text(ASSETS_DIR / "app.js", generate_app_js())
+    write_text(ASSETS_DIR / "collection-app.js", generate_collection_app_js())
     write_text(ASSETS_DIR / "paper.js", generate_paper_js())
     write_text(ASSETS_DIR / "data.json", json.dumps(list_data, ensure_ascii=False, indent=2))
+    write_text(ASSETS_DIR / "collection-data.json", json.dumps(collection_list_data, ensure_ascii=False, indent=2))
 
     for idx, record in enumerate(site_records):
       prev_rec = site_records[idx - 1] if idx > 0 else None
       next_rec = site_records[idx + 1] if idx < len(site_records) - 1 else None
       write_text(PAPERS_DIR / str(record["page_dir"]) / "index.html", generate_paper_html(record, prev_rec, next_rec))
       write_text(COVERS_DIR / str(record["page_dir"]) / "index.html", generate_cover_html(record))
+
+    for idx, record in enumerate(collection_records):
+      prev_rec = collection_records[idx - 1] if idx > 0 else None
+      next_rec = collection_records[idx + 1] if idx < len(collection_records) - 1 else None
+      write_text(COLLECTION_PAPERS_DIR / str(record["page_dir"]) / "index.html", generate_paper_html(record, prev_rec, next_rec))
+      write_text(COLLECTION_COVERS_DIR / str(record["page_dir"]) / "index.html", generate_cover_html(record))
 
     print(f"生成完成：{SITE_DIR}")
     return 0
