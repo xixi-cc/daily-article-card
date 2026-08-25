@@ -1,0 +1,36 @@
+{
+  "arxiv_id": "2608.06597",
+  "source_version": "v1",
+  "source_pdf": "https://arxiv.org/pdf/2608.06597",
+  "title_en": "Cascading Through the Hierarchy: Regularizer-Induced Feature Detection as Phase Transitions in Deep Linear Neural Networks",
+  "title_zh": "层级级联：正则化诱导的特征检测作为深度线性神经网络中的相变",
+  "curation_status": "full_text_verified",
+  "sections": [
+    {"title": "作者信息", "bullets": ["作者：Björn Ladewig、Ibrahim Talha Ersoy、Karoline Wiesner。", "机构：Institute of Physics and Astronomy, University of Potsdam。", "版本：arXiv:2608.06597v1，2026-08-06；分类 cond-mat.stat-mech。"]},
+    {"title": "研究问题", "paragraphs": ["本文把 $L^2$ 正则化强度 $\\beta$ 当作统计物理中的外场，研究深线性网络随着 $\\beta$ 调节为何会逐级“看见”数据协方差的不同奇异方向。目标不是提出新的高精度网络，而是在可解析的最小模型中，把宏观的秩/序参量跃迁与微观损失景观的临界点及 Hessian 谱严格连接起来。"]},
+    {"title": "模型与方法", "bullets": [
+      "模型是任意深度的全连接深线性网络，使用均方误差和逐层 $L^2$ 正则化；隐藏层不构成额外瓶颈。训练数据只通过 $\\Sigma_{xx}$、$\\Sigma_{yx}$ 等经验或总体协方差进入解析式。",
+      "宏观变量为端到端映射 $W=W^{(n)}\\cdots W^{(1)}$ 的奇异值；在 0-balanced 扇区，各层权重的奇异结构可由同一组序参量表示，正则化损失因而化为各奇异方向上的有效势。",
+      "在 $\\Sigma_{xx}$ 与 $\\Sigma_{yx}$ 可对齐/同时对角化的可解情形，每个数据奇异方向在临界 $\\beta_j^*$ 处进入可学习集合；一隐藏层给出连续的二阶跃迁，更深网络可出现一阶跃迁和亚稳态。",
+      "作者从全参数 Hessian 出发，把谱分为数据依赖 massive block、显式破缺 GL 对称性的 $\\beta$ block、对称性导致的 zero block 和未学习子空间的 null block，并与宏观 Jacobian 对照。",
+      "数值部分用有限学习率/批量的梯度下降检验解析预测，并进一步考察非对齐协方差、有限样本，以及 tanh 网络和 MNIST sigmoid 网络中的有效秩现象。"
+    ]},
+    {"title": "核心结果与证据", "bullets": [
+      "调低 $\\beta$ 时，数据协方差的奇异方向按奇异值从大到小依次被学习，$r_{\\max}(\\beta)$ 阶梯式增加；当 $\\beta>\\beta_{\\mathrm{onset}}$ 时端到端映射秩为 0，而 $\\beta\\to0$ 时恢复到 $\\operatorname{rank}(\\Sigma_{yx})$。",
+      "正则化把无正则损失中对应“受秩约束最优解”的高阶鞍点稳定成局部极小值。因此静态正则化级联可解释为无正则训练中 saddle-to-saddle、逐步学习特征动力学的静态对应。",
+      "表 3 对两隐藏层临界点给出 Hessian 扇区、特征值和重数；数据依赖 massive modes 的数量直接随已学习秩 $r$ 变化，建立微观曲率与宏观序参量之间的对应。",
+      "图 8 显示非对齐协方差下奇异向量会随 $\\beta$ 旋转；有限 $N_{data}$ 会把尖锐转变抹平。文中以 $10^3$–$10^5$ 个有限样本实现的平均展示这种展宽，而不是假设经验协方差仍精确对齐。",
+      "图 9 的非线性检验中，较强正则化时 tanh/MNIST 网络各层有效秩仍出现相近跳变；但低正则区（文中示例约 $\\beta<0.02$）各层秩明显分离，线性序参量描述开始定性失效。"
+    ]},
+    {"title": "有效性与局限", "bullets": [
+      "完整解析结果依赖深线性、MSE、$L^2$ 正则和协方差对齐等结构；非对齐情形一般不能再分解成相互独立的奇异值有效势。",
+      "严格相变讨论位于零温/零噪声宏观框架；有限学习率与小噪声数值只表明现象有一定稳健性，是否在大模型热力学极限中构成真正相变仍是开放问题。",
+      "对非线性网络的部分只提供数值类比，不存在强制不同层具有相同秩的线性 0-balanced 机制；作者明确指出应寻找不同的序参量和对称性描述。",
+      "有限数据会破坏对齐并展宽转变位置，因此总体协方差给出的精确临界点不能直接当作小样本训练的精确预测。",
+      "这是解释性玩具模型，不直接给出正则化选择的通用工程规则，也未证明相变位置与真实任务泛化最优点一致。"
+    ]},
+    {"title": "复现与资源", "bullets": ["原文 PDF：https://arxiv.org/pdf/2608.06597。", "正文致谢说明数值工作使用 Julia packages，但本次全文核查未发现作者代码仓库或完整环境链接。", "最小复现应先实现一隐藏层对齐协方差的有效势和临界点，再核对两隐藏层 Hessian 表 3，最后分别加入非对齐扰动和有限样本，避免一开始就用非线性网络混淆解析结论。"]},
+    {"title": "阅读指南", "bullets": ["先读 I.A 的模型与数据协方差定义，确认深度、维数和 0-balanced 假设。", "接着读 III.A/III.B，对照一隐藏层二阶与更深网络一阶跃迁。", "用表 3/4 把 Hessian 四个谱块、正则化极小值与无正则鞍点一一对应。", "最后读 IV.B、图 8–9 和 Summary & Outlook，那里清楚标出有限样本、非对齐和非线性外推的边界。"]}
+  ],
+  "evidence_refs": ["paper.pdf p. 1: title, authors, affiliation, abstract, and contents", "paper.pdf pp. 3-5: model, covariance description, symmetries, and assumptions", "paper.pdf pp. 8-13: regularizer-stabilized basins and transition cascades", "paper.pdf p. 14: Table III Hessian spectrum and regularized/unregularized relation", "paper.pdf pp. 15-17: non-alignment, finite data, nonlinear comparison, summary and outlook", "Evidence status: full-text verified; no independent reproduction performed."]
+}

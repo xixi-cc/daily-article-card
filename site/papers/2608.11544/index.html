@@ -1,0 +1,176 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Fine-Tuning Generative Models for Extreme Events via CVaR-Penalized Wasserstein Gradient Flows - physics+AI 每日论文卡</title>
+    <meta name="description" content="作者：Thejani Gamage、Hyemin Gu、Zhizhen Zhang、Ziyu Chen、Markos Katsoulakis、Luc Rey-Bellet。 机构：University of Massachusetts Amherst；University of North Carolina at Chapel Hill。 版本：arXiv:2608.11544v1，2026-08-12；分类 stat.ML。" />
+    <script>
+      (function() {
+        try {
+          var themePreference = window.localStorage.getItem('color-theme') || 'system';
+          var systemUsesDarkTheme = window.matchMedia('(prefers-color-scheme: dark)').matches;
+          var resolvedTheme = themePreference === 'system'
+            ? (systemUsesDarkTheme ? 'dark' : 'light')
+            : themePreference;
+          document.documentElement.dataset.theme = resolvedTheme;
+          document.documentElement.dataset.themePreference = themePreference;
+          document.documentElement.style.colorScheme = resolvedTheme;
+        } catch (error) {
+          document.documentElement.dataset.theme = 'light';
+          document.documentElement.dataset.themePreference = 'system';
+        }
+      })();
+    </script>
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='18' fill='%23111827'/%3E%3Ctext x='50%25' y='55%25' text-anchor='middle' dominant-baseline='middle' font-size='30' font-family='Arial, sans-serif' fill='white'%3EV%3C/text%3E%3C/svg%3E" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700;800&family=Noto+Sans+SC:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <script>
+      window.MathJax = {
+        tex: {
+          inlineMath: [['$', '$'], ['\\(', '\\)']],
+          displayMath: [['$$', '$$'], ['\\[', '\\]']],
+          processEscapes: true
+        },
+        options: {
+          skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+        },
+        chtml: {
+          scale: 1,
+          displayAlign: 'center'
+        }
+      };
+    </script>
+    <script defer src="https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-chtml.js"></script>
+    <link rel="stylesheet" href="../../assets/style.css" />
+  </head>
+  <body class="detail-page" data-paper-id="2608.11544">
+    <div class="page-noise"></div>
+    <div class="page-blur page-blur-a"></div>
+    <div class="page-blur page-blur-b"></div>
+
+    <header class="header detail-page-header">
+      <div class="container">
+        <div class="detail-page-topbar">
+          <a class="back-link" href="../../physics_AI.html">返回列表</a>
+          <div class="detail-topbar-actions">
+            <span class="detail-site-name">physics+AI 每日论文卡</span>
+            <button class="theme-toggle" type="button" data-theme-toggle aria-label="当前主题：设备，点击切换主题" title="当前主题：设备">
+  <span class="theme-toggle-icons" aria-hidden="true">
+    <svg class="theme-toggle-icon theme-toggle-icon-light" viewBox="0 0 24 24" fill="none">
+      <circle cx="12" cy="12" r="3.5" stroke="currentColor" stroke-width="1.8"/>
+      <path d="M12 2.5v2M12 19.5v2M2.5 12h2M19.5 12h2M5.3 5.3l1.4 1.4M17.3 17.3l1.4 1.4M18.7 5.3l-1.4 1.4M6.7 17.3l-1.4 1.4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+    </svg>
+    <svg class="theme-toggle-icon theme-toggle-icon-dark" viewBox="0 0 24 24" fill="none">
+      <path d="M20 15.2A8.1 8.1 0 0 1 8.8 4a8.2 8.2 0 1 0 11.2 11.2z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>
+    </svg>
+    <svg class="theme-toggle-icon theme-toggle-icon-system" viewBox="0 0 24 24" fill="none">
+      <rect x="3" y="4" width="18" height="13" rx="2.5" stroke="currentColor" stroke-width="1.8"/>
+      <path d="M8 21h8M12 17v4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+    </svg>
+  </span>
+  <span class="theme-toggle-label" data-theme-toggle-label>设备</span>
+</button>
+          </div>
+        </div>
+
+        <div class="detail-hero-grid">
+          <div class="detail-hero-cover"><figure class="paper-figure-card paper-figure-card-detail">
+  <img class="paper-figure-image" src="../../assets/paper-images/2608.11544.webp" alt="Fine-Tuning Generative Models for Extreme Events via CVaR-Penalized Wasserstein Gradient Flows" loading="lazy" onclick="window.openPaperFigureImage && window.openPaperFigureImage(this)" />
+  <figcaption class="paper-figure-caption">图 1 的 2D Student-t $\nu=1$、N=5000：Lip-KL-GPA 20,000 iterations 后速度几乎处处消失且漏尾；CVaR 项在极端半径恢复非零速度。</figcaption>
+</figure></div>
+          <div class="detail-hero-copy">
+            <p class="eyebrow">论文详情</p>
+            <h1 class="detail-page-title">Fine-Tuning Generative Models for Extreme Events via CVaR-Penalized Wasserstein Gradient Flows</h1>
+            <p class="detail-page-title-zh">通过 CVaR 惩罚 Wasserstein 梯度流微调极端事件生成模型</p>
+            <div class="detail-meta">2026-08-14 · <a href="https://arxiv.org/abs/2608.11544" target="_blank" rel="noopener noreferrer">原文</a></div>
+            <p class="detail-summary">作者：Thejani Gamage、Hyemin Gu、Zhizhen Zhang、Ziyu Chen、Markos Katsoulakis、Luc Rey-Bellet。 机构：University of Massachusetts Amherst；University of North Carolina at Chapel Hill。 版本：arXiv:2608.11544v1，2026-08-12；分类 stat.ML。</p>
+            <div class="detail-micro-meta">
+              <span class="meta-pill">8 分钟读完</span>
+              <span class="meta-pill">7 张阅读卡</span>
+              <span class="meta-pill">作者：Thejani Gamage、Hyemin Gu、Zhizhen Zhang、Ziyu Chen…</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <main class="container detail-layout">
+      <div class="detail-shell">
+        <article id="detail-body" class="reading-flow"><section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 01</span>
+    <span class="reading-step-note">作者信息</span>
+  </div>
+  <h2>作者信息</h2>
+  <div class="reading-card-content"><ul><li>作者：Thejani Gamage、Hyemin Gu、Zhizhen Zhang、Ziyu Chen、Markos Katsoulakis、Luc Rey-Bellet。</li><li>机构：University of Massachusetts Amherst；University of North Carolina at Chapel Hill。</li><li>版本：arXiv:2608.11544v1，2026-08-12；分类 stat.ML。</li></ul></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 02</span>
+    <span class="reading-step-note">研究问题</span>
+  </div>
+  <h2>研究问题</h2>
+  <div class="reading-card-content"><p>Lipschitz generator 从轻尾 source 出发通常保留尾型，且 finite data 尾部稀少会让 KL particle flow 过早速度归零。CVaR-GPA 不预估 tail index，而在 Lipschitz-regularized KL 的 Wasserstein gradient flow 中加入目标/模型 CVaR discrepancy，为欠采样极端区恢复 transport velocity。</p></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 03</span>
+    <span class="reading-step-note">模型与方法</span>
+  </div>
+  <h2>模型与方法</h2>
+  <div class="reading-card-content"><ul><li>输入可为任意 pretrained generator 的输出样本，无需访问网络内部；把样本作为 interacting particles 继续 transport。</li><li>基础 loss 是 variational Lipschitz-regularized KL，在仅有限一阶矩等弱条件下可由 samples 估计。</li><li>风险函数 $g$ 默认径向；用 Rockafellar–Uryasev representation 推导 CVaR 对 empirical measures 的 first-variation subgradient，避免 density formula 在离散经验测度失效。</li><li>所得 Wasserstein velocity 有界但非 Lipschitz；这正允许跨越标准 Lipschitz map 的 tail-preservation 障碍。</li><li>用 particle kinetic energy 作为停止条件，使 flow depth 由 target data 决定；比较 Lip-KL-GPA baseline。</li></ul></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 04</span>
+    <span class="reading-step-note">核心结果与证据</span>
+  </div>
+  <h2>核心结果与证据</h2>
+  <div class="reading-card-content"><ul><li>图 1 的 2D Student-t $\nu=1$、N=5000：Lip-KL-GPA 20,000 iterations 后速度几乎处处消失且漏尾；CVaR 项在极端半径恢复非零速度。</li><li>理论证明 penalized functional 的 divergence/critical-point 性质，并为经验粒子定义合法 subgradient flow，而非假设已有平滑 density。</li><li>Student-t、Neal's funnel 和 Fama–French 25 portfolios 上，CVaR fine-tuning 同时降低 global $L^1$ 与 tail error。</li><li>5D anisotropic Student-t $\nu=(1,1.5,3,10,30)$ 中，对前四个重尾 marginal 改善，但对近 Gaussian $\nu=30$ 反而增加 global/tail error，明确展示过度尾部惩罚。</li><li>算法称 tail-agnostic 是不需 tail index；仍需选 CVaR level、penalty 与 risk function。</li></ul></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 05</span>
+    <span class="reading-step-note">有效性与局限</span>
+  </div>
+  <h2>有效性与局限</h2>
+  <div class="reading-card-content"><ul><li>CVaR 强度/level 错配会损害轻尾维度，图 5 已给负结果。</li><li>径向 $g$ 对各向异性尾不最优；per-coordinate/adaptive risk 是未来方向。</li><li>粒子/critic 近似与 non-Lipschitz velocity 带来数值稳定和有限样本误差。</li><li>能量停止阈值是额外超参数，不保证统计最优 stopping。</li><li>实验优于强 Lip-KL baseline，但未与所有最新 tail generator 在统一预算完整比较。</li></ul></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 06</span>
+    <span class="reading-step-note">复现与资源</span>
+  </div>
+  <h2>复现与资源</h2>
+  <div class="reading-card-content"><ul><li>原文 PDF：https://arxiv.org/pdf/2608.11544。</li><li>无代码链接；复现应保留 pretrained samples、相同 N/iterations，并按 marginal 同时报 global 与 tail error。</li><li>必须包括 $\nu=30$ 负结果和 penalty/alpha sweep，避免只报重尾收益。</li></ul></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 07</span>
+    <span class="reading-step-note">阅读指南</span>
+  </div>
+  <h2>阅读指南</h2>
+  <div class="reading-card-content"><ul><li>先看图 1理解 premature saturation。</li><li>第 2–4 节读 CVaR empirical subgradient 与 flow。</li><li>第 5 节按 Student-t/funnel/finance 查看 tail 与 global error。</li><li>结论里的各向异性和轻尾损害决定实际使用边界。</li></ul></div>
+</section></article>
+        <aside id="detail-toc" class="detail-toc hidden" aria-label="内容目录">
+          <p class="detail-toc-title">阅读目录</p>
+          <nav id="detail-toc-nav" class="detail-toc-nav"></nav>
+        </aside>
+      </div>
+      <nav class="paper-nav"><a class="paper-nav-link paper-nav-prev" href="../../papers/2608.11695/"><span class="paper-nav-label">← 上一篇</span><span class="paper-nav-title">Generalised stochastic curvature flow in d≥2, and sharp interface limit for the stochastic Allen-Cahn equation with nonlinear diffusion</span></a>
+      <a class="paper-nav-link paper-nav-next" href="../../papers/2608.11465/"><span class="paper-nav-label">下一篇 →</span><span class="paper-nav-title">PAC-Bayes Beyond Parameter Space: Behavioral Equivalence, Z-Information, and Exact Complexity Decomposition</span></a></nav>
+    </main>
+
+    <footer class="footer">
+      <div class="container">
+        <p>内容来自 <a href="https://arxiv.org" target="_blank" rel="noopener noreferrer">arXiv.org</a>，阅读卡片由静态站点生成器构建。</p>
+      </div>
+    </footer>
+
+    <script src="../../assets/theme.js"></script>
+    <script src="../../assets/media.js"></script>
+    <script src="../../assets/paper.js"></script>
+  </body>
+</html>

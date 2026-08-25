@@ -1,0 +1,176 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>IADD-TR: Intervention-Aware Dynamics Decoupling with Targeted Regularization for Model-Based Reinforcement Learning - physics+AI 每日论文卡</title>
+    <meta name="description" content="作者：Zefeng Liang、Jie Qiao、Ruichu Cai、Weilin Chen、Zhifeng Hao。 版本：arXiv:2608.10634v1，2026-08-11；分类 cs.LG。 主题：模型强化学习、动作干预分解与 targeted policy-gradient estimation。" />
+    <script>
+      (function() {
+        try {
+          var themePreference = window.localStorage.getItem('color-theme') || 'system';
+          var systemUsesDarkTheme = window.matchMedia('(prefers-color-scheme: dark)').matches;
+          var resolvedTheme = themePreference === 'system'
+            ? (systemUsesDarkTheme ? 'dark' : 'light')
+            : themePreference;
+          document.documentElement.dataset.theme = resolvedTheme;
+          document.documentElement.dataset.themePreference = themePreference;
+          document.documentElement.style.colorScheme = resolvedTheme;
+        } catch (error) {
+          document.documentElement.dataset.theme = 'light';
+          document.documentElement.dataset.themePreference = 'system';
+        }
+      })();
+    </script>
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='18' fill='%23111827'/%3E%3Ctext x='50%25' y='55%25' text-anchor='middle' dominant-baseline='middle' font-size='30' font-family='Arial, sans-serif' fill='white'%3EV%3C/text%3E%3C/svg%3E" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700;800&family=Noto+Sans+SC:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <script>
+      window.MathJax = {
+        tex: {
+          inlineMath: [['$', '$'], ['\\(', '\\)']],
+          displayMath: [['$$', '$$'], ['\\[', '\\]']],
+          processEscapes: true
+        },
+        options: {
+          skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+        },
+        chtml: {
+          scale: 1,
+          displayAlign: 'center'
+        }
+      };
+    </script>
+    <script defer src="https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-chtml.js"></script>
+    <link rel="stylesheet" href="../../assets/style.css" />
+  </head>
+  <body class="detail-page" data-paper-id="2608.10634">
+    <div class="page-noise"></div>
+    <div class="page-blur page-blur-a"></div>
+    <div class="page-blur page-blur-b"></div>
+
+    <header class="header detail-page-header">
+      <div class="container">
+        <div class="detail-page-topbar">
+          <a class="back-link" href="../../physics_AI.html">返回列表</a>
+          <div class="detail-topbar-actions">
+            <span class="detail-site-name">physics+AI 每日论文卡</span>
+            <button class="theme-toggle" type="button" data-theme-toggle aria-label="当前主题：设备，点击切换主题" title="当前主题：设备">
+  <span class="theme-toggle-icons" aria-hidden="true">
+    <svg class="theme-toggle-icon theme-toggle-icon-light" viewBox="0 0 24 24" fill="none">
+      <circle cx="12" cy="12" r="3.5" stroke="currentColor" stroke-width="1.8"/>
+      <path d="M12 2.5v2M12 19.5v2M2.5 12h2M19.5 12h2M5.3 5.3l1.4 1.4M17.3 17.3l1.4 1.4M18.7 5.3l-1.4 1.4M6.7 17.3l-1.4 1.4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+    </svg>
+    <svg class="theme-toggle-icon theme-toggle-icon-dark" viewBox="0 0 24 24" fill="none">
+      <path d="M20 15.2A8.1 8.1 0 0 1 8.8 4a8.2 8.2 0 1 0 11.2 11.2z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>
+    </svg>
+    <svg class="theme-toggle-icon theme-toggle-icon-system" viewBox="0 0 24 24" fill="none">
+      <rect x="3" y="4" width="18" height="13" rx="2.5" stroke="currentColor" stroke-width="1.8"/>
+      <path d="M8 21h8M12 17v4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+    </svg>
+  </span>
+  <span class="theme-toggle-label" data-theme-toggle-label>设备</span>
+</button>
+          </div>
+        </div>
+
+        <div class="detail-hero-grid">
+          <div class="detail-hero-cover"><figure class="paper-figure-card paper-figure-card-detail">
+  <img class="paper-figure-image" src="../../assets/paper-images/2608.10634.webp" alt="IADD-TR: Intervention-Aware Dynamics Decoupling with Targeted Regularization for Model-Based Reinforcement Learning" loading="lazy" onclick="window.openPaperFigureImage && window.openPaperFigureImage(this)" />
+  <figcaption class="paper-figure-caption">IADD-TR 在 HalfCheetah、Walker2d、Ant、Humanoid 相对 MBPO 提升最明显，Hopper 前期更快且最终相当；IADD 与 TR 单独通常各有增益，组合在多任务最强。</figcaption>
+</figure></div>
+          <div class="detail-hero-copy">
+            <p class="eyebrow">论文详情</p>
+            <h1 class="detail-page-title">IADD-TR: Intervention-Aware Dynamics Decoupling with Targeted Regularization for Model-Based Reinforcement Learning</h1>
+            <p class="detail-page-title-zh">IADD-TR：面向模型强化学习的干预感知动力学解耦与靶向正则化</p>
+            <div class="detail-meta">2026-08-13 · <a href="https://arxiv.org/abs/2608.10634" target="_blank" rel="noopener noreferrer">原文</a></div>
+            <p class="detail-summary">作者：Zefeng Liang、Jie Qiao、Ruichu Cai、Weilin Chen、Zhifeng Hao。 版本：arXiv:2608.10634v1，2026-08-11；分类 cs.LG。 主题：模型强化学习、动作干预分解与 targeted policy-gradient estimation。</p>
+            <div class="detail-micro-meta">
+              <span class="meta-pill">9 分钟读完</span>
+              <span class="meta-pill">7 张阅读卡</span>
+              <span class="meta-pill">作者：Zefeng Liang、Jie Qiao、Ruichu Cai、Weilin Chen、Zhi…</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <main class="container detail-layout">
+      <div class="detail-shell">
+        <article id="detail-body" class="reading-flow"><section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 01</span>
+    <span class="reading-step-note">作者信息</span>
+  </div>
+  <h2>作者信息</h2>
+  <div class="reading-card-content"><ul><li>作者：Zefeng Liang、Jie Qiao、Ruichu Cai、Weilin Chen、Zhifeng Hao。</li><li>版本：arXiv:2608.10634v1，2026-08-11；分类 cs.LG。</li><li>主题：模型强化学习、动作干预分解与 targeted policy-gradient estimation。</li></ul></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 02</span>
+    <span class="reading-step-note">研究问题</span>
+  </div>
+  <h2>研究问题</h2>
+  <div class="reading-card-content"><p>离线/回放数据中的动作由历史策略选择，动作与状态演化纠缠；稀有反事实动作的 critic 误差又被 policy gradient 放大。IADD-TR 分别处理两处偏差：IADD 把转移拆成即时 action intervention 与 action-free natural evolution，TR 用 efficient influence function 校正低 propensity 动作的价值误差。</p></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 03</span>
+    <span class="reading-step-note">模型与方法</span>
+  </div>
+  <h2>模型与方法</h2>
+  <div class="reading-card-content"><ul><li>IADD 学习 $s,a\to\tilde s_o\to s'$ 两阶段：第一阶段编码动作效应，第二阶段不再输入动作，只演化环境。</li><li>分解本身不唯一，故加入 zero-action anchor：$a=0$ 时 observable intermediate $\tilde s_o=s$；真实零动作只占交互内预定比例，不加入 actor/critic replay。</li><li>Theorem 3 的 EIF 含 $1/\pi_\beta(a|s)$，揭示低覆盖动作会放大 critic residual；标准 TD loss 不针对这个 policy-gradient sensitivity。</li><li>TR 构造 $Q_{adj}=Q+\epsilon_\xi(a)/\tilde\pi_\beta$，冻结 baseline critic 学 residual correction，使 EIF score 近零。Theorem 4 在 critic 或 replay density 任一一致时给 double robustness。</li><li>五个 MuJoCo 任务与 SAC/PPO/SLBO/MBPO 比较 5 seeds；另用可观测中间态的 damped-oscillator 合成系统和 Hopper Monte Carlo gradient 做机制诊断。</li></ul></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 04</span>
+    <span class="reading-step-note">核心结果与证据</span>
+  </div>
+  <h2>核心结果与证据</h2>
+  <div class="reading-card-content"><ul><li>IADD-TR 在 HalfCheetah、Walker2d、Ant、Humanoid 相对 MBPO 提升最明显，Hopper 前期更快且最终相当；IADD 与 TR 单独通常各有增益，组合在多任务最强。</li><li>合成系统将 zero-action ratio 从 0 增到 0.40，post-intervention-state MSE 由 4.043 降至 0.0109（99.7%），action-effect correlation 由 0.346 升至 0.973。</li><li>$\lambda_0=0.10$ 时 next-state MSE 从 $2.325\times10^{-4}$ 改善至 $2.156\times10^{-4}$；更高比例仍在 $2.325$–$2.434\times10^{-4}$，说明中间态可识别性提升未明显牺牲终态拟合。</li><li>Hopper 六个 actor checkpoints 上，TR 的 critic-gradient 与有限样本 MC reference cosine 均更高；epoch 50 从 0.728→0.771，epoch 300 从 0.918→0.928，配对增益 0.009–0.044。</li><li>零动作诊断 sweep 只有一个 completed training seed，10,000 held-out transitions 是同一模型的评估点而非独立重复；论文没有虚报跨 seed 不确定度。</li></ul></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 05</span>
+    <span class="reading-step-note">有效性与局限</span>
+  </div>
+  <h2>有效性与局限</h2>
+  <div class="reading-card-content"><ul><li>需要有物理意义的 zero-action anchor；持续漂移或零动作并非“无干预”的系统可能不满足。</li><li>两阶段 latent 分解仍依赖 identifiability 假设，真实 MuJoCo 没有中间态 ground truth。</li><li>double robustness 有 overlap、moment、empirical-process 和 EIF score 条件，非自动有限样本保证。</li><li>MC gradient 参考也是 32 trajectories/state、horizon 500 的有限估计，cosine 只测方向不测尺度。</li><li>zero-action 数据改变探索动作的 10%，虽总交互预算相同，仍是 IADD 专属采样机制。</li></ul></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 06</span>
+    <span class="reading-step-note">复现与资源</span>
+  </div>
+  <h2>复现与资源</h2>
+  <div class="reading-card-content"><ul><li>原文 PDF：https://arxiv.org/pdf/2608.10634。</li><li>复现需固定 MuJoCo 2.0、5 seeds、$\lambda_0=0.1$、TR 权重 1，并分开 MBPO+TR、IADD、IADD+TR。</li><li>机制 sweep 要标注单 seed；不能把 held-out transition 数当重复次数。</li></ul></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 07</span>
+    <span class="reading-step-note">阅读指南</span>
+  </div>
+  <h2>阅读指南</h2>
+  <div class="reading-card-content"><ul><li>先看图 1–2与两阶段 factorization/anchor。</li><li>读 Theorems 3–4，理解 propensity 放大与 double robustness。</li><li>图 3–4看 return，图 5–6看机制；两类证据不要混合。</li><li>最后读 identifiability 与 zero-action 适用条件。</li></ul></div>
+</section></article>
+        <aside id="detail-toc" class="detail-toc hidden" aria-label="内容目录">
+          <p class="detail-toc-title">阅读目录</p>
+          <nav id="detail-toc-nav" class="detail-toc-nav"></nav>
+        </aside>
+      </div>
+      <nav class="paper-nav"><a class="paper-nav-link paper-nav-prev" href="../../papers/2608.11073/"><span class="paper-nav-label">← 上一篇</span><span class="paper-nav-title">A Dynamical Mechanism for Irreversibility in Cyclically Driven Amorphous Solids</span></a>
+      <a class="paper-nav-link paper-nav-next" href="../../papers/2608.10076/"><span class="paper-nav-label">下一篇 →</span><span class="paper-nav-title">Generalized Master Stability of Heterogeneous Delay-Coupled Networks</span></a></nav>
+    </main>
+
+    <footer class="footer">
+      <div class="container">
+        <p>内容来自 <a href="https://arxiv.org" target="_blank" rel="noopener noreferrer">arXiv.org</a>，阅读卡片由静态站点生成器构建。</p>
+      </div>
+    </footer>
+
+    <script src="../../assets/theme.js"></script>
+    <script src="../../assets/media.js"></script>
+    <script src="../../assets/paper.js"></script>
+  </body>
+</html>

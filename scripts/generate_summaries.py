@@ -1,0 +1,410 @@
+import os
+import re
+import time
+from typing import List, Set, Tuple
+
+import requests
+from dotenv import load_dotenv
+from openai import OpenAI
+from tqdm import tqdm
+
+
+RATE_LIMITED_MODELS: Set[str] = set()
+
+
+"""
+/**
+ * @file generate_summaries.py
+ * @description 读取项目根目录 `papers.md`，为“简要总结”列仍为“待生成”的条目生成摘要，
+ * 使用在 `test_api.py` 中相同的推理接口（ModelScope OpenAI 兼容 API），并将结果回写到 `papers.md`。
+ */
+"""
+
+
+def get_client() -> OpenAI:
+    """
+    构造 OpenAI 客户端（ModelScope），从环境变量读取配置。
+    """
+    load_dotenv()
+    api_key = os.getenv("MODELSCOPE_ACCESS_TOKEN")
+    if not api_key:
+        raise RuntimeError("缺少环境变量 MODELSCOPE_ACCESS_TOKEN")
+
+    base_url = os.getenv("MODELSCOPE_BASE_URL", "https://api-inference.modelscope.cn/v1/")
+    return OpenAI(api_key=api_key, base_url=base_url)
+
+
+def get_papers_md_path() -> str:
+    """
+    /**
+     * @function get_papers_md_path
+     * @description 获取项目根目录下的 `papers.md` 绝对路径。
+     */
+    """
+    scripts_dir = os.path.dirname(os.path.abspath(__file__))
+    root_dir = os.path.dirname(scripts_dir)
+    return os.path.join(root_dir, "papers.md")
+
+
+def is_placeholder_summary(cell: str) -> bool:
+    """
+    /**
+     * @function is_placeholder_summary
+     * @description 判断“简要总结”单元格是否为默认占位（待生成）。
+     */
+    """
+    return "待生成" in cell
+
+
+def parse_table_line(line: str) -> List[str]:
+    """
+    /**
+     * @function parse_table_line
+     * @description 解析 markdown 表格行，返回去除空项后的单元格列表。
+     * @param {str} line - 形如 `| a | b | c | d |\n`
+     * @returns {List[str]} 单元格列表
+     */
+    """
+    parts = [p.strip() for p in line.strip().split("|")]
+    # 去除首尾空项（因为行首尾都有 `|`）
+    cells = [p for p in parts if p and p != "---"]
+    return cells
+
+
+def rebuild_line(date_str: str, title: str, link: str, summary_html: str) -> str:
+    """
+    /**
+     * @function rebuild_line
+     * @description 将四列内容重建为表格行。
+     */
+    """
+    safe_title = title.replace("|", "\\|")
+    safe_summary = summary_html.replace("|", "\\|")
+    return f"| {date_str} | {safe_title} | {link} | {safe_summary} |\n"
+
+
+def get_model_list() -> List[str]:
+    """
+    从环境变量读取模型列表，按优先级排序。
+    支持逗号分隔的多个模型，如: model1,model2,model3
+    """
+    models_str = os.getenv("MODELSCOPE_MODELS", "")
+    if models_str:
+        # 解析逗号分隔的模型列表，去除空白
+        models = [m.strip() for m in models_str.split(",") if m.strip()]
+        if models:
+            return models
+
+    # 如果未配置 MODELSCOPE_MODELS，回退到单个模型配置
+    single_model = os.getenv("MODELSCOPE_MODEL", "deepseek-ai/DeepSeek-V3.2")
+    return [single_model]
+
+
+def mark_model_rate_limited(model: str) -> None:
+    """
+    记录本次运行中已被判定为限流的模型，后续论文不再从它重试。
+    """
+    RATE_LIMITED_MODELS.add(model)
+
+
+def get_available_model_list(model: str = None) -> List[str]:
+    """
+    获取当前仍可用的模型列表，跳过本次运行中已经限流的模型。
+    """
+    if model is not None:
+        return [] if model in RATE_LIMITED_MODELS else [model]
+
+    return [candidate for candidate in get_model_list() if candidate not in RATE_LIMITED_MODELS]
+
+
+def generate_summary_for_link(client: OpenAI, link: str, model: str = None) -> str:
+    """
+    抓取 arXiv HTML 原文并让模型基于 HTML 生成简要总结。
+    包含模型回退机制和重试机制。
+    """
+    # 获取模型列表，跳过本次运行中已经判定为限流的模型。
+    model_list = get_available_model_list(model)
+    if not model_list:
+        print(f"✗ 所有模型都已被判定为限流，跳过摘要生成: {link}")
+        return ""
+
+    # 将 /abs/ 链接转换为 /html/ 页面
+    html_url = re.sub(r"/abs/", "/html/", link)
+
+    # 抓取 HTML 文本（带重试）
+    max_retries = int(os.getenv("HTTP_MAX_RETRIES", "3"))
+    timeout = int(os.getenv("HTTP_TIMEOUT", "30"))
+    html_content = None
+
+    for attempt in range(max_retries):
+        try:
+            resp = requests.get(html_url, timeout=timeout)
+            resp.raise_for_status()
+            html_content = resp.text
+            break
+        except requests.exceptions.HTTPError as e:
+            if e.response.status_code == 404:
+                print(f"警告: HTML页面不存在，尝试使用PDF: {link}")
+                # 如果HTML不存在，尝试获取摘要（fallback）
+                return ""
+            elif attempt < max_retries - 1:
+                print(f"HTTP错误 {e.response.status_code}，重试 {attempt + 1}/{max_retries}: {link}")
+                time.sleep(2 ** attempt)
+            else:
+                print(f"HTTP请求失败，已达最大重试次数: {link}")
+                return ""
+        except requests.exceptions.RequestException as e:
+            if attempt < max_retries - 1:
+                print(f"网络错误，重试 {attempt + 1}/{max_retries}: {link}")
+                time.sleep(2 ** attempt)
+            else:
+                print(f"网络请求失败: {link}: {repr(e)}")
+                return ""
+
+    if not html_content:
+        return ""
+
+    # 按需截断，避免上下文过长
+    max_chars = int(os.getenv("HTML_MAX_CHARS", "180000"))
+    if len(html_content) > max_chars:
+        html_content = html_content[:max_chars]
+
+    # 遍历模型列表，依次尝试。单个模型最多调用两次：第二次仍失败则认为已被限流，直接切换下一个模型。
+    api_max_retries = max(1, min(int(os.getenv("API_MAX_RETRIES", "3")), 2))
+
+    for model_idx, current_model in enumerate(model_list):
+        print(f"尝试使用模型 [{model_idx + 1}/{len(model_list)}]: {current_model}")
+
+        # 对当前模型进行重试
+        for attempt in range(api_max_retries):
+            try:
+                response = client.chat.completions.create(
+                    model=current_model,
+                    messages=[
+                        {
+                            'role': 'system',
+                            'content': '''你是一名论文阅读专家。根据提供的 arXiv 论文 HTML 原文，生成结构化的论文总结。
+
+**严格格式要求：**
+1. 必须使用标准 Markdown 格式
+2. 每个部分必须使用 ## 二级标题（例如：## 研究单位）
+3. 使用 **粗体** 强调关键信息（如机构名、模型名、数据集名）
+4. 使用无序列表（- 开头）组织要点
+5. 每个列表项简洁明了，一行一个要点
+6. 不要使用代码块标记（```）
+
+**输出模板（严格遵循）：**
+
+## 研究单位
+- 列出论文作者所属的研究机构
+
+## 论文概述
+- 用 2-3 个要点概括论文的核心内容和研究目标
+- 说明论文要解决的问题
+
+## 核心贡献
+- 贡献点 1
+- 贡献点 2
+- 贡献点 3
+（列出 3-5 个主要贡献）
+
+## 方法描述
+- 简要描述使用的技术方法
+- 说明创新点和关键技术
+
+## 数据集与资源
+- 使用的数据集名称
+- 模型规模和参数量
+- 训练资源（GPU/TPU 等）
+
+## 评估与结果
+- 评估环境和基准
+- 主要评估指标
+- 关键实验结果
+
+**注意：每个 ## 标题后必须换行，然后使用 - 开头的列表项。**'''
+                        },
+                        {
+                            'role': 'user',
+                            'content': f"以下为论文的 HTML 原文（可能已截断）：\n\n{html_content}"
+                        },
+                    ],
+                    stream=False,
+                )
+
+                if not response.choices:
+                    print(f"警告: API返回无choices，链接: {link}")
+                    if attempt < api_max_retries - 1:
+                        time.sleep(2 ** attempt)
+                        continue
+                    else:
+                        mark_model_rate_limited(current_model)
+                        print(f"✗ 模型 {current_model} 第二次调用仍失败，切换下一个模型")
+                        break  # 尝试下一个模型
+
+                text = getattr(response.choices[0].message, "content", "")
+                if not text:
+                    print(f"警告: API返回content为空，链接: {link}")
+                    if attempt < api_max_retries - 1:
+                        time.sleep(2 ** attempt)
+                        continue
+                    else:
+                        mark_model_rate_limited(current_model)
+                        print(f"✗ 模型 {current_model} 第二次调用仍失败，切换下一个模型")
+                        break  # 尝试下一个模型
+
+                text = text.strip()
+                # 移除模型可能输出的 <think>...</think> 思考内容
+                text = re.sub(r"<think>.*?</think>", "", text, flags=re.IGNORECASE | re.DOTALL).strip()
+                # 移除 Markdown 代码块标记
+                text = re.sub(r"```markdown\s*", "", text, flags=re.IGNORECASE)
+                text = re.sub(r"```\s*$", "", text, flags=re.MULTILINE)
+                text = text.strip()
+                # 规范化换行：保留换行符，但规范化空白
+                text = re.sub(r"[ \t]+", " ", text)
+                text = re.sub(r"\n{3,}", "\n\n", text)
+                text = re.sub(r" +\n", "\n", text)
+                # 将换行符转换为 <br> 标签以便在 Markdown 表格中存储
+                text = text.replace("\n", "<br>")
+
+                if not text:
+                    print(f"警告: 处理后文本为空，链接: {link}")
+                    if attempt < api_max_retries - 1:
+                        time.sleep(2 ** attempt)
+                        continue
+                    else:
+                        mark_model_rate_limited(current_model)
+                        print(f"✗ 模型 {current_model} 第二次调用仍失败，切换下一个模型")
+                        break  # 尝试下一个模型
+
+                # 成功生成摘要
+                print(f"✓ 使用模型 {current_model} 成功生成摘要")
+                return text
+
+            except Exception as e:
+                error_msg = str(e).lower()
+                # 检查是否是配额用完的错误
+                is_quota_error = any(keyword in error_msg for keyword in [
+                    'quota', 'rate limit', 'insufficient', 'exceeded', 'balance'
+                ])
+
+                if is_quota_error:
+                    mark_model_rate_limited(current_model)
+                    print(f"✗ 模型 {current_model} 配额已用完")
+                    break  # 直接尝试下一个模型，不重试
+                elif attempt < api_max_retries - 1:
+                    print(f"API调用失败，重试 {attempt + 1}/{api_max_retries}: {repr(e)}")
+                    time.sleep(2 ** attempt)
+                else:
+                    mark_model_rate_limited(current_model)
+                    print(f"✗ 模型 {current_model} 第二次调用仍失败，切换下一个模型: {repr(e)}")
+                    break  # 尝试下一个模型
+
+    # 所有模型都失败
+    print(f"✗ 所有模型都无法生成摘要: {link}")
+    return ""
+
+
+def default_summary_cell() -> str:
+    """
+    /**
+     * @function default_summary_cell
+     * @description 默认折叠占位单元格 HTML。
+     */
+    """
+    return "<details><summary>展开</summary>待生成</details>"
+
+
+def wrap_in_details(summary_text: str) -> str:
+    """
+    /**
+     * @function wrap_in_details
+     * @description 将纯文本包装为折叠 HTML。
+     */
+    """
+    return f"<details><summary>展开</summary>{summary_text}</details>"
+
+
+def update_papers_md() -> Tuple[int, int]:
+    """
+    /**
+     * @function update_papers_md
+     * @description 读取 `papers.md`，为缺失摘要的条目生成并写回。
+     * @returns {Tuple[int,int]} (总需更新数, 实际更新成功数)
+     */
+    """
+    papers_md = get_papers_md_path()
+    if not os.path.exists(papers_md):
+        raise FileNotFoundError(f"未找到 {papers_md}，请先运行爬取初始化")
+
+    with open(papers_md, "r", encoding="utf-8") as f:
+        lines = f.readlines()
+
+    if len(lines) < 2:
+        return 0, 0
+
+    header = lines[:2]
+    body = lines[2:]
+
+    client = get_client()
+
+    entries_to_update: List[Tuple[int, str, str, str]] = []
+    for idx, line in enumerate(body):
+        if not line.strip().startswith("|"):
+            continue
+        cells = parse_table_line(line)
+        if len(cells) != 4:
+            continue
+        date_str, title, link, summary_cell = cells
+        if not is_placeholder_summary(summary_cell):
+            continue
+        entries_to_update.append((idx, date_str, title, link))
+
+    need_count = len(entries_to_update)
+    success_count = 0
+    batch_size = int(os.getenv("BATCH_WRITE_SIZE", "5"))
+    updates_since_last_write = 0
+
+    progress_bar = tqdm(entries_to_update, desc="生成简要总结", unit="篇")
+
+    for idx, date_str, title, link in progress_bar:
+        try:
+            summary_text = generate_summary_for_link(client, link)
+            if not summary_text:
+                print(f"警告: 生成摘要为空，跳过: {link}")
+                continue
+            new_summary_cell = wrap_in_details(summary_text)
+            new_line = rebuild_line(date_str, title, link, new_summary_cell)
+            # 更新内存中的行
+            body[idx] = new_line
+            success_count += 1
+            updates_since_last_write += 1
+            progress_bar.set_postfix({"成功": success_count})
+
+            # 批量写入：每处理 batch_size 篇就写一次文件
+            if updates_since_last_write >= batch_size:
+                try:
+                    with open(papers_md, "w", encoding="utf-8") as f:
+                        f.writelines(header + body)
+                    updates_since_last_write = 0
+                except Exception as e:
+                    print(f"警告: 写入文件失败: {repr(e)}")
+
+        except Exception as e:
+            print(f"生成摘要失败: {link}: {repr(e)}")
+
+    # 最后写入一次，确保所有更改都保存
+    if updates_since_last_write > 0:
+        try:
+            with open(papers_md, "w", encoding="utf-8") as f:
+                f.writelines(header + body)
+        except Exception as e:
+            print(f"错误: 最终写入文件失败: {repr(e)}")
+            raise
+
+    return need_count, success_count
+
+
+if __name__ == "__main__":
+    total, updated = update_papers_md()
+    print(f"需要生成摘要的条目: {total}，已更新: {updated}")

@@ -1,0 +1,20 @@
+{
+  "arxiv_id": "2608.13335",
+  "source_version": "v1",
+  "source_pdf": "https://arxiv.org/pdf/2608.13335",
+  "title_en": "Neural Quadratic Forms: A Unified Minimal Model for Sudden Learning and Scaling Laws",
+  "title_zh": "神经二次型：突发学习与标度律的统一最小模型",
+  "curation_status": "full_text_verified",
+  "source_report": {"report_date": "2026-08-15", "listing_date": "2026-08-14", "grade": "S", "score": "39/40"},
+  "sections": [
+    {"title": "作者信息", "bullets": ["作者：Liu Ziyin、Yizhou Xu（共同第一作者）、Tomaso Poggio、Isaac Chuang。", "机构：Massachusetts Institute of Technology；École Polytechnique Fédérale de Lausanne (EPFL)。", "版本：arXiv:2608.13335v1，提交于 2026-08-13；primary category 为 cs.LG。日报评级：39/40，S。"]},
+    {"title": "摘要", "paragraphs": ["用梯度下降训练、损失函数光滑的神经网络仍可能以台阶方式学习：损失在长平台期保持不变，随后突然下降；与此同时，训练损失又会呈现光滑的幂律。两种行为都出现在微观结构差异很大的架构中，暗示存在少数相关集体变量。本文证明，一个对称性决定了这些变量：网络层由可交换单元求和构成，重新标记单元不改变网络；结合光滑性以及单元在原点梯度为零的条件，近零初始化权重附近的展开具有普适首项 $\\mathrm{Tr}[WW^\\top A(x)]$，全部架构细节被压缩进结构矩阵 $A(x)$。感知机、attention、mixture of experts 与 convolution 因而只是不同 $A$ 下的同一模型。训练动力学在序参量 $M=WW^\\top$ 上闭合；当数据矩阵共享特征基时，动力学约化为各模依次开启的 Lotka–Volterra 方程。初始权重越小，开启时刻分隔越远，平台成为光滑流的奇异极限；大量不可分辨事件叠加时形成训练时间的幂律，其指数可由理论预测。作者在多种训练方法与架构上进行了数值验证。"]},
+    {"title": "背景", "paragraphs": ["论文试图用一个由置换对称性推导出的 normal form，同时解释单次训练轨迹中的 sudden learning 与跨尺度观测到的 smooth scaling law。与只针对某一架构或某一 teacher–student 模型的解释不同，它把宽度方向的可交换单元作为共同结构，并把架构差异局域化为 $A(x)$。分类属于 physics of AI：统计物理中的序参量、模不稳定性、奇异极限与普适性被用于描述学习动力学，但结论对象仍是神经网络训练。"]},
+    {"title": "模型与方法", "bullets": ["从网络输出对每个重复单元参数作近零 Taylor 展开。置换对称性、光滑性和原点零梯度排除线性首项，得到 neural quadratic form (NQF) $f(x)=\\mathrm{Tr}[WW^\\top A(x)]$；表 1 与附录表 3 给出 MLP、CNN、attention、MoE 等对应的结构矩阵。", "以 $M=WW^\\top$ 为序参量推导闭合梯度流。若训练样本诱导的数据矩阵可同时对角化，特征方向上的振幅满足 Lotka–Volterra 型方程；Theorem 5/6 分别处理 sample-wise 与 feature-wise 可解设置，并给出依赖初始化尺度的特征开启时间。", "数值检验使用二维层 MLP、单层 CNN、query-key-only attention 和 multi-head attention，并比较 GD、Polyak momentum（$\\beta=0.9$）与 Adam。图 2 对比小初始化 $\\sigma=0.01$ 和大初始化 $\\sigma=0.2$；图 6 的 online SGD 使用学习率 0.05、batch 64、2000 次迭代并平均 5 个独立运行。"]},
+    {"title": "核心结果与证据", "bullets": ["理论结果：架构无关的 NQF 由交换对称性强制产生，架构信息只进入 $A(x)$；在共享特征基的受控情形中，序参量动力学可解，特征的 characteristic times 随小初始化的 $\\log(1/\\epsilon)$ 分离，平台并非不连续算法造成，而是光滑流的奇异极限。", "幂律机制：当样本难度、特征对齐或方差具有幂律分布，许多不可分辨的逐模开启事件聚合为 $L(t)$ 的幂律。图 5 把 Fourier MLP 的归一化 MSE 与预测斜率比较；标准 tanh MLP 在该设置中不显示同一幂律，明确提供了负对照。", "数值证据：图 2 中小初始化时原网络与 NQF 在四类架构、三种 optimizer 下几乎重合；大初始化时明显偏离，直接标示近零展开的有效域。图 3/4 分别把 Theorem 6 和 Eq. (36) 的理论曲线同 GD/full-batch GD 比较；图 6 报告 5 次独立 online-SGD 运行的均值与 $\\pm1$ 标准差。证据状态为解析推导加合成数值验证，不是对大规模真实训练的经验定律证明。"]},
+    {"title": "有效性与局限", "bullets": ["NQF 是近零初始化的 leading-order approximation；图 2 的 $\\sigma=0.2$ 已显示偏离，因此不能把 normal form 外推到任意初始化或训练后期。", "Lotka–Volterra 的完全解依赖数据矩阵共享特征基等结构；一般数据会耦合特征方向。幂律还需要特征/样本分布假设，并非仅由置换对称性自动推出。", "主要实验是低维 teacher–student 或受控合成任务；没有在现代大模型规模上验证预测指数，也没有证明有限学习率、噪声、非光滑激活或优化器状态不会改变普适类。"]},
+    {"title": "复现与资源", "bullets": ["作者代码：https://github.com/xu-yz19/Neural-Quadratic-Forms。原文：https://arxiv.org/abs/2608.13335；PDF：https://arxiv.org/pdf/2608.13335。", "代码声明可复现正文全部图。复核时应分别记录初始化尺度、optimizer、架构、每个奇异模开启时间和理论误差；图 6 还需保留 5 个独立运行。论文未报告真实大模型训练硬件或 checkpoint。"]},
+    {"title": "阅读指南", "bullets": ["快速阅读：第 2 节 NQF 定义 → 第 5 节闭合动力学 → 第 6 节 sudden learning/scaling laws → 图 2–5。", "最重要方程是 NQF $\\mathrm{Tr}[WW^\\top A(x)]$ 与序参量 $M=WW^\\top$ 的闭合动力学；最重要证据图是图 2，因为它同时展示近似成功和大初始化失效。", "深入阅读应核对 Theorem 1 的对称性条件、Theorem 5/6 的可解假设以及附录 C 的实验参数，避免把受控模型结论写成任意网络定理。"]}
+  ],
+  "evidence_refs": ["paper.pdf p. 1: title, authors, affiliations, abstract, and scope", "paper.pdf pp. 3-10: NQF construction, order-parameter dynamics, solvable assumptions, and Theorems 1/5/6", "paper.pdf pp. 11-14: Figures 2-5 and experiment/theory comparisons", "paper.pdf p. 49: Figure 6 online-SGD parameters and five-run uncertainty", "Evidence status: full-text verified; no independent reproduction performed."]
+}
