@@ -1,0 +1,213 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Neural Tangent Kernel Beyond the Infinite-Width Limit: Effects of Depth and Initialization - physics+AI Collection 随机精选</title>
+    <meta name="description" content="作者：Mariia Seleznova、Gitta Kutyniok；机构为 Ludwig-Maximilians-Universität München 数学系。论文发表于 ICML 2022（PMLR 162），本卡核对 arXiv:2202.00553v2。 代码：https://github.com/mselezniova/ntk。" />
+    <script>
+      (function() {
+        try {
+          var themePreference = window.localStorage.getItem('color-theme') || 'system';
+          var systemUsesDarkTheme = window.matchMedia('(prefers-color-scheme: dark)').matches;
+          var resolvedTheme = themePreference === 'system'
+            ? (systemUsesDarkTheme ? 'dark' : 'light')
+            : themePreference;
+          document.documentElement.dataset.theme = resolvedTheme;
+          document.documentElement.dataset.themePreference = themePreference;
+          document.documentElement.style.colorScheme = resolvedTheme;
+        } catch (error) {
+          document.documentElement.dataset.theme = 'light';
+          document.documentElement.dataset.themePreference = 'system';
+        }
+      })();
+    </script>
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='18' fill='%23111827'/%3E%3Ctext x='50%25' y='55%25' text-anchor='middle' dominant-baseline='middle' font-size='30' font-family='Arial, sans-serif' fill='white'%3EV%3C/text%3E%3C/svg%3E" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700;800&family=Noto+Sans+SC:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <script>document.documentElement.classList.add('math-pending');</script>
+    <script>
+      window.MathJax = {
+        tex: {
+          inlineMath: [['$', '$'], ['\\(', '\\)']],
+          displayMath: [['$$', '$$'], ['\\[', '\\]']],
+          processEscapes: true
+        },
+        options: {
+          skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+        },
+        chtml: {
+          scale: 1,
+          displayAlign: 'center'
+        },
+        startup: {
+          ready: function() {
+            MathJax.startup.defaultReady();
+            MathJax.startup.promise.then(function() {
+              document.documentElement.classList.remove('math-pending');
+              document.documentElement.dataset.mathReady = 'true';
+            });
+          }
+        }
+      };
+    </script>
+    <script defer src="../../assets/vendor/mathjax/tex-chtml.js"></script>
+    <link rel="stylesheet" href="../../assets/style.css" />
+  </head>
+  <body class="detail-page" data-paper-id="2202.00553">
+    <div class="page-noise"></div>
+    <div class="page-blur page-blur-a"></div>
+    <div class="page-blur page-blur-b"></div>
+
+    <header class="header detail-page-header">
+      <div class="container">
+        <div class="detail-page-topbar">
+          <a class="back-link" href="../../collection.html">返回列表</a>
+          <div class="detail-topbar-actions">
+            <span class="detail-site-name">physics+AI Collection 随机精选</span>
+            <button class="theme-toggle" type="button" data-theme-toggle aria-label="当前主题：设备，点击切换主题" title="当前主题：设备">
+  <span class="theme-toggle-icons" aria-hidden="true">
+    <svg class="theme-toggle-icon theme-toggle-icon-light" viewBox="0 0 24 24" fill="none">
+      <circle cx="12" cy="12" r="3.5" stroke="currentColor" stroke-width="1.8"/>
+      <path d="M12 2.5v2M12 19.5v2M2.5 12h2M19.5 12h2M5.3 5.3l1.4 1.4M17.3 17.3l1.4 1.4M18.7 5.3l-1.4 1.4M6.7 17.3l-1.4 1.4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+    </svg>
+    <svg class="theme-toggle-icon theme-toggle-icon-dark" viewBox="0 0 24 24" fill="none">
+      <path d="M20 15.2A8.1 8.1 0 0 1 8.8 4a8.2 8.2 0 1 0 11.2 11.2z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>
+    </svg>
+    <svg class="theme-toggle-icon theme-toggle-icon-system" viewBox="0 0 24 24" fill="none">
+      <rect x="3" y="4" width="18" height="13" rx="2.5" stroke="currentColor" stroke-width="1.8"/>
+      <path d="M8 21h8M12 17v4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+    </svg>
+  </span>
+  <span class="theme-toggle-label" data-theme-toggle-label>设备</span>
+</button>
+          </div>
+        </div>
+
+        <div class="detail-hero-grid">
+          <div class="detail-hero-cover"><figure class="paper-figure-card paper-figure-card-detail">
+  <img class="paper-figure-image" src="../../assets/collection-figures/2202.00553/figure-4-ntk-evolution.webp" alt="三种初始化相下，MNIST 训练从第 0 到 3000 轮的 NTK 矩阵热图；ordered 相逐渐出现标签块结构。" loading="lazy" onclick="window.openPaperFigureImage && window.openPaperFigureImage(this)" />
+  <figcaption class="paper-figure-caption">NTK 并非总是冻结：初始化相决定训练中核矩阵是形成清晰标签块，还是持续发生强烈而弥散的重排。</figcaption>
+</figure></div>
+          <div class="detail-hero-copy">
+            <p class="eyebrow">Collection 全文卡</p>
+            <h1 class="detail-page-title">Neural Tangent Kernel Beyond the Infinite-Width Limit: Effects of Depth and Initialization</h1>
+            <p class="detail-page-title-zh">超越无限宽极限：深宽比与初始化如何控制 NTK 涨落</p>
+            <div class="detail-meta">Paper Collection · Statistical Physics · <a href="https://arxiv.org/abs/2202.00553" target="_blank" rel="noopener noreferrer">原文</a></div>
+            <p class="detail-summary">作者：Mariia Seleznova、Gitta Kutyniok；机构为 Ludwig-Maximilians-Universität München 数学系。论文发表于 ICML 2022（PMLR 162），本卡核对 arXiv:2202.00553v2。 代码：https://github.com/mselezniova/ntk。</p>
+            <div class="detail-micro-meta">
+              <span class="meta-pill">10 分钟读完</span>
+              <span class="meta-pill">8 张阅读卡</span>
+              <span class="meta-pill">作者：Mariia Seleznova、Gitta Kutyniok；机构为 Ludwig-Maxim…</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <main class="container detail-layout">
+      <div class="detail-shell">
+        <article id="detail-body" class="reading-flow"><section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 01</span>
+    <span class="reading-step-note">作者信息</span>
+  </div>
+  <h2>作者信息</h2>
+  <div class="reading-card-content"><ul><li>作者：Mariia Seleznova、Gitta Kutyniok；机构为 Ludwig-Maximilians-Universität München 数学系。论文发表于 ICML 2022（PMLR 162），本卡核对 arXiv:2202.00553v2。</li><li>代码：https://github.com/mselezniova/ntk。</li></ul></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 02</span>
+    <span class="reading-step-note">研究问题</span>
+  </div>
+  <h2>研究问题</h2>
+  <div class="reading-card-content"><ul><li>无限宽、固定深度极限把神经网络训练约化为由初始化处 Neural Tangent Kernel（NTK）控制的线性动力学。但真实网络的深度 L 与宽度 M 都有限，且两者之比可能不小；此时核是否仍然自平均、训练中是否近似不变，不能由先取 M→∞ 的极限直接回答。</li><li>论文研究 fully connected ReLU 网络在联合极限 L,M→∞ 且 λ=L/M 有限时的 NTK 涨落，并追问 ordered、edge-of-chaos 与 chaotic 三种初始化相中，有限宽修正如何影响 lazy-training 图景。</li></ul></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 03</span>
+    <span class="reading-step-note">背景</span>
+  </div>
+  <h2>背景</h2>
+  <div class="reading-card-content"><ul><li>NTK 是参数空间梯度在两个输入上的内积：</li><li>\[\Theta(x,\tilde x)=\nabla_w f(x)\cdot\nabla_w f(\tilde x).\]</li><li>若宽度趋于无穷且深度固定，Θ 在初始化处收敛到确定核，并在梯度流中保持常数。该陈述隐含了极限次序；当 L 与 M 同时增长时，每一层的 O(1/M) 随机修正可沿深度累积成 O(L/M) 效应。</li><li>对 ReLU 网络，权重方差通过 a=σ_w²/2 区分 ordered（a<1）、edge of chaos（a=1）与 chaotic（a>1）相。这里的“相”描述前向相关和反向梯度沿层传播的稳定性，而不是训练数据的统计相变。</li></ul></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 04</span>
+    <span class="reading-step-note">模型与方法</span>
+  </div>
+  <h2>模型与方法</h2>
+  <div class="reading-card-content"><ul><li>作者对深度 L、每层宽度 M 的全连接 ReLU 网络计算 NTK 的一阶与二阶矩，采用零偏置并讨论 gradient-independence approximation。控制有限宽涨落的量为深宽比 λ=L/M，而非单独的 L 或 M。</li><li>用归一化二阶矩衡量核是否自平均：</li><li>\[\rho_\Theta=\frac{\mathbb E[\Theta^2(x,x)]}{\mathbb E[\Theta(x,x)]^2},\qquad \lambda=\frac{L}{M}.\]</li><li>若 ρ_Θ−1 随 λ 消失，单个网络的核接近总体平均；若它随 λ 指数增长，初始化之间的样本差异在深网络中被放大，确定性无限宽核不再代表典型有限网络。理论递推由有限宽矩展开得到，再以多组 M、L 和初始化的 Monte Carlo 实验检验。</li></ul></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 05</span>
+    <span class="reading-step-note">核心定理与证据</span>
+  </div>
+  <h2>核心定理与证据</h2>
+  <div class="reading-card-content"><ul><li>理论主结论是相依赖的：在 ordered 相，NTK 的相对涨落在联合深宽极限中保持受控；在 edge-of-chaos 与 chaotic 相，ρ_Θ 随 λ 指数增长。因此“宽度很大”并不足够，深度必须相对宽度受限，才能让 NTK 集中到其无限宽平均。</li><li>Figure 1 直接检验该尺度变量：M=100、200、500 的数值点以 λ=L/M 重排后与理论曲线相符，说明不同绝对宽度的偏离主要由深宽比组织。图中每点使用 500 个初始化并给出 bootstrap 误差，但这仍是特定全连接 ReLU ensemble 内的验证。</li><li>Figure 4 把抽象的核涨落变成训练中的可视结构：在 MNIST 上，ordered 初始化的 NTK 热图逐渐形成与标签一致的块结构；edge-of-chaos 和 chaotic 初始化下，核在 0、100、500、3000 epochs 间变化更强、更弥散。它说明有限宽核不仅在初始化处随机，训练轨迹也可能离开 frozen-kernel 近似。</li><li>作者进一步指出，在非 ordered 相若仍要强制 lazy training，需要让输出/学习率重标度随深度显著增大；这是一种人为压低参数位移的构造，不等同于普通参数化网络自然处于 NTK regime。</li></ul><figure class="evidence-figure">
+  <button class="evidence-figure-image-button" type="button" aria-label="放大查看 Figure 4" onclick="window.openPaperFigureImage && window.openPaperFigureImage(this.querySelector('img'))">
+    <img class="paper-figure-image evidence-figure-image" src="../../assets/collection-figures/2202.00553/figure-4-ntk-evolution.webp" alt="ordered、edge-of-chaos、chaotic 三种初始化下，NTK 矩阵随训练轮数变化的热图。" loading="lazy" />
+  </button>
+  <figcaption>
+    <strong>Figure 4</strong> · ordered 初始化发展出明显标签块；临界和 chaotic 初始化的核演化更强。
+    <span class="evidence-figure-reading">物理解读：有限宽涨落会进入真实训练动力学，因此固定核近似的有效性取决于初始化相与深宽比。</span>
+    <span class="evidence-figure-source">来源：arXiv:2202.00553v2, paper.pdf p. 8, Figure 4</span>
+  </figcaption>
+</figure>
+<figure class="evidence-figure">
+  <button class="evidence-figure-image-button" type="button" aria-label="放大查看 Figure 1" onclick="window.openPaperFigureImage && window.openPaperFigureImage(this.querySelector('img'))">
+    <img class="paper-figure-image evidence-figure-image" src="../../assets/collection-figures/2202.00553/figure-1-dispersion.webp" alt="不同宽度的 NTK 相对涨落随深宽比 λ 变化，并与理论曲线比较。" loading="lazy" />
+  </button>
+  <figcaption>
+    <strong>Figure 1</strong> · 不同 M 的数据由 λ=L/M 组织，临界与 chaotic 相出现快速增长。
+    <span class="evidence-figure-reading">物理解读：每层微小的有限宽修正沿深度累积；控制量是 L/M，而不是只看网络宽度。</span>
+    <span class="evidence-figure-source">来源：arXiv:2202.00553v2, paper.pdf p. 5, Figure 1</span>
+  </figcaption>
+</figure></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 06</span>
+    <span class="reading-step-note">有效性与局限</span>
+  </div>
+  <h2>有效性与局限</h2>
+  <div class="reading-card-content"><ul><li>定理针对 fully connected ReLU 网络，核心渐近分析采用均匀宽度、特定初始化和零偏置设定；卷积、残差、归一化、attention 或训练后特征学习不能从该结果直接推出。</li><li>二阶矩递推使用并检验了 gradient-independence approximation。数值符合理论支持其在所测尺度内有效，但不是对任意架构、任意数据或任意深宽比的严格保证。</li><li>MNIST 热图是机制示例，不是现代大模型上的性能基准；核的显著演化只是否定严格 frozen-NTK 描述，并不自动说明 feature learning 一定带来更好泛化。</li><li>该卡核对全文、定理、图与实验设置；no independent reproduction performed，未重新采样 500 次初始化，也未重跑 MNIST 训练。</li></ul></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 07</span>
+    <span class="reading-step-note">复现与资源</span>
+  </div>
+  <h2>复现与资源</h2>
+  <div class="reading-card-content"><ul><li>原文：https://arxiv.org/abs/2202.00553；PDF：https://arxiv.org/pdf/2202.00553；代码：https://github.com/mselezniova/ntk。</li><li>全文快照 SHA-256：157a3a9cd5ef13d9c0f401edd7ba535f4fb5bcfe6e99e4316b474e3c89ac3cfd；PDF 共 39 个实质页面。</li><li>复现时需固定 ReLU、零偏置、σ_w²、L、M、λ、输入归一化、初始化样本数与 bootstrap 方案；训练图还需固定 MNIST 子集、样本排序、优化器、学习率和输出重标度。</li><li>Evidence status: full-text verified; no independent reproduction performed.</li></ul></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 08</span>
+    <span class="reading-step-note">阅读指南</span>
+  </div>
+  <h2>阅读指南</h2>
+  <div class="reading-card-content"><ul><li>先读引言和相图定义，明确论文改变的是“固定深度后取无限宽”的极限次序；再读二阶矩定理，把 λ=L/M 视为累积有限宽修正的控制参数。</li><li>随后对照 Figure 1 检查理论的 data collapse，再看 Figure 4 判断核演化是否与初始化相一致。两幅图分别回答初始化处是否自平均，以及训练中是否近似冻结。</li><li>面向统计物理的读者，可把层号视为传播方向、1/M 修正视为每层弱噪声：ordered 相抑制累积涨落，而临界与 chaotic 相把微小层间涨落沿深度放大。</li></ul></div>
+</section></article>
+        <aside id="detail-toc" class="detail-toc hidden" aria-label="内容目录">
+          <p class="detail-toc-title">阅读目录</p>
+          <nav id="detail-toc-nav" class="detail-toc-nav"></nav>
+        </aside>
+      </div>
+      <nav class="paper-nav"><a class="paper-nav-link paper-nav-prev" href="../../collection-papers/2010.08895/"><span class="paper-nav-label">← 上一篇</span><span class="paper-nav-title">Fourier Neural Operator for Parametric Partial Differential Equations</span></a>
+      <a class="paper-nav-link paper-nav-next" href="../../collection-papers/2206.11777/"><span class="paper-nav-label">下一篇 →</span><span class="paper-nav-title">Fluctuating kinetic theory and fluctuating hydrodynamics of aligning active particles: the dilute limit</span></a></nav>
+    </main>
+
+    <footer class="footer">
+      <div class="container">
+        <p>内容来自 <a href="https://arxiv.org" target="_blank" rel="noopener noreferrer">arXiv.org</a>，阅读卡片由静态站点生成器构建。</p>
+      </div>
+    </footer>
+
+    <script src="../../assets/theme.js"></script>
+    <script src="../../assets/media.js"></script>
+    <script src="../../assets/paper.js"></script>
+  </body>
+</html>
