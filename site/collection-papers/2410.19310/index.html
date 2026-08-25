@@ -1,0 +1,203 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Flow Generator Matching - physics+AI Collection 随机精选</title>
+    <meta name="description" content="作者：Zemin Huang、Zhengyang Geng、Weijian Luo、Guo-jun Qi。本卡核对 arXiv:2410.19310v1；工作研究把多步 flow-matching ODE 蒸馏为一步 generator。" />
+    <script>
+      (function() {
+        try {
+          var themePreference = window.localStorage.getItem('color-theme') || 'system';
+          var systemUsesDarkTheme = window.matchMedia('(prefers-color-scheme: dark)').matches;
+          var resolvedTheme = themePreference === 'system'
+            ? (systemUsesDarkTheme ? 'dark' : 'light')
+            : themePreference;
+          document.documentElement.dataset.theme = resolvedTheme;
+          document.documentElement.dataset.themePreference = themePreference;
+          document.documentElement.style.colorScheme = resolvedTheme;
+        } catch (error) {
+          document.documentElement.dataset.theme = 'light';
+          document.documentElement.dataset.themePreference = 'system';
+        }
+      })();
+    </script>
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='18' fill='%23111827'/%3E%3Ctext x='50%25' y='55%25' text-anchor='middle' dominant-baseline='middle' font-size='30' font-family='Arial, sans-serif' fill='white'%3EV%3C/text%3E%3C/svg%3E" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700;800&family=Noto+Sans+SC:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <script>document.documentElement.classList.add('math-pending');</script>
+    <script>
+      window.MathJax = {
+        tex: {
+          inlineMath: [['$', '$'], ['\\(', '\\)']],
+          displayMath: [['$$', '$$'], ['\\[', '\\]']],
+          processEscapes: true
+        },
+        options: {
+          skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+        },
+        chtml: {
+          scale: 1,
+          displayAlign: 'center'
+        },
+        startup: {
+          ready: function() {
+            MathJax.startup.defaultReady();
+            MathJax.startup.promise.then(function() {
+              document.documentElement.classList.remove('math-pending');
+              document.documentElement.dataset.mathReady = 'true';
+            });
+          }
+        }
+      };
+    </script>
+    <script defer src="../../assets/vendor/mathjax/tex-chtml.js"></script>
+    <link rel="stylesheet" href="../../assets/style.css" />
+  </head>
+  <body class="detail-page" data-paper-id="2410.19310">
+    <div class="page-noise"></div>
+    <div class="page-blur page-blur-a"></div>
+    <div class="page-blur page-blur-b"></div>
+
+    <header class="header detail-page-header">
+      <div class="container">
+        <div class="detail-page-topbar">
+          <a class="back-link" href="../../collection.html">返回列表</a>
+          <div class="detail-topbar-actions">
+            <span class="detail-site-name">physics+AI Collection 随机精选</span>
+            <button class="theme-toggle" type="button" data-theme-toggle aria-label="当前主题：设备，点击切换主题" title="当前主题：设备">
+  <span class="theme-toggle-icons" aria-hidden="true">
+    <svg class="theme-toggle-icon theme-toggle-icon-light" viewBox="0 0 24 24" fill="none">
+      <circle cx="12" cy="12" r="3.5" stroke="currentColor" stroke-width="1.8"/>
+      <path d="M12 2.5v2M12 19.5v2M2.5 12h2M19.5 12h2M5.3 5.3l1.4 1.4M17.3 17.3l1.4 1.4M18.7 5.3l-1.4 1.4M6.7 17.3l-1.4 1.4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+    </svg>
+    <svg class="theme-toggle-icon theme-toggle-icon-dark" viewBox="0 0 24 24" fill="none">
+      <path d="M20 15.2A8.1 8.1 0 0 1 8.8 4a8.2 8.2 0 1 0 11.2 11.2z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>
+    </svg>
+    <svg class="theme-toggle-icon theme-toggle-icon-system" viewBox="0 0 24 24" fill="none">
+      <rect x="3" y="4" width="18" height="13" rx="2.5" stroke="currentColor" stroke-width="1.8"/>
+      <path d="M8 21h8M12 17v4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+    </svg>
+  </span>
+  <span class="theme-toggle-label" data-theme-toggle-label>设备</span>
+</button>
+          </div>
+        </div>
+
+        <div class="detail-hero-grid">
+          <div class="detail-hero-cover"><figure class="paper-figure-card paper-figure-card-detail">
+  <img class="paper-figure-image" src="../../assets/collection-figures/2410.19310/figure-1-one-step-samples.webp" alt="一步 MM-DiT-FGM 生成的多类人物、动物、建筑和风景图像网格。" loading="lazy" onclick="window.openPaperFigureImage && window.openPaperFigureImage(this)" />
+  <figcaption class="paper-figure-caption">一步 generator 在多种文本场景上给出高分辨率样本；图像质量需与 GenEval/FID 和覆盖度共同判断。</figcaption>
+</figure></div>
+          <div class="detail-hero-copy">
+            <p class="eyebrow">Collection 全文卡</p>
+            <h1 class="detail-page-title">Flow Generator Matching</h1>
+            <p class="detail-page-title-zh">流生成器匹配：将 Flow Matching 蒸馏为一步生成</p>
+            <div class="detail-meta">Paper Collection · Flow Matching · <a href="https://arxiv.org/abs/2410.19310" target="_blank" rel="noopener noreferrer">原文</a></div>
+            <p class="detail-summary">作者：Zemin Huang、Zhengyang Geng、Weijian Luo、Guo-jun Qi。本卡核对 arXiv:2410.19310v1；工作研究把多步 flow-matching ODE 蒸馏为一步 generator。</p>
+            <div class="detail-micro-meta">
+              <span class="meta-pill">9 分钟读完</span>
+              <span class="meta-pill">8 张阅读卡</span>
+              <span class="meta-pill">作者：Zemin Huang、Zhengyang Geng、Weijian Luo、Guo-jun Q…</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <main class="container detail-layout">
+      <div class="detail-shell">
+        <article id="detail-body" class="reading-flow"><section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 01</span>
+    <span class="reading-step-note">作者信息</span>
+  </div>
+  <h2>作者信息</h2>
+  <div class="reading-card-content"><ul><li>作者：Zemin Huang、Zhengyang Geng、Weijian Luo、Guo-jun Qi。本卡核对 arXiv:2410.19310v1；工作研究把多步 flow-matching ODE 蒸馏为一步 generator。</li></ul></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 02</span>
+    <span class="reading-step-note">研究问题</span>
+  </div>
+  <h2>研究问题</h2>
+  <div class="reading-card-content"><ul><li>标准 flow matching 学习瞬时速度场，采样时仍要多次求解 ODE。论文问：能否训练确定性映射 g_theta(z)，一步把 base noise 推到数据分布，同时继承 teacher flow 的样本质量？</li><li>难点不是逐样本回归 teacher 终点，而是匹配 student 分布经条件概率路径加噪后产生的边缘速度场；后者依赖 theta，直接梯度含难算的 velocity derivative。</li></ul></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 03</span>
+    <span class="reading-step-note">背景</span>
+  </div>
+  <h2>背景</h2>
+  <div class="reading-card-content"><ul><li>Flow matching 的 tractable conditional objective 通过样本对构造目标速度；多步积分把局部速度拼成全局 transport。一步 generator 则直接参数化端点映射，必须保证其 pushforward distribution 与 teacher/data 一致。</li><li>FGM 把匹配对象放在 probability-path 的 generator-induced velocity field 上：若所有时刻的边缘速度一致，连续性方程给出边缘分布一致。这比单纯 consistency regularization 更接近分布动力学约束。</li></ul></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 04</span>
+    <span class="reading-step-note">模型与方法</span>
+  </div>
+  <h2>模型与方法</h2>
+  <div class="reading-card-content"><ul><li>student 先生成 x_0=g_theta(z)，再从 q_t(x_t|x_0) 采样中间态。目标比较 student marginal velocity 与 pretrained flow velocity；作者通过概率路径恒等式把不可行的 theta 导数改写为可微样本期望，得到 tractable FGM loss。</li><li>CIFAR-10 使用独立 flow teacher 检验无条件与类别条件生成；大尺度实验蒸馏 Stable Diffusion 3 的 MM-DiT，并用一步网络直接从噪声生成文本条件图像。</li><li>评价报告 NFE、FID 与 GenEval，并给出 50/100-step teacher、其他 few-step distillation 和一步 student 的对照；定性图检查文字组合、属性绑定和场景多样性。</li></ul></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 05</span>
+    <span class="reading-step-note">核心结果与证据</span>
+  </div>
+  <h2>核心结果与证据</h2>
+  <div class="reading-card-content"><ul><li>Figure 1 展示一步 MM-DiT-FGM 的人物、动物、建筑和风景样本，说明一步输出不是 CIFAR 小图上的孤立结果；但它是选择性定性证据，不能替代 prompt-level 统计。</li><li>CIFAR-10 无条件一步 FID 为 3.08，优于论文复现的 50-step flow teacher；类别条件一步 FID 为 2.58，对比 100-step teacher 的 2.87。作者将改进部分归因于 generator objective，而非仅压缩步数。</li><li>SD3 蒸馏后一步模型在 GenEval 上接近多步 teacher。Figure 2 的同 prompt 并列图支持视觉质量可比，但 inference speed、训练蒸馏成本和 teacher 数据/权重依赖应分开计算。</li></ul><figure class="evidence-figure">
+  <button class="evidence-figure-image-button" type="button" aria-label="放大查看 Figure 1" onclick="window.openPaperFigureImage && window.openPaperFigureImage(this.querySelector('img'))">
+    <img class="paper-figure-image evidence-figure-image" src="../../assets/collection-figures/2410.19310/figure-1-one-step-samples.webp" alt="四行四列的一步生成图像。" loading="lazy" />
+  </button>
+  <figcaption>
+    <strong>Figure 1</strong> · 一步 MM-DiT-FGM 的定性样本。
+    <span class="evidence-figure-reading">物理解读：视觉可行性得到展示，但选择性样本不能证明分布覆盖或公平比较。</span>
+    <span class="evidence-figure-source">来源：paper.pdf p. 2, Figure 1</span>
+  </figcaption>
+</figure></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 06</span>
+    <span class="reading-step-note">有效性与局限</span>
+  </div>
+  <h2>有效性与局限</h2>
+  <div class="reading-card-content"><ul><li>FID 的有限样本误差、teacher reproduction 和训练预算会影响“超过 teacher”的解释；student 可能在 FID 特征上更优但丢失覆盖度或 prompt fidelity。GenEval 也只覆盖有限组合能力。</li><li>一步推理把积分成本转移到蒸馏训练，且依赖高质量 pretrained flow。大模型实验的 compute、数据和 SD3 权重条件限制可复现性；不能由单一 benchmark 推断普适一步生成。</li><li>理论保证针对目标/最优解和连续性方程，有限网络、随机优化与近似采样仍有误差。该卡 no independent reproduction performed。</li></ul></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 07</span>
+    <span class="reading-step-note">复现与资源</span>
+  </div>
+  <h2>复现与资源</h2>
+  <div class="reading-card-content"><ul><li>原文：https://arxiv.org/abs/2410.19310；PDF：https://arxiv.org/pdf/2410.19310。全文 SHA-256：49abd90f42d786ae5efe7dbc271d55facc62dc5b215f596f1e739879f4f7dd3b；22 页。</li><li>复现需固定 teacher checkpoint/NFE、conditional path、student architecture、training Kimg、EMA、CFG、sampling seed、FID sample count/implementation、GenEval prompts 与 SD3 license/provenance。</li><li>Evidence status: full-text verified; no independent reproduction performed.</li></ul></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 08</span>
+    <span class="reading-step-note">阅读指南</span>
+  </div>
+  <h2>阅读指南</h2>
+  <div class="reading-card-content"><ul><li>先读问题设定与 tractable gradient 推导，确认匹配的是边缘速度而非单个 teacher trajectory；再把 Tables 1–3 与 Figures 1–3 分别当分布、条件遵循和视觉证据。</li><li>物理上可把 teacher 看作连续时间流，student 看作有限时间 canonical map；FGM 试图通过所有中间时刻的 continuity equation 约束这个端点映射。</li></ul></div>
+</section></article>
+        <aside id="detail-toc" class="detail-toc hidden" aria-label="内容目录">
+          <p class="detail-toc-title">阅读目录</p>
+          <nav id="detail-toc-nav" class="detail-toc-nav"></nav>
+        </aside>
+      </div>
+      <nav class="paper-nav"><a class="paper-nav-link paper-nav-prev" href="../../collection-papers/2410.08184/"><span class="paper-nav-label">← 上一篇</span><span class="paper-nav-title">Scaling Laws For Diffusion Transformers</span></a>
+      <a class="paper-nav-link paper-nav-next" href="../../collection-papers/2411.14863/"><span class="paper-nav-label">下一篇 →</span><span class="paper-nav-title">Latent Schrodinger Bridge: Prompting Latent Diffusion for Fast Unpaired Image-to-Image Translation</span></a></nav>
+    </main>
+
+    <footer class="footer">
+      <div class="container">
+        <p>内容来自 <a href="https://arxiv.org" target="_blank" rel="noopener noreferrer">arXiv.org</a>，阅读卡片由静态站点生成器构建。</p>
+      </div>
+    </footer>
+
+    <script src="../../assets/theme.js"></script>
+    <script src="../../assets/media.js"></script>
+    <script src="../../assets/paper.js"></script>
+  </body>
+</html>

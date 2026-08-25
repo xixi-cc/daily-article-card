@@ -1,0 +1,203 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Beyond Chinchilla-Optimal: Accounting for Inference in Language Model Scaling Laws - physics+AI Collection 随机精选</title>
+    <meta name="description" content="作者：Nikhil Sardana、Jacob Portes、Sasha Doubov、Jonathan Frankle；Databricks MosaicML。本卡核对 arXiv:2401.00448v3。" />
+    <script>
+      (function() {
+        try {
+          var themePreference = window.localStorage.getItem('color-theme') || 'system';
+          var systemUsesDarkTheme = window.matchMedia('(prefers-color-scheme: dark)').matches;
+          var resolvedTheme = themePreference === 'system'
+            ? (systemUsesDarkTheme ? 'dark' : 'light')
+            : themePreference;
+          document.documentElement.dataset.theme = resolvedTheme;
+          document.documentElement.dataset.themePreference = themePreference;
+          document.documentElement.style.colorScheme = resolvedTheme;
+        } catch (error) {
+          document.documentElement.dataset.theme = 'light';
+          document.documentElement.dataset.themePreference = 'system';
+        }
+      })();
+    </script>
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='18' fill='%23111827'/%3E%3Ctext x='50%25' y='55%25' text-anchor='middle' dominant-baseline='middle' font-size='30' font-family='Arial, sans-serif' fill='white'%3EV%3C/text%3E%3C/svg%3E" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700;800&family=Noto+Sans+SC:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <script>document.documentElement.classList.add('math-pending');</script>
+    <script>
+      window.MathJax = {
+        tex: {
+          inlineMath: [['$', '$'], ['\\(', '\\)']],
+          displayMath: [['$$', '$$'], ['\\[', '\\]']],
+          processEscapes: true
+        },
+        options: {
+          skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+        },
+        chtml: {
+          scale: 1,
+          displayAlign: 'center'
+        },
+        startup: {
+          ready: function() {
+            MathJax.startup.defaultReady();
+            MathJax.startup.promise.then(function() {
+              document.documentElement.classList.remove('math-pending');
+              document.documentElement.dataset.mathReady = 'true';
+            });
+          }
+        }
+      };
+    </script>
+    <script defer src="../../assets/vendor/mathjax/tex-chtml.js"></script>
+    <link rel="stylesheet" href="../../assets/style.css" />
+  </head>
+  <body class="detail-page" data-paper-id="2401.00448">
+    <div class="page-noise"></div>
+    <div class="page-blur page-blur-a"></div>
+    <div class="page-blur page-blur-b"></div>
+
+    <header class="header detail-page-header">
+      <div class="container">
+        <div class="detail-page-topbar">
+          <a class="back-link" href="../../collection.html">返回列表</a>
+          <div class="detail-topbar-actions">
+            <span class="detail-site-name">physics+AI Collection 随机精选</span>
+            <button class="theme-toggle" type="button" data-theme-toggle aria-label="当前主题：设备，点击切换主题" title="当前主题：设备">
+  <span class="theme-toggle-icons" aria-hidden="true">
+    <svg class="theme-toggle-icon theme-toggle-icon-light" viewBox="0 0 24 24" fill="none">
+      <circle cx="12" cy="12" r="3.5" stroke="currentColor" stroke-width="1.8"/>
+      <path d="M12 2.5v2M12 19.5v2M2.5 12h2M19.5 12h2M5.3 5.3l1.4 1.4M17.3 17.3l1.4 1.4M18.7 5.3l-1.4 1.4M6.7 17.3l-1.4 1.4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+    </svg>
+    <svg class="theme-toggle-icon theme-toggle-icon-dark" viewBox="0 0 24 24" fill="none">
+      <path d="M20 15.2A8.1 8.1 0 0 1 8.8 4a8.2 8.2 0 1 0 11.2 11.2z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>
+    </svg>
+    <svg class="theme-toggle-icon theme-toggle-icon-system" viewBox="0 0 24 24" fill="none">
+      <rect x="3" y="4" width="18" height="13" rx="2.5" stroke="currentColor" stroke-width="1.8"/>
+      <path d="M8 21h8M12 17v4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+    </svg>
+  </span>
+  <span class="theme-toggle-label" data-theme-toggle-label>设备</span>
+</button>
+          </div>
+        </div>
+
+        <div class="detail-hero-grid">
+          <div class="detail-hero-cover"><figure class="paper-figure-card paper-figure-card-detail">
+  <img class="paper-figure-image" src="../../assets/collection-figures/2401.00448/figure-1-inference-aware-scaling.webp" alt="13B Chinchilla 模型与更长训练的 7B 模型在预训练、推理和总 FLOPs 上的示意比较。" loading="lazy" onclick="window.openPaperFigureImage && window.openPaperFigureImage(this)" />
+  <figcaption class="paper-figure-caption">额外训练较小模型的成本只发生一次，而更小参数量在整个推理生命周期持续返还算力。</figcaption>
+</figure></div>
+          <div class="detail-hero-copy">
+            <p class="eyebrow">Collection 全文卡</p>
+            <h1 class="detail-page-title">Beyond Chinchilla-Optimal: Accounting for Inference in Language Model Scaling Laws</h1>
+            <p class="detail-page-title-zh">超越 Chinchilla 最优：把推理成本纳入语言模型缩放律</p>
+            <div class="detail-meta">Paper Collection · Scaling Laws · <a href="https://arxiv.org/abs/2401.00448" target="_blank" rel="noopener noreferrer">原文</a></div>
+            <p class="detail-summary">作者：Nikhil Sardana、Jacob Portes、Sasha Doubov、Jonathan Frankle；Databricks MosaicML。本卡核对 arXiv:2401.00448v3。</p>
+            <div class="detail-micro-meta">
+              <span class="meta-pill">7 分钟读完</span>
+              <span class="meta-pill">8 张阅读卡</span>
+              <span class="meta-pill">作者：Nikhil Sardana、Jacob Portes、Sasha Doubov、Jonatha…</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <main class="container detail-layout">
+      <div class="detail-shell">
+        <article id="detail-body" class="reading-flow"><section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 01</span>
+    <span class="reading-step-note">作者信息</span>
+  </div>
+  <h2>作者信息</h2>
+  <div class="reading-card-content"><ul><li>作者：Nikhil Sardana、Jacob Portes、Sasha Doubov、Jonathan Frankle；Databricks MosaicML。本卡核对 arXiv:2401.00448v3。</li></ul></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 02</span>
+    <span class="reading-step-note">研究问题</span>
+  </div>
+  <h2>研究问题</h2>
+  <div class="reading-card-content"><ul><li>Chinchilla 缩放律在给定预训练算力下平衡参数量 N 与训练 token 数 D，却把模型生命周期中的推理需求 I 排除在目标函数外。若模型要服务十亿量级请求，最小训练损失的模型未必是总算力或总美元成本最低的模型。</li><li>论文求解给定目标质量和推理量时的 N、D：是否应训练更小模型并用更多 token 补回质量，以换取每一次推理都更便宜？</li></ul></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 03</span>
+    <span class="reading-step-note">背景</span>
+  </div>
+  <h2>背景</h2>
+  <div class="reading-card-content"><ul><li>经验损失写成 L(N,D)=E+A/N^alpha+B/D^beta；训练计算近似与 ND 成正比，而 autoregressive 推理成本近似与 N 乘输入/输出 token 数成正比。加入 I 后，目标面沿小 N、大 D 方向倾斜。</li><li>这是一种 amortization 问题：额外预训练只付一次，减小 N 的推理收益在全部请求上重复累积，因此 break-even 取决于生命周期流量与硬件效率。</li></ul></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 04</span>
+    <span class="reading-step-note">模型与方法</span>
+  </div>
+  <h2>模型与方法</h2>
+  <div class="reading-card-content"><ul><li>作者分别最小化 training+inference FLOPs 与现实美元成本；后者区分训练、prompt processing 和 generation 的 MFU、硬件价格与请求长度。给定 loss 水平扫描 N,D，和不计推理的 Chinchilla-style 解比较。</li><li>实验训练 47 个、150M–6B 参数模型，token/parameter 比最高到 10,000；用 validation loss 与多任务 Gauntlet average 检验超长训练能否让小模型匹配较大模型。</li><li>作者还逐步扩展用于拟合缩放律的数据范围，检验仅在常见 token/parameter 区域拟合是否可外推到极端长训练。</li></ul></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 05</span>
+    <span class="reading-step-note">核心结果与证据</span>
+  </div>
+  <h2>核心结果与证据</h2>
+  <div class="reading-card-content"><ul><li>Figure 1 的 13B→7B 示例最直观：在约 2T 推理 token 需求下，把更多算力移到 7B 的预训练可匹配质量，并因推理更便宜节省约 1.7×10^22 FLOPs，即 17%。</li><li>当推理量接近预训练数据规模，最优解系统性地变为更小 N、更大 D；论文把约十亿请求视为足以显著改变选择的现实量级。47 个模型中，loss 与 Gauntlet 指标在极端 tokens/parameter 范围仍继续改善。</li><li>Figure 5 显示常规训练比率上拟合的参数曲线不能准确描述 150M 的长训练轨迹；因此结论既支持 inference-aware allocation，也警告缩放律的外推依赖采样设计。</li></ul><figure class="evidence-figure">
+  <button class="evidence-figure-image-button" type="button" aria-label="放大查看 Figure 1" onclick="window.openPaperFigureImage && window.openPaperFigureImage(this.querySelector('img'))">
+    <img class="paper-figure-image evidence-figure-image" src="../../assets/collection-figures/2401.00448/figure-1-inference-aware-scaling.webp" alt="预训练曲线、推理 token 线和 13B/7B 计算柱形图。" loading="lazy" />
+  </button>
+  <figcaption>
+    <strong>Figure 1</strong> · 7B 模型用额外训练换取相同质量，并在大量推理时回收总计算。
+    <span class="evidence-figure-reading">物理解读：推理需求越大，一次性训练成本相对重复部署成本越不重要。</span>
+    <span class="evidence-figure-source">来源：paper.pdf p. 2, Figure 1</span>
+  </figcaption>
+</figure></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 06</span>
+    <span class="reading-step-note">有效性与局限</span>
+  </div>
+  <h2>有效性与局限</h2>
+  <div class="reading-card-content"><ul><li>推理成本模型依赖请求长度、batching、KV cache、量化、memory bandwidth 与实际 MFU；这些会随硬件和 serving stack 改变。美元最优不等于能耗、延迟或显存约束下最优。</li><li>实验最大仅 6B，极端比率证据主要来自较小模型；不能无条件外推到前沿模型、不同数据质量或 post-training。固定 loss/Gauntlet 也不保证能力谱、安全性和上下文长度等价。</li><li>结论是条件优化而非“小模型总更好”。该卡 no independent reproduction performed，未重拟合缩放律或训练模型。</li></ul></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 07</span>
+    <span class="reading-step-note">复现与资源</span>
+  </div>
+  <h2>复现与资源</h2>
+  <div class="reading-card-content"><ul><li>原文：https://arxiv.org/abs/2401.00448；PDF：https://arxiv.org/pdf/2401.00448。全文 SHA-256：284809fbaa8a3d5185a6da7748ad2ba14fa55541f5d9ce579b0f03d6700fe8db；17 页。</li><li>复现需固定 47 个训练 run、tokenizer/data mixture、loss 与 Gauntlet 口径、拟合区间、FLOP 常数、prompt/output 长度、MFU、硬件租价和生命周期推理量。</li><li>Evidence status: full-text verified; no independent reproduction performed.</li></ul></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 08</span>
+    <span class="reading-step-note">阅读指南</span>
+  </div>
+  <h2>阅读指南</h2>
+  <div class="reading-card-content"><ul><li>先看 Figure 1 的 break-even 图，再读 Figures 2/6 的 N、D 比率；最后用 Figure 3/5 判断长训练证据是否覆盖优化器要求的区域。</li><li>物理上可把推理量 I 视为改变自由能的外场：它不改变单次模型的损失面，却通过重复使用项移动资源分配的鞍点。</li></ul></div>
+</section></article>
+        <aside id="detail-toc" class="detail-toc hidden" aria-label="内容目录">
+          <p class="detail-toc-title">阅读目录</p>
+          <nav id="detail-toc-nav" class="detail-toc-nav"></nav>
+        </aside>
+      </div>
+      <nav class="paper-nav"><a class="paper-nav-link paper-nav-prev" href="../../collection-papers/2309.12991/"><span class="paper-nav-label">← 上一篇</span><span class="paper-nav-title">Deep learning probability flows and entropy production rates in active matter</span></a>
+      <a class="paper-nav-link paper-nav-next" href="../../collection-papers/2401.04082/"><span class="paper-nav-label">下一篇 →</span><span class="paper-nav-title">Improved motif-scaffolding with SE(3) flow matching</span></a></nav>
+    </main>
+
+    <footer class="footer">
+      <div class="container">
+        <p>内容来自 <a href="https://arxiv.org" target="_blank" rel="noopener noreferrer">arXiv.org</a>，阅读卡片由静态站点生成器构建。</p>
+      </div>
+    </footer>
+
+    <script src="../../assets/theme.js"></script>
+    <script src="../../assets/media.js"></script>
+    <script src="../../assets/paper.js"></script>
+  </body>
+</html>

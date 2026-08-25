@@ -1,0 +1,203 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Improving Rectified Flow with Boundary Conditions - physics+AI Collection 随机精选</title>
+    <meta name="description" content="作者：Xixi Hu、Runlong Liao、Keyang Xu、Bo Liu、Yeqing Li、Eugene Ie、Hongliang Fei、Qiang Liu。本卡核对 arXiv:2506.15864v2。" />
+    <script>
+      (function() {
+        try {
+          var themePreference = window.localStorage.getItem('color-theme') || 'system';
+          var systemUsesDarkTheme = window.matchMedia('(prefers-color-scheme: dark)').matches;
+          var resolvedTheme = themePreference === 'system'
+            ? (systemUsesDarkTheme ? 'dark' : 'light')
+            : themePreference;
+          document.documentElement.dataset.theme = resolvedTheme;
+          document.documentElement.dataset.themePreference = themePreference;
+          document.documentElement.style.colorScheme = resolvedTheme;
+        } catch (error) {
+          document.documentElement.dataset.theme = 'light';
+          document.documentElement.dataset.themePreference = 'system';
+        }
+      })();
+    </script>
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='18' fill='%23111827'/%3E%3Ctext x='50%25' y='55%25' text-anchor='middle' dominant-baseline='middle' font-size='30' font-family='Arial, sans-serif' fill='white'%3EV%3C/text%3E%3C/svg%3E" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700;800&family=Noto+Sans+SC:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <script>document.documentElement.classList.add('math-pending');</script>
+    <script>
+      window.MathJax = {
+        tex: {
+          inlineMath: [['$', '$'], ['\\(', '\\)']],
+          displayMath: [['$$', '$$'], ['\\[', '\\]']],
+          processEscapes: true
+        },
+        options: {
+          skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+        },
+        chtml: {
+          scale: 1,
+          displayAlign: 'center'
+        },
+        startup: {
+          ready: function() {
+            MathJax.startup.defaultReady();
+            MathJax.startup.promise.then(function() {
+              document.documentElement.classList.remove('math-pending');
+              document.documentElement.dataset.mathReady = 'true';
+            });
+          }
+        }
+      };
+    </script>
+    <script defer src="../../assets/vendor/mathjax/tex-chtml.js"></script>
+    <link rel="stylesheet" href="../../assets/style.css" />
+  </head>
+  <body class="detail-page" data-paper-id="2506.15864">
+    <div class="page-noise"></div>
+    <div class="page-blur page-blur-a"></div>
+    <div class="page-blur page-blur-b"></div>
+
+    <header class="header detail-page-header">
+      <div class="container">
+        <div class="detail-page-topbar">
+          <a class="back-link" href="../../collection.html">返回列表</a>
+          <div class="detail-topbar-actions">
+            <span class="detail-site-name">physics+AI Collection 随机精选</span>
+            <button class="theme-toggle" type="button" data-theme-toggle aria-label="当前主题：设备，点击切换主题" title="当前主题：设备">
+  <span class="theme-toggle-icons" aria-hidden="true">
+    <svg class="theme-toggle-icon theme-toggle-icon-light" viewBox="0 0 24 24" fill="none">
+      <circle cx="12" cy="12" r="3.5" stroke="currentColor" stroke-width="1.8"/>
+      <path d="M12 2.5v2M12 19.5v2M2.5 12h2M19.5 12h2M5.3 5.3l1.4 1.4M17.3 17.3l1.4 1.4M18.7 5.3l-1.4 1.4M6.7 17.3l-1.4 1.4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+    </svg>
+    <svg class="theme-toggle-icon theme-toggle-icon-dark" viewBox="0 0 24 24" fill="none">
+      <path d="M20 15.2A8.1 8.1 0 0 1 8.8 4a8.2 8.2 0 1 0 11.2 11.2z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>
+    </svg>
+    <svg class="theme-toggle-icon theme-toggle-icon-system" viewBox="0 0 24 24" fill="none">
+      <rect x="3" y="4" width="18" height="13" rx="2.5" stroke="currentColor" stroke-width="1.8"/>
+      <path d="M8 21h8M12 17v4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+    </svg>
+  </span>
+  <span class="theme-toggle-label" data-theme-toggle-label>设备</span>
+</button>
+          </div>
+        </div>
+
+        <div class="detail-hero-grid">
+          <div class="detail-hero-cover"><figure class="paper-figure-card paper-figure-card-detail">
+  <img class="paper-figure-image" src="../../assets/collection-figures/2506.15864/figure-2-boundary-stability.webp" alt="vanilla 与 Boundary RF 在 toy 分布上的 Euler/SDE 轨迹、边界速度和 score 场对比。" loading="lazy" onclick="window.openPaperFigureImage && window.openPaperFigureImage(this)" />
+  <figcaption class="paper-figure-caption">边界条件抑制端点 velocity error 被 score 公式放大，从而稳定随机采样并保持目标分布结构。</figcaption>
+</figure></div>
+          <div class="detail-hero-copy">
+            <p class="eyebrow">Collection 全文卡</p>
+            <h1 class="detail-page-title">Improving Rectified Flow with Boundary Conditions</h1>
+            <p class="detail-page-title-zh">用边界条件改进 Rectified Flow</p>
+            <div class="detail-meta">Paper Collection · Flow Matching · <a href="https://arxiv.org/abs/2506.15864" target="_blank" rel="noopener noreferrer">原文</a></div>
+            <p class="detail-summary">作者：Xixi Hu、Runlong Liao、Keyang Xu、Bo Liu、Yeqing Li、Eugene Ie、Hongliang Fei、Qiang Liu。本卡核对 arXiv:2506.15864v2。</p>
+            <div class="detail-micro-meta">
+              <span class="meta-pill">9 分钟读完</span>
+              <span class="meta-pill">8 张阅读卡</span>
+              <span class="meta-pill">作者：Xixi Hu、Runlong Liao、Keyang Xu、Bo Liu、Yeqing Li、…</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <main class="container detail-layout">
+      <div class="detail-shell">
+        <article id="detail-body" class="reading-flow"><section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 01</span>
+    <span class="reading-step-note">作者信息</span>
+  </div>
+  <h2>作者信息</h2>
+  <div class="reading-card-content"><ul><li>作者：Xixi Hu、Runlong Liao、Keyang Xu、Bo Liu、Yeqing Li、Eugene Ie、Hongliang Fei、Qiang Liu。本卡核对 arXiv:2506.15864v2。</li></ul></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 02</span>
+    <span class="reading-step-note">研究问题</span>
+  </div>
+  <h2>研究问题</h2>
+  <div class="reading-card-content"><ul><li>Rectified Flow 用 unconstrained neural field v_theta(x,t) 逼近线性插值速度。有限数据/网络下，它可能违反 t=0 或 t=1 的解析 boundary conditions；ODE 采样尚可容忍，但从 velocity 转 score 的除法会在边界放大误差。</li><li>论文问能否用最小代码改动把端点条件写进参数化，使确定性 ODE 和带随机性的 SDE/overshooting sampler 都更稳定。</li></ul></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 03</span>
+    <span class="reading-step-note">背景</span>
+  </div>
+  <h2>背景</h2>
+  <div class="reading-card-content"><ul><li>在线性 interpolation x_t=(1-t)x_0+t x_1 下，端点 conditional velocity 有已知结构。vanilla network 对全时间域自由拟合，不保证边界极限；score reconstruction 常含 1/t 或 1/(1-t) 因子。</li><li>边界约束类似 numerical PDE 中的 hard ansatz：用 time-dependent mask 或 subtract boundary residual，让网络只学习满足端点后剩余的自由函数。</li></ul></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 04</span>
+    <span class="reading-step-note">模型与方法</span>
+  </div>
+  <h2>模型与方法</h2>
+  <div class="reading-card-content"><ul><li>Mask-based model 用 f(t),g(t),h(t) 组合已知端点项与可学习 m_theta，使 t=0/1 自动满足；subtraction-based model 从 vanilla prediction 减去在边界的违反量，保持架构和训练流程基本不变。</li><li>toy mixture 显示 vanilla score near boundary 发散；Boundary RF field 保持正确终点。CIFAR-10/ImageNet-256/512 比较 ODE Euler、SDE 与 overshooting samplers。</li><li>消融单边/双边约束、不同 boundary functions、step counts 和 stochasticity c；FLUX.1-dev 端点预测用于说明 pretrained large flow 也存在 violation，但论文没有重训 FLUX。</li></ul></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 05</span>
+    <span class="reading-step-note">核心结果与证据</span>
+  </div>
+  <h2>核心结果与证据</h2>
+  <div class="reading-card-content"><ul><li>Figure 2 把 Euler、stochastic trajectory、t=1 velocity field 与 score function 并列：vanilla 在边界形成异常流和发散 score，Boundary RF 保持目标几何并允许更强随机采样。</li><li>ImageNet 上相对 vanilla，作者报告 ODE FID 改善 8.01%，SDE FID 改善 8.98%；多 step counts 与 256/512 设置总体一致。改善应看 absolute FID、precision/recall 与相同训练 seed，而不只百分比。</li><li>Figure 4/7 的 paired samples 显示边界模型的结构和细节更清楚；Table 3 随 overshooting noise c 增大时，boundary variants 更稳，支持“边界误差被随机采样放大”的机制。</li></ul><figure class="evidence-figure">
+  <button class="evidence-figure-image-button" type="button" aria-label="放大查看 Figure 2" onclick="window.openPaperFigureImage && window.openPaperFigureImage(this.querySelector('img'))">
+    <img class="paper-figure-image evidence-figure-image" src="../../assets/collection-figures/2506.15864/figure-2-boundary-stability.webp" alt="两行多列的分布轨迹和矢量场。" loading="lazy" />
+  </button>
+  <figcaption>
+    <strong>Figure 2</strong> · Boundary RF 去除边界奇异行为。
+    <span class="evidence-figure-reading">物理解读：stochastic sampler exposes errors that may remain less visible in deterministic ODE trajectories.</span>
+    <span class="evidence-figure-source">来源：paper.pdf p. 4, Figure 2</span>
+  </figcaption>
+</figure></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 06</span>
+    <span class="reading-step-note">有效性与局限</span>
+  </div>
+  <h2>有效性与局限</h2>
+  <div class="reading-card-content"><ul><li>硬约束正确的前提是 interpolation/noise convention 与解析 boundary condition 完全匹配；更换 path、data preprocessing 或 prediction target 后必须重推，错误约束会引入系统偏差。</li><li>FID 改善来自有限模型/数据和作者 recipe；相同随机 seed 增强可比性但不能替代多 seed uncertainty。FLUX violation 只是诊断，不证明修改能无代价提升该模型。</li><li>boundary ansatz 约束端点，不能保证 interior velocity、continuity equation 或 likelihood 全局正确。该卡 no independent reproduction performed。</li></ul></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 07</span>
+    <span class="reading-step-note">复现与资源</span>
+  </div>
+  <h2>复现与资源</h2>
+  <div class="reading-card-content"><ul><li>原文：https://arxiv.org/abs/2506.15864；PDF：https://arxiv.org/pdf/2506.15864。全文 SHA-256：3c303db371f192730a153b688a1c17f4d45ead013f048e5bde41499f7e7f1275；15 页。</li><li>复现需固定 interpolation、velocity/score formula、boundary functions、network/optimizer、sampler/NFE、overshooting c、EMA、CFG、ImageNet preprocessing、FID/IS/precision/recall sample sets 与 seeds。</li><li>Evidence status: full-text verified; no independent reproduction performed.</li></ul></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 08</span>
+    <span class="reading-step-note">阅读指南</span>
+  </div>
+  <h2>阅读指南</h2>
+  <div class="reading-card-content"><ul><li>先在 toy model 手算端点 velocity/score，再读两种 constrained parameterization；用 Figure 2 验证机制，再看 Tables 1/3 与 step-count ablation 判断收益是否来自稳定性。</li><li>物理上这是奇异坐标变换的 regularity 条件：velocity 的小端点误差在转成 score 时乘上发散系数，hard boundary condition 消除了这个相关奇点。</li></ul></div>
+</section></article>
+        <aside id="detail-toc" class="detail-toc hidden" aria-label="内容目录">
+          <p class="detail-toc-title">阅读目录</p>
+          <nav id="detail-toc-nav" class="detail-toc-nav"></nav>
+        </aside>
+      </div>
+      <nav class="paper-nav"><a class="paper-nav-link paper-nav-prev" href="../../collection-papers/2506.02070/"><span class="paper-nav-label">← 上一篇</span><span class="paper-nav-title">An Introduction to Flow Matching and Diffusion Models</span></a>
+      <a class="paper-nav-link paper-nav-next" href="../../collection-papers/2507.21621/"><span class="paper-nav-label">下一篇 →</span><span class="paper-nav-title">What exactly is &#x27;active matter&#x27;?</span></a></nav>
+    </main>
+
+    <footer class="footer">
+      <div class="container">
+        <p>内容来自 <a href="https://arxiv.org" target="_blank" rel="noopener noreferrer">arXiv.org</a>，阅读卡片由静态站点生成器构建。</p>
+      </div>
+    </footer>
+
+    <script src="../../assets/theme.js"></script>
+    <script src="../../assets/media.js"></script>
+    <script src="../../assets/paper.js"></script>
+  </body>
+</html>
