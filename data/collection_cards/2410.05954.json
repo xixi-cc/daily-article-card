@@ -1,0 +1,159 @@
+{
+  "arxiv_id": "2410.05954",
+  "source_version": "v2",
+  "source_pdf": "https://arxiv.org/pdf/2410.05954",
+  "title_en": "Pyramidal Flow Matching for Efficient Video Generative Modeling",
+  "title_zh": "金字塔流匹配：沿生成时间逐级释放视频分辨率",
+  "curation_status": "full_text_verified",
+  "sections": [
+    {
+      "title": "作者信息",
+      "bullets": [
+        "作者：Yang Jin、Zhicheng Sun、Ningyuan Li、Kun Xu、Hao Jiang、Nan Zhuang、Quzhe Huang、Yang Song、Yadong Mu、Zhouchen Lin；PDF 与 arXiv 元数据中 Kun Xu 出现两次，本卡不据此推断为两位不同作者。",
+        "机构：Peking University、Kuaishou Technology、Beijing University of Posts and Telecommunications、Pazhou Laboratory 等。论文发表于 ICLR 2025；本卡核对 arXiv:2410.05954v2。",
+        "项目页与代码：https://pyramid-flow.github.io。"
+      ]
+    },
+    {
+      "title": "研究问题",
+      "bullets": [
+        "视频 latent 的 token 数同时随空间分辨率与时间长度增长，而 DiT attention 成本近似随 token 数平方增长。标准扩散却在接近纯噪声、信息量很低的早期阶段也使用全分辨率，造成大量计算消耗在尚未形成细节的自由度上。",
+        "论文把去噪时间重解释为一条跨分辨率的分段概率流：先在低分辨率形成大尺度结构，再逐级解压到高分辨率；同时用压缩历史作为自回归条件，减少长视频的时间冗余。"
+      ]
+    },
+    {
+      "title": "背景",
+      "bullets": [
+        "普通 flow matching 学习速度场 v_t，使噪声 x_0 沿 ODE 运动到数据 x_1。线性概率路径的目标速度是 x_1−x_0，因此训练不必数值模拟整条 ODE。",
+        "传统 cascade 为每个分辨率训练独立生成器或 super-resolution 模型，计算较低但知识无法共享。金字塔流保持单一 2B MM-DiT，将生成与解压写进同一速度场回归目标。"
+      ]
+    },
+    {
+      "title": "模型与方法",
+      "bullets": [
+        "基础连续动力学为",
+        "\\[\\frac{d x_t}{dt}=v_t(x_t),\\qquad x_t=t x_1+(1-t)x_0.\\]",
+        "区间 [0,1] 被分成 K 个 stage；第 k 段只在相邻两级分辨率之间插值。作者耦合每段端点所用的噪声方向，再用统一损失回归段内位移：",
+        "\\[\\mathcal L_{\\mathrm{pyr}}=\\mathbb E_{k,t}\\left\\|v_t(\\hat x_t)-(\\hat x_{e_k}-\\hat x_{s_k})\\right\\|^2.\\]",
+        "推断跨 stage 时，上采样会产生块内强相关。方法对均值作 rescaling，并加入具有负块内相关的 corrective noise，使跳点前后的高斯边缘分布连续。时间金字塔则让较早历史帧以更低空间分辨率进入 causal attention。"
+      ]
+    },
+    {
+      "title": "核心结果与证据",
+      "bullets": [
+        "Figure 2 是机制核心：左侧把噪声到图像的路径分成逐级增分辨率的 stage；右侧在 jump point 上采样后重新加噪，以消除复制像素造成的块内相关并接入下一段概率流。",
+        "复杂度估算中，全序列 DiT 对 T 帧、每帧 N tokens 使用 TN tokens 与 T²N² attention 量；时间金字塔把最终 stage 的量级压到约 TN/4^K 和 T²N²/16^K。该式是架构计数，不等于端到端 wall-clock 加速。",
+        "作者报告用 20.7k A100 GPU-hours 训练 2B 模型，生成 5 秒（可到 10 秒）、768p、24 fps 视频；384p、5 秒样本推断约 56 秒。VBench 总分 81.72、质量分 84.74、语义分 69.62，显示质量强但语义指标并非表中最高。",
+        "Figure 7 的受控 image baseline 保持数据、token/batch、架构与超参数一致，空间金字塔的 FID 收敛约快三倍；Figure 8 的时间金字塔在相同步数下比 full-sequence baseline 更接近收敛。这些消融支持训练效率，而不是证明所有视频分布都服从同一加速比。"
+      ]
+    },
+    {
+      "title": "有效性与局限",
+      "bullets": [
+        "piecewise flow 的连续性依赖 jump-point Gaussian matching、上/下采样算子和共享噪声耦合；若 latent 分布显著非高斯或压缩器改变局域统计，修正噪声的充分性需要重新检验。",
+        "VBench/EvalCrafter 与 50 prompts、20+ participants 的用户研究覆盖视觉质量、运动与文本一致性，但商业模型的数据和训练预算不可比。人类偏好表中方法对 Kling 的 motion 偏好仅 32.5%，对 CogVideoX-5B 的 semantic 偏好为 38.6%，不能概括成全面领先。",
+        "Appendix 指出颜色、appearance style、face consistency 和 human action 较弱；模型未学习场景转场，部分 prompt（如 salt desert）不够忠实。开放数据与 caption 质量仍是主要限制。",
+        "该卡核对全文、公式、图和公开指标；no independent reproduction performed，未重训 20.7k GPU-hours 模型，也未独立复算 VBench 或用户偏好。"
+      ]
+    },
+    {
+      "title": "复现与资源",
+      "bullets": [
+        "原文：https://arxiv.org/abs/2410.05954；PDF：https://arxiv.org/pdf/2410.05954；项目页：https://pyramid-flow.github.io。",
+        "全文快照 SHA-256：6893963ea0a9b1c6f669212a179098c91c1603c60f01b0b4379a9cb9ceaa5699；PDF 共 25 个实质页面。",
+        "复现需固定 3D VAE 的 8×8×8 压缩、K=3、stage time windows、端点噪声耦合、jump renoising、blockwise causal attention、数据清洗/recaption、三阶段训练和 benchmark 版本。",
+        "Evidence status: full-text verified; no independent reproduction performed."
+      ]
+    },
+    {
+      "title": "阅读指南",
+      "bullets": [
+        "先读 Eq. (1)–(4) 复习标准 flow matching，再结合 Figure 2 与 Eq. (5)–(15) 检查分段流和跳点 covariance matching；不要只把它理解成普通 multi-scale architecture。",
+        "第 6 页 Figure 3 解释时间历史如何压缩；第 7–10 页应把理论 token 复杂度、实际 GPU-hours、benchmark 和受控消融分别阅读。",
+        "若关心物理/生成动力学，重点是“何时释放哪些自由度”：低频结构先形成，高频与长时细节后解锁；若关心工程性能，则必须连同 VAE、数据和 MM-DiT 基座一起评估。"
+      ]
+    }
+  ],
+  "cover": {
+    "mode": "source_figure",
+    "asset_path": "assets/collection-figures/2410.05954/figure-2-spatial-pyramid.webp",
+    "label": "Figure 2",
+    "visual_type": "schematic",
+    "evidence": "arXiv:2410.05954v2, paper.pdf p. 4, Figure 2",
+    "alt_text": "左侧显示从低分辨率噪声逐级生成高清图像的空间金字塔，右侧显示跨分辨率跳点的上采样与修正加噪。",
+    "caption": "空间金字塔把一条全分辨率去噪轨迹改写为多段低到高分辨率概率流，并在跳点用 renoising 保持统计连续。",
+    "selection_rationale": "Figure 2 是论文最重要的机制图，同时呈现分段生成与 jump-point 连续性；它比 benchmark 表或生成样本更能说明方法的物理结构。"
+  },
+  "figure_refs": [
+    {
+      "label": "Figure 2",
+      "asset_path": "assets/collection-figures/2410.05954/figure-2-spatial-pyramid.webp",
+      "section": "核心结果与证据",
+      "role": "show staged release of spatial degrees of freedom and the continuity correction",
+      "evidence": "arXiv:2410.05954v2, paper.pdf p. 4, Figure 2",
+      "alt_text": "左侧显示从低分辨率噪声逐级生成高清图像的空间金字塔，右侧显示跨分辨率跳点的上采样与修正加噪。",
+      "caption": "分辨率随 flow time 分段增加；每次上采样后加入协方差匹配的修正噪声。",
+      "interpretation": "方法把高频自由度延迟到生成后期，只在它们开始携带信息时支付全分辨率计算。"
+    }
+  ],
+  "evidence_refs": [
+    "paper.pdf pp. 3-5: standard flow matching, spatial pyramid objective, and jump-point renoising",
+    "paper.pdf pp. 5-7: temporal pyramid, implementation, datasets, and model setup",
+    "paper.pdf pp. 7-10: complexity estimate, benchmarks, user study, and controlled ablations",
+    "paper.pdf pp. 21-23: metric weaknesses, prompt fidelity, and scene-transition limitations",
+    "source PDF SHA-256 6893963ea0a9b1c6f669212a179098c91c1603c60f01b0b4379a9cb9ceaa5699",
+    "Evidence status: full-text verified; no independent reproduction performed."
+  ],
+  "verified_metadata": {
+    "arxiv_id": "2410.05954",
+    "version": "v2",
+    "title": "Pyramidal Flow Matching for Efficient Video Generative Modeling",
+    "abstract": "Video generation requires modeling a vast spatiotemporal space, which demands significant computational resources and data usage. To reduce the complexity, the prevailing approaches employ a cascaded architecture to avoid direct training with full resolution latent. Despite reducing computational demands, the separate optimization of each sub-stage hinders knowledge sharing and sacrifices flexibility. This work introduces a unified pyramidal flow matching algorithm. It reinterprets the original denoising trajectory as a series of pyramid stages, where only the final stage operates at the full resolution, thereby enabling more efficient video generative modeling. Through our sophisticated design, the flows of different pyramid stages can be interlinked to maintain continuity. Moreover, we craft autoregressive video generation with a temporal pyramid to compress the full-resolution history. The entire framework can be optimized in an end-to-end manner and with a single unified Diffusion Transformer (DiT). Extensive experiments demonstrate that our method supports generating high-quality 5-second (up to 10-second) videos at 768p resolution and 24 FPS within 20.7k A100 GPU training hours. All code and models are open-sourced at https://pyramid-flow.github.io.",
+    "authors": ["Yang Jin", "Zhicheng Sun", "Ningyuan Li", "Kun Xu", "Kun Xu", "Hao Jiang", "Nan Zhuang", "Quzhe Huang", "Yang Song", "Yadong Mu", "Zhouchen Lin"],
+    "categories": ["cs.CV", "cs.LG"],
+    "primary_category": "cs.CV",
+    "published": "2024-10-08T12:10:37Z",
+    "comment": ""
+  },
+  "card_standard_version": "2.3",
+  "paper_profile": "ai_empirical",
+  "style_reference": "physicist_daily_arxiv",
+  "provenance": {
+    "program": "Collection",
+    "catalog": "Paper Collection",
+    "catalog_record_id": "525f635323cc836e",
+    "catalog_topic": "Flow Matching",
+    "collection_date": "2026-08-24",
+    "sampled_at": "2026-08-26",
+    "selected_by": "deterministic_random_sample",
+    "sampling_seed": "paper-collection-random50-2026-08-26-v1",
+    "candidate_count": 272
+  },
+  "equation_refs": [
+    {
+      "label": "Flow ODE",
+      "latex": "\\frac{d x_t}{dt}=v_t(x_t)",
+      "role": "continuous generative dynamics",
+      "symbols": {
+        "x_t": "latent state at flow time t",
+        "v_t": "learned time-dependent velocity field",
+        "t": "generation time from noise to data"
+      },
+      "evidence": "paper.pdf p. 3, Eq. (1)",
+      "interpretation": "Generation is a deterministic transport once the velocity field is fixed; the pyramid changes the dimensional representation along this transport."
+    },
+    {
+      "label": "Unified pyramidal flow objective",
+      "latex": "\\mathcal L_{\\mathrm{pyr}}=\\mathbb E_{k,t}\\left\\|v_t(\\hat x_t)-(\\hat x_{e_k}-\\hat x_{s_k})\\right\\|^2",
+      "role": "train one velocity model across all spatial pyramid stages",
+      "symbols": {
+        "k": "pyramid stage",
+        "s_k,e_k": "stage start and end times",
+        "hat_x_t": "interpolated latent at the current resolution",
+        "v_t": "shared velocity field"
+      },
+      "evidence": "paper.pdf p. 4, Eq. (11)",
+      "interpretation": "Each stage regresses a displacement between coupled endpoints, allowing generation and decompression to share one DiT."
+    }
+  ]
+}

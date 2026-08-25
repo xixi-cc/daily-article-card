@@ -1,0 +1,170 @@
+{
+  "arxiv_id": "2202.00553",
+  "source_version": "v2",
+  "source_pdf": "https://arxiv.org/pdf/2202.00553",
+  "title_en": "Neural Tangent Kernel Beyond the Infinite-Width Limit: Effects of Depth and Initialization",
+  "title_zh": "超越无限宽极限：深宽比与初始化如何控制 NTK 涨落",
+  "curation_status": "full_text_verified",
+  "sections": [
+    {
+      "title": "作者信息",
+      "bullets": [
+        "作者：Mariia Seleznova、Gitta Kutyniok；机构为 Ludwig-Maximilians-Universität München 数学系。论文发表于 ICML 2022（PMLR 162），本卡核对 arXiv:2202.00553v2。",
+        "代码：https://github.com/mselezniova/ntk。"
+      ]
+    },
+    {
+      "title": "研究问题",
+      "bullets": [
+        "无限宽、固定深度极限把神经网络训练约化为由初始化处 Neural Tangent Kernel（NTK）控制的线性动力学。但真实网络的深度 L 与宽度 M 都有限，且两者之比可能不小；此时核是否仍然自平均、训练中是否近似不变，不能由先取 M→∞ 的极限直接回答。",
+        "论文研究 fully connected ReLU 网络在联合极限 L,M→∞ 且 λ=L/M 有限时的 NTK 涨落，并追问 ordered、edge-of-chaos 与 chaotic 三种初始化相中，有限宽修正如何影响 lazy-training 图景。"
+      ]
+    },
+    {
+      "title": "背景",
+      "bullets": [
+        "NTK 是参数空间梯度在两个输入上的内积：",
+        "\\[\\Theta(x,\\tilde x)=\\nabla_w f(x)\\cdot\\nabla_w f(\\tilde x).\\]",
+        "若宽度趋于无穷且深度固定，Θ 在初始化处收敛到确定核，并在梯度流中保持常数。该陈述隐含了极限次序；当 L 与 M 同时增长时，每一层的 O(1/M) 随机修正可沿深度累积成 O(L/M) 效应。",
+        "对 ReLU 网络，权重方差通过 a=σ_w²/2 区分 ordered（a<1）、edge of chaos（a=1）与 chaotic（a>1）相。这里的“相”描述前向相关和反向梯度沿层传播的稳定性，而不是训练数据的统计相变。"
+      ]
+    },
+    {
+      "title": "模型与方法",
+      "bullets": [
+        "作者对深度 L、每层宽度 M 的全连接 ReLU 网络计算 NTK 的一阶与二阶矩，采用零偏置并讨论 gradient-independence approximation。控制有限宽涨落的量为深宽比 λ=L/M，而非单独的 L 或 M。",
+        "用归一化二阶矩衡量核是否自平均：",
+        "\\[\\rho_\\Theta=\\frac{\\mathbb E[\\Theta^2(x,x)]}{\\mathbb E[\\Theta(x,x)]^2},\\qquad \\lambda=\\frac{L}{M}.\\]",
+        "若 ρ_Θ−1 随 λ 消失，单个网络的核接近总体平均；若它随 λ 指数增长，初始化之间的样本差异在深网络中被放大，确定性无限宽核不再代表典型有限网络。理论递推由有限宽矩展开得到，再以多组 M、L 和初始化的 Monte Carlo 实验检验。"
+      ]
+    },
+    {
+      "title": "核心定理与证据",
+      "bullets": [
+        "理论主结论是相依赖的：在 ordered 相，NTK 的相对涨落在联合深宽极限中保持受控；在 edge-of-chaos 与 chaotic 相，ρ_Θ 随 λ 指数增长。因此“宽度很大”并不足够，深度必须相对宽度受限，才能让 NTK 集中到其无限宽平均。",
+        "Figure 1 直接检验该尺度变量：M=100、200、500 的数值点以 λ=L/M 重排后与理论曲线相符，说明不同绝对宽度的偏离主要由深宽比组织。图中每点使用 500 个初始化并给出 bootstrap 误差，但这仍是特定全连接 ReLU ensemble 内的验证。",
+        "Figure 4 把抽象的核涨落变成训练中的可视结构：在 MNIST 上，ordered 初始化的 NTK 热图逐渐形成与标签一致的块结构；edge-of-chaos 和 chaotic 初始化下，核在 0、100、500、3000 epochs 间变化更强、更弥散。它说明有限宽核不仅在初始化处随机，训练轨迹也可能离开 frozen-kernel 近似。",
+        "作者进一步指出，在非 ordered 相若仍要强制 lazy training，需要让输出/学习率重标度随深度显著增大；这是一种人为压低参数位移的构造，不等同于普通参数化网络自然处于 NTK regime。"
+      ]
+    },
+    {
+      "title": "有效性与局限",
+      "bullets": [
+        "定理针对 fully connected ReLU 网络，核心渐近分析采用均匀宽度、特定初始化和零偏置设定；卷积、残差、归一化、attention 或训练后特征学习不能从该结果直接推出。",
+        "二阶矩递推使用并检验了 gradient-independence approximation。数值符合理论支持其在所测尺度内有效，但不是对任意架构、任意数据或任意深宽比的严格保证。",
+        "MNIST 热图是机制示例，不是现代大模型上的性能基准；核的显著演化只是否定严格 frozen-NTK 描述，并不自动说明 feature learning 一定带来更好泛化。",
+        "该卡核对全文、定理、图与实验设置；no independent reproduction performed，未重新采样 500 次初始化，也未重跑 MNIST 训练。"
+      ]
+    },
+    {
+      "title": "复现与资源",
+      "bullets": [
+        "原文：https://arxiv.org/abs/2202.00553；PDF：https://arxiv.org/pdf/2202.00553；代码：https://github.com/mselezniova/ntk。",
+        "全文快照 SHA-256：157a3a9cd5ef13d9c0f401edd7ba535f4fb5bcfe6e99e4316b474e3c89ac3cfd；PDF 共 39 个实质页面。",
+        "复现时需固定 ReLU、零偏置、σ_w²、L、M、λ、输入归一化、初始化样本数与 bootstrap 方案；训练图还需固定 MNIST 子集、样本排序、优化器、学习率和输出重标度。",
+        "Evidence status: full-text verified; no independent reproduction performed."
+      ]
+    },
+    {
+      "title": "阅读指南",
+      "bullets": [
+        "先读引言和相图定义，明确论文改变的是“固定深度后取无限宽”的极限次序；再读二阶矩定理，把 λ=L/M 视为累积有限宽修正的控制参数。",
+        "随后对照 Figure 1 检查理论的 data collapse，再看 Figure 4 判断核演化是否与初始化相一致。两幅图分别回答初始化处是否自平均，以及训练中是否近似冻结。",
+        "面向统计物理的读者，可把层号视为传播方向、1/M 修正视为每层弱噪声：ordered 相抑制累积涨落，而临界与 chaotic 相把微小层间涨落沿深度放大。"
+      ]
+    }
+  ],
+  "cover": {
+    "mode": "source_figure",
+    "asset_path": "assets/collection-figures/2202.00553/figure-4-ntk-evolution.webp",
+    "label": "Figure 4",
+    "visual_type": "field_map",
+    "evidence": "arXiv:2202.00553v2, paper.pdf p. 8, Figure 4",
+    "alt_text": "三种初始化相下，MNIST 训练从第 0 到 3000 轮的 NTK 矩阵热图；ordered 相逐渐出现标签块结构。",
+    "caption": "NTK 并非总是冻结：初始化相决定训练中核矩阵是形成清晰标签块，还是持续发生强烈而弥散的重排。",
+    "selection_rationale": "Figure 4 是全文最具可视性的机制证据，把抽象的核涨落与训练中的矩阵结构直接连接；相比单纯的曲线图，更适合作为封面。"
+  },
+  "figure_refs": [
+    {
+      "label": "Figure 4",
+      "asset_path": "assets/collection-figures/2202.00553/figure-4-ntk-evolution.webp",
+      "section": "核心定理与证据",
+      "role": "show phase-dependent NTK evolution during training",
+      "evidence": "arXiv:2202.00553v2, paper.pdf p. 8, Figure 4",
+      "alt_text": "ordered、edge-of-chaos、chaotic 三种初始化下，NTK 矩阵随训练轮数变化的热图。",
+      "caption": "ordered 初始化发展出明显标签块；临界和 chaotic 初始化的核演化更强。",
+      "interpretation": "有限宽涨落会进入真实训练动力学，因此固定核近似的有效性取决于初始化相与深宽比。"
+    },
+    {
+      "label": "Figure 1",
+      "asset_path": "assets/collection-figures/2202.00553/figure-1-dispersion.webp",
+      "section": "核心定理与证据",
+      "role": "test the predicted depth-to-width scaling of NTK dispersion",
+      "evidence": "arXiv:2202.00553v2, paper.pdf p. 5, Figure 1",
+      "alt_text": "不同宽度的 NTK 相对涨落随深宽比 λ 变化，并与理论曲线比较。",
+      "caption": "不同 M 的数据由 λ=L/M 组织，临界与 chaotic 相出现快速增长。",
+      "interpretation": "每层微小的有限宽修正沿深度累积；控制量是 L/M，而不是只看网络宽度。"
+    }
+  ],
+  "evidence_refs": [
+    "paper.pdf pp. 2-5: setup, phase definitions, joint depth-width limit, and NTK dispersion theorem",
+    "paper.pdf p. 5, Figure 1: 500-initialization numerical test across M=100, 200, 500",
+    "paper.pdf pp. 7-9, Figure 4: MNIST training dynamics and phase-dependent NTK matrices",
+    "paper.pdf appendices: finite-width moment derivations and discussion of the gradient-independence approximation",
+    "source PDF SHA-256 157a3a9cd5ef13d9c0f401edd7ba535f4fb5bcfe6e99e4316b474e3c89ac3cfd",
+    "Evidence status: full-text verified; no independent reproduction performed."
+  ],
+  "verified_metadata": {
+    "arxiv_id": "2202.00553",
+    "version": "v2",
+    "title": "Neural Tangent Kernel Beyond the Infinite-Width Limit: Effects of Depth and Initialization",
+    "abstract": "We study the properties of the Neural Tangent Kernel (NTK) in the limit of large depth and finite width for fully-connected neural networks with ReLU activations. We derive analytical expressions for the first and second moments of the NTK and show that its relative dispersion depends crucially on the initialization regime and the ratio between depth and width. Our results identify when finite-width kernels remain concentrated and when fluctuations grow strongly with depth, clarifying limitations of the conventional infinite-width approximation.",
+    "authors": ["Mariia Seleznova", "Gitta Kutyniok"],
+    "categories": ["cs.LG", "cs.AI"],
+    "primary_category": "cs.LG",
+    "published": "2022-02-01T16:52:16Z",
+    "comment": "Published at ICML 2022"
+  },
+  "card_standard_version": "2.3",
+  "paper_profile": "theory_numerics",
+  "style_reference": "physicist_daily_arxiv",
+  "provenance": {
+    "program": "Collection",
+    "catalog": "Paper Collection",
+    "catalog_record_id": "596df03cebf8e81d",
+    "catalog_topic": "Statistical Physics",
+    "collection_date": "2026-08-24",
+    "sampled_at": "2026-08-26",
+    "selected_by": "deterministic_random_sample",
+    "sampling_seed": "paper-collection-random50-2026-08-26-v1",
+    "candidate_count": 272
+  },
+  "equation_refs": [
+    {
+      "label": "Neural tangent kernel",
+      "latex": "\\Theta(x,\\tilde x)=\\nabla_w f(x)\\cdot\\nabla_w f(\\tilde x)",
+      "role": "linearized training kernel induced by parameter gradients",
+      "symbols": {
+        "f": "network output",
+        "w": "all trainable parameters",
+        "x,tilde_x": "two network inputs",
+        "Theta": "neural tangent kernel"
+      },
+      "evidence": "paper.pdf p. 2, NTK definition",
+      "interpretation": "The kernel measures how parameter updates couple output changes at two inputs."
+    },
+    {
+      "label": "Relative NTK dispersion",
+      "latex": "\\rho_\\Theta=\\frac{\\mathbb E[\\Theta^2(x,x)]}{\\mathbb E[\\Theta(x,x)]^2},\\qquad \\lambda=\\frac{L}{M}",
+      "role": "measure self-averaging in the joint depth-width limit",
+      "symbols": {
+        "rho_Theta": "normalized second moment of the diagonal NTK",
+        "L": "network depth",
+        "M": "hidden-layer width",
+        "lambda": "depth-to-width ratio"
+      },
+      "evidence": "paper.pdf pp. 4-5, NTK dispersion theorem",
+      "interpretation": "Layerwise finite-width fluctuations accumulate according to L/M; rapid growth means a typical finite network is not represented by the deterministic infinite-width kernel."
+    }
+  ]
+}
