@@ -31,27 +31,14 @@ FORBIDDEN_PHRASES = (
     "尚未逐项绑定",
 )
 MIN_CONTENT_CHARS = 1_800
-V2_THEORY_PROFILES = {"theory", "theory_numerics", "theory_experiment"}
-V2_EQUATION_MINIMUM = {
-    "theory": 3,
-    "theory_numerics": 3,
-    "theory_experiment": 3,
-    "numerical": 2,
-    "experiment": 1,
-    "ai_empirical": 1,
+V2_PAPER_PROFILES = {
+    "theory",
+    "theory_numerics",
+    "theory_experiment",
+    "numerical",
+    "experiment",
+    "ai_empirical",
 }
-
-
-def count_math_expressions(content: str) -> int:
-    """Count display and inline TeX without double-counting ``$$...$$``."""
-    display_pattern = re.compile(r"\$\$.*?\$\$|\\\[.*?\\\]", re.DOTALL)
-    display_count = len(display_pattern.findall(content))
-    without_display = display_pattern.sub("", content)
-    inline_pattern = re.compile(
-        r"(?<!\\)\$(?!\$).+?(?<!\\)\$(?!\$)|\\\(.*?\\\)",
-        re.DOTALL,
-    )
-    return display_count + len(inline_pattern.findall(without_display))
 
 
 def is_v2_card(card: dict[str, object]) -> bool:
@@ -65,7 +52,7 @@ def is_v2_card(card: dict[str, object]) -> bool:
 def validate_v2_card(card: dict[str, object], arxiv_id: str) -> list[str]:
     errors: list[str] = []
     profile = str(card.get("paper_profile", ""))
-    if profile not in V2_EQUATION_MINIMUM:
+    if profile not in V2_PAPER_PROFILES:
         errors.append(f"{arxiv_id}: invalid or missing paper_profile")
 
     if card.get("style_reference") != "physicist_daily_arxiv":
@@ -84,13 +71,9 @@ def validate_v2_card(card: dict[str, object], arxiv_id: str) -> list[str]:
                 errors.append(f"{arxiv_id}: selection_record missing {field}")
 
     equation_refs = card.get("equation_refs")
-    minimum = V2_EQUATION_MINIMUM.get(profile, 1)
-    if not isinstance(equation_refs, list) or len(equation_refs) < minimum:
-        errors.append(
-            f"{arxiv_id}: {profile or 'unknown'} card needs at least {minimum} equation_refs"
-        )
+    if not isinstance(equation_refs, list):
+        errors.append(f"{arxiv_id}: equation_refs must be a list")
     else:
-        roles: set[str] = set()
         for index, equation in enumerate(equation_refs, start=1):
             if not isinstance(equation, dict):
                 errors.append(f"{arxiv_id}: equation_ref {index} is not an object")
@@ -101,21 +84,8 @@ def validate_v2_card(card: dict[str, object], arxiv_id: str) -> list[str]:
             symbols = equation.get("symbols")
             if not isinstance(symbols, dict) or not symbols:
                 errors.append(f"{arxiv_id}: equation_ref {index} missing symbol definitions")
-            roles.add(str(equation.get("role", "")))
-
-        if profile in V2_THEORY_PROFILES:
-            if not roles & {"model", "definition", "governing_equation"}:
-                errors.append(f"{arxiv_id}: theory card lacks a model/definition equation")
-            if not roles & {"central_result", "scaling_law", "bound", "theorem"}:
-                errors.append(f"{arxiv_id}: theory card lacks a result equation")
 
     content = json.dumps(card.get("sections", []), ensure_ascii=False)
-    math_expression_count = count_math_expressions(content)
-    if math_expression_count < minimum:
-        errors.append(
-            f"{arxiv_id}: card prose contains {math_expression_count} rendered equations; "
-            f"needs {minimum}"
-        )
     if content.count("$$") % 2:
         errors.append(f"{arxiv_id}: unbalanced display-math delimiter")
 

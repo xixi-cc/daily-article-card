@@ -1,6 +1,7 @@
 import unittest
 
 from scripts.build_site import generate_head, markdown_to_html
+from scripts.validate_paper_cards import validate_v2_card
 
 
 class MathRenderingTests(unittest.TestCase):
@@ -21,6 +22,24 @@ class MathRenderingTests(unittest.TestCase):
     def test_markdown_preserves_display_tex_for_mathjax(self):
         rendered = markdown_to_html(r"$$S(k)\sim k^{-2+\eta}$$")
         self.assertIn(r"$$S(k)\sim k^{-2+\eta}$$", rendered)
+
+    def test_v2_theory_card_has_no_formula_quota(self):
+        card = {
+            "paper_profile": "theory",
+            "style_reference": "physicist_daily_arxiv",
+            "selection_record": {
+                "selected_by": "codex_direct_arxiv",
+                "grade": "S",
+                "report_date": "2026-08-25",
+                "listing_date": "2026-08-25",
+                "score": 36,
+                "rubric_version": "1.0",
+            },
+            "equation_refs": [],
+            "sections": [],
+        }
+        errors = validate_v2_card(card, "test")
+        self.assertFalse(any("equation" in error for error in errors), errors)
 
 
 if __name__ == "__main__":

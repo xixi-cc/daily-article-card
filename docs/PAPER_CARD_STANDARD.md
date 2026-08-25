@@ -1,6 +1,6 @@
 # Paper Card Standard
 
-Version: 2.0
+Version: 2.1
 Effective date: 2026-08-25
 Status: canonical
 
@@ -70,9 +70,9 @@ Equations are part of the argument, not decoration.
 - Introduce why the equation is needed, then state what follows from it and under which assumptions.
 - Preserve the paper's sign, coefficient, tensor/index, Fourier, stochastic-calculus, and nondimensionalization conventions. Do not silently simplify a load-bearing equation.
 - Use `$...$` for inline mathematics and `$$...$$` or `\[...\]` for displayed mathematics. Delimiters must be balanced. Do not put TeX in code spans.
-- For `theory`, `theory_numerics`, and `theory_experiment` cards, include at least three load-bearing equations: a definition/model or governing equation, the central transformation/closure/variational object when present, and a principal result such as a theorem, bound, dispersion relation, scaling law, or response relation.
-- For `numerical` cards, include at least two equations: the simulated model/objective and the principal measured or fitted relation.
-- For `experiment` and `ai_empirical` cards, include at least one equation when the paper's central claim depends on a metric, loss, estimator, scaling relation, conservation law, or dynamical update. Do not invent an equation for a paper whose contribution is genuinely non-mathematical.
+- Do not impose a minimum or maximum equation count. Choose equations by their role in the paper's argument, not by a quota.
+- For theoretical work, retain enough of the load-bearing mathematical structure for a physicist to follow the model, mechanism, and principal result without guessing a hidden assumption. Depending on the paper, this may require one compact relation or a longer equation chain.
+- For numerical, experimental, and AI-empirical work, include an equation only when it materially clarifies the simulated model, objective, estimator, scaling law, conservation constraint, dynamical update, or measured claim. Do not invent or add ornamental equations.
 - Each machine-readable `equation_ref` records `label`, `latex`, `role`, `symbols`, `evidence`, and a short `interpretation`.
 - State whether a displayed relation is a definition, exact identity, exact model consequence, symmetry/conservation consequence, controlled asymptotic result, perturbative result, mean-field prediction, closure-dependent result, phenomenological ansatz, numerical observation, experimental observation, interpretation, or conjecture.
 
@@ -117,12 +117,12 @@ A final card must contain:
 - English and Chinese titles;
 - `curation_status: full_text_verified`;
 - verified metadata sufficient for deterministic offline rendering;
-- `card_standard_version: 2.0` for newly generated cards;
+- `card_standard_version: 2.0` or later for newly generated cards;
 - `paper_profile` chosen from `theory`, `theory_numerics`, `theory_experiment`, `numerical`, `experiment`, or `ai_empirical`;
 - `style_reference: physicist_daily_arxiv`;
 - a Codex-direct `selection_record` for Daily cards;
 - provenance appropriate to Daily or Collection;
-- the profile-appropriate number of structured `equation_refs`;
+- structured `equation_refs` for the equations actually used; the list may be empty when equations are not needed to explain the paper;
 - all required sections;
 - at least three page-addressable evidence references;
 - an explicit independent-reproduction boundary.
