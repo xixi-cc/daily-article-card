@@ -393,7 +393,7 @@
       const image = document.createElement('img');
       image.className = 'paper-figure-image';
       image.src = item.paper_image_path;
-      image.alt = item.title || '论文首图';
+      image.alt = item.cover_alt_text || item.title || '论文封面图';
       image.loading = 'lazy';
       image.dataset.zoomable = 'true';
       image.addEventListener('click', (event) => {
@@ -406,7 +406,7 @@
       coverWrap.appendChild(figure);
     } else {
       const cover = document.createElement('div');
-      cover.className = 'note-cover note-cover-feed note-cover-title-only';
+      cover.className = 'note-cover note-cover-feed note-cover-title-abstract';
       applyCoverTheme(cover, item.cover_theme);
 
       const mesh = document.createElement('div');
@@ -416,10 +416,20 @@
       const titleShell = document.createElement('div');
       titleShell.className = 'note-cover-title-shell';
 
+      const kicker = document.createElement('span');
+      kicker.className = 'note-cover-kicker';
+      kicker.textContent = 'TITLE · ABSTRACT';
+      titleShell.appendChild(kicker);
+
       const title = document.createElement('h3');
       title.className = 'note-cover-title';
       title.textContent = item.title;
       titleShell.appendChild(title);
+
+      const abstractText = document.createElement('p');
+      abstractText.className = 'note-cover-abstract';
+      abstractText.textContent = item.cover_summary || item.preview_text || '';
+      titleShell.appendChild(abstractText);
       cover.appendChild(titleShell);
       coverWrap.appendChild(cover);
     }

@@ -72,13 +72,14 @@ Use this note as an editorial scaffold for the card, not as claim evidence. Rech
 
 ## 5. Card production and publication
 
-- Follow `docs/PAPER_CARD_STANDARD.md` version 2.0 or later.
+- Follow the current canonical `docs/PAPER_CARD_STANDARD.md`; new cards must use version 2.3 or later.
 - Download the official PDF to ignored temporary or automation-output storage and preserve it unchanged.
 - Build page-addressable full-text evidence before writing card prose.
-- New Daily cards must set `card_standard_version`, `paper_profile`, `style_reference`, `selection_record`, `verified_metadata`, `equation_refs`, `sections`, and `evidence_refs` according to the standard.
+- New Daily cards must set `card_standard_version`, `paper_profile`, `style_reference`, `selection_record`, `verified_metadata`, `equation_refs`, `figure_refs`, `cover`, `sections`, and `evidence_refs` according to the standard.
+- Select the cover only after full-text review: prefer the most important physical visualization over a data plot; when no meaningful source figure exists, render the exact title plus a faithful condensed abstract.
 - Render only S papers. Preserve A/B score sheets in automation evidence but do not add them to `papers.md` or the public site.
 - Treat one listing as an atomic publication unit. If runtime is insufficient, preserve completed evidence and resume without regenerating verified work.
-- Run all structural, equation, browser-rendering, deterministic build, unique-ID, and JSON/render parity checks before commit.
+- Run all structural, equation, cover-priority, figure-path, browser-rendering, deterministic build, unique-ID, and JSON/render parity checks before commit.
 - Push without force, verify GitHub Actions and Pages, then fetch the public index and every new detail URL. Only a verified public page completes publication.
 
 ## 6. Fail closed

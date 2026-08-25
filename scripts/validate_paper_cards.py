@@ -42,6 +42,20 @@ V2_PAPER_PROFILES = {
     "experiment",
     "ai_empirical",
 }
+COVER_VISUAL_TYPES = {
+    "real_space",
+    "micrograph",
+    "simulation_snapshot",
+    "field_map",
+    "schematic",
+    "apparatus",
+    "phase_diagram",
+    "distribution",
+    "trajectory",
+    "comparison",
+    "data_plot",
+    "table",
+}
 
 
 def is_v2_card(card: dict[str, object]) -> bool:
@@ -158,6 +172,43 @@ def validate_v2_card(card: dict[str, object], arxiv_id: str, program: str = "Dai
         inline_delimiters = re.findall(r"(?<!\\)\$(?!\$)", decoded_sections)
         if len(inline_delimiters) % 2:
             errors.append(f"{arxiv_id}: unbalanced inline-math delimiter")
+
+    if version_at_least(card, (2, 3)):
+        cover = card.get("cover")
+        if not isinstance(cover, dict):
+            errors.append(f"{arxiv_id}: v2.3 requires a structured cover decision")
+        else:
+            mode = cover.get("mode")
+            rationale = str(cover.get("selection_rationale", "")).strip()
+            if len(rationale) < 30:
+                errors.append(f"{arxiv_id}: cover selection_rationale is too short")
+            if mode == "source_figure":
+                for field in (
+                    "asset_path",
+                    "label",
+                    "visual_type",
+                    "evidence",
+                    "alt_text",
+                    "caption",
+                ):
+                    if not cover.get(field):
+                        errors.append(f"{arxiv_id}: source_figure cover missing {field}")
+                visual_type = str(cover.get("visual_type", ""))
+                if visual_type not in COVER_VISUAL_TYPES:
+                    errors.append(f"{arxiv_id}: invalid cover visual_type {visual_type!r}")
+                asset_path = str(cover.get("asset_path", ""))
+                if asset_path and not asset_path.startswith("assets/"):
+                    errors.append(f"{arxiv_id}: cover asset must be site-relative")
+                if asset_path and not (ROOT / "site" / asset_path).is_file():
+                    errors.append(f"{arxiv_id}: cover asset missing: {asset_path}")
+            elif mode == "title_abstract":
+                abstract_text = str(cover.get("abstract_text", "")).strip()
+                if len(abstract_text) < 60:
+                    errors.append(f"{arxiv_id}: title_abstract cover text is too short")
+                if cover.get("asset_path"):
+                    errors.append(f"{arxiv_id}: title_abstract cover must not set asset_path")
+            else:
+                errors.append(f"{arxiv_id}: invalid cover mode {mode!r}")
 
     return errors
 
