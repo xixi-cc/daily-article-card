@@ -11,8 +11,10 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 PAPERS_MD = ROOT / "papers.md"
 CARDS_DIR = ROOT / "data" / "curated_cards"
+COLLECTION_CARDS_DIR = ROOT / "data" / "collection_cards"
 STANDARD_PATH = ROOT / "docs" / "PAPER_CARD_STANDARD.md"
 SITE_PAPERS_DIR = ROOT / "site" / "papers"
+SITE_COLLECTION_PAPERS_DIR = ROOT / "site" / "collection-papers"
 REQUIRED_CORE = {
     "作者信息",
     "模型与方法",
@@ -49,7 +51,7 @@ def is_v2_card(card: dict[str, object]) -> bool:
         return False
 
 
-def validate_v2_card(card: dict[str, object], arxiv_id: str) -> list[str]:
+def validate_v2_card(card: dict[str, object], arxiv_id: str, program: str = "Daily") -> list[str]:
     errors: list[str] = []
     profile = str(card.get("paper_profile", ""))
     if profile not in V2_PAPER_PROFILES:
@@ -59,9 +61,10 @@ def validate_v2_card(card: dict[str, object], arxiv_id: str) -> list[str]:
         errors.append(f"{arxiv_id}: missing physicist_daily_arxiv style reference")
 
     selection = card.get("selection_record")
-    if not isinstance(selection, dict):
+    if program == "Daily" and not isinstance(selection, dict):
         errors.append(f"{arxiv_id}: missing Codex selection_record")
-    else:
+    elif program == "Daily":
+        assert isinstance(selection, dict)
         if selection.get("selected_by") != "codex_direct_arxiv":
             errors.append(f"{arxiv_id}: selection_record is not Codex-direct")
         if selection.get("grade") != "S":
@@ -69,6 +72,24 @@ def validate_v2_card(card: dict[str, object], arxiv_id: str) -> list[str]:
         for field in ("report_date", "listing_date", "score", "rubric_version"):
             if not selection.get(field):
                 errors.append(f"{arxiv_id}: selection_record missing {field}")
+    else:
+        if selection is not None:
+            errors.append(f"{arxiv_id}: Collection card must not contain a Daily selection_record")
+        provenance = card.get("provenance")
+        if not isinstance(provenance, dict) or provenance.get("program") != "Collection":
+            errors.append(f"{arxiv_id}: missing Collection provenance")
+        else:
+            for field in (
+                "catalog",
+                "catalog_record_id",
+                "catalog_topic",
+                "collection_date",
+                "sampled_at",
+                "selected_by",
+                "sampling_seed",
+            ):
+                if not provenance.get(field):
+                    errors.append(f"{arxiv_id}: Collection provenance missing {field}")
 
     equation_refs = card.get("equation_refs")
     if not isinstance(equation_refs, list):
@@ -108,9 +129,13 @@ def main() -> int:
     if not STANDARD_PATH.exists():
         errors.append("missing canonical docs/PAPER_CARD_STANDARD.md")
     rows = rendered_rows()
-    paths = sorted(CARDS_DIR.glob("*.json"))
+    daily_paths = sorted(CARDS_DIR.glob("*.json"))
+    collection_paths = sorted(COLLECTION_CARDS_DIR.glob("*.json"))
 
-    for path in paths:
+    for program, path in [
+        *(('Daily', path) for path in daily_paths),
+        *(('Collection', path) for path in collection_paths),
+    ]:
         try:
             card = json.loads(path.read_text(encoding="utf-8"))
         except json.JSONDecodeError as error:
@@ -145,26 +170,35 @@ def main() -> int:
                 errors.append(f"{arxiv_id}: placeholder phrase {phrase!r}")
 
         if is_v2_card(card):
-            errors.extend(validate_v2_card(card, arxiv_id))
+            errors.extend(validate_v2_card(card, arxiv_id, program))
 
-        row = rows.get(arxiv_id)
-        if row is None:
-            errors.append(f"{arxiv_id}: missing from papers.md")
-            continue
-        rendered_titles = re.findall(r"## ([^<]+)<br>", row)
-        if rendered_titles != titles:
-            errors.append(
-                f"{arxiv_id}: rendered headings differ: {rendered_titles} != {titles}"
-            )
-        if card.get("title_zh") not in row or card.get("title_en") not in row:
-            errors.append(f"{arxiv_id}: rendered title differs from curated source")
+        if program == "Daily":
+            row = rows.get(arxiv_id)
+            if row is None:
+                errors.append(f"{arxiv_id}: missing from papers.md")
+                continue
+            rendered_titles = re.findall(r"## ([^<]+)<br>", row)
+            if rendered_titles != titles:
+                errors.append(
+                    f"{arxiv_id}: rendered headings differ: {rendered_titles} != {titles}"
+                )
+            if card.get("title_zh") not in row or card.get("title_en") not in row:
+                errors.append(f"{arxiv_id}: rendered title differs from curated source")
 
-    extra_rows = sorted(set(rows) - {path.stem for path in paths})
+    extra_rows = sorted(set(rows) - {path.stem for path in daily_paths})
     if extra_rows:
         errors.append(f"papers.md rows without curated cards: {extra_rows}")
-    if SITE_PAPERS_DIR.exists():
+    overlap = sorted({path.stem for path in daily_paths} & {path.stem for path in collection_paths})
+    if overlap:
+        errors.append(f"Daily and Collection identifiers overlap: {overlap}")
+
+    if SITE_PAPERS_DIR.exists() or SITE_COLLECTION_PAPERS_DIR.exists():
         missing_math = []
-        for detail_path in SITE_PAPERS_DIR.glob("*/index.html"):
+        detail_paths = [
+            *SITE_PAPERS_DIR.glob("*/index.html"),
+            *SITE_COLLECTION_PAPERS_DIR.glob("*/index.html"),
+        ]
+        for detail_path in detail_paths:
             site_html = detail_path.read_text(encoding="utf-8")
             if "tex-chtml.js" not in site_html or "window.MathJax" not in site_html:
                 missing_math.append(detail_path.parent.name)
@@ -175,8 +209,9 @@ def main() -> int:
     if errors:
         raise SystemExit("\n".join(errors))
     print(
-        f"Validated {len(paths)} full-text cards: strict JSON, evidence refs, "
-        f"minimum depth, and rendered Markdown parity"
+        f"Validated {len(daily_paths)} Daily and {len(collection_paths)} Collection "
+        f"full-text cards: strict JSON, provenance, evidence refs, minimum depth, "
+        f"and rendered parity"
     )
     return 0
 
