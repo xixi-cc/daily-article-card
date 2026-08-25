@@ -548,27 +548,47 @@ def theme_style(theme: Dict[str, str]) -> str:
 
 def render_note_cover(record: Dict[str, object], standalone: bool = False) -> str:
     compact_class = " note-cover-standalone" if standalone else ""
+    summary = str(record.get("cover_summary", "")).strip()
+    content_class = " note-cover-title-abstract" if summary else " note-cover-title-only"
 
     return f"""
-<article class="note-cover note-cover-title-only{compact_class}" style="{escape(theme_style(record["cover_theme"]), quote=True)}">
+<article class="note-cover{content_class}{compact_class}" style="{escape(theme_style(record["cover_theme"]), quote=True)}">
   <div class="note-cover-mesh"></div>
   <div class="note-cover-title-shell">
+    <span class="note-cover-kicker">TITLE · ABSTRACT</span>
     <h1 class="note-cover-title">{escape(str(record["title"]))}</h1>
     {f'<p class="note-cover-title-zh">{escape(str(record["title_zh"]))}</p>' if record.get("title_zh") else ''}
+    {f'<p class="note-cover-abstract">{escape(summary)}</p>' if summary else ''}
   </div>
 </article>
 """.strip()
 
 
 def render_paper_figure(record: Dict[str, object], image_src: str, context: str) -> str:
-    caption = escape(str(record["hook_text"]))
-    title = escape(str(record["title"]))
+    caption = escape(str(record.get("cover_caption") or record["hook_text"]))
+    title = escape(str(record.get("cover_alt_text") or record["title"]))
 
     return f"""
 <figure class="paper-figure-card paper-figure-card-{context}">
   <img class="paper-figure-image" src="{escape(image_src, quote=True)}" alt="{title}" loading="lazy" onclick="window.openPaperFigureImage && window.openPaperFigureImage(this)" />
   <figcaption class="paper-figure-caption">{caption}</figcaption>
 </figure>
+""".strip()
+
+
+def render_source_cover(record: Dict[str, object], image_src: str) -> str:
+    label = escape(str(record.get("cover_label") or "SOURCE FIGURE"))
+    alt_text = escape(str(record.get("cover_alt_text") or record["title"]), quote=True)
+    return f"""
+<article class="source-cover source-cover-standalone">
+  <img class="source-cover-image" src="{escape(image_src, quote=True)}" alt="{alt_text}" />
+  <div class="source-cover-shade"></div>
+  <div class="source-cover-copy">
+    <span class="source-cover-label">{label}</span>
+    <h1>{escape(str(record["title"]))}</h1>
+    {f'<p>{escape(str(record["title_zh"]))}</p>' if record.get("title_zh") else ''}
+  </div>
+</article>
 """.strip()
 
 
@@ -655,6 +675,8 @@ def build_site_records(records: List[Dict[str, str]], paper_image_manifest: Dict
                 "summary_markdown": summary_markdown,
                 "sections": sections,
                 "preview_text": preview_text,
+                "cover_summary": truncate_text(preview_text, 260),
+                "cover_alt_text": "",
                 "research_unit": research_unit,
                 "key_points": key_points,
                 "hook_text": hook_text,
@@ -715,10 +737,22 @@ def build_collection_records(paper_image_manifest: Dict[str, Dict[str, object]])
                 "program_label": "Paper Collection",
                 "topic": str(topic),
                 "figure_refs": card.get("figure_refs", []),
+                "cover": card.get("cover", {}),
                 "detail_path": f"collection-papers/{record['page_dir']}/",
                 "cover_path": f"collection-covers/{record['page_dir']}/",
             }
         )
+        cover = record["cover"]
+        if isinstance(cover, dict):
+            record["cover_mode"] = str(cover.get("mode", ""))
+            record["cover_summary"] = str(cover.get("abstract_text", ""))
+            record["cover_label"] = str(cover.get("label", ""))
+            record["cover_alt_text"] = str(cover.get("alt_text", ""))
+            record["cover_caption"] = str(cover.get("caption", ""))
+            if record["cover_mode"] == "source_figure":
+                record["paper_image_path"] = str(cover.get("asset_path", ""))
+            elif record["cover_mode"] == "title_abstract":
+                record["paper_image_path"] = ""
     return records
 
 
@@ -743,6 +777,9 @@ def build_list_data(records: List[Dict[str, object]], thumb_map: Dict[str, str] 
             "reading_minutes": record["reading_minutes"],
             "section_count": record["section_count"],
             "cover_theme": record["cover_theme"],
+            "cover_mode": record.get("cover_mode", ""),
+            "cover_summary": record.get("cover_summary", record.get("hook_text", "")),
+            "cover_alt_text": record.get("cover_alt_text", ""),
         }
         if record.get("program") == "Collection":
             item["program_label"] = record.get("program_label", "Paper Collection")
@@ -1059,7 +1096,13 @@ def generate_cover_html(record: Dict[str, object]) -> str:
     site_title = f"{keyword} 每日论文卡"
     page_title = f"{record['title']} - 封面卡"
     description = str(record["hook_text"])
-    cover_html = render_note_cover(record, standalone=True)
+    figure_src = f"../../{record['paper_image_path']}" if record["paper_image_path"] else ""
+    cover_html = (
+        render_source_cover(record, figure_src)
+        if figure_src
+        else render_note_cover(record, standalone=True)
+    )
+    detail_root = "collection-papers" if record.get("program") == "Collection" else "papers"
 
     return f"""<!doctype html>
 <html lang="zh-CN">
@@ -1072,7 +1115,7 @@ def generate_cover_html(record: Dict[str, object]) -> str:
       <div class="cover-preview-shell">
         {cover_html}
         <div class="cover-preview-toolbar">
-          <a class="back-link" href="../../papers/{escape(str(record["page_dir"]), quote=True)}/index.html">返回详情</a>
+          <a class="back-link" href="../../{detail_root}/{escape(str(record["page_dir"]), quote=True)}/index.html">返回详情</a>
           <div class="detail-topbar-actions">
             <span class="detail-site-name">{escape(site_title)}</span>
             {render_theme_toggle()}
@@ -2950,7 +2993,7 @@ def generate_app_js() -> str:
       const image = document.createElement('img');
       image.className = 'paper-figure-image';
       image.src = item.paper_image_path;
-      image.alt = item.title || '论文首图';
+      image.alt = item.cover_alt_text || item.title || '论文封面图';
       image.loading = 'lazy';
       image.dataset.zoomable = 'true';
       image.addEventListener('click', (event) => {
@@ -2963,7 +3006,7 @@ def generate_app_js() -> str:
       coverWrap.appendChild(figure);
     } else {
       const cover = document.createElement('div');
-      cover.className = 'note-cover note-cover-feed note-cover-title-only';
+      cover.className = 'note-cover note-cover-feed note-cover-title-abstract';
       applyCoverTheme(cover, item.cover_theme);
 
       const mesh = document.createElement('div');
@@ -2973,10 +3016,20 @@ def generate_app_js() -> str:
       const titleShell = document.createElement('div');
       titleShell.className = 'note-cover-title-shell';
 
+      const kicker = document.createElement('span');
+      kicker.className = 'note-cover-kicker';
+      kicker.textContent = 'TITLE · ABSTRACT';
+      titleShell.appendChild(kicker);
+
       const title = document.createElement('h3');
       title.className = 'note-cover-title';
       title.textContent = item.title;
       titleShell.appendChild(title);
+
+      const abstractText = document.createElement('p');
+      abstractText.className = 'note-cover-abstract';
+      abstractText.textContent = item.cover_summary || item.preview_text || '';
+      titleShell.appendChild(abstractText);
       cover.appendChild(titleShell);
       coverWrap.appendChild(cover);
     }

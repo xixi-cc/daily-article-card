@@ -1,6 +1,6 @@
 # Paper Card Standard
 
-Version: 2.2
+Version: 2.3
 Effective date: 2026-08-26
 Status: canonical
 
@@ -121,11 +121,26 @@ The Daily arXiv report is a style reference and selection artifact, not evidence
 
 ## 9. Cover standard
 
-- Use the scientifically decisive figure when licensing and legibility permit.
-- Preserve its meaning, original figure number, and a concise explanatory caption.
-- Do not select an image merely because it is first in the paper.
-- Use the title page only as a last fallback.
-- Do not crop away axes, legends, units, or other information needed to interpret the result.
+The cover must be selected after full-text review and recorded in structured card data. It is a visual entry point to the paper, not a screenshot of the first available page.
+
+Use this priority order:
+
+1. A scientifically central visualization: real-space configuration, micrograph, simulation snapshot, learned field, mechanism schematic, apparatus, or other image that lets a physicist see the system or mechanism directly.
+2. A central visual comparison: phase diagram, spatial map, distribution, trajectory, or compact multi-panel comparison.
+3. A quantitative data figure only when the curve or scaling plot is itself the paper's decisive result and no equally central visualization exists.
+4. If the paper has no scientifically meaningful figure, generate a deterministic typography cover from the exact paper title and a faithful one-to-three-sentence condensation of its abstract.
+
+Additional rules:
+
+- Prefer visualizations over data plots, and data plots over decorative or unrelated images. Scientific centrality still overrides visual attractiveness.
+- Preserve the original figure number and source page. Record why this image carries the paper's main physical idea and why a more visual alternative was not chosen when the cover is a data plot or table.
+- Preserve panel labels, axes, units, legends, scale bars, and annotations needed to understand the selected image. A cover-specific crop may remove surrounding prose and the printed caption, but must not alter or selectively hide scientific content.
+- Use a source figure only when reuse, attribution, and legibility permit. Do not reuse a third-party figure merely because the paper itself reproduced it with permission; fall back to another author-created figure or the title-and-abstract cover.
+- Never use the PDF title page, a screenshot of the abstract page, a decorative stock image, or an AI-generated scientific scene as the fallback.
+- The title-and-abstract fallback must remain readable at feed-card size. It may shorten the abstract, but it must preserve the paper's question, principal result, and epistemic qualifier without adding editorial claims.
+- A machine-readable `cover` records `mode`, `selection_rationale`, and mode-specific fields. `source_figure` additionally requires `asset_path`, `label`, `visual_type`, `evidence`, `alt_text`, and `caption`. `title_abstract` additionally requires `abstract_text`.
+- Allowed `visual_type` values are `real_space`, `micrograph`, `simulation_snapshot`, `field_map`, `schematic`, `apparatus`, `phase_diagram`, `distribution`, `trajectory`, `comparison`, `data_plot`, and `table`.
+- The generated feed card, detail hero, and standalone cover page must all use the same structured `cover` decision.
 
 ## 10. Machine-readable contract
 
@@ -135,13 +150,14 @@ A final card must contain:
 - English and Chinese titles;
 - `curation_status: full_text_verified`;
 - verified metadata sufficient for deterministic offline rendering;
-- `card_standard_version: 2.0` or later for newly generated cards;
+- `card_standard_version: 2.3` or later for newly generated cards; historical cards retain their recorded version until they are substantively revised;
 - `paper_profile` chosen from `theory`, `theory_numerics`, `theory_experiment`, `numerical`, `experiment`, or `ai_empirical`;
 - `style_reference: physicist_daily_arxiv`;
 - a Codex-direct `selection_record` for Daily cards;
 - provenance appropriate to Daily or Collection;
 - structured `equation_refs` for the equations actually used; the list may be empty when equations are not needed to explain the paper;
 - structured `figure_refs` for figures actually shown; the list may be empty when no figure improves the physical argument;
+- a structured `cover` following Section 9; cards created under v2.3 or later fail validation when the cover decision is absent or its asset does not resolve;
 - all required sections;
 - at least three page-addressable evidence references;
 - an explicit independent-reproduction boundary.
@@ -160,9 +176,11 @@ Before publication:
 6. Confirm that the site-local TeX renderer and its fonts are packaged. A network-only renderer fails the gate.
 7. Load representative detail pages in a browser and verify that inline and display mathematics render without visible `$`, `$$`, `\(`, or `\[` delimiters; inspect narrow-screen overflow for long equations.
 8. Inspect every newly added figure at card width. Verify its figure number, panels, axes, units, legend, caption, source attribution, and claim strength against the paper.
-9. Inspect representative cards manually for paper-specific scientific depth, symbol definitions, equation-to-prose consistency, figure-to-caption consistency, and physicist-style causal logic. Structural validation and minimum length are necessary but not sufficient.
-10. Commit one independently auditable batch at a time.
-11. Verify push, build, deployment, the public index, and every new detail URL. A local build or green workflow alone is not publication proof.
+9. Audit the cover against the priority ladder. Confirm that a data plot or table has an explicit reason for outranking available visualizations, or that `title_abstract` is used only after confirming no suitable source figure exists.
+10. Verify feed card, detail hero, and standalone cover parity from the same `cover` record.
+11. Inspect representative cards manually for paper-specific scientific depth, symbol definitions, equation-to-prose consistency, figure-to-caption consistency, and physicist-style causal logic. Structural validation and minimum length are necessary but not sufficient.
+12. Commit one independently auditable batch at a time.
+13. Verify push, build, deployment, the public index, and every new detail URL. A local build or green workflow alone is not publication proof.
 
 Current validation command:
 
