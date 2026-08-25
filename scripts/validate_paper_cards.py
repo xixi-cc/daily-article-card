@@ -11,6 +11,8 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 PAPERS_MD = ROOT / "papers.md"
 CARDS_DIR = ROOT / "data" / "curated_cards"
+STANDARD_PATH = ROOT / "docs" / "PAPER_CARD_STANDARD.md"
+SITE_PAPERS_DIR = ROOT / "site" / "papers"
 REQUIRED_CORE = {
     "作者信息",
     "模型与方法",
@@ -29,6 +31,95 @@ FORBIDDEN_PHRASES = (
     "尚未逐项绑定",
 )
 MIN_CONTENT_CHARS = 1_800
+V2_THEORY_PROFILES = {"theory", "theory_numerics", "theory_experiment"}
+V2_EQUATION_MINIMUM = {
+    "theory": 3,
+    "theory_numerics": 3,
+    "theory_experiment": 3,
+    "numerical": 2,
+    "experiment": 1,
+    "ai_empirical": 1,
+}
+
+
+def count_math_expressions(content: str) -> int:
+    """Count display and inline TeX without double-counting ``$$...$$``."""
+    display_pattern = re.compile(r"\$\$.*?\$\$|\\\[.*?\\\]", re.DOTALL)
+    display_count = len(display_pattern.findall(content))
+    without_display = display_pattern.sub("", content)
+    inline_pattern = re.compile(
+        r"(?<!\\)\$(?!\$).+?(?<!\\)\$(?!\$)|\\\(.*?\\\)",
+        re.DOTALL,
+    )
+    return display_count + len(inline_pattern.findall(without_display))
+
+
+def is_v2_card(card: dict[str, object]) -> bool:
+    version = str(card.get("card_standard_version", "1.0"))
+    try:
+        return tuple(int(part) for part in version.split(".")) >= (2, 0)
+    except ValueError:
+        return False
+
+
+def validate_v2_card(card: dict[str, object], arxiv_id: str) -> list[str]:
+    errors: list[str] = []
+    profile = str(card.get("paper_profile", ""))
+    if profile not in V2_EQUATION_MINIMUM:
+        errors.append(f"{arxiv_id}: invalid or missing paper_profile")
+
+    if card.get("style_reference") != "physicist_daily_arxiv":
+        errors.append(f"{arxiv_id}: missing physicist_daily_arxiv style reference")
+
+    selection = card.get("selection_record")
+    if not isinstance(selection, dict):
+        errors.append(f"{arxiv_id}: missing Codex selection_record")
+    else:
+        if selection.get("selected_by") != "codex_direct_arxiv":
+            errors.append(f"{arxiv_id}: selection_record is not Codex-direct")
+        if selection.get("grade") != "S":
+            errors.append(f"{arxiv_id}: Daily publication requires grade S")
+        for field in ("report_date", "listing_date", "score", "rubric_version"):
+            if not selection.get(field):
+                errors.append(f"{arxiv_id}: selection_record missing {field}")
+
+    equation_refs = card.get("equation_refs")
+    minimum = V2_EQUATION_MINIMUM.get(profile, 1)
+    if not isinstance(equation_refs, list) or len(equation_refs) < minimum:
+        errors.append(
+            f"{arxiv_id}: {profile or 'unknown'} card needs at least {minimum} equation_refs"
+        )
+    else:
+        roles: set[str] = set()
+        for index, equation in enumerate(equation_refs, start=1):
+            if not isinstance(equation, dict):
+                errors.append(f"{arxiv_id}: equation_ref {index} is not an object")
+                continue
+            for field in ("label", "latex", "role", "evidence", "interpretation"):
+                if not equation.get(field):
+                    errors.append(f"{arxiv_id}: equation_ref {index} missing {field}")
+            symbols = equation.get("symbols")
+            if not isinstance(symbols, dict) or not symbols:
+                errors.append(f"{arxiv_id}: equation_ref {index} missing symbol definitions")
+            roles.add(str(equation.get("role", "")))
+
+        if profile in V2_THEORY_PROFILES:
+            if not roles & {"model", "definition", "governing_equation"}:
+                errors.append(f"{arxiv_id}: theory card lacks a model/definition equation")
+            if not roles & {"central_result", "scaling_law", "bound", "theorem"}:
+                errors.append(f"{arxiv_id}: theory card lacks a result equation")
+
+    content = json.dumps(card.get("sections", []), ensure_ascii=False)
+    math_expression_count = count_math_expressions(content)
+    if math_expression_count < minimum:
+        errors.append(
+            f"{arxiv_id}: card prose contains {math_expression_count} rendered equations; "
+            f"needs {minimum}"
+        )
+    if content.count("$$") % 2:
+        errors.append(f"{arxiv_id}: unbalanced display-math delimiter")
+
+    return errors
 
 
 def rendered_rows() -> dict[str, str]:
@@ -44,6 +135,8 @@ def rendered_rows() -> dict[str, str]:
 
 def main() -> int:
     errors: list[str] = []
+    if not STANDARD_PATH.exists():
+        errors.append("missing canonical docs/PAPER_CARD_STANDARD.md")
     rows = rendered_rows()
     paths = sorted(CARDS_DIR.glob("*.json"))
 
@@ -81,6 +174,9 @@ def main() -> int:
             if phrase in content:
                 errors.append(f"{arxiv_id}: placeholder phrase {phrase!r}")
 
+        if is_v2_card(card):
+            errors.extend(validate_v2_card(card, arxiv_id))
+
         row = rows.get(arxiv_id)
         if row is None:
             errors.append(f"{arxiv_id}: missing from papers.md")
@@ -96,6 +192,16 @@ def main() -> int:
     extra_rows = sorted(set(rows) - {path.stem for path in paths})
     if extra_rows:
         errors.append(f"papers.md rows without curated cards: {extra_rows}")
+    if SITE_PAPERS_DIR.exists():
+        missing_math = []
+        for detail_path in SITE_PAPERS_DIR.glob("*/index.html"):
+            site_html = detail_path.read_text(encoding="utf-8")
+            if "tex-chtml.js" not in site_html or "window.MathJax" not in site_html:
+                missing_math.append(detail_path.parent.name)
+        if missing_math:
+            errors.append(
+                f"generated detail pages missing MathJax: {missing_math[:5]}"
+            )
     if errors:
         raise SystemExit("\n".join(errors))
     print(

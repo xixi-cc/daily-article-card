@@ -38,6 +38,7 @@ IMAGE_DIR = ASSETS_DIR / "paper-images"
 PAPER_IMAGES_MANIFEST = ASSETS_DIR / "paper-images.json"
 SITE_TOPIC_LABEL = "physics+AI"
 SITE_DOCUMENT_NAME = "physics_AI.html"
+MATHJAX_VERSION = "3.2.2"
 
 COVER_THEMES = [
     {
@@ -660,7 +661,12 @@ def render_detail_meta(record: Dict[str, object]) -> str:
     return " · ".join(parts)
 
 
-def generate_head(title: str, description: str, stylesheet_prefix: str = "") -> str:
+def generate_head(
+    title: str,
+    description: str,
+    stylesheet_prefix: str = "",
+    include_math: bool = False,
+) -> str:
     stylesheet_path = f"{stylesheet_prefix}assets/style.css"
     favicon = (
         "data:image/svg+xml,"
@@ -670,6 +676,28 @@ def generate_head(title: str, description: str, stylesheet_prefix: str = "") -> 
         "font-size='30' font-family='Arial, sans-serif' fill='white'%3EV%3C/text%3E"
         "%3C/svg%3E"
     )
+    math_head = ""
+    if include_math:
+        math_head = f"""
+    <script>
+      window.MathJax = {{
+        tex: {{
+          inlineMath: [['$', '$'], ['\\\\(', '\\\\)']],
+          displayMath: [['$$', '$$'], ['\\\\[', '\\\\]']],
+          processEscapes: true
+        }},
+        options: {{
+          skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+        }},
+        chtml: {{
+          scale: 1,
+          displayAlign: 'center'
+        }}
+      }};
+    </script>
+    <script defer src="https://cdn.jsdelivr.net/npm/mathjax@{MATHJAX_VERSION}/es5/tex-chtml.js"></script>
+""".rstrip()
+
     return f"""
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -695,7 +723,7 @@ def generate_head(title: str, description: str, stylesheet_prefix: str = "") -> 
     <link rel="icon" href="{favicon}" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700;800&family=Noto+Sans+SC:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700;800&family=Noto+Sans+SC:wght@400;500;600;700;800&display=swap" rel="stylesheet" />{math_head}
     <link rel="stylesheet" href="{escape(stylesheet_path, quote=True)}" />
 """.strip()
 
@@ -831,7 +859,7 @@ def generate_paper_html(record: Dict[str, object], prev_record: Dict[str, object
     return f"""<!doctype html>
 <html lang="zh-CN">
   <head>
-    {generate_head(f"{page_title} - {site_title}", page_description, "../../")}
+    {generate_head(f"{page_title} - {site_title}", page_description, "../../", include_math=True)}
   </head>
   <body class="detail-page" data-paper-id="{escape(str(record["arxiv_id"] or record["page_dir"]), quote=True)}">
     <div class="page-noise"></div>
