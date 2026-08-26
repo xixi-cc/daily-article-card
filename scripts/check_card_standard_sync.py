@@ -55,7 +55,7 @@ def main() -> int:
     ))
     errors.extend(require(
         ROOT / "scripts" / "modern_ui.css",
-        ("font-size: 17px", "font-size: 1.08em", "color: var(--text)"),
+        ("font-size: 17px", "font-size: 1em", "color: var(--text)"),
     ))
     errors.extend(require(
         ROOT / ".github" / "workflows" / "deploy.yml",
