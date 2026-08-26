@@ -187,7 +187,7 @@ Before publication:
 
 - Mark every mathematical variable, symbol, short relation, and inline formula with `\(...\)`; use `\[...\]` only for display equations. Do not leave notation such as `p_init`, `h→0`, Greek symbols, or compact equalities in prose font.
 - The renderer applies a conservative MathJax safety net to unmistakable bare notation, but this does not replace explicit authoring for ambiguous single-letter variables.
-- Inline MathJax inherits the surrounding 17 px reading size and primary text color; display mathematics is slightly larger. Main card prose, captions, and mathematical notation use the primary high-contrast text color rather than gray.
+- Inline and display MathJax inherit the surrounding 17 px reading size and primary text color. Main card prose, summaries, captions, and mathematical notation use the same high-contrast reading size and primary text color rather than gray.
 
 Current validation command:
 
