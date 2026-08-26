@@ -1,0 +1,199 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Scaling Laws and Representation Learning in Simple Hierarchical Languages: Transformers vs. Convolutional Architectures - physics+AI Collection 随机精选</title>
+    <meta name="description" content="本文的论证主线由以下经过全文核验的节点构成：为什么架构与生成层级对齐时，缩放更快？；RHM 把语言结构写成一棵可控的随机生成树；样本复杂度由可检测相关阶数与架构共享方式共同决定；CNN 的优势来自两种精确对齐：locality + weight sharing；数据相关在样本增加时按层级可检测，形成阶段性学习；locality 与 weight sharing 让 CNN 更有效复用 RHM 统计；Transformer 的灵活性需要更多样本学习 relevant 结构。 卡片内容来自已完成冷读与逐页检查的 paper_presentation.json，并回链到原论文页码、图或公式。" />
+    <script>
+      (function() {
+        try {
+          var themePreference = window.localStorage.getItem('color-theme') || 'system';
+          var systemUsesDarkTheme = window.matchMedia('(prefers-color-scheme: dark)').matches;
+          var resolvedTheme = themePreference === 'system'
+            ? (systemUsesDarkTheme ? 'dark' : 'light')
+            : themePreference;
+          document.documentElement.dataset.theme = resolvedTheme;
+          document.documentElement.dataset.themePreference = themePreference;
+          document.documentElement.style.colorScheme = resolvedTheme;
+        } catch (error) {
+          document.documentElement.dataset.theme = 'light';
+          document.documentElement.dataset.themePreference = 'system';
+        }
+      })();
+    </script>
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='18' fill='%23111827'/%3E%3Ctext x='50%25' y='55%25' text-anchor='middle' dominant-baseline='middle' font-size='30' font-family='Arial, sans-serif' fill='white'%3EV%3C/text%3E%3C/svg%3E" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700;800&family=Noto+Sans+SC:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <script>document.documentElement.classList.add('math-pending');</script>
+    <script>
+      window.MathJax = {
+        tex: {
+          inlineMath: [['$', '$'], ['\\(', '\\)']],
+          displayMath: [['$$', '$$'], ['\\[', '\\]']],
+          processEscapes: true
+        },
+        options: {
+          skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+        },
+        chtml: {
+          scale: 1,
+          displayAlign: 'center'
+        },
+        startup: {
+          ready: function() {
+            MathJax.startup.defaultReady();
+            MathJax.startup.promise.then(function() {
+              document.documentElement.classList.remove('math-pending');
+              document.documentElement.dataset.mathReady = 'true';
+            });
+          }
+        }
+      };
+    </script>
+    <script defer src="../../assets/vendor/mathjax/tex-chtml.js"></script>
+    <link rel="stylesheet" href="../../assets/style.css" />
+  </head>
+  <body class="detail-page" data-paper-id="2505.07070">
+    <div class="page-noise"></div>
+    <div class="page-blur page-blur-a"></div>
+    <div class="page-blur page-blur-b"></div>
+
+    <header class="header detail-page-header">
+      <div class="container">
+        <div class="detail-page-topbar">
+          <a class="back-link" href="../../collection.html">返回列表</a>
+          <div class="detail-topbar-actions">
+            <span class="detail-site-name">physics+AI Collection 随机精选</span>
+            <button class="theme-toggle" type="button" data-theme-toggle aria-label="当前主题：设备，点击切换主题" title="当前主题：设备">
+  <span class="theme-toggle-icons" aria-hidden="true">
+    <svg class="theme-toggle-icon theme-toggle-icon-light" viewBox="0 0 24 24" fill="none">
+      <circle cx="12" cy="12" r="3.5" stroke="currentColor" stroke-width="1.8"/>
+      <path d="M12 2.5v2M12 19.5v2M2.5 12h2M19.5 12h2M5.3 5.3l1.4 1.4M17.3 17.3l1.4 1.4M18.7 5.3l-1.4 1.4M6.7 17.3l-1.4 1.4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+    </svg>
+    <svg class="theme-toggle-icon theme-toggle-icon-dark" viewBox="0 0 24 24" fill="none">
+      <path d="M20 15.2A8.1 8.1 0 0 1 8.8 4a8.2 8.2 0 1 0 11.2 11.2z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>
+    </svg>
+    <svg class="theme-toggle-icon theme-toggle-icon-system" viewBox="0 0 24 24" fill="none">
+      <rect x="3" y="4" width="18" height="13" rx="2.5" stroke="currentColor" stroke-width="1.8"/>
+      <path d="M8 21h8M12 17v4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+    </svg>
+  </span>
+  <span class="theme-toggle-label" data-theme-toggle-label>设备</span>
+</button>
+          </div>
+        </div>
+
+        <div class="detail-hero-grid">
+          <div class="detail-hero-cover"><article class="note-cover note-cover-title-abstract" style="--cover-from: #ef6c3f; --cover-to: #f6b13d; --cover-spot: #ffd59c; --cover-ink: #fff8ef; --cover-muted: rgba(255, 248, 239, 0.82); --cover-chip: rgba(255, 248, 239, 0.16); --cover-stroke: rgba(255, 248, 239, 0.26)">
+  <div class="note-cover-mesh"></div>
+  <div class="note-cover-title-shell">
+    <span class="note-cover-kicker">TITLE · ABSTRACT</span>
+    <h1 class="note-cover-title">Scaling Laws and Representation Learning in Simple Hierarchical Languages: Transformers vs. Convolutional Architectures</h1>
+    <p class="note-cover-title-zh">简单层级语言中的缩放律与表征学习：Transformer 对比卷积架构</p>
+    <p class="note-cover-abstract">How do neural language models acquire a language&#x27;s structure when trained for next-token prediction? We address this question by deriving theoretical scaling laws for neural network performance on synthetic datasets generated by the Random Hierarchy Model (RHM) -- an ensemble of probabilistic context-free grammars designed to capture the hierarchical structure of natural language while remaining analytically tractable. Previously, we developed a theory of representation learning based on data correlations that explains how deep learning models capture the hierarchical structure of the data sequentially, one layer at a time. Here, we extend our theoretical framework to account for architectural differences. In particular, we predict and empirically validate that convolutional networks, whose structure aligns with that of the generative process through locality and weight sharing, enjoy a</p>
+  </div>
+</article></div>
+          <div class="detail-hero-copy">
+            <p class="eyebrow">Collection 全文卡</p>
+            <h1 class="detail-page-title">Scaling Laws and Representation Learning in Simple Hierarchical Languages: Transformers vs. Convolutional Architectures</h1>
+            <p class="detail-page-title-zh">简单层级语言中的缩放律与表征学习：Transformer 对比卷积架构</p>
+            <div class="detail-meta">Paper Collection · Scaling Laws · <a href="https://arxiv.org/abs/2505.07070" target="_blank" rel="noopener noreferrer">原文</a></div>
+            <p class="detail-summary">本文的论证主线由以下经过全文核验的节点构成：为什么架构与生成层级对齐时，缩放更快？；RHM 把语言结构写成一棵可控的随机生成树；样本复杂度由可检测相关阶数与架构共享方式共同决定；CNN 的优势来自两种精确对齐：locality + weight sharing；数据相关在样本增加时按层级可检测，形成阶段性学习；locality 与 weight sharing 让 CNN 更有效复用 RHM 统计；Transformer 的灵活性需要更多样本学习 relevant 结构。 卡片内容来自已完成冷读与逐页检查的 paper_presentation.json，并回链到原论文页码、图或公式。</p>
+            <div class="detail-micro-meta">
+              <span class="meta-pill">14 分钟读完</span>
+              <span class="meta-pill">8 张阅读卡</span>
+              <span class="meta-pill">作者：Francesco Cagnetta、Alessandro Favero、Antonio Scl…</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <main class="container detail-layout">
+      <div class="detail-shell">
+        <article id="detail-body" class="reading-flow"><section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 01</span>
+    <span class="reading-step-note">作者信息</span>
+  </div>
+  <h2>作者信息</h2>
+  <div class="reading-card-content"><ul><li>作者：Francesco Cagnetta、Alessandro Favero、Antonio Sclocchi、Matthieu Wyart。</li><li>研究机构：SISSA, EPFL, UCL, Johns Hopkins University。</li><li>来源：arXiv:2505.07070；年份：2025；主题：缩放律、层级语言、架构偏置。</li><li>本文按本地全文快照制作，官方元数据核验版本为 2505.07070v1。</li></ul></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 02</span>
+    <span class="reading-step-note">摘要</span>
+  </div>
+  <h2>摘要</h2>
+  <div class="reading-card-content"><ul><li>本文的论证主线由以下经过全文核验的节点构成：为什么架构与生成层级对齐时，缩放更快？；RHM 把语言结构写成一棵可控的随机生成树；样本复杂度由可检测相关阶数与架构共享方式共同决定；CNN 的优势来自两种精确对齐：locality + weight sharing；数据相关在样本增加时按层级可检测，形成阶段性学习；locality 与 weight sharing 让 CNN 更有效复用 RHM 统计；Transformer 的灵活性需要更多样本学习 relevant 结构。</li><li>卡片内容来自已完成冷读与逐页检查的 \(paper_{\mathrm{presentation}}\).json，并回链到原论文页码、图或公式。</li></ul></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 03</span>
+    <span class="reading-step-note">背景</span>
+  </div>
+  <h2>背景</h2>
+  <div class="reading-card-content"><ul><li>论证节点“为什么架构与生成层级对齐时，缩放更快？”。</li><li>Random Hierarchy Model (RHM) 是概率上下文无关语法，逐层生成可控的层级序列。</li><li>任务是 next-token prediction；隐藏变量位于不同树深度。</li><li>数据相关性随样本增加逐层显现，网络也按层级顺序恢复隐藏变量。</li><li>论文比较局部+权重共享的卷积网络与全局 self-attention Transformer。</li><li>可解析合成语言让缩放律可以从数据结构推导，而非只做经验拟合。</li><li>论文用 RHM 研究 next-token prediction 与架构依赖缩放律。 （\(p\). 1; source/tex/main.tex:138-250）</li><li>论证节点“RHM 把语言结构写成一棵可控的随机生成树”。</li><li>根符号经随机规则递归展开，深度 $L$ 控制层级数。</li><li>词表大小、分支数和规则数控制可见相关性与歧义。</li><li>浅层隐藏变量由低阶相关较早恢复。</li><li>更深层变量需要更高样本量，形成分阶段学习与幂律区间。</li><li>模型性能的拐点对应新的层级变量被可靠识别。</li><li>论文定义 RHM 语法、相关统计与隐藏变量重构。 （\(p\). 3; source/tex/main.tex:168-350）</li><li>研究问题的表述以论文给出的对象和评价目标为边界；背景动机不自动构成方法有效性的证据。</li></ul></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 04</span>
+    <span class="reading-step-note">模型与方法</span>
+  </div>
+  <h2>模型与方法</h2>
+  <div class="reading-card-content"><ul><li>论证节点“CNN 的优势来自两种精确对齐：locality + weight sharing”。</li><li>RHM 的兄弟/局部子树包含直接统计依赖，卷积 receptive field 与之对齐。</li><li>同一生成规则在不同位置复用，卷积权重共享能合并统计证据。</li><li>Transformer 全局 attention 更灵活，但必须从数据学习哪些位置和尺度 relevant。</li><li>去掉 locality 或 weight sharing 后，卷积架构的缩放优势按理论预期减弱。</li><li>更强通用性可能付出更高样本代价；正确偏置在匹配任务上更快。</li><li>论文分析 convolution、locally connected 与 Transformer 的结构差异。 （\(p\). 7; source/tex/main.tex:430-520）</li><li>方法部分按 presentation 中的数学关系、算法结构或实验设计重述；公式只在相应证据页定义的符号与条件下成立。</li></ul></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 05</span>
+    <span class="reading-step-note">核心结果与证据</span>
+  </div>
+  <h2>核心结果与证据</h2>
+  <div class="reading-card-content"><ul><li>论证节点“样本复杂度由可检测相关阶数与架构共享方式共同决定”。</li><li>设定：层级数据由 RHM 生成；模型在 next-token 任务上达到给定误差。</li><li>关键关系：P_\ell &\sim \(v^{\)\alpha_\ell} \\ \mathcal \(\mathrm{L}(P)\)-\mathcal L_\infty &\sim \(P^{-\)\beta(\text{architecture},\,\text{RHM})}</li><li>推导含义：恢复第 $\ell$ 层隐藏变量需要足够样本分辨相应相关；局部性和权重共享改变有效统计量复用次数。</li><li>结论边界：缩放指数不是纯模型常数，而是架构与数据生成结构的匹配函数。</li><li>理论推导层级隐藏变量重构的 sample complexity 与 performance scaling。 （\(p\). 5; equation sample complexity scaling; source/tex/main.tex:251-430）</li><li>论证节点“学习曲线呈阶梯：每个 plateau 对应一个层级被学会”。</li><li>Learning curves：CNN 与 Transformer 的 loss 随训练样本/步数分阶段下降；架构对齐的卷积模型更早跨过层级阈值。</li><li>证据解释：曲线拐点不是简单优化噪声，而与隐藏变量恢复同步。</li><li>训练曲线比较 CNN 与 attention 模型的层级学习阶段。 （\(p\). 10; figure learning curves; source/tex/loss-vs-\(time_{L_{4}}_{s_{2}}_{v_{16}}_{m_{4}}_{\mathrm{CNN}}\)-vs-MLA.pdf）</li><li>论证节点“表征敏感度显示深度按层级顺序对齐”。</li><li>Sensitivity profile：网络不同深度对 RHM 隐藏变量层级的敏感度依次出现；卷积模型的层—层级对应更清晰。</li><li>证据解释：这给缩放律提供表征层机制，而不只是最终 loss 拟合。</li><li>sensitivity 分析验证隐藏层依次编码更深生成变量。 （\(p\). 11; figure sensitivity; source/tex/\(sensitivities_{L_{4}}_{v_{32}}_{n_{32}}_{m_{8}}_{s_{2}}_{\mathrm{hcnn}}_{d_{4}}_{P_{268435456}}\).pdf）</li><li>证据状态：上述结论均来自逐页审阅后的 presentation manifest；这里只确认论文原文支持，不把作者实验视为本站独立复现。</li></ul></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 06</span>
+    <span class="reading-step-note">有效性与局限</span>
+  </div>
+  <h2>有效性与局限</h2>
+  <div class="reading-card-content"><ul><li>论证节点“边界：RHM 是可控显微镜，不是自然语言复制品”。</li><li>语法树、规则分布和 next-token 任务高度理想化。</li><li>自然语言含长程语义、歧义、世界知识与非平稳频率，未必服从同一指数。</li><li>比较在特定模型宽深和训练配置下进行；优化与有限尺寸会改变观测斜率。</li><li>结论支持 architecture–data alignment 机制，但不宣称 CNN 普遍优于 Transformer。</li><li>合成模型最有价值之处，是提出可检验机制与失败条件。</li><li>结论限定 RHM 分析并讨论向真实语言推广。 （\(p\). 12; source/tex/main.tex:520-610）</li><li>论证节点“三点带走：层级阈值、结构匹配、缩放指数不是常数”。</li><li>数据相关在样本增加时按层级可检测，形成阶段性学习。</li><li>locality 与 weight sharing 让 CNN 更有效复用 RHM 统计。</li><li>Transformer 的灵活性需要更多样本学习 relevant 结构。</li><li>真实缩放律应同时描述数据生成结构与架构偏置。</li><li>这篇论文把 scaling law 从经验直线变成了可解释的表征恢复过程。</li><li>论文总结架构相关 scaling 与层级 representation learning。 （\(p\). 12; source/tex/main.tex:520-610）</li><li>适用边界以卡片列出的目标、假设、数据集或物理参数区间为准；未在原文证据中出现的外推不计入论文结论。</li><li>该卡完成的是全文证据审计，未重新运行训练、仿真或实验，因此不能据此声称独立复现、稳健性复核或跨任务泛化。</li></ul></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 07</span>
+    <span class="reading-step-note">复现与资源</span>
+  </div>
+  <h2>复现与资源</h2>
+  <div class="reading-card-content"><ul><li>原文：https://arxiv.org/abs/2505.07070；PDF：https://arxiv.org/pdf/2505.07070。</li><li>本地证据源：2505.07070/source/paper.pdf；SHA-256：baeffcad7925b21476983cd35f7ab84ff025c333fe78e2b9e502c1099cb32688。</li><li>来源格式：tex；来源包状态：downloaded；presentation 证据条目数：8。</li><li>presentation 及其质量报告保留了页面审阅、编译和冷读状态；它们用于追溯卡片，不等同于作者代码或数据已公开。</li><li>Evidence status: full-text verified; no independent reproduction performed.</li></ul></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 08</span>
+    <span class="reading-step-note">阅读指南</span>
+  </div>
+  <h2>阅读指南</h2>
+  <div class="reading-card-content"><ul><li>快速阅读可先看证据页 1, 3, 5, 7, 10, 11，这些页覆盖问题、方法与主要结论。</li><li>图证据优先查看 learning curves；结合图注和正文，不只依据视觉趋势下结论。</li><li>公式链优先查看 sample complexity scaling；核对符号、假设与前后推导。</li><li>建议按“研究问题 → 方法/数学对象 → 证据 → 局限”的顺序阅读，避免从摘要直接跳到强结论。</li><li>若要复现，先从证据引用恢复具体设置，再补齐随机种子、计算资源、评价指标和失败案例。</li></ul></div>
+</section></article>
+        <aside id="detail-toc" class="detail-toc hidden" aria-label="内容目录">
+          <p class="detail-toc-title">阅读目录</p>
+          <nav id="detail-toc-nav" class="detail-toc-nav"></nav>
+        </aside>
+      </div>
+      <nav class="paper-nav"><a class="paper-nav-link paper-nav-prev" href="../../collection-papers/2504.18267/"><span class="paper-nav-label">← 上一篇</span><span class="paper-nav-title">Neural operators struggle to learn complex PDEs in pedestrian mobility: Hughes model case study</span></a>
+      <a class="paper-nav-link paper-nav-next" href="../../collection-papers/2505.11441/"><span class="paper-nav-label">下一篇 →</span><span class="paper-nav-title">Is Compression Really Linear with Code Intelligence?</span></a></nav>
+    </main>
+
+    <footer class="footer">
+      <div class="container">
+        <p>内容来自 <a href="https://arxiv.org" target="_blank" rel="noopener noreferrer">arXiv.org</a>，阅读卡片由静态站点生成器构建。</p>
+      </div>
+    </footer>
+
+    <script src="../../assets/theme.js"></script>
+    <script src="../../assets/media.js"></script>
+    <script src="../../assets/paper.js"></script>
+  </body>
+</html>

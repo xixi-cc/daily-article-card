@@ -1,0 +1,199 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Interpretable Machine Learning for Science with PySR and SymbolicRegression.jl - physics+AI Collection 随机精选</title>
+    <meta name="description" content="PySR 是面向科学方程发现的开源 symbolic regression 工具；Python 前端连接高性能 Julia 后端 SymbolicRegression.jl，以多种群进化搜索表达式的误差—复杂度 Pareto 前沿。 核心循环是 evolve–simplify–optimize：结构突变后做代数化简，再用 BFGS 等数值优化新表达式中的实常数。 论文还提出九条历史经验定律组成的 EmpiricalBench，要求算法在噪声、真实量纲范围和未知非整数常数下恢复函数形式。" />
+    <script>
+      (function() {
+        try {
+          var themePreference = window.localStorage.getItem('color-theme') || 'system';
+          var systemUsesDarkTheme = window.matchMedia('(prefers-color-scheme: dark)').matches;
+          var resolvedTheme = themePreference === 'system'
+            ? (systemUsesDarkTheme ? 'dark' : 'light')
+            : themePreference;
+          document.documentElement.dataset.theme = resolvedTheme;
+          document.documentElement.dataset.themePreference = themePreference;
+          document.documentElement.style.colorScheme = resolvedTheme;
+        } catch (error) {
+          document.documentElement.dataset.theme = 'light';
+          document.documentElement.dataset.themePreference = 'system';
+        }
+      })();
+    </script>
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='18' fill='%23111827'/%3E%3Ctext x='50%25' y='55%25' text-anchor='middle' dominant-baseline='middle' font-size='30' font-family='Arial, sans-serif' fill='white'%3EV%3C/text%3E%3C/svg%3E" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700;800&family=Noto+Sans+SC:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <script>document.documentElement.classList.add('math-pending');</script>
+    <script>
+      window.MathJax = {
+        tex: {
+          inlineMath: [['$', '$'], ['\\(', '\\)']],
+          displayMath: [['$$', '$$'], ['\\[', '\\]']],
+          processEscapes: true
+        },
+        options: {
+          skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+        },
+        chtml: {
+          scale: 1,
+          displayAlign: 'center'
+        },
+        startup: {
+          ready: function() {
+            MathJax.startup.defaultReady();
+            MathJax.startup.promise.then(function() {
+              document.documentElement.classList.remove('math-pending');
+              document.documentElement.dataset.mathReady = 'true';
+            });
+          }
+        }
+      };
+    </script>
+    <script defer src="../../assets/vendor/mathjax/tex-chtml.js"></script>
+    <link rel="stylesheet" href="../../assets/style.css" />
+  </head>
+  <body class="detail-page" data-paper-id="2305.01582">
+    <div class="page-noise"></div>
+    <div class="page-blur page-blur-a"></div>
+    <div class="page-blur page-blur-b"></div>
+
+    <header class="header detail-page-header">
+      <div class="container">
+        <div class="detail-page-topbar">
+          <a class="back-link" href="../../collection.html">返回列表</a>
+          <div class="detail-topbar-actions">
+            <span class="detail-site-name">physics+AI Collection 随机精选</span>
+            <button class="theme-toggle" type="button" data-theme-toggle aria-label="当前主题：设备，点击切换主题" title="当前主题：设备">
+  <span class="theme-toggle-icons" aria-hidden="true">
+    <svg class="theme-toggle-icon theme-toggle-icon-light" viewBox="0 0 24 24" fill="none">
+      <circle cx="12" cy="12" r="3.5" stroke="currentColor" stroke-width="1.8"/>
+      <path d="M12 2.5v2M12 19.5v2M2.5 12h2M19.5 12h2M5.3 5.3l1.4 1.4M17.3 17.3l1.4 1.4M18.7 5.3l-1.4 1.4M6.7 17.3l-1.4 1.4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+    </svg>
+    <svg class="theme-toggle-icon theme-toggle-icon-dark" viewBox="0 0 24 24" fill="none">
+      <path d="M20 15.2A8.1 8.1 0 0 1 8.8 4a8.2 8.2 0 1 0 11.2 11.2z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>
+    </svg>
+    <svg class="theme-toggle-icon theme-toggle-icon-system" viewBox="0 0 24 24" fill="none">
+      <rect x="3" y="4" width="18" height="13" rx="2.5" stroke="currentColor" stroke-width="1.8"/>
+      <path d="M8 21h8M12 17v4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+    </svg>
+  </span>
+  <span class="theme-toggle-label" data-theme-toggle-label>设备</span>
+</button>
+          </div>
+        </div>
+
+        <div class="detail-hero-grid">
+          <div class="detail-hero-cover"><article class="note-cover note-cover-title-abstract" style="--cover-from: #ef6c3f; --cover-to: #f6b13d; --cover-spot: #ffd59c; --cover-ink: #fff8ef; --cover-muted: rgba(255, 248, 239, 0.82); --cover-chip: rgba(255, 248, 239, 0.16); --cover-stroke: rgba(255, 248, 239, 0.26)">
+  <div class="note-cover-mesh"></div>
+  <div class="note-cover-title-shell">
+    <span class="note-cover-kicker">TITLE · ABSTRACT</span>
+    <h1 class="note-cover-title">Interpretable Machine Learning for Science with PySR and SymbolicRegression.jl</h1>
+    <p class="note-cover-title-zh">用 PySR 与 SymbolicRegression.jl 做可解释科学机器学习</p>
+    <p class="note-cover-abstract">PySR is an open-source library for practical symbolic regression, a type of machine learning which aims to discover human-interpretable symbolic models. PySR was developed to democratize and popularize symbolic regression for the sciences, and is built on a high-performance distributed back-end, a flexible search algorithm, and interfaces with several deep learning packages. PySR&#x27;s internal search algorithm is a multi-population evolutionary algorithm, which consists of a unique evolve-simplify-optimize loop, designed for optimization of unknown scalar constants in newly-discovered empirical expressions. PySR&#x27;s backend is the extremely optimized Julia library SymbolicRegression.jl, which can be used directly from Julia. It is capable of fusing user-defined operators into SIMD kernels at runtime, performing automatic differentiation, and distributing populations of expressions to thousand</p>
+  </div>
+</article></div>
+          <div class="detail-hero-copy">
+            <p class="eyebrow">Collection 全文卡</p>
+            <h1 class="detail-page-title">Interpretable Machine Learning for Science with PySR and SymbolicRegression.jl</h1>
+            <p class="detail-page-title-zh">用 PySR 与 SymbolicRegression.jl 做可解释科学机器学习</p>
+            <div class="detail-meta">Paper Collection · Machine Learning · <a href="https://arxiv.org/abs/2305.01582" target="_blank" rel="noopener noreferrer">原文</a></div>
+            <p class="detail-summary">PySR 是面向科学方程发现的开源 symbolic regression 工具；Python 前端连接高性能 Julia 后端 SymbolicRegression.jl，以多种群进化搜索表达式的误差—复杂度 Pareto 前沿。 核心循环是 evolve–simplify–optimize：结构突变后做代数化简，再用 BFGS 等数值优化新表达式中的实常数。 论文还提出九条历史经验定律组成的 EmpiricalBench，要求算法在噪声、真实量纲范围和未知非整数常数下恢复函数形式。</p>
+            <div class="detail-micro-meta">
+              <span class="meta-pill">9 分钟读完</span>
+              <span class="meta-pill">8 张阅读卡</span>
+              <span class="meta-pill">作者：Miles Cranmer。</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <main class="container detail-layout">
+      <div class="detail-shell">
+        <article id="detail-body" class="reading-flow"><section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 01</span>
+    <span class="reading-step-note">作者信息</span>
+  </div>
+  <h2>作者信息</h2>
+  <div class="reading-card-content"><ul><li>作者：Miles Cranmer。</li><li>官方快照：arXiv:2305.01582v3；主分类 astro-ph.IM。</li><li>论文同时是算法、软件系统与 EmpiricalBench benchmark 描述，结果与特定版本和运行配置绑定。</li></ul></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 02</span>
+    <span class="reading-step-note">摘要</span>
+  </div>
+  <h2>摘要</h2>
+  <div class="reading-card-content"><ul><li>PySR 是面向科学方程发现的开源 symbolic regression 工具；Python 前端连接高性能 Julia 后端 SymbolicRegression.jl，以多种群进化搜索表达式的误差—复杂度 Pareto 前沿。</li><li>核心循环是 evolve–simplify–optimize：结构突变后做代数化简，再用 BFGS 等数值优化新表达式中的实常数。</li><li>论文还提出九条历史经验定律组成的 EmpiricalBench，要求算法在噪声、真实量纲范围和未知非整数常数下恢复函数形式。</li></ul></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 03</span>
+    <span class="reading-step-note">背景</span>
+  </div>
+  <h2>背景</h2>
+  <div class="reading-card-content"><ul><li>symbolic regression 不只追求预测误差，还要在可解释复杂度上做多目标选择；科学用户通常需要一组 Pareto 候选，而非单一黑盒最优式。</li><li>常见 Feynman/Nguyen 合成 benchmark 往往直接给定物理常数、使用规整采样和简单噪声；这与历史上从不完美观测中同时发现结构和常数的任务有距离。</li><li>PySR 的设计强调自定义算符、量纲/复杂度约束、非光滑表达式、并行种群与深度学习接口，目标是可用的软件而非只在一个合成表上得分。</li></ul></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 04</span>
+    <span class="reading-step-note">模型与方法</span>
+  </div>
+  <h2>模型与方法</h2>
+  <div class="reading-card-content"><ul><li>每个种群维护表达式树，锦标赛选择后执行节点/算符变异或 crossover；模拟退火式接受准则允许暂时变差，migration 在种群间传递候选，hall of fame 保存每个复杂度的最佳式（Figs. 1–4, Algorithms 1–4）。</li><li>默认复杂度统计运算节点、变量和常数，但用户可按领域设定；自适应 parsimony 根据种群中各复杂度频率调整惩罚，避免搜索只停在简单或庞大表达式。</li><li>EmpiricalBench 含 Hubble、Kepler、Newton、Planck、Leavitt、Schechter、Bode、ideal gas、Rydberg 九条定律；原数据可得时直接使用或从原图表数字化，否则按现实变量范围生成并加噪。</li><li>六种方法各对九个任务跑 5 次，每次最多 1 小时、8 个 AMD Rome CPU cores；整条 Pareto front 由人工判断 correct/almost/failed/incorrect。</li></ul></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 05</span>
+    <span class="reading-step-note">核心结果与证据</span>
+  </div>
+  <h2>核心结果与证据</h2>
+  <div class="reading-card-content"><ul><li>Table 3 中 PySR 在 Hubble、Kepler、Newton、Leavitt、Schechter、Bode、ideal gas 七项均为 5/5 correct，在 Planck 与 Rydberg 为 0/5，总计 35/45。</li><li>DSR 在 Kepler 4/5、Leavitt/Schechter/ideal gas 各 5/5，但有多项 failed；Operon 只有 Newton 1/5、Schechter 5/5、Bode 3/5。EQL 与 SR-Transformer 没有 correct trial，QLattice 仅 Schechter 5/5。</li><li>作者把 crash、domain error 和未定义表达式计入失败，强调软件稳定性是科学可用性的一部分；但也承认作者更熟悉 PySR 环境，可能让它获得配置与稳定性优势。</li><li>所有方法都未恢复 Planck 与 Rydberg，说明复杂指数/倒数结构与实常数仍是共同难点；结果不是“PySR 可发现任意物理定律”。</li></ul></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 06</span>
+    <span class="reading-step-note">有效性与局限</span>
+  </div>
+  <h2>有效性与局限</h2>
+  <div class="reading-card-content"><ul><li>benchmark 只有九条定律、每项五次，人工目检允许忽略小常数误差；没有独立盲评或置信区间，算法排序对任务和配置敏感。</li><li>全部数据用于训练，因为评价对象是表达式本身；因此结果衡量结构恢复，不衡量留出集泛化。</li><li>一小时/8-core 预算没有逐算法调优；作者团队对自家软件更熟悉，其他包的 crash 或配置失败不一定代表其最佳能力。</li><li>EmpiricalBench 不统计函数评估次数、搜索能耗或数值预测精度，也混合原始与合成数据；35/45 是该协议下的结构恢复计数。</li></ul></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 07</span>
+    <span class="reading-step-note">复现与资源</span>
+  </div>
+  <h2>复现与资源</h2>
+  <div class="reading-card-content"><ul><li>PySR：https://github.com/MilesCranmer/PySR；Julia 后端：https://github.com/MilesCranmer/SymbolicRegression.jl；论文 benchmark 与全部 Pareto fronts：https://github.com/MilesCranmer/pysr_paper。</li><li>复现需锁定 \(v_{3}\) 代码依赖、算符集、复杂度规则、CPU/线程、1 小时预算和五个随机种子；应保存所有 fronts、crash 日志与人工分类依据。</li><li>本站 PDF SHA-256：231a9e250e879938a5119d1269764b34101de743181351fe77f4507a62b835b9。</li><li>Evidence status: full-text verified; no independent reproduction performed.</li></ul></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 08</span>
+    <span class="reading-step-note">阅读指南</span>
+  </div>
+  <h2>阅读指南</h2>
+  <div class="reading-card-content"><ul><li>先看 Figs. 3–4 理解内外循环，再看 Section 2 的 simplify/constant optimization/adaptive parsimony；这些是 PySR 与朴素遗传编程的主要差异。</li><li>随后读 Fig. 5、Tables 2–3，把每个 5-run 分解中的 failed 与 incorrect 分开，不要只看总正确数。</li><li>实际使用时先定义允许算符与复杂度，再检查量纲、稳定性和外推；Pareto front 上的简洁式仍需物理验证。</li></ul></div>
+</section></article>
+        <aside id="detail-toc" class="detail-toc hidden" aria-label="内容目录">
+          <p class="detail-toc-title">阅读目录</p>
+          <nav id="detail-toc-nav" class="detail-toc-nav"></nav>
+        </aside>
+      </div>
+      <nav class="paper-nav"><a class="paper-nav-link paper-nav-prev" href="../../collection-papers/2303.16852/"><span class="paper-nav-label">← 上一篇</span><span class="paper-nav-title">Diffusion Schrödinger Bridge Matching</span></a>
+      <a class="paper-nav-link paper-nav-next" href="../../collection-papers/2305.10491/"><span class="paper-nav-label">下一篇 →</span><span class="paper-nav-title">Bayesian Renormalization</span></a></nav>
+    </main>
+
+    <footer class="footer">
+      <div class="container">
+        <p>内容来自 <a href="https://arxiv.org" target="_blank" rel="noopener noreferrer">arXiv.org</a>，阅读卡片由静态站点生成器构建。</p>
+      </div>
+    </footer>
+
+    <script src="../../assets/theme.js"></script>
+    <script src="../../assets/media.js"></script>
+    <script src="../../assets/paper.js"></script>
+  </body>
+</html>

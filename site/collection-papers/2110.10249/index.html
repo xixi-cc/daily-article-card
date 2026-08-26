@@ -1,0 +1,199 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Neural Stochastic PDEs: Resolution-Invariant Learning of Continuous Spatiotemporal Dynamics - physics+AI Collection 随机精选</title>
+    <meta name="description" content="Neural SPDE 从 mild solution 出发，把初值 u0 与连续时空 forcing ξ 提升到 latent function space；谱域 kernel 表达线性传播，神经网络表达状态与 forcing 的非线性交互。 同一模型有两种数值化：只在空间做 Fourier transform 后交给 ODE solver，或在时空域写成 Picard fixed-point problem；两者分别可用 adjoint 与 implicit differentiation 节省反向传播内存。 Ginzburg–Landau、随机 KdV 与二维随机 Navier–Stokes 实验比较 NCDE、NRDE、NCDE-FNO、DeepONet、FNO；结果支持特定设置下的数据效率、zero-shot super-resolution 与相对传统 solver 的推理加速。" />
+    <script>
+      (function() {
+        try {
+          var themePreference = window.localStorage.getItem('color-theme') || 'system';
+          var systemUsesDarkTheme = window.matchMedia('(prefers-color-scheme: dark)').matches;
+          var resolvedTheme = themePreference === 'system'
+            ? (systemUsesDarkTheme ? 'dark' : 'light')
+            : themePreference;
+          document.documentElement.dataset.theme = resolvedTheme;
+          document.documentElement.dataset.themePreference = themePreference;
+          document.documentElement.style.colorScheme = resolvedTheme;
+        } catch (error) {
+          document.documentElement.dataset.theme = 'light';
+          document.documentElement.dataset.themePreference = 'system';
+        }
+      })();
+    </script>
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='18' fill='%23111827'/%3E%3Ctext x='50%25' y='55%25' text-anchor='middle' dominant-baseline='middle' font-size='30' font-family='Arial, sans-serif' fill='white'%3EV%3C/text%3E%3C/svg%3E" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700;800&family=Noto+Sans+SC:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <script>document.documentElement.classList.add('math-pending');</script>
+    <script>
+      window.MathJax = {
+        tex: {
+          inlineMath: [['$', '$'], ['\\(', '\\)']],
+          displayMath: [['$$', '$$'], ['\\[', '\\]']],
+          processEscapes: true
+        },
+        options: {
+          skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+        },
+        chtml: {
+          scale: 1,
+          displayAlign: 'center'
+        },
+        startup: {
+          ready: function() {
+            MathJax.startup.defaultReady();
+            MathJax.startup.promise.then(function() {
+              document.documentElement.classList.remove('math-pending');
+              document.documentElement.dataset.mathReady = 'true';
+            });
+          }
+        }
+      };
+    </script>
+    <script defer src="../../assets/vendor/mathjax/tex-chtml.js"></script>
+    <link rel="stylesheet" href="../../assets/style.css" />
+  </head>
+  <body class="detail-page" data-paper-id="2110.10249">
+    <div class="page-noise"></div>
+    <div class="page-blur page-blur-a"></div>
+    <div class="page-blur page-blur-b"></div>
+
+    <header class="header detail-page-header">
+      <div class="container">
+        <div class="detail-page-topbar">
+          <a class="back-link" href="../../collection.html">返回列表</a>
+          <div class="detail-topbar-actions">
+            <span class="detail-site-name">physics+AI Collection 随机精选</span>
+            <button class="theme-toggle" type="button" data-theme-toggle aria-label="当前主题：设备，点击切换主题" title="当前主题：设备">
+  <span class="theme-toggle-icons" aria-hidden="true">
+    <svg class="theme-toggle-icon theme-toggle-icon-light" viewBox="0 0 24 24" fill="none">
+      <circle cx="12" cy="12" r="3.5" stroke="currentColor" stroke-width="1.8"/>
+      <path d="M12 2.5v2M12 19.5v2M2.5 12h2M19.5 12h2M5.3 5.3l1.4 1.4M17.3 17.3l1.4 1.4M18.7 5.3l-1.4 1.4M6.7 17.3l-1.4 1.4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+    </svg>
+    <svg class="theme-toggle-icon theme-toggle-icon-dark" viewBox="0 0 24 24" fill="none">
+      <path d="M20 15.2A8.1 8.1 0 0 1 8.8 4a8.2 8.2 0 1 0 11.2 11.2z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>
+    </svg>
+    <svg class="theme-toggle-icon theme-toggle-icon-system" viewBox="0 0 24 24" fill="none">
+      <rect x="3" y="4" width="18" height="13" rx="2.5" stroke="currentColor" stroke-width="1.8"/>
+      <path d="M8 21h8M12 17v4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+    </svg>
+  </span>
+  <span class="theme-toggle-label" data-theme-toggle-label>设备</span>
+</button>
+          </div>
+        </div>
+
+        <div class="detail-hero-grid">
+          <div class="detail-hero-cover"><article class="note-cover note-cover-title-abstract" style="--cover-from: #ef6c3f; --cover-to: #f6b13d; --cover-spot: #ffd59c; --cover-ink: #fff8ef; --cover-muted: rgba(255, 248, 239, 0.82); --cover-chip: rgba(255, 248, 239, 0.16); --cover-stroke: rgba(255, 248, 239, 0.26)">
+  <div class="note-cover-mesh"></div>
+  <div class="note-cover-title-shell">
+    <span class="note-cover-kicker">TITLE · ABSTRACT</span>
+    <h1 class="note-cover-title">Neural Stochastic PDEs: Resolution-Invariant Learning of Continuous Spatiotemporal Dynamics</h1>
+    <p class="note-cover-title-zh">神经随机偏微分方程：连续时空动力学的分辨率不变学习</p>
+    <p class="note-cover-abstract">Stochastic partial differential equations (SPDEs) are the mathematical tool of choice for modelling spatiotemporal PDE-dynamics under the influence of randomness. Based on the notion of mild solution of an SPDE, we introduce a novel neural architecture to learn solution operators of PDEs with (possibly stochastic) forcing from partially observed data. The proposed Neural SPDE model provides an extension to two popular classes of physics-inspired architectures. On the one hand, it extends Neural CDEs and variants – continuous-time analogues of RNNs – in that it is capable of processing incoming sequential information arriving at arbitrary spatial resolutions. On the other hand, it extends Neural Operators – generalizations of neural networks to model mappings between spaces of functions – in that it can parameterize solution operators of SPDEs depending simultaneously on the initial condi</p>
+  </div>
+</article></div>
+          <div class="detail-hero-copy">
+            <p class="eyebrow">Collection 全文卡</p>
+            <h1 class="detail-page-title">Neural Stochastic PDEs: Resolution-Invariant Learning of Continuous Spatiotemporal Dynamics</h1>
+            <p class="detail-page-title-zh">神经随机偏微分方程：连续时空动力学的分辨率不变学习</p>
+            <div class="detail-meta">Paper Collection · Neural Operators · <a href="https://arxiv.org/abs/2110.10249" target="_blank" rel="noopener noreferrer">原文</a></div>
+            <p class="detail-summary">Neural SPDE 从 mild solution 出发，把初值 u0 与连续时空 forcing ξ 提升到 latent function space；谱域 kernel 表达线性传播，神经网络表达状态与 forcing 的非线性交互。 同一模型有两种数值化：只在空间做 Fourier transform 后交给 ODE solver，或在时空域写成 Picard fixed-point problem；两者分别可用 adjoint 与 implicit differentiation 节省反向传播内存。 Ginzburg–Landau、随机 KdV 与二维随机 Navier–Stokes 实验比较 NCDE、NRDE、NCDE-FNO、DeepONet、FNO；结果支持特定设置下的数据效率、zero-shot super-resolution 与相对传统 solver 的推理加速。</p>
+            <div class="detail-micro-meta">
+              <span class="meta-pill">13 分钟读完</span>
+              <span class="meta-pill">8 张阅读卡</span>
+              <span class="meta-pill">作者：Cristopher Salvi、Maud Lemercier、Andris Gerasimov…</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <main class="container detail-layout">
+      <div class="detail-shell">
+        <article id="detail-body" class="reading-flow"><section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 01</span>
+    <span class="reading-step-note">作者信息</span>
+  </div>
+  <h2>作者信息</h2>
+  <div class="reading-card-content"><ul><li>作者：Cristopher Salvi、Maud Lemercier、Andris Gerasimovics；机构包括 Imperial College London、The Alan Turing Institute、University of Warwick 与 University of Bath。</li><li>官方快照：arXiv:2110.10249v8，23 页，NeurIPS 2022；分类 cs.LG。</li><li>本文处理给定初值与一条驱动噪声 realization 的 pathwise solution-operator learning，不是只学习 SPDE 解的边缘分布。</li></ul></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 02</span>
+    <span class="reading-step-note">摘要</span>
+  </div>
+  <h2>摘要</h2>
+  <div class="reading-card-content"><ul><li>Neural SPDE 从 mild solution 出发，把初值 \(u_{0}\) 与连续时空 forcing \(\xi\) 提升到 latent function space；谱域 kernel 表达线性传播，神经网络表达状态与 forcing 的非线性交互。</li><li>同一模型有两种数值化：只在空间做 Fourier transform 后交给 ODE solver，或在时空域写成 Picard fixed-point problem；两者分别可用 adjoint 与 implicit differentiation 节省反向传播内存。</li><li>Ginzburg–Landau、随机 KdV 与二维随机 Navier–Stokes 实验比较 NCDE、NRDE、NCDE-FNO、DeepONet、FNO；结果支持特定设置下的数据效率、zero-shot super-resolution 与相对传统 solver 的推理加速。</li></ul></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 03</span>
+    <span class="reading-step-note">背景</span>
+  </div>
+  <h2>背景</h2>
+  <div class="reading-card-content"><ul><li>普通 Neural CDE/RDE 对时间采样具有连续性，但把每个空间点当 channel 会随空间维度爆炸，且不是 space-resolution invariant；普通 FNO 又通常没有把一条外生随机时空信号作为连续驱动显式处理。</li><li>论文把 SPDE 写成 du=(Lu+F(\(u\)))dt+G(\(u\))dW，并对 W 做平滑，得到 random PDE 的 mild form；学习对象因此是 (\(u_{0}\), \(\xi\))→\(u\)，而不是只由 \(u_{0}\) 唯一决定的确定性算子。</li><li>作者专门把 \(u_{0}\to u\)、\(\xi\to u\) 与 (\(u_{0}\),\(\xi\))→\(u\) 三种信息条件分开；缺失 \(\xi\) 时误差高是信息论上的 sanity check，不能当作模型本身失败。</li></ul></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 04</span>
+    <span class="reading-step-note">模型与方法</span>
+  </div>
+  <h2>模型与方法</h2>
+  <div class="reading-card-content"><ul><li>lift Lθ 把初值映射到 dh 维 latent field，readout Πθ 投回物理场；Hθ,\(\xi(z)=F\theta(z)\)+Gθ(\(z\))\(\xi\) 把非线性漂移和观测 forcing 合并。</li><li>ODE 版本在空间 Fourier coefficients 上求 v̇=Av+\(F_{d}\)(Hθ,\(\xi\)(\(F_{d}^{-1}v\)))，近似 spectral Galerkin；fixed-point 版本对完整时空做 FFT，迭代 \(z=\Phi\theta\),\(\xi\)(\(z\))。</li><li>在实验选取下两种算法复杂度可比，但 ODE 版本为达到相近表现需约 20 倍 latent width，且实测约慢 10 倍；作者把部分差距归因于 torchdiffeq 与高度优化 FFT 的实现差异。</li><li>所谓 resolution invariance 来自连续函数输入/输出与 Fourier truncation 后可在不同网格求值；对 irregular observations 仍要先插值到 regular grid，FFT approximation 才可靠。</li><li>训练使用 relative pathwise \(L_{2}\) loss、grid search 与 Tesla \(P_{100}\)；三类 SPDE 都由数值 solver 产生监督轨迹，因此这里验证的是对给定生成器的 surrogate fidelity。</li></ul></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 05</span>
+    <span class="reading-step-note">核心结果与证据</span>
+  </div>
+  <h2>核心结果与证据</h2>
+  <div class="reading-card-content"><ul><li>Ginzburg–Landau Table 1：\(N=10\),000 时 (\(u_{0}\),\(\xi\))→\(u\) 的 NSPDE error 为 0.006，NCDE/NRDE/NCDE-FNO 为 0.072/0.083/0.069；\(N=1\),000 时 NSPDE 为 0.012。</li><li>随机 KdV Table 2a：\(N=1\),000、\(T=0.5\) 时 \(\xi\to u\) 为 0.004，对比 FNO 0.079；(\(u_{0}\),\(\xi\))→\(u\) 为 0.008，对比 NCDE-FNO 0.259。\(T=1\) 时 NSPDE \(\xi\to u\) 0.009、FNO 0.112。</li><li>KdV 缺失观测实验揭示条件性：随机丢 50% 空间点时 error \(0.004\to 0.005\)，丢 10% 时间点时升至 0.076；Brownian forcing 在时间更粗糙，因此“可处理 irregular data”不等于任意缺失都鲁棒。</li><li>Navier–Stokes Table 3：\(\xi\to u\) 的 NSPDE/FNO 为 0.034/0.039，只是小幅领先；联合输入任务 NSPDE 0.049、NCDE-FNO 0.178。Figure 2 展示 16² 训练后 64² 求值，但只是同一模拟体系中的示例轨迹。</li><li>Table 4 在相同离散化上报告相对数值 solver 加速：Ginzburg–Landau 59×、KdV 80×、Navier–Stokes 300×；摘要的“up to 3 orders”应读作这组三个比值的最大值，而不是所有任务都千倍。</li></ul></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 06</span>
+    <span class="reading-step-note">有效性与局限</span>
+  </div>
+  <h2>有效性与局限</h2>
+  <div class="reading-card-content"><ul><li>误差表没有多随机种子误差条；作者 checklist 明确称因 NCDE/NRDE/NCDE-FNO 成本过高而未报告 error bars，因此模型排序的不确定性没有量化。</li><li>无限维噪声的 mollification 收敛对一般 differential operator 缺少完整证明；Section 3.6 明确把 generic operator 下的严格结果留作未来工作。</li><li>Fourier kernel 带来 irregular-grid、aliasing 与 mode truncation 问题；插值误差尤其会破坏时间粗糙 forcing，Table 2c 已给出实证反例。</li><li>zero-shot super-resolution 是在数值模拟、相同方程/分布与下采样网格之间验证，不证明对真实传感器、参数外推或未见 forcing law 的泛化。</li><li>速度比依赖 hardware、solver、容差、batch 与实现；论文只给 ratio，不能脱离相同 discretization 的比较条件解释为通用 wall-clock 定律。</li></ul></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 07</span>
+    <span class="reading-step-note">复现与资源</span>
+  </div>
+  <h2>复现与资源</h2>
+  <div class="reading-card-content"><ul><li>论文称代码、数据、模型与 instructions 随 supplementary material 提供，assets 为 MIT license；复现时仍应固定 \(v_{8}\) 附件快照并记录依赖版本。</li><li>需分别保存三种 input-information settings、训练样本数、空间/时间网格、forcing covariance、solver 步长、Fourier modes、latent width、Picard iterations/ODE tolerance 与 grid-search candidates。</li><li>必须保留逐 seed raw errors 和 runtime distribution；原论文没有 error bars，独立复现至少应补多 seed，并将 59×/80×/300× 分解为 batch、device 与 solver tolerance。</li><li>本站 PDF SHA-256：d5a5198689f0e8e02b927bf633a5729f60237113a61d723328abcfc044342672。</li><li>Evidence status: full-text verified; no independent reproduction performed.</li></ul></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 08</span>
+    <span class="reading-step-note">阅读指南</span>
+  </div>
+  <h2>阅读指南</h2>
+  <div class="reading-card-content"><ul><li>先读 pp. 1–3 的问题设定，确认外生 noise realization 是输入的一部分；这正是与普通 FNO 的关键边界。</li><li>再读 Figure 1 与 Sections 3.2–3.6，对照 ODE/fixed-point 两条执行路径、复杂度、插值条件和无限维收敛缺口。</li><li>最后联读 Tables 1–4、Figure 2 与 checklist：数值优势清楚，但没有 error bars，且 super-resolution、速度与理论收敛都带限定条件。</li></ul></div>
+</section></article>
+        <aside id="detail-toc" class="detail-toc hidden" aria-label="内容目录">
+          <p class="detail-toc-title">阅读目录</p>
+          <nav id="detail-toc-nav" class="detail-toc-nav"></nav>
+        </aside>
+      </div>
+      <nav class="paper-nav"><a class="paper-nav-link paper-nav-prev" href="../../collection-papers/2108.08481/"><span class="paper-nav-label">← 上一篇</span><span class="paper-nav-title">Neural Operator: Learning Maps Between Function Spaces</span></a>
+      <a class="paper-nav-link paper-nav-next" href="../../collection-papers/2111.03794/"><span class="paper-nav-label">下一篇 →</span><span class="paper-nav-title">Physics-Informed Neural Operator for Learning Partial Differential Equations</span></a></nav>
+    </main>
+
+    <footer class="footer">
+      <div class="container">
+        <p>内容来自 <a href="https://arxiv.org" target="_blank" rel="noopener noreferrer">arXiv.org</a>，阅读卡片由静态站点生成器构建。</p>
+      </div>
+    </footer>
+
+    <script src="../../assets/theme.js"></script>
+    <script src="../../assets/media.js"></script>
+    <script src="../../assets/paper.js"></script>
+  </body>
+</html>

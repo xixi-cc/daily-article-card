@@ -1,0 +1,199 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>A Multi-agent Framework for Physical Laws Discovery - physics+AI Collection 随机精选</title>
+    <meta name="description" content="框架把文献检索、变量/算符选择、LLM 生成候选公式、数值拟合与复杂度评分、reflection、beam search 和 RAG 解释串成闭环，在金属玻璃 GFA、化合物 Vickers hardness 与多主元合金 Young’s modulus 三个任务上搜索紧凑闭式关系。 论文报告三任务最高 R² 分别约 0.94、0.86、0.94；Young’s-modulus 公式进一步用于未见 quaternary/quinary alloys，但这些数字来自作者协议，不等于独立复现。" />
+    <script>
+      (function() {
+        try {
+          var themePreference = window.localStorage.getItem('color-theme') || 'system';
+          var systemUsesDarkTheme = window.matchMedia('(prefers-color-scheme: dark)').matches;
+          var resolvedTheme = themePreference === 'system'
+            ? (systemUsesDarkTheme ? 'dark' : 'light')
+            : themePreference;
+          document.documentElement.dataset.theme = resolvedTheme;
+          document.documentElement.dataset.themePreference = themePreference;
+          document.documentElement.style.colorScheme = resolvedTheme;
+        } catch (error) {
+          document.documentElement.dataset.theme = 'light';
+          document.documentElement.dataset.themePreference = 'system';
+        }
+      })();
+    </script>
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='18' fill='%23111827'/%3E%3Ctext x='50%25' y='55%25' text-anchor='middle' dominant-baseline='middle' font-size='30' font-family='Arial, sans-serif' fill='white'%3EV%3C/text%3E%3C/svg%3E" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700;800&family=Noto+Sans+SC:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <script>document.documentElement.classList.add('math-pending');</script>
+    <script>
+      window.MathJax = {
+        tex: {
+          inlineMath: [['$', '$'], ['\\(', '\\)']],
+          displayMath: [['$$', '$$'], ['\\[', '\\]']],
+          processEscapes: true
+        },
+        options: {
+          skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+        },
+        chtml: {
+          scale: 1,
+          displayAlign: 'center'
+        },
+        startup: {
+          ready: function() {
+            MathJax.startup.defaultReady();
+            MathJax.startup.promise.then(function() {
+              document.documentElement.classList.remove('math-pending');
+              document.documentElement.dataset.mathReady = 'true';
+            });
+          }
+        }
+      };
+    </script>
+    <script defer src="../../assets/vendor/mathjax/tex-chtml.js"></script>
+    <link rel="stylesheet" href="../../assets/style.css" />
+  </head>
+  <body class="detail-page" data-paper-id="2411.16416">
+    <div class="page-noise"></div>
+    <div class="page-blur page-blur-a"></div>
+    <div class="page-blur page-blur-b"></div>
+
+    <header class="header detail-page-header">
+      <div class="container">
+        <div class="detail-page-topbar">
+          <a class="back-link" href="../../collection.html">返回列表</a>
+          <div class="detail-topbar-actions">
+            <span class="detail-site-name">physics+AI Collection 随机精选</span>
+            <button class="theme-toggle" type="button" data-theme-toggle aria-label="当前主题：设备，点击切换主题" title="当前主题：设备">
+  <span class="theme-toggle-icons" aria-hidden="true">
+    <svg class="theme-toggle-icon theme-toggle-icon-light" viewBox="0 0 24 24" fill="none">
+      <circle cx="12" cy="12" r="3.5" stroke="currentColor" stroke-width="1.8"/>
+      <path d="M12 2.5v2M12 19.5v2M2.5 12h2M19.5 12h2M5.3 5.3l1.4 1.4M17.3 17.3l1.4 1.4M18.7 5.3l-1.4 1.4M6.7 17.3l-1.4 1.4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+    </svg>
+    <svg class="theme-toggle-icon theme-toggle-icon-dark" viewBox="0 0 24 24" fill="none">
+      <path d="M20 15.2A8.1 8.1 0 0 1 8.8 4a8.2 8.2 0 1 0 11.2 11.2z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>
+    </svg>
+    <svg class="theme-toggle-icon theme-toggle-icon-system" viewBox="0 0 24 24" fill="none">
+      <rect x="3" y="4" width="18" height="13" rx="2.5" stroke="currentColor" stroke-width="1.8"/>
+      <path d="M8 21h8M12 17v4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+    </svg>
+  </span>
+  <span class="theme-toggle-label" data-theme-toggle-label>设备</span>
+</button>
+          </div>
+        </div>
+
+        <div class="detail-hero-grid">
+          <div class="detail-hero-cover"><article class="note-cover note-cover-title-abstract" style="--cover-from: #ef6c3f; --cover-to: #f6b13d; --cover-spot: #ffd59c; --cover-ink: #fff8ef; --cover-muted: rgba(255, 248, 239, 0.82); --cover-chip: rgba(255, 248, 239, 0.16); --cover-stroke: rgba(255, 248, 239, 0.26)">
+  <div class="note-cover-mesh"></div>
+  <div class="note-cover-title-shell">
+    <span class="note-cover-kicker">TITLE · ABSTRACT</span>
+    <h1 class="note-cover-title">A Multi-agent Framework for Physical Laws Discovery</h1>
+    <p class="note-cover-title-zh">用于发现物理规律的多智能体框架</p>
+    <p class="note-cover-abstract">Discovering explicit physical laws has traditionally depended on human intuition and domain expertise. Recent advances in artificial intelligence, particularly large language models (LLMs), offer a new route to accelerate this process by automating key steps from hypothesis generation to interpretable model construction. Here we develop an LLM-based multi-agent framework for physical-law discovery that integrates literature-guided variable selection, hypothesis formulation, symbolic regression, formula derivation, and mechanistic explanation. We validate the framework on three representative materials problems: the glass-forming ability (GFA) of metallic glasses, the Vickers hardness of compounds, and the Young&#x27;s modulus of multi-component alloys. Using physically and chemically meaningful descriptors as inputs, the discovered formulas achieve strong agreement with reference data, with c</p>
+  </div>
+</article></div>
+          <div class="detail-hero-copy">
+            <p class="eyebrow">Collection 全文卡</p>
+            <h1 class="detail-page-title">A Multi-agent Framework for Physical Laws Discovery</h1>
+            <p class="detail-page-title-zh">用于发现物理规律的多智能体框架</p>
+            <div class="detail-meta">Paper Collection · AI for Science · <a href="https://arxiv.org/abs/2411.16416" target="_blank" rel="noopener noreferrer">原文</a></div>
+            <p class="detail-summary">框架把文献检索、变量/算符选择、LLM 生成候选公式、数值拟合与复杂度评分、reflection、beam search 和 RAG 解释串成闭环，在金属玻璃 GFA、化合物 Vickers hardness 与多主元合金 Young’s modulus 三个任务上搜索紧凑闭式关系。 论文报告三任务最高 R² 分别约 0.94、0.86、0.94；Young’s-modulus 公式进一步用于未见 quaternary/quinary alloys，但这些数字来自作者协议，不等于独立复现。</p>
+            <div class="detail-micro-meta">
+              <span class="meta-pill">10 分钟读完</span>
+              <span class="meta-pill">8 张阅读卡</span>
+              <span class="meta-pill">作者：Bo Hu、Siyu Liu、Beilin Ye、Yun Hao、Yanhui Liu、Yang…</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <main class="container detail-layout">
+      <div class="detail-shell">
+        <article id="detail-body" class="reading-flow"><section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 01</span>
+    <span class="reading-step-note">作者信息</span>
+  </div>
+  <h2>作者信息</h2>
+  <div class="reading-card-content"><ul><li>作者：Bo Hu、Siyu Liu、Beilin Ye、Yun Hao、Yanhui Liu、Yang Lu、Ju Li、David \(J\). Srolovitz、Tongqi Wen。</li><li>机构：The University of Hong Kong、HKU-SIRI、South China University of Technology、Institute of Physics CAS、MIT。</li><li>官方快照：arXiv:2411.16416v2；主分类 cond-mat.mtrl-sci。</li></ul></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 02</span>
+    <span class="reading-step-note">摘要</span>
+  </div>
+  <h2>摘要</h2>
+  <div class="reading-card-content"><ul><li>框架把文献检索、变量/算符选择、LLM 生成候选公式、数值拟合与复杂度评分、reflection、beam search 和 RAG 解释串成闭环，在金属玻璃 GFA、化合物 Vickers hardness 与多主元合金 Young’s modulus 三个任务上搜索紧凑闭式关系。</li><li>论文报告三任务最高 R² 分别约 0.94、0.86、0.94；Young’s-modulus 公式进一步用于未见 quaternary/quinary alloys，但这些数字来自作者协议，不等于独立复现。</li></ul></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 03</span>
+    <span class="reading-step-note">背景</span>
+  </div>
+  <h2>背景</h2>
+  <div class="reading-card-content"><ul><li>深度模型可预测材料性质，却常缺少可解释机制；传统 symbolic regression 又面对组合搜索和变量选择。作者将 LLM 的跨领域先验用于提出物理上可读的公式 skeleton，再用确定性的数值评分筛选。</li><li>LLM 幻觉被明确视为风险：RAG、允许算符集合、可执行 Python 表达式、无效表达式剔除和 reflection 是约束层，但它们不能保证发现的是因果定律。</li></ul></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 04</span>
+    <span class="reading-step-note">模型与方法</span>
+  </div>
+  <h2>模型与方法</h2>
+  <div class="reading-card-content"><ul><li>流程含六阶段：文献/数据准备、任务 prompt、beam 初始化、候选生成与评分、科学解释、下游设计（pp. 2–3, Fig. 1）。Gemini-2.5-flash 与 DeepSeek-\(V_{3}\) 在固定变量和算符下各独立运行三次。</li><li>候选按 \(s(f)=Error(f,y)\)+λC(\(f\)) 排名；Error 默认 NMSE，\(C\) 是加权 operator count。每层保留 \(K\) 个节点、每节点生成 \(N\) 个子式，搜索到深度 \(D\)；trajectory memory 和 reflection 反馈抑制重复与无效语法（pp. 2–4, Eqs. 1–2, Algorithm 1）。</li><li>数据规模分别为 GFA 56 个 metallic-glass compositions、hardness 61 compounds、Young’s modulus 170 binary/ternary compositions；descriptor 由实验、DFT 或 matminer 提供（Methods pp. 9–10）。</li></ul></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 05</span>
+    <span class="reading-step-note">核心结果与证据</span>
+  </div>
+  <h2>核心结果与证据</h2>
+  <div class="reading-card-content"><ul><li>hardness 轨迹从 bulk-modulus baseline 经指数修正到加入 shear modulus，score 从 0.254 降至 0.193；最终平均 R²≈0.85，与同数据既有研究相近（\(p\). 4, Fig. 2）。</li><li>Young’s-modulus 公式在 held-out binary/ternary 数据上 R² 接近 0.97；去掉平均质量项后 test R² 从 0.97 降到 0.89，展示 accuracy–interpretability 权衡（pp. 5–6）。</li><li>quaternary Mo–Nb–Ta–W 扫描中，formula 相对 DPA-3.1-3M 的 MAPE 大多 <5%，LoM 某些组成超过 17%；特定组成的 MAPE 相对 LoM 最多降低 78.8%（pp. 6–7, Fig. 3）。</li><li>quinary Mo–Nb–Ta–W–V 用 NSGA-II 同时优化 E 与 B/G，各元素 5–35 at.%、1 at.% 步长；三组 Pareto compositions 与 DPA-3.1-3M 比较时两个目标 MAPE 均 <10%（\(p\). 8, Table II）。</li></ul></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 06</span>
+    <span class="reading-step-note">有效性与局限</span>
+  </div>
+  <h2>有效性与局限</h2>
+  <div class="reading-card-content"><ul><li>LLM 对专业物理领域的深度依赖训练语料；当前 RAG 每任务只用代表性文献，数据整理与文献选择仍需人工。</li><li>symbolic regression 仍是高成本搜索；goodness-of-fit 主导的选择可能产生敏感常数或过复杂公式。作者把量纲一致性、稳健性和先验物理约束列为后续选择准则。</li><li>三个案例都是小型 tabular materials datasets；没有多模态原始谱图/显微图，也不能据此断言框架会发现未知基本定律。</li><li>代码说明为“upon acceptance/按请求提供”，因此当前卡片不把代码可得性或完整复现性视为已确认。</li></ul></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 07</span>
+    <span class="reading-step-note">复现与资源</span>
+  </div>
+  <h2>复现与资源</h2>
+  <div class="reading-card-content"><ul><li>复现需固定两种 base model、三次独立运行、beam 的 \(D\)/\(N\)/\(K\)、\(\lambda\) 和 operator weights，并保存每个 trajectory、拟合参数、无效表达式与 reflection。</li><li>数据：GFA 56 样本在 SI；其他数据来自引用论文。quaternary 验证使用 DPA-3.1-3M/APEX/LAMMPS，quinary 优化使用 NSGA-II。</li><li>本站 PDF SHA-256：410b5458f697e836f40a1800f036844df08d57a5dd92fb3a8c8f520e2174c1b7。</li><li>Evidence status: full-text verified; no independent reproduction performed.</li></ul></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 08</span>
+    <span class="reading-step-note">阅读指南</span>
+  </div>
+  <h2>阅读指南</h2>
+  <div class="reading-card-content"><ul><li>先读 Fig. 1 与 Eqs. 1–2，把 LLM proposal 与数值评分分开；再看 Fig. 2 的公式演化，判断 reflection 是否带来可解释增量。</li><li>最关键的外推证据是 Fig. 3 和 Table II；同时读 pp. 8–9 的 limitations，避免把拟合/迁移结果称作因果定律发现。</li><li>复现时优先重跑三 seed 分布和 human-in-the-loop ablation，而不是只报告 best formula。</li></ul></div>
+</section></article>
+        <aside id="detail-toc" class="detail-toc hidden" aria-label="内容目录">
+          <p class="detail-toc-title">阅读目录</p>
+          <nav id="detail-toc-nav" class="detail-toc-nav"></nav>
+        </aside>
+      </div>
+      <nav class="paper-nav"><a class="paper-nav-link paper-nav-prev" href="../../collection-papers/2411.14863/"><span class="paper-nav-label">← 上一篇</span><span class="paper-nav-title">Latent Schrodinger Bridge: Prompting Latent Diffusion for Fast Unpaired Image-to-Image Translation</span></a>
+      <a class="paper-nav-link paper-nav-next" href="../../collection-papers/2412.05674/"><span class="paper-nav-label">下一篇 →</span><span class="paper-nav-title">No-Free-Lunch Theories for Tensor-Network Machine Learning Models</span></a></nav>
+    </main>
+
+    <footer class="footer">
+      <div class="container">
+        <p>内容来自 <a href="https://arxiv.org" target="_blank" rel="noopener noreferrer">arXiv.org</a>，阅读卡片由静态站点生成器构建。</p>
+      </div>
+    </footer>
+
+    <script src="../../assets/theme.js"></script>
+    <script src="../../assets/media.js"></script>
+    <script src="../../assets/paper.js"></script>
+  </body>
+</html>

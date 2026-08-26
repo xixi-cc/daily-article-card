@@ -1,0 +1,191 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Low-Interaction-Rank Learning: Unifying Multiplicative Dual-Encoder Heads - physics+AI Collection 随机精选</title>
+    <meta name="description" content="作者：Zijian Zhao、Sen Li（通讯作者）。 机构：香港科技大学；香港科技大学（广州）。 版本：arXiv:2608.11661v1，2026-08-12；论文提供 Mul-Net 代码仓库。" />
+    <script>
+      (function() {
+        try {
+          var themePreference = window.localStorage.getItem('color-theme') || 'system';
+          var systemUsesDarkTheme = window.matchMedia('(prefers-color-scheme: dark)').matches;
+          var resolvedTheme = themePreference === 'system'
+            ? (systemUsesDarkTheme ? 'dark' : 'light')
+            : themePreference;
+          document.documentElement.dataset.theme = resolvedTheme;
+          document.documentElement.dataset.themePreference = themePreference;
+          document.documentElement.style.colorScheme = resolvedTheme;
+        } catch (error) {
+          document.documentElement.dataset.theme = 'light';
+          document.documentElement.dataset.themePreference = 'system';
+        }
+      })();
+    </script>
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='18' fill='%23111827'/%3E%3Ctext x='50%25' y='55%25' text-anchor='middle' dominant-baseline='middle' font-size='30' font-family='Arial, sans-serif' fill='white'%3EV%3C/text%3E%3C/svg%3E" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700;800&family=Noto+Sans+SC:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <script>document.documentElement.classList.add('math-pending');</script>
+    <script>
+      window.MathJax = {
+        tex: {
+          inlineMath: [['$', '$'], ['\\(', '\\)']],
+          displayMath: [['$$', '$$'], ['\\[', '\\]']],
+          processEscapes: true
+        },
+        options: {
+          skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+        },
+        chtml: {
+          scale: 1,
+          displayAlign: 'center'
+        },
+        startup: {
+          ready: function() {
+            MathJax.startup.defaultReady();
+            MathJax.startup.promise.then(function() {
+              document.documentElement.classList.remove('math-pending');
+              document.documentElement.dataset.mathReady = 'true';
+            });
+          }
+        }
+      };
+    </script>
+    <script defer src="../../assets/vendor/mathjax/tex-chtml.js"></script>
+    <link rel="stylesheet" href="../../assets/style.css" />
+  </head>
+  <body class="detail-page" data-paper-id="2608.11661">
+    <div class="page-noise"></div>
+    <div class="page-blur page-blur-a"></div>
+    <div class="page-blur page-blur-b"></div>
+
+    <header class="header detail-page-header">
+      <div class="container">
+        <div class="detail-page-topbar">
+          <a class="back-link" href="../../collection.html">返回列表</a>
+          <div class="detail-topbar-actions">
+            <span class="detail-site-name">physics+AI Collection 随机精选</span>
+            <button class="theme-toggle" type="button" data-theme-toggle aria-label="当前主题：设备，点击切换主题" title="当前主题：设备">
+  <span class="theme-toggle-icons" aria-hidden="true">
+    <svg class="theme-toggle-icon theme-toggle-icon-light" viewBox="0 0 24 24" fill="none">
+      <circle cx="12" cy="12" r="3.5" stroke="currentColor" stroke-width="1.8"/>
+      <path d="M12 2.5v2M12 19.5v2M2.5 12h2M19.5 12h2M5.3 5.3l1.4 1.4M17.3 17.3l1.4 1.4M18.7 5.3l-1.4 1.4M6.7 17.3l-1.4 1.4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+    </svg>
+    <svg class="theme-toggle-icon theme-toggle-icon-dark" viewBox="0 0 24 24" fill="none">
+      <path d="M20 15.2A8.1 8.1 0 0 1 8.8 4a8.2 8.2 0 1 0 11.2 11.2z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>
+    </svg>
+    <svg class="theme-toggle-icon theme-toggle-icon-system" viewBox="0 0 24 24" fill="none">
+      <rect x="3" y="4" width="18" height="13" rx="2.5" stroke="currentColor" stroke-width="1.8"/>
+      <path d="M8 21h8M12 17v4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+    </svg>
+  </span>
+  <span class="theme-toggle-label" data-theme-toggle-label>设备</span>
+</button>
+          </div>
+        </div>
+
+        <div class="detail-hero-grid">
+          <div class="detail-hero-cover"><article class="note-cover note-cover-title-abstract" style="--cover-from: #316b57; --cover-to: #8bb174; --cover-spot: #d9e7c7; --cover-ink: #fbfff6; --cover-muted: rgba(251, 255, 246, 0.82); --cover-chip: rgba(251, 255, 246, 0.16); --cover-stroke: rgba(251, 255, 246, 0.24)">
+  <div class="note-cover-mesh"></div>
+  <div class="note-cover-title-shell">
+    <span class="note-cover-kicker">TITLE · ABSTRACT</span>
+    <h1 class="note-cover-title">Low-Interaction-Rank Learning: Unifying Multiplicative Dual-Encoder Heads</h1>
+    <p class="note-cover-title-zh">低交互秩学习：统一乘性双编码器头</p>
+    <p class="note-cover-abstract">CLIP 相似度、DeepONet branch–trunk、双塔检索、目标条件强化学习等都用两个独立编码器的内积 $F(u,v)\approx\langle f_\theta(u),g_\phi(v)\rangle$，但各领域分别讨论维度、归一化与失效条件。本文把它们统一为低交互秩函数：交互谱决定需要多少乘性模式，也决定这种架构是否值得使用。</p>
+  </div>
+</article></div>
+          <div class="detail-hero-copy">
+            <p class="eyebrow">Collection 全文卡</p>
+            <h1 class="detail-page-title">Low-Interaction-Rank Learning: Unifying Multiplicative Dual-Encoder Heads</h1>
+            <p class="detail-page-title-zh">低交互秩学习：统一乘性双编码器头</p>
+            <div class="detail-meta">Paper Collection · Machine Learning · <a href="https://arxiv.org/abs/2608.11661" target="_blank" rel="noopener noreferrer">原文</a></div>
+            <p class="detail-summary">作者：Zijian Zhao、Sen Li（通讯作者）。 机构：香港科技大学；香港科技大学（广州）。 版本：arXiv:2608.11661v1，2026-08-12；论文提供 Mul-Net 代码仓库。</p>
+            <div class="detail-micro-meta">
+              <span class="meta-pill">8 分钟读完</span>
+              <span class="meta-pill">7 张阅读卡</span>
+              <span class="meta-pill">作者：Zijian Zhao、Sen Li（通讯作者）。</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <main class="container detail-layout">
+      <div class="detail-shell">
+        <article id="detail-body" class="reading-flow"><section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 01</span>
+    <span class="reading-step-note">作者信息</span>
+  </div>
+  <h2>作者信息</h2>
+  <div class="reading-card-content"><ul><li>作者：Zijian Zhao、Sen Li（通讯作者）。</li><li>机构：香港科技大学；香港科技大学（广州）。</li><li>版本：arXiv:2608.11661v1，2026-08-12；论文提供 Mul-Net 代码仓库。</li></ul></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 02</span>
+    <span class="reading-step-note">研究问题</span>
+  </div>
+  <h2>研究问题</h2>
+  <div class="reading-card-content"><ul><li>CLIP 相似度、DeepONet branch–trunk、双塔检索、目标条件强化学习等都用两个独立编码器的内积 $F(u,v)\approx\langle f_\theta(u),g_\phi(v)\rangle$，但各领域分别讨论维度、归一化与失效条件。本文把它们统一为低交互秩函数：交互谱决定需要多少乘性模式，也决定这种架构是否值得使用。</li></ul></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 03</span>
+    <span class="reading-step-note">模型与方法</span>
+  </div>
+  <h2>模型与方法</h2>
+  <div class="reading-card-content"><ul><li>对 $F\in L^2(\mu_U\otimes\mu_V)$ 作 Schmidt 分解 $F=\sum_k\sigma_k a_k\otimes b_k$；embedding width $d$ 就是保留的交互秩。</li><li>rank-$d$ 逼近误差拆成不可避免的谱截断 $\sum_{k>d}\sigma_k^2$ 与两个 encoder 对前 $d$ 个模式的实现误差。</li><li>统计复杂度由两个 encoder 假设类复杂度之和控制，而非二者乘积；对谱快速衰减的光滑目标，最优秩只随样本量对数增长。</li><li>编码具有 $f\mapsto Af,\ g\mapsto A^{-T}g$ 的线性 gauge 自由度；论文把归一化解释为 gauge fixing，并证明 whitening 可把模式确定到置换与符号。</li><li>给出 interaction spectrum 的可用性判据，并以谱隙控制有限样本 whitening 的模式恢复误差。</li></ul></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 04</span>
+    <span class="reading-step-note">核心结果与证据</span>
+  </div>
+  <h2>核心结果与证据</h2>
+  <div class="reading-card-content"><ul><li>线性矩阵回归实例中，Theorem 7 的 excess-risk 标度为 $\sigma^2d(2p-d)/n$；图 1 对样本数、秩和环境维度的扫描支持该标度。</li><li>七种 normalization 的四随机种子比较显示 hard whitening 同时实现最高模式对齐、可控协方差条件数与跨种子零 gauge 距离；cosine normalization 仍保留任意正交旋转。</li><li>有限样本模式识别随谱隙和样本量退化，图 3 中 $\text{error}\,\Delta\sqrt n$ 约为 2.48，符合 $O((\Delta\sqrt n)^{-1})$。</li><li>负结果给出适用边界：\(m\)-bit Boolean equality kernel 达到 10% 相对误差所需秩随 $2^m$ 增长；窄带周期 Gaussian kernel 的秩随 $1/h$ 线性增长；平谱目标存在 $1-d/N$ 的相对平方误差下限。</li><li>DeepONet 实验比较 heat、antiderivative 与 boxcar block operator：heat 从 $d=4$ 到 8 仅改善约 5%，antiderivative 改善约 31%，而严格平谱 boxcar 呈现预测误差地板。</li><li>两个独立训练的 CLIP 表征可由单一旋转对齐；whitening 去除该自由度后出现可解释 concept axes，说明原坐标不可解释不等于交互子空间没有结构。</li></ul></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 05</span>
+    <span class="reading-step-note">有效性与局限</span>
+  </div>
+  <h2>有效性与局限</h2>
+  <div class="reading-card-content"><ul><li>低交互秩是假设而非普遍事实；平谱、equality 与窄带 kernel 是作者明确给出的反例。</li><li>whitening 依赖可靠协方差估计和非退化谱隙；谱隙趋小时，单个模式的身份本身不稳定。</li><li>理论主要在 $L^2$ 总体分布与平方误差下表述，实际负采样、非平稳数据和下游决策损失可能改变结论。</li><li>CLIP 的旋转/概念轴结果是表征层实证，不证明所有 contrastive 模型都能恢复相同语义基。</li><li>框架回答乘性 head 的表达与统计问题，不替代对 encoder 优化难度、计算成本和校准的分析。</li></ul></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 06</span>
+    <span class="reading-step-note">复现与资源</span>
+  </div>
+  <h2>复现与资源</h2>
+  <div class="reading-card-content"><ul><li>原文 PDF：https://arxiv.org/pdf/2608.11661。</li><li>代码：https://github.com/RS2002/Mul-Net。</li><li>复现时应同时报告 interaction spectrum、截断误差、encoder realization error、不同 normalization 的 mode alignment/condition number，以及 equality/boxcar 负对照。</li></ul></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 07</span>
+    <span class="reading-step-note">阅读指南</span>
+  </div>
+  <h2>阅读指南</h2>
+  <div class="reading-card-content"><ul><li>先读第 2 节的 Schmidt 谱与十类统一实例。</li><li>第 3 节看逼近分解与 gauge symmetry，第 4 节看统计复杂度和禁用判据。</li><li>图 2–3 检查 whitening 与谱隙，图 4–5 专门看架构失效案例。</li><li>不要把 embedding 维度当作越大越好；应先根据谱衰减选择秩。</li></ul></div>
+</section></article>
+        <aside id="detail-toc" class="detail-toc hidden" aria-label="内容目录">
+          <p class="detail-toc-title">阅读目录</p>
+          <nav id="detail-toc-nav" class="detail-toc-nav"></nav>
+        </aside>
+      </div>
+      <nav class="paper-nav"><a class="paper-nav-link paper-nav-prev" href="../../collection-papers/2608.11479/"><span class="paper-nav-label">← 上一篇</span><span class="paper-nav-title">Convergence Guarantees of Gradient Descent for Neural Networks via Generalized Lipschitz Smoothness</span></a>
+      <a class="paper-nav-link paper-nav-next" href="../../collection-papers/2608.11831/"><span class="paper-nav-label">下一篇 →</span><span class="paper-nav-title">Kernel Methods for Learning Operators with Multiple Inputs and Outputs</span></a></nav>
+    </main>
+
+    <footer class="footer">
+      <div class="container">
+        <p>内容来自 <a href="https://arxiv.org" target="_blank" rel="noopener noreferrer">arXiv.org</a>，阅读卡片由静态站点生成器构建。</p>
+      </div>
+    </footer>
+
+    <script src="../../assets/theme.js"></script>
+    <script src="../../assets/media.js"></script>
+    <script src="../../assets/paper.js"></script>
+  </body>
+</html>

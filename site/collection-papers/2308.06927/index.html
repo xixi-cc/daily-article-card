@@ -1,0 +1,199 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Foundations of algorithmic thermodynamics - physics+AI Collection 随机精选</title>
+    <meta name="description" content="本文的论证主线由以下经过全文核验的节点构成：Gibbs--Shannon 熵描述系综，却未直接描述眼前这个状态；算法熵 = 描述复杂度 + 状态体积权重；随机性守恒给出算法版积分涨落不等式；典型简单系综中两种熵一致，复杂个态上算法熵更细；Kolmogorov complexity 不可计算；有限压缩器只能给上界，无法一般地认证某个具体状态具有很高复杂度；关键物理假设是 coarse-graining 近似 Markovian；论文承认如何为现实系统刻画这一条件仍是开放问题；结论针对经典、measure-preserving 动力学及可计算过程；量子与非 Markov 情形需要另行扩展。 卡片内容来自已完成冷读与逐页检查的 paper_presentation.json，并回链到原论文页码、图或公式。" />
+    <script>
+      (function() {
+        try {
+          var themePreference = window.localStorage.getItem('color-theme') || 'system';
+          var systemUsesDarkTheme = window.matchMedia('(prefers-color-scheme: dark)').matches;
+          var resolvedTheme = themePreference === 'system'
+            ? (systemUsesDarkTheme ? 'dark' : 'light')
+            : themePreference;
+          document.documentElement.dataset.theme = resolvedTheme;
+          document.documentElement.dataset.themePreference = themePreference;
+          document.documentElement.style.colorScheme = resolvedTheme;
+        } catch (error) {
+          document.documentElement.dataset.theme = 'light';
+          document.documentElement.dataset.themePreference = 'system';
+        }
+      })();
+    </script>
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='18' fill='%23111827'/%3E%3Ctext x='50%25' y='55%25' text-anchor='middle' dominant-baseline='middle' font-size='30' font-family='Arial, sans-serif' fill='white'%3EV%3C/text%3E%3C/svg%3E" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700;800&family=Noto+Sans+SC:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <script>document.documentElement.classList.add('math-pending');</script>
+    <script>
+      window.MathJax = {
+        tex: {
+          inlineMath: [['$', '$'], ['\\(', '\\)']],
+          displayMath: [['$$', '$$'], ['\\[', '\\]']],
+          processEscapes: true
+        },
+        options: {
+          skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+        },
+        chtml: {
+          scale: 1,
+          displayAlign: 'center'
+        },
+        startup: {
+          ready: function() {
+            MathJax.startup.defaultReady();
+            MathJax.startup.promise.then(function() {
+              document.documentElement.classList.remove('math-pending');
+              document.documentElement.dataset.mathReady = 'true';
+            });
+          }
+        }
+      };
+    </script>
+    <script defer src="../../assets/vendor/mathjax/tex-chtml.js"></script>
+    <link rel="stylesheet" href="../../assets/style.css" />
+  </head>
+  <body class="detail-page" data-paper-id="2308.06927">
+    <div class="page-noise"></div>
+    <div class="page-blur page-blur-a"></div>
+    <div class="page-blur page-blur-b"></div>
+
+    <header class="header detail-page-header">
+      <div class="container">
+        <div class="detail-page-topbar">
+          <a class="back-link" href="../../collection.html">返回列表</a>
+          <div class="detail-topbar-actions">
+            <span class="detail-site-name">physics+AI Collection 随机精选</span>
+            <button class="theme-toggle" type="button" data-theme-toggle aria-label="当前主题：设备，点击切换主题" title="当前主题：设备">
+  <span class="theme-toggle-icons" aria-hidden="true">
+    <svg class="theme-toggle-icon theme-toggle-icon-light" viewBox="0 0 24 24" fill="none">
+      <circle cx="12" cy="12" r="3.5" stroke="currentColor" stroke-width="1.8"/>
+      <path d="M12 2.5v2M12 19.5v2M2.5 12h2M19.5 12h2M5.3 5.3l1.4 1.4M17.3 17.3l1.4 1.4M18.7 5.3l-1.4 1.4M6.7 17.3l-1.4 1.4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+    </svg>
+    <svg class="theme-toggle-icon theme-toggle-icon-dark" viewBox="0 0 24 24" fill="none">
+      <path d="M20 15.2A8.1 8.1 0 0 1 8.8 4a8.2 8.2 0 1 0 11.2 11.2z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>
+    </svg>
+    <svg class="theme-toggle-icon theme-toggle-icon-system" viewBox="0 0 24 24" fill="none">
+      <rect x="3" y="4" width="18" height="13" rx="2.5" stroke="currentColor" stroke-width="1.8"/>
+      <path d="M8 21h8M12 17v4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+    </svg>
+  </span>
+  <span class="theme-toggle-label" data-theme-toggle-label>设备</span>
+</button>
+          </div>
+        </div>
+
+        <div class="detail-hero-grid">
+          <div class="detail-hero-cover"><article class="note-cover note-cover-title-abstract" style="--cover-from: #316b57; --cover-to: #8bb174; --cover-spot: #d9e7c7; --cover-ink: #fbfff6; --cover-muted: rgba(251, 255, 246, 0.82); --cover-chip: rgba(251, 255, 246, 0.16); --cover-stroke: rgba(251, 255, 246, 0.24)">
+  <div class="note-cover-mesh"></div>
+  <div class="note-cover-title-shell">
+    <span class="note-cover-kicker">TITLE · ABSTRACT</span>
+    <h1 class="note-cover-title">Foundations of algorithmic thermodynamics</h1>
+    <p class="note-cover-title-zh">算法热力学基础：把熵定义到单个物理状态上</p>
+    <p class="note-cover-abstract">Gács&#x27; coarse-grained algorithmic entropy leverages universal computation to quantify the information content of any given physical state. Unlike the Boltzmann and Gibbs-Shannon entropies, it requires no prior commitment to macrovariables or probabilistic ensembles, rendering it applicable to settings arbitrarily far from equilibrium. For measure-preserving dynamical systems equipped with a Markovian coarse-graining, we prove a number of fluctuation inequalities. These include algorithmic versions of Jarzynski&#x27;s equality, Landauer&#x27;s principle, and the second law of thermodynamics. In general, the algorithmic entropy determines a system&#x27;s actual capacity to do work from an individual state, whereas the Gibbs-Shannon entropy only gives the mean capacity to do work from a state ensemble that is known a priori.</p>
+  </div>
+</article></div>
+          <div class="detail-hero-copy">
+            <p class="eyebrow">Collection 全文卡</p>
+            <h1 class="detail-page-title">Foundations of algorithmic thermodynamics</h1>
+            <p class="detail-page-title-zh">算法热力学基础：把熵定义到单个物理状态上</p>
+            <div class="detail-meta">Paper Collection · Machine Learning · <a href="https://arxiv.org/abs/2308.06927" target="_blank" rel="noopener noreferrer">原文</a></div>
+            <p class="detail-summary">本文的论证主线由以下经过全文核验的节点构成：Gibbs--Shannon 熵描述系综，却未直接描述眼前这个状态；算法熵 = 描述复杂度 + 状态体积权重；随机性守恒给出算法版积分涨落不等式；典型简单系综中两种熵一致，复杂个态上算法熵更细；Kolmogorov complexity 不可计算；有限压缩器只能给上界，无法一般地认证某个具体状态具有很高复杂度；关键物理假设是 coarse-graining 近似 Markovian；论文承认如何为现实系统刻画这一条件仍是开放问题；结论针对经典、measure-preserving 动力学及可计算过程；量子与非 Markov 情形需要另行扩展。 卡片内容来自已完成冷读与逐页检查的 paper_presentation.json，并回链到原论文页码、图或公式。</p>
+            <div class="detail-micro-meta">
+              <span class="meta-pill">13 分钟读完</span>
+              <span class="meta-pill">8 张阅读卡</span>
+              <span class="meta-pill">作者：Aram Ebtekar、Marcus Hutter。</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <main class="container detail-layout">
+      <div class="detail-shell">
+        <article id="detail-body" class="reading-flow"><section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 01</span>
+    <span class="reading-step-note">作者信息</span>
+  </div>
+  <h2>作者信息</h2>
+  <div class="reading-card-content"><ul><li>作者：Aram Ebtekar、Marcus Hutter。</li><li>研究机构：Vancouver; Google DeepMind。</li><li>来源：arXiv:2308.06927v4；年份：2024；主题：Thermodynamics、Algorithmic Information、Nonequilibrium。</li><li>本文按本地全文快照制作，官方元数据核验版本为 2308.06927v4。</li></ul></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 02</span>
+    <span class="reading-step-note">摘要</span>
+  </div>
+  <h2>摘要</h2>
+  <div class="reading-card-content"><ul><li>本文的论证主线由以下经过全文核验的节点构成：Gibbs--Shannon 熵描述系综，却未直接描述眼前这个状态；算法熵 = 描述复杂度 + 状态体积权重；随机性守恒给出算法版积分涨落不等式；典型简单系综中两种熵一致，复杂个态上算法熵更细；Kolmogorov complexity 不可计算；有限压缩器只能给上界，无法一般地认证某个具体状态具有很高复杂度；关键物理假设是 coarse-graining 近似 Markovian；论文承认如何为现实系统刻画这一条件仍是开放问题；结论针对经典、measure-preserving 动力学及可计算过程；量子与非 Markov 情形需要另行扩展。</li><li>卡片内容来自已完成冷读与逐页检查的 \(paper_{\mathrm{presentation}}\).json，并回链到原论文页码、图或公式。</li></ul></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 03</span>
+    <span class="reading-step-note">背景</span>
+  </div>
+  <h2>背景</h2>
+  <div class="reading-card-content"><ul><li>论证节点“Gibbs--Shannon 熵描述系综，却未直接描述眼前这个状态”。</li><li>非平衡系统可能没有自然、先验已知的概率系综；计算机内存等状态也不能只靠温度压缩成宏变量。</li><li>作者要求熵成为单个 coarse-grained 状态的函数，同时兼容微观可逆动力学与宏观不可逆。</li><li>两个工具：Markovian coarse-graining 把动力学变成离散 Markov 过程；Kolmogorov complexity 衡量具体状态的最短描述。</li><li>论文寻求无需预选宏变量或系综的单状态非平衡熵 （\(p\). 1; source/tex/main.tex）</li><li>研究问题的表述以论文给出的对象和评价目标为边界；背景动机不自动构成方法有效性的证据。</li></ul></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 04</span>
+    <span class="reading-step-note">模型与方法</span>
+  </div>
+  <h2>模型与方法</h2>
+  <div class="reading-card-content"><ul><li>论证节点“算法熵 = 描述复杂度 + 状态体积权重”。</li><li>设定：$x$ 是 coarse-grained 状态；$z$ 为侧信息；$\pi$ 是该 Markov 过程的平稳测度。</li><li>关键关系：S_\pi(\(x\)\mid \(z\)) &= \(K\)(\(x\)\mid \(z\))+\log\pi(\(x\)) \\ J_\pi(\(x\)\mid \(z\)) &= \log \(Z\)-S_\pi(\(x\)\mid \(z\))</li><li>推导含义：$K$ 计入状态的可压缩结构，$\log\pi$ 计入 coarse cell 体积；$J_\pi$ 是相对平衡的 randomness deficiency。</li><li>结论边界：熵不再只是“对未知状态的平均不确定性”，而是具体状态可用自由能/有序性的度量。</li><li>论文定义相对平稳测度的 coarse-grained algorithmic entropy 和 negentropy （\(p\). 11; equation Eqs. (19)--(21); source/tex/main.tex）</li><li>论证节点“随机性守恒给出算法版积分涨落不等式”。</li><li>设定：$P$ 为可计算的 $\pi$-stochastic 转移；$X\to Y$ 是前后状态。</li><li>关键关系：\mathbb E\!\left[2^{S_\pi(\(X\)\mid\widetilde P)-S_\pi(\(Y\)\mid\widetilde P)}\right] &\lesssim 1 \\ \Pr\!\left[S_\pi(\(X\))-S_\pi(\(Y\))\gtrsim\log(1/\delta)\right] &< \delta</li><li>推导含义：指数矩约束允许罕见小幅降熵，但大幅降熵概率呈指数受限；宏观尺度上常数项可忽略。</li><li>结论边界：第二定律成为由初态复杂度与可计算动力学导出的高概率陈述。</li><li>随机性守恒推出算法熵的积分涨落不等式与高概率第二定律 （\(p\). 12; equation Eqs. (22)--(23); source/tex/main.tex）</li><li>论证节点“典型简单系综中两种熵一致，复杂个态上算法熵更细”。</li><li>若系综 $\mu$ 描述简单、有典型集，且具体状态 $x$ 是典型样本，则 $H_\pi(\mu)\approx S_\pi(x)$。</li><li>若 $\mu$ 本身复杂、没有集中典型集，或 $x$ 对 $\mu$ 异常，Gibbs--Shannon 熵只给平均工作能力。</li><li>算法熵把“知识”也视为物理记忆的一部分，因此能区分同一混合系综中电池真正满或真正空的具体状态。</li><li>论文给出 Gibbs--Shannon 与算法熵近似一致的三个条件，并讨论失效情形 （\(p\). 15; source/tex/main.tex）</li><li>方法部分按 presentation 中的数学关系、算法结构或实验设计重述；公式只在相应证据页定义的符号与条件下成立。</li></ul></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 05</span>
+    <span class="reading-step-note">核心结果与证据</span>
+  </div>
+  <h2>核心结果与证据</h2>
+  <div class="reading-card-content"><ul><li>论证节点“Landauer 原理被细化为“擦除具体字符串的算法成本””。</li><li>可压缩字符串不必支付其字面长度对应的擦除代价；可逆计算可先用短程序生成/重构，再清理。</li><li>不可压缩信息的擦除成本与 $K(x)$ 相关，算法 negentropy 决定单个状态实际可输出的功。</li><li>Maxwell demon 的测量记录必须物理编码，不能把外部已知系综当作免费知识。</li><li>传统 $kT\ln2$ 每 bit 结论对应最坏/典型不可压缩数据；算法视角把数据结构本身纳入热力学账本。</li><li>论文给出算法版 Landauer 原理、Maxwell demon 与信息引擎应用 （\(p\). 31; source/tex/main.tex）</li><li>证据状态：上述结论均来自逐页审阅后的 presentation manifest；这里只确认论文原文支持，不把作者实验视为本站独立复现。</li></ul></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 06</span>
+    <span class="reading-step-note">有效性与局限</span>
+  </div>
+  <h2>有效性与局限</h2>
+  <div class="reading-card-content"><ul><li>论证节点“普适性以不可计算性和 coarse-graining 假设为代价”。</li><li>Kolmogorov complexity 不可计算；有限压缩器只能给上界，无法一般地认证某个具体状态具有很高复杂度。</li><li>关键物理假设是 coarse-graining 近似 Markovian；论文承认如何为现实系统刻画这一条件仍是开放问题。</li><li>结论针对经典、measure-preserving 动力学及可计算过程；量子与非 Markov 情形需要另行扩展。</li><li>算法熵给单状态第二定律一个极广的数学框架，但其操作化测量能力比理论定义弱得多。</li><li>作者讨论不可计算性、Markov coarse-graining 与框架适用范围 （\(p\). 37; source/tex/main.tex）</li><li>适用边界以卡片列出的目标、假设、数据集或物理参数区间为准；未在原文证据中出现的外推不计入论文结论。</li><li>该卡完成的是全文证据审计，未重新运行训练、仿真或实验，因此不能据此声称独立复现、稳健性复核或跨任务泛化。</li></ul></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 07</span>
+    <span class="reading-step-note">复现与资源</span>
+  </div>
+  <h2>复现与资源</h2>
+  <div class="reading-card-content"><ul><li>原文：https://arxiv.org/abs/2308.06927；PDF：https://arxiv.org/pdf/2308.06927。</li><li>本地证据源：24be133138c9189b/source/paper.pdf；SHA-256：51fad12eb7ed9a593d6cd6cbdcecaa4d7e3b779569ce1d4c339b852e6489255c。</li><li>来源格式：tex；来源包状态：downloaded；presentation 证据条目数：6。</li><li>presentation 及其质量报告保留了页面审阅、编译和冷读状态；它们用于追溯卡片，不等同于作者代码或数据已公开。</li><li>Evidence status: full-text verified; no independent reproduction performed.</li></ul></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 08</span>
+    <span class="reading-step-note">阅读指南</span>
+  </div>
+  <h2>阅读指南</h2>
+  <div class="reading-card-content"><ul><li>快速阅读可先看证据页 1, 11, 12, 15, 31, 37，这些页覆盖问题、方法与主要结论。</li><li>公式链优先查看 Eqs. (19)--(21)；核对符号、假设与前后推导。</li><li>建议按“研究问题 → 方法/数学对象 → 证据 → 局限”的顺序阅读，避免从摘要直接跳到强结论。</li><li>若要复现，先从证据引用恢复具体设置，再补齐随机种子、计算资源、评价指标和失败案例。</li></ul></div>
+</section></article>
+        <aside id="detail-toc" class="detail-toc hidden" aria-label="内容目录">
+          <p class="detail-toc-title">阅读目录</p>
+          <nav id="detail-toc-nav" class="detail-toc-nav"></nav>
+        </aside>
+      </div>
+      <nav class="paper-nav"><a class="paper-nav-link paper-nav-prev" href="../../collection-papers/2307.16695/"><span class="paper-nav-label">← 上一篇</span><span class="paper-nav-title">A theory of data variability in Neural Network Bayesian inference</span></a>
+      <a class="paper-nav-link paper-nav-next" href="../../collection-papers/2309.03350/"><span class="paper-nav-label">下一篇 →</span><span class="paper-nav-title">Relay Diffusion: Unifying diffusion process across resolutions for image synthesis</span></a></nav>
+    </main>
+
+    <footer class="footer">
+      <div class="container">
+        <p>内容来自 <a href="https://arxiv.org" target="_blank" rel="noopener noreferrer">arXiv.org</a>，阅读卡片由静态站点生成器构建。</p>
+      </div>
+    </footer>
+
+    <script src="../../assets/theme.js"></script>
+    <script src="../../assets/media.js"></script>
+    <script src="../../assets/paper.js"></script>
+  </body>
+</html>

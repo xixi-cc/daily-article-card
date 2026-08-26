@@ -1,0 +1,199 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>An effective control of large systems of active particles: An application to evacuation problem - physics+AI Collection 随机精选</title>
+    <meta name="description" content="研究把大规模个体控制压缩为单个 rescuer-leader 的连续二维动作决策，并以 generalized Vicsek model描述人群的局域对齐、噪声和对 leader 的跟随。 核心方法用两类 inverse-power pseudo-potentials 汇总自由人群对 leader 的 catch force，以及已跟随人数加权的 exit force，再将固定维特征输入 RPO policy。 60 人与 15 人的仿真显示该编码比直接 feed-forward 和 transformer 输入更快、更稳定地学会疏散；但这些结论只在作者设定的方形单出口 simulator 内成立。" />
+    <script>
+      (function() {
+        try {
+          var themePreference = window.localStorage.getItem('color-theme') || 'system';
+          var systemUsesDarkTheme = window.matchMedia('(prefers-color-scheme: dark)').matches;
+          var resolvedTheme = themePreference === 'system'
+            ? (systemUsesDarkTheme ? 'dark' : 'light')
+            : themePreference;
+          document.documentElement.dataset.theme = resolvedTheme;
+          document.documentElement.dataset.themePreference = themePreference;
+          document.documentElement.style.colorScheme = resolvedTheme;
+        } catch (error) {
+          document.documentElement.dataset.theme = 'light';
+          document.documentElement.dataset.themePreference = 'system';
+        }
+      })();
+    </script>
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='18' fill='%23111827'/%3E%3Ctext x='50%25' y='55%25' text-anchor='middle' dominant-baseline='middle' font-size='30' font-family='Arial, sans-serif' fill='white'%3EV%3C/text%3E%3C/svg%3E" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700;800&family=Noto+Sans+SC:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <script>document.documentElement.classList.add('math-pending');</script>
+    <script>
+      window.MathJax = {
+        tex: {
+          inlineMath: [['$', '$'], ['\\(', '\\)']],
+          displayMath: [['$$', '$$'], ['\\[', '\\]']],
+          processEscapes: true
+        },
+        options: {
+          skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+        },
+        chtml: {
+          scale: 1,
+          displayAlign: 'center'
+        },
+        startup: {
+          ready: function() {
+            MathJax.startup.defaultReady();
+            MathJax.startup.promise.then(function() {
+              document.documentElement.classList.remove('math-pending');
+              document.documentElement.dataset.mathReady = 'true';
+            });
+          }
+        }
+      };
+    </script>
+    <script defer src="../../assets/vendor/mathjax/tex-chtml.js"></script>
+    <link rel="stylesheet" href="../../assets/style.css" />
+  </head>
+  <body class="detail-page" data-paper-id="2509.19972">
+    <div class="page-noise"></div>
+    <div class="page-blur page-blur-a"></div>
+    <div class="page-blur page-blur-b"></div>
+
+    <header class="header detail-page-header">
+      <div class="container">
+        <div class="detail-page-topbar">
+          <a class="back-link" href="../../collection.html">返回列表</a>
+          <div class="detail-topbar-actions">
+            <span class="detail-site-name">physics+AI Collection 随机精选</span>
+            <button class="theme-toggle" type="button" data-theme-toggle aria-label="当前主题：设备，点击切换主题" title="当前主题：设备">
+  <span class="theme-toggle-icons" aria-hidden="true">
+    <svg class="theme-toggle-icon theme-toggle-icon-light" viewBox="0 0 24 24" fill="none">
+      <circle cx="12" cy="12" r="3.5" stroke="currentColor" stroke-width="1.8"/>
+      <path d="M12 2.5v2M12 19.5v2M2.5 12h2M19.5 12h2M5.3 5.3l1.4 1.4M17.3 17.3l1.4 1.4M18.7 5.3l-1.4 1.4M6.7 17.3l-1.4 1.4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+    </svg>
+    <svg class="theme-toggle-icon theme-toggle-icon-dark" viewBox="0 0 24 24" fill="none">
+      <path d="M20 15.2A8.1 8.1 0 0 1 8.8 4a8.2 8.2 0 1 0 11.2 11.2z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>
+    </svg>
+    <svg class="theme-toggle-icon theme-toggle-icon-system" viewBox="0 0 24 24" fill="none">
+      <rect x="3" y="4" width="18" height="13" rx="2.5" stroke="currentColor" stroke-width="1.8"/>
+      <path d="M8 21h8M12 17v4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+    </svg>
+  </span>
+  <span class="theme-toggle-label" data-theme-toggle-label>设备</span>
+</button>
+          </div>
+        </div>
+
+        <div class="detail-hero-grid">
+          <div class="detail-hero-cover"><article class="note-cover note-cover-title-abstract" style="--cover-from: #ef6c3f; --cover-to: #f6b13d; --cover-spot: #ffd59c; --cover-ink: #fff8ef; --cover-muted: rgba(255, 248, 239, 0.82); --cover-chip: rgba(255, 248, 239, 0.16); --cover-stroke: rgba(255, 248, 239, 0.26)">
+  <div class="note-cover-mesh"></div>
+  <div class="note-cover-title-shell">
+    <span class="note-cover-kicker">TITLE · ABSTRACT</span>
+    <h1 class="note-cover-title">An effective control of large systems of active particles: An application to evacuation problem</h1>
+    <p class="note-cover-title-zh">大规模主动粒子系统的有效控制：疏散问题中的应用</p>
+    <p class="note-cover-abstract">Manipulation of large systems of active particles is a serious challenge across diverse domains, including crowd management, control of robotic swarms, and coordinated material transport. The development of advanced control strategies for complex scenarios is hindered, however, by the lack of scalability and robustness of the existing methods, in particular, due to the need of an individual control for each agent. One possible solution involves controlling a system through a leader or a group of leaders, which other agents tend to follow. Using such an approach we develop an effective control strategy for a leader, combining reinforcement learning (RL) with artificial forces acting on the system. To describe the guidance of active particles by a leader we introduce the generalized Vicsek model. This novel method is then applied to the problem of the effective evacuation by a robot-rescue</p>
+  </div>
+</article></div>
+          <div class="detail-hero-copy">
+            <p class="eyebrow">Collection 全文卡</p>
+            <h1 class="detail-page-title">An effective control of large systems of active particles: An application to evacuation problem</h1>
+            <p class="detail-page-title-zh">大规模主动粒子系统的有效控制：疏散问题中的应用</p>
+            <div class="detail-meta">Paper Collection · Active Matter · <a href="https://arxiv.org/abs/2509.19972" target="_blank" rel="noopener noreferrer">原文</a></div>
+            <p class="detail-summary">研究把大规模个体控制压缩为单个 rescuer-leader 的连续二维动作决策，并以 generalized Vicsek model描述人群的局域对齐、噪声和对 leader 的跟随。 核心方法用两类 inverse-power pseudo-potentials 汇总自由人群对 leader 的 catch force，以及已跟随人数加权的 exit force，再将固定维特征输入 RPO policy。 60 人与 15 人的仿真显示该编码比直接 feed-forward 和 transformer 输入更快、更稳定地学会疏散；但这些结论只在作者设定的方形单出口 simulator 内成立。</p>
+            <div class="detail-micro-meta">
+              <span class="meta-pill">14 分钟读完</span>
+              <span class="meta-pill">8 张阅读卡</span>
+              <span class="meta-pill">作者：Albina Klepach、Egor E. Nuzhin、Alexey A. Tsukanov…</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <main class="container detail-layout">
+      <div class="detail-shell">
+        <article id="detail-body" class="reading-flow"><section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 01</span>
+    <span class="reading-step-note">作者信息</span>
+  </div>
+  <h2>作者信息</h2>
+  <div class="reading-card-content"><ul><li>作者：Albina Klepach、Egor E. Nuzhin、Alexey A. Tsukanov、Nikolay V. Brilliantov；机构包括 AIRI、Skolkovo Institute of Science and Technology 与 University of Leicester。</li><li>官方快照：arXiv:2509.19972v3，主分类 cs.RO，另含 cs.AI；论文 DOI 10.1016/j.cnsns.2025.109359。</li><li>论文提出一种面向 leader-follower 主动粒子群的状态编码，并在机器人引导疏散的 agent-based 数值环境中验证；没有真实人群、实体机器人或建筑现场实验。</li></ul></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 02</span>
+    <span class="reading-step-note">摘要</span>
+  </div>
+  <h2>摘要</h2>
+  <div class="reading-card-content"><ul><li>研究把大规模个体控制压缩为单个 rescuer-leader 的连续二维动作决策，并以 generalized Vicsek model描述人群的局域对齐、噪声和对 leader 的跟随。</li><li>核心方法用两类 inverse-power pseudo-potentials 汇总自由人群对 leader 的 catch force，以及已跟随人数加权的 exit force，再将固定维特征输入 RPO policy。</li><li>60 人与 15 人的仿真显示该编码比直接 feed-forward 和 transformer 输入更快、更稳定地学会疏散；但这些结论只在作者设定的方形单出口 simulator 内成立。</li></ul></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 03</span>
+    <span class="reading-step-note">背景</span>
+  </div>
+  <h2>背景</h2>
+  <div class="reading-card-content"><ul><li>传统逐个操控 \(N\) 个 agent 的状态/动作会随群体规模膨胀；leader-follower范式把控制集中到少量 leader，但仍需在继续收集远处人群和把现有 followers带往出口之间权衡。</li><li>人工 potential field在机器人导航中以目标吸引、障碍排斥提供局部方向；本文没有直接把potential加进reward，而是把势的梯度作为不含可训练参数的 observation encoder。</li><li>疏散在黑暗或烟雾房间中建模：个体不知道出口并随机运动，机器人掌握全部个体和出口坐标。这一全局可观测假设比真实应急场景强。</li></ul></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 04</span>
+    <span class="reading-step-note">模型与方法</span>
+  </div>
+  <h2>模型与方法</h2>
+  <div class="reading-card-content"><ul><li>Generalized Vicsek update令普通粒子以定速运动并向邻域平均方向对齐；leader在影响半径内参与平均。进入 exit zone 后，个体不再与leader交互，而被确定性地指向出口。</li><li>Gym环境为边长2L的方形，leader从中心出发，N个个体位置和方向随机初始化；动作a∈R²经归一化为leader运动方向，episode上限2000 steps。</li><li>奖励在每一步扣 \(p=1\)；新进入 exit zone 的人数得到 (wA+wBτ)\(N_{\mathrm{new}}\)，其中 \(wA=15\)、\(wB=10\)、τ随episode进度下降，以缓解只在完全疏散后奖励造成的稀疏反馈。</li><li>Catch potential Ucatch=−Σfree|\(r\)−ri|^{−\(\alpha\)}；exit potential Uexit=−|rexit−\(r\)|^{−\(\alpha\)}Ncaught。网络输入为leader坐标和两者梯度 Fcatch、Fexit，维度不随N改变。</li><li>比较三种同一RPO训练框架下的表示：原始坐标feed-forward（输入2N+4）、entity-token transformer，以及pseudo-gravitational encoding后接同一类feed-forward decoder。</li><li>默认参数包括N=60、noise \(\zeta=0.2\)、speed 0.01、Vicsek radius 0.1、leader radius ratio 2；RPO使用3 environments、2048-step rollout、\(\gamma=0.99\)、learning rate 5×10⁻4和25M total timesteps。</li></ul></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 05</span>
+    <span class="reading-step-note">核心结果与证据</span>
+  </div>
+  <h2>核心结果与证据</h2>
+  <div class="reading-card-content"><ul><li>Figure 4 对60人场景的10次不同环境随机种子训练取平均并画standard error；pseudo-gravitational曲线先收敛到短episode和高reward，transformer更慢，原始feed-forward在图示预算内基本未形成有效策略。</li><li>Appendix Figure \(C\).6 对15人与60人均报告10个训练runs；Appendix Table \(C\).1 的25M-step耗时分别为：15人 FF 8h54m、Transformer 14h58m、Pseudo 9h27m；60人 FF 9h16m、Transformer 1d9h25m、Pseudo 10h5m。</li><li>Table \(C\).1 同时说明pseudo方法约3M steps已达到最优值；正文另称学习约6×10⁴ time-steps，二者很可能采用不同的environment step/aggregate timestep口径，论文没有充分解释换算，不能直接视为同一训练成本数字。</li><li>Figure 5 固定使用训练一次的pseudo policy，在5000个不同随机种子上估计尚未完全疏散的概率；有leader时最后一人获救的时刻，对应无leader基线仅约50% runs完成疏散。</li><li>该50%比较是complete-evacuation probability的分布对照，而不是“leader把获救人数提高一倍”；无leader是随机游走进入exit zone，也不是另外两种RL architecture。</li><li>作者声称 fixed-dimensional encoder原则上可适配任意N；Discussion明确承认真正universality仍需在变化群体规模的episodes上专门训练，本文没有执行这种跨N泛化实验。</li></ul></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 06</span>
+    <span class="reading-step-note">有效性与局限</span>
+  </div>
+  <h2>有效性与局限</h2>
+  <div class="reading-card-content"><ul><li>全部结果来自 generalized Vicsek/Gym agent simulation；没有真实参与者、烟雾环境、拥挤接触力、受伤风险、通信失效、感知遮挡或硬件动力学，因此不能直接支持现场疏散安全结论。</li><li>leader观察所有人的精确坐标，个体一进exit zone便确定性朝出口运动；这两条设计显著简化了感知和局部拥塞问题。</li><li>几何只含方形单出口、单机器人、无内墙；多出口、障碍、多leader同步和复杂建筑均被作者列为未来工作。</li><li>baseline控制了RPO optimizer并比较表示，但三种architecture的参数量、计算量和inductive bias不同；transformer配置无residual且只用2 blocks，不能推出attention方法普遍不适用。</li><li>论文对 \(\alpha\) 的最优值存在内部冲突：Section 4称实验表明α=3最优且Figure 5用α=3，Appendix D与Figure \(C\).7说明却称α=1。读者应以代码、原始日志或作者勘误确认，不能在卡片中替作者消解。</li><li>Figure 5的network只训练一次，虽在5000随机初态上评估，却没有跨training seeds报告policy uncertainty；训练曲线10或20 seeds不能替代最终policy的独立重复训练。</li><li>源码公开提升可核查性，但本站未执行环境、训练或5000-run评估；所有性能数字均为论文内部证据。</li></ul></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 07</span>
+    <span class="reading-step-note">复现与资源</span>
+  </div>
+  <h2>复现与资源</h2>
+  <div class="reading-card-content"><ul><li>公开代码：https://github.com/cinemere/evacuation；先固定论文v3、依赖和配置，再分别复现15/60人三种表示的25M-step训练。</li><li>记录每个training seed的episode reward、episode length、complete-evacuation time、wall-clock、GPU/CPU型号和参数量；不要只从平滑曲线读单一收敛点。</li><li>独立扫描α=1…5并保存Figure \(C\).7底层数据，核对正文α=3与附录α=1冲突；Figure 5必须分别明确使用哪个checkpoint与α。</li><li>泛化测试至少改变N、方形尺寸、exit位置/宽度、噪声、leader影响半径并加入内墙；随后才可评价fixed-dimensional encoding对群体规模的稳健性。</li><li>现实外推需另建social-force/contact或真人/机器人安全协议，并把部分可观测、定位误差和通信延迟纳入；Vicsek仿真成功不能充当该层验证。</li><li>本站 PDF SHA-256：4c7adb1c5af628c2412287e10025efc4b84ad23cf7d64b9de11cf3ad164deaed。</li><li>Evidence status: full-text verified; no independent reproduction performed.</li></ul></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 08</span>
+    <span class="reading-step-note">阅读指南</span>
+  </div>
+  <h2>阅读指南</h2>
+  <div class="reading-card-content"><ul><li>先读 Sections 2.2–2.3，区分Vicsek动力学、exit-zone规则和reward shaping；这里决定了任务到底有多接近真实疏散。</li><li>再读 Eqs. (7–10) 与 Section 3.2，确认创新是fixed-dimensional physics-inspired representation，不是新的RPO optimizer。</li><li>随后对照 Figures 4–5、Table \(C\).1 与Figures \(C\).6–\(C\).7；重点检查step口径、最终policy重复次数和α冲突。</li><li>最后读Discussion的scope：作者自己把跨N训练、复杂几何、多出口和多机器人列作未完成工作。</li></ul></div>
+</section></article>
+        <aside id="detail-toc" class="detail-toc hidden" aria-label="内容目录">
+          <p class="detail-toc-title">阅读目录</p>
+          <nav id="detail-toc-nav" class="detail-toc-nav"></nav>
+        </aside>
+      </div>
+      <nav class="paper-nav"><a class="paper-nav-link paper-nav-prev" href="../../collection-papers/2509.19012/"><span class="paper-nav-label">← 上一篇</span><span class="paper-nav-title">Pure Vision Language Action (VLA) Models: A Comprehensive Survey</span></a>
+      <a class="paper-nav-link paper-nav-next" href="../../collection-papers/2509.20262/"><span class="paper-nav-label">下一篇 →</span><span class="paper-nav-title">Are Neural Networks Collision Resistant?</span></a></nav>
+    </main>
+
+    <footer class="footer">
+      <div class="container">
+        <p>内容来自 <a href="https://arxiv.org" target="_blank" rel="noopener noreferrer">arXiv.org</a>，阅读卡片由静态站点生成器构建。</p>
+      </div>
+    </footer>
+
+    <script src="../../assets/theme.js"></script>
+    <script src="../../assets/media.js"></script>
+    <script src="../../assets/paper.js"></script>
+  </body>
+</html>
