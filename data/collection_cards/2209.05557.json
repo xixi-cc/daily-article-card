@@ -1,0 +1,148 @@
+{
+  "arxiv_id": "2209.05557",
+  "source_version": "v3",
+  "source_pdf": "https://arxiv.org/pdf/2209.05557",
+  "title_en": "Blurring Diffusion Models",
+  "title_zh": "模糊扩散模型",
+  "curation_status": "full_text_verified",
+  "card_standard_version": "2.3",
+  "paper_profile": "theory_numerics",
+  "style_reference": "physicist_daily_arxiv",
+  "provenance": {
+    "program": "Collection",
+    "catalog": "Paper Collection",
+    "catalog_record_id": "3e6cded2f0754313",
+    "catalog_record_ids": [
+      "3e6cded2f0754313"
+    ],
+    "catalog_topic": "Generative Models",
+    "collection_date": "2026-08-23",
+    "sampled_at": "2026-08-26",
+    "selected_by": "full_collection_backfill",
+    "sampling_seed": "not_applicable_full_collection",
+    "candidate_count": 452
+  },
+  "verified_metadata": {
+    "arxiv_id": "2209.05557",
+    "version": "v3",
+    "title": "Blurring Diffusion Models",
+    "authors": [
+      "Emiel Hoogeboom",
+      "Tim Salimans"
+    ],
+    "categories": [
+      "cs.LG",
+      "cs.CV",
+      "stat.ML"
+    ],
+    "primary_category": "cs.LG",
+    "published": "2022-09-12T19:16:48Z",
+    "abstract": "Heat dissipation is recast as frequency-dependent Gaussian diffusion and combined with growing noise."
+  },
+  "sections": [
+    {
+      "title": "作者信息",
+      "paragraphs": [
+        "作者：Emiel Hoogeboom、Tim Salimans；arXiv:2209.05557v3，ICLR 2023。",
+        "本卡核对 15 页全文。"
+      ]
+    },
+    {
+      "title": "研究问题",
+      "paragraphs": [
+        "IHDM 明确按频率模糊，却在反演协方差和参数化上与成熟 DDPM 脱节。论文问热耗散是否其实是某种非各向同性 Gaussian diffusion，以及能否同时保留 blur 的多尺度偏置和标准 denoising diffusion 的可训练性。",
+        "这要求证明 forward marginals 对应合法 Markov transitions，并在频率空间写出解析 reverse conditional。"
+      ]
+    },
+    {
+      "title": "背景",
+      "paragraphs": [
+        "DCT 将热算子对角化。对频率分量 (u_t=V^\\top z_t)，IHDM marginal 是 (q(u_t|u_x)=\\mathcal N(d_t\\odot u_x,\\sigma^2I))：信噪比按频率变化，因此等价于非各向同性 Gaussian diffusion。",
+        "高频 d_t 衰减更快，随后每步有效噪声也更强；低频保留更久，形成显式尺度偏置。"
+      ]
+    },
+    {
+      "title": "模型与方法",
+      "paragraphs": [
+        "作者推广为 (q(u_t|u_x)=\\mathcal N(\\alpha_t\\odot u_x,\\operatorname{diag}(\\sigma_t^2)))，每个 DCT 模式有自己的 signal/noise schedule。",
+        "合法 Markov transition 与 posterior covariance 可逐频率解析计算；网络仍在像素空间做 epsilon prediction，DCT 只用于构造 forward/reverse 系数。",
+        "Figure 1 对比标准 diffusion、近确定热耗散和 blurring diffusion：后者既模糊又逐步加噪，桥接两个极限。"
+      ]
+    },
+    {
+      "title": "核心结果与证据",
+      "paragraphs": [
+        "CIFAR-10 FID：Cold Blur 80.08、IHDM 18.96、Soft Diffusion 4.64、同架构 denoising diffusion 3.58、blurring diffusion 3.17。LSUN Churches 128 上分别为 IHDM 45.1、denoising 4.68、blurring 3.88。",
+        "最大 blur (sigma_{B,\\max}=20) 在 CIFAR-10 最好（FID 3.17），LSUN 则 (sigma_{B,\\max}=10) 最好（3.65）；sin² schedule 在强 blur 下优于更激进的 sin schedule。",
+        "结果支持 blur 作为正则化归纳偏置，但收益相对标准 diffusion 只有 0.41–0.80 FID，远小于相对 IHDM 的修复。"
+      ]
+    },
+    {
+      "title": "有效性与局限",
+      "paragraphs": [
+        "更强 blur 收敛更慢：CIFAR-10 约 200k 步后、LSUN 约 1M 步后才超过弱 blur；训练预算不足会反转结论。",
+        "只在 CIFAR-10 与 LSUN Churches 两个无条件图像任务验证，且超参数 optimum 不跨数据集保持。",
+        "频率空间对角化依赖线性 blur 与正交 DCT；任意非线性 destruction 不能自动继承解析 Markov/posterior 结构。"
+      ]
+    },
+    {
+      "title": "复现与资源",
+      "paragraphs": [
+        "原文：https://arxiv.org/abs/2209.05557。",
+        "全文 PDF 共 15 页，SHA-256：2ea8c413fd92dcc21b0c677e210469abae4fcabe996232c70e1a40edb980b909。",
+        "复现需匹配 UNet、训练步数、样本数、DCT 归一化、blur/noise schedule 和 epsilon parameterization；绘制 FID 随训练步与 σ_B,max 的二维曲线，而不只报终点。",
+        "Evidence status: full-text verified; no independent reproduction performed."
+      ]
+    },
+    {
+      "title": "阅读指南",
+      "paragraphs": [
+        "先看 Figure 1 确认三个 forward process 的区别，再推导 DCT 下的 scalar Gaussian channels。",
+        "随后核对 Markov transition 与 reverse covariance，理解 IHDM 原参数化为何不匹配真实逆过程。",
+        "最后读 Tables 1–4 与 limitations；把理论桥接、相对 IHDM 改善和小幅超过 DDPM 分成三层结论。"
+      ]
+    }
+  ],
+  "cover": {
+    "mode": "source_figure",
+    "asset_path": "assets/collection-figures/2209.05557/figure-1-process-comparison.webp",
+    "label": "Figure 1",
+    "visual_type": "comparison",
+    "evidence": "paper.pdf p. 1, Figure 1",
+    "alt_text": "猫图像在标准扩散、热耗散和模糊扩散中的破坏序列。",
+    "caption": "标准扩散各向同性加噪，热耗散优先删除高频，模糊扩散把频率选择性衰减与增长噪声结合。",
+    "selection_rationale": "该图比 FID 表更清楚地展示模型在两个已知极限之间的位置。"
+  },
+  "figure_refs": [
+    {
+      "label": "Figure 1",
+      "asset_path": "assets/collection-figures/2209.05557/figure-1-process-comparison.webp",
+      "section": "核心结果与证据",
+      "role": "compare three forward processes",
+      "evidence": "paper.pdf p. 1, Figure 1",
+      "alt_text": "三种 diffusion/destruction process 的猫图像序列。",
+      "caption": "blurring diffusion 同时表现出尺度选择性模糊与随机噪声增长。",
+      "interpretation": "The model interpolates structurally between isotropic denoising diffusion and inverse heat dissipation."
+    }
+  ],
+  "equation_refs": [
+    {
+      "label": "Frequency-dependent diffusion",
+      "latex": "q(u_t\\mid u_x)=\\mathcal N\\!\\left(u_t\\mid \\alpha_t\\odot u_x,\\operatorname{diag}(\\sigma_t^2)\\right)",
+      "role": "define independent diffusion schedules for spatial frequencies",
+      "symbols": {
+        "u_x": "DCT image coefficients",
+        "alpha_t": "mode-wise signal schedule",
+        "sigma_t": "mode-wise noise schedule"
+      },
+      "evidence": "paper.pdf p. 5, Eq. (19)",
+      "interpretation": "Heat dissipation becomes Gaussian diffusion with frequency-dependent signal-to-noise ratios."
+    }
+  ],
+  "evidence_refs": [
+    "paper.pdf pp. 2–5: Gaussian reinterpretation of heat dissipation",
+    "paper.pdf pp. 5–9: blurring model, FID and schedule ablations",
+    "source PDF SHA-256 2ea8c413fd92dcc21b0c677e210469abae4fcabe996232c70e1a40edb980b909",
+    "Evidence status: full-text verified; no independent reproduction performed."
+  ]
+}

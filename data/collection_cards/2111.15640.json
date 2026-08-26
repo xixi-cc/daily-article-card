@@ -1,0 +1,149 @@
+{
+  "arxiv_id": "2111.15640",
+  "source_version": "v3",
+  "source_pdf": "https://arxiv.org/pdf/2111.15640",
+  "title_en": "Diffusion Autoencoders: Toward a Meaningful and Decodable Representation",
+  "title_zh": "扩散自编码器：走向有意义且可解码的表征",
+  "curation_status": "full_text_verified",
+  "card_standard_version": "2.3",
+  "paper_profile": "ai_empirical",
+  "style_reference": "physicist_daily_arxiv",
+  "provenance": {
+    "program": "Collection",
+    "catalog": "Paper Collection",
+    "catalog_record_id": "42643d6683734bf6",
+    "catalog_record_ids": [
+      "42643d6683734bf6"
+    ],
+    "catalog_topic": "Field Theory",
+    "collection_date": "2026-08-23",
+    "sampled_at": "2026-08-26",
+    "selected_by": "full_collection_backfill",
+    "sampling_seed": "not_applicable_full_collection",
+    "candidate_count": 452
+  },
+  "verified_metadata": {
+    "arxiv_id": "2111.15640",
+    "version": "v3",
+    "title": "Diffusion Autoencoders: Toward a Meaningful and Decodable Representation",
+    "authors": [
+      "Konpat Preechakul",
+      "Nattanat Chatthee",
+      "Suttisak Wizadwongsa",
+      "Supasorn Suwajanakorn"
+    ],
+    "categories": [
+      "cs.CV",
+      "cs.LG"
+    ],
+    "primary_category": "cs.CV",
+    "published": "2021-11-30T18:24:04Z",
+    "abstract": "A semantic encoder and conditional DDIM split image information into editable semantics and stochastic detail."
+  },
+  "sections": [
+    {
+      "title": "作者信息",
+      "paragraphs": [
+        "作者：Konpat Preechakul、Nattanat Chatthee、Suttisak Wizadwongsa、Supasorn Suwajanakorn；arXiv:2111.15640v3，CVPR 2022。",
+        "本卡核对 23 页全文。"
+      ]
+    },
+    {
+      "title": "研究问题",
+      "paragraphs": [
+        "扩散模型的噪声轨迹可生成高质量图像，却不是紧凑、线性可操纵的语义坐标；GAN latent 较可编辑，但真实图像反演会丢失身份与细节。",
+        "论文尝试把图像自由度分成低维语义子码与高维随机细节子码，并要求二者合起来近乎精确重构。"
+      ]
+    },
+    {
+      "title": "背景",
+      "paragraphs": [
+        "若 decoder 只靠紧凑 bottleneck，像素细节会被均方误差平均掉；若把全部信息放入 DDIM terminal latent，则可重构但难以语义解释。",
+        "方法的物理类比是相关尺度分解：低维 z_sem 承载慢、全局自由度，x_T 承载高频和随机微观细节；这是一种学习到的分工，不是严格正交投影。"
+      ]
+    },
+    {
+      "title": "模型与方法",
+      "paragraphs": [
+        "encoder (E_\\phi(x_0)=z_{\\mathrm{sem}}) 输出 512 维语义码；conditional noise predictor (epsilon_\\theta(x_t,t,z_{\\mathrm{sem}})) 构成 DDIM decoder。给定真实图像还可反演得到 (x_T)，所以完整码是 ((z_{\\mathrm{sem}},x_T))。",
+        "生成时另训练 latent DDIM 拟合 z_sem 分布，再从 Gaussian x_T 解码；属性编辑只沿 z_sem 中线性分类器法向移动。",
+        "Figure 1 同时展示局部属性编辑与两张真实图像间插值，是“线性语义且可解码”的直接视觉检验。"
+      ]
+    },
+    {
+      "title": "核心结果与证据",
+      "paragraphs": [
+        "完整双码在 CelebA-HQ 重构达到 SSIM 0.991、LPIPS 0.011、MSE 6.07e-5；若随机采 x_T，仅 512D z_sem 的 LPIPS 为 0.073，说明语义码保留主体但不保留全部细节。",
+        "T=20 时本方法 SSIM 0.927、LPIPS 0.050，超过 T=100 的 DDIM 的 0.917 与 0.063；条件语义减少了去噪阶段必须反推的信息。",
+        "40 个属性的线性可分性 AUROC 为 0.925，高于文中 StyleGAN-W 反演的 0.891。FFHQ 无条件 FID 在 T=100 为 10.59，对应 DDIM 12.03；优势存在但不是数量级提升。"
+      ]
+    },
+    {
+      "title": "有效性与局限",
+      "paragraphs": [
+        "z_sem 与 x_T 的“语义/随机”分工由训练目标和可视化支持，却没有信息论上的唯一性；属性方向也可能纠缠身份、年龄与数据偏差。",
+        "重构对比的 latent dimension 差异很大，训练图像数与公开预训练模型也不完全一致；不能从单表推断压缩率的公平排名。",
+        "人脸编辑主要在 FFHQ/CelebA-HQ 上验证，线性属性轴会继承标签和人群偏差；真实应用需报告分组保持率与编辑外溢。"
+      ]
+    },
+    {
+      "title": "复现与资源",
+      "paragraphs": [
+        "原文：https://arxiv.org/abs/2111.15640；项目：https://Diff-AE.github.io/。",
+        "全文 PDF 共 23 页，SHA-256：6a8d3ce5412f7ba3dd4610a9b7e719b4d6adcabc338487044de3c957e2c1aa26。",
+        "复现需固定数据裁剪、训练图像数、z_sem 维数、DDIM 步数、反演方案和指标实现；同时保存身份相似度、属性分类器置信度与非目标属性漂移。",
+        "Evidence status: full-text verified; no independent reproduction performed."
+      ]
+    },
+    {
+      "title": "阅读指南",
+      "paragraphs": [
+        "先看 Figures 1–3，区分 z_sem 改主体与 x_T 改细节。",
+        "再核对 Tables 1–2 的训练预算、latent dimension 和步数，避免跨配置直接比较。",
+        "最后读属性编辑与 limitations，把漂亮插值和可辨识、无偏的表征分开。"
+      ]
+    }
+  ],
+  "cover": {
+    "mode": "source_figure",
+    "asset_path": "assets/collection-figures/2111.15640/figure-1-editing-interpolation.webp",
+    "label": "Figure 1",
+    "visual_type": "comparison",
+    "evidence": "paper.pdf p. 1, Figure 1",
+    "alt_text": "真实人脸的发型、笑容、年龄编辑与连续插值。",
+    "caption": "线性移动语义子码可改变属性；完整双码仍保留可逆重构所需的随机细节。",
+    "selection_rationale": "首图直接展示语义坐标的可操纵性与解码质量；相较指标表，它同时保留真实图像端点、编辑方向与插值连续性。"
+  },
+  "figure_refs": [
+    {
+      "label": "Figure 1",
+      "asset_path": "assets/collection-figures/2111.15640/figure-1-editing-interpolation.webp",
+      "section": "核心结果与证据",
+      "role": "show semantic edits and interpolation",
+      "evidence": "paper.pdf p. 1, Figure 1",
+      "alt_text": "真实图像属性编辑与插值。",
+      "caption": "z_sem 中的线性移动改变头发、表情或年龄，同时输出保持高保真。",
+      "interpretation": "The visualization tests editability and detail retention, but not disentanglement uniqueness."
+    }
+  ],
+  "equation_refs": [
+    {
+      "label": "Conditional denoising objective",
+      "latex": "\\mathcal L_{\\mathrm{simple}}=\\mathbb E_{x_0,\\epsilon,t}\\!\\left[\\|\\epsilon_\\theta(x_t,t,z_{\\mathrm{sem}})-\\epsilon\\|_2^2\\right]",
+      "role": "train the diffusion decoder conditioned on semantic content",
+      "symbols": {
+        "z_sem": "semantic code",
+        "x_t": "noisy image",
+        "epsilon": "forward noise"
+      },
+      "evidence": "paper.pdf p. 3, Eq. (6)",
+      "interpretation": "Conditioning removes high-level ambiguity, allowing fewer denoising steps and a separate stochastic-detail code."
+    }
+  ],
+  "evidence_refs": [
+    "paper.pdf pp. 2–4: two-part code and conditional DDIM",
+    "paper.pdf pp. 5–8: reconstruction, editing and FID tables",
+    "source PDF SHA-256 6a8d3ce5412f7ba3dd4610a9b7e719b4d6adcabc338487044de3c957e2c1aa26",
+    "Evidence status: full-text verified; no independent reproduction performed."
+  ]
+}

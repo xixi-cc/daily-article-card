@@ -1,0 +1,154 @@
+{
+  "arxiv_id": "2208.09392",
+  "source_version": "v1",
+  "source_pdf": "https://arxiv.org/pdf/2208.09392",
+  "title_en": "Cold Diffusion: Inverting Arbitrary Image Transforms Without Noise",
+  "title_zh": "冷扩散：无噪声地反演任意图像变换",
+  "curation_status": "full_text_verified",
+  "card_standard_version": "2.3",
+  "paper_profile": "ai_empirical",
+  "style_reference": "physicist_daily_arxiv",
+  "provenance": {
+    "program": "Collection",
+    "catalog": "Paper Collection",
+    "catalog_record_id": "1123e0812adab953",
+    "catalog_record_ids": [
+      "1123e0812adab953"
+    ],
+    "catalog_topic": "Flow Matching",
+    "collection_date": "2026-08-23",
+    "sampled_at": "2026-08-26",
+    "selected_by": "full_collection_backfill",
+    "sampling_seed": "not_applicable_full_collection",
+    "candidate_count": 452
+  },
+  "verified_metadata": {
+    "arxiv_id": "2208.09392",
+    "version": "v1",
+    "title": "Cold Diffusion: Inverting Arbitrary Image Transforms Without Noise",
+    "authors": [
+      "Arpit Bansal",
+      "Eitan Borgnia",
+      "Hong-Min Chu",
+      "Jie S. Li",
+      "Hamid Kazemi",
+      "Furong Huang",
+      "Micah Goldblum",
+      "Jonas Geiping",
+      "Tom Goldstein"
+    ],
+    "categories": [
+      "cs.CV",
+      "cs.LG"
+    ],
+    "primary_category": "cs.CV",
+    "published": "2022-08-19T15:18:39Z",
+    "abstract": "Diffusion-like training and sampling are generalized from Gaussian noise to deterministic image degradations."
+  },
+  "sections": [
+    {
+      "title": "作者信息",
+      "paragraphs": [
+        "作者：Arpit Bansal 等九人；arXiv:2208.09392v1。",
+        "本卡核对 23 页全文。"
+      ]
+    },
+    {
+      "title": "研究问题",
+      "paragraphs": [
+        "扩散生成通常被解释为反演随机加噪。论文检验更强命题：若 forward operator 是确定的 blur、mask、pixelation、snow 或 animorphosis，类似的逐步 restoration 是否仍能形成生成/重构模型？",
+        "难点是 restoration predictor 不完美时，逐步直接退化其输出会积累误差；稳定 sampler 必须保留并校正当前状态。"
+      ]
+    },
+    {
+      "title": "背景",
+      "paragraphs": [
+        "给定逐级信息损失算子 (D(x,t))，训练 restoration (R(x_t,t)\\approx x_0)。朴素更新 (x_{t-1}=D(R(x_t,t),t-1)) 会把每步误差完全写回状态。",
+        "改进算法把预测在相邻退化层的差量加到当前状态；当 R 完美时两算法一致，当相邻步很小时误差的一阶共模部分抵消。"
+      ]
+    },
+    {
+      "title": "模型与方法",
+      "paragraphs": [
+        "训练损失为 (mathbb E\\|R(D(x_0,t),t)-x_0\\|_1)。Algorithm 2 更新 (x_{t-1}=x_t-D(\\hat x_0,t)+D(\\hat x_0,t-1))。",
+        "作者在 MNIST、CIFAR-10、CelebA 上测试 deblurring、inpainting、super-resolution、snow removal，并用固定噪声、blur prior 与其他 transform 做生成 proof of concept。",
+        "Figure 1 把 Gaussian hot diffusion 与五种 cold transforms 放在同一 forward/reverse 坐标中，显示“diffusion”框架真正依赖的是退化层级，而非必须注入随机噪声。"
+      ]
+    },
+    {
+      "title": "核心结果与证据",
+      "paragraphs": [
+        "deblurring 的 sampled FID 在 MNIST/CIFAR-10/CelebA 为 4.69/80.08/26.14，优于 direct reconstruction 的 5.10/83.69/36.37；但 sampled 的 RMSE、SSIM 可能更差，说明更像总体数据分布不等于更接近原图。",
+        "inpainting 的 sampled FID 为 1.61/8.92/5.73，同样优于 direct 2.24/9.97/7.74。Algorithm 2 的稳定性因此不仅是视觉案例，也体现在 held-out distribution metrics。",
+        "无条件 cold blur 的 CelebA/AFHQ FID 为 49.45/54.68，明显不及 estimated-noise hot diffusion 23.11/20.59；论文建立可行性，而非证明任意退化都优于 Gaussian diffusion。"
+      ]
+    },
+    {
+      "title": "有效性与局限",
+      "paragraphs": [
+        "任意 D 并不自动给出易采样 terminal prior；unconditional blur 需要对最终通道均值拟合 GMM，并通过破坏像素对称性改善生成。",
+        "Algorithm 2 对小步误差稳定，但 D 若不平滑、非嵌套或丢失结构突变，局部抵消论证会减弱。",
+        "FID 与逐图像 SSIM/RMSE 衡量不同对象；重构任务和生成任务必须分开评价，不能只挑有利指标。"
+      ]
+    },
+    {
+      "title": "复现与资源",
+      "paragraphs": [
+        "原文：https://arxiv.org/abs/2208.09392；代码：https://github.com/arpitbansal297/Cold-Diffusion-Models。",
+        "全文 PDF 共 23 页，SHA-256：ec5e6a5ccae672bc6f17649fce078bcb596d58a4547b57e2d66703ae765ce62a。",
+        "复现应固定 D 的完整 schedule、T、R 网络、terminal prior 与 Algorithm 1/2；同时保存 FID、SSIM、RMSE 和逐步误差，避免把分布逼真度当作原图恢复。",
+        "Evidence status: full-text verified; no independent reproduction performed."
+      ]
+    },
+    {
+      "title": "阅读指南",
+      "paragraphs": [
+        "先看 Figure 1 建立 generalized diffusion 的对象，再逐行比较 Algorithms 1–2。",
+        "随后读 deblurring 段的 difference-of-Gaussians 解释，并核对 Tables 1–4 的指标分歧。",
+        "最后读 cold generation；把条件恢复成功与无条件生成质量严格分开。"
+      ]
+    }
+  ],
+  "cover": {
+    "mode": "source_figure",
+    "asset_path": "assets/collection-figures/2208.09392/figure-1-cold-transforms.webp",
+    "label": "Figure 1",
+    "visual_type": "comparison",
+    "evidence": "paper.pdf p. 1, Figure 1",
+    "alt_text": "噪声、模糊、动物形变、遮罩、像素化和雪化的 forward/reverse 图像序列。",
+    "caption": "同一恢复框架可反演随机加噪，也可反演多种确定退化；不同退化定义不同的生成归纳偏置。",
+    "selection_rationale": "这张总览图最直接表达论文反直觉结论；它把六种退化放在同一 forward/reverse 坐标中，比任一单独指标表更能解释方法边界。"
+  },
+  "figure_refs": [
+    {
+      "label": "Figure 1",
+      "asset_path": "assets/collection-figures/2208.09392/figure-1-cold-transforms.webp",
+      "section": "核心结果与证据",
+      "role": "compare hot and deterministic cold degradations",
+      "evidence": "paper.pdf p. 1, Figure 1",
+      "alt_text": "六种 forward 与 reverse 图像变换。",
+      "caption": "噪声不是唯一可用的 destruction process；blur、mask 等也能组织逐步 restoration。",
+      "interpretation": "The framework generalizes the degradation path, while sample quality remains operator-dependent."
+    }
+  ],
+  "equation_refs": [
+    {
+      "label": "Error-correcting cold update",
+      "latex": "x_{t-1}=x_t-D(\\hat x_0,t)+D(\\hat x_0,t-1),\\qquad \\hat x_0=R(x_t,t)",
+      "role": "invert a degradation path without compounding restoration error",
+      "symbols": {
+        "D": "degradation operator",
+        "R": "restoration network",
+        "x_t": "current degraded state"
+      },
+      "evidence": "paper.pdf p. 4, Algorithm 2",
+      "interpretation": "Only the predicted change between adjacent degradation levels is applied to the current state."
+    }
+  ],
+  "evidence_refs": [
+    "paper.pdf pp. 3–5: generalized training and stable sampling",
+    "paper.pdf pp. 5–9: restoration metrics and cold generation",
+    "source PDF SHA-256 ec5e6a5ccae672bc6f17649fce078bcb596d58a4547b57e2d66703ae765ce62a",
+    "Evidence status: full-text verified; no independent reproduction performed."
+  ]
+}

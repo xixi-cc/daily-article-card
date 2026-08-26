@@ -1,0 +1,149 @@
+{
+  "arxiv_id": "2206.13397",
+  "source_version": "v7",
+  "source_pdf": "https://arxiv.org/pdf/2206.13397",
+  "title_en": "Generative Modelling With Inverse Heat Dissipation",
+  "title_zh": "用逆热耗散进行生成建模",
+  "curation_status": "full_text_verified",
+  "card_standard_version": "2.3",
+  "paper_profile": "theory_numerics",
+  "style_reference": "physicist_daily_arxiv",
+  "provenance": {
+    "program": "Collection",
+    "catalog": "Paper Collection",
+    "catalog_record_id": "779731ba4665f15c",
+    "catalog_record_ids": [
+      "779731ba4665f15c"
+    ],
+    "catalog_topic": "Flow Matching",
+    "collection_date": "2026-08-23",
+    "sampled_at": "2026-08-26",
+    "selected_by": "full_collection_backfill",
+    "sampling_seed": "not_applicable_full_collection",
+    "candidate_count": 452
+  },
+  "verified_metadata": {
+    "arxiv_id": "2206.13397",
+    "version": "v7",
+    "title": "Generative Modelling With Inverse Heat Dissipation",
+    "authors": [
+      "Severi Rissanen",
+      "Markus Heinonen",
+      "Arno Solin"
+    ],
+    "categories": [
+      "cs.CV",
+      "cs.LG",
+      "stat.ML"
+    ],
+    "primary_category": "cs.CV",
+    "published": "2022-06-21T13:40:38Z",
+    "abstract": "A generative latent-variable model stochastically reverses the heat equation to impose an explicit coarse-to-fine image prior."
+  },
+  "sections": [
+    {
+      "title": "作者信息",
+      "paragraphs": [
+        "作者：Severi Rissanen、Markus Heinonen、Arno Solin；arXiv:2206.13397v7，ICLR 2023。",
+        "本卡核对 55 页全文。"
+      ]
+    },
+    {
+      "title": "研究问题",
+      "paragraphs": [
+        "标准扩散在像素各向同性地加噪，没有显式使用自然图像的多尺度结构。作者问：若 forward destruction 改为二维热方程，使高频先衰减，能否把生成过程组织成从平均颜色、轮廓到纹理的逆热流？",
+        "纯逆热方程病态且确定；模型必须加入非零噪声，使不同 forward paths 重叠，从而定义可学习的反向条件分布。"
+      ]
+    },
+    {
+      "title": "背景",
+      "paragraphs": [
+        "热方程 (partial_t u=\\Delta u) 在离散余弦基中对每个波数独立衰减：(u_k=V\\exp(-\\Lambda t_k)V^\\top u_0)。高波数具有更大的 Laplacian 本征值，因此更快消失。",
+        "自然图像近似 (1/f^\\alpha) 功率谱也解释了普通扩散的隐式 coarse-to-fine：白噪声先淹没能量较弱的高频；IHDM 则显式按频率衰减。"
+      ]
+    },
+    {
+      "title": "模型与方法",
+      "paragraphs": [
+        "forward variational family 在每个热耗散层加入固定训练噪声 σ；reverse network 预测前一层均值，并加入采样噪声 δ。DCT 使热核计算与频率分层高效。",
+        "U-Net 通过逐层 MSE 学习 regularized deblurring。非零 σ 不是装饰：它让反向条件非退化，并正则化病态逆热问题。",
+        "Figure 5 展示五个数据集从平坦场逐步长出结构，并用分叉树强调同一粗态可通向多种细节。"
+      ]
+    },
+    {
+      "title": "核心结果与证据",
+      "paragraphs": [
+        "生成序列确实先确定平均颜色和大尺度形状，再出现纹理；固定噪声而改变初态颜色可得到形态相似但色调不同的人脸，说明尺度层级在 latent paths 中可操纵。",
+        "文中 FID：CIFAR-10 18.96、LSUN Churches 128 为 45.06、AFHQ 43.39、FFHQ 64.91；作者明确承认远弱于当时 CIFAR-10 DDPM 3.17，贡献主要是新归纳偏置而非 SOTA。",
+        "采样噪声比 δ/σ 约 1.25–1.3 时最好；δ=0 只锐化已有粗像，不产生足够新细节，而 σ=0 时即使 MNIST 也失败。"
+      ]
+    },
+    {
+      "title": "有效性与局限",
+      "paragraphs": [
+        "逆热方程的病态性被噪声正则化但未消失；结果对 σ、δ、离散层数 K 与最大模糊尺度敏感。",
+        "FID 明显落后强 diffusion/GAN 基线，不能把可解释的 coarse-to-fine 视觉过程当成更高概率质量。",
+        "颜色—形状“解缠”来自特定数据与 prior，尚无严格独立性判据；高分辨率成本和似然/FID 的最优超参数也不一致。"
+      ]
+    },
+    {
+      "title": "复现与资源",
+      "paragraphs": [
+        "原文：https://arxiv.org/abs/2206.13397；代码：https://github.com/AaltoML/generative-inverse-heat-dissipation。",
+        "全文 PDF 共 55 页，SHA-256：ebfe4b0dd02dac03078244ad21cbae4114cc299e95b99bac3b2aa517269a91aa。",
+        "复现应扫描 σ、δ/σ、K 与最大 blur width；保存逐频率功率谱、每层重构误差、同一粗态的分叉样本和固定样本数 FID。",
+        "Evidence status: full-text verified; no independent reproduction performed."
+      ]
+    },
+    {
+      "title": "阅读指南",
+      "paragraphs": [
+        "先看 Figure 3 理解为何 σ>0 让 paths 合并，再从热核的 DCT 对角化重建 forward process。",
+        "随后看 Figures 4–5，把频谱论证与实际粗到细样本对应。",
+        "最后读 δ/σ 扫描和定量段落；论文价值在结构性假设，不在 benchmark 冠军。"
+      ]
+    }
+  ],
+  "cover": {
+    "mode": "source_figure",
+    "asset_path": "assets/collection-figures/2206.13397/figure-5-coarse-to-fine.webp",
+    "label": "Figure 5",
+    "visual_type": "comparison",
+    "evidence": "paper.pdf p. 6, Figure 5",
+    "alt_text": "五个数据集的逆热耗散粗到细生成序列与分叉树。",
+    "caption": "生成从近乎平坦的低频场开始，逐步加入轮廓与纹理；同一粗态可随机分叉成不同细节。",
+    "selection_rationale": "该图是论文最关键、最物理直观的多尺度生成可视化；它同时展示尺度顺序和随机分叉，信息量高于单独的 FID 数据表。"
+  },
+  "figure_refs": [
+    {
+      "label": "Figure 5",
+      "asset_path": "assets/collection-figures/2206.13397/figure-5-coarse-to-fine.webp",
+      "section": "核心结果与证据",
+      "role": "show coarse-to-fine stochastic generation",
+      "evidence": "paper.pdf p. 6, Figure 5",
+      "alt_text": "逆热耗散生成序列与层级分叉。",
+      "caption": "低频结构先确定，高频细节在后续随机反演中出现。",
+      "interpretation": "The learned reverse process follows the scale ordering imposed by the heat operator."
+    }
+  ],
+  "equation_refs": [
+    {
+      "label": "Heat semigroup",
+      "latex": "u_k=V\\exp(-\\Lambda t_k)V^\\top u_0",
+      "role": "erase high spatial frequencies at mode-dependent rates",
+      "symbols": {
+        "V": "DCT basis",
+        "Lambda": "discrete Laplacian spectrum",
+        "t_k": "dissipation time"
+      },
+      "evidence": "paper.pdf heat-equation formulation",
+      "interpretation": "Large Laplacian eigenvalues decay first, explicitly ordering image scales."
+    }
+  ],
+  "evidence_refs": [
+    "paper.pdf pp. 2–5: probabilistic inverse heat process and spectral bias",
+    "paper.pdf pp. 6–8: generation, FID, noise ratio and latent behavior",
+    "source PDF SHA-256 ebfe4b0dd02dac03078244ad21cbae4114cc299e95b99bac3b2aa517269a91aa",
+    "Evidence status: full-text verified; no independent reproduction performed."
+  ]
+}

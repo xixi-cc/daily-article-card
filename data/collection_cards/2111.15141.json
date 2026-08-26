@@ -1,0 +1,158 @@
+{
+  "arxiv_id": "2111.15141",
+  "source_version": "v2",
+  "source_pdf": "https://arxiv.org/pdf/2111.15141",
+  "title_en": "Path Integral Sampler: a stochastic control approach for sampling",
+  "title_zh": "路径积分采样器：随机控制视角下的采样",
+  "curation_status": "full_text_verified",
+  "card_standard_version": "2.3",
+  "paper_profile": "theory_numerics",
+  "style_reference": "physicist_daily_arxiv",
+  "provenance": {
+    "program": "Collection",
+    "catalog": "Paper Collection",
+    "catalog_record_id": "1d621814988a5812",
+    "catalog_record_ids": [
+      "1d621814988a5812"
+    ],
+    "catalog_topic": "Field Theory",
+    "collection_date": "2026-08-23",
+    "sampled_at": "2026-08-26",
+    "selected_by": "full_collection_backfill",
+    "sampling_seed": "not_applicable_full_collection",
+    "candidate_count": 452
+  },
+  "verified_metadata": {
+    "arxiv_id": "2111.15141",
+    "version": "v2",
+    "title": "Path Integral Sampler: a stochastic control approach for sampling",
+    "authors": [
+      "Qinsheng Zhang",
+      "Yongxin Chen"
+    ],
+    "categories": [
+      "cs.LG"
+    ],
+    "primary_category": "cs.LG",
+    "published": "2021-11-30T05:50:12Z",
+    "abstract": "A Schrödinger-bridge sampler learned as stochastic optimal control, with path-space importance correction."
+  },
+  "sections": [
+    {
+      "title": "作者信息",
+      "paragraphs": [
+        "作者：Qinsheng Zhang、Yongxin Chen；arXiv:2111.15141v2，ICLR 2022。",
+        "本卡核对 27 页全文。此处 path integral 是受控扩散轨道上的测度与作用量，不应与量子振幅的振荡积分混同。"
+      ]
+    },
+    {
+      "title": "研究问题",
+      "paragraphs": [
+        "目标密度只知道到归一化常数时，短链 MCMC 容易困在模态，显式 flow 又受可逆架构约束。论文问能否训练一条有限时间受控 SDE，把简单初态直接输运到目标分布。",
+        "第二个问题是 learned controller 与离散积分必然不完美；作者需要可计算的偏差界与重要性权重，而不只是生成样本的视觉相似。"
+      ]
+    },
+    {
+      "title": "背景",
+      "paragraphs": [
+        "Schrödinger bridge 在给定端点边缘分布时寻找相对参考扩散最可能的路径测度。Girsanov 定理把路径测度的 KL 写成控制能量，从而把采样变成终端代价加运行代价的随机最优控制。",
+        "数据处理不等式给出 (D_{\\mathrm{KL}}(\\mu_Q\\Vert\\mu)\\le D_{\\mathrm{KL}}(Q\\Vert P))：控制的是整条路径，却约束终点样本误差。"
+      ]
+    },
+    {
+      "title": "模型与方法",
+      "paragraphs": [
+        "受控过程为 (dx_t=u_t(x_t)dt+dw_t)。选择终端代价 (Psi(x_T)=\\log[\\mu^0(x_T)/\\mu(x_T)]) 后，最优控制的终点边缘就是目标 (mu)。",
+        "控制场用神经网络参数化；PIS-Grad 额外注入目标 score 以缓解分离模态下的 zero-forcing。训练通过离散 SDE 轨迹反向传播，采样时同时累积路径作用量。",
+        "Figure 1 把无控扩散、终端势与受控路径束并排显示，直观说明控制不是末端重排，而是改变整条轨道测度。"
+      ]
+    },
+    {
+      "title": "核心结果与证据",
+      "paragraphs": [
+        "理论上，若控制误差有界，终点的二阶 Wasserstein 误差满足 (W_2=O(\\sqrt{Td(\\Delta t+\\epsilon)}))；这同时暴露维数、步长与策略误差的依赖。",
+        "路径积分权重可校正次优控制与时间离散偏差，并无偏估计归一化常数；低 ESS 则直接警告校正由少数轨道支配。",
+        "二维分离模态图中 PIS-Grad 比无 score 的 PIS-NN 覆盖更多模态；MG、Funnel 与 LGCP 的 100 次归一化常数实验中，带重权的 PIS-Grad 优于文中 AFT/SMC 配置。但比较预算并不完全等价：退火基线使用约十倍离散步。"
+      ]
+    },
+    {
+      "title": "有效性与局限",
+      "paragraphs": [
+        "保证依赖控制场误差的全局上界，实际神经网络训练并不能直接验证该前提；Wasserstein 小也不保证任意稀有事件估计稳定。",
+        "重要性修正恢复期望的无偏性，但权重方差可随维度和时间迅速恶化；必须同时报告 ESS、权重尾部和多模态覆盖。",
+        "数值任务以 toy densities、LGCP、丙氨酸二肽和 VAE latent 为主，尚不能直接推出高维场论采样的可扩展优势。"
+      ]
+    },
+    {
+      "title": "复现与资源",
+      "paragraphs": [
+        "原文：https://arxiv.org/abs/2111.15141；代码：https://github.com/qsh-zh/pis。",
+        "全文 PDF 共 27 页，SHA-256：e0bb88baf8cf19b54d29195a6765aaf113de42fa7b5aab2d11658fd959175ac8。",
+        "复现应固定 SDE 时域、Euler 步长、控制网络、score 是否注入、目标梯度实现和每个基线的总函数评估数；保存每条轨道的作用量、权重、ESS 与终点样本。",
+        "Evidence status: full-text verified; no independent reproduction performed."
+      ]
+    },
+    {
+      "title": "阅读指南",
+      "paragraphs": [
+        "先读 Figure 1 与 Theorem 1，重建终端势为何把随机控制变成目标采样。",
+        "再读 Eqs. (16)–(19)，把近似误差界、重要性校正和归一化常数估计分成三个命题。",
+        "最后核对实验的步数预算与权重版本；不要把未加权样本质量等同于无偏估计。"
+      ]
+    }
+  ],
+  "cover": {
+    "mode": "source_figure",
+    "asset_path": "assets/collection-figures/2111.15141/figure-1-control-bridge.webp",
+    "label": "Figure 1",
+    "visual_type": "schematic",
+    "evidence": "paper.pdf p. 2, Figure 1",
+    "alt_text": "无控扩散经终端代价变成命中双峰目标的受控路径束。",
+    "caption": "终端势把参考扩散重新加权为 Schrödinger bridge；最优控制沿有限时域逐步塑造终点分布。",
+    "selection_rationale": "该图直接呈现论文的物理核心：路径测度如何被控制场重整形；它比性能表更适合说明方法的因果结构。"
+  },
+  "figure_refs": [
+    {
+      "label": "Figure 1",
+      "asset_path": "assets/collection-figures/2111.15141/figure-1-control-bridge.webp",
+      "section": "核心结果与证据",
+      "role": "visualize the controlled path measure",
+      "evidence": "paper.pdf p. 2, Figure 1",
+      "alt_text": "PIS 的无控与最优受控扩散路径。",
+      "caption": "终端代价选择目标密度，最优控制把参考终点分布推到双峰目标。",
+      "interpretation": "Sampling is performed by changing the full trajectory measure, not by a terminal deterministic map."
+    }
+  ],
+  "equation_refs": [
+    {
+      "label": "Controlled diffusion",
+      "latex": "dx_t=u_t(x_t)\\,dt+dw_t",
+      "role": "define the trainable stochastic transport",
+      "symbols": {
+        "x_t": "state",
+        "u_t": "control field",
+        "w_t": "Brownian motion"
+      },
+      "evidence": "paper.pdf p. 3, Eq. (2)",
+      "interpretation": "The neural policy changes the drift while preserving stochastic exploration."
+    },
+    {
+      "label": "Path importance weight",
+      "latex": "w^u(\\tau)=\\exp\\!\\left[-\\int_0^T\\!\\left(\\tfrac12\\|u_t\\|^2dt+u_t^\\top dw_t\\right)-\\Psi(x_T)\\right]",
+      "role": "correct controller and discretization bias",
+      "symbols": {
+        "tau": "trajectory",
+        "Psi": "terminal cost",
+        "u_t": "learned control"
+      },
+      "evidence": "paper.pdf p. 6, Eq. (17)",
+      "interpretation": "Exact expectations remain available only when the path weights have tolerable variance."
+    }
+  ],
+  "evidence_refs": [
+    "paper.pdf pp. 3–6: stochastic-control formulation, bounds and importance weights",
+    "paper.pdf pp. 6–9: benchmark, molecular and latent-space experiments",
+    "source PDF SHA-256 e0bb88baf8cf19b54d29195a6765aaf113de42fa7b5aab2d11658fd959175ac8",
+    "Evidence status: full-text verified; no independent reproduction performed."
+  ]
+}
