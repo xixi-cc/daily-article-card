@@ -1,0 +1,203 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>From Denoising Diffusions to Denoising Markov Models - physics+AI Collection 随机精选</title>
+    <meta name="description" content="作者：Joe Benton、Yuyang Shi、Valentin De Bortoli、George Deligiannidis、Arnaud Doucet；arXiv:2211.03595v3。全文 56 页。" />
+    <script>
+      (function() {
+        try {
+          var themePreference = window.localStorage.getItem('color-theme') || 'system';
+          var systemUsesDarkTheme = window.matchMedia('(prefers-color-scheme: dark)').matches;
+          var resolvedTheme = themePreference === 'system'
+            ? (systemUsesDarkTheme ? 'dark' : 'light')
+            : themePreference;
+          document.documentElement.dataset.theme = resolvedTheme;
+          document.documentElement.dataset.themePreference = themePreference;
+          document.documentElement.style.colorScheme = resolvedTheme;
+        } catch (error) {
+          document.documentElement.dataset.theme = 'light';
+          document.documentElement.dataset.themePreference = 'system';
+        }
+      })();
+    </script>
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='18' fill='%23111827'/%3E%3Ctext x='50%25' y='55%25' text-anchor='middle' dominant-baseline='middle' font-size='30' font-family='Arial, sans-serif' fill='white'%3EV%3C/text%3E%3C/svg%3E" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700;800&family=Noto+Sans+SC:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <script>document.documentElement.classList.add('math-pending');</script>
+    <script>
+      window.MathJax = {
+        tex: {
+          inlineMath: [['$', '$'], ['\\(', '\\)']],
+          displayMath: [['$$', '$$'], ['\\[', '\\]']],
+          processEscapes: true
+        },
+        options: {
+          skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+        },
+        chtml: {
+          scale: 1,
+          displayAlign: 'center'
+        },
+        startup: {
+          ready: function() {
+            MathJax.startup.defaultReady();
+            MathJax.startup.promise.then(function() {
+              document.documentElement.classList.remove('math-pending');
+              document.documentElement.dataset.mathReady = 'true';
+            });
+          }
+        }
+      };
+    </script>
+    <script defer src="../../assets/vendor/mathjax/tex-chtml.js"></script>
+    <link rel="stylesheet" href="../../assets/style.css" />
+  </head>
+  <body class="detail-page" data-paper-id="2211.03595">
+    <div class="page-noise"></div>
+    <div class="page-blur page-blur-a"></div>
+    <div class="page-blur page-blur-b"></div>
+
+    <header class="header detail-page-header">
+      <div class="container">
+        <div class="detail-page-topbar">
+          <a class="back-link" href="../../collection.html">返回列表</a>
+          <div class="detail-topbar-actions">
+            <span class="detail-site-name">physics+AI Collection 随机精选</span>
+            <button class="theme-toggle" type="button" data-theme-toggle aria-label="当前主题：设备，点击切换主题" title="当前主题：设备">
+  <span class="theme-toggle-icons" aria-hidden="true">
+    <svg class="theme-toggle-icon theme-toggle-icon-light" viewBox="0 0 24 24" fill="none">
+      <circle cx="12" cy="12" r="3.5" stroke="currentColor" stroke-width="1.8"/>
+      <path d="M12 2.5v2M12 19.5v2M2.5 12h2M19.5 12h2M5.3 5.3l1.4 1.4M17.3 17.3l1.4 1.4M18.7 5.3l-1.4 1.4M6.7 17.3l-1.4 1.4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+    </svg>
+    <svg class="theme-toggle-icon theme-toggle-icon-dark" viewBox="0 0 24 24" fill="none">
+      <path d="M20 15.2A8.1 8.1 0 0 1 8.8 4a8.2 8.2 0 1 0 11.2 11.2z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>
+    </svg>
+    <svg class="theme-toggle-icon theme-toggle-icon-system" viewBox="0 0 24 24" fill="none">
+      <rect x="3" y="4" width="18" height="13" rx="2.5" stroke="currentColor" stroke-width="1.8"/>
+      <path d="M8 21h8M12 17v4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+    </svg>
+  </span>
+  <span class="theme-toggle-label" data-theme-toggle-label>设备</span>
+</button>
+          </div>
+        </div>
+
+        <div class="detail-hero-grid">
+          <div class="detail-hero-cover"><figure class="paper-figure-card paper-figure-card-detail">
+  <img class="paper-figure-image" src="../../assets/collection-figures/2211.03595/figure-6-so3-pose.webp" alt="两个物体及其在 SO(3) 上的真值和模型姿态分布。" loading="lazy" onclick="window.openPaperFigureImage && window.openPaperFigureImage(this)" />
+  <figcaption class="paper-figure-caption">DMM 在旋转群上复现由物体对称性导致的多峰后验，展示框架超越欧氏像素空间的意义。</figcaption>
+</figure></div>
+          <div class="detail-hero-copy">
+            <p class="eyebrow">Collection 全文卡</p>
+            <h1 class="detail-page-title">From Denoising Diffusions to Denoising Markov Models</h1>
+            <p class="detail-page-title-zh">从去噪扩散到去噪马尔可夫模型</p>
+            <div class="detail-meta">Paper Collection · Generative Models · <a href="https://arxiv.org/abs/2211.03595" target="_blank" rel="noopener noreferrer">原文</a></div>
+            <p class="detail-summary">作者：Joe Benton、Yuyang Shi、Valentin De Bortoli、George Deligiannidis、Arnaud Doucet；arXiv:2211.03595v3。全文 56 页。</p>
+            <div class="detail-micro-meta">
+              <span class="meta-pill">6 分钟读完</span>
+              <span class="meta-pill">8 张阅读卡</span>
+              <span class="meta-pill">作者：Joe Benton、Yuyang Shi、Valentin De Bortoli、George…</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <main class="container detail-layout">
+      <div class="detail-shell">
+        <article id="detail-body" class="reading-flow"><section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 01</span>
+    <span class="reading-step-note">作者信息</span>
+  </div>
+  <h2>作者信息</h2>
+  <div class="reading-card-content"><ul><li>作者：Joe Benton、Yuyang Shi、Valentin De Bortoli、George Deligiannidis、Arnaud Doucet；arXiv:2211.03595v3。全文 56 页。</li></ul></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 02</span>
+    <span class="reading-step-note">研究问题</span>
+  </div>
+  <h2>研究问题</h2>
+  <div class="reading-card-content"><ul><li>标准 score diffusion 依赖欧氏空间的梯度与布朗运动。论文问：能否只用 Markov generator、参考测度与时间反演，统一处理 \(\mathbb R^d\)、离散状态、Riemannian 流形和概率单纯形？</li></ul></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 03</span>
+    <span class="reading-step-note">背景</span>
+  </div>
+  <h2>背景</h2>
+  <div class="reading-card-content"><ul><li>连续时间 Markov 过程由生成元 \(L\) 描述局部演化；其 adjoint 控制密度的 forward equation。Feynman–Kac 把模型 likelihood 表成辅助过程上的加权期望，广义 Girsanov 再把它转换到已知 noising process。</li></ul></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 04</span>
+    <span class="reading-step-note">模型与方法</span>
+  </div>
+  <h2>模型与方法</h2>
+  <div class="reading-card-content"><ul><li>模型用正函数 \(eta(x,t)\) 参数化可逆生成过程。Theorem 1 给出 ELBO；去掉与参数无关的项后得到 generalized implicit score matching，另有等价 denoising objective。最优解满足 \(eta(x,t)\propto q_t(x)\)。</li><li>同一构造在欧氏空间退化为 score diffusion，在有限状态空间变为 CTMC，在流形上使用几何扩散，在 simplex 上可用 Wright–Fisher 过程。</li></ul></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 05</span>
+    <span class="reading-step-note">核心结果与证据</span>
+  </div>
+  <h2>核心结果与证据</h2>
+  <div class="reading-card-content"><ul><li>Figure 6 在 \(SO(3)\) 上给出两种物体从二维视图推断三维姿态的真值与模型分布；模型复现由物体对称性产生的多峰旋转分布。</li><li>14×14 MNIST inpainting 中，离散 DMM 的 PSNR/SSIM 为 16.63/0.757；连续模型 raw 为 16.72/0.706，rounded 为 16.75/0.723。不同状态空间改变了结构指标，而不只是像素误差。</li><li>利用解析 \(SO(3)\) transition 的训练比相关流形 diffusion 基线约快 15%，likelihood 相近。simplex 的模型 log-likelihood 在 \(N=3,5,10,20\) 时均接近真实值。</li></ul><figure class="evidence-figure">
+  <button class="evidence-figure-image-button" type="button" aria-label="放大查看 Figure 6" onclick="window.openPaperFigureImage && window.openPaperFigureImage(this.querySelector('img'))">
+    <img class="paper-figure-image evidence-figure-image" src="../../assets/collection-figures/2211.03595/figure-6-so3-pose.webp" alt="SO(3) 姿态分布的真值与模型比较。" loading="lazy" />
+  </button>
+  <figcaption>
+    <strong>Figure 6</strong> · 模型在旋转群上捕捉对称性诱导的多个姿态模态。
+    <span class="evidence-figure-reading">物理解读：The multimodality is geometric, not merely pixel-space uncertainty.</span>
+    <span class="evidence-figure-source">来源：paper.pdf p. 14, Figure 6</span>
+  </figcaption>
+</figure></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 06</span>
+    <span class="reading-step-note">有效性与局限</span>
+  </div>
+  <h2>有效性与局限</h2>
+  <div class="reading-card-content"><ul><li>统一公式依赖 Feller process、adjoint 与 Radon–Nikodym 等正则条件；无限维或奇异参考测度下未必成立。</li><li>有限数据经验分布相对连续参考测度可为奇异，论文的 density 表达需平滑 noising 才可用。理论给出 objective 等价性，但没有一般有限样本误差或离散积分保证。</li></ul></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 07</span>
+    <span class="reading-step-note">复现与资源</span>
+  </div>
+  <h2>复现与资源</h2>
+  <div class="reading-card-content"><ul><li>原文：https://arxiv.org/abs/2211.03595；代码：https://github.com/oxcsml/denoising_markov_models。</li><li>全文 56 页，PDF SHA-256：d1f2aff73c5a5d61c4b503b47f3610e02bdad5ef84c04fd2096029f24ab0b643。复现需固定生成元、参考测度、transition sampler、时间积分和 manifold 坐标约定。</li><li>Evidence status: full-text verified; no independent reproduction performed.</li></ul></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 08</span>
+    <span class="reading-step-note">阅读指南</span>
+  </div>
+  <h2>阅读指南</h2>
+  <div class="reading-card-content"><ul><li>先读 Theorem 1 与 Eqs. (8)–(10)，把 likelihood、隐式 objective 与 denoising objective 对齐；再按 Euclidean、discrete、manifold 三个例子检查退化极限。最后看 Figure 6，区分对称性诱导的多峰与预测不确定性。</li></ul></div>
+</section></article>
+        <aside id="detail-toc" class="detail-toc hidden" aria-label="内容目录">
+          <p class="detail-toc-title">阅读目录</p>
+          <nav id="detail-toc-nav" class="detail-toc-nav"></nav>
+        </aside>
+      </div>
+      <nav class="paper-nav"><a class="paper-nav-link paper-nav-prev" href="../../collection-papers/2211.01364/"><span class="paper-nav-label">← 上一篇</span><span class="paper-nav-title">An optimal control perspective on diffusion-based generative modeling</span></a>
+      <a class="paper-nav-link paper-nav-next" href="../../collection-papers/2212.11379/"><span class="paper-nav-label">下一篇 →</span><span class="paper-nav-title">The Inverse of Exact Renormalization Group Flows as Statistical Inference</span></a></nav>
+    </main>
+
+    <footer class="footer">
+      <div class="container">
+        <p>内容来自 <a href="https://arxiv.org" target="_blank" rel="noopener noreferrer">arXiv.org</a>，阅读卡片由静态站点生成器构建。</p>
+      </div>
+    </footer>
+
+    <script src="../../assets/theme.js"></script>
+    <script src="../../assets/media.js"></script>
+    <script src="../../assets/paper.js"></script>
+  </body>
+</html>
