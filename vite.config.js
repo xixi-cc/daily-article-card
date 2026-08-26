@@ -3,6 +3,26 @@ import { resolve } from 'node:path';
 import { sites } from '@openai/sites-vite-plugin';
 import { defineConfig } from 'vite';
 
+function detailAliasName(identifier) {
+  return identifier.replaceAll('.', '__dot__');
+}
+
+async function emitDetailRouteAliases(clientDirectory) {
+  const aliasRoot = resolve(clientDirectory, '_detail-routes');
+  for (const detailRoot of ['papers', 'collection-papers']) {
+    const sourceRoot = resolve(clientDirectory, detailRoot);
+    const destinationRoot = resolve(aliasRoot, detailRoot);
+    await mkdir(destinationRoot, { recursive: true });
+    for (const entry of await readdir(sourceRoot, { withFileTypes: true })) {
+      if (!entry.isDirectory()) continue;
+      await cp(
+        resolve(sourceRoot, entry.name, 'index.html'),
+        resolve(destinationRoot, `${detailAliasName(entry.name)}.html`),
+      );
+    }
+  }
+}
+
 function sitesStaticAssets() {
   return {
     name: 'sites-static-assets',
@@ -32,6 +52,7 @@ function sitesStaticAssets() {
         });
         await rm(rootEntry, { recursive: true, force: true });
       }
+      await emitDetailRouteAliases(clientDirectory);
     },
   };
 }
