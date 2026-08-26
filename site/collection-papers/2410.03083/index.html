@@ -122,7 +122,7 @@
     <span class="reading-step-note">研究问题</span>
   </div>
   <h2>研究问题</h2>
-  <div class="reading-card-content"><ul><li>传统 scaling law 把所有 training tokens D 视为等价；参数受限时，继续加入低多样性或模型化文本可能不如少量高质量数据。论文问能否用易计算的 diversity 与 syntheticity 把 D 改写为 effective tokens \(D_{q}\)。</li><li>目标是在 N、raw D 与数据属性之间建立 microscopic correction，并预测八个 reasoning tasks 的平均准确率，而不仅是 held-out language-model loss。</li></ul></div>
+  <div class="reading-card-content"><ul><li>传统 scaling law 把所有 training tokens \(D\) 视为等价；参数受限时，继续加入低多样性或模型化文本可能不如少量高质量数据。论文问能否用易计算的 diversity 与 syntheticity 把 \(D\) 改写为 effective tokens \(D_{q}\)。</li><li>目标是在 \(N\)、raw \(D\) 与数据属性之间建立 microscopic correction，并预测八个 reasoning tasks 的平均准确率，而不仅是 held-out language-model loss。</li></ul></div>
 </section>
 <section class="reading-card reading-card-section">
   <div class="reading-card-topline">
@@ -130,7 +130,7 @@
     <span class="reading-step-note">背景</span>
   </div>
   <h2>背景</h2>
-  <div class="reading-card-content"><ul><li>同一 token budget 的信息增益取决于重复度、覆盖和 teacher-likeness。diversity score 近似语料内部变化；syntheticity 用 teacher perplexity/生成倾向刻画文本是否接近高质量模型分布。</li><li>作者把质量压进乘性 factor Q，使 \(D_{q}=DQ\)；在参数固定时，Q 改变相当于有效增加/减少训练样本，但这种标量压缩必然丢失 domain-specific composition。</li></ul></div>
+  <div class="reading-card-content"><ul><li>同一 token budget 的信息增益取决于重复度、覆盖和 teacher-likeness。diversity score 近似语料内部变化；syntheticity 用 teacher perplexity/生成倾向刻画文本是否接近高质量模型分布。</li><li>作者把质量压进乘性 factor \(Q\)，使 \(D_{q}=DQ\)；在参数固定时，\(Q\) 改变相当于有效增加/减少训练样本，但这种标量压缩必然丢失 domain-specific composition。</li></ul></div>
 </section>
 <section class="reading-card reading-card-section">
   <div class="reading-card-topline">
@@ -138,7 +138,7 @@
     <span class="reading-step-note">模型与方法</span>
   </div>
   <h2>模型与方法</h2>
-  <div class="reading-card-content"><ul><li>数据来自 RefinedWeb 的多种 sampling 比例和由 Qwen 等 teacher 生成/改写的 synthetic corpora；每个 model size 配 2–10B tokens，在分布式 GPU 上预训练。</li><li>Diversity 与 syntheticity 进入指数形式 Q=exp(\(c_{1}\) Dr+\(c_{2}\) S)，再嵌入参数/数据 scaling function G(N,\(D_{q}\))。常数由 200+ runs 拟合并 bootstrap standard errors。</li><li>评价在八个 zero-shot reasoning benchmarks 汇总 accuracy；消融 model size、data size、sampling 与 synthesis，并检查 predicted vs true accuracy correlation。</li></ul></div>
+  <div class="reading-card-content"><ul><li>数据来自 RefinedWeb 的多种 sampling 比例和由 Qwen 等 teacher 生成/改写的 synthetic corpora；每个 model size 配 2–10B tokens，在分布式 GPU 上预训练。</li><li>Diversity 与 syntheticity 进入指数形式 \(Q\)=exp(\(c_{1}\) Dr+\(c_{2}\) S)，再嵌入参数/数据 scaling function G(\(N\),\(D_{q}\))。常数由 200+ runs 拟合并 bootstrap standard errors。</li><li>评价在八个 zero-shot reasoning benchmarks 汇总 accuracy；消融 model size、data size、sampling 与 synthesis，并检查 predicted vs true accuracy correlation。</li></ul></div>
 </section>
 <section class="reading-card reading-card-section">
   <div class="reading-card-topline">
@@ -146,7 +146,7 @@
     <span class="reading-step-note">核心结果与证据</span>
   </div>
   <h2>核心结果与证据</h2>
-  <div class="reading-card-content"><ul><li>Figure 3 左图把不同 N、D、语料的 accuracy 对 \(D_{q}\) 重画后更接近共同趋势；右图显示拟合 Q 随 diversity/syntheticity 的方向。该方向是作者指标下的经验结果，不应泛化为“越 synthetic 越好”。</li><li>预测 G(N,D) 与 RefinedWeb 模型真实 accuracy 的 Pearson correlation 为 +0.83；Figure 4 显示 Q 的收益在 token 较少时更明显，D 足够大后 raw token count 主导。</li><li>模型/数据消融支持 parameter-constrained setting 中 quality adjustment 有信息量，但 scatter 仍显著，说明单个 Q 无法完全解释任务差异与 optimization noise。</li></ul><figure class="evidence-figure">
+  <div class="reading-card-content"><ul><li>Figure 3 左图把不同 \(N\)、\(D\)、语料的 accuracy 对 \(D_{q}\) 重画后更接近共同趋势；右图显示拟合 \(Q\) 随 diversity/syntheticity 的方向。该方向是作者指标下的经验结果，不应泛化为“越 synthetic 越好”。</li><li>预测 G(\(N\),\(D\)) 与 RefinedWeb 模型真实 accuracy 的 Pearson correlation 为 +0.83；Figure 4 显示 \(Q\) 的收益在 token 较少时更明显，\(D\) 足够大后 raw token count 主导。</li><li>模型/数据消融支持 parameter-constrained setting 中 quality adjustment 有信息量，但 scatter 仍显著，说明单个 \(Q\) 无法完全解释任务差异与 optimization noise。</li></ul><figure class="evidence-figure">
   <button class="evidence-figure-image-button" type="button" aria-label="放大查看 Figure 3" onclick="window.openPaperFigureImage && window.openPaperFigureImage(this.querySelector('img'))">
     <img class="paper-figure-image evidence-figure-image" src="../../assets/collection-figures/2410.03083/figure-3-effective-tokens.webp" alt="两面板 scaling scatter 与 quality-factor lines。" loading="lazy" />
   </button>
@@ -179,7 +179,7 @@
     <span class="reading-step-note">阅读指南</span>
   </div>
   <h2>阅读指南</h2>
-  <div class="reading-card-content"><ul><li>先检查 \(D_{q}\) 定义和 Figure 3 的横轴 collapse，再看 Figure 5 是否真正 out-of-sample；最后审计 \(c_{1}\),\(c_{2}\) 的符号是否由特定 teacher/数据混合驱动。</li><li>物理上 Q 类似把非均匀样本权重压成 renormalized density；collapse 有用，但若不同任务对应多个 relevant operators，单一标量不会普适。</li></ul></div>
+  <div class="reading-card-content"><ul><li>先检查 \(D_{q}\) 定义和 Figure 3 的横轴 collapse，再看 Figure 5 是否真正 out-of-sample；最后审计 \(c_{1}\),\(c_{2}\) 的符号是否由特定 teacher/数据混合驱动。</li><li>物理上 \(Q\) 类似把非均匀样本权重压成 renormalized density；collapse 有用，但若不同任务对应多个 relevant operators，单一标量不会普适。</li></ul></div>
 </section></article>
         <aside id="detail-toc" class="detail-toc hidden" aria-label="内容目录">
           <p class="detail-toc-title">阅读目录</p>

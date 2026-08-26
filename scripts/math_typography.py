@@ -50,6 +50,7 @@ AUTO_MATH_RE = re.compile(
     rf"|[A-Za-zΑ-Ωα-ω][A-Za-z0-9Α-Ωα-ω]*(?:_[A-Za-z0-9{{}}]+|\^[A-Za-z0-9{{}}+\-]+)+"
     rf"|[∇∂√]{IDENTIFIER}(?:\([^()\s，。；]*\))?"
     rf"|[A-Za-z][0-9]+"
+    rf"|[TXYZQNMLKCDHJxyzthfgupqrknmd]"
     rf"|[Α-Ωα-ω](?:_[A-Za-z0-9{{}}]+|\^[A-Za-z0-9{{}}+\-]+)*"
     rf")(?![\w])"
 )
