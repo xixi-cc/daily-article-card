@@ -1,0 +1,177 @@
+{
+  "arxiv_id": "2010.00029",
+  "source_version": "v5",
+  "source_pdf": "https://arxiv.org/pdf/2010.00029",
+  "title_en": "RG-Flow: A hierarchical and explainable flow model based on renormalization group and sparse prior",
+  "title_zh": "RG-Flow：基于重整化群与稀疏先验的层级可解释流模型",
+  "curation_status": "full_text_verified",
+  "card_standard_version": "2.3",
+  "paper_profile": "theory_numerics",
+  "style_reference": "physicist_daily_arxiv",
+  "provenance": {
+    "program": "Collection",
+    "catalog": "Paper Collection",
+    "catalog_record_id": "ef2edf90e2952e25",
+    "catalog_record_ids": [
+      "ef2edf90e2952e25"
+    ],
+    "catalog_topic": "Renormalization Group",
+    "collection_date": "2026-08-23",
+    "sampled_at": "2026-08-26",
+    "selected_by": "full_collection_backfill",
+    "sampling_seed": "not_applicable_full_collection",
+    "candidate_count": 452
+  },
+  "verified_metadata": {
+    "arxiv_id": "2010.00029",
+    "version": "v5",
+    "title": "RG-Flow: A hierarchical and explainable flow model based on renormalization group and sparse prior",
+    "authors": [
+      "Hong-Ye Hu",
+      "Dian Wu",
+      "Yi-Zhuang You",
+      "Bruno Olshausen",
+      "Yubei Chen"
+    ],
+    "categories": [
+      "cs.LG",
+      "cond-mat.dis-nn",
+      "cs.AI",
+      "cs.CV",
+      "stat.ML"
+    ],
+    "primary_category": "cs.LG",
+    "published": "2020-09-30T18:04:04Z",
+    "abstract": "RG-Flow arranges invertible local maps as a renormalization hierarchy, separates latent variables by scale, and uses a sparse Laplacian prior to improve disentanglement."
+  },
+  "sections": [
+    {
+      "title": "作者信息",
+      "paragraphs": [
+        "作者：Hong-Ye Hu、Dian Wu、Yi-Zhuang You、Bruno Olshausen、Yubei Chen；论文为 arXiv:2010.00029v5。",
+        "本卡核对 32 页全文。工作把实空间 RG/MERA 的局域层级结构移植到 normalizing flow，并在合成多尺度图像与 CelebA 上验证。"
+      ]
+    },
+    {
+      "title": "研究问题",
+      "paragraphs": [
+        "普通 flow 用全局耦合的可逆映射把图像压到各向同性 Gaussian；虽然似然可精确计算，潜变量往往不对应明确的尺度、位置或语义。",
+        "论文问：若把每层可逆变换组织成“粗粒化 + 分出短尺度变量”的 RG 过程，能否让不同层的 latent 对应不同长度尺度，并利用因果锥的局域性加速局部修复？稀疏先验能否进一步破除高层表示的旋转简并？"
+      ]
+    },
+    {
+      "title": "背景",
+      "paragraphs": [
+        "实空间 RG 逐层积分掉短程自由度，把长波变量送往更高层；MERA 的 disentangler 在 decimation 前削弱局部关联。可逆流不能真正丢弃自由度，因此 RG-Flow 把被 decimate 的细节保存为当前层 latent。",
+        "局部 bijector 使每个 latent 只影响输出中的一个生成因果锥；反向也只有局部像素进入其推断因果锥。层级深度随图像边长 L 仅对数增长。"
+      ]
+    },
+    {
+      "title": "模型与方法",
+      "paragraphs": [
+        "第 (h) 层局部可逆变换满足 \\((x^{(h+1)},z^{(h)})=R_h(x^{(h)})\\)，逆过程为 \\(x^{(h)}=R_h^{-1}(x^{(h+1)},z^{(h)})\\)。四分之三局部自由度被分到 \\(z^{(h)}\\)，剩余粗变量继续上行。",
+        "网络交错使用局部 disentangler 与 decimator，所有尺度 latent 构成双曲树状表示。作者用生成图像对 latent 的 Jacobian 定义 receptive field，直接测量每个变量的空间作用域。",
+        "低层局部变量近似独立；高层 receptive field 重叠时，将标准 Gaussian prior 换成 \\(p(z)=\\frac{1}{2b}e^{-|z|/b}\\) 的 Laplacian 稀疏先验，借轴向稀疏性促进语义方向分离。"
+      ]
+    },
+    {
+      "title": "核心结果与证据",
+      "paragraphs": [
+        "Figure 5 把尺度结构可视化：逆 RG 从粗脸逐层加细节；低层 latent 的 receptive field 是眼角等局部小斑点，高层变量覆盖整张脸。它是“不同尺度信息分离”的直接证据，而非仅看 likelihood。",
+        "Figure 6 中高层变量对应 gender、emotion、light、azimuth、hair、skin，中层控制 eyes、eyebrows、bang、collar，低层只影响单眼或眉毛；作者通过逐一扫描 latent 并查看 receptive field 进行语义标注。",
+        "局部损坏只沿一条 \\(O(\\log L)\\) 深度因果锥影响 latent，因此 inpainting 优化变量数为 \\(O(\\log L)\\)；全局 Real NVP 需调整 \\(O(L^2)\\) 个变量。Figure 8 的 CelebA 修复在相同允许变量数下更清晰。",
+        "Laplacian prior 在合成数据上打破 Gaussian 的连续旋转对称，并提高作者报告的 disentanglement 指标；但高层因素很少的 3D Chairs 上仍难找到稳定可解释方向。"
+      ]
+    },
+    {
+      "title": "有效性与局限",
+      "paragraphs": [
+        "这里的“RG”是受物理粗粒化启发的网络架构，不是从某个 microscopic Hamiltonian 推导的 exact RG，也没有计算临界指数或证明 universal fixed point。",
+        "语义变量主要通过人工查看 latent sweep 与 receptive field 命名，存在后验选择；CelebA 的性别等属性也可能与数据偏差和相关特征纠缠。",
+        "\\(O(\\log L)\\) 指局部损坏涉及的 latent 数量，在固定局部核和层级结构下成立；总生成、训练和搜索最优修复的墙钟复杂度不因此全部变成对数。",
+        "Laplacian prior 牺牲旋转对称性换取轴向稀疏，但 disentanglement 不是普遍保证；作者自己报告当高层生成因子较少时效果不稳。"
+      ]
+    },
+    {
+      "title": "复现与资源",
+      "paragraphs": [
+        "原文：https://arxiv.org/abs/2010.00029；PDF：https://arxiv.org/pdf/2010.00029；论文提供项目代码链接。",
+        "全文 PDF 共 32 页，SHA-256：cbd0a2377aea2df249202abfde0dd37037c181e5e3e4bb7d7d6b596f570650。",
+        "复现应固定 bijector kernel、层数、decimation 规则和 prior；逐层保存 latent sweep、Jacobian receptive field、likelihood 与 disentanglement 指标，并分别计数 inpainting 的活跃 latent 和真实优化时间。",
+        "Evidence status: full-text verified; no independent reproduction performed."
+      ]
+    },
+    {
+      "title": "阅读指南",
+      "paragraphs": [
+        "先看 Figure 2，把“积分掉”改译为“分出但保留为 latent”；这是可逆 flow 与物理 RG 的关键差别。",
+        "再看 Figures 5–6，从 receptive-field 支撑随 h 扩张理解尺度，而不是先接受语义标签。",
+        "最后读 Secs. 3.5、4.6 与 Appendices E–G，分别审查 \\(O(\\log L)\\) 因果锥、Laplacian 对称性破缺和失败案例。"
+      ]
+    }
+  ],
+  "cover": {
+    "mode": "source_figure",
+    "asset_path": "assets/collection-figures/2010.00029/figure-5-multiscale-generation.webp",
+    "label": "Figure 5",
+    "visual_type": "real_space",
+    "evidence": "arXiv:2010.00029v5, paper.pdf p. 11, Figure 5",
+    "alt_text": "CelebA 图像的逐尺度生成与不同 RG 层级潜变量的 receptive fields。",
+    "caption": "逆 RG 从粗粒度脸逐层补充细节；潜变量 receptive field 从局部斑点扩展到整张脸，直接显示层级长度尺度。",
+    "selection_rationale": "这是论文最重要且最直观的尺度可视化；Figure 2 的架构图作为正文机制图补充。"
+  },
+  "figure_refs": [
+    {
+      "label": "Figure 2",
+      "asset_path": "assets/collection-figures/2010.00029/figure-2-rg-hierarchy.webp",
+      "section": "模型与方法",
+      "role": "show forward coarse-graining and inverse generation",
+      "evidence": "paper.pdf p. 5, Figure 2",
+      "alt_text": "RG-Flow 的逐层粗粒化与逆生成示意图。",
+      "caption": "每层把粗变量送往更高层，同时把细节保存在当前层 latent。",
+      "interpretation": "可逆性意味着细节没有被积分后丢弃，而是被显式分层保存。"
+    },
+    {
+      "label": "Figure 5",
+      "asset_path": "assets/collection-figures/2010.00029/figure-5-multiscale-generation.webp",
+      "section": "核心结果与证据",
+      "role": "visualize scale-separated generation and receptive fields",
+      "evidence": "paper.pdf p. 11, Figure 5",
+      "alt_text": "不同 RG 层的脸部生成和 receptive fields。",
+      "caption": "低层变量局部作用，高层变量覆盖全局结构。",
+      "interpretation": "层级 receptive field 是 RG-Flow 可解释性的操作性定义。"
+    }
+  ],
+  "equation_refs": [
+    {
+      "label": "Forward RG split",
+      "latex": "(x^{(h+1)},z^{(h)})=R_h(x^{(h)})",
+      "role": "separate coarse variables from fine-scale latent variables",
+      "symbols": {
+        "x_h": "observable/coarse representation at level h",
+        "z_h": "fine-scale latent split at level h",
+        "R_h": "local bijective RG transform"
+      },
+      "evidence": "paper.pdf p. 5, Eq. (3)",
+      "interpretation": "Coarse information continues upward while fine information remains explicitly stored at its own scale."
+    },
+    {
+      "label": "Sparse latent prior",
+      "latex": "p(z_l)=\\frac{1}{2b}\\exp\\!\\left(-\\frac{|z_l|}{b}\\right)",
+      "role": "encourage axis-aligned sparse high-level representations",
+      "symbols": {
+        "z_l": "latent component",
+        "b": "Laplacian scale"
+      },
+      "evidence": "paper.pdf p. 7, Eq. (7)",
+      "interpretation": "Unlike an isotropic Gaussian, the Laplacian prior favors coordinate axes and can break rotational degeneracy among latent directions."
+    }
+  ],
+  "evidence_refs": [
+    "paper.pdf pp. 4–8: normalizing-flow objective, RG hierarchy and receptive fields",
+    "paper.pdf pp. 9–14: multiscale representations, semantics, mixing and inpainting",
+    "paper.pdf Appendices E–G: sparse-prior mechanism, quantitative inpainting and failure case",
+    "source PDF SHA-256 cbd0a2377aea2df249202abfde0dd37037c181e5e3e4bb7d7d6b596f570650",
+    "Evidence status: full-text verified; no independent reproduction performed."
+  ]
+}

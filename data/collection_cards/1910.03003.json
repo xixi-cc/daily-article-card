@@ -1,0 +1,167 @@
+{
+  "arxiv_id": "1910.03003",
+  "source_version": "v2",
+  "source_pdf": "https://arxiv.org/pdf/1910.03003",
+  "title_en": "Stochastic Optimal Control as Approximate Input Inference",
+  "title_zh": "将随机最优控制表述为近似输入推断",
+  "curation_status": "full_text_verified",
+  "card_standard_version": "2.3",
+  "paper_profile": "theory_numerics",
+  "style_reference": "physicist_daily_arxiv",
+  "provenance": {
+    "program": "Collection",
+    "catalog": "Paper Collection",
+    "catalog_record_id": "28b45f9fa02765a4",
+    "catalog_record_ids": [
+      "28b45f9fa02765a4"
+    ],
+    "catalog_topic": "Control & Reinforcement Learning",
+    "collection_date": "2026-08-23",
+    "sampled_at": "2026-08-26",
+    "selected_by": "full_collection_backfill",
+    "sampling_seed": "not_applicable_full_collection",
+    "candidate_count": 452
+  },
+  "verified_metadata": {
+    "arxiv_id": "1910.03003",
+    "version": "v2",
+    "title": "Stochastic Optimal Control as Approximate Input Inference",
+    "authors": [
+      "Joe Watson",
+      "Hany Abdulsamad",
+      "Jan Peters"
+    ],
+    "categories": [
+      "cs.LG",
+      "cs.RO",
+      "eess.SY",
+      "stat.ML"
+    ],
+    "primary_category": "cs.LG",
+    "published": "2019-10-07T18:41:52Z",
+    "abstract": "Input Inference for Control casts stochastic optimal control as EM and Gaussian message passing, yielding time-varying feedback controllers with Bayesian regularization."
+  },
+  "sections": [
+    {
+      "title": "作者信息",
+      "paragraphs": [
+        "作者：Joe Watson、Hany Abdulsamad、Jan Peters；论文为 arXiv:1910.03003v2，交叉机器学习、机器人与控制。",
+        "本卡核对 21 页全文。主体推导 I²C，并在 pendulum、cart-pole 与 double cart-pole 三个模拟系统上比较 iLQR 和 GPS。"
+      ]
+    },
+    {
+      "title": "研究问题",
+      "paragraphs": [
+        "非线性随机控制的全局 Bellman 方程通常不可解，轨迹优化于是每轮局部线性化，并依赖 line search、trust region 或手调正则来防止更新崩溃。",
+        "论文问：能否把动作序列当成待估计的随机输入，把目标代价写成伪观测 likelihood，再用 Bayesian filtering/smoothing 的不确定性传播自然地产生探索、反馈增益和更新正则？"
+      ]
+    },
+    {
+      "title": "背景",
+      "paragraphs": [
+        "control-as-inference 常引入 optimality variable，但许多表述仍需额外策略参数化。I²C 直接在状态—动作联合轨迹上做近似推断，将动作与状态置于同一 Gaussian 图模型。",
+        "线性 Gaussian 图中的前向消息相当于预测/滤波，后向消息编码未来目标信息。精度矩阵在控制语言中对应二次 value function 的 Hessian，因此 Kalman smoothing 与 LQR Riccati 递推共享代数结构。"
+      ]
+    },
+    {
+      "title": "模型与方法",
+      "paragraphs": [
+        "把目标轨迹写成伪观测 \\(z_t=[x_g,u_g]\\)，其噪声精度取 \\(\\Sigma_\\xi^{-1}=\\Lambda_\\xi=\\alpha\\Theta\\)，其中 \\(\\Theta=\\mathrm{diag}(Q,R)\\) 编码 LQ 代价，\\(\\alpha\\) 是待估计尺度。",
+        "E-step 在每轮局部线性 Gaussian 动力学上做 forward-backward message passing，得到完整 state-action posterior；M-step 更新 α，并从联合后验条件化得到 time-varying linear Gaussian feedback controller。",
+        "作者用相邻迭代 trajectory distribution 的 KL 上界限制 α 更新，形成具有概率意义的 trust region；这同时限制线性化误差并保留动作协方差。"
+      ]
+    },
+    {
+      "title": "核心结果与证据",
+      "paragraphs": [
+        "Figure 2 把 I²C 的动力学、控制输入、过程噪声与目标伪观测放进同一 Forney factor graph；控制量不是外加的确定优化变量，而是图中的随机边。",
+        "在确定性线性系统、宽动作先验和高目标精度极限下，后向消息的 precision/scaled mean 与 LQR value-function 参数逐项对应，Figure 3 数值显示状态轨迹和反馈/前馈增益重合。",
+        "非线性轨迹优化中 iLQR 收敛更快、最终预测代价更低；I²C 前期会用若干 EM 轮“预热”先验。可是在加入模型过程噪声的 100 次评估中，I²C 的实际代价更接近其预测代价，显示保守不确定性传播的校准优势。",
+        "论文的优势因此不是在无噪基准上全面击败 iLQR，而是得到带 covariance 的反馈控制器、可解释的初始化/正则化和较一致的预测—执行差。"
+      ]
+    },
+    {
+      "title": "有效性与局限",
+      "paragraphs": [
+        "核心算法依赖局部线性化和 Gaussian 近似；多峰后验、硬接触和强非线性会被压成单峰矩，可能丢失最优控制分支。",
+        "I²C 在报告的轨迹优化曲线上慢于且最终差于 iLQR；Bayesian 正则的价值主要体现在随机执行的校准与稳定性，不应写成普遍性能胜利。",
+        "实验只有三个模拟任务，动力学模型已知且每轮可线性化；真实机器人、模型学习误差和高维感知未覆盖。",
+        "KL 限制和 α 初值仍是超参数；概率解释使其更有原则，但不消除调参与局部最优。"
+      ]
+    },
+    {
+      "title": "复现与资源",
+      "paragraphs": [
+        "原文：https://arxiv.org/abs/1910.03003；PDF：https://arxiv.org/pdf/1910.03003；论文脚注给出 input-inference-for-control 代码仓库。",
+        "全文 PDF 共 21 页，SHA-256：28b45f9fa02765a42ead460feee771db6567773fede2532863c4a48ae6ae251c。",
+        "复现需分别保存预测 cost 与随机 rollout cost，不能只画优化曲线；固定线性化频率、过程噪声、α 初值、KL bound 和探索 covariance，并复核 LQR 极限下每个增益矩阵。",
+        "Evidence status: full-text verified; no independent reproduction performed."
+      ]
+    },
+    {
+      "title": "阅读指南",
+      "paragraphs": [
+        "先看 Figure 2 和 Algorithm 1，理解动作作为随机输入参与消息传递；再读 Table 1 对照 precision、scaled mean 与 LQR value function。",
+        "随后读 Sec. 2.1.1 和 Appendix B.5，核对 I²C 恢复 maximum-entropy finite-horizon LQR 所需的极限条件。",
+        "最后把 Figure 4 的优化速度、Table 2 的随机执行校准和 Sec. 5 的作者结论分开评价。"
+      ]
+    }
+  ],
+  "cover": {
+    "mode": "source_figure",
+    "asset_path": "assets/collection-figures/1910.03003/figure-2-factor-graph.webp",
+    "label": "Figure 2",
+    "visual_type": "schematic",
+    "evidence": "arXiv:1910.03003v2, paper.pdf p. 3, Figure 2",
+    "alt_text": "I²C 线性 Gaussian 动力系统的 Forney factor graph。",
+    "caption": "状态、动作、过程噪声与目标伪观测被放在同一 Gaussian 图中；前后向消息共同产生轨迹后验和反馈控制器。",
+    "selection_rationale": "该图直接呈现论文最重要的控制即推断结构，比代价曲线更能说明方法。"
+  },
+  "figure_refs": [
+    {
+      "label": "Figure 2",
+      "asset_path": "assets/collection-figures/1910.03003/figure-2-factor-graph.webp",
+      "section": "核心结果与证据",
+      "role": "show controls as inferred random variables in a Gaussian factor graph",
+      "evidence": "paper.pdf p. 3, Figure 2",
+      "alt_text": "I²C 的线性 Gaussian Forney factor graph。",
+      "caption": "蓝色中间变量用于封闭形式的 Gaussian 消息推导。",
+      "interpretation": "后向消息把未来代价传回当前动作，前向消息传播动力学不确定性。"
+    }
+  ],
+  "equation_refs": [
+    {
+      "label": "Cost as observation precision",
+      "latex": "\\Sigma_\\xi^{-1}=\\Lambda_\\xi=\\alpha\\Theta,\\qquad \\Theta=\\operatorname{diag}(Q,R)",
+      "role": "encode quadratic state-action cost as a Gaussian pseudo-observation",
+      "symbols": {
+        "Sigma_xi": "pseudo-observation covariance",
+        "alpha": "inferred cost scale",
+        "Q": "state cost matrix",
+        "R": "action cost matrix"
+      },
+      "evidence": "paper.pdf p. 3, discussion below Eq. (4)",
+      "interpretation": "Higher control cost becomes higher observation precision rather than an external deterministic penalty."
+    },
+    {
+      "label": "Gaussian belief fusion",
+      "latex": "\\Sigma_x=(\\Lambda_{\\vec x}+\\Lambda_{\\cev x})^{-1},\\qquad \\mu_x=\\Sigma_x(\\nu_{\\vec x}+\\nu_{\\cev x})",
+      "role": "combine forward dynamics and backward optimality messages",
+      "symbols": {
+        "Lambda": "message precision",
+        "nu": "precision-weighted mean",
+        "mu_x": "posterior mean",
+        "Sigma_x": "posterior covariance"
+      },
+      "evidence": "paper.pdf p. 3, Eq. (5)",
+      "interpretation": "The posterior trajectory balances predictive uncertainty with information arriving from future objectives."
+    }
+  ],
+  "evidence_refs": [
+    "paper.pdf pp. 2–6: probabilistic formulation, EM, factor graph and LQR correspondence",
+    "paper.pdf pp. 7–8: nonlinear trajectory optimization and stochastic evaluation",
+    "paper.pdf Appendix B: message derivations and dynamic-programming equivalence",
+    "source PDF SHA-256 28b45f9fa02765a42ead460feee771db6567773fede2532863c4a48ae6ae251c",
+    "Evidence status: full-text verified; no independent reproduction performed."
+  ]
+}

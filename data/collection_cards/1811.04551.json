@@ -1,0 +1,179 @@
+{
+  "arxiv_id": "1811.04551",
+  "source_version": "v5",
+  "source_pdf": "https://arxiv.org/pdf/1811.04551",
+  "title_en": "Learning Latent Dynamics for Planning from Pixels",
+  "title_zh": "从像素学习用于规划的潜在动力学",
+  "curation_status": "full_text_verified",
+  "card_standard_version": "2.3",
+  "paper_profile": "ai_empirical",
+  "style_reference": "physicist_daily_arxiv",
+  "provenance": {
+    "program": "Collection",
+    "catalog": "Paper Collection",
+    "catalog_record_id": "6b3ebe959a8a7238",
+    "catalog_record_ids": [
+      "6b3ebe959a8a7238"
+    ],
+    "catalog_topic": "Control & Reinforcement Learning",
+    "collection_date": "2026-08-23",
+    "sampled_at": "2026-08-26",
+    "selected_by": "full_collection_backfill",
+    "sampling_seed": "not_applicable_full_collection",
+    "candidate_count": 452
+  },
+  "verified_metadata": {
+    "arxiv_id": "1811.04551",
+    "version": "v5",
+    "title": "Learning Latent Dynamics for Planning from Pixels",
+    "authors": [
+      "Danijar Hafner",
+      "Timothy Lillicrap",
+      "Ian Fischer",
+      "Ruben Villegas",
+      "David Ha",
+      "Honglak Lee",
+      "James Davidson"
+    ],
+    "categories": [
+      "cs.LG",
+      "cs.AI",
+      "stat.ML"
+    ],
+    "primary_category": "cs.LG",
+    "published": "2018-11-12T04:30:10Z",
+    "abstract": "PlaNet learns a recurrent latent state-space model from pixels and uses online latent-space planning for continuous control."
+  },
+  "sections": [
+    {
+      "title": "作者信息",
+      "paragraphs": [
+        "作者：Danijar Hafner、Timothy Lillicrap、Ian Fischer、Ruben Villegas、David Ha、Honglak Lee、James Davidson；论文为 arXiv:1811.04551v5。",
+        "本卡核对 21 页全文。实验覆盖六个 DeepMind Control Suite 像素控制任务，每个设置报告 5 个随机种子与测试轨迹分位区间。"
+      ]
+    },
+    {
+      "title": "研究问题",
+      "paragraphs": [
+        "若环境方程未知，基于模型的控制必须一边从图像学习动力学，一边用模型向未来规划。困难不只是重建下一帧，而是保持对奖励和受控状态的多步预测精度；规划器还会主动寻找模型误差并利用它。",
+        "论文问：能否在不恢复显式物理坐标的情况下，学习一个足以支持长时域控制的潜在状态 \\(s_t\\)，并以在线优化动作序列替代训练一个独立策略？"
+      ]
+    },
+    {
+      "title": "背景",
+      "paragraphs": [
+        "纯确定性 RNN 能长时记忆，却无法表示同一状态的多种未来；纯随机 state-space model 能表示不确定性，却容易在采样链中遗忘。像素重建损失又会把容量浪费在与控制无关的纹理上。",
+        "PlaNet 的立场接近系统辨识：不要求生成模型在所有像素指标上完美，而要求潜在传播子在规划时域内保留可预测的动力学与奖励信息。"
+      ]
+    },
+    {
+      "title": "模型与方法",
+      "paragraphs": [
+        "recurrent state-space model（RSSM）把状态拆成确定性记忆 \\(h_t=f(h_{t-1},s_{t-1},a_{t-1})\\) 与随机分量 \\(s_t\\sim p(s_t\\mid h_t)\\)，并由 \\(p(o_t\\mid h_t,s_t)\\) 与 \\(p(r_t\\mid h_t,s_t)\\) 解码观测和奖励。",
+        "训练使用变分序列目标；latent overshooting 进一步让多步 prior 直接匹配未来 posterior，迫使随机传播子跨越多个时间步保持一致。",
+        "控制时用 cross-entropy method（CEM）反复采样、筛选并重拟合动作序列分布；只执行第一段动作，得到新观测后再滚动规划。"
+      ]
+    },
+    {
+      "title": "核心结果与证据",
+      "paragraphs": [
+        "Figure 2 给出机制对照：RNN 只有确定路径，SSM 只有随机路径，RSSM 用两条路径耦合记忆与多未来。它解释了为什么模型设计不是简单增加隐变量，而是在可记忆性与不确定性之间分工。",
+        "Figure 1 的六个环境包含接触、部分可观测与稀疏奖励；PlaNet 仅用 64×64 RGB 观测，在 500 个 episode 内达到与 D4PG 使用约 100,000 个 episode 相近或更高的最终表现，论文据此报告平均约 200 倍的 episode 效率差。",
+        "消融表明 RSSM 普遍优于纯确定或纯随机设计，CEM 优于 random shooting；但 latent overshooting 对 RSSM 本身略降性能，对较弱 DRNN 则显著改善，因此它不是所有架构上的单调增益。",
+        "Appendix 的 50-step open-loop 视频预测和状态探针显示潜变量保留了位置、速度与奖励信息；这支持“可用于控制的状态表示”，但不是对真实动力学方程的唯一辨识。"
+      ]
+    },
+    {
+      "title": "有效性与局限",
+      "paragraphs": [
+        "200 倍是按论文从既有 D4PG 曲线估算达到 PlaNet 最终分数所需 episode，不是同一代码、同一算力和同一观测管线下的严格墙钟比较。",
+        "全部任务来自同一控制套件和低分辨率固定相机；域随机化、真实传感噪声、长时不可逆误差和安全约束均未检验。",
+        "CEM 每个环境步需评估大量候选序列，样本效率不等同于推理效率。规划器仍可能利用模型偏差，且 receding horizon 不能保证全局最优。",
+        "开环像素预测漂亮并不充分：真正因果证据来自奖励/状态探针和闭环控制消融。latent overshooting 的混合结果也要求按模型族单独验证。"
+      ]
+    },
+    {
+      "title": "复现与资源",
+      "paragraphs": [
+        "原文：https://arxiv.org/abs/1811.04551；PDF：https://arxiv.org/pdf/1811.04551；作者公开了 PlaNet 实现。",
+        "全文 PDF 共 21 页，SHA-256：abac727526e6a45669d3ab9957126587e22aacf4dc9bcd60ffe5c853108e5bcc。",
+        "最小复现应固定环境 action repeat、5 个 seed episodes、模型更新频率、CEM 的 horizon/iteration/candidate/elite 数，并保存每个随机种子的 episode-return 曲线、规划耗时和开环预测误差。",
+        "Evidence status: full-text verified; no independent reproduction performed."
+      ]
+    },
+    {
+      "title": "阅读指南",
+      "paragraphs": [
+        "先看 Figure 2 和 Eq. (4)，把确定性记忆与随机状态的职责分开；再看 Figure 3 理解 one-step ELBO 与 multi-step overshooting 的差别。",
+        "随后读 Figures 4–5 与 Table 1，分别核对模型结构、数据收集策略和 episode 效率，不要把三种比较混为一项。",
+        "最后看 Appendices D–E 的多任务、overshooting 与开环预测诊断；特别注意作者对 RSSM 上 overshooting 负增益的诚实报告。"
+      ]
+    }
+  ],
+  "cover": {
+    "mode": "source_figure",
+    "asset_path": "assets/collection-figures/1811.04551/figure-1-control-domains.webp",
+    "label": "Figure 1",
+    "visual_type": "simulation_snapshot",
+    "evidence": "arXiv:1811.04551v5, paper.pdf p. 2, Figure 1",
+    "alt_text": "PlaNet 的六个像素控制环境：Cartpole、Reacher、Cheetah、Finger、Cup 与 Walker。",
+    "caption": "六类仅从图像观测的连续控制任务同时包含接触、遮挡和稀疏奖励，直观展示论文所要求的潜在动力学覆盖范围。",
+    "selection_rationale": "这是原文最直观的任务可视化，比性能曲线更适合作为封面；机制图 Figure 2 另在正文解释。"
+  },
+  "figure_refs": [
+    {
+      "label": "Figure 1",
+      "asset_path": "assets/collection-figures/1811.04551/figure-1-control-domains.webp",
+      "section": "核心结果与证据",
+      "role": "show the physical diversity of the pixel-control tasks",
+      "evidence": "paper.pdf p. 2, Figure 1",
+      "alt_text": "六个 DeepMind Control Suite 像素任务。",
+      "caption": "任务同时考验部分可观测、接触动力学和稀疏奖励。",
+      "interpretation": "PlaNet 的证据范围比单一 cart-pole 更广，但仍局限于模拟器。"
+    },
+    {
+      "label": "Figure 2",
+      "asset_path": "assets/collection-figures/1811.04551/figure-2-rssm-designs.webp",
+      "section": "核心结果与证据",
+      "role": "contrast deterministic, stochastic, and recurrent state-space dynamics",
+      "evidence": "paper.pdf p. 4, Figure 2",
+      "alt_text": "RNN、SSM 与 RSSM 三种潜在动力学图模型。",
+      "caption": "RSSM 用确定性路径保持记忆，用随机路径表示多种未来。",
+      "interpretation": "双路径是模型能同时处理长时依赖与随机性的核心结构。"
+    }
+  ],
+  "equation_refs": [
+    {
+      "label": "RSSM transition and observation model",
+      "latex": "h_t=f(h_{t-1},s_{t-1},a_{t-1}),\\quad s_t\\sim p(s_t\\mid h_t),\\quad o_t\\sim p(o_t\\mid h_t,s_t)",
+      "role": "separate deterministic memory from stochastic latent dynamics",
+      "symbols": {
+        "h_t": "deterministic recurrent state",
+        "s_t": "stochastic latent state",
+        "a_t": "action",
+        "o_t": "image observation"
+      },
+      "evidence": "paper.pdf p. 4, Eq. (4)",
+      "interpretation": "The deterministic path transports memory while the stochastic path represents uncertain futures."
+    },
+    {
+      "label": "Latent overshooting",
+      "latex": "\\mathbb E_{q(s_{t-d}\\mid o_{\\le t-d},a_{<t-d})}\\,p(s_{t-1}\\mid s_{t-d},a_{<t})}\\!\\left[D_{\\mathrm{KL}}\\!\\left(q(s_t\\mid o_{\\le t},a_{<t})\\Vert p(s_t\\mid s_{t-1},a_{t-1})\\right)\\right]",
+      "role": "train multi-step predictive consistency in latent space",
+      "symbols": {
+        "d": "overshooting distance",
+        "q": "inference posterior",
+        "p": "learned transition prior"
+      },
+      "evidence": "paper.pdf p. 5, Eq. (6)",
+      "interpretation": "Future posteriors supervise transitions reached through multiple model steps rather than only one-step predictions."
+    }
+  ],
+  "evidence_refs": [
+    "paper.pdf pp. 2–5: tasks, RSSM architecture, ELBO and latent overshooting",
+    "paper.pdf pp. 6–8: CEM planning and primary/ablation results",
+    "paper.pdf Appendices C–E: implementation details, multi-task and prediction diagnostics",
+    "source PDF SHA-256 abac727526e6a45669d3ab9957126587e22aacf4dc9bcd60ffe5c853108e5bcc",
+    "Evidence status: full-text verified; no independent reproduction performed."
+  ]
+}

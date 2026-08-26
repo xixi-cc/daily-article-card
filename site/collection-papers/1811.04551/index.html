@@ -1,0 +1,213 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Learning Latent Dynamics for Planning from Pixels - physics+AI Collection 随机精选</title>
+    <meta name="description" content="作者：Danijar Hafner、Timothy Lillicrap、Ian Fischer、Ruben Villegas、David Ha、Honglak Lee、James Davidson；论文为 arXiv:1811.04551v5。 本卡核对 21 页全文。实验覆盖六个 DeepMind Control Suite 像素控制任务，每个设置报告 5 个随机种子与测试轨迹分位区间。" />
+    <script>
+      (function() {
+        try {
+          var themePreference = window.localStorage.getItem('color-theme') || 'system';
+          var systemUsesDarkTheme = window.matchMedia('(prefers-color-scheme: dark)').matches;
+          var resolvedTheme = themePreference === 'system'
+            ? (systemUsesDarkTheme ? 'dark' : 'light')
+            : themePreference;
+          document.documentElement.dataset.theme = resolvedTheme;
+          document.documentElement.dataset.themePreference = themePreference;
+          document.documentElement.style.colorScheme = resolvedTheme;
+        } catch (error) {
+          document.documentElement.dataset.theme = 'light';
+          document.documentElement.dataset.themePreference = 'system';
+        }
+      })();
+    </script>
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='18' fill='%23111827'/%3E%3Ctext x='50%25' y='55%25' text-anchor='middle' dominant-baseline='middle' font-size='30' font-family='Arial, sans-serif' fill='white'%3EV%3C/text%3E%3C/svg%3E" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700;800&family=Noto+Sans+SC:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <script>document.documentElement.classList.add('math-pending');</script>
+    <script>
+      window.MathJax = {
+        tex: {
+          inlineMath: [['$', '$'], ['\\(', '\\)']],
+          displayMath: [['$$', '$$'], ['\\[', '\\]']],
+          processEscapes: true
+        },
+        options: {
+          skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+        },
+        chtml: {
+          scale: 1,
+          displayAlign: 'center'
+        },
+        startup: {
+          ready: function() {
+            MathJax.startup.defaultReady();
+            MathJax.startup.promise.then(function() {
+              document.documentElement.classList.remove('math-pending');
+              document.documentElement.dataset.mathReady = 'true';
+            });
+          }
+        }
+      };
+    </script>
+    <script defer src="../../assets/vendor/mathjax/tex-chtml.js"></script>
+    <link rel="stylesheet" href="../../assets/style.css" />
+  </head>
+  <body class="detail-page" data-paper-id="1811.04551">
+    <div class="page-noise"></div>
+    <div class="page-blur page-blur-a"></div>
+    <div class="page-blur page-blur-b"></div>
+
+    <header class="header detail-page-header">
+      <div class="container">
+        <div class="detail-page-topbar">
+          <a class="back-link" href="../../collection.html">返回列表</a>
+          <div class="detail-topbar-actions">
+            <span class="detail-site-name">physics+AI Collection 随机精选</span>
+            <button class="theme-toggle" type="button" data-theme-toggle aria-label="当前主题：设备，点击切换主题" title="当前主题：设备">
+  <span class="theme-toggle-icons" aria-hidden="true">
+    <svg class="theme-toggle-icon theme-toggle-icon-light" viewBox="0 0 24 24" fill="none">
+      <circle cx="12" cy="12" r="3.5" stroke="currentColor" stroke-width="1.8"/>
+      <path d="M12 2.5v2M12 19.5v2M2.5 12h2M19.5 12h2M5.3 5.3l1.4 1.4M17.3 17.3l1.4 1.4M18.7 5.3l-1.4 1.4M6.7 17.3l-1.4 1.4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+    </svg>
+    <svg class="theme-toggle-icon theme-toggle-icon-dark" viewBox="0 0 24 24" fill="none">
+      <path d="M20 15.2A8.1 8.1 0 0 1 8.8 4a8.2 8.2 0 1 0 11.2 11.2z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>
+    </svg>
+    <svg class="theme-toggle-icon theme-toggle-icon-system" viewBox="0 0 24 24" fill="none">
+      <rect x="3" y="4" width="18" height="13" rx="2.5" stroke="currentColor" stroke-width="1.8"/>
+      <path d="M8 21h8M12 17v4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+    </svg>
+  </span>
+  <span class="theme-toggle-label" data-theme-toggle-label>设备</span>
+</button>
+          </div>
+        </div>
+
+        <div class="detail-hero-grid">
+          <div class="detail-hero-cover"><figure class="paper-figure-card paper-figure-card-detail">
+  <img class="paper-figure-image" src="../../assets/collection-figures/1811.04551/figure-1-control-domains.webp" alt="PlaNet 的六个像素控制环境：Cartpole、Reacher、Cheetah、Finger、Cup 与 Walker。" loading="lazy" onclick="window.openPaperFigureImage && window.openPaperFigureImage(this)" />
+  <figcaption class="paper-figure-caption">六类仅从图像观测的连续控制任务同时包含接触、遮挡和稀疏奖励，直观展示论文所要求的潜在动力学覆盖范围。</figcaption>
+</figure></div>
+          <div class="detail-hero-copy">
+            <p class="eyebrow">Collection 全文卡</p>
+            <h1 class="detail-page-title">Learning Latent Dynamics for Planning from Pixels</h1>
+            <p class="detail-page-title-zh">从像素学习用于规划的潜在动力学</p>
+            <div class="detail-meta">Paper Collection · Control &amp; Reinforcement Learning · <a href="https://arxiv.org/abs/1811.04551" target="_blank" rel="noopener noreferrer">原文</a></div>
+            <p class="detail-summary">作者：Danijar Hafner、Timothy Lillicrap、Ian Fischer、Ruben Villegas、David Ha、Honglak Lee、James Davidson；论文为 arXiv:1811.04551v5。 本卡核对 21 页全文。实验覆盖六个 DeepMind Control Suite 像素控制任务，每个设置报告 5 个随机种子与测试轨迹分位区间。</p>
+            <div class="detail-micro-meta">
+              <span class="meta-pill">8 分钟读完</span>
+              <span class="meta-pill">8 张阅读卡</span>
+              <span class="meta-pill">作者：Danijar Hafner、Timothy Lillicrap、Ian Fischer、Rub…</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <main class="container detail-layout">
+      <div class="detail-shell">
+        <article id="detail-body" class="reading-flow"><section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 01</span>
+    <span class="reading-step-note">作者信息</span>
+  </div>
+  <h2>作者信息</h2>
+  <div class="reading-card-content"><ul><li>作者：Danijar Hafner、Timothy Lillicrap、Ian Fischer、Ruben Villegas、David Ha、Honglak Lee、James Davidson；论文为 arXiv:1811.04551v5。</li><li>本卡核对 21 页全文。实验覆盖六个 DeepMind Control Suite 像素控制任务，每个设置报告 5 个随机种子与测试轨迹分位区间。</li></ul></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 02</span>
+    <span class="reading-step-note">研究问题</span>
+  </div>
+  <h2>研究问题</h2>
+  <div class="reading-card-content"><ul><li>若环境方程未知，基于模型的控制必须一边从图像学习动力学，一边用模型向未来规划。困难不只是重建下一帧，而是保持对奖励和受控状态的多步预测精度；规划器还会主动寻找模型误差并利用它。</li><li>论文问：能否在不恢复显式物理坐标的情况下，学习一个足以支持长时域控制的潜在状态 \(s_t\)，并以在线优化动作序列替代训练一个独立策略？</li></ul></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 03</span>
+    <span class="reading-step-note">背景</span>
+  </div>
+  <h2>背景</h2>
+  <div class="reading-card-content"><ul><li>纯确定性 RNN 能长时记忆，却无法表示同一状态的多种未来；纯随机 state-space model 能表示不确定性，却容易在采样链中遗忘。像素重建损失又会把容量浪费在与控制无关的纹理上。</li><li>PlaNet 的立场接近系统辨识：不要求生成模型在所有像素指标上完美，而要求潜在传播子在规划时域内保留可预测的动力学与奖励信息。</li></ul></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 04</span>
+    <span class="reading-step-note">模型与方法</span>
+  </div>
+  <h2>模型与方法</h2>
+  <div class="reading-card-content"><ul><li>recurrent state-space model（RSSM）把状态拆成确定性记忆 \(h_t=f(h_{t-1},s_{t-1},a_{t-1})\) 与随机分量 \(s_t\sim p(s_t\mid h_t)\)，并由 \(p(o_t\mid h_t,s_t)\) 与 \(p(r_t\mid h_t,s_t)\) 解码观测和奖励。</li><li>训练使用变分序列目标；latent overshooting 进一步让多步 prior 直接匹配未来 posterior，迫使随机传播子跨越多个时间步保持一致。</li><li>控制时用 cross-entropy method（CEM）反复采样、筛选并重拟合动作序列分布；只执行第一段动作，得到新观测后再滚动规划。</li></ul></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 05</span>
+    <span class="reading-step-note">核心结果与证据</span>
+  </div>
+  <h2>核心结果与证据</h2>
+  <div class="reading-card-content"><ul><li>Figure 2 给出机制对照：RNN 只有确定路径，SSM 只有随机路径，RSSM 用两条路径耦合记忆与多未来。它解释了为什么模型设计不是简单增加隐变量，而是在可记忆性与不确定性之间分工。</li><li>Figure 1 的六个环境包含接触、部分可观测与稀疏奖励；PlaNet 仅用 64×64 RGB 观测，在 500 个 episode 内达到与 D4PG 使用约 100,000 个 episode 相近或更高的最终表现，论文据此报告平均约 200 倍的 episode 效率差。</li><li>消融表明 RSSM 普遍优于纯确定或纯随机设计，CEM 优于 random shooting；但 latent overshooting 对 RSSM 本身略降性能，对较弱 DRNN 则显著改善，因此它不是所有架构上的单调增益。</li><li>Appendix 的 50-step open-loop 视频预测和状态探针显示潜变量保留了位置、速度与奖励信息；这支持“可用于控制的状态表示”，但不是对真实动力学方程的唯一辨识。</li></ul><figure class="evidence-figure">
+  <button class="evidence-figure-image-button" type="button" aria-label="放大查看 Figure 1" onclick="window.openPaperFigureImage && window.openPaperFigureImage(this.querySelector('img'))">
+    <img class="paper-figure-image evidence-figure-image" src="../../assets/collection-figures/1811.04551/figure-1-control-domains.webp" alt="六个 DeepMind Control Suite 像素任务。" loading="lazy" />
+  </button>
+  <figcaption>
+    <strong>Figure 1</strong> · 任务同时考验部分可观测、接触动力学和稀疏奖励。
+    <span class="evidence-figure-reading">物理解读：PlaNet 的证据范围比单一 cart-pole 更广，但仍局限于模拟器。</span>
+    <span class="evidence-figure-source">来源：paper.pdf p. 2, Figure 1</span>
+  </figcaption>
+</figure>
+<figure class="evidence-figure">
+  <button class="evidence-figure-image-button" type="button" aria-label="放大查看 Figure 2" onclick="window.openPaperFigureImage && window.openPaperFigureImage(this.querySelector('img'))">
+    <img class="paper-figure-image evidence-figure-image" src="../../assets/collection-figures/1811.04551/figure-2-rssm-designs.webp" alt="RNN、SSM 与 RSSM 三种潜在动力学图模型。" loading="lazy" />
+  </button>
+  <figcaption>
+    <strong>Figure 2</strong> · RSSM 用确定性路径保持记忆，用随机路径表示多种未来。
+    <span class="evidence-figure-reading">物理解读：双路径是模型能同时处理长时依赖与随机性的核心结构。</span>
+    <span class="evidence-figure-source">来源：paper.pdf p. 4, Figure 2</span>
+  </figcaption>
+</figure></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 06</span>
+    <span class="reading-step-note">有效性与局限</span>
+  </div>
+  <h2>有效性与局限</h2>
+  <div class="reading-card-content"><ul><li>200 倍是按论文从既有 D4PG 曲线估算达到 PlaNet 最终分数所需 episode，不是同一代码、同一算力和同一观测管线下的严格墙钟比较。</li><li>全部任务来自同一控制套件和低分辨率固定相机；域随机化、真实传感噪声、长时不可逆误差和安全约束均未检验。</li><li>CEM 每个环境步需评估大量候选序列，样本效率不等同于推理效率。规划器仍可能利用模型偏差，且 receding horizon 不能保证全局最优。</li><li>开环像素预测漂亮并不充分：真正因果证据来自奖励/状态探针和闭环控制消融。latent overshooting 的混合结果也要求按模型族单独验证。</li></ul></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 07</span>
+    <span class="reading-step-note">复现与资源</span>
+  </div>
+  <h2>复现与资源</h2>
+  <div class="reading-card-content"><ul><li>原文：https://arxiv.org/abs/1811.04551；PDF：https://arxiv.org/pdf/1811.04551；作者公开了 PlaNet 实现。</li><li>全文 PDF 共 21 页，SHA-256：abac727526e6a45669d3ab9957126587e22aacf4dc9bcd60ffe5c853108e5bcc。</li><li>最小复现应固定环境 action repeat、5 个 seed episodes、模型更新频率、CEM 的 horizon/iteration/candidate/elite 数，并保存每个随机种子的 episode-return 曲线、规划耗时和开环预测误差。</li><li>Evidence status: full-text verified; no independent reproduction performed.</li></ul></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 08</span>
+    <span class="reading-step-note">阅读指南</span>
+  </div>
+  <h2>阅读指南</h2>
+  <div class="reading-card-content"><ul><li>先看 Figure 2 和 Eq. (4)，把确定性记忆与随机状态的职责分开；再看 Figure 3 理解 one-step ELBO 与 multi-step overshooting 的差别。</li><li>随后读 Figures 4–5 与 Table 1，分别核对模型结构、数据收集策略和 episode 效率，不要把三种比较混为一项。</li><li>最后看 Appendices \(D\)–E 的多任务、overshooting 与开环预测诊断；特别注意作者对 RSSM 上 overshooting 负增益的诚实报告。</li></ul></div>
+</section></article>
+        <aside id="detail-toc" class="detail-toc hidden" aria-label="内容目录">
+          <p class="detail-toc-title">阅读目录</p>
+          <nav id="detail-toc-nav" class="detail-toc-nav"></nav>
+        </aside>
+      </div>
+      <nav class="paper-nav"><a class="paper-nav-link paper-nav-prev" href="../../collection-papers/1807.10425/"><span class="paper-nav-label">← 上一篇</span><span class="paper-nav-title">STEAP: simultaneous trajectory estimation and planning</span></a>
+      <a class="paper-nav-link paper-nav-next" href="../../collection-papers/1902.06015/"><span class="paper-nav-label">下一篇 →</span><span class="paper-nav-title">Mean-field theory of two-layers neural networks: dimension-free bounds and kernel limit</span></a></nav>
+    </main>
+
+    <footer class="footer">
+      <div class="container">
+        <p>内容来自 <a href="https://arxiv.org" target="_blank" rel="noopener noreferrer">arXiv.org</a>，阅读卡片由静态站点生成器构建。</p>
+      </div>
+    </footer>
+
+    <script src="../../assets/theme.js"></script>
+    <script src="../../assets/media.js"></script>
+    <script src="../../assets/paper.js"></script>
+  </body>
+</html>

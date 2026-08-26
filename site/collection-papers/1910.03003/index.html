@@ -1,0 +1,203 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Stochastic Optimal Control as Approximate Input Inference - physics+AI Collection 随机精选</title>
+    <meta name="description" content="作者：Joe Watson、Hany Abdulsamad、Jan Peters；论文为 arXiv:1910.03003v2，交叉机器学习、机器人与控制。 本卡核对 21 页全文。主体推导 I²C，并在 pendulum、cart-pole 与 double cart-pole 三个模拟系统上比较 iLQR 和 GPS。" />
+    <script>
+      (function() {
+        try {
+          var themePreference = window.localStorage.getItem('color-theme') || 'system';
+          var systemUsesDarkTheme = window.matchMedia('(prefers-color-scheme: dark)').matches;
+          var resolvedTheme = themePreference === 'system'
+            ? (systemUsesDarkTheme ? 'dark' : 'light')
+            : themePreference;
+          document.documentElement.dataset.theme = resolvedTheme;
+          document.documentElement.dataset.themePreference = themePreference;
+          document.documentElement.style.colorScheme = resolvedTheme;
+        } catch (error) {
+          document.documentElement.dataset.theme = 'light';
+          document.documentElement.dataset.themePreference = 'system';
+        }
+      })();
+    </script>
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='18' fill='%23111827'/%3E%3Ctext x='50%25' y='55%25' text-anchor='middle' dominant-baseline='middle' font-size='30' font-family='Arial, sans-serif' fill='white'%3EV%3C/text%3E%3C/svg%3E" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700;800&family=Noto+Sans+SC:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <script>document.documentElement.classList.add('math-pending');</script>
+    <script>
+      window.MathJax = {
+        tex: {
+          inlineMath: [['$', '$'], ['\\(', '\\)']],
+          displayMath: [['$$', '$$'], ['\\[', '\\]']],
+          processEscapes: true
+        },
+        options: {
+          skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+        },
+        chtml: {
+          scale: 1,
+          displayAlign: 'center'
+        },
+        startup: {
+          ready: function() {
+            MathJax.startup.defaultReady();
+            MathJax.startup.promise.then(function() {
+              document.documentElement.classList.remove('math-pending');
+              document.documentElement.dataset.mathReady = 'true';
+            });
+          }
+        }
+      };
+    </script>
+    <script defer src="../../assets/vendor/mathjax/tex-chtml.js"></script>
+    <link rel="stylesheet" href="../../assets/style.css" />
+  </head>
+  <body class="detail-page" data-paper-id="1910.03003">
+    <div class="page-noise"></div>
+    <div class="page-blur page-blur-a"></div>
+    <div class="page-blur page-blur-b"></div>
+
+    <header class="header detail-page-header">
+      <div class="container">
+        <div class="detail-page-topbar">
+          <a class="back-link" href="../../collection.html">返回列表</a>
+          <div class="detail-topbar-actions">
+            <span class="detail-site-name">physics+AI Collection 随机精选</span>
+            <button class="theme-toggle" type="button" data-theme-toggle aria-label="当前主题：设备，点击切换主题" title="当前主题：设备">
+  <span class="theme-toggle-icons" aria-hidden="true">
+    <svg class="theme-toggle-icon theme-toggle-icon-light" viewBox="0 0 24 24" fill="none">
+      <circle cx="12" cy="12" r="3.5" stroke="currentColor" stroke-width="1.8"/>
+      <path d="M12 2.5v2M12 19.5v2M2.5 12h2M19.5 12h2M5.3 5.3l1.4 1.4M17.3 17.3l1.4 1.4M18.7 5.3l-1.4 1.4M6.7 17.3l-1.4 1.4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+    </svg>
+    <svg class="theme-toggle-icon theme-toggle-icon-dark" viewBox="0 0 24 24" fill="none">
+      <path d="M20 15.2A8.1 8.1 0 0 1 8.8 4a8.2 8.2 0 1 0 11.2 11.2z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>
+    </svg>
+    <svg class="theme-toggle-icon theme-toggle-icon-system" viewBox="0 0 24 24" fill="none">
+      <rect x="3" y="4" width="18" height="13" rx="2.5" stroke="currentColor" stroke-width="1.8"/>
+      <path d="M8 21h8M12 17v4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+    </svg>
+  </span>
+  <span class="theme-toggle-label" data-theme-toggle-label>设备</span>
+</button>
+          </div>
+        </div>
+
+        <div class="detail-hero-grid">
+          <div class="detail-hero-cover"><figure class="paper-figure-card paper-figure-card-detail">
+  <img class="paper-figure-image" src="../../assets/collection-figures/1910.03003/figure-2-factor-graph.webp" alt="I²C 线性 Gaussian 动力系统的 Forney factor graph。" loading="lazy" onclick="window.openPaperFigureImage && window.openPaperFigureImage(this)" />
+  <figcaption class="paper-figure-caption">状态、动作、过程噪声与目标伪观测被放在同一 Gaussian 图中；前后向消息共同产生轨迹后验和反馈控制器。</figcaption>
+</figure></div>
+          <div class="detail-hero-copy">
+            <p class="eyebrow">Collection 全文卡</p>
+            <h1 class="detail-page-title">Stochastic Optimal Control as Approximate Input Inference</h1>
+            <p class="detail-page-title-zh">将随机最优控制表述为近似输入推断</p>
+            <div class="detail-meta">Paper Collection · Control &amp; Reinforcement Learning · <a href="https://arxiv.org/abs/1910.03003" target="_blank" rel="noopener noreferrer">原文</a></div>
+            <p class="detail-summary">作者：Joe Watson、Hany Abdulsamad、Jan Peters；论文为 arXiv:1910.03003v2，交叉机器学习、机器人与控制。 本卡核对 21 页全文。主体推导 I²C，并在 pendulum、cart-pole 与 double cart-pole 三个模拟系统上比较 iLQR 和 GPS。</p>
+            <div class="detail-micro-meta">
+              <span class="meta-pill">8 分钟读完</span>
+              <span class="meta-pill">8 张阅读卡</span>
+              <span class="meta-pill">作者：Joe Watson、Hany Abdulsamad、Jan Peters；论文为 arXiv…</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <main class="container detail-layout">
+      <div class="detail-shell">
+        <article id="detail-body" class="reading-flow"><section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 01</span>
+    <span class="reading-step-note">作者信息</span>
+  </div>
+  <h2>作者信息</h2>
+  <div class="reading-card-content"><ul><li>作者：Joe Watson、Hany Abdulsamad、Jan Peters；论文为 arXiv:1910.03003v2，交叉机器学习、机器人与控制。</li><li>本卡核对 21 页全文。主体推导 I²C，并在 pendulum、cart-pole 与 double cart-pole 三个模拟系统上比较 iLQR 和 GPS。</li></ul></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 02</span>
+    <span class="reading-step-note">研究问题</span>
+  </div>
+  <h2>研究问题</h2>
+  <div class="reading-card-content"><ul><li>非线性随机控制的全局 Bellman 方程通常不可解，轨迹优化于是每轮局部线性化，并依赖 line search、trust region 或手调正则来防止更新崩溃。</li><li>论文问：能否把动作序列当成待估计的随机输入，把目标代价写成伪观测 likelihood，再用 Bayesian filtering/smoothing 的不确定性传播自然地产生探索、反馈增益和更新正则？</li></ul></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 03</span>
+    <span class="reading-step-note">背景</span>
+  </div>
+  <h2>背景</h2>
+  <div class="reading-card-content"><ul><li>control-as-inference 常引入 optimality variable，但许多表述仍需额外策略参数化。I²C 直接在状态—动作联合轨迹上做近似推断，将动作与状态置于同一 Gaussian 图模型。</li><li>线性 Gaussian 图中的前向消息相当于预测/滤波，后向消息编码未来目标信息。精度矩阵在控制语言中对应二次 value function 的 Hessian，因此 Kalman smoothing 与 LQR Riccati 递推共享代数结构。</li></ul></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 04</span>
+    <span class="reading-step-note">模型与方法</span>
+  </div>
+  <h2>模型与方法</h2>
+  <div class="reading-card-content"><ul><li>把目标轨迹写成伪观测 \(z_t=[x_g,u_g]\)，其噪声精度取 \(\Sigma_\xi^{-1}=\Lambda_\xi=\alpha\Theta\)，其中 \(\Theta=\mathrm{diag}(Q,R)\) 编码 LQ 代价，\(\alpha\) 是待估计尺度。</li><li>E-step 在每轮局部线性 Gaussian 动力学上做 forward-backward message passing，得到完整 state-action posterior；\(M\)-step 更新 \(\alpha\)，并从联合后验条件化得到 time-varying linear Gaussian feedback controller。</li><li>作者用相邻迭代 trajectory distribution 的 KL 上界限制 \(\alpha\) 更新，形成具有概率意义的 trust region；这同时限制线性化误差并保留动作协方差。</li></ul></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 05</span>
+    <span class="reading-step-note">核心结果与证据</span>
+  </div>
+  <h2>核心结果与证据</h2>
+  <div class="reading-card-content"><ul><li>Figure 2 把 I²C 的动力学、控制输入、过程噪声与目标伪观测放进同一 Forney factor graph；控制量不是外加的确定优化变量，而是图中的随机边。</li><li>在确定性线性系统、宽动作先验和高目标精度极限下，后向消息的 precision/scaled mean 与 LQR value-function 参数逐项对应，Figure 3 数值显示状态轨迹和反馈/前馈增益重合。</li><li>非线性轨迹优化中 iLQR 收敛更快、最终预测代价更低；I²C 前期会用若干 EM 轮“预热”先验。可是在加入模型过程噪声的 100 次评估中，I²C 的实际代价更接近其预测代价，显示保守不确定性传播的校准优势。</li><li>论文的优势因此不是在无噪基准上全面击败 iLQR，而是得到带 covariance 的反馈控制器、可解释的初始化/正则化和较一致的预测—执行差。</li></ul><figure class="evidence-figure">
+  <button class="evidence-figure-image-button" type="button" aria-label="放大查看 Figure 2" onclick="window.openPaperFigureImage && window.openPaperFigureImage(this.querySelector('img'))">
+    <img class="paper-figure-image evidence-figure-image" src="../../assets/collection-figures/1910.03003/figure-2-factor-graph.webp" alt="I²C 的线性 Gaussian Forney factor graph。" loading="lazy" />
+  </button>
+  <figcaption>
+    <strong>Figure 2</strong> · 蓝色中间变量用于封闭形式的 Gaussian 消息推导。
+    <span class="evidence-figure-reading">物理解读：后向消息把未来代价传回当前动作，前向消息传播动力学不确定性。</span>
+    <span class="evidence-figure-source">来源：paper.pdf p. 3, Figure 2</span>
+  </figcaption>
+</figure></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 06</span>
+    <span class="reading-step-note">有效性与局限</span>
+  </div>
+  <h2>有效性与局限</h2>
+  <div class="reading-card-content"><ul><li>核心算法依赖局部线性化和 Gaussian 近似；多峰后验、硬接触和强非线性会被压成单峰矩，可能丢失最优控制分支。</li><li>I²C 在报告的轨迹优化曲线上慢于且最终差于 iLQR；Bayesian 正则的价值主要体现在随机执行的校准与稳定性，不应写成普遍性能胜利。</li><li>实验只有三个模拟任务，动力学模型已知且每轮可线性化；真实机器人、模型学习误差和高维感知未覆盖。</li><li>KL 限制和 \(\alpha\) 初值仍是超参数；概率解释使其更有原则，但不消除调参与局部最优。</li></ul></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 07</span>
+    <span class="reading-step-note">复现与资源</span>
+  </div>
+  <h2>复现与资源</h2>
+  <div class="reading-card-content"><ul><li>原文：https://arxiv.org/abs/1910.03003；PDF：https://arxiv.org/pdf/1910.03003；论文脚注给出 input-inference-for-control 代码仓库。</li><li>全文 PDF 共 21 页，SHA-256：28b45f9fa02765a42ead460feee771db6567773fede2532863c4a48ae6ae251c。</li><li>复现需分别保存预测 cost 与随机 rollout cost，不能只画优化曲线；固定线性化频率、过程噪声、\(\alpha\) 初值、KL bound 和探索 covariance，并复核 LQR 极限下每个增益矩阵。</li><li>Evidence status: full-text verified; no independent reproduction performed.</li></ul></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 08</span>
+    <span class="reading-step-note">阅读指南</span>
+  </div>
+  <h2>阅读指南</h2>
+  <div class="reading-card-content"><ul><li>先看 Figure 2 和 Algorithm 1，理解动作作为随机输入参与消息传递；再读 Table 1 对照 precision、scaled mean 与 LQR value function。</li><li>随后读 Sec. 2.1.1 和 Appendix B.5，核对 I²C 恢复 maximum-entropy finite-horizon LQR 所需的极限条件。</li><li>最后把 Figure 4 的优化速度、Table 2 的随机执行校准和 Sec. 5 的作者结论分开评价。</li></ul></div>
+</section></article>
+        <aside id="detail-toc" class="detail-toc hidden" aria-label="内容目录">
+          <p class="detail-toc-title">阅读目录</p>
+          <nav id="detail-toc-nav" class="detail-toc-nav"></nav>
+        </aside>
+      </div>
+      <nav class="paper-nav"><a class="paper-nav-link paper-nav-prev" href="../../collection-papers/1910.00019/"><span class="paper-nav-label">← 上一篇</span><span class="paper-nav-title">Non-Gaussian processes and neural networks at finite widths</span></a>
+      <a class="paper-nav-link paper-nav-next" href="../../collection-papers/1910.03193/"><span class="paper-nav-label">下一篇 →</span><span class="paper-nav-title">DeepONet: Learning nonlinear operators for identifying differential equations based on the universal approximation theorem of operators</span></a></nav>
+    </main>
+
+    <footer class="footer">
+      <div class="container">
+        <p>内容来自 <a href="https://arxiv.org" target="_blank" rel="noopener noreferrer">arXiv.org</a>，阅读卡片由静态站点生成器构建。</p>
+      </div>
+    </footer>
+
+    <script src="../../assets/theme.js"></script>
+    <script src="../../assets/media.js"></script>
+    <script src="../../assets/paper.js"></script>
+  </body>
+</html>

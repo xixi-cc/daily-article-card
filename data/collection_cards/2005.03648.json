@@ -1,0 +1,168 @@
+{
+  "arxiv_id": "2005.03648",
+  "source_version": "v1",
+  "source_pdf": "https://arxiv.org/pdf/2005.03648",
+  "title_en": "Plan2Vec: Unsupervised Representation Learning by Latent Plans",
+  "title_zh": "Plan2Vec：通过潜在规划进行无监督表征学习",
+  "curation_status": "full_text_verified",
+  "card_standard_version": "2.3",
+  "paper_profile": "ai_empirical",
+  "style_reference": "physicist_daily_arxiv",
+  "provenance": {
+    "program": "Collection",
+    "catalog": "Paper Collection",
+    "catalog_record_id": "3c07c1608916f3ba",
+    "catalog_record_ids": [
+      "3c07c1608916f3ba"
+    ],
+    "catalog_topic": "Field Theory",
+    "collection_date": "2026-08-23",
+    "sampled_at": "2026-08-26",
+    "selected_by": "full_collection_backfill",
+    "sampling_seed": "not_applicable_full_collection",
+    "candidate_count": 452
+  },
+  "verified_metadata": {
+    "arxiv_id": "2005.03648",
+    "version": "v1",
+    "title": "Plan2Vec: Unsupervised Representation Learning by Latent Plans",
+    "authors": [
+      "Ge Yang",
+      "Amy Zhang",
+      "Ari S. Morcos",
+      "Joelle Pineau",
+      "Pieter Abbeel",
+      "Roberto Calandra"
+    ],
+    "categories": [
+      "cs.LG",
+      "cs.AI",
+      "stat.ML"
+    ],
+    "primary_category": "cs.LG",
+    "published": "2020-05-07T17:52:23Z",
+    "abstract": "Plan2Vec builds a local-neighbor graph over observation sequences and distills graph shortest-path distances into a global latent metric for reactive planning."
+  },
+  "sections": [
+    {
+      "title": "作者信息",
+      "paragraphs": [
+        "作者：Ge Yang、Amy Zhang、Ari S. Morcos、Joelle Pineau、Pieter Abbeel、Roberto Calandra；论文为 arXiv:2005.03648v1。",
+        "本卡核对 20 页全文。Paper Collection 原分类为 Field Theory；这里保留目录标签，但内容实质属于无监督表征学习与视觉规划。"
+      ]
+    },
+    {
+      "title": "研究问题",
+      "paragraphs": [
+        "局部视觉相似度只能判断两个观测是否可直接过渡，不能给出跨越长走廊、障碍或不同数据轨迹的全局可达距离。显式 Dijkstra 搜索能组合局部边，却要在每次目标查询时遍历大量节点。",
+        "论文问：能否先利用离线轨迹建立拓扑图，再把图上的 shortest-path geodesic 蒸馏进一个参数化距离函数，使长时域规划从逐次图搜索变成近似常数代价的值查询？"
+      ]
+    },
+    {
+      "title": "背景",
+      "paragraphs": [
+        "状态空间若落在弯曲流形上，欧氏像素距离会把隔墙但视觉相近的点错误拉近。图最短路提供由局部可行边诱导的内禀距离，类似从局部度量重建全局 geodesic。",
+        "与生成式 world model 不同，Plan2Vec 不预测下一帧；它只学习局部邻接和全局距离。与普通 replay-buffer value learning 不同，它可以从图中抽取跨越不同原始轨迹的计划作为监督。"
+      ]
+    },
+    {
+      "title": "模型与方法",
+      "paragraphs": [
+        "第一阶段用真实相邻帧作正例、非邻接帧作负例训练局部 metric，并在图像数据集上建立加权近邻图。图中新增边是模型推断的局部可达关系。",
+        "第二阶段对起点 \\(x_s\\) 和目标 \\(x_g\\) 做图搜索，得到路径 \\((x_i)\\) 及目标距离 \\(D(x_s,x_g)=\\sum_i d(x_i,x_{i+1})\\)，再回归全局 embedding/metric \\(D_\\phi\\)。",
+        "memoryless sampling 从图中采样子计划，避免把监督局限于原始线性轨迹；训练后 \\(D_\\phi\\) 可直接作 goal-conditioned value 或 A* heuristic。"
+      ]
+    },
+    {
+      "title": "核心结果与证据",
+      "paragraphs": [
+        "Figure 1 清楚给出两级结构：轨迹先变成局部图，启发式搜索产生 shortest-path target，再由 value regression 把规划结果压进全局表示。关键监督来自“路径积分”，而不是像素重建。",
+        "在 C-maze 中二维 embedding 展开了障碍造成的全局拓扑；与 DQN 相比，Plan2Vec 用更少 rollout 学到更高成功率。把 learned metric 用作 A* heuristic 时，200-step StreetLearn 路径平均每步扩展约 1.6 个节点，而 L1 heuristic 为 2.7、Dijkstra 为 11.8。",
+        "StreetLearn 一步目标成功率在 Tiny/Small/Medium 子集为 92.2±2.9%、57.2±4.3%、51.4±6.9%，高于文中 SPTM、VAE 与随机基线。Rope 数据的视觉计划能跨接两条原始轨迹，同时保持相邻绳形局部变化。",
+        "论文所称线性 memory/computation 是对蒸馏后 reactive lookup 相对穷举图搜索的渐近描述；训练阶段仍需建图和求最短路。"
+      ]
+    },
+    {
+      "title": "有效性与局限",
+      "paragraphs": [
+        "局部 metric 的假阳性会给图添加物理上不可执行的捷径，随后最短路蒸馏会放大该错误。方法依赖局部邻接泛化足够可靠。",
+        "Plan2Vec 学的是距离/值，不生成动作；实际控制仍需把连续观测对映射为低层动作，论文任务多以数据集导航或局部转移可用为前提。",
+        "StreetLearn 的训练与测试来自同一城市图像分布，C-maze 和 Rope 规模有限；对动态环境、不可逆动作与强 stochastic transition 的证据不足。",
+        "线性推理优势不包括离线 Dijkstra target 生成和图存储成本。类别删除实验的泛化还依赖道路网络保持连通。"
+      ]
+    },
+    {
+      "title": "复现与资源",
+      "paragraphs": [
+        "原文：https://arxiv.org/abs/2005.03648；PDF：https://arxiv.org/pdf/2005.03648；论文公开了代码与补充视频。",
+        "全文 PDF 共 20 页，SHA-256：c75963d530aa827b5bda450608e20e63786c1c7c8597d39d652c9cfc3a738860。",
+        "复现应分别记录局部边 precision/recall、图连通性、全局距离误差、搜索节点扩展数和最终成功率；只看成功率无法判断失败来自局部图、距离蒸馏还是控制接口。",
+        "Evidence status: full-text verified; no independent reproduction performed."
+      ]
+    },
+    {
+      "title": "阅读指南",
+      "paragraphs": [
+        "先看 Figure 1，把局部 metric、图搜索和全局 value regression 三个对象分开；再读 Sec. 3 的 memoryless sampling。",
+        "然后按 C-maze→Rope→StreetLearn 顺序阅读，三者分别检验拓扑展开、跨轨迹组合和视觉不显著的长程导航。",
+        "最后核对 Figure 8 与 Table 2：一个测搜索开销，一个测 goal-reaching 成功率，不能互相替代。"
+      ]
+    }
+  ],
+  "cover": {
+    "mode": "source_figure",
+    "asset_path": "assets/collection-figures/2005.03648/figure-1-plan2vec-schematic.webp",
+    "label": "Figure 1",
+    "visual_type": "schematic",
+    "evidence": "arXiv:2005.03648v1, paper.pdf p. 2, Figure 1",
+    "alt_text": "Plan2Vec 从轨迹数据建图、搜索并回归全局距离的流程图。",
+    "caption": "局部邻接图提供 geodesic，搜索生成长程监督，再由参数化距离把逐次规划压缩成快速查询。",
+    "selection_rationale": "该图一眼呈现论文完整因果链，比单独的成功率或搜索成本图更适合作为封面。"
+  },
+  "figure_refs": [
+    {
+      "label": "Figure 1",
+      "asset_path": "assets/collection-figures/2005.03648/figure-1-plan2vec-schematic.webp",
+      "section": "核心结果与证据",
+      "role": "summarize graph construction, search, and metric distillation",
+      "evidence": "paper.pdf p. 2, Figure 1",
+      "alt_text": "Plan2Vec 高层流程示意图。",
+      "caption": "真实局部转移训练邻接 metric，图搜索产生全局 shortest-path target。",
+      "interpretation": "表示学习的监督由离线规划生成，因此把局部可达性积分成全局几何。"
+    }
+  ],
+  "equation_refs": [
+    {
+      "label": "Shortest-path target",
+      "latex": "D(x_s,x_g)=\\min_{\\tau:x_s\\leadsto x_g}\\sum_i d(x_i,x_{i+1})",
+      "role": "define the graph geodesic distilled into the latent metric",
+      "symbols": {
+        "x_s": "start observation",
+        "x_g": "goal observation",
+        "tau": "graph path",
+        "d": "learned local edge metric"
+      },
+      "evidence": "paper.pdf pp. 2–3, Figure 1 and generalized value metric",
+      "interpretation": "Global distance is the path integral of locally feasible transitions, not direct pixel similarity."
+    },
+    {
+      "label": "Plan2Vec regression",
+      "latex": "\\mathcal L(\\phi)=\\left\\|D_\\phi(x_s,x_g)-\\sum_i d(x_i,x_{i+1})\\right\\|_2^2",
+      "role": "amortize graph planning into a parametric distance lookup",
+      "symbols": {
+        "D_phi": "learned global distance",
+        "phi": "representation parameters",
+        "x_i": "states on a planned path"
+      },
+      "evidence": "paper.pdf Sec. 3 and Figure 1",
+      "interpretation": "The expensive shortest-path computation is paid during training and distilled for reactive use."
+    }
+  ],
+  "evidence_refs": [
+    "paper.pdf pp. 2–4: graph construction, generalized value metric and memoryless sampling",
+    "paper.pdf pp. 5–8: C-maze, Rope and StreetLearn experiments",
+    "paper.pdf Appendix: dataset details, additional trajectories and hyperparameters",
+    "source PDF SHA-256 c75963d530aa827b5bda450608e20e63786c1c7c8597d39d652c9cfc3a738860",
+    "Evidence status: full-text verified; no independent reproduction performed."
+  ]
+}
