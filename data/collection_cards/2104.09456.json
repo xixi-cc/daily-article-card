@@ -1,0 +1,148 @@
+{
+  "arxiv_id": "2104.09456",
+  "source_version": "v1",
+  "source_pdf": "https://arxiv.org/pdf/2104.09456",
+  "title_en": "Self-supervised Representation Learning With Path Integral Clustering For Speaker Diarization",
+  "title_zh": "用于说话人日志的路径积分聚类自监督表征学习",
+  "curation_status": "full_text_verified",
+  "card_standard_version": "2.3",
+  "paper_profile": "ai_empirical",
+  "style_reference": "physicist_daily_arxiv",
+  "provenance": {
+    "program": "Collection",
+    "catalog": "Paper Collection",
+    "catalog_record_id": "3defde399fb7adf3",
+    "catalog_record_ids": [
+      "3defde399fb7adf3"
+    ],
+    "catalog_topic": "Field Theory",
+    "collection_date": "2026-08-23",
+    "sampled_at": "2026-08-26",
+    "selected_by": "full_collection_backfill",
+    "sampling_seed": "not_applicable_full_collection",
+    "candidate_count": 452
+  },
+  "verified_metadata": {
+    "arxiv_id": "2104.09456",
+    "version": "v1",
+    "title": "Self-supervised Representation Learning With Path Integral Clustering For Speaker Diarization",
+    "authors": [
+      "Prachi Singh",
+      "Sriram Ganapathy"
+    ],
+    "categories": [
+      "eess.AS",
+      "cs.SD"
+    ],
+    "primary_category": "eess.AS",
+    "published": "2021-04-19T17:13:24Z",
+    "abstract": "An iterative loop alternates path-integral clustering and triplet-based embedding learning for speaker diarization."
+  },
+  "sections": [
+    {
+      "title": "作者信息",
+      "paragraphs": [
+        "作者：Prachi Singh、Sriram Ganapathy；arXiv:2104.09456v1，语音与音频处理。",
+        "本卡核对 12 页全文。Paper Collection 的 Field Theory 标签来自目录分类；本文的 path integral 是图上随机游走路径和，不是量子或统计场论泛函积分。"
+      ]
+    },
+    {
+      "title": "研究问题",
+      "paragraphs": [
+        "传统 diarization 先训练 x-vector，再冻结表示做聚类；表示学习与聚类目标彼此隔离。若 embedding 的局部几何不适合当前录音中的说话人结构，后端 AHC 无法反向修正它。",
+        "作者提出闭环：用图结构的 path-integral clustering 产生伪标签，再用这些标签采样 triplet 微调表示，反复迭代直到达到估计说话人数。"
+      ]
+    },
+    {
+      "title": "背景",
+      "paragraphs": [
+        "PIC 把 embedding 相似度归一化为有向图转移概率，并用簇内所有路径概率之和衡量簇稳定性；合并两个强连通簇若提高路径积分，就比只看最近或平均 pairwise affinity 更利用全局结构。",
+        "自监督环路的风险是 confirmation bias：错误聚类会生成错误 triplet，再把错误几何强化。因此论文设置逐轮阈值、temporal weighting 和停止准则。"
+      ]
+    },
+    {
+      "title": "模型与方法",
+      "paragraphs": [
+        "Figure 1 是完整反馈回路：固定长度音频片段先得到 x-vectors；PIC 产生第 q 轮簇标签；标签生成 triplet，DNN 用改进 triplet similarity 更新 embedding，再回到下一轮 PIC。",
+        "图邻接权重为 \\(W_{ij}=[1+\\exp(-s(i,j))]^{-1}\\)，仅保留 K-nearest neighbors；行归一化得到转移矩阵 \\(P\\)，cluster path integral 由簇内多步转移的 trace/路径和构造。",
+        "说话人数可已知或由阈值估计；实验在 CALLHOME 与 AMI 上对 x-vector+AHC、PIC、SSC 及 VB-HMM refinement 做逐项比较。"
+      ]
+    },
+    {
+      "title": "核心结果与证据",
+      "paragraphs": [
+        "Figure 1 比冗长算法文字更清楚地显示 clustering→triplet mining→representation update 的闭环，而不是两个独立阶段。",
+        "论文摘要报告相对 x-vector+AHC 的 diarization error rate 相对改善：CALLHOME 约 13%，AMI 约 59%。改进在 AMI 更大，说明会议录音中全局图结构和表示再训练更有价值。",
+        "Figure 7 的 t-SNE 仅是定性辅助；主要证据来自两数据集 DER 表及已知/未知说话人数设置。VB-HMM 后处理还能进一步改善边界，但这不应归因于 SSC 表征本身。"
+      ]
+    },
+    {
+      "title": "有效性与局限",
+      "paragraphs": [
+        "伪标签环路没有真值保证，初始 embedding 或 PIC 图错误可被放大；K、阈值和 temporal weighting 对稳定性关键。",
+        "CALLHOME 与 AMI 的录音条件、分段和说话人数分布有限；跨语言、重叠语音和远场噪声的外推仍需独立测试。",
+        "DER 相对改善依赖基线与后处理配置；应同时报告绝对 DER、oracle speaker count 与 estimated speaker count，不能只引用百分比。",
+        "t-SNE 簇分离不等同于 diarization 成功，时间边界、重叠说话和 speaker confusion 需分项误差。"
+      ]
+    },
+    {
+      "title": "复现与资源",
+      "paragraphs": [
+        "原文：https://arxiv.org/abs/2104.09456；PDF：https://arxiv.org/pdf/2104.09456。",
+        "全文 PDF 共 12 页，SHA-256：7acc8e17ca9e2fb794f0267350bbdd3c27ed22b70626bd6d9fde1bda5a5e4e38。",
+        "复现需固定分段长度、x-vector extractor、KNN 图、PIC 阈值、triplet margin、每轮训练步数和停止条件；保存每轮簇数、伪标签一致率及 DER 分解。",
+        "Evidence status: full-text verified; no independent reproduction performed."
+      ]
+    },
+    {
+      "title": "阅读指南",
+      "paragraphs": [
+        "先看 Figure 1，追踪标签怎样从 PIC 回流到 DNN；再读 Sec. III-C 的 path integral 定义和 Sec. III-F 的停止规则。",
+        "随后核对 CALLHOME 与 AMI 的绝对 DER 表，而非只读摘要中的相对百分比。",
+        "最后看 Figure 7 时把它当解释性投影，不把二维可视化当作定量证明。"
+      ]
+    }
+  ],
+  "cover": {
+    "mode": "source_figure",
+    "asset_path": "assets/collection-figures/2104.09456/figure-1-ssc-loop.webp",
+    "label": "Figure 1",
+    "visual_type": "schematic",
+    "evidence": "paper.pdf p. 2, Figure 1",
+    "alt_text": "SSC 在路径积分聚类与 triplet 表征学习之间循环的框图。",
+    "caption": "PIC 的簇标签生成下一轮 triplet，更新后的 DNN embedding 又反馈给 PIC。",
+    "selection_rationale": "该机制图直接解释论文贡献，比 t-SNE 或 DER 曲线更适合作为封面。"
+  },
+  "figure_refs": [
+    {
+      "label": "Figure 1",
+      "asset_path": "assets/collection-figures/2104.09456/figure-1-ssc-loop.webp",
+      "section": "核心结果与证据",
+      "role": "visualize the iterative clustering-representation loop",
+      "evidence": "paper.pdf p. 2, Figure 1",
+      "alt_text": "SSC 自监督循环。",
+      "caption": "聚类伪标签驱动 triplet mining，表示更新后再次聚类。",
+      "interpretation": "The method couples representation geometry to the recording-specific clustering objective."
+    }
+  ],
+  "equation_refs": [
+    {
+      "label": "KNN graph weight",
+      "latex": "W_{ij}=\\begin{cases}[1+\\exp(-s(i,j))]^{-1},&y_j\\in\\mathcal N_i^K\\\\0,&\\text{otherwise}\\end{cases}",
+      "role": "construct the sparse directed similarity graph used by PIC",
+      "symbols": {
+        "s": "pairwise embedding similarity",
+        "N_i_K": "K nearest neighbors",
+        "W": "adjacency matrix"
+      },
+      "evidence": "paper.pdf p. 3, Eq. (2)",
+      "interpretation": "Only local neighbors define transitions, while path integrals aggregate their global connectivity."
+    }
+  ],
+  "evidence_refs": [
+    "paper.pdf pp. 2–5: SSC loop, PIC graph and triplet learning",
+    "paper.pdf pp. 6–9: CALLHOME/AMI DER comparisons and embedding visualization",
+    "source PDF SHA-256 7acc8e17ca9e2fb794f0267350bbdd3c27ed22b70626bd6d9fde1bda5a5e4e38",
+    "Evidence status: full-text verified; no independent reproduction performed."
+  ]
+}

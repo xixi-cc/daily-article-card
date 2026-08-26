@@ -1,0 +1,154 @@
+{
+  "arxiv_id": "2106.07582",
+  "source_version": "v1",
+  "source_pdf": "https://arxiv.org/pdf/2106.07582",
+  "title_en": "Non Gaussian Denoising Diffusion Models",
+  "title_zh": "非高斯去噪扩散模型",
+  "curation_status": "full_text_verified",
+  "card_standard_version": "2.3",
+  "paper_profile": "ai_empirical",
+  "style_reference": "physicist_daily_arxiv",
+  "provenance": {
+    "program": "Collection",
+    "catalog": "Paper Collection",
+    "catalog_record_id": "124ba7342af02f26",
+    "catalog_record_ids": [
+      "124ba7342af02f26"
+    ],
+    "catalog_topic": "Generative Models",
+    "collection_date": "2026-08-23",
+    "sampled_at": "2026-08-26",
+    "selected_by": "full_collection_backfill",
+    "sampling_seed": "not_applicable_full_collection",
+    "candidate_count": 452
+  },
+  "verified_metadata": {
+    "arxiv_id": "2106.07582",
+    "version": "v1",
+    "title": "Non Gaussian Denoising Diffusion Models",
+    "authors": [
+      "Eliya Nachmani",
+      "Robin San Roman",
+      "Lior Wolf"
+    ],
+    "categories": [
+      "cs.LG",
+      "cs.CV",
+      "cs.SD",
+      "eess.AS"
+    ],
+    "primary_category": "cs.LG",
+    "published": "2021-06-14T16:42:43Z",
+    "abstract": "Gamma and Gaussian-mixture forward noise are tested as alternatives to standard Gaussian diffusion."
+  },
+  "sections": [
+    {
+      "title": "作者信息",
+      "paragraphs": [
+        "作者：Eliya Nachmani、Robin San Roman、Lior Wolf；arXiv:2106.07582v1。",
+        "本卡核对 12 页全文。实验覆盖 CelebA、LSUN Church 与 LJ speech，比较 Gaussian、Gaussian mixture 和 Gamma forward noise。"
+      ]
+    },
+    {
+      "title": "研究问题",
+      "paragraphs": [
+        "标准扩散模型选择 Gaussian 噪声，原因是闭合的加噪边缘与简单训练目标，而不是数据残差必然高斯。作者观察预训练 DDPM 的图像差分直方图存在非高斯形状，问额外自由度能否改善少步采样。",
+        "关键约束是替代噪声仍需可高效重参数化，使任意时间步的带噪样本能直接构造，而不是逐步模拟整条 forward chain。"
+      ]
+    },
+    {
+      "title": "背景",
+      "paragraphs": [
+        "Gaussian diffusion 的闭包性使多步噪声仍是 Gaussian。Gamma 分布具有可加性；适当中心化和缩放后可维持零均值及预定方差。Gaussian mixture 则用离散成分增加多峰自由度。",
+        "若 forward kernel 改变，reverse model 的训练目标和采样递推也必须一致修改；只在末端换 prior 并不等价。"
+      ]
+    },
+    {
+      "title": "模型与方法",
+      "paragraphs": [
+        "Gamma 方案令每步噪声来自中心化 Gamma，并选择 shape/rate 使累积噪声满足目标方差日程；模型预测标准化噪声 \\(\\epsilon_t\\)，reverse update 使用对应的非高斯样本。",
+        "mixture 方案将多个 Gaussian noise variables 组合，并保持可直接采样的时刻边缘。作者在相同迭代数下比较 DDPM-like 与 DDIM-like 采样。",
+        "图像指标用 FID，语音用 PESQ、STOI 与 MCD；Figure 2 固定同一初始噪声，直观比较三种 noise law 的 100-step 生成结果。"
+      ]
+    },
+    {
+      "title": "核心结果与证据",
+      "paragraphs": [
+        "Figure 2 显示同一初始噪声下三行 CelebA 样本：单 Gaussian、Gaussian mixture、Gamma。它让改变量只剩 forward noise family，比随机挑选不同 seed 更可解释。",
+        "CelebA DDIM 10/20/50/100 steps 中 Gamma FID 为 11.64/6.83/4.28/3.17，均优于单 Gaussian 的 17.33/13.73/9.17/6.53；1000-step 时 Gamma 2.92 也优于 3.51。",
+        "LSUN Church 的 Gamma DDPM 在 10/20/50/100 steps 为 28.56/19.68/10.53/7.87，对应 Gaussian 为 51.56/23.37/11.16/8.27。mixture 在高分辨率上因训练成本未完成。",
+        "优势主要出现在少步采样；论文没有给出哪类数据分布对应哪种最优噪声的理论判据。"
+      ]
+    },
+    {
+      "title": "有效性与局限",
+      "paragraphs": [
+        "噪声族、参数化与训练预算同时变化，不能把所有收益解释为“真实残差是 Gamma”；Figure 1 的 histogram fit 是动机，不是因果证明。",
+        "只考察 Gamma 与一种 Gaussian mixture，搜索空间远未穷尽；作者在 Limitations 中明确承认缺少适用条件的完整刻画。",
+        "高分辨率 mixture 实验缺失，模型规模和 compute 未完全等价；FID 也不衡量 mode coverage、语义一致性或社会偏差。",
+        "论文年代较早，结论针对其 DDPM/DDIM 配置；不能直接外推到现代 latent diffusion 或不同 parameterization。"
+      ]
+    },
+    {
+      "title": "复现与资源",
+      "paragraphs": [
+        "原文：https://arxiv.org/abs/2106.07582；PDF：https://arxiv.org/pdf/2106.07582。",
+        "全文 PDF 共 12 页，SHA-256：51b136b3ff13ad0242001ab623f3cec775fc5ba2ad12de95bd940a3ed477d329。",
+        "复现需固定 backbone、variance schedule、训练步数、数据预处理与 FID 实现；每个 noise family 使用相同 seed 集，并同时报告少步/长步采样曲线。",
+        "Evidence status: full-text verified; no independent reproduction performed."
+      ]
+    },
+    {
+      "title": "阅读指南",
+      "paragraphs": [
+        "先读 Figure 1，把 empirical residual fit 当作提出假设；再读 Gamma 可加性与 reverse update 推导。",
+        "随后核对 Tables 2–3，区分 DDPM、DDIM、步数和数据集，不要只摘最优单元格。",
+        "最后读 Limitations；这篇文章提出“噪声族是设计变量”，但没有完成噪声选择理论。"
+      ]
+    }
+  ],
+  "cover": {
+    "mode": "source_figure",
+    "asset_path": "assets/collection-figures/2106.07582/figure-2-generated-faces.webp",
+    "label": "Figure 2",
+    "visual_type": "comparison",
+    "evidence": "paper.pdf p. 9, Figure 2",
+    "alt_text": "同一初始噪声下 Gaussian、Gaussian mixture 与 Gamma 扩散生成的人脸。",
+    "caption": "三行分别对应单 Gaussian、Gaussian mixture 与 Gamma noise，均使用 100 个 reverse steps。",
+    "selection_rationale": "这是论文最直观的生成对照；固定初始噪声后能直接比较三种 forward noise family，且比 FID 数据表更适合作为视觉封面。"
+  },
+  "figure_refs": [
+    {
+      "label": "Figure 2",
+      "asset_path": "assets/collection-figures/2106.07582/figure-2-generated-faces.webp",
+      "section": "核心结果与证据",
+      "role": "compare samples under three forward-noise families",
+      "evidence": "paper.pdf p. 9, Figure 2",
+      "alt_text": "三种噪声分布的 CelebA 生成比较。",
+      "caption": "固定初始噪声隔离 noise family 对生成轨迹的影响。",
+      "interpretation": "The visual comparison supports a difference in sample quality but does not alone establish coverage or likelihood."
+    }
+  ],
+  "equation_refs": [
+    {
+      "label": "Centered Gamma noise",
+      "latex": "\\bar g_t=\\frac{g_t-k_t\\theta_t}{\\sqrt{k_t}\\theta_t},\\qquad g_t\\sim\\Gamma(k_t,\\theta_t)",
+      "role": "construct zero-mean unit-variance non-Gaussian diffusion noise",
+      "symbols": {
+        "g_t": "Gamma random variable",
+        "k_t": "shape",
+        "theta_t": "scale",
+        "bar_g_t": "standardized noise"
+      },
+      "evidence": "paper.pdf Gamma diffusion section",
+      "interpretation": "Gamma additivity preserves tractable time marginals while changing higher moments."
+    }
+  ],
+  "evidence_refs": [
+    "paper.pdf pp. 2–6: residual motivation and Gamma/mixture construction",
+    "paper.pdf pp. 7–9: speech and image metrics plus Figure 2",
+    "paper.pdf pp. 9–10: limitations and conclusions",
+    "source PDF SHA-256 51b136b3ff13ad0242001ab623f3cec775fc5ba2ad12de95bd940a3ed477d329",
+    "Evidence status: full-text verified; no independent reproduction performed."
+  ]
+}

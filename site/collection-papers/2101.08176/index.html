@@ -1,0 +1,199 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Introduction to Normalizing Flows for Lattice Field Theory - physics+AI Collection 随机精选</title>
+    <meta name="description" content="作者：Michael S. Albergo、Denis Boyda、Daniel C. Hackett、Gurtej Kanwar、Kyle Cranmer、Sébastien Racanière、Danilo Jimenez Rezende、Phiala E. Shanahan；arXiv:2101.08176v3。 本卡核对 40 页全文。原文是与 Jupyter notebook 配套的可执行教程，重点是从概率恒等式到可检验代码的完整链条，而不是提出新的 benchmark。" />
+    <script>
+      (function() {
+        try {
+          var themePreference = window.localStorage.getItem('color-theme') || 'system';
+          var systemUsesDarkTheme = window.matchMedia('(prefers-color-scheme: dark)').matches;
+          var resolvedTheme = themePreference === 'system'
+            ? (systemUsesDarkTheme ? 'dark' : 'light')
+            : themePreference;
+          document.documentElement.dataset.theme = resolvedTheme;
+          document.documentElement.dataset.themePreference = themePreference;
+          document.documentElement.style.colorScheme = resolvedTheme;
+        } catch (error) {
+          document.documentElement.dataset.theme = 'light';
+          document.documentElement.dataset.themePreference = 'system';
+        }
+      })();
+    </script>
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='18' fill='%23111827'/%3E%3Ctext x='50%25' y='55%25' text-anchor='middle' dominant-baseline='middle' font-size='30' font-family='Arial, sans-serif' fill='white'%3EV%3C/text%3E%3C/svg%3E" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700;800&family=Noto+Sans+SC:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <script>document.documentElement.classList.add('math-pending');</script>
+    <script>
+      window.MathJax = {
+        tex: {
+          inlineMath: [['$', '$'], ['\\(', '\\)']],
+          displayMath: [['$$', '$$'], ['\\[', '\\]']],
+          processEscapes: true
+        },
+        options: {
+          skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+        },
+        chtml: {
+          scale: 1,
+          displayAlign: 'center'
+        },
+        startup: {
+          ready: function() {
+            MathJax.startup.defaultReady();
+            MathJax.startup.promise.then(function() {
+              document.documentElement.classList.remove('math-pending');
+              document.documentElement.dataset.mathReady = 'true';
+            });
+          }
+        }
+      };
+    </script>
+    <script defer src="../../assets/vendor/mathjax/tex-chtml.js"></script>
+    <link rel="stylesheet" href="../../assets/style.css" />
+  </head>
+  <body class="detail-page" data-paper-id="2101.08176">
+    <div class="page-noise"></div>
+    <div class="page-blur page-blur-a"></div>
+    <div class="page-blur page-blur-b"></div>
+
+    <header class="header detail-page-header">
+      <div class="container">
+        <div class="detail-page-topbar">
+          <a class="back-link" href="../../collection.html">返回列表</a>
+          <div class="detail-topbar-actions">
+            <span class="detail-site-name">physics+AI Collection 随机精选</span>
+            <button class="theme-toggle" type="button" data-theme-toggle aria-label="当前主题：设备，点击切换主题" title="当前主题：设备">
+  <span class="theme-toggle-icons" aria-hidden="true">
+    <svg class="theme-toggle-icon theme-toggle-icon-light" viewBox="0 0 24 24" fill="none">
+      <circle cx="12" cy="12" r="3.5" stroke="currentColor" stroke-width="1.8"/>
+      <path d="M12 2.5v2M12 19.5v2M2.5 12h2M19.5 12h2M5.3 5.3l1.4 1.4M17.3 17.3l1.4 1.4M18.7 5.3l-1.4 1.4M6.7 17.3l-1.4 1.4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+    </svg>
+    <svg class="theme-toggle-icon theme-toggle-icon-dark" viewBox="0 0 24 24" fill="none">
+      <path d="M20 15.2A8.1 8.1 0 0 1 8.8 4a8.2 8.2 0 1 0 11.2 11.2z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>
+    </svg>
+    <svg class="theme-toggle-icon theme-toggle-icon-system" viewBox="0 0 24 24" fill="none">
+      <rect x="3" y="4" width="18" height="13" rx="2.5" stroke="currentColor" stroke-width="1.8"/>
+      <path d="M8 21h8M12 17v4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+    </svg>
+  </span>
+  <span class="theme-toggle-label" data-theme-toggle-label>设备</span>
+</button>
+          </div>
+        </div>
+
+        <div class="detail-hero-grid">
+          <div class="detail-hero-cover"><article class="note-cover note-cover-title-abstract" style="--cover-from: #ef6c3f; --cover-to: #f6b13d; --cover-spot: #ffd59c; --cover-ink: #fff8ef; --cover-muted: rgba(255, 248, 239, 0.82); --cover-chip: rgba(255, 248, 239, 0.16); --cover-stroke: rgba(255, 248, 239, 0.26)">
+  <div class="note-cover-mesh"></div>
+  <div class="note-cover-title-shell">
+    <span class="note-cover-kicker">TITLE · ABSTRACT</span>
+    <h1 class="note-cover-title">Introduction to Normalizing Flows for Lattice Field Theory</h1>
+    <p class="note-cover-title-zh">面向格点场论的正规化流入门</p>
+    <p class="note-cover-abstract">正规化流把简单基分布可逆地映射到格点场配置，并提供精确 Jacobian；结合 independence Metropolis 或重加权后，可作为渐近精确的全局 proposal。教程从二维标量场推进到 U(1) 规范理论，展示怎样把 plaquette 规范不变量和等变 link 更新写进 coupling layer，同时强调生成模型拟合好并不等于采样器已无偏。</p>
+  </div>
+</article></div>
+          <div class="detail-hero-copy">
+            <p class="eyebrow">Collection 全文卡</p>
+            <h1 class="detail-page-title">Introduction to Normalizing Flows for Lattice Field Theory</h1>
+            <p class="detail-page-title-zh">面向格点场论的正规化流入门</p>
+            <div class="detail-meta">Paper Collection · Field Theory · <a href="https://arxiv.org/abs/2101.08176" target="_blank" rel="noopener noreferrer">原文</a></div>
+            <p class="detail-summary">作者：Michael S. Albergo、Denis Boyda、Daniel C. Hackett、Gurtej Kanwar、Kyle Cranmer、Sébastien Racanière、Danilo Jimenez Rezende、Phiala E. Shanahan；arXiv:2101.08176v3。 本卡核对 40 页全文。原文是与 Jupyter notebook 配套的可执行教程，重点是从概率恒等式到可检验代码的完整链条，而不是提出新的 benchmark。</p>
+            <div class="detail-micro-meta">
+              <span class="meta-pill">8 分钟读完</span>
+              <span class="meta-pill">8 张阅读卡</span>
+              <span class="meta-pill">作者：Michael S. Albergo、Denis Boyda、Daniel C. Hackett…</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <main class="container detail-layout">
+      <div class="detail-shell">
+        <article id="detail-body" class="reading-flow"><section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 01</span>
+    <span class="reading-step-note">作者信息</span>
+  </div>
+  <h2>作者信息</h2>
+  <div class="reading-card-content"><ul><li>作者：Michael S. Albergo、Denis Boyda、Daniel \(C\). Hackett、Gurtej Kanwar、Kyle Cranmer、Sébastien Racanière、Danilo Jimenez Rezende、Phiala E. Shanahan；arXiv:2101.08176v3。</li><li>本卡核对 40 页全文。原文是与 Jupyter notebook 配套的可执行教程，重点是从概率恒等式到可检验代码的完整链条，而不是提出新的 benchmark。</li></ul></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 02</span>
+    <span class="reading-step-note">研究问题</span>
+  </div>
+  <h2>研究问题</h2>
+  <div class="reading-card-content"><ul><li>格点场论需要从玻尔兹曼权重抽样；临界慢化、拓扑冻结和高维强关联会使局域 Markov 更新产生很长自相关。正规化流能直接生成全局 proposal，但只有结合精确接受拒绝或重加权后才保持目标分布无偏。</li><li>教程问的是：怎样把可逆映射、Jacobian、反向 KL 训练、independence Metropolis 和有效样本量组织成一套物理上可审计的采样器，并在 U(1) 格点规范理论中把规范对称性直接编码进网络？</li></ul></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 03</span>
+    <span class="reading-step-note">背景</span>
+  </div>
+  <h2>背景</h2>
+  <div class="reading-card-content"><ul><li>可逆流 \(f:z\mapsto\phi\) 将简单基分布 \(r(z)\) 推到模型分布 \(q(\phi)\)，其密度由变量替换公式精确计算。训练目标是 \(D_{\mathrm{KL}}(q\Vert p)\)，只需从模型自身采样和计算未归一化作用量。</li><li>直接使用 \(q\) 的样本一般仍有模型偏差；把 \(q\) 作为 independence proposal，加上 Metropolis–Hastings 接受率，或用重要性权重修正，才能得到渐近精确估计。</li></ul></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 04</span>
+    <span class="reading-step-note">模型与方法</span>
+  </div>
+  <h2>模型与方法</h2>
+  <div class="reading-card-content"><ul><li>标量理论部分从 checkerboard affine coupling layers 开始：每层冻结一半格点，用其余格点预测 scale 与 shift；多层交替 mask 保证全局耦合且 Jacobian 为三角结构。</li><li>训练后用 \(A(\phi\!\to\!\phi')=\min[1,p(\phi')q(\phi)/(p(\phi)q(\phi'))]\) 构造 independence chain，并以 reweighting ESS、接受率和 observable autocorrelation 判断 \(q\) 是否足够覆盖目标。</li><li>U(1) 部分不直接更新 link angle，而以 plaquette 的 gauge-invariant 信息生成等变 link 更新；mask 必须同时满足可逆性、局域依赖和格点平移覆盖。</li></ul></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 05</span>
+    <span class="reading-step-note">核心结果与证据</span>
+  </div>
+  <h2>核心结果与证据</h2>
+  <div class="reading-card-content"><ul><li>教程在二维标量场上逐步展示训练 loss、模型与目标 action、重加权 observable 及自相关诊断；核心证据不是单一数值，而是同一 notebook 能从目标作用量生成无偏 MCMC 流程。</li><li>对 U(1) 理论，Figures 2–5 依次定义 link、plaquette、将 plaquette 更新推回 link 的等变作用以及合法 mask。它们说明规范不变性不是数据增强，而是 coupling layer 的结构约束。</li><li>最重要的物理边界是：flow 的独立样本质量决定接受率与权重方差，但精确性来自后续统计校正。一个视觉上匹配的模型分布不能替代 detailed balance 或 importance identity。</li></ul></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 06</span>
+    <span class="reading-step-note">有效性与局限</span>
+  </div>
+  <h2>有效性与局限</h2>
+  <div class="reading-card-content"><ul><li>这是教学实现，不是大体积 QCD 性能声明；标量与 U(1) 例子的自由度、耦合和网络规模都为课堂可运行性服务。</li><li>反向 KL 倾向 mode seeking，\(q\) 若漏掉相空间扇区，会造成低接受率或极端权重；有限训练样本上的漂亮直方图不能证明全局覆盖。</li><li>independence proposal 的接受事件仍可相关，ESS 也依赖 observable；评估必须同时报告接受率、权重尾部和积分自相关时间。</li><li>规范等变层减少无效自由度，但不自动解决拓扑扇区或费米子行列式的代价。</li></ul></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 07</span>
+    <span class="reading-step-note">复现与资源</span>
+  </div>
+  <h2>复现与资源</h2>
+  <div class="reading-card-content"><ul><li>原文：https://arxiv.org/abs/2101.08176；PDF：https://arxiv.org/pdf/2101.08176；论文明确建议配合所附 Jupyter notebook 交互运行。</li><li>全文 PDF 共 40 页，SHA-256：1b0caf63db00d605563de7cf56b5905c2572ee02dbdca7aaaf187231fa1a7822。</li><li>复现应固定格点大小、作用量参数、mask 顺序、随机种子和训练预算；保存 raw chain、log-weight、接受事件与逐 observable 自相关，而不只保存最终均值。</li><li>Evidence status: full-text verified; no independent reproduction performed.</li></ul></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 08</span>
+    <span class="reading-step-note">阅读指南</span>
+  </div>
+  <h2>阅读指南</h2>
+  <div class="reading-card-content"><ul><li>先读标量场 notebook 单元，逐项核对变量替换、KL 和 Metropolis 接受率；再用 ESS 与自相关理解“模型质量”和“统计精确性”的区别。</li><li>随后读 U(1) 部分的 Figures 2–5，从 gauge transformation 到 plaquette-conditioned link update 重建等变性。</li><li>最后把教程范围与后续费米子论文分开：这里给出方法骨架，不声称已解决现实 QCD 规模。</li></ul></div>
+</section></article>
+        <aside id="detail-toc" class="detail-toc hidden" aria-label="内容目录">
+          <p class="detail-toc-title">阅读目录</p>
+          <nav id="detail-toc-nav" class="detail-toc-nav"></nav>
+        </aside>
+      </div>
+      <nav class="paper-nav"><a class="paper-nav-link paper-nav-prev" href="../../collection-papers/2012.01447/"><span class="paper-nav-label">← 上一篇</span><span class="paper-nav-title">Relevance in the Renormalization Group and in Information Theory</span></a>
+      <a class="paper-nav-link paper-nav-next" href="../../collection-papers/2102.06701/"><span class="paper-nav-label">下一篇 →</span><span class="paper-nav-title">Explaining Neural Scaling Laws</span></a></nav>
+    </main>
+
+    <footer class="footer">
+      <div class="container">
+        <p>内容来自 <a href="https://arxiv.org" target="_blank" rel="noopener noreferrer">arXiv.org</a>，阅读卡片由静态站点生成器构建。</p>
+      </div>
+    </footer>
+
+    <script src="../../assets/theme.js"></script>
+    <script src="../../assets/media.js"></script>
+    <script src="../../assets/paper.js"></script>
+  </body>
+</html>

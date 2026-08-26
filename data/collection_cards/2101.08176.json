@@ -1,0 +1,152 @@
+{
+  "arxiv_id": "2101.08176",
+  "source_version": "v3",
+  "source_pdf": "https://arxiv.org/pdf/2101.08176",
+  "title_en": "Introduction to Normalizing Flows for Lattice Field Theory",
+  "title_zh": "面向格点场论的正规化流入门",
+  "curation_status": "full_text_verified",
+  "card_standard_version": "2.3",
+  "paper_profile": "theory_numerics",
+  "style_reference": "physicist_daily_arxiv",
+  "provenance": {
+    "program": "Collection",
+    "catalog": "Paper Collection",
+    "catalog_record_id": "ed189695c2b2b746",
+    "catalog_record_ids": [
+      "ed189695c2b2b746"
+    ],
+    "catalog_topic": "Field Theory",
+    "collection_date": "2026-08-23",
+    "sampled_at": "2026-08-26",
+    "selected_by": "full_collection_backfill",
+    "sampling_seed": "not_applicable_full_collection",
+    "candidate_count": 452
+  },
+  "verified_metadata": {
+    "arxiv_id": "2101.08176",
+    "version": "v3",
+    "title": "Introduction to Normalizing Flows for Lattice Field Theory",
+    "authors": [
+      "Michael S. Albergo",
+      "Denis Boyda",
+      "Daniel C. Hackett",
+      "Gurtej Kanwar",
+      "Kyle Cranmer",
+      "Sébastien Racanière",
+      "Danilo Jimenez Rezende",
+      "Phiala E. Shanahan"
+    ],
+    "categories": [
+      "hep-lat",
+      "cond-mat.stat-mech",
+      "cs.LG"
+    ],
+    "primary_category": "hep-lat",
+    "published": "2021-01-20T15:16:28Z",
+    "abstract": "An executable tutorial on flow-based sampling for scalar lattice theory and gauge-equivariant U(1) theory."
+  },
+  "sections": [
+    {
+      "title": "作者信息",
+      "paragraphs": [
+        "作者：Michael S. Albergo、Denis Boyda、Daniel C. Hackett、Gurtej Kanwar、Kyle Cranmer、Sébastien Racanière、Danilo Jimenez Rezende、Phiala E. Shanahan；arXiv:2101.08176v3。",
+        "本卡核对 40 页全文。原文是与 Jupyter notebook 配套的可执行教程，重点是从概率恒等式到可检验代码的完整链条，而不是提出新的 benchmark。"
+      ]
+    },
+    {
+      "title": "研究问题",
+      "paragraphs": [
+        "格点场论需要从玻尔兹曼权重抽样；临界慢化、拓扑冻结和高维强关联会使局域 Markov 更新产生很长自相关。正规化流能直接生成全局 proposal，但只有结合精确接受拒绝或重加权后才保持目标分布无偏。",
+        "教程问的是：怎样把可逆映射、Jacobian、反向 KL 训练、independence Metropolis 和有效样本量组织成一套物理上可审计的采样器，并在 U(1) 格点规范理论中把规范对称性直接编码进网络？"
+      ]
+    },
+    {
+      "title": "背景",
+      "paragraphs": [
+        "可逆流 \\(f:z\\mapsto\\phi\\) 将简单基分布 \\(r(z)\\) 推到模型分布 \\(q(\\phi)\\)，其密度由变量替换公式精确计算。训练目标是 \\(D_{\\mathrm{KL}}(q\\Vert p)\\)，只需从模型自身采样和计算未归一化作用量。",
+        "直接使用 q 的样本一般仍有模型偏差；把 q 作为 independence proposal，加上 Metropolis–Hastings 接受率，或用重要性权重修正，才能得到渐近精确估计。"
+      ]
+    },
+    {
+      "title": "模型与方法",
+      "paragraphs": [
+        "标量理论部分从 checkerboard affine coupling layers 开始：每层冻结一半格点，用其余格点预测 scale 与 shift；多层交替 mask 保证全局耦合且 Jacobian 为三角结构。",
+        "训练后用 \\(A(\\phi\\!\\to\\!\\phi')=\\min[1,p(\\phi')q(\\phi)/(p(\\phi)q(\\phi'))]\\) 构造 independence chain，并以 reweighting ESS、接受率和 observable autocorrelation 判断 q 是否足够覆盖目标。",
+        "U(1) 部分不直接更新 link angle，而以 plaquette 的 gauge-invariant 信息生成等变 link 更新；mask 必须同时满足可逆性、局域依赖和格点平移覆盖。"
+      ]
+    },
+    {
+      "title": "核心结果与证据",
+      "paragraphs": [
+        "教程在二维标量场上逐步展示训练 loss、模型与目标 action、重加权 observable 及自相关诊断；核心证据不是单一数值，而是同一 notebook 能从目标作用量生成无偏 MCMC 流程。",
+        "对 U(1) 理论，Figures 2–5 依次定义 link、plaquette、将 plaquette 更新推回 link 的等变作用以及合法 mask。它们说明规范不变性不是数据增强，而是 coupling layer 的结构约束。",
+        "最重要的物理边界是：flow 的独立样本质量决定接受率与权重方差，但精确性来自后续统计校正。一个视觉上匹配的模型分布不能替代 detailed balance 或 importance identity。"
+      ]
+    },
+    {
+      "title": "有效性与局限",
+      "paragraphs": [
+        "这是教学实现，不是大体积 QCD 性能声明；标量与 U(1) 例子的自由度、耦合和网络规模都为课堂可运行性服务。",
+        "反向 KL 倾向 mode seeking，q 若漏掉相空间扇区，会造成低接受率或极端权重；有限训练样本上的漂亮直方图不能证明全局覆盖。",
+        "independence proposal 的接受事件仍可相关，ESS 也依赖 observable；评估必须同时报告接受率、权重尾部和积分自相关时间。",
+        "规范等变层减少无效自由度，但不自动解决拓扑扇区或费米子行列式的代价。"
+      ]
+    },
+    {
+      "title": "复现与资源",
+      "paragraphs": [
+        "原文：https://arxiv.org/abs/2101.08176；PDF：https://arxiv.org/pdf/2101.08176；论文明确建议配合所附 Jupyter notebook 交互运行。",
+        "全文 PDF 共 40 页，SHA-256：1b0caf63db00d605563de7cf56b5905c2572ee02dbdca7aaaf187231fa1a7822。",
+        "复现应固定格点大小、作用量参数、mask 顺序、随机种子和训练预算；保存 raw chain、log-weight、接受事件与逐 observable 自相关，而不只保存最终均值。",
+        "Evidence status: full-text verified; no independent reproduction performed."
+      ]
+    },
+    {
+      "title": "阅读指南",
+      "paragraphs": [
+        "先读标量场 notebook 单元，逐项核对变量替换、KL 和 Metropolis 接受率；再用 ESS 与自相关理解“模型质量”和“统计精确性”的区别。",
+        "随后读 U(1) 部分的 Figures 2–5，从 gauge transformation 到 plaquette-conditioned link update 重建等变性。",
+        "最后把教程范围与后续费米子论文分开：这里给出方法骨架，不声称已解决现实 QCD 规模。"
+      ]
+    }
+  ],
+  "cover": {
+    "mode": "title_abstract",
+    "abstract_text": "正规化流把简单基分布可逆地映射到格点场配置，并提供精确 Jacobian；结合 independence Metropolis 或重加权后，可作为渐近精确的全局 proposal。教程从二维标量场推进到 U(1) 规范理论，展示怎样把 plaquette 规范不变量和等变 link 更新写进 coupling layer，同时强调生成模型拟合好并不等于采样器已无偏。",
+    "selection_rationale": "原文是代码教程，图多为局部定义和 mask；题目加物理摘要更能概括完整方法链。"
+  },
+  "figure_refs": [],
+  "equation_refs": [
+    {
+      "label": "Flow density",
+      "latex": "q(\\phi)=r(f^{-1}(\\phi))\\left|\\det\\frac{\\partial f^{-1}}{\\partial\\phi}\\right|",
+      "role": "evaluate the generated field density exactly",
+      "symbols": {
+        "phi": "lattice field",
+        "z": "base variable",
+        "f": "invertible flow",
+        "r": "base density"
+      },
+      "evidence": "paper.pdf normalizing-flow introduction",
+      "interpretation": "Exact density evaluation makes importance weights and Metropolis corrections available."
+    },
+    {
+      "label": "Independence Metropolis correction",
+      "latex": "A(\\phi\\to\\phi')=\\min\\left(1,\\frac{p(\\phi')q(\\phi)}{p(\\phi)q(\\phi')}\\right)",
+      "role": "remove model bias while using the flow as a global proposal",
+      "symbols": {
+        "p": "target Boltzmann density",
+        "q": "flow proposal density",
+        "phi_prime": "proposed field"
+      },
+      "evidence": "paper.pdf scalar-field sampling section",
+      "interpretation": "The chain remains exact even when q differs from p, provided support and detailed-balance conditions hold."
+    }
+  ],
+  "evidence_refs": [
+    "paper.pdf scalar tutorial: flow construction, reverse-KL training and exact corrections",
+    "paper.pdf gauge tutorial: lattice U(1), plaquettes, equivariant updates and masks",
+    "source PDF SHA-256 1b0caf63db00d605563de7cf56b5905c2572ee02dbdca7aaaf187231fa1a7822",
+    "Evidence status: full-text verified; no independent reproduction performed."
+  ]
+}

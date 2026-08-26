@@ -1,0 +1,171 @@
+{
+  "arxiv_id": "2106.05934",
+  "source_version": "v2",
+  "source_pdf": "https://arxiv.org/pdf/2106.05934",
+  "title_en": "Flow-based sampling for fermionic lattice field theories",
+  "title_zh": "费米格点场论的流模型采样",
+  "curation_status": "full_text_verified",
+  "card_standard_version": "2.3",
+  "paper_profile": "theory_numerics",
+  "style_reference": "physicist_daily_arxiv",
+  "provenance": {
+    "program": "Collection",
+    "catalog": "Paper Collection",
+    "catalog_record_id": "7bf4c67140c643f3",
+    "catalog_record_ids": [
+      "7bf4c67140c643f3"
+    ],
+    "catalog_topic": "Field Theory",
+    "collection_date": "2026-08-23",
+    "sampled_at": "2026-08-26",
+    "selected_by": "full_collection_backfill",
+    "sampling_seed": "not_applicable_full_collection",
+    "candidate_count": 452
+  },
+  "verified_metadata": {
+    "arxiv_id": "2106.05934",
+    "version": "v2",
+    "title": "Flow-based sampling for fermionic lattice field theories",
+    "authors": [
+      "Michael S. Albergo",
+      "Gurtej Kanwar",
+      "Sébastien Racanière",
+      "Danilo J. Rezende",
+      "Julian M. Urban",
+      "Denis Boyda",
+      "Kyle Cranmer",
+      "Daniel C. Hackett",
+      "Phiala E. Shanahan"
+    ],
+    "categories": [
+      "hep-lat",
+      "cond-mat.stat-mech",
+      "cs.LG"
+    ],
+    "primary_category": "hep-lat",
+    "published": "2021-06-10T17:32:47Z",
+    "abstract": "Four exact sampling schemes extend normalizing flows to lattice theories with dynamical fermions."
+  },
+  "sections": [
+    {
+      "title": "作者信息",
+      "paragraphs": [
+        "作者：Michael S. Albergo 等九人；arXiv:2106.05934v2，hep-lat 并交叉统计物理与机器学习。",
+        "本卡核对 26 页全文。数值示范是二维无质量 staggered fermion 与标量场 Yukawa 耦合，并以 HMC 为基线。"
+      ]
+    },
+    {
+      "title": "研究问题",
+      "paragraphs": [
+        "积分掉 Grassmann 费米场后，玻色场权重包含昂贵且非局域的 fermion determinant。直接训练只对玻色场采样的 flow 会在训练或接受率中反复计算行列式；引入 pseudofermion 又产生条件分布与联合分布的建模选择。",
+        "论文系统比较四种保持渐近精确性的方案：标量边缘、Gibbs 条件更新、自回归分解和完全联合 flow，并问各自把行列式代价、模型误差和 Markov 自相关放在哪里。"
+      ]
+    },
+    {
+      "title": "背景",
+      "paragraphs": [
+        "目标联合密度可写为 \\(p(\\phi,\\varphi)=p(\\phi)p(\\varphi\\mid\\phi)\\)，其中 pseudofermion \\(\\varphi=\\mathcal A(\\phi)\\chi\\) 可由条件 Gaussian 精确采样。",
+        "flow proposal 本身近似目标；Metropolis correction、Gibbs detailed balance 或重加权赋予 exactness。不同分解的可扩展性不能只由接受率判断，因为某些方案每步仍需 determinant 或线性求解。"
+      ]
+    },
+    {
+      "title": "模型与方法",
+      "paragraphs": [
+        "Figure 1 将四种 sampler 并列：φ-marginal、Gibbs、autoregressive 与 joint；蓝色为当前 Markov 状态，黄色为可采样模型，绿色为接受拒绝。",
+        "作者为四种分解设计 coupling-layer flows，并使用 even-odd preconditioning。每种训练后生成 100 条、每条 10,000 步的链，丢弃前 1,000 步热化。",
+        "统计效率用接受率和 observable-specific integrated autocorrelation \\(\\tau_X^{\\mathrm{int}}=\\frac12+\\sum_{\\tau=1}^{\\tau_{\\max}}\\Gamma_X(\\tau)/\\Gamma_X(0)\\) 评估，窗口由 Madras–Sokal 规则确定。"
+      ]
+    },
+    {
+      "title": "核心结果与证据",
+      "paragraphs": [
+        "Figure 1 是方法选择图：它显示哪些变量被 flow 生成、哪些保持为链状态，以及 exact accept/reject 位于何处，替代逐段文字比较。",
+        "四种 flow-based exact samplers 对 magnetization、chiral condensate 及标量/费米二点关联给出与 HMC 相容的结果；一致性是无偏性的首要检查。",
+        "φ-marginal 在该小系统中接受率较高、自相关较低，但显式 determinant 在大体积或轻费米质量下扩展困难；若用 noisy determinant estimator，其方差可压低接受率。",
+        "其余三种方案在 perfect model 极限可达 100% 接受率，但 Gibbs proposal 依赖前一 φ，不能像 independence sampler 那样完全异步生成。论文的结论是权衡地图，不是单一赢家。"
+      ]
+    },
+    {
+      "title": "有效性与局限",
+      "paragraphs": [
+        "数值系统为二维 toy Yukawa theory；离四维 QCD、大体积和接近手征极限仍有数量级差距。",
+        "接受率与自相关依赖 action 参数和 observable，不能用一个平均数概括。训练成本、Dirac solve 和 determinant estimator 的墙钟开销需单独核算。",
+        "模型质量在有限格点上可管理，不代表体积增长时 KL 或权重方差温和；接近热力学极限可能出现 overlap catastrophe。",
+        "所有 exactness 论证都依赖接受拒绝、detailed balance 或无偏重加权正确实现，不能直接部署裸 flow 样本。"
+      ]
+    },
+    {
+      "title": "复现与资源",
+      "paragraphs": [
+        "原文：https://arxiv.org/abs/2106.05934；PDF：https://arxiv.org/pdf/2106.05934。",
+        "全文 PDF 共 26 页，SHA-256：ea75b10a32baf6510c3b1d3696759c6e1c4be346d1e257e5b43282ca64c909ac。",
+        "复现需对四种分解使用相同作用量、格点、链长与误差分析；保存接受事件、每次 Dirac solve/行列式成本、权重、raw observables 和 jackknife blocks。",
+        "Evidence status: full-text verified; no independent reproduction performed."
+      ]
+    },
+    {
+      "title": "阅读指南",
+      "paragraphs": [
+        "先看 Figure 1 和 Table I，画出每种 sampler 的状态变量、proposal 和 exactness 机制。",
+        "再读 Sec. IV 的四个 flow 架构，注意哪些 conditional 可以精确采样、哪些需近似。",
+        "最后用 Table III 和 Figures 4–5 同时检查正确 observable 与自相关；不要按接受率单独排名。"
+      ]
+    }
+  ],
+  "cover": {
+    "mode": "source_figure",
+    "asset_path": "assets/collection-figures/2106.05934/figure-1-sampling-schemes.webp",
+    "label": "Figure 1",
+    "visual_type": "schematic",
+    "evidence": "paper.pdf p. 5, Figure 1",
+    "alt_text": "费米 flow 的四种渐近精确采样方案。",
+    "caption": "边缘、Gibbs、自回归和联合方案把 flow proposal、链状态与接受拒绝放在不同位置。",
+    "selection_rationale": "四方案示意图是论文最重要的比较结构，比单一相关函数曲线更能解释贡献。"
+  },
+  "figure_refs": [
+    {
+      "label": "Figure 1",
+      "asset_path": "assets/collection-figures/2106.05934/figure-1-sampling-schemes.webp",
+      "section": "核心结果与证据",
+      "role": "compare four exact sampling factorizations",
+      "evidence": "paper.pdf p. 5, Figure 1",
+      "alt_text": "四种 fermionic flow sampler。",
+      "caption": "蓝色为链状态，黄色为生成密度，绿色为接受拒绝。",
+      "interpretation": "Each factorization moves determinant and conditional-sampling costs to a different stage."
+    }
+  ],
+  "equation_refs": [
+    {
+      "label": "Pseudofermion conditional sample",
+      "latex": "\\varphi=\\mathcal A(\\phi)\\chi,\\qquad \\chi\\sim\\mathcal N_{\\mathbb C}(0,I)",
+      "role": "draw pseudofermions exactly conditional on the bosonic field",
+      "symbols": {
+        "phi": "bosonic field",
+        "varphi": "pseudofermion",
+        "A": "operator whose product gives the fermion matrix",
+        "chi": "complex Gaussian noise"
+      },
+      "evidence": "paper.pdf p. 5, Eq. (16)",
+      "interpretation": "Exact conditional sampling enables Gibbs-style schemes without explicitly normalizing the conditional density."
+    },
+    {
+      "label": "Integrated autocorrelation time",
+      "latex": "\\tau_X^{\\mathrm{int}}=\\frac12+\\sum_{\\tau=1}^{\\tau_{\\max}}\\frac{\\Gamma_X(\\tau)}{\\Gamma_X(0)}",
+      "role": "measure observable-specific Markov-chain efficiency",
+      "symbols": {
+        "X": "observable",
+        "Gamma_X": "autocorrelation function",
+        "tau_max": "window cutoff"
+      },
+      "evidence": "paper.pdf p. 15, Eq. (52)",
+      "interpretation": "Acceptance rate alone is insufficient because different observables decorrelate on different time scales."
+    }
+  ],
+  "evidence_refs": [
+    "paper.pdf pp. 4–8: four exact schemes and flow architectures",
+    "paper.pdf pp. 12–16: observable agreement, acceptance and autocorrelation",
+    "paper.pdf Sec. VII: scaling limitations and outlook",
+    "source PDF SHA-256 ea75b10a32baf6510c3b1d3696759c6e1c4be346d1e257e5b43282ca64c909ac",
+    "Evidence status: full-text verified; no independent reproduction performed."
+  ]
+}

@@ -1,0 +1,203 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Non Gaussian Denoising Diffusion Models - physics+AI Collection 随机精选</title>
+    <meta name="description" content="作者：Eliya Nachmani、Robin San Roman、Lior Wolf；arXiv:2106.07582v1。 本卡核对 12 页全文。实验覆盖 CelebA、LSUN Church 与 LJ speech，比较 Gaussian、Gaussian mixture 和 Gamma forward noise。" />
+    <script>
+      (function() {
+        try {
+          var themePreference = window.localStorage.getItem('color-theme') || 'system';
+          var systemUsesDarkTheme = window.matchMedia('(prefers-color-scheme: dark)').matches;
+          var resolvedTheme = themePreference === 'system'
+            ? (systemUsesDarkTheme ? 'dark' : 'light')
+            : themePreference;
+          document.documentElement.dataset.theme = resolvedTheme;
+          document.documentElement.dataset.themePreference = themePreference;
+          document.documentElement.style.colorScheme = resolvedTheme;
+        } catch (error) {
+          document.documentElement.dataset.theme = 'light';
+          document.documentElement.dataset.themePreference = 'system';
+        }
+      })();
+    </script>
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='18' fill='%23111827'/%3E%3Ctext x='50%25' y='55%25' text-anchor='middle' dominant-baseline='middle' font-size='30' font-family='Arial, sans-serif' fill='white'%3EV%3C/text%3E%3C/svg%3E" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700;800&family=Noto+Sans+SC:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <script>document.documentElement.classList.add('math-pending');</script>
+    <script>
+      window.MathJax = {
+        tex: {
+          inlineMath: [['$', '$'], ['\\(', '\\)']],
+          displayMath: [['$$', '$$'], ['\\[', '\\]']],
+          processEscapes: true
+        },
+        options: {
+          skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+        },
+        chtml: {
+          scale: 1,
+          displayAlign: 'center'
+        },
+        startup: {
+          ready: function() {
+            MathJax.startup.defaultReady();
+            MathJax.startup.promise.then(function() {
+              document.documentElement.classList.remove('math-pending');
+              document.documentElement.dataset.mathReady = 'true';
+            });
+          }
+        }
+      };
+    </script>
+    <script defer src="../../assets/vendor/mathjax/tex-chtml.js"></script>
+    <link rel="stylesheet" href="../../assets/style.css" />
+  </head>
+  <body class="detail-page" data-paper-id="2106.07582">
+    <div class="page-noise"></div>
+    <div class="page-blur page-blur-a"></div>
+    <div class="page-blur page-blur-b"></div>
+
+    <header class="header detail-page-header">
+      <div class="container">
+        <div class="detail-page-topbar">
+          <a class="back-link" href="../../collection.html">返回列表</a>
+          <div class="detail-topbar-actions">
+            <span class="detail-site-name">physics+AI Collection 随机精选</span>
+            <button class="theme-toggle" type="button" data-theme-toggle aria-label="当前主题：设备，点击切换主题" title="当前主题：设备">
+  <span class="theme-toggle-icons" aria-hidden="true">
+    <svg class="theme-toggle-icon theme-toggle-icon-light" viewBox="0 0 24 24" fill="none">
+      <circle cx="12" cy="12" r="3.5" stroke="currentColor" stroke-width="1.8"/>
+      <path d="M12 2.5v2M12 19.5v2M2.5 12h2M19.5 12h2M5.3 5.3l1.4 1.4M17.3 17.3l1.4 1.4M18.7 5.3l-1.4 1.4M6.7 17.3l-1.4 1.4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+    </svg>
+    <svg class="theme-toggle-icon theme-toggle-icon-dark" viewBox="0 0 24 24" fill="none">
+      <path d="M20 15.2A8.1 8.1 0 0 1 8.8 4a8.2 8.2 0 1 0 11.2 11.2z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>
+    </svg>
+    <svg class="theme-toggle-icon theme-toggle-icon-system" viewBox="0 0 24 24" fill="none">
+      <rect x="3" y="4" width="18" height="13" rx="2.5" stroke="currentColor" stroke-width="1.8"/>
+      <path d="M8 21h8M12 17v4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+    </svg>
+  </span>
+  <span class="theme-toggle-label" data-theme-toggle-label>设备</span>
+</button>
+          </div>
+        </div>
+
+        <div class="detail-hero-grid">
+          <div class="detail-hero-cover"><figure class="paper-figure-card paper-figure-card-detail">
+  <img class="paper-figure-image" src="../../assets/collection-figures/2106.07582/figure-2-generated-faces.webp" alt="同一初始噪声下 Gaussian、Gaussian mixture 与 Gamma 扩散生成的人脸。" loading="lazy" onclick="window.openPaperFigureImage && window.openPaperFigureImage(this)" />
+  <figcaption class="paper-figure-caption">三行分别对应单 Gaussian、Gaussian mixture 与 Gamma noise，均使用 100 个 reverse steps。</figcaption>
+</figure></div>
+          <div class="detail-hero-copy">
+            <p class="eyebrow">Collection 全文卡</p>
+            <h1 class="detail-page-title">Non Gaussian Denoising Diffusion Models</h1>
+            <p class="detail-page-title-zh">非高斯去噪扩散模型</p>
+            <div class="detail-meta">Paper Collection · Generative Models · <a href="https://arxiv.org/abs/2106.07582" target="_blank" rel="noopener noreferrer">原文</a></div>
+            <p class="detail-summary">作者：Eliya Nachmani、Robin San Roman、Lior Wolf；arXiv:2106.07582v1。 本卡核对 12 页全文。实验覆盖 CelebA、LSUN Church 与 LJ speech，比较 Gaussian、Gaussian mixture 和 Gamma forward noise。</p>
+            <div class="detail-micro-meta">
+              <span class="meta-pill">8 分钟读完</span>
+              <span class="meta-pill">8 张阅读卡</span>
+              <span class="meta-pill">作者：Eliya Nachmani、Robin San Roman、Lior Wolf；arXiv:2…</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <main class="container detail-layout">
+      <div class="detail-shell">
+        <article id="detail-body" class="reading-flow"><section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 01</span>
+    <span class="reading-step-note">作者信息</span>
+  </div>
+  <h2>作者信息</h2>
+  <div class="reading-card-content"><ul><li>作者：Eliya Nachmani、Robin San Roman、Lior Wolf；arXiv:2106.07582v1。</li><li>本卡核对 12 页全文。实验覆盖 CelebA、LSUN Church 与 LJ speech，比较 Gaussian、Gaussian mixture 和 Gamma forward noise。</li></ul></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 02</span>
+    <span class="reading-step-note">研究问题</span>
+  </div>
+  <h2>研究问题</h2>
+  <div class="reading-card-content"><ul><li>标准扩散模型选择 Gaussian 噪声，原因是闭合的加噪边缘与简单训练目标，而不是数据残差必然高斯。作者观察预训练 DDPM 的图像差分直方图存在非高斯形状，问额外自由度能否改善少步采样。</li><li>关键约束是替代噪声仍需可高效重参数化，使任意时间步的带噪样本能直接构造，而不是逐步模拟整条 forward chain。</li></ul></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 03</span>
+    <span class="reading-step-note">背景</span>
+  </div>
+  <h2>背景</h2>
+  <div class="reading-card-content"><ul><li>Gaussian diffusion 的闭包性使多步噪声仍是 Gaussian。Gamma 分布具有可加性；适当中心化和缩放后可维持零均值及预定方差。Gaussian mixture 则用离散成分增加多峰自由度。</li><li>若 forward kernel 改变，reverse model 的训练目标和采样递推也必须一致修改；只在末端换 prior 并不等价。</li></ul></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 04</span>
+    <span class="reading-step-note">模型与方法</span>
+  </div>
+  <h2>模型与方法</h2>
+  <div class="reading-card-content"><ul><li>Gamma 方案令每步噪声来自中心化 Gamma，并选择 shape/rate 使累积噪声满足目标方差日程；模型预测标准化噪声 \(\epsilon_t\)，reverse update 使用对应的非高斯样本。</li><li>mixture 方案将多个 Gaussian noise variables 组合，并保持可直接采样的时刻边缘。作者在相同迭代数下比较 DDPM-like 与 DDIM-like 采样。</li><li>图像指标用 FID，语音用 PESQ、STOI 与 MCD；Figure 2 固定同一初始噪声，直观比较三种 noise law 的 100-step 生成结果。</li></ul></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 05</span>
+    <span class="reading-step-note">核心结果与证据</span>
+  </div>
+  <h2>核心结果与证据</h2>
+  <div class="reading-card-content"><ul><li>Figure 2 显示同一初始噪声下三行 CelebA 样本：单 Gaussian、Gaussian mixture、Gamma。它让改变量只剩 forward noise family，比随机挑选不同 seed 更可解释。</li><li>CelebA DDIM 10/20/50/100 steps 中 Gamma FID 为 11.64/6.83/4.28/3.17，均优于单 Gaussian 的 17.33/13.73/9.17/6.53；1000-step 时 Gamma 2.92 也优于 3.51。</li><li>LSUN Church 的 Gamma DDPM 在 10/20/50/100 steps 为 28.56/19.68/10.53/7.87，对应 Gaussian 为 51.56/23.37/11.16/8.27。mixture 在高分辨率上因训练成本未完成。</li><li>优势主要出现在少步采样；论文没有给出哪类数据分布对应哪种最优噪声的理论判据。</li></ul><figure class="evidence-figure">
+  <button class="evidence-figure-image-button" type="button" aria-label="放大查看 Figure 2" onclick="window.openPaperFigureImage && window.openPaperFigureImage(this.querySelector('img'))">
+    <img class="paper-figure-image evidence-figure-image" src="../../assets/collection-figures/2106.07582/figure-2-generated-faces.webp" alt="三种噪声分布的 CelebA 生成比较。" loading="lazy" />
+  </button>
+  <figcaption>
+    <strong>Figure 2</strong> · 固定初始噪声隔离 noise family 对生成轨迹的影响。
+    <span class="evidence-figure-reading">物理解读：The visual comparison supports a difference in sample quality but does not alone establish coverage or likelihood.</span>
+    <span class="evidence-figure-source">来源：paper.pdf p. 9, Figure 2</span>
+  </figcaption>
+</figure></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 06</span>
+    <span class="reading-step-note">有效性与局限</span>
+  </div>
+  <h2>有效性与局限</h2>
+  <div class="reading-card-content"><ul><li>噪声族、参数化与训练预算同时变化，不能把所有收益解释为“真实残差是 Gamma”；Figure 1 的 histogram fit 是动机，不是因果证明。</li><li>只考察 Gamma 与一种 Gaussian mixture，搜索空间远未穷尽；作者在 Limitations 中明确承认缺少适用条件的完整刻画。</li><li>高分辨率 mixture 实验缺失，模型规模和 compute 未完全等价；FID 也不衡量 mode coverage、语义一致性或社会偏差。</li><li>论文年代较早，结论针对其 DDPM/DDIM 配置；不能直接外推到现代 latent diffusion 或不同 parameterization。</li></ul></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 07</span>
+    <span class="reading-step-note">复现与资源</span>
+  </div>
+  <h2>复现与资源</h2>
+  <div class="reading-card-content"><ul><li>原文：https://arxiv.org/abs/2106.07582；PDF：https://arxiv.org/pdf/2106.07582。</li><li>全文 PDF 共 12 页，SHA-256：51b136b3ff13ad0242001ab623f3cec775fc5ba2ad12de95bd940a3ed477d329。</li><li>复现需固定 backbone、variance schedule、训练步数、数据预处理与 FID 实现；每个 noise family 使用相同 seed 集，并同时报告少步/长步采样曲线。</li><li>Evidence status: full-text verified; no independent reproduction performed.</li></ul></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 08</span>
+    <span class="reading-step-note">阅读指南</span>
+  </div>
+  <h2>阅读指南</h2>
+  <div class="reading-card-content"><ul><li>先读 Figure 1，把 empirical residual fit 当作提出假设；再读 Gamma 可加性与 reverse update 推导。</li><li>随后核对 Tables 2–3，区分 DDPM、DDIM、步数和数据集，不要只摘最优单元格。</li><li>最后读 Limitations；这篇文章提出“噪声族是设计变量”，但没有完成噪声选择理论。</li></ul></div>
+</section></article>
+        <aside id="detail-toc" class="detail-toc hidden" aria-label="内容目录">
+          <p class="detail-toc-title">阅读目录</p>
+          <nav id="detail-toc-nav" class="detail-toc-nav"></nav>
+        </aside>
+      </div>
+      <nav class="paper-nav"><a class="paper-nav-link paper-nav-prev" href="../../collection-papers/2106.05934/"><span class="paper-nav-label">← 上一篇</span><span class="paper-nav-title">Flow-based sampling for fermionic lattice field theories</span></a>
+      <a class="paper-nav-link paper-nav-next" href="../../collection-papers/2107.00724/"><span class="paper-nav-label">下一篇 →</span><span class="paper-nav-title">Symmetry, Thermodynamics and Topology in Active Matter</span></a></nav>
+    </main>
+
+    <footer class="footer">
+      <div class="container">
+        <p>内容来自 <a href="https://arxiv.org" target="_blank" rel="noopener noreferrer">arXiv.org</a>，阅读卡片由静态站点生成器构建。</p>
+      </div>
+    </footer>
+
+    <script src="../../assets/theme.js"></script>
+    <script src="../../assets/media.js"></script>
+    <script src="../../assets/paper.js"></script>
+  </body>
+</html>
