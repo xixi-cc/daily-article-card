@@ -58,6 +58,18 @@ COVER_VISUAL_TYPES = {
 }
 
 
+def iter_strings(value: object):
+    """Yield decoded strings recursively so escaped control characters cannot hide in JSON."""
+    if isinstance(value, str):
+        yield value
+    elif isinstance(value, list):
+        for item in value:
+            yield from iter_strings(item)
+    elif isinstance(value, dict):
+        for item in value.values():
+            yield from iter_strings(item)
+
+
 def is_v2_card(card: dict[str, object]) -> bool:
     version = str(card.get("card_standard_version", "1.0"))
     try:
@@ -174,6 +186,8 @@ def validate_v2_card(card: dict[str, object], arxiv_id: str, program: str = "Dai
             errors.append(f"{arxiv_id}: unbalanced inline-math delimiter")
 
     if version_at_least(card, (2, 3)):
+        if any(any(ord(char) < 32 for char in text) for text in iter_strings(card)):
+            errors.append(f"{arxiv_id}: decoded card text contains ASCII control characters")
         cover = card.get("cover")
         if not isinstance(cover, dict):
             errors.append(f"{arxiv_id}: v2.3 requires a structured cover decision")
