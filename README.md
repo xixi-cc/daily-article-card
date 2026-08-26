@@ -56,4 +56,6 @@ python scripts/validate_paper_cards.py
 
 推送到 `master` 或 `main` 后，`.github/workflows/deploy.yml` 会构建并部署 `site/`。论文选择由 Codex 的每日自动任务完成；GitHub Actions 只执行确定性的图片处理、构建和 Pages 发布。
 
+Every completed website update must be pushed to GitHub. 发布完成的定义包括：验证与构建通过、提交当前变更、无强制推送到 GitHub `origin`、确认本地 `HEAD` 与 GitHub 分支头一致，并核验 GitHub Actions / Pages。OpenAI Sites 是并行发布目标，不能替代 GitHub 同步；两者同时发布时必须来自同一份已验证源码树。
+
 站点地址：<https://xixi-cc.github.io/physics_AI/>

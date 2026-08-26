@@ -13,8 +13,9 @@ Current required version: 2.3
 | `data/curated_cards/*.json` | Daily card sources | New cards include `card_standard_version`, `equation_refs`, `figure_refs`, and `cover` |
 | `data/collection_cards/*.json` | Collection card sources | New or substantively revised cards follow the same card standard but retain Collection provenance |
 | `scripts/validate_paper_cards.py` | Structural and evidence gate | Reject malformed v2.3 covers, unresolved figure assets, and raw or unbalanced TeX |
-| `scripts/build_site.py` | Feed, detail page, and standalone cover renderer | Derive all three surfaces from the same structured `cover` record and package local MathJax |
+| `scripts/build_site.py` and `scripts/math_typography.py` | Feed, detail page, and standalone cover renderer | Derive all three surfaces from the same structured `cover` record, normalize unmistakable inline notation, and package local MathJax |
 | `.github/workflows/deploy.yml` | GitHub Pages build gate | Run the synchronization check and card validator before deployment |
+| GitHub `origin` | Canonical public source and Pages trigger | Every completed website update must be pushed without force and local `HEAD` must equal the target branch SHA |
 | OpenAI Sites project | Owner-only hosted copy | Publish the same generated site after a validated repository change |
 
 ## Propagation rule
@@ -30,3 +31,5 @@ npm run build
 ```
 
 Historical cards retain their recorded version until they are substantively revised. Historical automation outputs, receipts, and release archives are append-only evidence and must not be rewritten merely to change the current standard. The separate Paper Collection catalog is an intake source, not a Paper Card renderer; only cards promoted into this repository's Collection data flow are governed here.
+
+GitHub synchronization is a permanent publication invariant, not a one-time migration step. A Sites deployment does not complete an update unless the same validated source has also been committed and pushed to GitHub `origin` and the remote branch SHA has been verified.

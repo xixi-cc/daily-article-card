@@ -138,7 +138,7 @@
     <span class="reading-step-note">模型与方法</span>
   </div>
   <h2>模型与方法</h2>
-  <div class="reading-card-content"><ul><li>作者给出两种实现：PNO_R 在确定性神经算子后学习均值与低成本随机扰动，近似函数空间高斯；PNO_D 通过 dropout/随机网络多次前向产生更一般的经验分布。框架对底层 FNO 或 UNO 基本无关。</li><li>评价把准确度与不确定性拆开：LL2 检查样本均值，energy score 检查整体函数分布，CRPS 检查逐点分位数，NLL 检查高斯矩匹配，并比较名义区间覆盖率 C_α 与区间宽度。理想模型应在 C_α≈1−α 时尽量保持区间窄。</li><li>实验覆盖二维 Darcy flow、Kuramoto–Sivashinsky、球面浅水方程和 ERA5 2 m 温度；测试统一从预测分布抽取 M=100 个函数样本，并与 Monte-Carlo dropout、Laplace approximation 和确定性算子比较。</li></ul></div>
+  <div class="reading-card-content"><ul><li>作者给出两种实现：\(PNO_{R}\) 在确定性神经算子后学习均值与低成本随机扰动，近似函数空间高斯；\(PNO_{D}\) 通过 dropout/随机网络多次前向产生更一般的经验分布。框架对底层 FNO 或 UNO 基本无关。</li><li>评价把准确度与不确定性拆开：LL2 检查样本均值，energy score 检查整体函数分布，CRPS 检查逐点分位数，NLL 检查高斯矩匹配，并比较名义区间覆盖率 C_α 与区间宽度。理想模型应在 C_α≈1−\(\alpha\) 时尽量保持区间窄。</li><li>实验覆盖二维 Darcy flow、Kuramoto–Sivashinsky、球面浅水方程和 ERA5 2 m 温度；测试统一从预测分布抽取 \(M=100\) 个函数样本，并与 Monte-Carlo dropout、Laplace approximation 和确定性算子比较。</li></ul></div>
 </section>
 <section class="reading-card reading-card-section">
   <div class="reading-card-topline">
@@ -146,7 +146,7 @@
     <span class="reading-step-note">核心结果与证据</span>
   </div>
   <h2>核心结果与证据</h2>
-  <div class="reading-card-content"><ul><li>Figure 2 以球面浅水位势为例，把 ground truth、均值、绝对误差、预测标准差和 95% coverage 并排显示。PNO_D/PNO_R 的不确定性场与误差结构更一致；相比只看一张均值图，这种空间共定位才是方法希望学习的物理信息。</li><li>在多个数据集和 FNO/UNO 架构上，PNO 通常改善 ES、CRPS、NLL 与 coverage，同时均值 LL2 不劣于甚至优于确定性基线。作者将均值改善解释为分布训练减小偏差，但表格优势并非每项、每任务都一致。</li><li>代价是 energy score 每步需要多个函数样本：论文报告每 epoch 训练时间约为对照的 1.5–3 倍。长自回归 rollout 仍可能不稳定，说明校准的一步或短程条件分布不会自动保证长期不变测度正确。</li></ul><figure class="evidence-figure">
+  <div class="reading-card-content"><ul><li>Figure 2 以球面浅水位势为例，把 ground truth、均值、绝对误差、预测标准差和 95% coverage 并排显示。\(PNO_{D}\)/\(PNO_{R}\) 的不确定性场与误差结构更一致；相比只看一张均值图，这种空间共定位才是方法希望学习的物理信息。</li><li>在多个数据集和 FNO/UNO 架构上，PNO 通常改善 ES、CRPS、NLL 与 coverage，同时均值 LL2 不劣于甚至优于确定性基线。作者将均值改善解释为分布训练减小偏差，但表格优势并非每项、每任务都一致。</li><li>代价是 energy score 每步需要多个函数样本：论文报告每 epoch 训练时间约为对照的 1.5–3 倍。长自回归 rollout 仍可能不稳定，说明校准的一步或短程条件分布不会自动保证长期不变测度正确。</li></ul><figure class="evidence-figure">
   <button class="evidence-figure-image-button" type="button" aria-label="放大查看 Figure 2" onclick="window.openPaperFigureImage && window.openPaperFigureImage(this.querySelector('img'))">
     <img class="paper-figure-image evidence-figure-image" src="../../assets/collection-figures/2502.12902/figure-2-shallow-water-uq.webp" alt="球面浅水位势的真值、预测、误差、标准差和覆盖率比较。" loading="lazy" />
   </button>
@@ -163,7 +163,7 @@
     <span class="reading-step-note">有效性与局限</span>
   </div>
   <h2>有效性与局限</h2>
-  <div class="reading-card-content"><ul><li>energy score 在函数空间中是 proper 的理论结果，建立在真实条件分布可由模型族表达且总体风险可优化的理想条件上；有限数据、有限样本 M 和架构失配仍会造成欠校准。</li><li>PNO_R 的高斯结构限制尾部与多模态；PNO_D 的精确预测分布不可解析，难以给出 coverage 或收敛保证。对极端事件尤其不能只凭平均 CRPS 宣称尾部可靠。</li><li>可视化来自代表性样本，不能替代表格的多样本统计；ERA5 与 PDE 任务的网格、噪声和 rollout 设置不同，不能把一种数据上的校准直接外推。</li><li>该卡核对全文、函数空间论证、图和表；no independent reproduction performed，未训练 FNO/UNO 或重新评估 100-sample 指标。</li></ul></div>
+  <div class="reading-card-content"><ul><li>energy score 在函数空间中是 proper 的理论结果，建立在真实条件分布可由模型族表达且总体风险可优化的理想条件上；有限数据、有限样本 M 和架构失配仍会造成欠校准。</li><li>\(PNO_{R}\) 的高斯结构限制尾部与多模态；\(PNO_{D}\) 的精确预测分布不可解析，难以给出 coverage 或收敛保证。对极端事件尤其不能只凭平均 CRPS 宣称尾部可靠。</li><li>可视化来自代表性样本，不能替代表格的多样本统计；ERA5 与 PDE 任务的网格、噪声和 rollout 设置不同，不能把一种数据上的校准直接外推。</li><li>该卡核对全文、函数空间论证、图和表；no independent reproduction performed，未训练 FNO/UNO 或重新评估 100-sample 指标。</li></ul></div>
 </section>
 <section class="reading-card reading-card-section">
   <div class="reading-card-topline">
@@ -171,7 +171,7 @@
     <span class="reading-step-note">复现与资源</span>
   </div>
   <h2>复现与资源</h2>
-  <div class="reading-card-content"><ul><li>原文：https://arxiv.org/abs/2502.12902；PDF：https://arxiv.org/pdf/2502.12902。</li><li>全文快照 SHA-256：9761b322e6d77081ab829fd99e2d2eda0aca4624a06cb52c118b9eefc5501a59；PDF 共 28 页。</li><li>复现需固定 PDE 数据生成、网格与归一化、FNO/UNO 版本、PNO_R/PNO_D 随机化、训练时样本数、M=100 测试抽样、分位数定义、rollout 长度和随机种子。</li><li>Evidence status: full-text verified; no independent reproduction performed.</li></ul></div>
+  <div class="reading-card-content"><ul><li>原文：https://arxiv.org/abs/2502.12902；PDF：https://arxiv.org/pdf/2502.12902。</li><li>全文快照 SHA-256：9761b322e6d77081ab829fd99e2d2eda0aca4624a06cb52c118b9eefc5501a59；PDF 共 28 页。</li><li>复现需固定 PDE 数据生成、网格与归一化、FNO/UNO 版本、\(PNO_{R}\)/\(PNO_{D}\) 随机化、训练时样本数、\(M=100\) 测试抽样、分位数定义、rollout 长度和随机种子。</li><li>Evidence status: full-text verified; no independent reproduction performed.</li></ul></div>
 </section>
 <section class="reading-card reading-card-section">
   <div class="reading-card-topline">

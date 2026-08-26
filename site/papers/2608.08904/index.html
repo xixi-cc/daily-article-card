@@ -130,7 +130,7 @@
     <span class="reading-step-note">模型与方法</span>
   </div>
   <h2>模型与方法</h2>
-  <div class="reading-card-content"><ul><li>对同一批 LIBERO 双相机帧，在 36 层每层视觉 token 上分别训练容量相同的 DPT depth probe，以 Depth-Anything-3 为 pseudo-ground truth；按 rollout 切分避免相邻帧泄漏。</li><li>深度指标 $d_1$ 在 affine alignment 后计算阈值内像素比例；另以线性 ridge probe 和 RMSE 核查 probe 架构依赖。</li><li>作者把 VLA 相对 VLM 全层持续差距称 floor，把 L28–L35 中 VLM 回升而 VLA 反向下跌称 cliff。</li><li>因果定位采用 2×2×12 全栈设计：VLM/VLA × MLP/attention，在每个不重叠 3 层窗口将对应 residual write 置零，再重新训练 L35 probe。</li><li>最后直接 probe 累积 MLP deposits $\sum_{i\le\ell}m_i$ 与 residual stream，并比较写入/流的 token norm，解释为何晚层单次写入影响更大。</li></ul></div>
+  <div class="reading-card-content"><ul><li>对同一批 LIBERO 双相机帧，在 36 层每层视觉 token 上分别训练容量相同的 DPT depth probe，以 Depth-Anything-3 为 pseudo-ground truth；按 rollout 切分避免相邻帧泄漏。</li><li>深度指标 $d_1$ 在 affine alignment 后计算阈值内像素比例；另以线性 ridge probe 和 RMSE 核查 probe 架构依赖。</li><li>作者把 VLA 相对 VLM 全层持续差距称 floor，把 \(L_{28}\)–\(L_{35}\) 中 VLM 回升而 VLA 反向下跌称 cliff。</li><li>因果定位采用 2×2×12 全栈设计：VLM/VLA × MLP/attention，在每个不重叠 3 层窗口将对应 residual write 置零，再重新训练 \(L_{35}\) probe。</li><li>最后直接 probe 累积 MLP deposits $\sum_{i\le\ell}m_i$ 与 residual stream，并比较写入/流的 token norm，解释为何晚层单次写入影响更大。</li></ul></div>
 </section>
 <section class="reading-card reading-card-section">
   <div class="reading-card-topline">
@@ -138,7 +138,7 @@
     <span class="reading-step-note">核心结果与证据</span>
   </div>
   <h2>核心结果与证据</h2>
-  <div class="reading-card-content"><ul><li>VLM 从 L0 的约 0.71 降至 L8 约 0.66，最终恢复至 0.752；VLA 在全部 36 层更差。表 2 的 early/mid/late 均值分别为 VLM 0.705/0.701/0.744，对应 VLA 0.617/0.606/0.578。</li><li>L35 差距达 0.246（0.752 对 0.506）；L28→L35 的 VLM 斜率 +0.040，VLA 为 −0.123，明确区分持续 floor 与额外 terminal cliff。</li><li>消融 VLA L33–35 MLP writes 将 L35 $d_1$ 从 0.506 提至 0.584（+0.078），恢复 cliff 的多数；L30–32 提升 +0.050。attention 末窗仅 +0.031，VLM MLP 末窗仅 +0.015。</li><li>VLM 的累积 MLP deposits 全程约 0.80–0.84，比 residual stream 0.66–0.75 更易解码；VLA deposits 在末层从约 0.68 崩至 0.38，ridge SNR 接近 0.03。</li><li>前 2/3 深度 residual stream norm 比单个 MLP write 大 100–1000 倍，后层压缩到约 10 倍；这解释晚层 write 可产生更强相对扰动，但不是证明动作能力与深度必然冲突。</li></ul></div>
+  <div class="reading-card-content"><ul><li>VLM 从 \(L_{0}\) 的约 0.71 降至 \(L_{8}\) 约 0.66，最终恢复至 0.752；VLA 在全部 36 层更差。表 2 的 early/mid/late 均值分别为 VLM 0.705/0.701/0.744，对应 VLA 0.617/0.606/0.578。</li><li>\(L_{35}\) 差距达 0.246（0.752 对 0.506）；\(L_{28}\to L_{35}\) 的 VLM 斜率 +0.040，VLA 为 −0.123，明确区分持续 floor 与额外 terminal cliff。</li><li>消融 VLA \(L_{33}\)–35 MLP writes 将 \(L_{35}\) $d_1$ 从 0.506 提至 0.584（+0.078），恢复 cliff 的多数；\(L_{30}\)–32 提升 +0.050。attention 末窗仅 +0.031，VLM MLP 末窗仅 +0.015。</li><li>VLM 的累积 MLP deposits 全程约 0.80–0.84，比 residual stream 0.66–0.75 更易解码；VLA deposits 在末层从约 0.68 崩至 0.38，ridge SNR 接近 0.03。</li><li>前 2/3 深度 residual stream norm 比单个 MLP write 大 100–1000 倍，后层压缩到约 10 倍；这解释晚层 write 可产生更强相对扰动，但不是证明动作能力与深度必然冲突。</li></ul></div>
 </section>
 <section class="reading-card reading-card-section">
   <div class="reading-card-topline">

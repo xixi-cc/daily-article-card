@@ -180,7 +180,14 @@ Before publication:
 10. Verify feed card, detail hero, and standalone cover parity from the same `cover` record.
 11. Inspect representative cards manually for paper-specific scientific depth, symbol definitions, equation-to-prose consistency, figure-to-caption consistency, and physicist-style causal logic. Structural validation and minimum length are necessary but not sufficient.
 12. Commit one independently auditable batch at a time.
-13. Verify push, build, deployment, the public index, and every new detail URL. A local build or green workflow alone is not publication proof.
+13. Every completed website update must be pushed to GitHub `origin` without force. Verify that the local `HEAD` equals the target GitHub branch SHA, then verify GitHub Actions, GitHub Pages, the public index, and every new detail URL. A local build, a Sites-only source push, or a green workflow alone is not publication proof.
+14. When OpenAI Sites is also updated, publish the same validated source tree to Sites and verify both deployments. GitHub synchronization is mandatory for every update and is never replaced by the Sites source repository.
+
+### Mathematical typography
+
+- Mark every mathematical variable, symbol, short relation, and inline formula with `\(...\)`; use `\[...\]` only for display equations. Do not leave notation such as `p_init`, `h→0`, Greek symbols, or compact equalities in prose font.
+- The renderer applies a conservative MathJax safety net to unmistakable bare notation, but this does not replace explicit authoring for ambiguous single-letter variables.
+- Inline MathJax inherits the surrounding 17 px reading size and primary text color; display mathematics is slightly larger. Main card prose, captions, and mathematical notation use the primary high-contrast text color rather than gray.
 
 Current validation command:
 
