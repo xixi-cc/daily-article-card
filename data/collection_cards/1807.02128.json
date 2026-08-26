@@ -1,0 +1,169 @@
+{
+  "arxiv_id": "1807.02128",
+  "source_version": "v4",
+  "source_pdf": "https://arxiv.org/pdf/1807.02128",
+  "title_en": "Adaptive Path-Integral Autoencoder: Representation Learning and Planning for Dynamical Systems",
+  "title_zh": "自适应路径积分自编码器：动力系统的表征学习与规划",
+  "curation_status": "full_text_verified",
+  "card_standard_version": "2.3",
+  "paper_profile": "ai_empirical",
+  "style_reference": "physicist_daily_arxiv",
+  "provenance": {
+    "program": "Collection",
+    "catalog": "Paper Collection",
+    "catalog_record_id": "48c4c9615019ef41",
+    "catalog_record_ids": [
+      "48c4c9615019ef41"
+    ],
+    "catalog_topic": "Control & Reinforcement Learning",
+    "collection_date": "2026-08-23",
+    "sampled_at": "2026-08-26",
+    "selected_by": "full_collection_backfill",
+    "sampling_seed": "not_applicable_full_collection",
+    "candidate_count": 452
+  },
+  "verified_metadata": {
+    "arxiv_id": "1807.02128",
+    "version": "v4",
+    "title": "Adaptive Path-Integral Autoencoder: Representation Learning and Planning for Dynamical Systems",
+    "authors": [
+      "Jung-Su Ha",
+      "Young-Jin Park",
+      "Hyeok-Joo Chae",
+      "Soon-Seo Park",
+      "Han-Lim Choi"
+    ],
+    "categories": [
+      "cs.LG",
+      "cs.RO",
+      "stat.ML"
+    ],
+    "primary_category": "cs.LG",
+    "published": "2018-07-05T18:05:18Z",
+    "abstract": "A semi-amortized variational model casts posterior refinement for latent stochastic trajectories as path-integral control and reuses the learned low-dimensional dynamics for planning."
+  },
+  "sections": [
+    {
+      "title": "作者信息",
+      "paragraphs": [
+        "作者：Jung-Su Ha、Young-Jin Park、Hyeok-Joo Chae、Soon-Seo Park、Han-Lim Choi；论文为 arXiv:1807.02128v4，主分类 cs.LG，交叉 cs.RO 与 stat.ML。",
+        "本卡核对 19 页全文及附录。实验覆盖图像化摆运动与人体 motion-capture 序列。"
+      ]
+    },
+    {
+      "title": "研究问题",
+      "paragraphs": [
+        "序列 VAE 的 amortized inference network 必须用一次前向映射近似每条观测序列的后验，容易留下 amortization gap。增加重要性样本只缓解 Monte Carlo 误差，若 proposal 与真实后验错位，权重仍会塌缩。",
+        "作者问：能否把潜在轨迹的后验推断重写成随机最优控制，用 inference network 给出初猜，再通过可微路径积分控制逐样本精化？同一潜动力学是否还能直接承担高维观测空间中的预测与规划？"
+      ]
+    },
+    {
+      "title": "背景",
+      "paragraphs": [
+        "潜状态服从连续时间 SDE \\(dz=f(z)dt+\\sigma(z)dw\\)，观测在离散时刻条件独立。普通 ELBO 与真实 log likelihood 的差正是 \\(D_{\\mathrm{KL}}(q\\Vert p(z\\mid x))\\)。",
+        "semi-amortized inference 在共享网络输出后为每个样本做局部优化。路径积分控制利用控制—推断对偶，把控制后的轨迹测度向最优后验测度做重要性重加权。"
+      ]
+    },
+    {
+      "title": "模型与方法",
+      "paragraphs": [
+        "proposal 取受控 SDE：\\(dz=f(z)dt+\\sigma(z)[u(t)dt+dw(t)]\\)。Girsanov 定理把 ELBO 写成观测代价、初态密度比、控制能量和随机积分之和，最优变分参数等价于一个 stochastic optimal-control 问题。",
+        "inference network 是反向 RNN，按 Bellman 最优性结构输出初态 Gaussian 及分段线性反馈 \\(u(t,z)=u_k^{ff}-K_kz\\)。随后 R 次 path-integral adaptation 用 \\(\\tilde w_l\\propto e^{-S_u[z_l]}\\) 对 L 条轨迹加权并匹配矩。",
+        "完整适配与 Monte Carlo objective 均可反向传播；训练后用潜空间 SDE 作为先验，在目标图像代价下再次做路径积分控制，得到未来观测序列。"
+      ]
+    },
+    {
+      "title": "核心结果与证据",
+      "paragraphs": [
+        "控制目标可写成 \\(J=D_{\\mathrm{KL}}(q_u\\Vert p^*)-\\log\\xi\\)，因此控制分布越接近最优轨迹测度，重要性权重方差越小；当 \\(u=u^*\\) 时理想权重等分。",
+        "Pendulum 与 mocap 实验中，路径积分精化普遍提高训练 lower bound；但 Table 1 同时显示最紧 bound、重构和预测的最优方法并不完全相同，作者明确提醒 tighter bound 不自动推出更好生成模型。",
+        "Figure 1 把潜状态的角度/角速度着色、观测重构、自由预测和四个目标规划放在同一图中：模型不是仅压缩图像，而是学习能被控制输入驱动的低维随机动力学。",
+        "人体运动实验的三维潜流形按步态相位、偏航率和前进速度呈有序结构，并可生成不同转向/速度的规划序列；证据仍来自两个受控数据集。"
+      ]
+    },
+    {
+      "title": "有效性与局限",
+      "paragraphs": [
+        "计算量随重要性样本数 L 与 refinement 次数 R 线性增长；GPU 并行降低墙钟时间，但不消除样本退化与高维路径空间的统计代价。",
+        "实验规模有限，缺少现代大规模视频数据、真实机器人闭环和系统性超参数消融；mocap prediction 甚至因缺乏合适指标未量化。",
+        "路径积分线性可解结构要求控制和噪声通道满足特定关系，反馈策略又限制为分段线性形式；复杂多模态后验可能超出变分族。",
+        "Table 1 说明更紧 ELBO 不保证测试预测最佳；评价必须分开 likelihood bound、重构、长期预测与任务规划。"
+      ]
+    },
+    {
+      "title": "复现与资源",
+      "paragraphs": [
+        "原文：https://arxiv.org/abs/1807.02128；PDF：https://arxiv.org/pdf/1807.02128；补充视频：https://youtu.be/xCp35crUoLQ。",
+        "全文 PDF 共 19 页，SHA-256：7bc2c9002e832405171ef4ed888e7d4853ee082584e76cde77dd97de27bad403。",
+        "复现应固定 L、R、resampling 开关与随机种子，保存每轮有效样本数、ELBO、重构和 rollout error；规划测试还应报告目标误差、碰撞率及潜控制能量。",
+        "Evidence status: full-text verified; no independent reproduction performed."
+      ]
+    },
+    {
+      "title": "阅读指南",
+      "paragraphs": [
+        "先读 pp. 2–5，从 ELBO gap 到受控 SDE 和 Girsanov 权重，确认控制代价如何等价于变分 KL。",
+        "再看 Figure 1 和 Figure 2，把潜空间着色与预测/规划序列一一对应；它们比单独的 lower-bound 表更能说明动力学表征。",
+        "最后读 Table 1 与附录 Algorithm 1–2，关注 L、R 带来的计算—统计折衷，以及 tighter bound 与预测质量的不一致。"
+      ]
+    }
+  ],
+  "cover": {
+    "mode": "source_figure",
+    "asset_path": "assets/collection-figures/1807.02128/figure-1-pendulum-latent-planning.webp",
+    "label": "Figure 1",
+    "visual_type": "comparison",
+    "evidence": "arXiv:1807.02128v4, paper.pdf p. 8, Figure 1",
+    "alt_text": "摆运动的二维潜空间按角度和角速度着色，并展示真实、预测及四种目标规划的图像序列。",
+    "caption": "同一个潜在随机动力学同时组织物理状态、自由预测与目标驱动规划；红线区分观测重构和未来生成。",
+    "selection_rationale": "Figure 1 是最关键的可视化证据，直接展示表征是否保留物理坐标以及学得动力学能否用于多目标规划，比 ELBO 数表更适合作为封面。"
+  },
+  "figure_refs": [
+    {
+      "label": "Figure 1",
+      "asset_path": "assets/collection-figures/1807.02128/figure-1-pendulum-latent-planning.webp",
+      "section": "核心结果与证据",
+      "role": "connect latent geometry, prediction, and control-conditioned planning",
+      "evidence": "arXiv:1807.02128v4, paper.pdf p. 8, Figure 1",
+      "alt_text": "摆运动潜空间及图像预测与规划序列。",
+      "caption": "左侧潜坐标按真实角度/角速度连续着色，中部显示真实、预测和四种目标规划，右侧给出目标图像。",
+      "interpretation": "有序潜几何本身不够；同一潜 SDE 能从观测段延伸到多种低代价未来，才构成表征对规划有用的证据。"
+    }
+  ],
+  "equation_refs": [
+    {
+      "label": "Controlled latent SDE",
+      "latex": "dz(t)=f(z(t))dt+\\sigma(z(t))\\left[u(t)dt+dw(t)\\right]",
+      "role": "parameterize the variational trajectory measure",
+      "symbols": {
+        "z": "latent state",
+        "f": "learned drift",
+        "sigma": "diffusion map",
+        "u": "variational control",
+        "w": "Wiener process"
+      },
+      "evidence": "paper.pdf p. 4, Eq. (9)",
+      "interpretation": "Posterior refinement becomes control of the same stochastic dynamics used as the generative prior."
+    },
+    {
+      "label": "Control-inference KL duality",
+      "latex": "J=D_{\\mathrm{KL}}\\!\\left(q_u(z_{[0,T]})\\Vert p^*(z_{[0,T]})\\right)-\\log\\xi",
+      "role": "turn approximate inference into stochastic optimal control",
+      "symbols": {
+        "q_u": "controlled proposal trajectory measure",
+        "p_star": "optimal posterior-like trajectory measure",
+        "xi": "normalization constant"
+      },
+      "evidence": "paper.pdf p. 4, Eq. (11)",
+      "interpretation": "Path-integral adaptation improves the proposal by reducing a trajectory-space KL divergence."
+    }
+  ],
+  "evidence_refs": [
+    "paper.pdf pp. 2–5: ELBO gap, controlled SDE and path-integral refinement",
+    "paper.pdf pp. 5–6: planning objective in learned latent dynamics",
+    "paper.pdf pp. 7–9: pendulum/mocap figures, Table 1 and qualified empirical conclusions",
+    "paper.pdf Appendix A–C: Girsanov derivation and algorithms",
+    "source PDF SHA-256 7bc2c9002e832405171ef4ed888e7d4853ee082584e76cde77dd97de27bad403",
+    "Evidence status: full-text verified; no independent reproduction performed."
+  ]
+}

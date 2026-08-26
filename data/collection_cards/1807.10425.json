@@ -1,0 +1,166 @@
+{
+  "arxiv_id": "1807.10425",
+  "source_version": "v1",
+  "source_pdf": "https://arxiv.org/pdf/1807.10425",
+  "title_en": "STEAP: simultaneous trajectory estimation and planning",
+  "title_zh": "STEAP：同步轨迹估计与规划",
+  "curation_status": "full_text_verified",
+  "card_standard_version": "2.3",
+  "paper_profile": "ai_empirical",
+  "style_reference": "physicist_daily_arxiv",
+  "provenance": {
+    "program": "Collection",
+    "catalog": "Paper Collection",
+    "catalog_record_id": "e021df620cf47de8",
+    "catalog_record_ids": [
+      "e021df620cf47de8"
+    ],
+    "catalog_topic": "Robotics",
+    "collection_date": "2026-08-23",
+    "sampled_at": "2026-08-26",
+    "selected_by": "full_collection_backfill",
+    "sampling_seed": "not_applicable_full_collection",
+    "candidate_count": 452
+  },
+  "verified_metadata": {
+    "arxiv_id": "1807.10425",
+    "version": "v1",
+    "title": "STEAP: simultaneous trajectory estimation and planning",
+    "authors": [
+      "Mustafa Mukadam",
+      "Jing Dong",
+      "Frank Dellaert",
+      "Byron Boots"
+    ],
+    "categories": [
+      "cs.RO"
+    ],
+    "primary_category": "cs.RO",
+    "published": "2018-07-27T03:49:45Z",
+    "abstract": "STEAP performs MAP inference over one continuous-time trajectory whose past is state estimation and whose future is motion planning, updating the factor graph incrementally with a Bayes tree."
+  },
+  "sections": [
+    {
+      "title": "作者信息",
+      "paragraphs": [
+        "作者：Mustafa Mukadam、Jing Dong、Frank Dellaert、Byron Boots；论文为 arXiv:1807.10425v1，主分类 cs.RO。",
+        "本卡核对 19 页全文。证据包括二维移动机械臂、18-DOF PR2 仿真和 Vector 移动机械臂实机实验。"
+      ]
+    },
+    {
+      "title": "研究问题",
+      "paragraphs": [
+        "机器人通常先从传感器估计当前状态，再从该点规划未来；这种串联会切断未来无碰撞约束对历史估计的反馈，也会让估计误差污染规划初值。",
+        "论文问：能否把从起点到终点的整条连续时间轨迹作为一个随机变量，在每个时刻用观测因子、障碍代价和边界条件共同做 MAP 推断，使过去部分自动成为平滑估计、未来部分自动成为重规划？"
+      ]
+    },
+    {
+      "title": "背景",
+      "paragraphs": [
+        "STEAM 用 Gaussian-process prior 和测量因子做连续时间轨迹估计；GPMP2 把障碍与起终点写成 likelihood 因子做运动规划。SLAP 虽同时运行定位和规划，却仍顺序求两个图。",
+        "因 LTV-SDE 生成的 GP 是 Gauss–Markov 链，轨迹 prior 可分解为只连接相邻状态的稀疏因子；Bayes tree 又允许新测量只重线性化受影响的 cliques。"
+      ]
+    },
+    {
+      "title": "模型与方法",
+      "paragraphs": [
+        "统一后验因子分解为 \\(p(\\boldsymbol\\theta\\mid e)\\propto f^{gp}f^{meas}f^{obs}f^{fix}\\)：GP prior 约束平滑动力学，测量因子约束已执行历史，障碍因子作用于整条轨迹，起点/目标因子固定边界。",
+        "每一步先用 GP 插值执行短轨迹段并做碰撞检查，再加入新测量因子；Bayes tree 只重新消元被新因子触及的上层子树，未受影响的条件结构直接复用。",
+        "算法在 SE(2)×R^n 的移动机械臂构型空间上使用局部 LTV-SDE prior，并以 signed-distance-field hinge loss 建模碰撞；比较 open loop、顺序 SLAP 与联合 STEAP。"
+      ]
+    },
+    {
+      "title": "核心结果与证据",
+      "paragraphs": [
+        "Figure 3 是机制核心：随着当前时刻从 t0 移到 t4，左侧因子图逐步加入测量，右侧红色历史估计与蓝色未来规划在同一 MAP 轨迹上同步更新，绿色真实轨迹用于解释执行噪声。",
+        "二维仿真中 STEAP 在不同动力学/相机噪声下普遍提高成功率并降低目标与估计误差。18-DOF PR2 仿真中，平均每步约 17 ms，而 SLAP 约 130 ms；优势来自增量 Bayes-tree 更新而非每步全图重算。",
+        "实机两个任务各 10 次：open-loop 均为 0/10，STEAP 为 9/10 与 10/10，总成功率 95%；轨迹估计误差相对原始定位约降低 50–60%。这些结果只覆盖已知静态环境。",
+        "联合图允许信息双向流：已安全走过的路径与障碍因子抑制不合理历史估计，更准的当前状态又改善未来轨迹。"
+      ]
+    },
+    {
+      "title": "有效性与局限",
+      "paragraphs": [
+        "当前系统要求已知静态地图并预计算 signed distance field；动态环境需在线建图、动态障碍跟踪和增量距离场，可能成为主要瓶颈。",
+        "实现面向 holonomic 系统，不直接支持非完整与硬不等式约束；软因子只能近似速度/构型限制。",
+        "MAP 轨迹优化是局部方法，在拥挤或迷宫环境中可能落入碰撞局部极小；Bayes-tree 增量推断缺少与批量多初值同等成熟的逃逸机制。",
+        "实机只有两个任务、20 次运行，地图、机器人和传感器固定；95% 不能外推到开放动态场景。有限 horizon 还造成目标附近越界后没有足够步数恢复。"
+      ]
+    },
+    {
+      "title": "复现与资源",
+      "paragraphs": [
+        "原文：https://arxiv.org/abs/1807.10425；PDF：https://arxiv.org/pdf/1807.10425；论文说明 GPMP2/STEAP 代码已开源并给出实验视频链接。",
+        "全文 PDF 共 19 页，SHA-256：e021df620cf47de87bf7e9380d9aa72c53088a28a2d326cde8c1f48c960fd88e。",
+        "复现需固定任务、噪声强度、图状态数、GP 插值密度、SDF 分辨率与变量消元顺序；分别保存成功率、目标误差、完整轨迹估计误差以及每步增量更新时间分布。",
+        "Evidence status: full-text verified; no independent reproduction performed."
+      ]
+    },
+    {
+      "title": "阅读指南",
+      "paragraphs": [
+        "先看 Figure 2 和 Table 1，把 STEAM、GPMP2、SLAP 与 STEAP 的因子集合对应起来。",
+        "再逐行读 Figure 3 与 Algorithm 1：红色历史、蓝色未来和新增测量因子共同说明“同步”不是并行运行两个模块。",
+        "最后核对 Tables 2–4 与 Sec. 10；把仿真噪声鲁棒性、实机成功率、实时性和已知静态地图限制分别评价。"
+      ]
+    }
+  ],
+  "cover": {
+    "mode": "source_figure",
+    "asset_path": "assets/collection-figures/1807.10425/figure-3-steap-loop.webp",
+    "label": "Figure 3",
+    "visual_type": "schematic",
+    "evidence": "arXiv:1807.10425v1, paper.pdf p. 7, Figure 3",
+    "alt_text": "五个时间步的 STEAP 因子图及机器人环境轨迹，分别显示真实、估计和重规划路径。",
+    "caption": "每次新测量同时修正红色历史估计和蓝色未来规划；左侧因子图展示同一连续轨迹后验如何增量更新。",
+    "selection_rationale": "Figure 3 直接可视化论文最重要的联合推断机制，比成功率表更能解释为何估计与规划会相互改善。"
+  },
+  "figure_refs": [
+    {
+      "label": "Figure 3",
+      "asset_path": "assets/collection-figures/1807.10425/figure-3-steap-loop.webp",
+      "section": "核心结果与证据",
+      "role": "visualize joint past estimation and future replanning over one factor graph",
+      "evidence": "arXiv:1807.10425v1, paper.pdf p. 7, Figure 3",
+      "alt_text": "STEAP 从 t0 到 t4 的因子图和真实、估计、规划轨迹。",
+      "caption": "灰色节点推进时测量因子逐步加入，过去轨迹变红、未来轨迹保持蓝色并反复重规划。",
+      "interpretation": "联合后验不是简单拼接定位器和规划器；同一因子图使障碍信息约束历史，传感器信息约束未来。"
+    }
+  ],
+  "equation_refs": [
+    {
+      "label": "STEAP posterior factorization",
+      "latex": "p(\\boldsymbol\\theta\\mid e)\\propto f^{\\mathrm{gp}}f^{\\mathrm{meas}}f^{\\mathrm{obs}}f^{\\mathrm{fix}}",
+      "role": "combine dynamics, sensing, collision costs, and boundary conditions",
+      "symbols": {
+        "theta": "full continuous-time trajectory",
+        "e": "all events and evidence",
+        "f_gp": "Gaussian-process prior factors",
+        "f_meas": "measurement factors",
+        "f_obs": "obstacle factors",
+        "f_fix": "start and goal factors"
+      },
+      "evidence": "paper.pdf p. 5, Eq. (19)",
+      "interpretation": "Past estimation and future planning are two portions of one MAP trajectory conditioned on all information."
+    },
+    {
+      "label": "Sparse GP prior",
+      "latex": "f^{\\mathrm{gp}}=\\prod_i f_i^{\\mathrm{gp}}(\\theta_i,\\theta_{i+1})",
+      "role": "make continuous-time trajectory inference sparse",
+      "symbols": {
+        "theta_i": "support state at time i",
+        "f_i_gp": "neighboring-state Gaussian-process factor"
+      },
+      "evidence": "paper.pdf p. 6, Eq. (20)",
+      "interpretation": "The Gauss–Markov chain permits local Bayes-tree updates instead of dense full-trajectory recomputation."
+    }
+  ],
+  "evidence_refs": [
+    "paper.pdf pp. 3–7: probabilistic inference, factorization and Figure 3 mechanism",
+    "paper.pdf pp. 8–13: Bayes-tree incremental inference and implementation",
+    "paper.pdf pp. 14–17: planar, PR2 and real-robot quantitative evidence",
+    "paper.pdf pp. 17–18: known-map, holonomic and local-minimum limitations",
+    "source PDF SHA-256 e021df620cf47de87bf7e9380d9aa72c53088a28a2d326cde8c1f48c960fd88e",
+    "Evidence status: full-text verified; no independent reproduction performed."
+  ]
+}
