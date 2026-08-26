@@ -80,7 +80,7 @@ Use this note as an editorial scaffold for the card, not as claim evidence. Rech
 - Render only S papers. Preserve A/B score sheets in automation evidence but do not add them to `papers.md` or the public site.
 - Treat one listing as an atomic publication unit. If runtime is insufficient, preserve completed evidence and resume without regenerating verified work.
 - Run all structural, equation, cover-priority, figure-path, browser-rendering, deterministic build, unique-ID, and JSON/render parity checks before commit.
-- Push without force, verify GitHub Actions and Pages, then fetch the public index and every new detail URL. Only a verified public page completes publication.
+- Every completed website update must be pushed to GitHub `origin` without force. Verify that local `HEAD` equals the target GitHub branch SHA, verify GitHub Actions and Pages, then fetch the public index and every new detail URL. A Sites-only deployment never completes publication.
 
 ## 6. Fail closed
 

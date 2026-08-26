@@ -53,6 +53,14 @@ def main() -> int:
         ROOT / ".github" / "workflows" / "deploy.yml",
         ("python scripts/check_card_standard_sync.py", "python scripts/validate_paper_cards.py"),
     ))
+    errors.extend(require(
+        ROOT / "AGENTS.md",
+        ("Every completed website update must be pushed to GitHub", "git ls-remote origin", "never replaced by a Sites"),
+    ))
+    errors.extend(require(
+        ROOT / "README.md",
+        ("Every completed website update must be pushed to GitHub", "OpenAI Sites", "HEAD"),
+    ))
 
     if errors:
         raise SystemExit("\n".join(errors))
