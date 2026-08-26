@@ -661,8 +661,10 @@ def build_site_records(records: List[Dict[str, str]], paper_image_manifest: Dict
         key_points = build_key_points(sections, preview_text)
         hook_text = build_hook_text(key_points, preview_text)
         arxiv_id = normalize_arxiv_id(record["link"])
-        page_dir = make_page_dir_name(arxiv_id, primary_title)
-        cover_theme = pick_cover_theme(arxiv_id or primary_title)
+        card_id = record.get("card_id", "").strip() or arxiv_id
+        source_identifier = record.get("source_identifier", "").strip() or arxiv_id
+        page_dir = record.get("page_dir", "").strip() or make_page_dir_name(card_id, primary_title)
+        cover_theme = pick_cover_theme(card_id or primary_title)
         reading_minutes = estimate_reading_minutes(summary_markdown)
         research_unit = extract_research_unit(sections)
         paper_image_path = get_paper_image_path(paper_image_manifest, arxiv_id)
@@ -674,6 +676,8 @@ def build_site_records(records: List[Dict[str, str]], paper_image_manifest: Dict
                 "title_zh": secondary_title,
                 "link": record["link"],
                 "arxiv_id": arxiv_id,
+                "card_id": card_id,
+                "source_identifier": source_identifier,
                 "page_dir": page_dir,
                 "detail_path": f"papers/{page_dir}/",
                 "cover_path": f"covers/{page_dir}/",
@@ -718,23 +722,29 @@ def build_collection_records(paper_image_manifest: Dict[str, Dict[str, object]])
         card = load_json(path)
         if not isinstance(card, dict):
             continue
+        card_id = path.stem
         arxiv_id = str(card.get("arxiv_id", "")).strip()
-        if not arxiv_id:
+        source_url = str(card.get("source_url") or (f"https://arxiv.org/abs/{arxiv_id}" if arxiv_id else "")).strip()
+        source_identifier = str(card.get("source_id") or arxiv_id or card_id).strip()
+        if not source_url:
             continue
-        cards[arxiv_id] = card
+        cards[card_id] = card
         raw_records.append(
             {
                 "date": "Paper Collection · 随机精选",
                 "title": f'{card.get("title_zh", "")}<br>{card.get("title_en", "")}',
-                "link": f"https://arxiv.org/abs/{arxiv_id}",
+                "link": source_url,
+                "card_id": card_id,
+                "source_identifier": source_identifier,
+                "page_dir": card_id,
                 "details_raw": render_collection_card_markdown(card),
             }
         )
 
     records = build_site_records(raw_records, paper_image_manifest)
     for record in records:
-        arxiv_id = str(record["arxiv_id"])
-        card = cards[arxiv_id]
+        card_id = str(record["card_id"])
+        card = cards[card_id]
         provenance = card.get("provenance", {})
         topic = provenance.get("catalog_topic", "") if isinstance(provenance, dict) else ""
         record.update(

@@ -242,7 +242,13 @@ def main() -> int:
             errors.append(f"{path.name}: invalid JSON: {error}")
             continue
 
-        arxiv_id = str(card.get("arxiv_id", ""))
+        arxiv_id = str(card.get("arxiv_id") or card.get("source_id") or path.stem)
+        if program == "Collection" and not card.get("arxiv_id"):
+            for field in ("card_id", "source_kind", "source_id", "source_url"):
+                if not card.get(field):
+                    errors.append(f"{path.stem}: non-arXiv Collection card missing {field}")
+            if str(card.get("card_id", "")) != path.stem:
+                errors.append(f"{path.stem}: card_id must equal its filename stem")
         sections = card.get("sections", [])
         titles = [section.get("title") for section in sections if isinstance(section, dict)]
         title_set = set(titles)

@@ -28,8 +28,8 @@ PACKET_DIR = WORK_DIR / "packets"
 USER_AGENT = "physics-AI-paper-cards/2.3 (local research workflow)"
 
 
-def download_pdf(arxiv_id: str) -> Path:
-    destination = PDF_DIR / f"{arxiv_id}.pdf"
+def download_pdf(arxiv_id: str, card_id: str | None = None) -> Path:
+    destination = PDF_DIR / f"{card_id or arxiv_id.replace('/', '-')}.pdf"
     if destination.is_file() and destination.stat().st_size > 1_000:
         return destination
     request = urllib.request.Request(
@@ -46,10 +46,11 @@ def download_pdf(arxiv_id: str) -> Path:
 def build_packet(item: dict[str, object], metadata: dict[str, object], pdf: Path) -> dict[str, object]:
     pages = pdf_pages(pdf)
     return {
-        "arxiv_id": item["arxiv_id"],
-        "catalog_record_id": item["catalog_record_id"],
-        "catalog_title": item["title"],
-        "catalog_topic": item["topic"],
+        "arxiv_id": item.get("arxiv_id") or item.get("source_id"),
+        "card_id": item.get("card_id") or item.get("arxiv_id"),
+        "catalog_record_ids": item.get("catalog_record_ids") or [item.get("catalog_record_id")],
+        "catalog_titles": item.get("titles") or [item.get("title")],
+        "catalog_topics": item.get("topics") or [item.get("topic")],
         "metadata": metadata,
         "pdf": {
             "source_url": item["source_url"],
@@ -102,9 +103,11 @@ def main() -> int:
     campaign = json.loads(args.campaign.read_text(encoding="utf-8"))
     items = [
         item for item in campaign["selection"]
-        if item["status"] == "pending" and int(item["sequence"]) >= args.start
+        if item["status"] == "pending"
+        and item.get("source_kind", "arxiv") == "arxiv"
+        and int(item["sequence"]) >= args.start
     ][: args.limit]
-    ids = [str(item["arxiv_id"]) for item in items]
+    ids = [str(item.get("arxiv_id") or item.get("source_id")) for item in items]
     if not ids:
         print("No pending sources selected")
         return 0
@@ -117,10 +120,11 @@ def main() -> int:
         raise SystemExit(f"official arXiv metadata missing: {missing}")
 
     for index, item in enumerate(items):
-        paper_id = str(item["arxiv_id"])
-        pdf = download_pdf(paper_id)
+        paper_id = str(item.get("arxiv_id") or item.get("source_id"))
+        card_id = str(item.get("card_id") or paper_id.replace("/", "-"))
+        pdf = download_pdf(paper_id, card_id)
         packet = build_packet(item, metadata[paper_id], pdf)
-        (PACKET_DIR / f"{paper_id}.json").write_text(
+        (PACKET_DIR / f"{card_id}.json").write_text(
             json.dumps(packet, ensure_ascii=False, indent=2) + "\n", encoding="utf-8"
         )
         print(
