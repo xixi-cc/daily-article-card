@@ -1,0 +1,148 @@
+{
+  "arxiv_id": "2302.01170",
+  "source_version": "v2",
+  "source_pdf": "https://arxiv.org/pdf/2302.01170",
+  "title_en": "Timewarp: Transferable Acceleration of Molecular Dynamics by Learning Time-Coarsened Dynamics",
+  "title_zh": "Timewarp：学习时间粗粒化动力学以实现可迁移的分子动力学加速",
+  "curation_status": "full_text_verified",
+  "card_standard_version": "2.3",
+  "paper_profile": "theory_numerics",
+  "style_reference": "physicist_daily_arxiv",
+  "provenance": {
+    "program": "Collection",
+    "catalog": "Paper Collection",
+    "catalog_record_id": "0a9cdf115b6fa0ad",
+    "catalog_record_ids": [
+      "0a9cdf115b6fa0ad"
+    ],
+    "catalog_topic": "Flow Matching",
+    "collection_date": "2026-08-23",
+    "sampled_at": "2026-08-26",
+    "selected_by": "full_collection_backfill",
+    "sampling_seed": "not_applicable_full_collection",
+    "candidate_count": 452
+  },
+  "verified_metadata": {
+    "arxiv_id": "2302.01170",
+    "version": "v2",
+    "title": "Timewarp: Transferable Acceleration of Molecular Dynamics by Learning Time-Coarsened Dynamics",
+    "authors": [
+      "Leon Klein",
+      "Andrew Y. K. Foong",
+      "Tor Erlend Fjelde",
+      "Bruno Mlodozeniec",
+      "Marc Brockschmidt",
+      "Sebastian Nowozin",
+      "Frank Noé",
+      "Ryota Tomioka"
+    ],
+    "categories": [
+      "stat.ML",
+      "cond-mat.stat-mech",
+      "cs.LG",
+      "physics.chem-ph"
+    ],
+    "primary_category": "stat.ML",
+    "published": "2023-02-02T15:48:39Z",
+    "abstract": "A transferable conditional normalizing flow proposes long molecular transitions, with Metropolis-Hastings correction targeting the Boltzmann distribution."
+  },
+  "sections": [
+    {
+      "title": "作者信息",
+      "paragraphs": [
+        "作者：Leon Klein、Andrew Y. K. Foong、Tor Erlend Fjelde、Bruno Mlodozeniec、Marc Brockschmidt、Sebastian Nowozin、Frank Noé、Ryota Tomioka；arXiv:2302.01170v2。全文 22 页。"
+      ]
+    },
+    {
+      "title": "研究问题",
+      "paragraphs": [
+        "全原子 MD 以飞秒步长积分，但构象跃迁常在微秒至毫秒发生，且每个新分子都要重新模拟。论文问：能否离线学习 \\(10^5\\!\text{--}\\!10^6\\,\\mathrm{fs}\\) 的粗时间转移核，并迁移到未见过的小肽，同时保持 Boltzmann 平衡分布？"
+      ]
+    },
+    {
+      "title": "背景",
+      "paragraphs": [
+        "只学习长步 proposal 会产生模型偏差。Timewarp 把它嵌入 Metropolis–Hastings 链：proposal 决定跨越势垒的效率，能量与反向 proposal density 的比值负责详细平衡。",
+        "因此“动力学加速”在本文主要指 equilibrium sampling 的有效样本率，不等于复现真实的时间相关动力学。"
+      ]
+    },
+    {
+      "title": "模型与方法",
+      "paragraphs": [
+        "条件 normalizing flow 学习 \\(p_\theta(x(t+\tau)\\mid x(t))\\)。permutation-equivariant transformer/RealNVP 同时支持快速采样与精确 likelihood；positions 和 auxiliary velocities 构成增广状态。",
+        "每个 proposal 用 MH acceptance ratio 修正。作者也给出不做 MH 的快速探索模式，但明确承认它有偏。"
+      ]
+    },
+    {
+      "title": "核心结果与证据",
+      "paragraphs": [
+        "Figure 1 对同一未见 HT 二肽比较 30 分钟 MD 与 Timewarp：在 TICA 平面上，Timewarp 更快访问分离的 metastable basins，报告约 33 倍 ESS/s。",
+        "对 100 个测试二肽，中位 ESS/s speedup 约 5；QW 与 HT 分别约 5 和 33。proposal acceptance 约 0.03%–2%，说明大跨步能在低接受率下仍有净收益。",
+        "4AA 结果更混合：只有约三分之一在带 MH 时超过 MD，一些链不能覆盖全部构象，接受率可低于 0.01%。"
+      ]
+    },
+    {
+      "title": "有效性与局限",
+      "paragraphs": [
+        "迁移只验证到 2–4 个氨基酸的小肽，不能外推到蛋白折叠或配体结合。低 acceptance 会让有限时间链停滞；多 proposal batching 改善吞吐但不改变混合时间的根本困难。",
+        "MH 模式渐近无偏，但仍需足够长链与正确能量；去掉 MH 的 exploration mode 不再采样精确 Boltzmann 分布。ESS/s 加速也不意味着物理时间轨迹正确。"
+      ]
+    },
+    {
+      "title": "复现与资源",
+      "paragraphs": [
+        "原文：https://arxiv.org/abs/2302.01170；代码：https://github.com/microsoft/timewarp。",
+        "全文 22 页，PDF SHA-256：e16b5d7bdda21c3260e7281933ddee64350a33deb1af8a7425b5d9fdf4d22331。复现需固定 force field、温度、\\(\tau\\)、训练肽划分、MH batching 和 ESS estimator，并报告每条链的 acceptance 与 basin coverage。",
+        "Evidence status: full-text verified; no independent reproduction performed."
+      ]
+    },
+    {
+      "title": "阅读指南",
+      "paragraphs": [
+        "先看 Figure 1，把 wall-clock exploration 与真实动力学区分开；再读 Eqs. (5)–(6) 检查 detailed balance。最后看二肽总体分布和 4AA failure cases，不能只引用 33 倍最佳案例。"
+      ]
+    }
+  ],
+  "cover": {
+    "mode": "source_figure",
+    "asset_path": "assets/collection-figures/2302.01170/figure-1-timewarp-overview.webp",
+    "label": "Figure 1",
+    "visual_type": "trajectory",
+    "evidence": "paper.pdf p. 2, Figure 1",
+    "alt_text": "肽构象转移示意及 MD 与 Timewarp 在 TICA 空间中的轨迹。",
+    "caption": "学习到的长步 proposal 跨越 metastable basins；MH 校正负责把高效探索重新约束到 Boltzmann 平衡分布。",
+    "selection_rationale": "该图同时展示分子构象、粗时间步和相空间探索，是方法与物理目标的最完整可视化。"
+  },
+  "figure_refs": [
+    {
+      "label": "Figure 1",
+      "asset_path": "assets/collection-figures/2302.01170/figure-1-timewarp-overview.webp",
+      "section": "核心结果与证据",
+      "role": "compare metastable exploration",
+      "evidence": "paper.pdf p. 2, Figure 1",
+      "alt_text": "分子跃迁以及 MD 与 Timewarp 的 TICA 轨迹。",
+      "caption": "长步 flow proposal 在相同 wall-clock 下访问更多 metastable regions。",
+      "interpretation": "Faster equilibrium exploration does not establish correct dynamical kinetics."
+    }
+  ],
+  "equation_refs": [
+    {
+      "label": "Metropolis-Hastings correction",
+      "latex": "\\alpha(X,\\widetilde X)=\\min\\!\\left\\{1,\\frac{\\mu_{\\mathrm{aug}}(\\widetilde X)\\,p_\\theta(X\\mid\\widetilde X^{p})}{\\mu_{\\mathrm{aug}}(X)\\,p_\\theta(\\widetilde X\\mid X^{p})}\\right\\}",
+      "role": "enforce detailed balance for learned long-step proposals",
+      "symbols": {
+        "mu_aug": "Boltzmann target with auxiliary velocities",
+        "p_theta": "conditional flow proposal",
+        "X_p": "positions in the augmented state"
+      },
+      "evidence": "paper.pdf p. 5, Eq. (6)",
+      "interpretation": "Exact proposal likelihoods allow the learned dynamics to be bias-corrected asymptotically."
+    }
+  ],
+  "evidence_refs": [
+    "paper.pdf pp. 3–6: Boltzmann target, flow proposal and MH correction",
+    "paper.pdf pp. 8–11: peptide transfer, ESS/s and failure cases",
+    "source PDF SHA-256 e16b5d7bdda21c3260e7281933ddee64350a33deb1af8a7425b5d9fdf4d22331",
+    "Evidence status: full-text verified; no independent reproduction performed."
+  ]
+}

@@ -1,0 +1,144 @@
+{
+  "arxiv_id": "2211.01364",
+  "source_version": "v3",
+  "source_pdf": "https://arxiv.org/pdf/2211.01364",
+  "title_en": "An optimal control perspective on diffusion-based generative modeling",
+  "title_zh": "扩散生成模型的随机最优控制视角",
+  "curation_status": "full_text_verified",
+  "card_standard_version": "2.3",
+  "paper_profile": "theory_numerics",
+  "style_reference": "physicist_daily_arxiv",
+  "provenance": {
+    "program": "Collection",
+    "catalog": "Paper Collection",
+    "catalog_record_id": "1e672de62d14de31",
+    "catalog_record_ids": [
+      "1e672de62d14de31"
+    ],
+    "catalog_topic": "Control & Reinforcement Learning",
+    "collection_date": "2026-08-23",
+    "sampled_at": "2026-08-26",
+    "selected_by": "full_collection_backfill",
+    "sampling_seed": "not_applicable_full_collection",
+    "candidate_count": 452
+  },
+  "verified_metadata": {
+    "arxiv_id": "2211.01364",
+    "version": "v3",
+    "title": "An optimal control perspective on diffusion-based generative modeling",
+    "authors": [
+      "Julius Berner",
+      "Lorenz Richter",
+      "Karen Ullrich"
+    ],
+    "categories": [
+      "cs.LG",
+      "math.OC",
+      "stat.ML"
+    ],
+    "primary_category": "cs.LG",
+    "published": "2022-11-02T17:59:09Z",
+    "abstract": "Stochastic optimal control yields the diffusion ELBO, a path-space KL interpretation, and a sampler for unnormalized densities."
+  },
+  "sections": [
+    {
+      "title": "作者信息",
+      "paragraphs": [
+        "作者：Julius Berner、Lorenz Richter、Karen Ullrich；arXiv:2211.01364v3。全文 43 页。"
+      ]
+    },
+    {
+      "title": "研究问题",
+      "paragraphs": [
+        "扩散生成模型通常从 score matching 或变分推断推导。论文追问其背后是否存在统一的随机控制结构，以及该结构能否反过来构造只知道未归一化密度 \\(\rho\\) 的采样器。"
+      ]
+    },
+    {
+      "title": "背景",
+      "paragraphs": [
+        "Hamilton–Jacobi–Bellman 方程控制 log-density 的演化；verification theorem 把任意可行控制的代价与最优 value function 比较。Girsanov 定理则把 drift 改变写成路径测度的 KL。",
+        "因此 diffusion ELBO 不只是代数技巧：它是控制代价对路径空间 KL 的上界表达。"
+      ]
+    },
+    {
+      "title": "模型与方法",
+      "paragraphs": [
+        "DIS 先从目标分布出发定义一条正向扩散 \\(Y\\)，使终态近似高斯；再从高斯初态训练受控反向过程 \\(X^u\\) 回到目标。目标函数包含控制轨道代价与端点密度比。",
+        "控制场用神经网络与解析 score 插值共同参数化；训练模拟整条 Euler–Maruyama 轨道，并可用 importance weights 估计归一化常数与观测量。"
+      ]
+    },
+    {
+      "title": "核心结果与证据",
+      "paragraphs": [
+        "Figure 3 在 20 维 double-well 上展示从高斯初态向多阱目标演化的受控轨迹、终点样本与 KDE；它把抽象的路径测度匹配变成可见的输运过程。",
+        "在 Gaussian mixture 与 Funnel 上，DIS 的 log-normalizer 误差优于论文实现的 PIS；double-well 上优势较小。10 seeds、每批 \\(N=100,200,400,800\\) 的观测量估计中，DIS 也总体优于 PIS。",
+        "理论恒等式表明最小 DIS 代价等于端点 KL 减去 \\(\\log Z\\)；但只有当反向过程的初态真正匹配正向终态时，最优控制才保证正确目标边缘。"
+      ]
+    },
+    {
+      "title": "有效性与局限",
+      "paragraphs": [
+        "若 \\(p_{X_0}\neq p_{Y_T}\\)，控制无法消除这项初态错配；增大扩散时间可缓解，却增加轨迹离散和反向传播成本。",
+        "实验依赖目标 score 与完整轨迹梯度；离散 SDE 会给 importance estimator 引入偏差。作者还改进了 PIS 实现，因此跨论文预算比较需谨慎。",
+        "路径空间 KL 控制的是整条随机轨道；终点密度、归一化常数与具体观测量的方差仍需分别检验。尤其在多峰目标上，终点 KDE 看似正确并不能排除低概率模态遗漏或 importance weights 被极少数轨道支配。"
+      ]
+    },
+    {
+      "title": "复现与资源",
+      "paragraphs": [
+        "原文：https://arxiv.org/abs/2211.01364；代码：https://github.com/juliusberner/sde_sampler。",
+        "全文 43 页，PDF SHA-256：acc14bcda73d11c0a46913696e81622d5add9b147b042754a6b5c1486949e5ba。复现应固定 SDE 系数、时间网格、batch、目标 score、控制参数化和 importance-weight 计算。",
+        "Evidence status: full-text verified; no independent reproduction performed."
+      ]
+    },
+    {
+      "title": "阅读指南",
+      "paragraphs": [
+        "先读 Corollary 3.1 的 Eqs. (19)–(20)，确认损失、端点 KL 与 \\(\\log Z\\) 的关系；再看 Figure 3。最后核对 Appendix 的离散化和初态近似，区分连续时间恒等式与实际 estimator。"
+      ]
+    }
+  ],
+  "cover": {
+    "mode": "source_figure",
+    "asset_path": "assets/collection-figures/2211.01364/figure-3-dis-trajectories.webp",
+    "label": "Figure 3",
+    "visual_type": "trajectory",
+    "evidence": "paper.pdf p. 8, Figure 3",
+    "alt_text": "受控扩散从高斯分布输运到 double-well 目标的轨迹和密度。",
+    "caption": "DIS 学习整条受控随机轨道，而非仅拟合终点样本；右侧密度检验终态是否覆盖目标势阱。",
+    "selection_rationale": "该图把随机控制、轨迹测度与目标采样三个核心概念连接起来，并同时显示路径演化、终点样本和目标密度，优先于单独的误差数据表。"
+  },
+  "figure_refs": [
+    {
+      "label": "Figure 3",
+      "asset_path": "assets/collection-figures/2211.01364/figure-3-dis-trajectories.webp",
+      "section": "核心结果与证据",
+      "role": "visualize controlled stochastic transport",
+      "evidence": "paper.pdf p. 8, Figure 3",
+      "alt_text": "double-well 上的 DIS 轨迹、样本和密度。",
+      "caption": "高斯初态经受控扩散进入多阱目标。",
+      "interpretation": "Endpoint agreement depends on both the learned control and the initial-marginal approximation."
+    }
+  ],
+  "equation_refs": [
+    {
+      "label": "DIS variational identity",
+      "latex": "D_{\\mathrm{KL}}\\!\\left(P_{X_0^u}\\|P_{Y_T}\\right)-\\log Z=\\min_{u\\in\\mathcal U}\\mathcal L_{\\mathrm{DIS}}(u)",
+      "role": "link stochastic-control cost to endpoint mismatch and normalization",
+      "symbols": {
+        "u": "control",
+        "Z": "target normalizer",
+        "P_X": "controlled endpoint law",
+        "P_Y": "forward-diffusion terminal law"
+      },
+      "evidence": "paper.pdf p. 7, Eq. (20)",
+      "interpretation": "The learned control is exact only after accounting for the endpoint-prior mismatch."
+    }
+  ],
+  "evidence_refs": [
+    "paper.pdf pp. 4–8: control-theoretic derivation and DIS",
+    "paper.pdf pp. 9–13: numerical comparisons",
+    "source PDF SHA-256 acc14bcda73d11c0a46913696e81622d5add9b147b042754a6b5c1486949e5ba",
+    "Evidence status: full-text verified; no independent reproduction performed."
+  ]
+}

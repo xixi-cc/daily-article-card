@@ -1,0 +1,138 @@
+{
+  "arxiv_id": "2210.11058",
+  "source_version": "v1",
+  "source_pdf": "https://arxiv.org/pdf/2210.11058",
+  "title_en": "Representation Learning with Diffusion Models",
+  "title_zh": "用扩散模型学习语义表征",
+  "curation_status": "full_text_verified",
+  "card_standard_version": "2.3",
+  "paper_profile": "theory_numerics",
+  "style_reference": "physicist_daily_arxiv",
+  "provenance": {
+    "program": "Collection",
+    "catalog": "Paper Collection",
+    "catalog_record_id": "76d3033b1386cf39",
+    "catalog_record_ids": [
+      "76d3033b1386cf39"
+    ],
+    "catalog_topic": "Generative Models",
+    "collection_date": "2026-08-23",
+    "sampled_at": "2026-08-26",
+    "selected_by": "full_collection_backfill",
+    "sampling_seed": "not_applicable_full_collection",
+    "candidate_count": 452
+  },
+  "verified_metadata": {
+    "arxiv_id": "2210.11058",
+    "version": "v1",
+    "title": "Representation Learning with Diffusion Models",
+    "authors": [
+      "Jeremias Traub"
+    ],
+    "categories": [
+      "cs.CV"
+    ],
+    "primary_category": "cs.CV",
+    "published": "2022-10-20T07:26:47Z",
+    "abstract": "A latent diffusion model is jointly conditioned on a KL-regularized representation encoder to obtain a tractable semantic latent space."
+  },
+  "sections": [
+    {
+      "title": "作者信息",
+      "paragraphs": [
+        "作者：Jeremias Traub；arXiv:2210.11058v1。本文是一篇 74 页硕士论文，本卡按全文而非摘要核对。"
+      ]
+    },
+    {
+      "title": "研究问题",
+      "paragraphs": [
+        "Latent diffusion model 能高质量生成，却会在正向扩散中逐级抹去样本信息，因此其中间变量不是稳定、可解释的语义坐标。论文问：能否给扩散模型增加一个可采样的表征自由度，同时兼顾无条件生成、重构与语义插值？"
+      ]
+    },
+    {
+      "title": "背景",
+      "paragraphs": [
+        "普通 LDM 从高斯末态反演压缩图像 latent；VAE 则用 KL 项把编码分布压向简单先验。LRDM 把两者耦合：表征编码器从干净 latent 提取 \\(r\\)，扩散 U-Net 在每个去噪时刻以 \\(r\\) 为条件。",
+        "从物理角度看，\\(r\\) 像一组慢变量：它约束宏观语义，扩散轨道负责补齐未被它固定的微观细节；这只是学习到的尺度分工，并非可辨识性定理。"
+      ]
+    },
+    {
+      "title": "模型与方法",
+      "paragraphs": [
+        "编码器给出高斯近似后验 \\(q_\\phi(r\\mid z_0)\\)，先验取 \\(p(r)=\\mathcal N(0,I)\\)。训练把 image-parameterized diffusion 重构项与 \\(\\lambda D_{\\mathrm{KL}}\\) 相加；\\(\\lambda\\) 决定表征的信息容量与直接从先验采样的可行性。",
+        "作者还考察 timestep-conditional t-LRDM、类别条件表征，以及形状/风格的分离实验。"
+      ]
+    },
+    {
+      "title": "核心结果与证据",
+      "paragraphs": [
+        "Figure 4.7 显示：VQ-AE 插值更像像素混合，DDIM 的变化不够平滑，而 LRDM 在身份与场景语义之间形成连续过渡。这是表征几何最直接的证据。",
+        "LSUN Churches 上，\\(\\lambda=10^{-6},10^{-4},5\times10^{-4}\\) 的 FID 分别为 457.70、58.08、10.54，而 reconstruction FID 分别为 6.03、8.63、13.30：更强先验匹配改善无条件采样，却牺牲重构。",
+        "400 epoch 的 image-parameterized LDM 达到 FID 5.64；因此 LRDM 的贡献是语义 latent 与单一先验采样，不是胜过充分训练 LDM 的生成质量。"
+      ]
+    },
+    {
+      "title": "有效性与局限",
+      "paragraphs": [
+        "结论主要来自有限图像数据集与单篇硕士论文中的配置；没有证明 \\(r\\) 的语义因素唯一、独立或可跨域迁移。",
+        "性能强烈依赖 \\(\\lambda\\)：弱 KL 导致 aggregated posterior 偏离高斯先验，强 KL 则损害重构。t-LRDM 在相同 100 epoch 预算下更差，而且每次反向步计算更贵。"
+      ]
+    },
+    {
+      "title": "复现与资源",
+      "paragraphs": [
+        "原文：https://arxiv.org/abs/2210.11058；代码：https://github.com/jeremiastraub/diffusion。",
+        "全文 74 页，PDF SHA-256：462de2436e79df363e84deefb002f1a4a7b8520580bbb394d953d9da88fca7d3。复现需固定 autoencoder、image/noise parameterization、表征尺寸、\\(\\lambda\\)、训练 epoch 与采样步数。",
+        "Evidence status: full-text verified; no independent reproduction performed."
+      ]
+    },
+    {
+      "title": "阅读指南",
+      "paragraphs": [
+        "先读 Eq. (2.35) 与 Figure 4.4，理解表征分支怎样进入去噪网络；再看 Figure 4.7 和 Table 4.2，把语义连续性、重构质量和 prior sampling 分开。最后检查 \\(\\lambda\\) 扫描，不要把漂亮插值等同于表征可辨识。"
+      ]
+    }
+  ],
+  "cover": {
+    "mode": "source_figure",
+    "asset_path": "assets/collection-figures/2210.11058/figure-4-7-semantic-interpolation.webp",
+    "label": "Figure 4.7",
+    "visual_type": "comparison",
+    "evidence": "paper.pdf p. 41, Figure 4.7",
+    "alt_text": "VQ-AE、DDIM 与 LRDM 的图像插值序列。",
+    "caption": "LRDM 在端点之间给出更连续的语义变化；图像细节由条件扩散解码器补足。",
+    "selection_rationale": "该图直接检验论文的核心对象——表征空间的语义几何，比单独的 FID 表更有解释力。"
+  },
+  "figure_refs": [
+    {
+      "label": "Figure 4.7",
+      "asset_path": "assets/collection-figures/2210.11058/figure-4-7-semantic-interpolation.webp",
+      "section": "核心结果与证据",
+      "role": "compare representation geometry",
+      "evidence": "paper.pdf p. 41, Figure 4.7",
+      "alt_text": "三种模型在图像端点之间的插值。",
+      "caption": "LRDM 的路径主要沿语义属性连续变化。",
+      "interpretation": "The visual evidence supports semantic smoothness, not unique disentanglement."
+    }
+  ],
+  "equation_refs": [
+    {
+      "label": "LRDM objective",
+      "latex": "\\mathcal L_{\\mathrm{LRDM}}=\\mathbb E\\!\\left[\\|z_0-z_{0,\\theta}(z_t,t,r(z_0))\\|_2^2\\right]+\\lambda D_{\\mathrm{KL}}\\!\\left(q_\\phi(r\\mid z_0)\\|p(r)\\right)",
+      "role": "couple diffusion reconstruction to a sampleable representation prior",
+      "symbols": {
+        "r": "learned representation",
+        "lambda": "prior regularization strength",
+        "z_t": "noised autoencoder latent"
+      },
+      "evidence": "paper.pdf p. 23, Eq. (2.35)",
+      "interpretation": "The KL term trades reconstruction information for agreement with the Gaussian representation prior."
+    }
+  ],
+  "evidence_refs": [
+    "paper.pdf pp. 22–24: LRDM objective and graphical model",
+    "paper.pdf pp. 39–46: interpolation and regularization study",
+    "source PDF SHA-256 462de2436e79df363e84deefb002f1a4a7b8520580bbb394d953d9da88fca7d3",
+    "Evidence status: full-text verified; no independent reproduction performed."
+  ]
+}

@@ -22,6 +22,7 @@ def main() -> int:
         raise SystemExit("campaign selection must be a list")
 
     completed = 0
+    links: list[dict[str, object]] = []
     seen_card_ids: set[str] = set()
     seen_catalog_ids: set[str] = set()
     for item in selection:
@@ -38,6 +39,19 @@ def main() -> int:
         if card_path.is_file():
             item["status"] = "card_existing"
             completed += 1
+            titles = [str(value) for value in item.get("titles", [])]
+            for index, record_id in enumerate(record_ids):
+                title = titles[index] if index < len(titles) else titles[0]
+                links.append({
+                    "card_id": card_id,
+                    "arxiv_id": item.get("source_id") if item.get("source_kind") == "arxiv" else None,
+                    "catalog_record_id": record_id,
+                    "title": title,
+                    "card_url": (
+                        "https://physics-ai-daily.lezontbukercfdvs4.chatgpt.site/"
+                        f"{str(item['card_url_path']).strip('/')}/"
+                    ),
+                })
         else:
             item["status"] = "pending"
 
@@ -52,7 +66,11 @@ def main() -> int:
     args.campaign.write_text(
         json.dumps(campaign, ensure_ascii=False, indent=2) + "\n", encoding="utf-8"
     )
+    links.sort(key=lambda entry: str(entry["catalog_record_id"]))
+    ledger = args.campaign.with_name("card-links.json")
+    ledger.write_text(json.dumps(links, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
     print(f"Full Collection campaign: {completed}/{target} cards, {target - completed} pending")
+    print(f"Paper Card link ledger: {len(links)} catalog records")
     return 0
 
 
