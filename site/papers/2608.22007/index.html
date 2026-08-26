@@ -1,0 +1,209 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>The Communication Map of a Transformer - physics+AI 每日论文卡</title>
+    <meta name="description" content="Transformer 组件通过向共享 residual stream 写入并从中读取来通信，而机制可解释性过去常逐条电路手工绘制这些连接。本文提出 communication map：仅由权重出发绘制语言模型中每个潜在通信通道，把已有 composition score 推广为统一 coupling coefficient，覆盖从完整 attention-head 电路到单 neuron 的 18 类连接。对所有候选通道的普查从 GPT-2 的 $6.3\times10^8$ 对扩展到 Pythia-6.9B 的 $1.3\times10^{11}$ 对；70–89% 的 head pairs 相对随机方向显著偏离，有些强耦合，有些主动避开。完整图谱在一张消费级 GPU 上耗时从 GPT-2 的 15 秒到 Pythia-6.9B 的 11 分钟。两个应用验证其用途：最强 head-to-head coupling 可盲恢复已知 induction circuits 并把它们组成社区，消融该社区会破坏 in-context copying；汇总所有 head 的 coupling 后还能找到不同于 activation PCA 与 outlier dimensions 的二维 residual-stream 子空间，删除它会在六个模型中消除 induction 能力。作者公开图谱、统计工具与干预套件。" />
+    <script>
+      (function() {
+        try {
+          var themePreference = window.localStorage.getItem('color-theme') || 'system';
+          var systemUsesDarkTheme = window.matchMedia('(prefers-color-scheme: dark)').matches;
+          var resolvedTheme = themePreference === 'system'
+            ? (systemUsesDarkTheme ? 'dark' : 'light')
+            : themePreference;
+          document.documentElement.dataset.theme = resolvedTheme;
+          document.documentElement.dataset.themePreference = themePreference;
+          document.documentElement.style.colorScheme = resolvedTheme;
+        } catch (error) {
+          document.documentElement.dataset.theme = 'light';
+          document.documentElement.dataset.themePreference = 'system';
+        }
+      })();
+    </script>
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='18' fill='%23111827'/%3E%3Ctext x='50%25' y='55%25' text-anchor='middle' dominant-baseline='middle' font-size='30' font-family='Arial, sans-serif' fill='white'%3EV%3C/text%3E%3C/svg%3E" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700;800&family=Noto+Sans+SC:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <script>document.documentElement.classList.add('math-pending');</script>
+    <script>
+      window.MathJax = {
+        tex: {
+          inlineMath: [['$', '$'], ['\\(', '\\)']],
+          displayMath: [['$$', '$$'], ['\\[', '\\]']],
+          processEscapes: true
+        },
+        options: {
+          skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+        },
+        chtml: {
+          scale: 1,
+          displayAlign: 'center'
+        },
+        startup: {
+          ready: function() {
+            MathJax.startup.defaultReady();
+            MathJax.startup.promise.then(function() {
+              document.documentElement.classList.remove('math-pending');
+              document.documentElement.dataset.mathReady = 'true';
+            });
+          }
+        }
+      };
+    </script>
+    <script defer src="../../assets/vendor/mathjax/tex-chtml.js"></script>
+    <link rel="stylesheet" href="../../assets/style.css" />
+  </head>
+  <body class="detail-page" data-paper-id="2608.22007">
+    <div class="page-noise"></div>
+    <div class="page-blur page-blur-a"></div>
+    <div class="page-blur page-blur-b"></div>
+
+    <header class="header detail-page-header">
+      <div class="container">
+        <div class="detail-page-topbar">
+          <a class="back-link" href="../../physics_AI.html">返回列表</a>
+          <div class="detail-topbar-actions">
+            <span class="detail-site-name">physics+AI 每日论文卡</span>
+            <button class="theme-toggle" type="button" data-theme-toggle aria-label="当前主题：设备，点击切换主题" title="当前主题：设备">
+  <span class="theme-toggle-icons" aria-hidden="true">
+    <svg class="theme-toggle-icon theme-toggle-icon-light" viewBox="0 0 24 24" fill="none">
+      <circle cx="12" cy="12" r="3.5" stroke="currentColor" stroke-width="1.8"/>
+      <path d="M12 2.5v2M12 19.5v2M2.5 12h2M19.5 12h2M5.3 5.3l1.4 1.4M17.3 17.3l1.4 1.4M18.7 5.3l-1.4 1.4M6.7 17.3l-1.4 1.4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+    </svg>
+    <svg class="theme-toggle-icon theme-toggle-icon-dark" viewBox="0 0 24 24" fill="none">
+      <path d="M20 15.2A8.1 8.1 0 0 1 8.8 4a8.2 8.2 0 1 0 11.2 11.2z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>
+    </svg>
+    <svg class="theme-toggle-icon theme-toggle-icon-system" viewBox="0 0 24 24" fill="none">
+      <rect x="3" y="4" width="18" height="13" rx="2.5" stroke="currentColor" stroke-width="1.8"/>
+      <path d="M8 21h8M12 17v4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+    </svg>
+  </span>
+  <span class="theme-toggle-label" data-theme-toggle-label>设备</span>
+</button>
+          </div>
+        </div>
+
+        <div class="detail-hero-grid">
+          <div class="detail-hero-cover"><figure class="paper-figure-card paper-figure-card-detail">
+  <img class="paper-figure-image" src="../../assets/paper-images/2608.22007.webp" alt="The Communication Map of a Transformer" loading="lazy" onclick="window.openPaperFigureImage && window.openPaperFigureImage(this)" />
+  <figcaption class="paper-figure-caption">Transformer 组件通过向共享 residual stream 写入并从中读取来通信，而机制可解释性过去常逐条电路手工绘制这些连接。本文提出 communication map：仅由权重出发绘制语言模型中每个潜在通信通道，把已有 composition score 推广为统一 coupling coefficient，覆盖从完整 attention-head 电路到单 neuron 的 18 类连接。对所有候选通道的普查从 GPT-2 的 $6.3\times10^8$ 对扩展到 Pythia-6.9B 的 $1.3\times10^{11}$ 对；70–89% 的 head pairs 相对随机方向显著偏离，有些强耦合，有些主动避开。完整图谱在一张消费级 GPU 上耗时从 GPT-2 的 15 秒到 Pythia-6.9B 的 11 分钟。两个应用验证其用途：最强 head-to-head coupling 可盲恢复已知 induction circuits 并把它们组成社区，消融该社区会破坏 in-context copying；汇总所有 head 的 coupling 后还能找到不同于 activation PCA 与 outlier dimensions 的二维 residual-stream 子空间，删除它会在六个模型中消除 induction 能力。作者公开图谱、统计工具与干预套件。</figcaption>
+</figure></div>
+          <div class="detail-hero-copy">
+            <p class="eyebrow">论文详情</p>
+            <h1 class="detail-page-title">The Communication Map of a Transformer</h1>
+            <p class="detail-page-title-zh">Transformer 的通信图谱</p>
+            <div class="detail-meta">2026-08-26 · <a href="https://arxiv.org/abs/2608.22007" target="_blank" rel="noopener noreferrer">原文</a></div>
+            <p class="detail-summary">Transformer 组件通过向共享 residual stream 写入并从中读取来通信，而机制可解释性过去常逐条电路手工绘制这些连接。本文提出 communication map：仅由权重出发绘制语言模型中每个潜在通信通道，把已有 composition score 推广为统一 coupling coefficient，覆盖从完整 attention-head 电路到单 neuron 的 18 类连接。对所有候选通道的普查从 GPT-2 的 $6.3\times10^8$ 对扩展到 Pythia-6.9B 的 $1.3\times10^{11}$ 对；70–89% 的 head pairs 相对随机方向显著偏离，有些强耦合，有些主动避开。完整图谱在一张消费级 GPU 上耗时从 GPT-2 的 15 秒到 Pythia-6.9B 的 11 分钟。两个应用验证其用途：最强 head-to-head coupling 可盲恢复已知 induction circuits 并把它们组成社区，消融该社区会破坏 in-context copying；汇总所有 head 的 coupling 后还能找到不同于 activation PCA 与 outlier dimensions 的二维 residual-stream 子空间，删除它会在六个模型中消除 induction 能力。作者公开图谱、统计工具与干预套件。</p>
+            <div class="detail-micro-meta">
+              <span class="meta-pill">12 分钟读完</span>
+              <span class="meta-pill">10 张阅读卡</span>
+              <span class="meta-pill">作者：Richard Zhe Wang。</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <main class="container detail-layout">
+      <div class="detail-shell">
+        <article id="detail-body" class="reading-flow"><section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 01</span>
+    <span class="reading-step-note">作者信息</span>
+  </div>
+  <h2>作者信息</h2>
+  <div class="reading-card-content"><ul><li>作者：Richard Zhe Wang。</li><li>核验机构：St. John Fisher University；邮箱 zwang@sjfc.edu、rzwang.research@gmail.com（论文首页）。</li><li>arXiv:2608.22007v1，primary category cs.LG，cross-list cs.CL，提交于 2026-08-22T15:24:47Z。Codex-direct 评分 37/40，S。</li></ul></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 02</span>
+    <span class="reading-step-note">摘要</span>
+  </div>
+  <h2>摘要</h2>
+  <div class="reading-card-content"><p>Transformer 组件通过向共享 residual stream 写入并从中读取来通信，而机制可解释性过去常逐条电路手工绘制这些连接。本文提出 communication map：仅由权重出发绘制语言模型中每个潜在通信通道，把已有 composition score 推广为统一 coupling coefficient，覆盖从完整 attention-head 电路到单 neuron 的 18 类连接。对所有候选通道的普查从 GPT-2 的 $6.3\times10^8$ 对扩展到 Pythia-6.9B 的 $1.3\times10^{11}$ 对；70–89% 的 head pairs 相对随机方向显著偏离，有些强耦合，有些主动避开。完整图谱在一张消费级 GPU 上耗时从 GPT-2 的 15 秒到 Pythia-6.9B 的 11 分钟。两个应用验证其用途：最强 head-to-head coupling 可盲恢复已知 induction circuits 并把它们组成社区，消融该社区会破坏 in-context copying；汇总所有 head 的 coupling 后还能找到不同于 activation PCA 与 outlier dimensions 的二维 residual-stream 子空间，删除它会在六个模型中消除 induction 能力。作者公开图谱、统计工具与干预套件。</p></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 03</span>
+    <span class="reading-step-note">研究问题</span>
+  </div>
+  <h2>研究问题</h2>
+  <div class="reading-card-content"><p>能否用一个与组件类型无关、可统计校准且计算可扩展的权重几何量，系统枚举 Transformer 中“谁能向谁写入信息”，并让图上结构产生可干预验证的功能预测？分类为 pure AI / mechanistic interpretability。</p></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 04</span>
+    <span class="reading-step-note">背景</span>
+  </div>
+  <h2>背景</h2>
+  <div class="reading-card-content"><p>residual stream 是 attention heads 与 MLP neurons 的共享通信介质。既有 QK/OV composition scores 适合特定 head-to-head 情形，却难统一 neuron、head 与多种读写通道；激活归因则依赖输入。本文刻意测量 potential connectivity：权重几何允许的通道，而不是任意给定输入上实际流过的信息。</p></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 05</span>
+    <span class="reading-step-note">模型与方法</span>
+  </div>
+  <h2>模型与方法</h2>
+  <div class="reading-card-content"><ul><li>把每个组件写成 reader map $R$ 与 writer map $W$，用 trace 归一化的 $C^2(R,W)$ 衡量 gain-weighted directional overlap；SVD 形式把它解释为奇异方向夹角的加权平均。</li><li>对 18 种 connection class 分别建立因果层掩码和经验 null；Haar 旋转给出均值 $1/d$，实际 edge selection 使用类内 robust \(z\)-score 与 Benjamini–Hochberg FDR $q=0.05$。</li><li>在 GPT-2、GPT-Neo 与 Pythia 家族七个模型上完成全候选普查；应用一把显著 head graph 做 Louvain 社区划分并消融，应用二把各 head 的 coupling profile 汇总后做 RW-PCA，删除得到的二维子空间并与 activation PCA、rogue dimensions、随机子空间比较。</li></ul></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 06</span>
+    <span class="reading-step-note">核心结果与证据</span>
+  </div>
+  <h2>核心结果与证据</h2>
+  <div class="reading-card-content"><ul><li>规模与成本：候选通道从 GPT-2 的 $6.3\times10^8$ 到 Pythia-6.9B 的 $1.3\times10^{11}$；fp32 单 RTX 5090 上构图分别约 15 秒与 11 分钟。70–89% head pairs 的方向耦合显著偏离 chance，但方向既可强耦合也可低于 chance。</li><li>盲恢复：GPT-2 head graph 的强边形成跨层垂直社区，已知 induction、IOI name-mover 与 S-inhibition heads 集中在特定社区。六个模型的社区消融破坏 82–97.1% clean induction gain；随机/匹配控制远小。</li><li>全局二维子空间：只删除 residual width 的两个方向，就在六个模型中消除 82–96% induction gain；Pythia-6.9B 删除 $2/4096=0.05\%$ 维度消除 89.5%，对比 activation PCA 84.5%、rogue dimensions 36.5%。随机二维删除接近零。</li><li>Figure 2 展示图结构发现；Table 3 提供六尺度干预，Tables 9–10 给跨模型复现和 GPT-2 社区 knockout 分解。证据包含权重全枚举、盲发现与因果干预，而不只相关性。</li></ul></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 07</span>
+    <span class="reading-step-note">为什么重要</span>
+  </div>
+  <h2>为什么重要</h2>
+  <div class="reading-card-content"><p>这项工作把电路发现从少量手工假设提升为可枚举的全图搜索，并把几何候选与消融验证连接起来。二维 induction-critical subspace 说明能力可能集中于极低维通信带，同时也为权重级审计、跨模型比较和后续 feature-level mapping 提供可复现基础。</p></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 08</span>
+    <span class="reading-step-note">有效性与局限</span>
+  </div>
+  <h2>有效性与局限</h2>
+  <div class="reading-card-content"><ul><li>communication map 只刻画 potential connectivity；输入依赖的 attention routing 不可见，强几何耦合不等于每个 prompt 都实际通信。</li><li>功能验证集中于 in-context copying/induction，并偏重 head-to-head 结构；neuron wires 和其余社区尚未逐一赋予功能。</li><li>模型最大为 Pythia-6.9B，尚未验证更大或架构显著不同的模型。节点是 heads/neurons 而非 sparse features；二维删除的非加性也提醒不能把子空间简单解释成两条独立电路。</li></ul></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 09</span>
+    <span class="reading-step-note">复现与资源</span>
+  </div>
+  <h2>复现与资源</h2>
+  <div class="reading-card-content"><ul><li>代码与结果：https://github.com/richardzhewang/communication-map；原文：https://arxiv.org/abs/2608.22007；PDF：https://arxiv.org/pdf/2608.22007。</li><li>论文给出固定 Pile samples、seeds、public checkpoints 与完整 pipeline；所有实验在 RTX 5090 32GB 上运行，6.9B fp32 forward 需要 32GB，其余可用更小显卡。</li><li>本卡核对全文、表格和公式，未下载代码重跑构图或消融；独立复现状态明确为未执行。</li></ul></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 10</span>
+    <span class="reading-step-note">阅读指南</span>
+  </div>
+  <h2>阅读指南</h2>
+  <div class="reading-card-content"><ul><li>快速阅读：Eq. (1) → Table 1/\(2 \to Figure\) \(2 \to Table\) \(3 \to Limitations\) 与 Reproducibility Statement。</li><li>最重要公式是统一 coupling coefficient；最重要干预是二维 RW-PCA subspace deletion，而不是 70–89% 的描述性普查比例。</li><li>深读应看 Appendix B 的 18 类矩阵形状与 null calibration、Appendix \(C\) 的跨模型 knockout，区分“可通信”与“实际通信”。</li></ul></div>
+</section></article>
+        <aside id="detail-toc" class="detail-toc hidden" aria-label="内容目录">
+          <p class="detail-toc-title">阅读目录</p>
+          <nav id="detail-toc-nav" class="detail-toc-nav"></nav>
+        </aside>
+      </div>
+      <nav class="paper-nav"><a class="paper-nav-link paper-nav-next" href="../../papers/2608.22197/"><span class="paper-nav-label">下一篇 →</span><span class="paper-nav-title">On the Capability Separation Between World-Model Policy Learning and Imitated World-Action Models</span></a></nav>
+    </main>
+
+    <footer class="footer">
+      <div class="container">
+        <p>内容来自 <a href="https://arxiv.org" target="_blank" rel="noopener noreferrer">arXiv.org</a>，阅读卡片由静态站点生成器构建。</p>
+      </div>
+    </footer>
+
+    <script src="../../assets/theme.js"></script>
+    <script src="../../assets/media.js"></script>
+    <script src="../../assets/paper.js"></script>
+  </body>
+</html>
