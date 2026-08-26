@@ -1,0 +1,199 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Improving and generalizing flow-based generative models with minibatch optimal transport - physics+AI Collection 随机精选</title>
+    <meta name="description" content="generalized CFM 以任意 coupling z 条件化 source/target probability paths；训练仍是 conditional vector-field regression，不要求 source 为 Gaussian 或能评估其 density。 OT-CFM 在每个 minibatch 内求 source–target 2-Wasserstein matching，再回归近直线 conditional flows；目的既是减少 regression-target variance，也让 ODE 更易积分。 当可采样真实 static OT plan 且 σ²→0、满足 regularity 时，marginal flow 解 dynamic OT；实际大数据只用 minibatch plan，因此是近似而非 theorem 所述 exact OT。" />
+    <script>
+      (function() {
+        try {
+          var themePreference = window.localStorage.getItem('color-theme') || 'system';
+          var systemUsesDarkTheme = window.matchMedia('(prefers-color-scheme: dark)').matches;
+          var resolvedTheme = themePreference === 'system'
+            ? (systemUsesDarkTheme ? 'dark' : 'light')
+            : themePreference;
+          document.documentElement.dataset.theme = resolvedTheme;
+          document.documentElement.dataset.themePreference = themePreference;
+          document.documentElement.style.colorScheme = resolvedTheme;
+        } catch (error) {
+          document.documentElement.dataset.theme = 'light';
+          document.documentElement.dataset.themePreference = 'system';
+        }
+      })();
+    </script>
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='18' fill='%23111827'/%3E%3Ctext x='50%25' y='55%25' text-anchor='middle' dominant-baseline='middle' font-size='30' font-family='Arial, sans-serif' fill='white'%3EV%3C/text%3E%3C/svg%3E" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700;800&family=Noto+Sans+SC:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <script>document.documentElement.classList.add('math-pending');</script>
+    <script>
+      window.MathJax = {
+        tex: {
+          inlineMath: [['$', '$'], ['\\(', '\\)']],
+          displayMath: [['$$', '$$'], ['\\[', '\\]']],
+          processEscapes: true
+        },
+        options: {
+          skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+        },
+        chtml: {
+          scale: 1,
+          displayAlign: 'center'
+        },
+        startup: {
+          ready: function() {
+            MathJax.startup.defaultReady();
+            MathJax.startup.promise.then(function() {
+              document.documentElement.classList.remove('math-pending');
+              document.documentElement.dataset.mathReady = 'true';
+            });
+          }
+        }
+      };
+    </script>
+    <script defer src="../../assets/vendor/mathjax/tex-chtml.js"></script>
+    <link rel="stylesheet" href="../../assets/style.css" />
+  </head>
+  <body class="detail-page" data-paper-id="2302.00482">
+    <div class="page-noise"></div>
+    <div class="page-blur page-blur-a"></div>
+    <div class="page-blur page-blur-b"></div>
+
+    <header class="header detail-page-header">
+      <div class="container">
+        <div class="detail-page-topbar">
+          <a class="back-link" href="../../collection.html">返回列表</a>
+          <div class="detail-topbar-actions">
+            <span class="detail-site-name">physics+AI Collection 随机精选</span>
+            <button class="theme-toggle" type="button" data-theme-toggle aria-label="当前主题：设备，点击切换主题" title="当前主题：设备">
+  <span class="theme-toggle-icons" aria-hidden="true">
+    <svg class="theme-toggle-icon theme-toggle-icon-light" viewBox="0 0 24 24" fill="none">
+      <circle cx="12" cy="12" r="3.5" stroke="currentColor" stroke-width="1.8"/>
+      <path d="M12 2.5v2M12 19.5v2M2.5 12h2M19.5 12h2M5.3 5.3l1.4 1.4M17.3 17.3l1.4 1.4M18.7 5.3l-1.4 1.4M6.7 17.3l-1.4 1.4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+    </svg>
+    <svg class="theme-toggle-icon theme-toggle-icon-dark" viewBox="0 0 24 24" fill="none">
+      <path d="M20 15.2A8.1 8.1 0 0 1 8.8 4a8.2 8.2 0 1 0 11.2 11.2z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>
+    </svg>
+    <svg class="theme-toggle-icon theme-toggle-icon-system" viewBox="0 0 24 24" fill="none">
+      <rect x="3" y="4" width="18" height="13" rx="2.5" stroke="currentColor" stroke-width="1.8"/>
+      <path d="M8 21h8M12 17v4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+    </svg>
+  </span>
+  <span class="theme-toggle-label" data-theme-toggle-label>设备</span>
+</button>
+          </div>
+        </div>
+
+        <div class="detail-hero-grid">
+          <div class="detail-hero-cover"><article class="note-cover note-cover-title-abstract" style="--cover-from: #d84f61; --cover-to: #f29c6b; --cover-spot: #ffd6c4; --cover-ink: #fff7f4; --cover-muted: rgba(255, 247, 244, 0.82); --cover-chip: rgba(255, 247, 244, 0.16); --cover-stroke: rgba(255, 247, 244, 0.24)">
+  <div class="note-cover-mesh"></div>
+  <div class="note-cover-title-shell">
+    <span class="note-cover-kicker">TITLE · ABSTRACT</span>
+    <h1 class="note-cover-title">Improving and generalizing flow-based generative models with minibatch optimal transport</h1>
+    <p class="note-cover-title-zh">用小批量最优传输改进并推广基于流的生成模型</p>
+    <p class="note-cover-abstract">Continuous normalizing flows (CNFs) are an attractive generative modeling technique, but they have been held back by limitations in their simulation-based maximum likelihood training. We introduce the generalized conditional flow matching (CFM) technique, a family of simulation-free training objectives for CNFs. CFM features a stable regression objective like that used to train the stochastic flow in diffusion models but enjoys the efficient inference of deterministic flow models. In contrast to both diffusion models and prior CNF training algorithms, CFM does not require the source distribution to be Gaussian or require evaluation of its density. A variant of our objective is optimal transport CFM (OT-CFM), which creates simpler flows that are more stable to train and lead to faster inference, as evaluated in our experiments. Furthermore, we show that when the true OT plan is available,</p>
+  </div>
+</article></div>
+          <div class="detail-hero-copy">
+            <p class="eyebrow">Collection 全文卡</p>
+            <h1 class="detail-page-title">Improving and generalizing flow-based generative models with minibatch optimal transport</h1>
+            <p class="detail-page-title-zh">用小批量最优传输改进并推广基于流的生成模型</p>
+            <div class="detail-meta">Paper Collection · Generative Models · <a href="https://arxiv.org/abs/2302.00482" target="_blank" rel="noopener noreferrer">原文</a></div>
+            <p class="detail-summary">generalized CFM 以任意 coupling z 条件化 source/target probability paths；训练仍是 conditional vector-field regression，不要求 source 为 Gaussian 或能评估其 density。 OT-CFM 在每个 minibatch 内求 source–target 2-Wasserstein matching，再回归近直线 conditional flows；目的既是减少 regression-target variance，也让 ODE 更易积分。 当可采样真实 static OT plan 且 σ²→0、满足 regularity 时，marginal flow 解 dynamic OT；实际大数据只用 minibatch plan，因此是近似而非 theorem 所述 exact OT。</p>
+            <div class="detail-micro-meta">
+              <span class="meta-pill">16 分钟读完</span>
+              <span class="meta-pill">8 张阅读卡</span>
+              <span class="meta-pill">作者：Alexander Tong、Kilian Fatras、Nikolay Malkin、Guil…</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <main class="container detail-layout">
+      <div class="detail-shell">
+        <article id="detail-body" class="reading-flow"><section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 01</span>
+    <span class="reading-step-note">作者信息</span>
+  </div>
+  <h2>作者信息</h2>
+  <div class="reading-card-content"><ul><li>作者：Alexander Tong、Kilian Fatras、Nikolay Malkin、Guillaume Huguet、Yanlei Zhang、Jarrid Rector-Brooks、Guy Wolf、Yoshua Bengio；Mila/Montréal/McGill。</li><li>官方快照：arXiv:2302.00482v4；34 页；TMLR 2024；代码 torchcfm。前三位作者 equal contribution。</li><li>论文推广 CFM 到任意 source–target coupling，并提出 minibatch OT-CFM 与 Schrödinger-bridge CFM。</li></ul></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 02</span>
+    <span class="reading-step-note">摘要</span>
+  </div>
+  <h2>摘要</h2>
+  <div class="reading-card-content"><ul><li>generalized CFM 以任意 coupling \(z\) 条件化 source/target probability paths；训练仍是 conditional vector-field regression，不要求 source 为 Gaussian 或能评估其 density。</li><li>OT-CFM 在每个 minibatch 内求 source–target 2-Wasserstein matching，再回归近直线 conditional flows；目的既是减少 regression-target variance，也让 ODE 更易积分。</li><li>当可采样真实 static OT plan 且 σ²→0、满足 regularity 时，marginal flow 解 dynamic OT；实际大数据只用 minibatch plan，因此是近似而非 theorem 所述 exact OT。</li></ul></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 03</span>
+    <span class="reading-step-note">背景</span>
+  </div>
+  <h2>背景</h2>
+  <div class="reading-card-content"><ul><li>早期 FM 把单 data endpoint 与 Gaussian source 配对；这限制了 empirical-to-empirical transport、single-cell interpolation、unpaired translation 与一般 bridge。</li><li>dynamic OT 最小化 path kinetic energy，理论等价于 static Wasserstein-2；以 regularizer 强迫 neural ODE 变直常难优化。</li><li>本工作将 coupling 本身视为 CFM 设计轴：independent coupling 给 I-CFM，OT coupling 给 OT-CFM，entropic OT/Brownian bridge 给 SB-CFM。</li></ul></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 04</span>
+    <span class="reading-step-note">模型与方法</span>
+  </div>
+  <h2>模型与方法</h2>
+  <div class="reading-card-content"><ul><li>Theorems 3.1–3.2 将条件变量从单 endpoint 推广为一般 \(z\)：posterior-weighted conditional fields 生成 marginal path，CFM 与 FM losses 对 \(\theta\) 只差常数。</li><li>I-CFM 从 \(q_{0}\)、\(q_{1}\) 独立抽 \(x_{0}\),\(x_{1}\)，并用 mean (1−\(t\))\(x_{0}\)+tx1、variance σ² 的 conditional Gaussian bridge；source 可是任意 sampleable empirical distribution。</li><li>OT-CFM 改从 joint plan \(\pi\)(\(x_{0}\),\(x_{1}\)) 抽 paired endpoints。Proposition 3.4 在 exact \(\pi\)、regularity、σ²→0 下得到 Benamou–Brenier dynamic OT。</li><li>大数据每批先计算 discrete OT πbatch；complexity 相对全支持 cubic time/quadratic memory低，但 batch plan 不是全局 plan。batch \(size=1\) 退化为 I-CFM，等于完整 support 才恢复 exact discrete OT。</li><li>SB-CFM 用 entropic-OT endpoint coupling \(\epsilon\)=2σ² 与 Brownian-bridge conditional path；Proposition 3.5 证明 marginal probability path 等于 Schrödinger bridge。\(\epsilon\to 0\) 接 OT-CFM，\(\epsilon\)→∞ 接 independent coupling。</li><li>理论还给出 Monge-map、\(\sigma\to 0\) 时 OT-CFM target \(variance\to 0\)；batch aggregation可进一步以计算换 variance。</li></ul></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 05</span>
+    <span class="reading-step-note">核心结果与证据</span>
+  </div>
+  <h2>核心结果与证据</h2>
+  <div class="reading-card-content"><ul><li>Table 2 的四个二维分布对、5 seeds：OT-CFM normalized path energy 为 .018/.053/.087/.027，明显低于 I-CFM 的 .222/2.738/.841/.867；但 \(W_{2}\) fit 并非每项都最佳。</li><li>Figure \(D\).2 显示 path-energy error 随 minibatch 增大很快下降并约在 \(batch\approx 64\) 后平台；作者也说明所需 batch size 会随 dataset改变。</li><li>Table 4 的 leave-one-timepoint single-cell EMD：OT-CFM 在 Cite/EB/Multi 为 .882±.058/.790±.068/.937±.054，优于表中 DSB、I-CFM、SB-CFM；这评估 distribution interpolation，不追踪真实单细胞 lineage。</li><li>CIFAR-10 Table 5：新的统一训练 recipe 下 OT-CFM adaptive FID 3.577、NFE 133.94；OT-FM 3.655/143，I-CFM 3.659/146.42。高 NFE fixed-step 时差距很小，低 NFE时 OT-CFM优势更明显。</li><li>作者无法用原文参数复现 Lipman et al. 报告的 OT-FM 6.35，得到 11.527；改用 constant LR、gradient clip、EMA、较小 128-channel net/dropout 后所有方法显著改善。这是重要 provenance，不可把 3.577 与旧 6.35 归因全给算法。</li><li>CelebA 128-\(d\) VAE latent unpaired attributes：Table 6 OT-CFM MMD 在 \(\sigma\)=.1/.3/1 均低于 I-CFM；但大 \(\sigma\) alignment被作者视觉判断更不自然，MMD 单指标不足。</li></ul></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 06</span>
+    <span class="reading-step-note">有效性与局限</span>
+  </div>
+  <h2>有效性与局限</h2>
+  <div class="reading-card-content"><ul><li>exact dynamic-OT theorem 需要 true plan、regularity 与 \(\sigma\to 0\)；minibatch OT 会引入高维 coupling error，论文结论中明确列为限制。</li><li>CFM 要求 closed-form conditional flows；若需要直接 regularize unknown marginal vector field，框架不如 simulation-based/regularized CNF灵活。</li><li>minibatch OT 根据当前 batch 强制配对，可能带来 sample-size bias；\(batch\approx 64\) 平台是特定低维实验，不是 universal threshold。</li><li>single-cell ground truth 只有 time-marginal snapshots；较低 EMD 不证明 learned trajectories 是细胞真实因果发展路径或保留 lineage。</li><li>CIFAR recipe 同时改变 LR schedule、channels、dropout、batch、clip 与 EMA；可以支持 reproducibility correction和 within-recipe comparison，不能隔离每项贡献。</li><li>image translation 在 VAE latent进行且用 broad-kernel MMD；作者承认 direct image-space GAN methods仍占优势。</li><li>variance降低的理论针对 conditional target与特定 limits；实际 wall-clock还含 minibatch OT solve，虽文中 CIFAR 报 <1% overhead，也依赖维度、batch和 solver。</li></ul></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 07</span>
+    <span class="reading-step-note">复现与资源</span>
+  </div>
+  <h2>复现与资源</h2>
+  <div class="reading-card-content"><ul><li>使用公开 torchcfm 固定版本，先重建 moons↔8gaussians：同时报告 test \(W_{2}\) fit、normalized path energy、objective variance、steps和 wall time。</li><li>OT audit 扫 batch size 1/16/64/full support 与 \(\sigma\)，保存每批 assignment cost；只在 full support/exact plan 条件下标 exact dynamic OT。</li><li>CIFAR 必须分别复现 original recipe 与 revised recipe，记录 \(channels=128\)、dropout=.1、\(batch=128\)、LR=2e-4、clip \(norm=1\)、EMA=.9999、FID sample count与 adaptive solver batch。</li><li>single-cell leave-one-timepoint split 要按 donor/time避免 leakage，并把 distribution EMD 与 lineage/perturbation prediction分开。</li><li>本站 PDF SHA-256：c98a4834abffe8a5c4e27c13c36a10d83d38e8780c98c3891150c4e028094d0a。</li><li>Evidence status: full-text verified; no independent reproduction performed.</li></ul></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 08</span>
+    <span class="reading-step-note">阅读指南</span>
+  </div>
+  <h2>阅读指南</h2>
+  <div class="reading-card-content"><ul><li>先读 Theorems 3.1–3.2，再画出 I-CFM、OT-CFM、SB-CFM 三种 endpoint coupling；差别主要在 \(q\)(\(z\))，不是网络架构。</li><li>读 Proposition 3.4 时逐项圈出 exact \(\pi\)、regularity、\(\sigma\to 0\)；然后与 minibatch paragraph 对照。</li><li>最后读 Tables 2/4/5/6、footnote 3 和 Conclusion；将优化路径、生成拟合、推断成本与科学轨迹真实性四种评价分离。</li></ul></div>
+</section></article>
+        <aside id="detail-toc" class="detail-toc hidden" aria-label="内容目录">
+          <p class="detail-toc-title">阅读目录</p>
+          <nav id="detail-toc-nav" class="detail-toc-nav"></nav>
+        </aside>
+      </div>
+      <nav class="paper-nav"><a class="paper-nav-link paper-nav-prev" href="../../collection-papers/2212.11379/"><span class="paper-nav-label">← 上一篇</span><span class="paper-nav-title">The Inverse of Exact Renormalization Group Flows as Statistical Inference</span></a>
+      <a class="paper-nav-link paper-nav-next" href="../../collection-papers/2302.07400/"><span class="paper-nav-label">下一篇 →</span><span class="paper-nav-title">Score-based Diffusion Models in Function Space</span></a></nav>
+    </main>
+
+    <footer class="footer">
+      <div class="container">
+        <p>内容来自 <a href="https://arxiv.org" target="_blank" rel="noopener noreferrer">arXiv.org</a>，阅读卡片由静态站点生成器构建。</p>
+      </div>
+    </footer>
+
+    <script src="../../assets/theme.js"></script>
+    <script src="../../assets/media.js"></script>
+    <script src="../../assets/paper.js"></script>
+  </body>
+</html>

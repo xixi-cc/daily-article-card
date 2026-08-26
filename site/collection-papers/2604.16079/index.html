@@ -1,0 +1,199 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>The Amazing Stability of Flow Matching - physics+AI Collection 随机精选</title>
+    <meta name="description" content="研究问题是flow-matching generator在删减训练数据、替换数据域内样本和改变architecture后，是否保持分布指标及同seed生成语义。 在CelebA-HQ删去50%数据时，多数方法的same-seed ArcFace similarity仍高于0.79，而unmatched pairs约0.37。 balanced cluster pruning的FID为22.80，优于full-data模型的24.24；但high-loss或low-gradient筛选会显著恶化FID。 disjoint halves、CelebA-HQ到FFHQ以及DiT缩小仍出现seed-aligned相似输出，U-Net替换则相似度下降。 证据是单一人脸域上的经验现象，论文没有证明一般FM stability theorem。" />
+    <script>
+      (function() {
+        try {
+          var themePreference = window.localStorage.getItem('color-theme') || 'system';
+          var systemUsesDarkTheme = window.matchMedia('(prefers-color-scheme: dark)').matches;
+          var resolvedTheme = themePreference === 'system'
+            ? (systemUsesDarkTheme ? 'dark' : 'light')
+            : themePreference;
+          document.documentElement.dataset.theme = resolvedTheme;
+          document.documentElement.dataset.themePreference = themePreference;
+          document.documentElement.style.colorScheme = resolvedTheme;
+        } catch (error) {
+          document.documentElement.dataset.theme = 'light';
+          document.documentElement.dataset.themePreference = 'system';
+        }
+      })();
+    </script>
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='18' fill='%23111827'/%3E%3Ctext x='50%25' y='55%25' text-anchor='middle' dominant-baseline='middle' font-size='30' font-family='Arial, sans-serif' fill='white'%3EV%3C/text%3E%3C/svg%3E" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700;800&family=Noto+Sans+SC:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <script>document.documentElement.classList.add('math-pending');</script>
+    <script>
+      window.MathJax = {
+        tex: {
+          inlineMath: [['$', '$'], ['\\(', '\\)']],
+          displayMath: [['$$', '$$'], ['\\[', '\\]']],
+          processEscapes: true
+        },
+        options: {
+          skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+        },
+        chtml: {
+          scale: 1,
+          displayAlign: 'center'
+        },
+        startup: {
+          ready: function() {
+            MathJax.startup.defaultReady();
+            MathJax.startup.promise.then(function() {
+              document.documentElement.classList.remove('math-pending');
+              document.documentElement.dataset.mathReady = 'true';
+            });
+          }
+        }
+      };
+    </script>
+    <script defer src="../../assets/vendor/mathjax/tex-chtml.js"></script>
+    <link rel="stylesheet" href="../../assets/style.css" />
+  </head>
+  <body class="detail-page" data-paper-id="2604.16079">
+    <div class="page-noise"></div>
+    <div class="page-blur page-blur-a"></div>
+    <div class="page-blur page-blur-b"></div>
+
+    <header class="header detail-page-header">
+      <div class="container">
+        <div class="detail-page-topbar">
+          <a class="back-link" href="../../collection.html">返回列表</a>
+          <div class="detail-topbar-actions">
+            <span class="detail-site-name">physics+AI Collection 随机精选</span>
+            <button class="theme-toggle" type="button" data-theme-toggle aria-label="当前主题：设备，点击切换主题" title="当前主题：设备">
+  <span class="theme-toggle-icons" aria-hidden="true">
+    <svg class="theme-toggle-icon theme-toggle-icon-light" viewBox="0 0 24 24" fill="none">
+      <circle cx="12" cy="12" r="3.5" stroke="currentColor" stroke-width="1.8"/>
+      <path d="M12 2.5v2M12 19.5v2M2.5 12h2M19.5 12h2M5.3 5.3l1.4 1.4M17.3 17.3l1.4 1.4M18.7 5.3l-1.4 1.4M6.7 17.3l-1.4 1.4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+    </svg>
+    <svg class="theme-toggle-icon theme-toggle-icon-dark" viewBox="0 0 24 24" fill="none">
+      <path d="M20 15.2A8.1 8.1 0 0 1 8.8 4a8.2 8.2 0 1 0 11.2 11.2z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>
+    </svg>
+    <svg class="theme-toggle-icon theme-toggle-icon-system" viewBox="0 0 24 24" fill="none">
+      <rect x="3" y="4" width="18" height="13" rx="2.5" stroke="currentColor" stroke-width="1.8"/>
+      <path d="M8 21h8M12 17v4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+    </svg>
+  </span>
+  <span class="theme-toggle-label" data-theme-toggle-label>设备</span>
+</button>
+          </div>
+        </div>
+
+        <div class="detail-hero-grid">
+          <div class="detail-hero-cover"><article class="note-cover note-cover-title-abstract" style="--cover-from: #3f6ee8; --cover-to: #6fa7ff; --cover-spot: #d5e6ff; --cover-ink: #f7fbff; --cover-muted: rgba(247, 251, 255, 0.82); --cover-chip: rgba(247, 251, 255, 0.16); --cover-stroke: rgba(247, 251, 255, 0.24)">
+  <div class="note-cover-mesh"></div>
+  <div class="note-cover-title-shell">
+    <span class="note-cover-kicker">TITLE · ABSTRACT</span>
+    <h1 class="note-cover-title">The Amazing Stability of Flow Matching</h1>
+    <p class="note-cover-title-zh">流匹配令人惊讶的稳定性</p>
+    <p class="note-cover-abstract">This empirical study probes whether flow-matching generators preserve quality, diversity and seed-aligned outputs under dataset pruning, disjoint training subsets, same-domain dataset swaps and architecture changes. On CelebA-HQ, models trained after removing half the data retain high ArcFace similarity to an unpruned model, even when some pruning rules worsen FID. A balanced CLIP-cluster selection improves FID from 24.24 to 22.80 at 50% pruning. Same-seed outputs also remain similar across disjoint halves, CelebA-HQ versus FFHQ, and DiT capacity changes, though a switch to U-Net weakens the effect. The work interprets this as global stability of learned flow trajectories and proposes gradient-, loss- and cluster-based pruning strategies, but evaluates one face domain and does not establish a theoretical stability guarantee.</p>
+  </div>
+</article></div>
+          <div class="detail-hero-copy">
+            <p class="eyebrow">Collection 全文卡</p>
+            <h1 class="detail-page-title">The Amazing Stability of Flow Matching</h1>
+            <p class="detail-page-title-zh">流匹配令人惊讶的稳定性</p>
+            <div class="detail-meta">Paper Collection · Flow Matching · <a href="https://arxiv.org/abs/2604.16079" target="_blank" rel="noopener noreferrer">原文</a></div>
+            <p class="detail-summary">研究问题是flow-matching generator在删减训练数据、替换数据域内样本和改变architecture后，是否保持分布指标及同seed生成语义。 在CelebA-HQ删去50%数据时，多数方法的same-seed ArcFace similarity仍高于0.79，而unmatched pairs约0.37。 balanced cluster pruning的FID为22.80，优于full-data模型的24.24；但high-loss或low-gradient筛选会显著恶化FID。 disjoint halves、CelebA-HQ到FFHQ以及DiT缩小仍出现seed-aligned相似输出，U-Net替换则相似度下降。 证据是单一人脸域上的经验现象，论文没有证明一般FM stability theorem。</p>
+            <div class="detail-micro-meta">
+              <span class="meta-pill">17 分钟读完</span>
+              <span class="meta-pill">8 张阅读卡</span>
+              <span class="meta-pill">作者来自Forschungszentrum Jülich、TU Dortmund、Lamarr Ins…</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <main class="container detail-layout">
+      <div class="detail-shell">
+        <article id="detail-body" class="reading-flow"><section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 01</span>
+    <span class="reading-step-note">作者信息</span>
+  </div>
+  <h2>作者信息</h2>
+  <div class="reading-card-content"><ul><li>作者来自Forschungszentrum Jülich、TU Dortmund、Lamarr Institute、Institute for AI in Medicine Essen、Reichman University、Helmholtz AI与University of Cologne。</li><li>官方快照为arXiv:2604.16079v2，主分类cs.CV，共7页；论文曾发表于EurIPS 2025 PriGM workshop。</li><li>代码与实验细节链接为github.com/briqr/\(fm_{\mathrm{stability}}\)，正文未提供commit hash或环境锁定信息。</li></ul></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 02</span>
+    <span class="reading-step-note">摘要</span>
+  </div>
+  <h2>摘要</h2>
+  <div class="reading-card-content"><ul><li>研究问题是flow-matching generator在删减训练数据、替换数据域内样本和改变architecture后，是否保持分布指标及同seed生成语义。</li><li>在CelebA-HQ删去50%数据时，多数方法的same-seed ArcFace similarity仍高于0.79，而unmatched pairs约0.37。</li><li>balanced cluster pruning的FID为22.80，优于full-data模型的24.24；但high-loss或low-gradient筛选会显著恶化FID。</li><li>disjoint halves、CelebA-HQ到FFHQ以及DiT缩小仍出现seed-aligned相似输出，U-Net替换则相似度下降。</li><li>证据是单一人脸域上的经验现象，论文没有证明一般FM stability theorem。</li></ul></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 03</span>
+    <span class="reading-step-note">背景</span>
+  </div>
+  <h2>背景</h2>
+  <div class="reading-card-content"><ul><li>FM训练velocity field，使Gaussian latent沿ODE走向data manifold；其训练成本使dataset pruning具有实际价值。</li><li>扩散模型已有同seed、不同数据子集仍生成相似图像的观察，但FM不依赖同样的entropic transport稳定性解释。</li><li>作者把quality/diversity用FID测量，把同seed输出的identity-level stability用ArcFace cosine similarity测量。</li><li>‘stable’在此主要指相同初始噪声对应的输出接近及FID未明显退化，不等于优化轨迹、参数或每个样本完全相同。</li></ul></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 04</span>
+    <span class="reading-step-note">模型与方法</span>
+  </div>
+  <h2>模型与方法</h2>
+  <div class="reading-card-content"><ul><li>基础模型是DiT加flow-matching transport，沿Gaussian noise到data的linear interpolants训练u_theta(\(x\),\(t\))；图像由在目标数据上训练的VQ-VAE编码。</li><li>Random pruning作为低成本baseline；Grad与Loss策略用约7%完整训练schedule的surrogate，对每样本取M=2 shared noisy endpoints与T=8 timesteps并做noise-band EMA normalization。</li><li>Grad score平均squared parameter-gradient norm，Loss以training loss替换；每种还测试保留最低分的inverse criterion。</li><li>Clust使用pretrained CLIP embeddings与k-means，\(k=24\)；数量可按cluster size proportional或各cluster balanced，cluster内可选near-center或farther samples。</li><li>主要pruning fraction为0.5；定量生成N=4096图像，Random FID报告3 seeds，其余表格未报告training-seed重复。</li><li>稳定性stress tests还包括两个disjoint random halves、PaliGemma zero-shot gender split、CelebA-HQ/FFHQ swap，以及675M DiT-XL/2、33M DiT-S/4和U-Net切换。</li></ul></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 05</span>
+    <span class="reading-step-note">核心结果与证据</span>
+  </div>
+  <h2>核心结果与证据</h2>
+  <div class="reading-card-content"><ul><li>Table 1a中Unpruned FID为24.24，Random \(25.25\pm 0.38\)，Grad 24.62，Grad inverse 29.75，Loss 33.92，Loss inverse 23.49，balanced Clust 22.80。</li><li>Table 1b中所有50%-pruned model相对Unpruned的matched-seed ArcFace mean为0.79–0.83，pair-level SD约0.11–0.13；unmatched pairs为0.\(37\pm 0.11\)。</li><li>两个disjoint random subsets训练的模型之间matched-seed similarity为0.\(69\pm 0.12\)，unrelated为0.\(34\pm 0.10\)，支持现象不只来自与full model比较。</li><li>按PaliGemma二元gender attribute拆分后，两个分区模型的相似度分别0.\(76\pm 0\).17与0.\(58\pm 0.16\)；作者同时承认gender概念与社会含义远复杂于该技术二分。</li><li>用FFHQ替换CelebA-HQ但保留CelebHQ VAE时same-seed similarity为0.\(58\pm 0.15\)，对照unrelated \(0.30\pm 0.10\)。</li><li>DiT从675M缩至33M仍为0.\(81\pm 0.12\)，切换到U-Net则降至0.\(55\pm 0.13\)，说明capacity与architecture perturbation不能混作同强度结论。</li><li>high-loss samples筛选的FID最差33.92，作者解释这些可能来自low-density regions，过度代表会扭曲velocity field；相反Loss inverse达到23.49。</li><li>balanced clustering在只用一半数据时把FID改善1.44点，但没有跨training seeds的不确定性，因此不能确认稳定显著优于full-data baseline。</li><li>Figure 1与2均使用固定随机噪声序列且声明非手工挑图，只从更长序列截取连续范围；图像证据仍属定性补充。</li></ul></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 06</span>
+    <span class="reading-step-note">有效性与局限</span>
+  </div>
+  <h2>有效性与局限</h2>
+  <div class="reading-card-content"><ul><li>实验集中在CelebA-HQ/FFHQ人脸域，并共享CelebHQ VAE；same-domain dataset swap不能代表跨域或文本条件生成。</li><li>除Random FID外，多数配置未给多training seeds、confidence intervals或显著性检验；ArcFace的±是4096 image pairs间SD，不是独立训练run间误差。</li><li>FID只用4000/4096生成样本，估计偏差可能较大；22.80对24.24的差异需要重复训练与更大样本确认。</li><li>ArcFace偏重face identity，无法完整衡量背景、细节、多样性、artifact或非人脸语义；高similarity与较差FID可同时出现。</li><li>训练两套disjoint subsets虽提供更强扰动，却未与完全独立VAE或latent coordinate system比较；固定VAE可能贡献seed alignment。</li><li>PaliGemma gender split依zero-shot binary classification，可能包含标签错误和社会偏差；该实验不能支持关于真实gender类别的科学结论。</li><li>论文用局部调整flow field解释cluster removal，但没有直接测velocity-field norm、trajectory distance随t变化或causal mechanism。</li><li>pruning scoring使用surrogate约7%训练schedule且Grad昂贵；总体compute savings未连同scoring、clustering与重训练成本完整核算。</li><li>没有在CIFAR、ImageNet、文本到图像或不同FM objective上验证，外推到大型generative models仍是开放问题。</li><li>工作是经验稳定性报告，没有数据扰动到ODE endpoint变化的理论上界。</li></ul></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 07</span>
+    <span class="reading-step-note">复现与资源</span>
+  </div>
+  <h2>复现与资源</h2>
+  <div class="reading-card-content"><ul><li>锁定CelebA-HQ split、VQ-VAE、DiT checkpoint recipe、ODE solver、noise seeds与4096 latent list，保证same-seed pair真正共享x0。</li><li>至少5个training seeds复跑Unpruned、Random、Grad、Loss inverse与balanced Clust，分别报告training-run CI与pair-level dispersion。</li><li>FID同时用4k与标准更大sample count，加入KID/precision-recall；ArcFace外再用LPIPS、CLIP和pixel/trajectory distances。</li><li>保存每个integration time的x_t与u_theta(\(x_{t}\),\(t\))，检验相似endpoint是否来自全程相近还是不同路径汇合。</li><li>做VAE固定、独立训练和cross-decoder三组control，分离latent coordinate system与FM field的贡献。</li><li>cluster removal按class/attribute之外加入自然语义clusters，并用人工audit量化PaliGemma split error。</li><li>compute账本需包括7% surrogate、\(M=2\)、\(T=8\) gradient scoring、CLIP/\(k\)-means和最终训练，比较真实节省。</li><li>仓库：https://github.com/briqr/fm_stability；本站PDF SHA-256：fbbb06db77d07c186194ceee8e99f72c053ada7f6520d9186493538c7b703a73。</li><li>Evidence status: full-text verified; no independent reproduction performed.</li></ul></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 08</span>
+    <span class="reading-step-note">阅读指南</span>
+  </div>
+  <h2>阅读指南</h2>
+  <div class="reading-card-content"><ul><li>先看Table 1，分清FID的distribution quality与ArcFace的same-seed identity stability是两种指标。</li><li>再读Disjoint subsets、Data swapping和Architectural change，注意每个实验的unmatched control与共享VAE条件。</li><li>Pruning strategies部分最有操作价值：Grad与Loss的inverse结果说明‘高分样本更重要’并非普遍成立。</li><li>最后读Discussion，把global/local flow-field解释视为待检验机制；正文只观察endpoint与图像相似，没有直接场测量。</li></ul></div>
+</section></article>
+        <aside id="detail-toc" class="detail-toc hidden" aria-label="内容目录">
+          <p class="detail-toc-title">阅读目录</p>
+          <nav id="detail-toc-nav" class="detail-toc-nav"></nav>
+        </aside>
+      </div>
+      <nav class="paper-nav"><a class="paper-nav-link paper-nav-prev" href="../../collection-papers/2604.00947/"><span class="paper-nav-label">← 上一篇</span><span class="paper-nav-title">Phase transition on a context-sensitive random language model with short range interactions</span></a>
+      <a class="paper-nav-link paper-nav-next" href="../../collection-papers/2604.22541/"><span class="paper-nav-label">下一篇 →</span><span class="paper-nav-title">Dr.Sai: An agentic AI for real-world physics analysis at BESIII</span></a></nav>
+    </main>
+
+    <footer class="footer">
+      <div class="container">
+        <p>内容来自 <a href="https://arxiv.org" target="_blank" rel="noopener noreferrer">arXiv.org</a>，阅读卡片由静态站点生成器构建。</p>
+      </div>
+    </footer>
+
+    <script src="../../assets/theme.js"></script>
+    <script src="../../assets/media.js"></script>
+    <script src="../../assets/paper.js"></script>
+  </body>
+</html>

@@ -1,0 +1,199 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Energy Matching: Unifying Flow Matching and Energy-Based Models for Generative Modeling - physics+AI Collection 随机精选</title>
+    <meta name="description" content="Energy Matching 把生成分成两区：远离 data manifold 时以 ε=0 的 OT-like deterministic flow快速搬运；接近数据时升温并用 Langevin dynamics趋向 exp(−V/εmax)。 训练先以 minibatch OT直线 pairs回归 −∇V，再联合 contrastive divergence；负样本一半来自 data、一半来自 noise，以同时雕刻局部 density well与远场 landscape。 显式 scalar energy便于把 measurement fidelity或sample–sample repulsion直接相加，用于 inpainting、protein design和 Hessian-based local intrinsic dimension。" />
+    <script>
+      (function() {
+        try {
+          var themePreference = window.localStorage.getItem('color-theme') || 'system';
+          var systemUsesDarkTheme = window.matchMedia('(prefers-color-scheme: dark)').matches;
+          var resolvedTheme = themePreference === 'system'
+            ? (systemUsesDarkTheme ? 'dark' : 'light')
+            : themePreference;
+          document.documentElement.dataset.theme = resolvedTheme;
+          document.documentElement.dataset.themePreference = themePreference;
+          document.documentElement.style.colorScheme = resolvedTheme;
+        } catch (error) {
+          document.documentElement.dataset.theme = 'light';
+          document.documentElement.dataset.themePreference = 'system';
+        }
+      })();
+    </script>
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='18' fill='%23111827'/%3E%3Ctext x='50%25' y='55%25' text-anchor='middle' dominant-baseline='middle' font-size='30' font-family='Arial, sans-serif' fill='white'%3EV%3C/text%3E%3C/svg%3E" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700;800&family=Noto+Sans+SC:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <script>document.documentElement.classList.add('math-pending');</script>
+    <script>
+      window.MathJax = {
+        tex: {
+          inlineMath: [['$', '$'], ['\\(', '\\)']],
+          displayMath: [['$$', '$$'], ['\\[', '\\]']],
+          processEscapes: true
+        },
+        options: {
+          skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+        },
+        chtml: {
+          scale: 1,
+          displayAlign: 'center'
+        },
+        startup: {
+          ready: function() {
+            MathJax.startup.defaultReady();
+            MathJax.startup.promise.then(function() {
+              document.documentElement.classList.remove('math-pending');
+              document.documentElement.dataset.mathReady = 'true';
+            });
+          }
+        }
+      };
+    </script>
+    <script defer src="../../assets/vendor/mathjax/tex-chtml.js"></script>
+    <link rel="stylesheet" href="../../assets/style.css" />
+  </head>
+  <body class="detail-page" data-paper-id="2504.10612">
+    <div class="page-noise"></div>
+    <div class="page-blur page-blur-a"></div>
+    <div class="page-blur page-blur-b"></div>
+
+    <header class="header detail-page-header">
+      <div class="container">
+        <div class="detail-page-topbar">
+          <a class="back-link" href="../../collection.html">返回列表</a>
+          <div class="detail-topbar-actions">
+            <span class="detail-site-name">physics+AI Collection 随机精选</span>
+            <button class="theme-toggle" type="button" data-theme-toggle aria-label="当前主题：设备，点击切换主题" title="当前主题：设备">
+  <span class="theme-toggle-icons" aria-hidden="true">
+    <svg class="theme-toggle-icon theme-toggle-icon-light" viewBox="0 0 24 24" fill="none">
+      <circle cx="12" cy="12" r="3.5" stroke="currentColor" stroke-width="1.8"/>
+      <path d="M12 2.5v2M12 19.5v2M2.5 12h2M19.5 12h2M5.3 5.3l1.4 1.4M17.3 17.3l1.4 1.4M18.7 5.3l-1.4 1.4M6.7 17.3l-1.4 1.4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+    </svg>
+    <svg class="theme-toggle-icon theme-toggle-icon-dark" viewBox="0 0 24 24" fill="none">
+      <path d="M20 15.2A8.1 8.1 0 0 1 8.8 4a8.2 8.2 0 1 0 11.2 11.2z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>
+    </svg>
+    <svg class="theme-toggle-icon theme-toggle-icon-system" viewBox="0 0 24 24" fill="none">
+      <rect x="3" y="4" width="18" height="13" rx="2.5" stroke="currentColor" stroke-width="1.8"/>
+      <path d="M8 21h8M12 17v4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+    </svg>
+  </span>
+  <span class="theme-toggle-label" data-theme-toggle-label>设备</span>
+</button>
+          </div>
+        </div>
+
+        <div class="detail-hero-grid">
+          <div class="detail-hero-cover"><article class="note-cover note-cover-title-abstract" style="--cover-from: #d84f61; --cover-to: #f29c6b; --cover-spot: #ffd6c4; --cover-ink: #fff7f4; --cover-muted: rgba(255, 247, 244, 0.82); --cover-chip: rgba(255, 247, 244, 0.16); --cover-stroke: rgba(255, 247, 244, 0.24)">
+  <div class="note-cover-mesh"></div>
+  <div class="note-cover-title-shell">
+    <span class="note-cover-kicker">TITLE · ABSTRACT</span>
+    <h1 class="note-cover-title">Energy Matching: Unifying Flow Matching and Energy-Based Models for Generative Modeling</h1>
+    <p class="note-cover-title-zh">能量匹配：统一流匹配与基于能量的生成模型</p>
+    <p class="note-cover-abstract">Current state-of-the-art generative models map noise to data distributions by matching flows or scores. A key limitation of these models is their inability to readily integrate available partial observations and additional priors. In contrast, energy-based models (EBMs) address this by incorporating corresponding scalar energy terms. Here, we propose Energy Matching, a framework that endows flow-based approaches with the flexibility of EBMs. Far from the data manifold, samples move from noise to data along irrotational, optimal transport paths. As they approach the data manifold, an entropic energy term guides the system into a Boltzmann equilibrium distribution, explicitly capturing the underlying likelihood structure of the data. We parameterize these dynamics with a single time-independent scalar field, which serves as both a powerful generator and a flexible prior for effective regul</p>
+  </div>
+</article></div>
+          <div class="detail-hero-copy">
+            <p class="eyebrow">Collection 全文卡</p>
+            <h1 class="detail-page-title">Energy Matching: Unifying Flow Matching and Energy-Based Models for Generative Modeling</h1>
+            <p class="detail-page-title-zh">能量匹配：统一流匹配与基于能量的生成模型</p>
+            <div class="detail-meta">Paper Collection · Flow Matching · <a href="https://arxiv.org/abs/2504.10612" target="_blank" rel="noopener noreferrer">原文</a></div>
+            <p class="detail-summary">Energy Matching 把生成分成两区：远离 data manifold 时以 ε=0 的 OT-like deterministic flow快速搬运；接近数据时升温并用 Langevin dynamics趋向 exp(−V/εmax)。 训练先以 minibatch OT直线 pairs回归 −∇V，再联合 contrastive divergence；负样本一半来自 data、一半来自 noise，以同时雕刻局部 density well与远场 landscape。 显式 scalar energy便于把 measurement fidelity或sample–sample repulsion直接相加，用于 inpainting、protein design和 Hessian-based local intrinsic dimension。</p>
+            <div class="detail-micro-meta">
+              <span class="meta-pill">16 分钟读完</span>
+              <span class="meta-pill">8 张阅读卡</span>
+              <span class="meta-pill">作者：Michal Balcerak、Tamaz Amiranashvili、Antonio Terp…</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <main class="container detail-layout">
+      <div class="detail-shell">
+        <article id="detail-body" class="reading-flow"><section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 01</span>
+    <span class="reading-step-note">作者信息</span>
+  </div>
+  <h2>作者信息</h2>
+  <div class="reading-card-content"><ul><li>作者：Michal Balcerak、Tamaz Amiranashvili、Antonio Terpin、Suprosanna Shit、Lea Bogensperger、Sebastian Kaltenbach、Petros Koumoutsakos、Bjoern Menze；Zurich/TUM/ETH/Harvard。</li><li>官方快照：arXiv:2504.10612v5；20 页；NeurIPS 2025；代码仓库 EnergyMatching。</li><li>方法学习单个 time-independent scalar Vθ；其梯度兼作远程 transport field 与近数据 EBM score。</li></ul></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 02</span>
+    <span class="reading-step-note">摘要</span>
+  </div>
+  <h2>摘要</h2>
+  <div class="reading-card-content"><ul><li>Energy Matching 把生成分成两区：远离 data manifold 时以 \(\epsilon=0\) 的 OT-like deterministic flow快速搬运；接近数据时升温并用 Langevin dynamics趋向 exp(−V/εmax)。</li><li>训练先以 minibatch OT直线 pairs回归 −\(\nabla V\)，再联合 contrastive divergence；负样本一半来自 data、一半来自 noise，以同时雕刻局部 density well与远场 landscape。</li><li>显式 scalar energy便于把 measurement fidelity或sample–sample repulsion直接相加，用于 inpainting、protein design和 Hessian-based local intrinsic dimension。</li></ul></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 03</span>
+    <span class="reading-step-note">背景</span>
+  </div>
+  <h2>背景</h2>
+  <div class="reading-card-content"><ul><li>flow/diffusion 擅长 noise-to-data transport，但通常学习 noised marginals上的 vector/score；EBM直接给 unnormalized density且可组合 pri验，却受 MCMC mixing和 mode collapse困扰。</li><li>JKO scheme 在 Wasserstein transport cost、potential energy与 entropy之间做 proximal step；作者让温度 \(\epsilon\)(\(t\)) 随时间从0升至 εmax。</li><li>“单一场”减少 time conditioning/auxiliary generator，但每次 velocity evaluation要计算 input gradient，并不等于计算免费。</li></ul></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 04</span>
+    <span class="reading-step-note">模型与方法</span>
+  </div>
+  <h2>模型与方法</h2>
+  <div class="reading-card-content"><ul><li>Eq. (1) 的 JKO objective是 W2²/(2Δt)+∫Vdρ+\(\epsilon\)(\(t\))∫ρlogρ；first-order condition给 (\(x\)−\(y\))/Δt+\(\nabla V\)+\(\epsilon\)∇\(log\rho=0\)。</li><li>\(\epsilon=0\) 时得到 OT-like velocity −\(\nabla V\)；长时 \(x\approx y\)、\(\epsilon=\epsilonmax\) 时得到 ρeq∝exp(−V/εmax)。这解释同一 V 的 transport和 EBM两种角色。</li><li>LOT 对 minibatch POT map \(T\)，在线性插值 xt=(1−\(t\))\(T\)(xdata)+txdata 上回归 \(\nabla V(xt)\)+xdata−\(T(xdata)=0\)；time-independent gradient限制为 irrotational field。</li><li>\(\mathrm{LCD}=Edata\)[V/εmax]−Enegative[V/εmax]；negatives用 Euler–Maruyama Langevin近似 equilibrium且 stop-gradient，不反传 sampler。主训练优化 LOT+λCD LCD。</li><li>sampling用 Euler–Heun，时间 τs有限；inverse problem加入 \(\epsilon\)||\(y\)−A(\(x\))||²/ζ²，interaction W可鼓励多链在指定区域/sequence space分散。</li><li>LID把 Hessian ∇²V 在 data point的 near-zero eigenvalue数作为 local dimension，threshold由 dataset手设。</li></ul></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 05</span>
+    <span class="reading-step-note">核心结果与证据</span>
+  </div>
+  <h2>核心结果与证据</h2>
+  <div class="reading-card-content"><ul><li>CIFAR-10 Table 1：50M Energy Matching FID 3.34，优于表内 EBM ImprovedCD 25.1、CLEL-large 8.61及 ensemble Cooperative DRL-large 3.68；但仍不及 NCSN++ 2.45。</li><li>ImageNet32 Table 2：Energy Matching FID 6.64，显著优于表中 EBM 15.47–32.48和 Cooperative DRL 9.35，但 flow matching报告5.02。故主要突破是 EBM fidelity，不是所有生成模型 SOTA。</li><li>Appendix Table 4 同 batch128/GPU：Energy Matching 325 steps、173 s、FID3.34；OT-FM 1000 steps、136 s、3.74；DDPM++ 1000 steps、183 s、3.45。input-gradient使每步约2.15×慢，少步抵消部分成本。</li><li>CIFAR minibatch linear-program OT与 random pairing FID 3.34 vs 3.37，差异很小；不能把全部性能提升归因于精确 OT coupling。POT overhead约1.5% training time。</li><li>protein AAV Medium/Hard 使用 VLGPO latent与预测 fitness；Figure 3 展示 inference-time repulsion移动 fitness–Levenshtein diversity Pareto tradeoff，尚无 wet-lab packaging validation。</li><li>Table 3 LID与 PNG compression Spearman：MNIST .877、CIFAR .901，略高于 NB .864/.894；PNG只是proxy且 threshold \(\tau=3\)/2手工指定。</li></ul></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 06</span>
+    <span class="reading-step-note">有效性与局限</span>
+  </div>
+  <h2>有效性与局限</h2>
+  <div class="reading-card-content"><ul><li>远场训练 LOT 是 simulation-free regression，但主阶段明确运行 MLangevin-step MCMC产生 contrastive negatives，采样也需 Langevin；不能笼统称整个方法 training/sampling simulation-free。</li><li>V/εmax给 unnormalized log-density，partition function未知；“likelihood”主要指相对能量/score，不等同于报告 normalized test NLL。</li><li>finite τs时仅经验观察 CIFAR FID在3.25附近平台；Boltzmann convergence只在 τs→∞保证，high-dimensional mixing仍可能偏置。</li><li>time-independent irrotational field是强约束；同一空间点需要不同时间速度或存在 circulation的 transport可能无法表达。</li><li>作者报告额外 input gradient增加20–40% training memory；full Hessian LID为 O(d³)，高分辨率不可直接扩展。</li><li>FID表混合 reproduced与 best reported、参数量和 steps不同；跨论文优劣不能解释为单因素算法因果。</li><li>inpainting只给质性例图；protein fitness由 predictor评估且在 latent space生成，repulsion提高多样性不保证可合成、结构稳定或真实包装。</li><li>LID near-zero cutoff敏感，Hessian of learned energy未被证明等于 manifold normal curvature；较高 compression correlation不是 dimension ground truth。</li></ul></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 07</span>
+    <span class="reading-step-note">复现与资源</span>
+  </div>
+  <h2>复现与资源</h2>
+  <div class="reading-card-content"><ul><li>分阶段复现：先记录 warm-up LOT convergence和 noise-to-data FID，再开启 LCD，分别保存 data/noise initialized negative chains及energy histograms。</li><li>ablation必须含 LOT-only、LCD-only、dual objective、LP-OT vs random pairing、\(\tau\)*、λCD、εmax、MLangevin、Δt与τs sweep。</li><li>报告 normalized wall-clock：forward、input-gradient、OT solve、negative MCMC分项；同时给 steps、FID sample count、EMA和 evaluator版本。</li><li>inverse/protein任务保存每个 interaction strength的 fidelity、diversity、novelty与 predictor uncertainty；物理或生物成功需独立实验，不能由 predictor代替。</li><li>本站 PDF SHA-256：d06fe64ed362e6c63bbddd6e575c581d4589e15c976bb4fc8dcb7b4520217e79。</li><li>Evidence status: full-text verified; no independent reproduction performed.</li></ul></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 08</span>
+    <span class="reading-step-note">阅读指南</span>
+  </div>
+  <h2>阅读指南</h2>
+  <div class="reading-card-content"><ul><li>先读 JKO Eq. (1) 与 first-order Eq. (4–6)，理解同一势能如何在 \(\epsilon=0\)/\(\epsilon\)>0 两区切换。</li><li>再读 Algorithms 1–3：尤其数清 main training里的 Langevin negative steps，校正“simulation-free”表述。</li><li>最后读 Tables 1–4、Figures 2–4与 Limitations；把 EBM fidelity、全类SOTA、normalized likelihood、inverse-task validation四件事分开。</li></ul></div>
+</section></article>
+        <aside id="detail-toc" class="detail-toc hidden" aria-label="内容目录">
+          <p class="detail-toc-title">阅读目录</p>
+          <nav id="detail-toc-nav" class="detail-toc-nav"></nav>
+        </aside>
+      </div>
+      <nav class="paper-nav"><a class="paper-nav-link paper-nav-prev" href="../../collection-papers/2504.08066/"><span class="paper-nav-label">← 上一篇</span><span class="paper-nav-title">The AI Scientist-v2: Workshop-Level Automated Scientific Discovery via Agentic Tree Search</span></a>
+      <a class="paper-nav-link paper-nav-next" href="../../collection-papers/2504.18267/"><span class="paper-nav-label">下一篇 →</span><span class="paper-nav-title">Neural operators struggle to learn complex PDEs in pedestrian mobility: Hughes model case study</span></a></nav>
+    </main>
+
+    <footer class="footer">
+      <div class="container">
+        <p>内容来自 <a href="https://arxiv.org" target="_blank" rel="noopener noreferrer">arXiv.org</a>，阅读卡片由静态站点生成器构建。</p>
+      </div>
+    </footer>
+
+    <script src="../../assets/theme.js"></script>
+    <script src="../../assets/media.js"></script>
+    <script src="../../assets/paper.js"></script>
+  </body>
+</html>

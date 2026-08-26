@@ -1,0 +1,199 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Lost in Retraining: Roaming the Parameter Space of Exponential Families Under Closed-Loop Learning - physics+AI Collection 随机精选</title>
+    <meta name="description" content="每轮从当前指数族模型生成M个样本，可另加入m个ground-truth样本，再以ML或MAP拟合下一轮参数。 纯self-generated数据加ML时，经验充分统计量成为有界martingale，最终命中absorbing boundary；输出多样性收缩并放大初态偏差。 大M连续时间极限给由Fisher information geometry控制的Itô扩散；期望entropy以参数维数D的速率线性下降。 加入prior/regularization或外部数据后，Fokker–Planck stationary density为p_st(θ)∝p_0(θ)^{2u}exp[−2mD_KL(q||θ)]。 某些Ising与Poisson例中一个外部样本m=1即可使stationary density可归一化并避免吸收，但这不是对任意模型的一点数据万能定理。" />
+    <script>
+      (function() {
+        try {
+          var themePreference = window.localStorage.getItem('color-theme') || 'system';
+          var systemUsesDarkTheme = window.matchMedia('(prefers-color-scheme: dark)').matches;
+          var resolvedTheme = themePreference === 'system'
+            ? (systemUsesDarkTheme ? 'dark' : 'light')
+            : themePreference;
+          document.documentElement.dataset.theme = resolvedTheme;
+          document.documentElement.dataset.themePreference = themePreference;
+          document.documentElement.style.colorScheme = resolvedTheme;
+        } catch (error) {
+          document.documentElement.dataset.theme = 'light';
+          document.documentElement.dataset.themePreference = 'system';
+        }
+      })();
+    </script>
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='18' fill='%23111827'/%3E%3Ctext x='50%25' y='55%25' text-anchor='middle' dominant-baseline='middle' font-size='30' font-family='Arial, sans-serif' fill='white'%3EV%3C/text%3E%3C/svg%3E" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700;800&family=Noto+Sans+SC:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <script>document.documentElement.classList.add('math-pending');</script>
+    <script>
+      window.MathJax = {
+        tex: {
+          inlineMath: [['$', '$'], ['\\(', '\\)']],
+          displayMath: [['$$', '$$'], ['\\[', '\\]']],
+          processEscapes: true
+        },
+        options: {
+          skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+        },
+        chtml: {
+          scale: 1,
+          displayAlign: 'center'
+        },
+        startup: {
+          ready: function() {
+            MathJax.startup.defaultReady();
+            MathJax.startup.promise.then(function() {
+              document.documentElement.classList.remove('math-pending');
+              document.documentElement.dataset.mathReady = 'true';
+            });
+          }
+        }
+      };
+    </script>
+    <script defer src="../../assets/vendor/mathjax/tex-chtml.js"></script>
+    <link rel="stylesheet" href="../../assets/style.css" />
+  </head>
+  <body class="detail-page" data-paper-id="2506.20623">
+    <div class="page-noise"></div>
+    <div class="page-blur page-blur-a"></div>
+    <div class="page-blur page-blur-b"></div>
+
+    <header class="header detail-page-header">
+      <div class="container">
+        <div class="detail-page-topbar">
+          <a class="back-link" href="../../collection.html">返回列表</a>
+          <div class="detail-topbar-actions">
+            <span class="detail-site-name">physics+AI Collection 随机精选</span>
+            <button class="theme-toggle" type="button" data-theme-toggle aria-label="当前主题：设备，点击切换主题" title="当前主题：设备">
+  <span class="theme-toggle-icons" aria-hidden="true">
+    <svg class="theme-toggle-icon theme-toggle-icon-light" viewBox="0 0 24 24" fill="none">
+      <circle cx="12" cy="12" r="3.5" stroke="currentColor" stroke-width="1.8"/>
+      <path d="M12 2.5v2M12 19.5v2M2.5 12h2M19.5 12h2M5.3 5.3l1.4 1.4M17.3 17.3l1.4 1.4M18.7 5.3l-1.4 1.4M6.7 17.3l-1.4 1.4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+    </svg>
+    <svg class="theme-toggle-icon theme-toggle-icon-dark" viewBox="0 0 24 24" fill="none">
+      <path d="M20 15.2A8.1 8.1 0 0 1 8.8 4a8.2 8.2 0 1 0 11.2 11.2z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>
+    </svg>
+    <svg class="theme-toggle-icon theme-toggle-icon-system" viewBox="0 0 24 24" fill="none">
+      <rect x="3" y="4" width="18" height="13" rx="2.5" stroke="currentColor" stroke-width="1.8"/>
+      <path d="M8 21h8M12 17v4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+    </svg>
+  </span>
+  <span class="theme-toggle-label" data-theme-toggle-label>设备</span>
+</button>
+          </div>
+        </div>
+
+        <div class="detail-hero-grid">
+          <div class="detail-hero-cover"><article class="note-cover note-cover-title-abstract" style="--cover-from: #ef6c3f; --cover-to: #f6b13d; --cover-spot: #ffd59c; --cover-ink: #fff8ef; --cover-muted: rgba(255, 248, 239, 0.82); --cover-chip: rgba(255, 248, 239, 0.16); --cover-stroke: rgba(255, 248, 239, 0.26)">
+  <div class="note-cover-mesh"></div>
+  <div class="note-cover-title-shell">
+    <span class="note-cover-kicker">TITLE · ABSTRACT</span>
+    <h1 class="note-cover-title">Lost in Retraining: Roaming the Parameter Space of Exponential Families Under Closed-Loop Learning</h1>
+    <p class="note-cover-title-zh">迷失于反复训练：闭环学习下指数族参数空间的漫游</p>
+    <p class="note-cover-abstract">Closed-loop learning is the process of repeatedly estimating a model from data generated from the model itself. It is receiving great attention due to the possibility that large neural network models may, in the future, be primarily trained with data generated by artificial neural networks themselves. We study this process for models that belong to exponential families, deriving equations of motions that govern the dynamics of the parameters. We show that maximum likelihood estimation of the parameters endows sufficient statistics with the martingale property and that as a result the process converges to absorbing states that amplify initial biases present in the data. However, we show that this outcome may be prevented if the data contains at least one data point generated from a ground truth model, by relying on maximum a posteriori estimation or by introducing regularisation.</p>
+  </div>
+</article></div>
+          <div class="detail-hero-copy">
+            <p class="eyebrow">Collection 全文卡</p>
+            <h1 class="detail-page-title">Lost in Retraining: Roaming the Parameter Space of Exponential Families Under Closed-Loop Learning</h1>
+            <p class="detail-page-title-zh">迷失于反复训练：闭环学习下指数族参数空间的漫游</p>
+            <div class="detail-meta">Paper Collection · Training Dynamics · <a href="https://arxiv.org/abs/2506.20623" target="_blank" rel="noopener noreferrer">原文</a></div>
+            <p class="detail-summary">每轮从当前指数族模型生成M个样本，可另加入m个ground-truth样本，再以ML或MAP拟合下一轮参数。 纯self-generated数据加ML时，经验充分统计量成为有界martingale，最终命中absorbing boundary；输出多样性收缩并放大初态偏差。 大M连续时间极限给由Fisher information geometry控制的Itô扩散；期望entropy以参数维数D的速率线性下降。 加入prior/regularization或外部数据后，Fokker–Planck stationary density为p_st(θ)∝p_0(θ)^{2u}exp[−2mD_KL(q||θ)]。 某些Ising与Poisson例中一个外部样本m=1即可使stationary density可归一化并避免吸收，但这不是对任意模型的一点数据万能定理。</p>
+            <div class="detail-micro-meta">
+              <span class="meta-pill">16 分钟读完</span>
+              <span class="meta-pill">8 张阅读卡</span>
+              <span class="meta-pill">Fariba Jangjoo来自NTNU Kavli Institute for Systems Ne…</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <main class="container detail-layout">
+      <div class="detail-shell">
+        <article id="detail-body" class="reading-flow"><section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 01</span>
+    <span class="reading-step-note">作者信息</span>
+  </div>
+  <h2>作者信息</h2>
+  <div class="reading-card-content"><ul><li>Fariba Jangjoo来自NTNU Kavli Institute for Systems Neuroscience，Matteo Marsili来自ICTP，Yasser Roudi来自King's College London数学系。</li><li>官方快照arXiv:2506.20623v2，主分类cs.LG，另含cond-mat.dis-nn、physics.data-an与stat.ML；21页、3幅图。</li><li>论文是指数族闭环重训练的解析模型，不是对LLM或扩散模型的直接训练实验。</li></ul></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 02</span>
+    <span class="reading-step-note">摘要</span>
+  </div>
+  <h2>摘要</h2>
+  <div class="reading-card-content"><ul><li>每轮从当前指数族模型生成M个样本，可另加入m个ground-truth样本，再以ML或MAP拟合下一轮参数。</li><li>纯self-generated数据加ML时，经验充分统计量成为有界martingale，最终命中absorbing boundary；输出多样性收缩并放大初态偏差。</li><li>大M连续时间极限给由Fisher information geometry控制的Itô扩散；期望entropy以参数维数D的速率线性下降。</li><li>加入prior/regularization或外部数据后，Fokker–Planck stationary density为p_st(\(\theta\))∝\(p_{0}\)(\(\theta\))^{2u}exp[−2mD_KL(\(q\)||\(\theta\))]。</li><li>某些Ising与Poisson例中一个外部样本m=1即可使stationary density可归一化并避免吸收，但这不是对任意模型的一点数据万能定理。</li></ul></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 03</span>
+    <span class="reading-step-note">背景</span>
+  </div>
+  <h2>背景</h2>
+  <div class="reading-card-content"><ul><li>closed-loop learning指模型不断在自身或前代模型生成的数据上再估计；可能导致mode collapse、diversity loss，也可能在其他模型中走向random output。</li><li>指数族f(s|\(\theta\))=\(Z\)(\(\theta\))^{-1}exp[Σ_aθ_aϕ_a(s)]提供充分统计量、partition function与Fisher information的可控结构。</li><li>经典单次估计中，\(M\)→∞时MAP与ML差异、固定m个污染样本影响通常消失；反复闭环把每轮O(1/\(M\))漂移积累到τ=\(t\)/M尺度。</li><li>本文把model collapse操作化为充分统计量到边界吸收、分布支撑缩减，而非神经生成模型所有可能的collapse定义。</li></ul></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 04</span>
+    <span class="reading-step-note">模型与方法</span>
+  </div>
+  <h2>模型与方法</h2>
+  <div class="reading-card-content"><ul><li>初始θ0由原始数据拟合；每轮从f(s|\(\theta_{t}\))抽M个self samples，再从q(s)抽m个external samples，以argmax \(p\)(data|\(\theta\))\(p_{0}\)(\(\theta\))^u更新，\(u\)=0为ML、\(u\)=1为MAP。</li><li>ML、\(m\)=0时估计方程要求模型期望充分统计量等于经验均值，因此E[ϕ̄_{a,\(t\)+1}|ϕ̄_{a,\(t\)}]=ϕ̄_{a,\(t\)}，即martingale。</li><li>有界状态空间的martingale Markov chain收敛到absorbing states；吸收时所有保留样本对每个ϕ_a取相同值或局限在同一level set。</li><li>大M时一步参数增量近Gaussian，covariance \(J^{-1}\)(\(\theta\))/\(M\)，J为Fisher information；mean drift为−\(J^{-1}\)\(\nabla U\)/\(M\)。</li><li>有效势U=(1/2)log det \(J\)−\(u\) log \(p_{0}\)+\(mD_{\mathrm{KL}}\)(\(q\)||\(\theta\))；重标时间τ=\(t\)/M后dθ=A(\(\theta\))dτ+dW，noise covariance为J^{-1}dτ。</li><li>Fokker–Planck stationary solution要求normalization finite；若不可归一化，则概率流向parameter boundary并发生collapse。</li></ul></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 05</span>
+    <span class="reading-step-note">核心结果与证据</span>
+  </div>
+  <h2>核心结果与证据</h2>
+  <div class="reading-card-content"><ul><li>无interaction Ising中magnetization充分统计量最终吸收到±\(N\)，θ1→±∞；命中all-up概率为(ϕ̄_{1,0}+\(N\))/(2N)，直接保留并放大初始偏置。</li><li>Figure 1a–c用N=5–20、\(M=50\)–200模拟支持吸收概率与convergence time约t_max∼NM；这些是有限小系统证据。</li><li>有interaction Ising可吸收到N−2k任一magnetization level，θ2→−∞且θ1/θ2固定；最终在同一magnetization configurations上uniform。</li><li>每configuration一个参数的过参数化例中，任何一轮未观测state永久消失，最终M个样本全部等于某一s*；其吸收概率等于初始frequency \(k_{s\),0}/\(M\)。</li><li>连续极限中entropy \(S=logZ\)−Σθ_aφ_a满足E[S(\(\tau\))]=E[S(0)]−Dτ，显示参数维数越高，理想正则模型的平均收缩越快。</li><li>Equation (18)给p_st∝\(p_{0}^{2u}e^{\)−2mD_KL}；纯ML self-loop的u=\(m\)=0为常数且在非紧parameter space不可归一化，与collapse一致。</li><li>Figure 2以10^7 iterations验证Ising stationary distributions：\(m\)=1外部样本、Gaussian prior/L2或二者结合均与解析曲线吻合并避免边界吸收。</li><li>Poisson appendix中exponential prior单独仍不能阻止mean ϑ→0；\(m\)>0使stationary state成为shape 2mϑ0的Gamma distribution，强调regularization效果依模型而定。</li></ul></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 06</span>
+    <span class="reading-step-note">有效性与局限</span>
+  </div>
+  <h2>有效性与局限</h2>
+  <div class="reading-card-content"><ul><li>定理依赖regular exponential family、bounded sufficient statistics的martingale argument，以及连续极限中可逆Fisher information；singular/overparameterized neural models通常违反这些条件。</li><li>‘一个真实样本即可避免collapse’只在stationary density因该q与模型而可归一化时成立；Poisson例已显示某些prior单独无效，弱或偏置q也可能产生错误锚点。</li><li>每轮都重新抽取M samples并做精确ML/MAP，未建模SGD、有限优化、replay原始数据、数据过滤、模型misspecification或generation temperature。</li><li>外部数据来自固定ground-truth q且独立同分布；真实互联网数据混合、漂移并被选择机制污染，不能直接套用m。</li><li>entropy线性下降式在连续、大M、invertible J条件下；靠近边界J可奇异，扩散近似与时间标度需要额外检查。</li><li>Ising和Poisson模拟是低维toy examples，未运行LLM、GAN、VAE或diffusion retraining；论文只提出可能的普适机制。</li><li>MAP/prior避免支撑坍缩不代表恢复真实q；stationary distribution也可能由prior bias主导，作者指出这会强化算法或architecture bias。</li><li>Figure 2的10^7 iterations验证同一理论模型而非独立数据；未系统报告多seed误差或finite-\(M\) corrections。</li><li>collapse定义聚焦diversity/absorbing support，不能涵盖语义退化、事实错误和utility下降。</li></ul></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 07</span>
+    <span class="reading-step-note">复现与资源</span>
+  </div>
+  <h2>复现与资源</h2>
+  <div class="reading-card-content"><ul><li>从Bernoulli/无interaction Ising开始，逐轮保存θ、empirical sufficient statistic、entropy与unique states；用多seed验证吸收概率而非只画轨迹。</li><li>扫描N、M并用t/(NM) collapse convergence-time CDF；单独检验Eq. (8)的initial-bias dependence和confidence intervals。</li><li>连续极限逐M比较one-step mean/covariance与−\(J^{-1}\)\(\nabla U\)/\(M\)、\(J^{-1}\)/\(M\)，监测靠近boundary时Gaussian approximation失效。</li><li>m与u做2×多级factorial：pure ML、prior only、external only、both；检验p_st normalization与解析histogram而非把不发散等同于truth recovery。</li><li>对Poisson同时扫描λ、ϑ0与m，复现prior-only collapse及m>0 Gamma stationary law，作为‘regularization不总有效’negative control。</li><li>向神经模型扩展时分别保留synthetic fraction、real-data anchors、weight decay和optimizer state，测coverage、likelihood、downstream utility与Fisher spectrum。</li><li>所有closed-loop实验保存每代训练集lineage与生成模型hash，防止把不断回用同一真实数据误标为fixed-\(m\) setting。</li><li>本站PDF SHA-256：46ff6d3707ee93f9acadab7a881eff202a4f34f87279645b8c61fa545e2512a1。</li><li>Evidence status: full-text verified; no independent reproduction performed.</li></ul></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 08</span>
+    <span class="reading-step-note">阅读指南</span>
+  </div>
+  <h2>阅读指南</h2>
+  <div class="reading-card-content"><ul><li>先读Eqs. (1)–(6)，抓住ML moment matching如何精确产生martingale和absorbing-state机制。</li><li>Figure 1的三个Ising/REM型例子展示collapse形态依模型而变，不要只记all-spins-up。</li><li>Eqs. (10)–(18)是理论核心：Fisher metric同时控制drift与diffusion，prior和q进入effective potential。</li><li>最后读Poisson appendix与Discussion，用它约束‘一个样本’和‘regularization’主张向深网外推的范围。</li></ul></div>
+</section></article>
+        <aside id="detail-toc" class="detail-toc hidden" aria-label="内容目录">
+          <p class="detail-toc-title">阅读目录</p>
+          <nav id="detail-toc-nav" class="detail-toc-nav"></nav>
+        </aside>
+      </div>
+      <nav class="paper-nav"><a class="paper-nav-link paper-nav-prev" href="../../collection-papers/2506.15864/"><span class="paper-nav-label">← 上一篇</span><span class="paper-nav-title">Improving Rectified Flow with Boundary Conditions</span></a>
+      <a class="paper-nav-link paper-nav-next" href="../../collection-papers/2507.21621/"><span class="paper-nav-label">下一篇 →</span><span class="paper-nav-title">What exactly is &#x27;active matter&#x27;?</span></a></nav>
+    </main>
+
+    <footer class="footer">
+      <div class="container">
+        <p>内容来自 <a href="https://arxiv.org" target="_blank" rel="noopener noreferrer">arXiv.org</a>，阅读卡片由静态站点生成器构建。</p>
+      </div>
+    </footer>
+
+    <script src="../../assets/theme.js"></script>
+    <script src="../../assets/media.js"></script>
+    <script src="../../assets/paper.js"></script>
+  </body>
+</html>

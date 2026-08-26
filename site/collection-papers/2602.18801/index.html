@@ -1,0 +1,199 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>SGNO: Spectral Generator Neural Operators for Stable Long Horizon PDE Rollouts - physics+AI Collection 随机精选</title>
+    <meta name="description" content="SGNO 面向周期域、线性部分有 Fourier multiplier 的 linear/semilinear evolution PDE；它把一步预测组织成 spectral carry + learned correction，而不是无结构黑箱。 real-valued nonpositive diagonal generator 使 retained modes 的 carry gain exp(λ)≤1；ETD-inspired ϕ1 weighting 与 complex spectral mixer/correction path 表达 forcing、phase、dispersion 和 nonlinear mode coupling。 十个 APEBench tasks 上，前 100 步 nRMSE 几何均值 GMean100 相对每项最强非 SGNO baseline 的中位降幅 74.8%，范围 13.6%–92.9%；并用谱误差、多 seed、机制消融支持。" />
+    <script>
+      (function() {
+        try {
+          var themePreference = window.localStorage.getItem('color-theme') || 'system';
+          var systemUsesDarkTheme = window.matchMedia('(prefers-color-scheme: dark)').matches;
+          var resolvedTheme = themePreference === 'system'
+            ? (systemUsesDarkTheme ? 'dark' : 'light')
+            : themePreference;
+          document.documentElement.dataset.theme = resolvedTheme;
+          document.documentElement.dataset.themePreference = themePreference;
+          document.documentElement.style.colorScheme = resolvedTheme;
+        } catch (error) {
+          document.documentElement.dataset.theme = 'light';
+          document.documentElement.dataset.themePreference = 'system';
+        }
+      })();
+    </script>
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='18' fill='%23111827'/%3E%3Ctext x='50%25' y='55%25' text-anchor='middle' dominant-baseline='middle' font-size='30' font-family='Arial, sans-serif' fill='white'%3EV%3C/text%3E%3C/svg%3E" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700;800&family=Noto+Sans+SC:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <script>document.documentElement.classList.add('math-pending');</script>
+    <script>
+      window.MathJax = {
+        tex: {
+          inlineMath: [['$', '$'], ['\\(', '\\)']],
+          displayMath: [['$$', '$$'], ['\\[', '\\]']],
+          processEscapes: true
+        },
+        options: {
+          skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+        },
+        chtml: {
+          scale: 1,
+          displayAlign: 'center'
+        },
+        startup: {
+          ready: function() {
+            MathJax.startup.defaultReady();
+            MathJax.startup.promise.then(function() {
+              document.documentElement.classList.remove('math-pending');
+              document.documentElement.dataset.mathReady = 'true';
+            });
+          }
+        }
+      };
+    </script>
+    <script defer src="../../assets/vendor/mathjax/tex-chtml.js"></script>
+    <link rel="stylesheet" href="../../assets/style.css" />
+  </head>
+  <body class="detail-page" data-paper-id="2602.18801">
+    <div class="page-noise"></div>
+    <div class="page-blur page-blur-a"></div>
+    <div class="page-blur page-blur-b"></div>
+
+    <header class="header detail-page-header">
+      <div class="container">
+        <div class="detail-page-topbar">
+          <a class="back-link" href="../../collection.html">返回列表</a>
+          <div class="detail-topbar-actions">
+            <span class="detail-site-name">physics+AI Collection 随机精选</span>
+            <button class="theme-toggle" type="button" data-theme-toggle aria-label="当前主题：设备，点击切换主题" title="当前主题：设备">
+  <span class="theme-toggle-icons" aria-hidden="true">
+    <svg class="theme-toggle-icon theme-toggle-icon-light" viewBox="0 0 24 24" fill="none">
+      <circle cx="12" cy="12" r="3.5" stroke="currentColor" stroke-width="1.8"/>
+      <path d="M12 2.5v2M12 19.5v2M2.5 12h2M19.5 12h2M5.3 5.3l1.4 1.4M17.3 17.3l1.4 1.4M18.7 5.3l-1.4 1.4M6.7 17.3l-1.4 1.4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+    </svg>
+    <svg class="theme-toggle-icon theme-toggle-icon-dark" viewBox="0 0 24 24" fill="none">
+      <path d="M20 15.2A8.1 8.1 0 0 1 8.8 4a8.2 8.2 0 1 0 11.2 11.2z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>
+    </svg>
+    <svg class="theme-toggle-icon theme-toggle-icon-system" viewBox="0 0 24 24" fill="none">
+      <rect x="3" y="4" width="18" height="13" rx="2.5" stroke="currentColor" stroke-width="1.8"/>
+      <path d="M8 21h8M12 17v4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+    </svg>
+  </span>
+  <span class="theme-toggle-label" data-theme-toggle-label>设备</span>
+</button>
+          </div>
+        </div>
+
+        <div class="detail-hero-grid">
+          <div class="detail-hero-cover"><article class="note-cover note-cover-title-abstract" style="--cover-from: #177e89; --cover-to: #5ec2a8; --cover-spot: #c5f0de; --cover-ink: #f5fffb; --cover-muted: rgba(245, 255, 251, 0.82); --cover-chip: rgba(245, 255, 251, 0.16); --cover-stroke: rgba(245, 255, 251, 0.24)">
+  <div class="note-cover-mesh"></div>
+  <div class="note-cover-title-shell">
+    <span class="note-cover-kicker">TITLE · ABSTRACT</span>
+    <h1 class="note-cover-title">SGNO: Spectral Generator Neural Operators for Stable Long Horizon PDE Rollouts</h1>
+    <p class="note-cover-title-zh">SGNO：用于稳定长时域 PDE 展开的谱生成元神经算子</p>
+    <p class="note-cover-abstract">Autoregressive neural PDE surrogates predict future states by repeatedly applying a learned one-step operator. This is a simple and widely used method, but small one-step errors can accumulate during long rollouts. The resulting drift often appears as spectral amplitude distortion, phase misalignment, and nonlinear mode-interaction error. These effects are especially important for time-dependent PDEs with clear Fourier structure. We introduce the Spectral Generator Neural Operator (SGNO), a structured autoregressive neural operator for long-horizon PDE forecasting. SGNO organizes each learned one-step map as a structured spectral evolution update. A real-valued nonpositive diagonal generator provides a gain-controlled spectral backbone, while a learned correction pathway with complex-valued spectral mixing completes the residual evolution. This design gives the autoregressive step an evo</p>
+  </div>
+</article></div>
+          <div class="detail-hero-copy">
+            <p class="eyebrow">Collection 全文卡</p>
+            <h1 class="detail-page-title">SGNO: Spectral Generator Neural Operators for Stable Long Horizon PDE Rollouts</h1>
+            <p class="detail-page-title-zh">SGNO：用于稳定长时域 PDE 展开的谱生成元神经算子</p>
+            <div class="detail-meta">Paper Collection · Neural Operators · <a href="https://arxiv.org/abs/2602.18801" target="_blank" rel="noopener noreferrer">原文</a></div>
+            <p class="detail-summary">SGNO 面向周期域、线性部分有 Fourier multiplier 的 linear/semilinear evolution PDE；它把一步预测组织成 spectral carry + learned correction，而不是无结构黑箱。 real-valued nonpositive diagonal generator 使 retained modes 的 carry gain exp(λ)≤1；ETD-inspired ϕ1 weighting 与 complex spectral mixer/correction path 表达 forcing、phase、dispersion 和 nonlinear mode coupling。 十个 APEBench tasks 上，前 100 步 nRMSE 几何均值 GMean100 相对每项最强非 SGNO baseline 的中位降幅 74.8%，范围 13.6%–92.9%；并用谱误差、多 seed、机制消融支持。</p>
+            <div class="detail-micro-meta">
+              <span class="meta-pill">15 分钟读完</span>
+              <span class="meta-pill">8 张阅读卡</span>
+              <span class="meta-pill">作者：Jiayi Li、Penghao Jiang、Hira Saleem、Zhaonan Wang、…</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <main class="container detail-layout">
+      <div class="detail-shell">
+        <article id="detail-body" class="reading-flow"><section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 01</span>
+    <span class="reading-step-note">作者信息</span>
+  </div>
+  <h2>作者信息</h2>
+  <div class="reading-card-content"><ul><li>作者：Jiayi Li、Penghao Jiang、Hira Saleem、Zhaonan Wang、Piotr Koniusz、Flora \(D\). Salim。</li><li>官方快照：arXiv:2602.18801v2；主分类 cs.LG。</li><li>论文提供公开代码仓库，并按 APEBench 协议报告多次独立训练 seed；卡片仍将其视为作者实验，未做本站独立运行。</li></ul></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 02</span>
+    <span class="reading-step-note">摘要</span>
+  </div>
+  <h2>摘要</h2>
+  <div class="reading-card-content"><ul><li>SGNO 面向周期域、线性部分有 Fourier multiplier 的 linear/semilinear evolution PDE；它把一步预测组织成 spectral carry + learned correction，而不是无结构黑箱。</li><li>real-valued nonpositive diagonal generator 使 retained modes 的 carry gain \(exp(\lambda)\le 1\)；ETD-inspired ϕ1 weighting 与 complex spectral mixer/correction path 表达 forcing、phase、dispersion 和 nonlinear mode coupling。</li><li>十个 APEBench tasks 上，前 100 步 nRMSE 几何均值 GMean100 相对每项最强非 SGNO baseline 的中位降幅 74.8%，范围 13.6%–92.9%；并用谱误差、多 seed、机制消融支持。</li></ul></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 03</span>
+    <span class="reading-step-note">背景</span>
+  </div>
+  <h2>背景</h2>
+  <div class="reading-card-content"><ul><li>autoregressive step 的误差可表现为 spectral amplitude distortion、phase drift 与 nonlinear mode-interaction error；这些在反馈循环中累积，即使 one-step MSE 很低也会崩坏。</li><li>对 \(\partial tu\)=Lphysu+Nphys(\(u\))，常系数线性部分在 Fourier mode \(k\) 上由 symbol Mphys(\(k\)) 表示；variation-of-constants/ETD 自然分成 exp(ΔtM) carry 和 forcing integral。</li><li>SGNO 借用这种结构，但不是固定数值 ETD solver：generator、spectral mixing 和 correction 都从数据学习，适用范围由训练分布与架构假设共同限定。</li></ul></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 04</span>
+    <span class="reading-step-note">模型与方法</span>
+  </div>
+  <h2>模型与方法</h2>
+  <div class="reading-card-content"><ul><li>输入 state 与 coordinates lifting 到 latent field；每层结合 local path、对 retained modes 的 diagonal generator carry、ϕ1-weighted correction budget、complex spectral mixing 和 nonlinear correction，最后预测 residual increment 并加回当前 state。</li><li>训练用 history length 1 的 one-step teacher forcing/MSE；测试是 200-step closed-loop rollout。每 seed 的 GMean100 是 steps 1–100 mean nRMSE 的 geometric mean，再对独立 network seeds 取 median。</li><li>1D tasks 训练 50 seeds，2D/3D tasks 训练 20 seeds；数据 generation seeds 固定而网络 initialization/mini-batch keys 变化，因而统计针对训练随机性而非数据集变化。</li><li>十项涵盖 advection、diffusion、dispersion、KdV、Kuramoto–Sivashinsky、2D mixed dispersion/Kolmogorov flow、3D diagonal diffusion/unbalanced advection/advection-diffusion。</li><li>基线包括 Conv、Res、U-Net、dilated network、FNO、CNO；Table 1 对不可用 3D CNO 留空且不纳入 best-baseline 比率。</li></ul></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 05</span>
+    <span class="reading-step-note">核心结果与证据</span>
+  </div>
+  <h2>核心结果与证据</h2>
+  <div class="reading-card-content"><ul><li>Table 1 中 SGNO 在十项都最低：例如 disp1d 0.0008 对 CNO 0.0110（ratio 0.071），ks1d 0.0294 对 Dil 0.1580（0.186），unbaladv3d 0.0220 对 Res 0.1340（0.165）。</li><li>较小改善出现在 advdiff3d：0.0650 对 U-Net 0.0750，ratio 0.864，即 13.6% reduction；最大改善约来自 0.071 ratio，即 92.9%。这些定义解释了摘要的范围。</li><li>Spectral Table 2 的五项诊断中，SGNO/baseline spectral-energy ratio 中位 0.178、low-band ratio 0.224；adv1d/disp1d phase ratios 为 0.455/0.115，中位约 0.285。</li><li>Table 3 消融：去 nonpositive constraint 的误差比 full 高 1.022–2.260 倍；改成普通 residual update 高 1.564–265.44 倍；去 correction 在 adv1d non-finite，在 disp1d 高 94.83 倍。</li><li>Appendix Table 6 在 kolm2d 用同一 64² checkpoint 推到 64²/128²/256²，GMean100 为 0.5581/0.5550/0.5705，ratio 1/0.995/1.022，显示该任务上的 resolution extrapolation 稳定。</li><li>理论 Proposition A.1 只证明 spectral carry 非扩张；full learned step 含 local/correction/mixer/nonlinearity/outer residual，只有在额外 Lipschitz 假设下才有 et+\(1\le Lf\) et+\(\delta\) 的有限时域递推，并非无条件稳定。</li></ul></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 06</span>
+    <span class="reading-step-note">有效性与局限</span>
+  </div>
+  <h2>有效性与局限</h2>
+  <div class="reading-card-content"><ul><li>适用域明确限制为 periodic、固定 time step/resolution、linear part 有 Fourier-structured symbol 的 PDE；variable coefficients、irregular geometry 和一般 boundary conditions 尚未覆盖。</li><li>diagonal generator 只能直接控制 mode-wise gain；phase、跨 channel/跨 mode coupling 和非线性都交给 correction，因此 carry 非扩张不保证完整 map contractive。</li><li>APEBench 任务机制丰富但仍为合成 benchmark；没有真实测量、复杂工程网格、solver wall-clock 或 conservation-law deployment validation。</li><li>主指标只用前 100 步，尽管 rollout 200 步；表中未裁剪的大于 1/NaN 能揭示 collapse，但不同 baseline 的可用配置与 tuning 范围仍影响相对排名。</li><li>resolution test 只在 kolm2d 一项；不能推广为所有 1D/3D tasks 的 zero-shot grid consistency。</li></ul></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 07</span>
+    <span class="reading-step-note">复现与资源</span>
+  </div>
+  <h2>复现与资源</h2>
+  <div class="reading-card-content"><ul><li>代码：https://github.com/cruiseresearchgroup/SGNO；应锁定论文对应 revision、APEBench version、数据 seeds、20/50 network keys 和未裁剪 raw metrics。</li><li>逐 seed 保存 200-step nRMSE、state rollouts、spectral/low-band energy 与 phase diagnostics；最终先算每 seed GMean100 再取 median，不能把所有 trajectories/seeds 混合后再算。</li><li>机制验证应复跑三种消融，并在 non-finite 时记录首次失稳 step；full-map Lipschitz 或 empirical gain 也应与只看 constrained carry 分开。</li><li>本站 PDF SHA-256：7d21f5a9231e5d32126615e41f5608694f961541b2f38bc4da2a5151fc796925。</li><li>Evidence status: full-text verified; no independent reproduction performed.</li></ul></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 08</span>
+    <span class="reading-step-note">阅读指南</span>
+  </div>
+  <h2>阅读指南</h2>
+  <div class="reading-card-content"><ul><li>先读 equations (1)–(10)，理解 PDE spectral form、closed-loop protocol 与 GMean100 aggregation。</li><li>再读 SGNO layer 和 Appendix A：最重要的逻辑边界是 carry nonexpansive 不等于 full step stable。</li><li>最后核 Table 1–3 与 Appendix Table 6；多 seed 和机制消融是强项，周期/Fourier 假设与仅一项 grid extrapolation 是范围边界。</li></ul></div>
+</section></article>
+        <aside id="detail-toc" class="detail-toc hidden" aria-label="内容目录">
+          <p class="detail-toc-title">阅读目录</p>
+          <nav id="detail-toc-nav" class="detail-toc-nav"></nav>
+        </aside>
+      </div>
+      <nav class="paper-nav"><a class="paper-nav-link paper-nav-prev" href="../../collection-papers/2601.20985/"><span class="paper-nav-label">← 上一篇</span><span class="paper-nav-title">Distributional Active Inference</span></a>
+      <a class="paper-nav-link paper-nav-next" href="../../collection-papers/2603.19312/"><span class="paper-nav-label">下一篇 →</span><span class="paper-nav-title">LeWorldModel: Stable End-to-End Joint-Embedding Predictive Architecture from Pixels</span></a></nav>
+    </main>
+
+    <footer class="footer">
+      <div class="container">
+        <p>内容来自 <a href="https://arxiv.org" target="_blank" rel="noopener noreferrer">arXiv.org</a>，阅读卡片由静态站点生成器构建。</p>
+      </div>
+    </footer>
+
+    <script src="../../assets/theme.js"></script>
+    <script src="../../assets/media.js"></script>
+    <script src="../../assets/paper.js"></script>
+  </body>
+</html>

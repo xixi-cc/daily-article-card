@@ -1,0 +1,198 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Zetta $ζ$: An Efficient Closed-Loop Embodied Harness for Self-Evolving Physical Intelligence - physics+AI Collection 随机精选</title>
+    <meta name="description" content="本文的论证主线由以下经过全文核验的节点构成：端到端 VLA 与事后反思之间缺少执行中的治理层；三个时间尺度分别负责动作、rollout 与能力更新；提案、离线通过与环境成功必须分层记账；这是部署期 harness 演化，不是基础 VLA 权重自训练；能力取决于 critic 可观测性和 recovery 表达空间；LIBERO-Pro 与 RoboCasa 是仿真 benchmark；论文结果不能直接等同于开放世界真实机器人可靠性；累计改动可能存在任务/实现特异性，跨模型、硬件和长周期回归仍需独立复现。 卡片内容来自已完成冷读与逐页检查的 paper_presentation.json，并回链到原论文页码、图或公式。" />
+    <script>
+      (function() {
+        try {
+          var themePreference = window.localStorage.getItem('color-theme') || 'system';
+          var systemUsesDarkTheme = window.matchMedia('(prefers-color-scheme: dark)').matches;
+          var resolvedTheme = themePreference === 'system'
+            ? (systemUsesDarkTheme ? 'dark' : 'light')
+            : themePreference;
+          document.documentElement.dataset.theme = resolvedTheme;
+          document.documentElement.dataset.themePreference = themePreference;
+          document.documentElement.style.colorScheme = resolvedTheme;
+        } catch (error) {
+          document.documentElement.dataset.theme = 'light';
+          document.documentElement.dataset.themePreference = 'system';
+        }
+      })();
+    </script>
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='18' fill='%23111827'/%3E%3Ctext x='50%25' y='55%25' text-anchor='middle' dominant-baseline='middle' font-size='30' font-family='Arial, sans-serif' fill='white'%3EV%3C/text%3E%3C/svg%3E" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700;800&family=Noto+Sans+SC:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <script>document.documentElement.classList.add('math-pending');</script>
+    <script>
+      window.MathJax = {
+        tex: {
+          inlineMath: [['$', '$'], ['\\(', '\\)']],
+          displayMath: [['$$', '$$'], ['\\[', '\\]']],
+          processEscapes: true
+        },
+        options: {
+          skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+        },
+        chtml: {
+          scale: 1,
+          displayAlign: 'center'
+        },
+        startup: {
+          ready: function() {
+            MathJax.startup.defaultReady();
+            MathJax.startup.promise.then(function() {
+              document.documentElement.classList.remove('math-pending');
+              document.documentElement.dataset.mathReady = 'true';
+            });
+          }
+        }
+      };
+    </script>
+    <script defer src="../../assets/vendor/mathjax/tex-chtml.js"></script>
+    <link rel="stylesheet" href="../../assets/style.css" />
+  </head>
+  <body class="detail-page" data-paper-id="2608.16590">
+    <div class="page-noise"></div>
+    <div class="page-blur page-blur-a"></div>
+    <div class="page-blur page-blur-b"></div>
+
+    <header class="header detail-page-header">
+      <div class="container">
+        <div class="detail-page-topbar">
+          <a class="back-link" href="../../collection.html">返回列表</a>
+          <div class="detail-topbar-actions">
+            <span class="detail-site-name">physics+AI Collection 随机精选</span>
+            <button class="theme-toggle" type="button" data-theme-toggle aria-label="当前主题：设备，点击切换主题" title="当前主题：设备">
+  <span class="theme-toggle-icons" aria-hidden="true">
+    <svg class="theme-toggle-icon theme-toggle-icon-light" viewBox="0 0 24 24" fill="none">
+      <circle cx="12" cy="12" r="3.5" stroke="currentColor" stroke-width="1.8"/>
+      <path d="M12 2.5v2M12 19.5v2M2.5 12h2M19.5 12h2M5.3 5.3l1.4 1.4M17.3 17.3l1.4 1.4M18.7 5.3l-1.4 1.4M6.7 17.3l-1.4 1.4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+    </svg>
+    <svg class="theme-toggle-icon theme-toggle-icon-dark" viewBox="0 0 24 24" fill="none">
+      <path d="M20 15.2A8.1 8.1 0 0 1 8.8 4a8.2 8.2 0 1 0 11.2 11.2z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>
+    </svg>
+    <svg class="theme-toggle-icon theme-toggle-icon-system" viewBox="0 0 24 24" fill="none">
+      <rect x="3" y="4" width="18" height="13" rx="2.5" stroke="currentColor" stroke-width="1.8"/>
+      <path d="M8 21h8M12 17v4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+    </svg>
+  </span>
+  <span class="theme-toggle-label" data-theme-toggle-label>设备</span>
+</button>
+          </div>
+        </div>
+
+        <div class="detail-hero-grid">
+          <div class="detail-hero-cover"><article class="note-cover note-cover-title-abstract" style="--cover-from: #316b57; --cover-to: #8bb174; --cover-spot: #d9e7c7; --cover-ink: #fbfff6; --cover-muted: rgba(251, 255, 246, 0.82); --cover-chip: rgba(251, 255, 246, 0.16); --cover-stroke: rgba(251, 255, 246, 0.24)">
+  <div class="note-cover-mesh"></div>
+  <div class="note-cover-title-shell">
+    <span class="note-cover-kicker">TITLE · ABSTRACT</span>
+    <h1 class="note-cover-title">Zetta $ζ$: An Efficient Closed-Loop Embodied Harness for Self-Evolving Physical Intelligence</h1>
+    <p class="note-cover-title-zh">Zetta：用于具身智能自演化的闭环 Harness</p>
+    <p class="note-cover-abstract">Embodied agents are increasingly used to close the gap left by end-to-end policy models. Yet the agentic path has not realized closed-loop learning in physical execution: existing harnesses remain largely open-loop, following fixed skills during rollout and reflecting only after an episode completes. Such post-hoc reflection cannot govern execution as it unfolds, because physical interaction requires decisions to track rapidly changing robot-environment states at a frequency beyond today&#x27;s large agentic models. We present Zetta, a closed-loop embodied harness that evolves code-based runtime critics and recovery skills online while keeping the base policy frozen. Through three timescale-separated loops, Zetta provides action-frequency governance, rollout-level critic-recovery proposal, and validation-gated skill updates. Together with Z-Infra, a rollout infrastructure decoupling agent log</p>
+  </div>
+</article></div>
+          <div class="detail-hero-copy">
+            <p class="eyebrow">Collection 全文卡</p>
+            <h1 class="detail-page-title">Zetta $ζ$: An Efficient Closed-Loop Embodied Harness for Self-Evolving Physical Intelligence</h1>
+            <p class="detail-page-title-zh">Zetta：用于具身智能自演化的闭环 Harness</p>
+            <div class="detail-meta">Paper Collection · Robotics · <a href="https://arxiv.org/abs/2608.16590" target="_blank" rel="noopener noreferrer">原文</a></div>
+            <p class="detail-summary">本文的论证主线由以下经过全文核验的节点构成：端到端 VLA 与事后反思之间缺少执行中的治理层；三个时间尺度分别负责动作、rollout 与能力更新；提案、离线通过与环境成功必须分层记账；这是部署期 harness 演化，不是基础 VLA 权重自训练；能力取决于 critic 可观测性和 recovery 表达空间；LIBERO-Pro 与 RoboCasa 是仿真 benchmark；论文结果不能直接等同于开放世界真实机器人可靠性；累计改动可能存在任务/实现特异性，跨模型、硬件和长周期回归仍需独立复现。 卡片内容来自已完成冷读与逐页检查的 paper_presentation.json，并回链到原论文页码、图或公式。</p>
+            <div class="detail-micro-meta">
+              <span class="meta-pill">14 分钟读完</span>
+              <span class="meta-pill">8 张阅读卡</span>
+              <span class="meta-pill">作者：Xin Ding、Liang Mi、Mingzhe Huang、Zixuan Wang、Chao…</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <main class="container detail-layout">
+      <div class="detail-shell">
+        <article id="detail-body" class="reading-flow"><section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 01</span>
+    <span class="reading-step-note">作者信息</span>
+  </div>
+  <h2>作者信息</h2>
+  <div class="reading-card-content"><ul><li>作者：Xin Ding、Liang Mi、Mingzhe Huang、Zixuan Wang、Chao Zhang、Zixu Hao、Fu Chen、Xiangyu Li、Yikai Zheng、Yaoyu Guo、Weijun Wang、Kun Li、Hao Wu、Yunxin Liu、Ting Cao。</li><li>研究机构：Institute for AI Industry Research, Tsinghua University; \(Z\)-Trans AI。</li><li>来源：arXiv:2608.16590v1；年份：2026；主题：Embodied AI、VLA、Agent Harness。</li><li>本文按本地全文快照制作，官方元数据核验版本为 2608.16590v1。</li></ul></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 02</span>
+    <span class="reading-step-note">摘要</span>
+  </div>
+  <h2>摘要</h2>
+  <div class="reading-card-content"><ul><li>本文的论证主线由以下经过全文核验的节点构成：端到端 VLA 与事后反思之间缺少执行中的治理层；三个时间尺度分别负责动作、rollout 与能力更新；提案、离线通过与环境成功必须分层记账；这是部署期 harness 演化，不是基础 VLA 权重自训练；能力取决于 critic 可观测性和 recovery 表达空间；LIBERO-Pro 与 RoboCasa 是仿真 benchmark；论文结果不能直接等同于开放世界真实机器人可靠性；累计改动可能存在任务/实现特异性，跨模型、硬件和长周期回归仍需独立复现。</li><li>卡片内容来自已完成冷读与逐页检查的 \(paper_{\mathrm{presentation}}\).json，并回链到原论文页码、图或公式。</li></ul></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 03</span>
+    <span class="reading-step-note">背景</span>
+  </div>
+  <h2>背景</h2>
+  <div class="reading-card-content"><ul><li>论证节点“端到端 VLA 与事后反思之间缺少执行中的治理层”。</li><li>VLA/WAM 扩大模型与示范数据，但部署分布变化使固定策略脆弱。</li><li>既有 embodied agent 常在 episode 后反思；执行时仍沿固定 skill 或预规划轨迹，无法跟踪快速变化的接触与抓取状态。</li><li>Zetta 保持 base policy 冻结，把可演化部分放在代码化 critic、recovery skill 与验证门控的 harness。</li><li>让高频运行时治理与低频大模型反思分离，避免要求 agentic model 在每个控制周期决策。</li><li>Zetta 针对具身 agent 仅事后反思、执行中开环的缺口，并保持基础策略冻结 （\(p\). 3; source/tex/\(arxiv_{\mathrm{submission}}\)/tex/introduction.tex）</li><li>研究问题的表述以论文给出的对象和评价目标为边界；背景动机不自动构成方法有效性的证据。</li></ul></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 04</span>
+    <span class="reading-step-note">模型与方法</span>
+  </div>
+  <h2>模型与方法</h2>
+  <div class="reading-card-content"><ul><li>论证节点“三个时间尺度分别负责动作、rollout 与能力更新”。</li><li>动作频率运行时 critic 读取当前状态，在已有 recovery 范围内触发、抑制或切换，不等待大模型重新规划。</li><li>Rollout 频率对失败轨迹做机制聚类与层级因果诊断，生成 critic--recovery 候选。</li><li>演化频率候选必须通过闭环验证、回归与推广条件，才进入累计 harness；基础 VLA 保持冻结。</li><li>方法以在线治理、rollout 诊断和验证门控更新构成三阶段闭环 （\(p\). 7; source/tex/\(arxiv_{\mathrm{submission}}\)/tex/method.tex）</li><li>方法部分按 presentation 中的数学关系、算法结构或实验设计重述；公式只在相应证据页定义的符号与条件下成立。</li></ul></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 05</span>
+    <span class="reading-step-note">核心结果与证据</span>
+  </div>
+  <h2>核心结果与证据</h2>
+  <div class="reading-card-content"><ul><li>2：在线 rollout 由固定动作策略与可演化 harness 协作；失败经聚类、因果诊断、critic--recovery 提案和验证后，才合并为可复用能力。</li><li>证据解释：Zetta 把“发现失败—提出修复—同条件验证—推广复用”做成有权限边界的闭环，而不是直接改 VLA 权重。</li><li>Zetta 的在线执行、离线演化和验证门控整体架构 （\(p\). 5; figure Figure 2; source/tex/\(arxiv_{\mathrm{submission}}\)/tex/method.tex）</li><li>论证节点“提案、离线通过与环境成功必须分层记账”。</li><li>Critic 只报告当前风险与候选干预；它的接受不等于动作已执行。</li><li>Recovery 必须在相同失败机制和固定预算下验证，并检查是否引入新失败。</li><li>只有环境终止条件确认的任务完成，才计入成功率；累计版本还需保留此前有效能力。</li><li>因此所谓“自演化”发生在 harness 代码与技能库，不是在线更新基础模型参数。</li><li>论文规定 critic-guided repair 的验证、成功判据和能力推广流程 （\(p\). 10; source/tex/\(arxiv_{\mathrm{submission}}\)/tex/method.tex）</li><li>6：RoboCasa 18 个任务上的累计版本从冻结 parent harness 出发，逐轮加入经验证的全局修复；论文报告 macro-average 由 $73.56\%$ 提升到 $93.56\%$。</li><li>证据解释：作者把提升归因于累计 critic--recovery 能力；该曲线是论文协议下的内部累计评测，不应脱离 seed、预算和 success 定义单独解读。</li><li>论文报告 RoboCasa 累计 harness 的宏平均成功率由 73.56% 增至 93.56% （\(p\). 24; figure Figure 6; source/tex/\(arxiv_{\mathrm{submission}}\)/tex/experiment.tex）</li><li>论证节点“论文报告成功率、迁移与吞吐三类结果”。</li><li>在当前 rollout budget 下，作者报告 LIBERO-Pro $90.8\%$、RoboCasa $93.6\%$。</li><li>Goal-\(T\)/Goal-S 与 RoboCasa 曲线展示累计能力、跨任务零样本迁移和若干“故障前沿后移”案例。</li><li>\(Z\)-Infra 解耦 control plane、environment worker 与 rollout worker；论文报告并发 64 时 $35.1$ ep/min，并相对并发 16 的基线达到 $7.7\times$ 与 $12.8\times$ 吞吐。</li><li>结果只支持论文所记录版本、固定 seed/预算与对应 harness 干预；不能把 proposal acceptance 或某个中间版本称为已实现物理成功。</li><li>论文摘要报告 LIBERO-Pro 90.8%、RoboCasa 93.6% 和 11.1 倍推理加速 （\(p\). 1; source/tex/\(arxiv_{\mathrm{submission}}\)/main.tex）</li><li>\(Z\)-Infra 报告并发 64 的 35.1 ep/min 和相对吞吐提升 （\(p\). 30; figure Figure 12; source/tex/\(arxiv_{\mathrm{submission}}\)/tex/experiment.tex）</li><li>证据状态：上述结论均来自逐页审阅后的 presentation manifest；这里只确认论文原文支持，不把作者实验视为本站独立复现。</li></ul></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 06</span>
+    <span class="reading-step-note">有效性与局限</span>
+  </div>
+  <h2>有效性与局限</h2>
+  <div class="reading-card-content"><ul><li>论证节点“结论边界在 harness、benchmark 与当前预算内”。</li><li>这是部署期 harness 演化，不是基础 VLA 权重自训练；能力取决于 critic 可观测性和 recovery 表达空间。</li><li>LIBERO-Pro 与 RoboCasa 是仿真 benchmark；论文结果不能直接等同于开放世界真实机器人可靠性。</li><li>累计改动可能存在任务/实现特异性，跨模型、硬件和长周期回归仍需独立复现。</li><li>系统最值得保留的是可审计闭环：失败事实、原子机制修改、同条件验证与环境终止证据分开记录。</li><li>论文结论聚焦闭环 harness 和 rollout infrastructure，并提出进一步扩展方向 （\(p\). 33; source/tex/\(arxiv_{\mathrm{submission}}\)/tex/conclusion.tex）</li><li>适用边界以卡片列出的目标、假设、数据集或物理参数区间为准；未在原文证据中出现的外推不计入论文结论。</li><li>该卡完成的是全文证据审计，未重新运行训练、仿真或实验，因此不能据此声称独立复现、稳健性复核或跨任务泛化。</li></ul></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 07</span>
+    <span class="reading-step-note">复现与资源</span>
+  </div>
+  <h2>复现与资源</h2>
+  <div class="reading-card-content"><ul><li>原文：https://arxiv.org/abs/2608.16590；PDF：https://arxiv.org/pdf/2608.16590。</li><li>本地证据源：2608.16590/source/paper.pdf；SHA-256：00e89f549666c4b174eb66a8dd3a0edd6f45c6ec6393530eef8f21d45c6dfc18。</li><li>来源格式：tex；来源包状态：downloaded；presentation 证据条目数：8。</li><li>presentation 及其质量报告保留了页面审阅、编译和冷读状态；它们用于追溯卡片，不等同于作者代码或数据已公开。</li><li>Evidence status: full-text verified; no independent reproduction performed.</li></ul></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 08</span>
+    <span class="reading-step-note">阅读指南</span>
+  </div>
+  <h2>阅读指南</h2>
+  <div class="reading-card-content"><ul><li>快速阅读可先看证据页 1, 3, 5, 7, 10, 24，这些页覆盖问题、方法与主要结论。</li><li>图证据优先查看 Figure 2；结合图注和正文，不只依据视觉趋势下结论。</li><li>建议按“研究问题 → 方法/数学对象 → 证据 → 局限”的顺序阅读，避免从摘要直接跳到强结论。</li><li>若要复现，先从证据引用恢复具体设置，再补齐随机种子、计算资源、评价指标和失败案例。</li></ul></div>
+</section></article>
+        <aside id="detail-toc" class="detail-toc hidden" aria-label="内容目录">
+          <p class="detail-toc-title">阅读目录</p>
+          <nav id="detail-toc-nav" class="detail-toc-nav"></nav>
+        </aside>
+      </div>
+      <nav class="paper-nav"><a class="paper-nav-link paper-nav-prev" href="../../collection-papers/2608.12438/"><span class="paper-nav-label">← 上一篇</span><span class="paper-nav-title">Unifying Generative Models with Path Integrals</span></a></nav>
+    </main>
+
+    <footer class="footer">
+      <div class="container">
+        <p>内容来自 <a href="https://arxiv.org" target="_blank" rel="noopener noreferrer">arXiv.org</a>，阅读卡片由静态站点生成器构建。</p>
+      </div>
+    </footer>
+
+    <script src="../../assets/theme.js"></script>
+    <script src="../../assets/media.js"></script>
+    <script src="../../assets/paper.js"></script>
+  </body>
+</html>

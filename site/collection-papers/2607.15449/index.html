@@ -1,0 +1,199 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Relevant and Irrelevant: A Renormalization Group Analysis of Transformer Attention - physics+AI Collection 随机精选</title>
+    <meta name="description" content="本文的论证主线由以下经过全文核验的节点构成：注意力的价值不是架构常数，而取决于数据相关长度；固定点位移由 MLP 稳定矩阵与 attention forcing 共同决定；理论给出四个可直接证伪的预测；Long-$\xi$：attention 在第一层触发 effective-rank 相变；attention 是否改变表示 fixed point 取决于输入 correlation length；long-$\xi$ 的 relevant 作用集中在首层，并建立高秩表示 plateau；谱选择性解释了它为何保留慢 Markov 模式。 卡片内容来自已完成冷读与逐页检查的 paper_presentation.json，并回链到原论文页码、图或公式。" />
+    <script>
+      (function() {
+        try {
+          var themePreference = window.localStorage.getItem('color-theme') || 'system';
+          var systemUsesDarkTheme = window.matchMedia('(prefers-color-scheme: dark)').matches;
+          var resolvedTheme = themePreference === 'system'
+            ? (systemUsesDarkTheme ? 'dark' : 'light')
+            : themePreference;
+          document.documentElement.dataset.theme = resolvedTheme;
+          document.documentElement.dataset.themePreference = themePreference;
+          document.documentElement.style.colorScheme = resolvedTheme;
+        } catch (error) {
+          document.documentElement.dataset.theme = 'light';
+          document.documentElement.dataset.themePreference = 'system';
+        }
+      })();
+    </script>
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='18' fill='%23111827'/%3E%3Ctext x='50%25' y='55%25' text-anchor='middle' dominant-baseline='middle' font-size='30' font-family='Arial, sans-serif' fill='white'%3EV%3C/text%3E%3C/svg%3E" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700;800&family=Noto+Sans+SC:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <script>document.documentElement.classList.add('math-pending');</script>
+    <script>
+      window.MathJax = {
+        tex: {
+          inlineMath: [['$', '$'], ['\\(', '\\)']],
+          displayMath: [['$$', '$$'], ['\\[', '\\]']],
+          processEscapes: true
+        },
+        options: {
+          skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+        },
+        chtml: {
+          scale: 1,
+          displayAlign: 'center'
+        },
+        startup: {
+          ready: function() {
+            MathJax.startup.defaultReady();
+            MathJax.startup.promise.then(function() {
+              document.documentElement.classList.remove('math-pending');
+              document.documentElement.dataset.mathReady = 'true';
+            });
+          }
+        }
+      };
+    </script>
+    <script defer src="../../assets/vendor/mathjax/tex-chtml.js"></script>
+    <link rel="stylesheet" href="../../assets/style.css" />
+  </head>
+  <body class="detail-page" data-paper-id="2607.15449">
+    <div class="page-noise"></div>
+    <div class="page-blur page-blur-a"></div>
+    <div class="page-blur page-blur-b"></div>
+
+    <header class="header detail-page-header">
+      <div class="container">
+        <div class="detail-page-topbar">
+          <a class="back-link" href="../../collection.html">返回列表</a>
+          <div class="detail-topbar-actions">
+            <span class="detail-site-name">physics+AI Collection 随机精选</span>
+            <button class="theme-toggle" type="button" data-theme-toggle aria-label="当前主题：设备，点击切换主题" title="当前主题：设备">
+  <span class="theme-toggle-icons" aria-hidden="true">
+    <svg class="theme-toggle-icon theme-toggle-icon-light" viewBox="0 0 24 24" fill="none">
+      <circle cx="12" cy="12" r="3.5" stroke="currentColor" stroke-width="1.8"/>
+      <path d="M12 2.5v2M12 19.5v2M2.5 12h2M19.5 12h2M5.3 5.3l1.4 1.4M17.3 17.3l1.4 1.4M18.7 5.3l-1.4 1.4M6.7 17.3l-1.4 1.4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+    </svg>
+    <svg class="theme-toggle-icon theme-toggle-icon-dark" viewBox="0 0 24 24" fill="none">
+      <path d="M20 15.2A8.1 8.1 0 0 1 8.8 4a8.2 8.2 0 1 0 11.2 11.2z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>
+    </svg>
+    <svg class="theme-toggle-icon theme-toggle-icon-system" viewBox="0 0 24 24" fill="none">
+      <rect x="3" y="4" width="18" height="13" rx="2.5" stroke="currentColor" stroke-width="1.8"/>
+      <path d="M8 21h8M12 17v4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+    </svg>
+  </span>
+  <span class="theme-toggle-label" data-theme-toggle-label>设备</span>
+</button>
+          </div>
+        </div>
+
+        <div class="detail-hero-grid">
+          <div class="detail-hero-cover"><article class="note-cover note-cover-title-abstract" style="--cover-from: #ef6c3f; --cover-to: #f6b13d; --cover-spot: #ffd59c; --cover-ink: #fff8ef; --cover-muted: rgba(255, 248, 239, 0.82); --cover-chip: rgba(255, 248, 239, 0.16); --cover-stroke: rgba(255, 248, 239, 0.26)">
+  <div class="note-cover-mesh"></div>
+  <div class="note-cover-title-shell">
+    <span class="note-cover-kicker">TITLE · ABSTRACT</span>
+    <h1 class="note-cover-title">Relevant and Irrelevant: A Renormalization Group Analysis of Transformer Attention</h1>
+    <p class="note-cover-title-zh">Relevant 还是 Irrelevant？用重整化群分析 Transformer 注意力</p>
+    <p class="note-cover-abstract">Using the language of Wilsonian renormalization group theory (RG), we treat the Transformer&#x27;s attention mechanism as a perturbation of the trained MLP residual-stack fixed point and ask whether it constitutes a relevant, marginal, or irrelevant operator. We derive a fixed-point shift formula and obtain four testable predictions for the fixed-point geometry, effective rank profile, layer specificity, and perturbation decay spectrum. Testing these on synthetic Markov chain sequences with controlled correlation length, we find: (1) For large chains(long correlation), attention is strongly relevant: it closes a residual loss gap the MLP cannot bridge and drives a phase transition in representation space, with effective rank jumping above input dimensionality at layer 1 and stabilizing at a high-dimensional plateau. (2) For short chains(short correlation), attention is irrelevant: the Transfo</p>
+  </div>
+</article></div>
+          <div class="detail-hero-copy">
+            <p class="eyebrow">Collection 全文卡</p>
+            <h1 class="detail-page-title">Relevant and Irrelevant: A Renormalization Group Analysis of Transformer Attention</h1>
+            <p class="detail-page-title-zh">Relevant 还是 Irrelevant？用重整化群分析 Transformer 注意力</p>
+            <div class="detail-meta">Paper Collection · Renormalization Group · <a href="https://arxiv.org/abs/2607.15449" target="_blank" rel="noopener noreferrer">原文</a></div>
+            <p class="detail-summary">本文的论证主线由以下经过全文核验的节点构成：注意力的价值不是架构常数，而取决于数据相关长度；固定点位移由 MLP 稳定矩阵与 attention forcing 共同决定；理论给出四个可直接证伪的预测；Long-$\xi$：attention 在第一层触发 effective-rank 相变；attention 是否改变表示 fixed point 取决于输入 correlation length；long-$\xi$ 的 relevant 作用集中在首层，并建立高秩表示 plateau；谱选择性解释了它为何保留慢 Markov 模式。 卡片内容来自已完成冷读与逐页检查的 paper_presentation.json，并回链到原论文页码、图或公式。</p>
+            <div class="detail-micro-meta">
+              <span class="meta-pill">15 分钟读完</span>
+              <span class="meta-pill">8 张阅读卡</span>
+              <span class="meta-pill">作者：Parviz Haggi-Mani、Irina Rish。</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <main class="container detail-layout">
+      <div class="detail-shell">
+        <article id="detail-body" class="reading-flow"><section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 01</span>
+    <span class="reading-step-note">作者信息</span>
+  </div>
+  <h2>作者信息</h2>
+  <div class="reading-card-content"><ul><li>作者：Parviz Haggi-Mani、Irina Rish。</li><li>研究机构：Université de Montréal and Mila。</li><li>来源：arXiv:2607.15449；年份：2026；主题：Transformer、重整化群、表征几何。</li><li>本文按本地全文快照制作，官方元数据核验版本为 2607.15449v1。</li></ul></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 02</span>
+    <span class="reading-step-note">摘要</span>
+  </div>
+  <h2>摘要</h2>
+  <div class="reading-card-content"><ul><li>本文的论证主线由以下经过全文核验的节点构成：注意力的价值不是架构常数，而取决于数据相关长度；固定点位移由 MLP 稳定矩阵与 attention forcing 共同决定；理论给出四个可直接证伪的预测；Long-$\xi$：attention 在第一层触发 effective-rank 相变；attention 是否改变表示 fixed point 取决于输入 correlation length；long-$\xi$ 的 relevant 作用集中在首层，并建立高秩表示 plateau；谱选择性解释了它为何保留慢 Markov 模式。</li><li>卡片内容来自已完成冷读与逐页检查的 \(paper_{\mathrm{presentation}}\).json，并回链到原论文页码、图或公式。</li></ul></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 03</span>
+    <span class="reading-step-note">背景</span>
+  </div>
+  <h2>背景</h2>
+  <div class="reading-card-content"><ul><li>论证节点“注意力的价值不是架构常数，而取决于数据相关长度”。</li><li>先训练 residual MLP stack，视其表示动力学收敛到固定点。</li><li>加入 attention 后，问这个扰动在层深方向会增长、保持还是衰减。</li><li>Wilsonian 语言对应 relevant、marginal、irrelevant operator。</li><li>合成 Markov 序列允许控制 correlation length $\xi$，把数据统计作为外部旋钮。</li><li>研究问题从“attention 是否有用”改写为“在哪种数据尺度上 relevant”。</li><li>论文把 attention 视为 MLP fixed point 的 RG perturbation。 （\(p\). 1; source/tex/main.tex:89-164）</li><li>研究问题的表述以论文给出的对象和评价目标为边界；背景动机不自动构成方法有效性的证据。</li></ul></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 04</span>
+    <span class="reading-step-note">模型与方法</span>
+  </div>
+  <h2>模型与方法</h2>
+  <div class="reading-card-content"><ul><li>论证节点“固定点位移由 MLP 稳定矩阵与 attention forcing 共同决定”。</li><li>设定：MLP fixed point 局部稳定；attention 作为小扰动加入。</li><li>关键关系：\delta &= -\left(\(M\)^*\right)^{-1}(a+b) \\ \(J_{\)\rm TFM} &= \(M\)^* + \(D\) a + \(D\) b</li><li>推导含义：若扰动沿某本征方向被层迭代放大，则 attention relevant；若衰减，则 irrelevant。</li><li>结论边界：同一 attention 模块可因输入相关长度不同而跨越 relevance 边界。</li><li>论文推导 fixed-point shift formula 与 stability classification。 （\(p\). 4; equation fixed-point shift; source/tex/main.tex:233-500）</li><li>论证节点“理论给出四个可直接证伪的预测”。</li><li>固定点几何：long-$\xi$ 时 Transformer 与 MLP 表示应分离。</li><li>effective rank：relevant regime 在早层跃迁到高维 plateau。</li><li>layer specificity：主要位移应由最早 attention head 驱动。</li><li>perturbation spectrum：long-$\xi$ 选择性保留慢模；short-$\xi$ 则整体快速衰减。</li><li>RG 解释不是事后比喻，因为它先规定了四组观测量。</li><li>论文从 RG classification 推出几何、秩、层特异性和谱四个预测。 （\(p\). 8; source/tex/main.tex:502-663）</li><li>方法部分按 presentation 中的数学关系、算法结构或实验设计重述；公式只在相应证据页定义的符号与条件下成立。</li></ul></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 05</span>
+    <span class="reading-step-note">核心结果与证据</span>
+  </div>
+  <h2>核心结果与证据</h2>
+  <div class="reading-card-content"><ul><li>论证节点“Long-$\xi$：attention 在第一层触发 effective-rank 相变”。</li><li>Fig. 1：长相关序列中，Transformer effective rank 在首层跳到超过输入维度的高 plateau，并关闭 MLP 无法消除的 residual loss gap；短相关序列两者最终几何接近。</li><li>证据解释：relevance 体现为表示轨迹改变，而不只是最终 loss 略有改善。</li><li>effective-rank profiles 区分 long- and short-correlation regimes。 （\(p\). 11; figure Fig. 1; source/tex/\(fig1_{\mathrm{erank}}_{\mathrm{profiles}}\).pdf）</li><li>论证节点“首层 head 的表示位移超过后续 head 四倍”。</li><li>Head ablation：逐 head 消融显示 L0H0 对长相关 regime 的表示位移最大，超过任一后续 head 的 $4\times$；随后层主要在新 fixed-point basin 内整合。</li><li>证据解释：这符合 relevant operator 应在 MLP 尚未粗粒化位置变化前作用的预测。</li><li>head ablation 识别 L0H0 为主导 relevant perturbation。 （\(p\). 15; figure Fig. 3; source/tex/\(fig3_{\mathrm{head}}_{\mathrm{ablation}}\).pdf）</li><li>论证节点“谱实验出现 regime reversal：保留慢模或全面压制”。</li><li>Fig. 4：long-$\xi$ 时 Transformer 的 decay-length dynamic range 为 $5.4\times$，MLP 为 $1.3\times$；short-$\xi$ 时 Transformer 无选择性地更快压制全部模式。</li><li>证据解释：attention 的作用由输入谱决定：相关结构足够长时选择性保留，否则成为快速收缩器。</li><li>perturbation decay spectrum 显示 long/short regime reversal。 （\(p\). 19; figure Fig. 4; source/tex/\(fig4_{\mathrm{perturbation}}_{\mathrm{spectrum}}\).pdf）</li><li>证据状态：上述结论均来自逐页审阅后的 presentation manifest；这里只确认论文原文支持，不把作者实验视为本站独立复现。</li></ul></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 06</span>
+    <span class="reading-step-note">有效性与局限</span>
+  </div>
+  <h2>有效性与局限</h2>
+  <div class="reading-card-content"><ul><li>论证节点“边界：这是受控合成语言上的离散 RG 类比”。</li><li>数据是可控 correlation length 的合成 Markov chain，不是自然语言语料。</li><li>比较采用匹配 MLP/Transformer residual stack；模型尺寸与训练协议有限。</li><li>层深被解释为离散 RG flow，但 coarse-graining 与严格场论 RG 并不完全等价。</li><li>relevance 指向特定观测量和 fixed point；不能简化为“attention 总是重要/不重要”。</li><li>最强结论是条件性机制：数据相关尺度控制 attention 的 RG 角色。</li><li>讨论限定合成语料、离散层流与 RG 解释范围。 （\(p\). 20; source/tex/main.tex:1000-1060）</li><li>论证节点“三点带走：条件 relevance、首层作用、谱选择性”。</li><li>attention 是否改变表示 fixed point 取决于输入 correlation length。</li><li>long-$\xi$ 的 relevant 作用集中在首层，并建立高秩表示 plateau。</li><li>谱选择性解释了它为何保留慢 Markov 模式。</li><li>下一步应在自然语言、多尺度相关与更大模型中检验同一四预测。</li><li>论文把“attention 有何用”变成了可量化的尺度依赖问题。</li><li>论文总结 relevant/irrelevant regimes 与四项实验支持。 （\(p\). 20; source/tex/main.tex:1000-1060）</li><li>适用边界以卡片列出的目标、假设、数据集或物理参数区间为准；未在原文证据中出现的外推不计入论文结论。</li><li>该卡完成的是全文证据审计，未重新运行训练、仿真或实验，因此不能据此声称独立复现、稳健性复核或跨任务泛化。</li></ul></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 07</span>
+    <span class="reading-step-note">复现与资源</span>
+  </div>
+  <h2>复现与资源</h2>
+  <div class="reading-card-content"><ul><li>原文：https://arxiv.org/abs/2607.15449；PDF：https://arxiv.org/pdf/2607.15449。</li><li>本地证据源：2607.15449/source/paper.pdf；SHA-256：4512c0c8ec21ba538eb60063fbd1b8f47b622252b0a6d5a9e857896f0df01911。</li><li>来源格式：tex；来源包状态：downloaded；presentation 证据条目数：8。</li><li>presentation 及其质量报告保留了页面审阅、编译和冷读状态；它们用于追溯卡片，不等同于作者代码或数据已公开。</li><li>Evidence status: full-text verified; no independent reproduction performed.</li></ul></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 08</span>
+    <span class="reading-step-note">阅读指南</span>
+  </div>
+  <h2>阅读指南</h2>
+  <div class="reading-card-content"><ul><li>快速阅读可先看证据页 1, 4, 8, 11, 15, 19，这些页覆盖问题、方法与主要结论。</li><li>图证据优先查看 Fig. 1；结合图注和正文，不只依据视觉趋势下结论。</li><li>公式链优先查看 fixed-point shift；核对符号、假设与前后推导。</li><li>建议按“研究问题 → 方法/数学对象 → 证据 → 局限”的顺序阅读，避免从摘要直接跳到强结论。</li><li>若要复现，先从证据引用恢复具体设置，再补齐随机种子、计算资源、评价指标和失败案例。</li></ul></div>
+</section></article>
+        <aside id="detail-toc" class="detail-toc hidden" aria-label="内容目录">
+          <p class="detail-toc-title">阅读目录</p>
+          <nav id="detail-toc-nav" class="detail-toc-nav"></nav>
+        </aside>
+      </div>
+      <nav class="paper-nav"><a class="paper-nav-link paper-nav-prev" href="../../collection-papers/2607.08448/"><span class="paper-nav-label">← 上一篇</span><span class="paper-nav-title">Harness VLA: Steering Frozen VLAs into Reliable Manipulation Primitives via Memory-Guided Agents</span></a>
+      <a class="paper-nav-link paper-nav-next" href="../../collection-papers/2607.24502/"><span class="paper-nav-label">下一篇 →</span><span class="paper-nav-title">Self-Attention Dynamics with Rotary Position Embeddings: Twisted States and Explicit Consensus Rates on the Sphere</span></a></nav>
+    </main>
+
+    <footer class="footer">
+      <div class="container">
+        <p>内容来自 <a href="https://arxiv.org" target="_blank" rel="noopener noreferrer">arXiv.org</a>，阅读卡片由静态站点生成器构建。</p>
+      </div>
+    </footer>
+
+    <script src="../../assets/theme.js"></script>
+    <script src="../../assets/media.js"></script>
+    <script src="../../assets/paper.js"></script>
+  </body>
+</html>

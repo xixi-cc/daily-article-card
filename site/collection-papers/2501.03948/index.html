@@ -1,0 +1,199 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Kinetic theory of decentralized learning for smart active matter - physics+AI Collection 随机精选</title>
+    <meta name="description" content="每个 agent 有物理 state S、指数滤波 memory M 和可调 policy P；局部相遇时按 reward difference 的 tanh probability 决定 teacher/student，student 复制 teacher 的 policy 与 memory。 把 teaching event 视为 binary collision，构造 single-agent phase-space density f(S,M,P,x,t) 的 Boltzmann-like kinetic equation；在时标分离与 Gaussian closure 下推导 policy mean μ 和 diversity σ² 的 hydrodynamics。 理论揭示 adaptation rate 与 density×diversity 成正比，mutation 维持 policy diversity；learning time τL 与 steady diversity 满足 τL σ∞²=λ0^{-1} 的 tradeoff。" />
+    <script>
+      (function() {
+        try {
+          var themePreference = window.localStorage.getItem('color-theme') || 'system';
+          var systemUsesDarkTheme = window.matchMedia('(prefers-color-scheme: dark)').matches;
+          var resolvedTheme = themePreference === 'system'
+            ? (systemUsesDarkTheme ? 'dark' : 'light')
+            : themePreference;
+          document.documentElement.dataset.theme = resolvedTheme;
+          document.documentElement.dataset.themePreference = themePreference;
+          document.documentElement.style.colorScheme = resolvedTheme;
+        } catch (error) {
+          document.documentElement.dataset.theme = 'light';
+          document.documentElement.dataset.themePreference = 'system';
+        }
+      })();
+    </script>
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='18' fill='%23111827'/%3E%3Ctext x='50%25' y='55%25' text-anchor='middle' dominant-baseline='middle' font-size='30' font-family='Arial, sans-serif' fill='white'%3EV%3C/text%3E%3C/svg%3E" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700;800&family=Noto+Sans+SC:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <script>document.documentElement.classList.add('math-pending');</script>
+    <script>
+      window.MathJax = {
+        tex: {
+          inlineMath: [['$', '$'], ['\\(', '\\)']],
+          displayMath: [['$$', '$$'], ['\\[', '\\]']],
+          processEscapes: true
+        },
+        options: {
+          skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+        },
+        chtml: {
+          scale: 1,
+          displayAlign: 'center'
+        },
+        startup: {
+          ready: function() {
+            MathJax.startup.defaultReady();
+            MathJax.startup.promise.then(function() {
+              document.documentElement.classList.remove('math-pending');
+              document.documentElement.dataset.mathReady = 'true';
+            });
+          }
+        }
+      };
+    </script>
+    <script defer src="../../assets/vendor/mathjax/tex-chtml.js"></script>
+    <link rel="stylesheet" href="../../assets/style.css" />
+  </head>
+  <body class="detail-page" data-paper-id="2501.03948">
+    <div class="page-noise"></div>
+    <div class="page-blur page-blur-a"></div>
+    <div class="page-blur page-blur-b"></div>
+
+    <header class="header detail-page-header">
+      <div class="container">
+        <div class="detail-page-topbar">
+          <a class="back-link" href="../../collection.html">返回列表</a>
+          <div class="detail-topbar-actions">
+            <span class="detail-site-name">physics+AI Collection 随机精选</span>
+            <button class="theme-toggle" type="button" data-theme-toggle aria-label="当前主题：设备，点击切换主题" title="当前主题：设备">
+  <span class="theme-toggle-icons" aria-hidden="true">
+    <svg class="theme-toggle-icon theme-toggle-icon-light" viewBox="0 0 24 24" fill="none">
+      <circle cx="12" cy="12" r="3.5" stroke="currentColor" stroke-width="1.8"/>
+      <path d="M12 2.5v2M12 19.5v2M2.5 12h2M19.5 12h2M5.3 5.3l1.4 1.4M17.3 17.3l1.4 1.4M18.7 5.3l-1.4 1.4M6.7 17.3l-1.4 1.4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+    </svg>
+    <svg class="theme-toggle-icon theme-toggle-icon-dark" viewBox="0 0 24 24" fill="none">
+      <path d="M20 15.2A8.1 8.1 0 0 1 8.8 4a8.2 8.2 0 1 0 11.2 11.2z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>
+    </svg>
+    <svg class="theme-toggle-icon theme-toggle-icon-system" viewBox="0 0 24 24" fill="none">
+      <rect x="3" y="4" width="18" height="13" rx="2.5" stroke="currentColor" stroke-width="1.8"/>
+      <path d="M8 21h8M12 17v4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+    </svg>
+  </span>
+  <span class="theme-toggle-label" data-theme-toggle-label>设备</span>
+</button>
+          </div>
+        </div>
+
+        <div class="detail-hero-grid">
+          <div class="detail-hero-cover"><article class="note-cover note-cover-title-abstract" style="--cover-from: #ef6c3f; --cover-to: #f6b13d; --cover-spot: #ffd59c; --cover-ink: #fff8ef; --cover-muted: rgba(255, 248, 239, 0.82); --cover-chip: rgba(255, 248, 239, 0.16); --cover-stroke: rgba(255, 248, 239, 0.26)">
+  <div class="note-cover-mesh"></div>
+  <div class="note-cover-title-shell">
+    <span class="note-cover-kicker">TITLE · ABSTRACT</span>
+    <h1 class="note-cover-title">Kinetic theory of decentralized learning for smart active matter</h1>
+    <p class="note-cover-title-zh">智能活性物质去中心化学习的动理学理论</p>
+    <p class="note-cover-abstract">Smart active matter has the ability to control its motion guided by individual policies to achieve collective goals. We introduce a theoretical framework to study a decentralized learning process in which agents can locally exchange policies to adapt their behavior and maximize a predefined reward function. We use our formalism to derive explicit hydrodynamic equations for the policy dynamics. We apply the theory to two different microscopic models where policies correspond either to fixed parameters similar to evolutionary dynamics, or to state-dependent controllers known from the field of robotics. We find good agreement between theoretical predictions and agent-based simulations. By deriving fundamental control parameters and uncertainty relations, our work lays the foundations for a statistical physics analysis of decentralized learning.</p>
+  </div>
+</article></div>
+          <div class="detail-hero-copy">
+            <p class="eyebrow">Collection 全文卡</p>
+            <h1 class="detail-page-title">Kinetic theory of decentralized learning for smart active matter</h1>
+            <p class="detail-page-title-zh">智能活性物质去中心化学习的动理学理论</p>
+            <div class="detail-meta">Paper Collection · Active Matter · <a href="https://arxiv.org/abs/2501.03948" target="_blank" rel="noopener noreferrer">原文</a></div>
+            <p class="detail-summary">每个 agent 有物理 state S、指数滤波 memory M 和可调 policy P；局部相遇时按 reward difference 的 tanh probability 决定 teacher/student，student 复制 teacher 的 policy 与 memory。 把 teaching event 视为 binary collision，构造 single-agent phase-space density f(S,M,P,x,t) 的 Boltzmann-like kinetic equation；在时标分离与 Gaussian closure 下推导 policy mean μ 和 diversity σ² 的 hydrodynamics。 理论揭示 adaptation rate 与 density×diversity 成正比，mutation 维持 policy diversity；learning time τL 与 steady diversity 满足 τL σ∞²=λ0^{-1} 的 tradeoff。</p>
+            <div class="detail-micro-meta">
+              <span class="meta-pill">15 分钟读完</span>
+              <span class="meta-pill">8 张阅读卡</span>
+              <span class="meta-pill">作者：Gerhard Jung、Misaki Ozawa、Eric Bertin，Université…</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <main class="container detail-layout">
+      <div class="detail-shell">
+        <article id="detail-body" class="reading-flow"><section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 01</span>
+    <span class="reading-step-note">作者信息</span>
+  </div>
+  <h2>作者信息</h2>
+  <div class="reading-card-content"><ul><li>作者：Gerhard Jung、Misaki Ozawa、Eric Bertin，Université Grenoble Alpes/CNRS/LIPhy。</li><li>官方快照：arXiv:2501.03948v2，18 页；分类 cond-mat.stat-mech/cond-mat.soft；期刊 Phys. Rev. Lett. 134, 248302。</li><li>论文给出去中心化 policy exchange 的 kinetic/hydrodynamic closure，并在两个 agent-based toy models 中验证；不是现实机器人群实验。</li></ul></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 02</span>
+    <span class="reading-step-note">摘要</span>
+  </div>
+  <h2>摘要</h2>
+  <div class="reading-card-content"><ul><li>每个 agent 有物理 state S、指数滤波 memory \(M\) 和可调 policy P；局部相遇时按 reward difference 的 tanh probability 决定 teacher/student，student 复制 teacher 的 policy 与 memory。</li><li>把 teaching event 视为 binary collision，构造 single-agent phase-space density \(f\)(S,\(M\),P,\(x\),\(t\)) 的 Boltzmann-like kinetic equation；在时标分离与 Gaussian closure 下推导 policy mean \(\mu\) 和 diversity σ² 的 hydrodynamics。</li><li>理论揭示 adaptation rate 与 density×diversity 成正比，mutation 维持 policy diversity；learning time τL 与 steady diversity 满足 τL \(\sigma\)∞²=\(\lambda0^{-1}\) 的 tradeoff。</li></ul></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 03</span>
+    <span class="reading-step-note">背景</span>
+  </div>
+  <h2>背景</h2>
+  <div class="reading-card-content"><ul><li>smart active matter 不仅自驱，还能 sensing、communicating、adapting；大规模微机器人/软机器人要求从局部规则推到宏观 policy distribution 的统计物理描述。</li><li>reward 只由个体 memory R(\(M\)) 评估，agent 只比较 reward difference，没有 centralized parameter server 或绝对 reward calibration。</li><li>memory time τM 用来从快涨落 G(S) 提取长期行为；teaching time τT 更慢。主 closure 假设 τG≪τM≪τT，使每次 policy 更新前 memory 已接近固定-policy steady state。</li></ul></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 04</span>
+    <span class="reading-step-note">模型与方法</span>
+  </div>
+  <h2>模型与方法</h2>
+  <div class="reading-card-content"><ul><li>teacher probability pT=(1+tanh[αT(Ri−Rn)])/2；student 完整复制 teacher 的 P/\(M\)，另有 policy-space diffusion Dmut 模拟 mutation。</li><li>kinetic equation \(\partial tf\)=Iphys+Imem+Ilearn，teaching collision integral双线性依赖 \(f\)；约化到 φ0(P,\(x\),\(t\)) 后，用 Gaussian moments描述 density \(\rho\)、mean \(\mu\) 与 variance σ²。</li><li>对 uniform fields 得 dμ/dt=ρσ²F1、dσ²/dt=2Dmut−\(\rho\sigma^{4F2}\)；\(F_{1}\)/\(F_{2}\) 由具体物理 model 的 \(policy\to memory\) response 决定。</li><li>Model 1 的 phototactic swimmer 让 policy \(P=D\theta\) 控制 rotational diffusion，reward −(\(M\)−VT)² 追踪 target \(x\) velocity；Model 2 的一维 robot policy \(\chi\) 控制 \(v(I)=max(v_{0}−\chiI,vmin)\)，reward 为平均采光。</li><li>space-dependent target 额外包含 physical advection，使 local optimal policy 与实际 response 有 phase lag；其大小由 advection time τA 与 learning time τL 比值决定。</li></ul></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 05</span>
+    <span class="reading-step-note">核心结果与证据</span>
+  </div>
+  <h2>核心结果与证据</h2>
+  <div class="reading-card-content"><ul><li>无 mutation 时 σ²~1/[λ0(τ0+\(t\))] 衰减、\(\mu\) 代数接近 optimum；Dmut>0 时 \(\sigma\)∞²=sqrt(2Dmut/λ0)，\(\mu\) 以 τL=(2Dmutλ0)^−1/2 收敛。</li><li>由此 τLσ∞²=λ0^−1：提高 mutation 加快 adaptation，却放大 steady policy/collective-output fluctuations；这不是量子不确定性，而是本模型 closure 下的学习–多样性 tradeoff。</li><li>Figure 2 中 kinetic theory 与 agent simulation 的 \(\mu\)(\(t\))、σ²(\(t\))吻合；对设定 \(Dmut=0.1\) 拟合得 \(0.094\pm 0.002\)，λ0 fit=(\(2.65\pm 0.01\))×10^-4，对应 simulation 2.655×10^-4。</li><li>Figure 3 的 sinusoidal VT(\(x\)) 中小 mutation 导致 τL≫τA、response lag/attenuation更大；理论对 mutation-dependent amplitude/phase 与 agent simulations 一致。</li><li>Figure 4 的 light robot：\(Dmut=0\) 时 \(\mu\to reward\) maximum \(\chiT\approx 1.09\)；Dmut>0 由于 reward curve asymmetric，finite diversity 把 mean 推到 χT 右侧，四阶 expansion 给定量预测。</li><li>结果主要比较 ensemble averages 与 moment curves；并没有报告在真实通信丢包、异步硬件、有限电量下的性能。</li></ul></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 06</span>
+    <span class="reading-step-note">有效性与局限</span>
+  </div>
+  <h2>有效性与局限</h2>
+  <div class="reading-card-content"><ul><li>闭合依赖 weak inter-agent correlations、Gaussian \(M\)/P distribution、局部 communication、teaching probability/memory response expansion 与严格时标分离；结论明确不能定量覆盖强 many-body interactions/correlations。</li><li>复制 policy+memory 的 binary rule 比实际 decentralized RL/robot learning简单；没有 partial policy update、gradient sharing、delays、adversarial agents 或 communication noise。</li><li>uncertainty relation 的 λ0 含 density、teaching sharpness 与 local response derivative，且源于 convex fitness/asymptotic closure；不应宣称对所有 decentralized learning universal。</li><li>Model 1 physical particles互不作用，collectivity只来自 information exchange；Model 2 也是非相互作用机器人，复杂 active-matter phase behavior尚未测试。</li><li>reward 由设计者给定；论文结论把如何反向设计能产生目标 collective behavior 的 reward 列为未来高层学习问题。</li></ul></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 07</span>
+    <span class="reading-step-note">复现与资源</span>
+  </div>
+  <h2>复现与资源</h2>
+  <div class="reading-card-content"><ul><li>复现先实现 event-level agent simulation和 kinetic moment ODE 两条独立路径；保存每次 teacher/student、neighbor count、policy/memory与 reward，避免只比较最终均值。</li><li>Model 1 主参数：\(\tauB=0.004\)、\(\sigmaB=0.1\)、\(\tauM=1\)、\(\tauT=100\)、\(v_{0}=1\)、\(D_{0}=10^-4\)、\(\alphaT=10\)、\(N=10\),000、density 100、\(dt=0.002\)、\(rc=1\)/\(\sqrt \pi\)；Fig. 3 用 \(Lx=100\)/\(N=10^{5}\)。</li><li>Model 2：\(\DeltaL=10^-3\)、\(\tauM=1\)、\(\tauT=100\)、\(v_{0}=1\)、\(vmin=0.01\)、\(D_{0}=0\)、\(\alphaT=10\)、\(N=10\),000、\(L=100\)、\(dt=10^-4\)、\(rc=0.5\)。</li><li>必须 sweep Dmut、density 与 τM/τT，报告 theory–simulation residual 和 non-Gaussian policy moments；否则无法验证 closure 的有效域。</li><li>本站 PDF SHA-256：2a59fe8860f311857c5e4e515f6cae72f59c6739884c861899ce16ce7db5b633。</li><li>Evidence status: full-text verified; no independent reproduction performed.</li></ul></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 08</span>
+    <span class="reading-step-note">阅读指南</span>
+  </div>
+  <h2>阅读指南</h2>
+  <div class="reading-card-content"><ul><li>先读 Eqs. (1)–(4)，画出 \(state\to memory\to reward\to teaching\to policy\) 的反馈环，确认 learning collision 与物理 collision 不同。</li><li>再读 Eqs. (10)–(13) 和 Figures 2–3，理解 density/diversity 控制 adaptation 与 mutation tradeoff。</li><li>最后读 Conclusion 与 Supplemental numerical details，逐项检查 Gaussian/时标/弱相关假设，再判断能否映射到具体机器人系统。</li></ul></div>
+</section></article>
+        <aside id="detail-toc" class="detail-toc hidden" aria-label="内容目录">
+          <p class="detail-toc-title">阅读目录</p>
+          <nav id="detail-toc-nav" class="detail-toc-nav"></nav>
+        </aside>
+      </div>
+      <nav class="paper-nav"><a class="paper-nav-link paper-nav-prev" href="../../collection-papers/2501.03575/"><span class="paper-nav-label">← 上一篇</span><span class="paper-nav-title">Cosmos World Foundation Model Platform for Physical AI</span></a>
+      <a class="paper-nav-link paper-nav-next" href="../../collection-papers/2501.09064/"><span class="paper-nav-label">下一篇 →</span><span class="paper-nav-title">Generative diffusion model with inverse renormalization group flows</span></a></nav>
+    </main>
+
+    <footer class="footer">
+      <div class="container">
+        <p>内容来自 <a href="https://arxiv.org" target="_blank" rel="noopener noreferrer">arXiv.org</a>，阅读卡片由静态站点生成器构建。</p>
+      </div>
+    </footer>
+
+    <script src="../../assets/theme.js"></script>
+    <script src="../../assets/media.js"></script>
+    <script src="../../assets/paper.js"></script>
+  </body>
+</html>
