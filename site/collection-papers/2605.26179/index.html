@@ -122,7 +122,7 @@
     <span class="reading-step-note">研究问题</span>
   </div>
   <h2>研究问题</h2>
-  <div class="reading-card-content"><ul><li>真实 DFT 工作流不是一次性写好 INCAR 后等待结束：SCF 不收敛、磁态或金属性交替、结构对称性破缺、k-point 不足以及中间物理发现都会迫使研究者改参数或改计划。论文问：LLM agent 能否在每一步读取 VASP 证据、恢复失败并重排后续计算，而不只生成开环脚本？</li><li>AutoDFT 把自动化目标定义为端到端任务成功和可用物性，而不是“输入文件能生成”或“VASP 进程退出为零”。</li></ul></div>
+  <div class="reading-card-content"><ul><li>真实 DFT 工作流不是一次性写好 INCAR 后等待结束：SCF 不收敛、磁态或金属性交替、结构对称性破缺、\(k\)-point 不足以及中间物理发现都会迫使研究者改参数或改计划。论文问：LLM agent 能否在每一步读取 VASP 证据、恢复失败并重排后续计算，而不只生成开环脚本？</li><li>AutoDFT 把自动化目标定义为端到端任务成功和可用物性，而不是“输入文件能生成”或“VASP 进程退出为零”。</li></ul></div>
 </section>
 <section class="reading-card reading-card-section">
   <div class="reading-card-topline">
@@ -130,7 +130,7 @@
     <span class="reading-step-note">背景</span>
   </div>
   <h2>背景</h2>
-  <div class="reading-card-content"><ul><li>DFT 的可靠性来自电子结构问题、数值离散和工作流因果链共同闭合。以表面 spin-PDOS 为例，slab relaxation、磁性 SCF、CHGCAR 复用、NSCF、k-point refinement 与最终投影态密度相互依赖；早期错误会在后续产生看似平滑但物理错误的谱。</li><li>开环 agent 在规划时一次性固定全部参数，后续仅用规则恢复。AutoDFT 采用 skeletal plan：先规定每步目标和成功条件，具体数值参数到执行前才结合 history 决定。</li></ul></div>
+  <div class="reading-card-content"><ul><li>DFT 的可靠性来自电子结构问题、数值离散和工作流因果链共同闭合。以表面 spin-PDOS 为例，slab relaxation、磁性 SCF、CHGCAR 复用、NSCF、\(k\)-point refinement 与最终投影态密度相互依赖；早期错误会在后续产生看似平滑但物理错误的谱。</li><li>开环 agent 在规划时一次性固定全部参数，后续仅用规则恢复。AutoDFT 采用 skeletal plan：先规定每步目标和成功条件，具体数值参数到执行前才结合 history 决定。</li></ul></div>
 </section>
 <section class="reading-card reading-card-section">
   <div class="reading-card-topline">
@@ -146,7 +146,7 @@
     <span class="reading-step-note">核心结果与证据</span>
   </div>
   <h2>核心结果与证据</h2>
-  <div class="reading-card-content"><ul><li>Figure 1 用 Ni(100) slab 展示闭环为何必要：开环方案把表面当 bulk-like 3D、遗漏磁性、错误复用 charge density 并在 PDOS 前失败；闭环检测金属性/磁性、重做 SCF 与 CHGCAR、发现近 Fermi 能带峰后细化 k-mesh，最终得到层分辨 spin-PDOS。</li><li>VASPBench 上 GPT-5.2 full system 成功 32/\(34=94.1\)%，open-loop 28/\(34=82.4\)%，rule-based 23/\(34=67.6\)%。最大增益出现在 phonon DFPT（full 100%，rule 0%，open 50%）和 molecular dynamics 等多阶段任务。</li><li>20-material 评估给出 band gap、magnetic moment 和 formation energy 相对 Materials Project PBE 的 MAE；但 Table 2 只在成功完成且提取到预测的任务上计算，各 backbone 的 n 不同，因此 MAE 必须与 completion rate 一起读。</li><li>Table 3 的 counterfactual audit 统计成功任务是否实际使用 LLM recovery、monitor termination 或 plan modification，支持闭环组件参与了部分成功；它仍是基于执行日志的归因，不是逐任务随机消融。</li></ul><figure class="evidence-figure">
+  <div class="reading-card-content"><ul><li>Figure 1 用 Ni(100) slab 展示闭环为何必要：开环方案把表面当 bulk-like 3D、遗漏磁性、错误复用 charge density 并在 PDOS 前失败；闭环检测金属性/磁性、重做 SCF 与 CHGCAR、发现近 Fermi 能带峰后细化 \(k\)-mesh，最终得到层分辨 spin-PDOS。</li><li>VASPBench 上 GPT-5.2 full system 成功 32/\(34=94.1\)%，open-loop 28/\(34=82.4\)%，rule-based 23/\(34=67.6\)%。最大增益出现在 phonon DFPT（full 100%，rule 0%，open 50%）和 molecular dynamics 等多阶段任务。</li><li>20-material 评估给出 band gap、magnetic moment 和 formation energy 相对 Materials Project PBE 的 MAE；但 Table 2 只在成功完成且提取到预测的任务上计算，各 backbone 的 \(n\) 不同，因此 MAE 必须与 completion rate 一起读。</li><li>Table 3 的 counterfactual audit 统计成功任务是否实际使用 LLM recovery、monitor termination 或 plan modification，支持闭环组件参与了部分成功；它仍是基于执行日志的归因，不是逐任务随机消融。</li></ul><figure class="evidence-figure">
   <button class="evidence-figure-image-button" type="button" aria-label="放大查看 Figure 1" onclick="window.openPaperFigureImage && window.openPaperFigureImage(this.querySelector('img'))">
     <img class="paper-figure-image evidence-figure-image" src="../../assets/collection-figures/2605.26179/figure-1-closed-loop-dft.webp" alt="上部对比固定和自适应执行环，下部展示 Ni slab 与 spin-resolved DOS。" loading="lazy" />
   </button>

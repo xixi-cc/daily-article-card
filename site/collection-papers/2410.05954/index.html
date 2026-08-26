@@ -138,7 +138,7 @@
     <span class="reading-step-note">模型与方法</span>
   </div>
   <h2>模型与方法</h2>
-  <div class="reading-card-content"><ul><li>基础连续动力学为</li><li>\[\frac{d x_t}{dt}=v_t(x_t),\qquad x_t=t x_1+(1-t)x_0.\]</li><li>区间 [0,1] 被分成 K 个 stage；第 k 段只在相邻两级分辨率之间插值。作者耦合每段端点所用的噪声方向，再用统一损失回归段内位移：</li><li>\[\mathcal L_{\mathrm{pyr}}=\mathbb E_{k,t}\left\|v_t(\hat x_t)-(\hat x_{e_k}-\hat x_{s_k})\right\|^2.\]</li><li>推断跨 stage 时，上采样会产生块内强相关。方法对均值作 rescaling，并加入具有负块内相关的 corrective noise，使跳点前后的高斯边缘分布连续。时间金字塔则让较早历史帧以更低空间分辨率进入 causal attention。</li></ul></div>
+  <div class="reading-card-content"><ul><li>基础连续动力学为</li><li>\[\frac{d x_t}{dt}=v_t(x_t),\qquad x_t=t x_1+(1-t)x_0.\]</li><li>区间 [0,1] 被分成 \(K\) 个 stage；第 \(k\) 段只在相邻两级分辨率之间插值。作者耦合每段端点所用的噪声方向，再用统一损失回归段内位移：</li><li>\[\mathcal L_{\mathrm{pyr}}=\mathbb E_{k,t}\left\|v_t(\hat x_t)-(\hat x_{e_k}-\hat x_{s_k})\right\|^2.\]</li><li>推断跨 stage 时，上采样会产生块内强相关。方法对均值作 rescaling，并加入具有负块内相关的 corrective noise，使跳点前后的高斯边缘分布连续。时间金字塔则让较早历史帧以更低空间分辨率进入 causal attention。</li></ul></div>
 </section>
 <section class="reading-card reading-card-section">
   <div class="reading-card-topline">
@@ -146,7 +146,7 @@
     <span class="reading-step-note">核心结果与证据</span>
   </div>
   <h2>核心结果与证据</h2>
-  <div class="reading-card-content"><ul><li>Figure 2 是机制核心：左侧把噪声到图像的路径分成逐级增分辨率的 stage；右侧在 jump point 上采样后重新加噪，以消除复制像素造成的块内相关并接入下一段概率流。</li><li>复杂度估算中，全序列 DiT 对 T 帧、每帧 N tokens 使用 TN tokens 与 T²N² attention 量；时间金字塔把最终 stage 的量级压到约 TN/4^K 和 T²N²/16^K。该式是架构计数，不等于端到端 wall-clock 加速。</li><li>作者报告用 20.7k \(A_{100}\) GPU-hours 训练 2B 模型，生成 5 秒（可到 10 秒）、768p、24 fps 视频；384p、5 秒样本推断约 56 秒。VBench 总分 81.72、质量分 84.74、语义分 69.62，显示质量强但语义指标并非表中最高。</li><li>Figure 7 的受控 image baseline 保持数据、token/batch、架构与超参数一致，空间金字塔的 FID 收敛约快三倍；Figure 8 的时间金字塔在相同步数下比 full-sequence baseline 更接近收敛。这些消融支持训练效率，而不是证明所有视频分布都服从同一加速比。</li></ul><figure class="evidence-figure">
+  <div class="reading-card-content"><ul><li>Figure 2 是机制核心：左侧把噪声到图像的路径分成逐级增分辨率的 stage；右侧在 jump point 上采样后重新加噪，以消除复制像素造成的块内相关并接入下一段概率流。</li><li>复杂度估算中，全序列 DiT 对 \(T\) 帧、每帧 \(N\) tokens 使用 TN tokens 与 T²N² attention 量；时间金字塔把最终 stage 的量级压到约 TN/4^\(K\) 和 T²N²/16^\(K\)。该式是架构计数，不等于端到端 wall-clock 加速。</li><li>作者报告用 20.7k \(A_{100}\) GPU-hours 训练 2B 模型，生成 5 秒（可到 10 秒）、768p、24 fps 视频；384p、5 秒样本推断约 56 秒。VBench 总分 81.72、质量分 84.74、语义分 69.62，显示质量强但语义指标并非表中最高。</li><li>Figure 7 的受控 image baseline 保持数据、token/batch、架构与超参数一致，空间金字塔的 FID 收敛约快三倍；Figure 8 的时间金字塔在相同步数下比 full-sequence baseline 更接近收敛。这些消融支持训练效率，而不是证明所有视频分布都服从同一加速比。</li></ul><figure class="evidence-figure">
   <button class="evidence-figure-image-button" type="button" aria-label="放大查看 Figure 2" onclick="window.openPaperFigureImage && window.openPaperFigureImage(this.querySelector('img'))">
     <img class="paper-figure-image evidence-figure-image" src="../../assets/collection-figures/2410.05954/figure-2-spatial-pyramid.webp" alt="左侧显示从低分辨率噪声逐级生成高清图像的空间金字塔，右侧显示跨分辨率跳点的上采样与修正加噪。" loading="lazy" />
   </button>

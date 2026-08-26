@@ -27,6 +27,10 @@ class MathTypographyTests(unittest.TestCase):
         self.assertIn(r"\(\partial A(x_{0})\)", rendered)
         self.assertIn(r"\(\nabla f\)", rendered)
 
+    def test_wraps_common_standalone_variables(self) -> None:
+        rendered = normalize_inline_math_notation("表示 T 对输入 X 和标签 Y 的信息。")
+        self.assertEqual(rendered, r"表示 \(T\) 对输入 \(X\) 和标签 \(Y\) 的信息。")
+
 
 if __name__ == "__main__":
     unittest.main()
