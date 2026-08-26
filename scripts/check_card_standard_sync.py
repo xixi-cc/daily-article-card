@@ -47,7 +47,15 @@ def main() -> int:
     ))
     errors.extend(require(
         ROOT / "scripts" / "build_site.py",
-        ('record["cover_mode"]', "render_source_cover", "render_note_cover"),
+        ('record["cover_mode"]', "render_source_cover", "render_note_cover", "normalize_inline_math_notation"),
+    ))
+    errors.extend(require(
+        ROOT / "scripts" / "math_typography.py",
+        ("AUTO_MATH_RE", "normalize_inline_math_notation", "to_latex"),
+    ))
+    errors.extend(require(
+        ROOT / "scripts" / "modern_ui.css",
+        ("font-size: 17px", "font-size: 1.08em", "color: var(--text)"),
     ))
     errors.extend(require(
         ROOT / ".github" / "workflows" / "deploy.yml",

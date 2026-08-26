@@ -22,6 +22,11 @@ from pathlib import Path
 from typing import Dict, List
 
 try:
+    from scripts.math_typography import normalize_inline_math_notation
+except ModuleNotFoundError:  # Direct execution: python3 scripts/build_site.py
+    from math_typography import normalize_inline_math_notation
+
+try:
     from PIL import Image
     HAS_PIL = True
 except ImportError:
@@ -220,6 +225,7 @@ def markdown_to_html(md: str) -> str:
     html_lines: List[str] = []
 
     def render_inline(text: str) -> str:
+        text = normalize_inline_math_notation(text)
         text = re.sub(r"`([^`]+)`", r"<code>\1</code>", text)
         text = re.sub(r"\*\*([^*]+)\*\*", r"<strong>\1</strong>", text)
         text = re.sub(

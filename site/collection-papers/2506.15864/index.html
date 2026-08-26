@@ -122,7 +122,7 @@
     <span class="reading-step-note">研究问题</span>
   </div>
   <h2>研究问题</h2>
-  <div class="reading-card-content"><ul><li>Rectified Flow 用 unconstrained neural field v_theta(x,t) 逼近线性插值速度。有限数据/网络下，它可能违反 t=0 或 t=1 的解析 boundary conditions；ODE 采样尚可容忍，但从 velocity 转 score 的除法会在边界放大误差。</li><li>论文问能否用最小代码改动把端点条件写进参数化，使确定性 ODE 和带随机性的 SDE/overshooting sampler 都更稳定。</li></ul></div>
+  <div class="reading-card-content"><ul><li>Rectified Flow 用 unconstrained neural field \(v_{\mathrm{theta}}\)(x,t) 逼近线性插值速度。有限数据/网络下，它可能违反 \(t=0\) 或 \(t=1\) 的解析 boundary conditions；ODE 采样尚可容忍，但从 velocity 转 score 的除法会在边界放大误差。</li><li>论文问能否用最小代码改动把端点条件写进参数化，使确定性 ODE 和带随机性的 SDE/overshooting sampler 都更稳定。</li></ul></div>
 </section>
 <section class="reading-card reading-card-section">
   <div class="reading-card-topline">
@@ -130,7 +130,7 @@
     <span class="reading-step-note">背景</span>
   </div>
   <h2>背景</h2>
-  <div class="reading-card-content"><ul><li>在线性 interpolation x_t=(1-t)x_0+t x_1 下，端点 conditional velocity 有已知结构。vanilla network 对全时间域自由拟合，不保证边界极限；score reconstruction 常含 1/t 或 1/(1-t) 因子。</li><li>边界约束类似 numerical PDE 中的 hard ansatz：用 time-dependent mask 或 subtract boundary residual，让网络只学习满足端点后剩余的自由函数。</li></ul></div>
+  <div class="reading-card-content"><ul><li>在线性 interpolation \(x_{t}\)=(1-t)\(x_{0}\)+t \(x_{1}\) 下，端点 conditional velocity 有已知结构。vanilla network 对全时间域自由拟合，不保证边界极限；score reconstruction 常含 1/t 或 1/(1-t) 因子。</li><li>边界约束类似 numerical PDE 中的 hard ansatz：用 time-dependent mask 或 subtract boundary residual，让网络只学习满足端点后剩余的自由函数。</li></ul></div>
 </section>
 <section class="reading-card reading-card-section">
   <div class="reading-card-topline">
@@ -138,7 +138,7 @@
     <span class="reading-step-note">模型与方法</span>
   </div>
   <h2>模型与方法</h2>
-  <div class="reading-card-content"><ul><li>Mask-based model 用 f(t),g(t),h(t) 组合已知端点项与可学习 m_theta，使 t=0/1 自动满足；subtraction-based model 从 vanilla prediction 减去在边界的违反量，保持架构和训练流程基本不变。</li><li>toy mixture 显示 vanilla score near boundary 发散；Boundary RF field 保持正确终点。CIFAR-10/ImageNet-256/512 比较 ODE Euler、SDE 与 overshooting samplers。</li><li>消融单边/双边约束、不同 boundary functions、step counts 和 stochasticity c；FLUX.1-dev 端点预测用于说明 pretrained large flow 也存在 violation，但论文没有重训 FLUX。</li></ul></div>
+  <div class="reading-card-content"><ul><li>Mask-based model 用 f(t),g(t),h(t) 组合已知端点项与可学习 \(m_{\mathrm{theta}}\)，使 \(t=0\)/1 自动满足；subtraction-based model 从 vanilla prediction 减去在边界的违反量，保持架构和训练流程基本不变。</li><li>toy mixture 显示 vanilla score near boundary 发散；Boundary RF field 保持正确终点。CIFAR-10/ImageNet-256/512 比较 ODE Euler、SDE 与 overshooting samplers。</li><li>消融单边/双边约束、不同 boundary functions、step counts 和 stochasticity c；FLUX.1-dev 端点预测用于说明 pretrained large flow 也存在 violation，但论文没有重训 FLUX。</li></ul></div>
 </section>
 <section class="reading-card reading-card-section">
   <div class="reading-card-topline">
@@ -146,7 +146,7 @@
     <span class="reading-step-note">核心结果与证据</span>
   </div>
   <h2>核心结果与证据</h2>
-  <div class="reading-card-content"><ul><li>Figure 2 把 Euler、stochastic trajectory、t=1 velocity field 与 score function 并列：vanilla 在边界形成异常流和发散 score，Boundary RF 保持目标几何并允许更强随机采样。</li><li>ImageNet 上相对 vanilla，作者报告 ODE FID 改善 8.01%，SDE FID 改善 8.98%；多 step counts 与 256/512 设置总体一致。改善应看 absolute FID、precision/recall 与相同训练 seed，而不只百分比。</li><li>Figure 4/7 的 paired samples 显示边界模型的结构和细节更清楚；Table 3 随 overshooting noise c 增大时，boundary variants 更稳，支持“边界误差被随机采样放大”的机制。</li></ul><figure class="evidence-figure">
+  <div class="reading-card-content"><ul><li>Figure 2 把 Euler、stochastic trajectory、\(t=1\) velocity field 与 score function 并列：vanilla 在边界形成异常流和发散 score，Boundary RF 保持目标几何并允许更强随机采样。</li><li>ImageNet 上相对 vanilla，作者报告 ODE FID 改善 8.01%，SDE FID 改善 8.98%；多 step counts 与 256/512 设置总体一致。改善应看 absolute FID、precision/recall 与相同训练 seed，而不只百分比。</li><li>Figure 4/7 的 paired samples 显示边界模型的结构和细节更清楚；Table 3 随 overshooting noise c 增大时，boundary variants 更稳，支持“边界误差被随机采样放大”的机制。</li></ul><figure class="evidence-figure">
   <button class="evidence-figure-image-button" type="button" aria-label="放大查看 Figure 2" onclick="window.openPaperFigureImage && window.openPaperFigureImage(this.querySelector('img'))">
     <img class="paper-figure-image evidence-figure-image" src="../../assets/collection-figures/2506.15864/figure-2-boundary-stability.webp" alt="两行多列的分布轨迹和矢量场。" loading="lazy" />
   </button>
