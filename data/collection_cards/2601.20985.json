@@ -1,0 +1,168 @@
+{
+  "arxiv_id": "2601.20985",
+  "source_version": "v2",
+  "source_pdf": "https://arxiv.org/pdf/2601.20985",
+  "title_en": "Distributional Active Inference",
+  "title_zh": "分布式主动推断：无需显式动力学模型",
+  "curation_status": "full_text_verified",
+  "sections": [
+    {
+      "title": "作者信息",
+      "bullets": [
+        "作者：Abdullah Akgul、Gulcin Baykal、Manuel Haussmann、Mustafa Mert Celikok、Melih Kandemir。",
+        "研究机构：University of Southern Denmark。",
+        "来源：ICML；年份：2026；主题：主动推断、分布式强化学习、控制。",
+        "本文按本地全文快照制作，官方元数据核验版本为 2601.20985v2。"
+      ]
+    },
+    {
+      "title": "摘要",
+      "bullets": [
+        "本文的论证主线由以下经过全文核验的节点构成：主动推断的优势为何难以进入现代 RL？；回报分布是策略轨迹测度的 push-forward；DAIF：在概率嵌入空间做分位数匹配；push-forward 视角把回报分布解释为策略轨迹的测度映射；概率状态抽象让主动推断信息进入 model-free 分布式 RL；19 环境结果显示一致排名优势，代价是中等额外计算。",
+        "卡片内容来自已完成冷读与逐页检查的 paper_presentation.json，并回链到原论文页码、图或公式。"
+      ]
+    },
+    {
+      "title": "背景",
+      "bullets": [
+        "论证节点“主动推断的优势为何难以进入现代 RL？”。",
+        "经典 AIF 依靠受控生成模型做前瞻推断，显式动力学建模成本高。",
+        "分布式 RL 学习完整回报分布，其中隐含未来转移与风险信息。",
+        "论文提出 push-forward RL，把策略诱导轨迹测度经回报泛函推送为回报分布。",
+        "由此可把 AIF 嵌入 model-free distributional RL，而不学习高保真前向模型。",
+        "关键桥梁不是再造世界模型，而是把回报分布解释为轨迹信息的压缩载体。",
+        "论文提出 push-forward RL 并以此连接 AIF 与分布式 RL。 （p. 1）",
+        "研究问题的表述以论文给出的对象和评价目标为边界；背景动机不自动构成方法有效性的证据。"
+      ]
+    },
+    {
+      "title": "模型与方法",
+      "bullets": [
+        "论证节点“回报分布是策略轨迹测度的 push-forward”。",
+        "设定：$\\mathbb P_\\pi$ 为策略诱导轨迹测度，$G$ 为回报泛函",
+        "关键关系：Z_\\pi &= G_{\\#}\\mathbb P_\\pi \\\\ \\mathcal T^\\pi Z &\\stackrel{D}{=} R+\\gamma Z(S',A')",
+        "推导含义：push-forward 把整条轨迹压缩为随机回报；分布 Bellman 更新保持该对象。",
+        "结论边界：这使 model-based 与 model-free policy iteration 可在同一测度语言下比较。",
+        "push-forward policy iteration 与分布 Bellman 关系。 （p. 5; equation Theorem 3.2; main.tex）",
+        "论证节点“DAIF：在概率嵌入空间做分位数匹配”。",
+        "编码器为每个 state-action 输出概率嵌入，形成可学习的潜在状态抽象。",
+        "目标回报分布通过 temporal-difference quantile matching 更新。",
+        "主动推断项把偏好与后验不确定性注入分布式 actor--critic。",
+        "实现保留 model-free 训练流程，只增加约 $12\\%$ 墙钟开销。",
+        "AIF 组件以分布目标和潜在瓶颈出现，而不是额外训练一个显式 transition model。",
+        "DAIF 算法与计算开销。 （p. 7; algos/daif.tex）",
+        "论证节点“收益集中在高维与复杂动力学任务”。",
+        "EvoGym、DMC、DMC Vision 分别含 7、7、5 个环境。",
+        "DAIF 的 AULC 平均排名分别为 $1.5,1.6,1.9$，均小于对比方法。",
+        "最终回报平均排名分别为 $1.6,1.5,2.0$。",
+        "相对 DTD3 的约 $12\\%$ 开销低于 DSAC 的 $26\\%$ 和 DRND 的 $37\\%$。",
+        "实验支持“抽象有用时 DAIF 增益更大”，但并非每个环境都显著提升。",
+        "Table 1 排名与墙钟开销比较。 （p. 9）",
+        "方法部分按 presentation 中的数学关系、算法结构或实验设计重述；公式只在相应证据页定义的符号与条件下成立。"
+      ]
+    },
+    {
+      "title": "核心结果与证据",
+      "bullets": [
+        "Fig. 1：概率编码器把观测归并为潜在等价类；分布式 RL 在潜空间进行无限时域规划。",
+        "证据解释：DAIF 用回报分布上的自由能目标同时约束状态抽象和策略优化。",
+        "DAIF 概念框架。 （p. 2; figure Fig. 1）",
+        "Fig. 3 / Table 1：19 个连续控制环境：EvoGym、DMC 与 DMC Vision；按重复实验分别排名。",
+        "证据解释：DAIF 在三套基准的 AULC 与最终回报平均排名均领先，困难任务曲线优势最明显。",
+        "19 个环境上的排名和代表性学习曲线。 （p. 9; figure Fig. 3）",
+        "证据状态：上述结论均来自逐页审阅后的 presentation manifest；这里只确认论文原文支持，不把作者实验视为本站独立复现。"
+      ]
+    },
+    {
+      "title": "有效性与局限",
+      "bullets": [
+        "论证节点“它是 AIF 的一种嵌入，不是完整 canonical AIF”。",
+        "DAIF 没有显式 EFE，也未分离 epistemic 与 instrumental value。",
+        "认知不确定性通过 Inverse-Gamma 后验隐式进入，而非显式信息增益。",
+        "潜在瓶颈维数由架构预设，没有自动优化。",
+        "有限样本性质仍是开放问题，保证主要继承自分布式 RL。",
+        "性能结果不能被扩张为“完整主动推断理论已被验证”。",
+        "作者明确列出 DAIF 与 canonical AIF 的差异。 （p. 9）",
+        "论证节点“DAIF 的贡献是找到一条低成本工程入口”。",
+        "push-forward 视角把回报分布解释为策略轨迹的测度映射。",
+        "概率状态抽象让主动推断信息进入 model-free 分布式 RL。",
+        "19 环境结果显示一致排名优势，代价是中等额外计算。",
+        "理论与实证支持的是这一特定嵌入，不是 AIF 全部主张。",
+        "分布式 RL 提供了不建显式世界模型也能测试主动推断思想的实验平台。",
+        "论文 takeaways 与开放问题。 （p. 9）",
+        "适用边界以卡片列出的目标、假设、数据集或物理参数区间为准；未在原文证据中出现的外推不计入论文结论。",
+        "该卡完成的是全文证据审计，未重新运行训练、仿真或实验，因此不能据此声称独立复现、稳健性复核或跨任务泛化。"
+      ]
+    },
+    {
+      "title": "复现与资源",
+      "bullets": [
+        "原文：https://arxiv.org/abs/2601.20985；PDF：https://arxiv.org/pdf/2601.20985。",
+        "本地证据源：2601.20985/source/paper.pdf；SHA-256：9413c1f50e8eb23bcd4d7199f1e48fa0961a007cbc339edbcee45b2415e303bf。",
+        "来源格式：tex；来源包状态：downloaded；presentation 证据条目数：8。",
+        "presentation 及其质量报告保留了页面审阅、编译和冷读状态；它们用于追溯卡片，不等同于作者代码或数据已公开。",
+        "Evidence status: full-text verified; no independent reproduction performed."
+      ]
+    },
+    {
+      "title": "阅读指南",
+      "bullets": [
+        "快速阅读可先看证据页 1, 2, 5, 7, 9，这些页覆盖问题、方法与主要结论。",
+        "图证据优先查看 Fig. 1；结合图注和正文，不只依据视觉趋势下结论。",
+        "公式链优先查看 Theorem 3.2；核对符号、假设与前后推导。",
+        "建议按“研究问题 → 方法/数学对象 → 证据 → 局限”的顺序阅读，避免从摘要直接跳到强结论。",
+        "若要复现，先从证据引用恢复具体设置，再补齐随机种子、计算资源、评价指标和失败案例。"
+      ]
+    }
+  ],
+  "evidence_refs": [
+    "paper.pdf pages 1, 2, 5, 7, 9: page-addressable claims",
+    "paper_presentation.json: 8 substantive slides and 8 evidence entries",
+    "source-provenance.json: PDF SHA-256 9413c1f50e8eb23bcd4d7199f1e48fa0961a007cbc339edbcee45b2415e303bf",
+    "Evidence status: full-text verified; no independent reproduction performed."
+  ],
+  "verified_metadata": {
+    "arxiv_id": "2601.20985",
+    "version": "v2",
+    "title": "Distributional Active Inference",
+    "abstract": "Optimal control of complex environments with robotic systems faces two complementary and intertwined challenges: efficient organization of sensory state information and far-sighted action planning. Because the reinforcement learning framework addresses only the latter, it tends to deliver sample-inefficient solutions. Active inference is the state-of-the-art process theory that explains how biological brains handle this dual problem. However, its applications to artificial intelligence have thus far been limited to extensions of existing model-based approaches. We present a formal abstraction of reinforcement learning algorithms that spans model-based, distributional, and model-free approaches. This abstraction seamlessly integrates active inference into the distributional reinforcement learning framework, making its performance advantages accessible without transition dynamics modeling.",
+    "authors": [
+      "Abdullah Akgül",
+      "Gulcin Baykal",
+      "Manuel Haußmann",
+      "Mustafa Mert Çelikok",
+      "Melih Kandemir"
+    ],
+    "categories": [
+      "cs.LG"
+    ],
+    "primary_category": "cs.LG",
+    "published": "2026-01-28T19:36:33Z",
+    "comment": ""
+  },
+  "card_standard_version": "2.3",
+  "paper_profile": "theory_experiment",
+  "style_reference": "physicist_daily_arxiv",
+  "provenance": {
+    "program": "Collection",
+    "catalog": "Paper Collection",
+    "catalog_record_id": "9413c1f50e8eb23b",
+    "catalog_record_ids": [
+      "9413c1f50e8eb23b"
+    ],
+    "catalog_topic": "AI Agents",
+    "collection_date": "2026-08-23",
+    "sampled_at": "2026-08-26",
+    "selected_by": "full_collection_backfill",
+    "sampling_seed": "not_applicable_full_collection",
+    "candidate_count": 452,
+    "legacy_full_text_card": "2601.20985.json"
+  },
+  "equation_refs": [],
+  "figure_refs": [],
+  "cover": {
+    "mode": "title_abstract",
+    "abstract_text": "Optimal control of complex environments with robotic systems faces two complementary and intertwined challenges: efficient organization of sensory state information and far-sighted action planning. Because the reinforcement learning framework addresses only the latter, it tends to deliver sample-inefficient solutions. Active inference is the state-of-the-art process theory that explains how biological brains handle this dual problem. However, its applications to artificial intelligence have thus far been limited to extensions of existing model-based approaches. We present a formal abstraction of reinforcement learning algorithms that spans model-based, distributional, and model-free approaches. This abstraction seamlessly integrates active inference into the distributional reinforcement learning framework, making its performance advantages accessible without transition dynamics modeling.",
+    "selection_rationale": "该旧版全文证据包没有经过 v2.3 的逐图导出与图号核验；为避免错配图片，封面使用论文题目和经全文核对的摘要，关键论证保留在卡片正文中。"
+  }
+}

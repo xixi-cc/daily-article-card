@@ -1,0 +1,162 @@
+{
+  "arxiv_id": "2203.15556",
+  "source_version": "v1",
+  "source_pdf": "https://arxiv.org/pdf/2203.15556v1",
+  "title_en": "Training Compute-Optimal Large Language Models",
+  "title_zh": "训练计算最优的大语言模型",
+  "curation_status": "full_text_verified",
+  "verified_metadata": {
+    "arxiv_id": "2203.15556",
+    "version": "v1",
+    "title": "Training Compute-Optimal Large Language Models",
+    "abstract": "We investigate the optimal model size and number of tokens for training a transformer language model under a given compute budget. By training over 400 language models ranging from 70 million to over 16 billion parameters on 5 to 500 billion tokens, we find that for compute-optimal training, the model size and the number of training tokens should be scaled equally. We test this hypothesis by training Chinchilla with 70B parameters on 1.4 trillion tokens at the same compute budget as Gopher.",
+    "authors": [
+      "Jordan Hoffmann",
+      "Sebastian Borgeaud",
+      "Arthur Mensch",
+      "Elena Buchatskaya",
+      "Trevor Cai",
+      "Eliza Rutherford",
+      "Diego de Las Casas",
+      "Lisa Anne Hendricks",
+      "Johannes Welbl",
+      "Aidan Clark",
+      "Tom Hennigan",
+      "Eric Noland",
+      "Katie Millican",
+      "George van den Driessche",
+      "Bogdan Damoc",
+      "Aurelia Guy",
+      "Simon Osindero",
+      "Karen Simonyan",
+      "Erich Elsen",
+      "Jack W. Rae",
+      "Oriol Vinyals",
+      "Laurent Sifre"
+    ],
+    "categories": [
+      "cs.CL",
+      "cs.LG"
+    ],
+    "primary_category": "cs.CL",
+    "published": "2022-03-29T13:38:03Z"
+  },
+  "sections": [
+    {
+      "title": "作者信息",
+      "bullets": [
+        "作者团队来自DeepMind，共22人，第一作者Jordan Hoffmann。",
+        "官方快照：arXiv:2203.15556v1；主分类cs.CL，另含cs.LG；后通常称Chinchilla scaling论文。",
+        "研究对象是dense autoregressive Transformer、给定pretraining FLOPs下最小化语言模型loss；并非推理计算、延迟、数据采购成本或总生命周期成本的统一最优。"
+      ]
+    },
+    {
+      "title": "摘要",
+      "bullets": [
+        "在约400个70M–16B参数、5B–500B token的训练run上，三种拟合方法都认为compute增加时N与D应近似等比例扩展，即Nopt∝C^a、Dopt∝C^b且a≈b≈0.5。",
+        "由Gopher约5.76×10²³ FLOPs预算外推，建议约40–70B参数、1.4–1.5T tokens；作者训练70B Chinchilla 1.4T tokens，与280B/300B-token Gopher用相近训练compute。",
+        "Chinchilla在大量任务上优于Gopher且inference更便宜，但large-scale只有这一对关键比较，且训练配置并非只改N/D。"
+      ]
+    },
+    {
+      "title": "背景",
+      "bullets": [
+        "Kaplan scaling建议compute增长主要投向参数：10×compute时N约5.5×、D约1.8×；许多早期LLM因此维持约300B training tokens而扩大模型。",
+        "本文指出learning-rate cosine schedule若固定130B horizon，会让早期checkpoint loss偏高；把schedule length匹配目标token budget会改变短训练run的有效性估计。",
+        "compute-optimal定义为在FLOPs(N,D)=C约束下最小化smoothed training loss L(N,D)；论文称在其less-than-one-epoch regime中training loss是test loss的unbiased estimate。"
+      ]
+    },
+    {
+      "title": "模型与方法",
+      "bullets": [
+        "Approach 1对70M–10B模型各训练4种cycle lengths，平滑/插值全训练曲线，在1500个log-spaced FLOP点取loss envelope，再拟合Nopt、Dopt power laws。",
+        "Approach 2对9个6×10¹⁸–3×10²¹ IsoFLOP budgets训练多个size至对应token数，对每条loss-vs-N valley拟合parabola，再拟合frontier power law。",
+        "Approach 3拟合Lhat(N,D)=E+A/N^α+B/D^β；对log predicted/observed loss使用δ=10⁻3 Huber loss与L-BFGS，多初始化取best，约束C≈6ND解析求frontier。",
+        "Table 2 bootstrap为从数据80%重采样100次给10/90 percentiles；Approach 1 a=0.50、b=0.50，Approach 2 0.49/0.51，Approach 3 0.46/0.54。",
+        "Chinchilla 70B、80 layers、dmodel8192、key/value size128，batch1.5M→3M tokens、peak lr10⁻4；Gopher 280B同80层但dmodel16384、batch3M→6M、peak lr4×10⁻5。",
+        "Chinchilla用MassiveText但调整source mixture，AdamW替代Gopher的Adam，修改SentencePiece tokenizer，并改变mixed-precision optimizer state；因此不是严格N/D-only ablation。"
+      ]
+    },
+    {
+      "title": "核心结果与证据",
+      "bullets": [
+        "Table 2三方法均与Kaplan a=0.73、b=0.27明显不同；Approach 1 bootstrap区间约a 0.488–0.502、b 0.501–0.512，Approach 2更宽。",
+        "Approach 1 Table 3预测67B应在5.76×10²³ FLOPs见1.5T tokens；280B要约9.90×10²⁴ FLOPs和5.9T tokens才落在该frontier，远高于实际Gopher预算。",
+        "三方法对Gopher预算的最优N并不完全同一点：Approach 3约40B，另两种约63–67B；作者因dataset/compute efficiency选择范围上端70B，而非由唯一公式精确给出。",
+        "Chinchilla/Gopher same-FLOP比较：70B/1.4T vs 280B/300B；WikiText-103 perplexity 7.16 vs 7.75，Pile所有subsets均改善。",
+        "MMLU Table 6五-shot为67.6% vs Gopher60.0%，提升7.6 points且51/57 tasks更好；abstract写67.5%，正文/表写67.6%，属于轻微rounding inconsistency。",
+        "BIG-bench 62 tasks平均65.1% vs54.4%，仅4项更差；LAMBADA zero-shot77.4% vs74.5%；RACE-h/m提高超过10 points。",
+        "更低LM loss没有消除社会风险：25,000 unprompted samples的PerspectiveAPI toxicity mean Chinchilla0.087 vs Gopher0.081，95th percentile0.238 vs0.230；Winogender仍显示group differences。"
+      ]
+    },
+    {
+      "title": "有效性与局限",
+      "bullets": [
+        "“约20 tokens per parameter”是本文frontier附近的经验比例，不是跨architecture、tokenizer、data quality、epoch、optimizer和后训练阶段的普适常数。",
+        "400+ runs最大仅16B，向Gopher预算外推数个数量级；large scale只有Chinchilla与Gopher两点，没有40B、100B等中间same-compute验证。",
+        "Chinchilla与Gopher除N/D外还改data mixture、optimizer、tokenizer与precision details；Appendix做部分optimizer分析，但downstream增益不能全部因果归于compute allocation。",
+        "power-law frontier是假设；作者观察高compute log Nopt负曲率，认为甚至可能仍高估large-scale最优size。",
+        "所有scaling runs小于一个epoch；data repetition/multiple epochs、finite high-quality corpus、deduplication与token quality不在拟合域。",
+        "objective是pretraining loss；inference-heavy deployment可能应把serving compute纳入总预算，本文只指出较小Chinchilla推理更便宜，没有求joint optimum。",
+        "benchmark prompts、contamination与训练数据重叠会影响结果；作者对MMLU/BIG-bench等较少leakage担忧，但并未给全数据可审计清单。",
+        "bootstrapping只反映当前run样本重采样，不覆盖functional-form misspecification、dataset shift或large-scale extrapolation uncertainty。",
+        "本站未重训任何scaling run或复算benchmark。"
+      ]
+    },
+    {
+      "title": "复现与资源",
+      "bullets": [
+        "先复现Approach 2：预注册model sizes、9个IsoFLOP budgets、token-matched cosine schedule和loss smoothing；保存每个run全curve与hardware FLOP accounting。",
+        "同时拟合三种frontiers并做held-out budget预测，不只在同一数据上报告bootstrap；增加alternative curved frontier与robust regression sensitivity。",
+        "same-compute因果测试应固定tokenizer、data mixture、optimizer、batch schedule和precision，只改变N/D；随后单独ablate Chinchilla其他工程变化。",
+        "至少使用多个seeds在小/中budget验证valley location；large-scale可用相邻budget的3+ model sizes而不是单一Chinchilla/Gopher pair。",
+        "数据审计记录unique tokens、epoch/repetition、source quality、dedup与benchmark overlap；token count不能替代有效信息量。",
+        "本站 PDF SHA-256：3fd3632a8ef48171bd25282990221d49535d75356192f068b3b2ebe08f2aedd4。",
+        "Evidence status: full-text verified; no independent reproduction performed."
+      ]
+    },
+    {
+      "title": "阅读指南",
+      "bullets": [
+        "先读Section 3与Table 2，区分curve envelope、IsoFLOP valley和parametric loss三种估计。",
+        "再读Table 3和Figure 4，注意Gopher预算预测范围40–67B而非神奇精确70B。",
+        "读Section 4时把same-FLOP证据与配置变更清单放在一起；benchmark improvement不等于N/D纯因果。",
+        "最后读Discussion limitations与bias/toxicity结果，明确frontier的less-than-one-epoch、data-quality和社会风险边界。"
+      ]
+    }
+  ],
+  "evidence_refs": [
+    "paper.pdf pp. 2-4: compute-optimal definition, prior-work contrast and experiment range",
+    "paper.pdf pp. 4-8: three frontier estimation approaches and exponents",
+    "paper.pdf pp. 8-10: bootstrap Table 2, projected tokens Table 3 and extrapolation caveats",
+    "paper.pdf pp. 10-14: Chinchilla/Gopher configuration differences and benchmark results",
+    "paper.pdf pp. 14-16: bias, toxicity and stated scaling limitations",
+    "paper.pdf pp. 20-36: schedules, fits, FLOP accounting, data mixture and model card",
+    "Evidence status: full-text verified; no independent reproduction performed."
+  ],
+  "card_standard_version": "2.3",
+  "paper_profile": "ai_empirical",
+  "style_reference": "physicist_daily_arxiv",
+  "provenance": {
+    "program": "Collection",
+    "catalog": "Paper Collection",
+    "catalog_record_id": "d9131f6cc4f74a02",
+    "catalog_record_ids": [
+      "d9131f6cc4f74a02"
+    ],
+    "catalog_topic": "Transformer Theory",
+    "collection_date": "2026-08-24",
+    "sampled_at": "2026-08-26",
+    "selected_by": "full_collection_backfill",
+    "sampling_seed": "not_applicable_full_collection",
+    "candidate_count": 452,
+    "legacy_full_text_card": "2203.15556.json"
+  },
+  "equation_refs": [],
+  "figure_refs": [],
+  "cover": {
+    "mode": "title_abstract",
+    "abstract_text": "We investigate the optimal model size and number of tokens for training a transformer language model under a given compute budget. By training over 400 language models ranging from 70 million to over 16 billion parameters on 5 to 500 billion tokens, we find that for compute-optimal training, the model size and the number of training tokens should be scaled equally. We test this hypothesis by training Chinchilla with 70B parameters on 1.4 trillion tokens at the same compute budget as Gopher.",
+    "selection_rationale": "该旧版全文证据包没有经过 v2.3 的逐图导出与图号核验；为避免错配图片，封面使用论文题目和经全文核对的摘要，关键论证保留在卡片正文中。"
+  }
+}

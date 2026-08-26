@@ -1,0 +1,145 @@
+{
+  "arxiv_id": "1503.03585",
+  "source_version": "v8",
+  "source_pdf": "https://arxiv.org/pdf/1503.03585v8",
+  "title_en": "Deep Unsupervised Learning using Nonequilibrium Thermodynamics",
+  "title_zh": "利用非平衡热力学进行深度无监督学习",
+  "curation_status": "full_text_verified",
+  "verified_metadata": {
+    "arxiv_id": "1503.03585",
+    "version": "v8",
+    "title": "Deep Unsupervised Learning using Nonequilibrium Thermodynamics",
+    "abstract": "A central problem in machine learning involves modeling complex data-sets using highly flexible families of probability distributions in which learning, sampling, inference, and evaluation are still analytically or computationally tractable. Here, we develop an approach that simultaneously achieves both flexibility and tractability. The essential idea, inspired by non-equilibrium statistical physics, is to systematically and slowly destroy structure in a data distribution through an iterative forward diffusion process. We then learn a reverse diffusion process that restores structure in data, yielding a highly flexible and tractable generative model of the data. This approach allows us to rapidly learn, sample from, and evaluate probabilities in deep generative models with thousands of layers or time steps, as well as to compute conditional and posterior probabilities under the learned model. We additionally release an open source reference implementation of the algorithm.",
+    "authors": [
+      "Jascha Sohl-Dickstein",
+      "Eric A. Weiss",
+      "Niru Maheswaranathan",
+      "Surya Ganguli"
+    ],
+    "categories": [
+      "cs.LG",
+      "cond-mat.dis-nn",
+      "q-bio.NC",
+      "stat.ML"
+    ],
+    "primary_category": "cs.LG",
+    "published": "2015-03-12T04:51:37Z",
+    "comment": "ICML 2015"
+  },
+  "sections": [
+    {
+      "title": "作者信息",
+      "bullets": [
+        "作者：Jascha Sohl-Dickstein、Eric A. Weiss、Niru Maheswaranathan、Surya Ganguli；当时来自 Stanford University 与 UC Berkeley。",
+        "官方快照：arXiv:1503.03585v8；ICML 2015；主分类 cs.LG，另含 cond-mat.dis-nn、q-bio.NC、stat.ML。",
+        "这是 diffusion probabilistic models 的早期原始论文；卡片按2015年版本陈述，不把后来的DDPM、score-SDE或现代U-Net结果倒写进本文。"
+      ]
+    },
+    {
+      "title": "摘要",
+      "bullets": [
+        "前向固定Markov diffusion逐步破坏数据结构，终点接近可采样的Gaussian或independent binomial；反向Markov chain学习每一小步的均值、协方差或bit-flip概率。",
+        "小步极限下，正向与反向条件分布可采用相同的Gaussian/binomial函数族；把一个难密度模型转为很多局部回归问题。",
+        "论文给出trajectory-ratio概率估计、log-likelihood下界、posterior条件化方法，并在Swiss roll、heartbeat、MNIST、CIFAR-10、dead leaves和bark上展示。"
+      ]
+    },
+    {
+      "title": "背景",
+      "bullets": [
+        "灵活的未归一化密度通常带来难求partition function、难采样和难评估；简单tractable family又不足以表达图像等复杂数据。",
+        "作者借鉴Jarzynski equality、annealed importance sampling、Fokker–Planck/Langevin dynamics和quasi-static process：慢慢改变分布可让相邻transition容易估计。",
+        "与VAE式少层latent model不同，本文显式允许数百至数千个time steps；深度换来局部reverse transition近似简单，但也带来逐步采样成本。"
+      ]
+    },
+    {
+      "title": "模型与方法",
+      "bullets": [
+        "Forward trajectory q(x0:T)=q(x0)∏t q(xt|x_{t−1})，使用保持目标平衡分布π的kernel，把数据渐变为identity-covariance Gaussian或独立binomial。",
+        "Generative trajectory从p(xT)=π(xT)出发，按p(x_{t−1}|xt)逆行；连续小β时reverse kernel仍近似Gaussian/binomial，只需网络预测均值/对角协方差或Bernoulli rates。",
+        "数据概率p(x0)是对隐含轨迹积分。作者以forward trajectory作proposal，将forward/reverse path probability ratio取期望；quasi-static且两条trajectory相同时单样本即可精确评估该积分。",
+        "训练对log p(x0)应用Jensen得到K下界；Appendix把它展开为各步true reverse posterior与learned transition的KL之和加可解析entropy项，优化相当于拟合每个reverse step。",
+        "Gaussian diffusion schedule β2:T也通过K优化，β1固定较小防止过拟合；binary case选择每步抹去恒定比例signal的schedule。",
+        "条件化/分布相乘通过在每个time slice引入r(xt)并修正reverse kernel；bark inpainting把已知像素设成delta约束，缺失区保持constant factor。",
+        "图像实验用多尺度卷积预测time-dependent mean与diagonal variance；MNIST/CIFAR/dead-leaf使用T=1000，bark使用T=500；toy Swiss roll为40步，binary heartbeat为2000步。"
+      ]
+    },
+    {
+      "title": "核心结果与证据",
+      "bullets": [
+        "Table 1 的held-out lower bound K：Swiss roll 2.35 bits、binary heartbeat −2.414 bits/sequence、bark −0.55 bits/pixel、dead leaves 1.489 bits/pixel、CIFAR-10 5.4±0.2 bits/pixel；右列均优于各自null Gaussian/binomial。",
+        "Heartbeat真实生成分布为−2.322 bits/sequence，模型下界−2.414，接近但不等于真实值；Figure 2显示20-bit周期序列的逆binomial chain。",
+        "Table 2在dead leaves上报告MCGSM 1.244与Diffusion 1.489 bits/pixel，并称后者当时state of the art；这是同一训练/测试数据下的density comparison。",
+        "MNIST的Table 2数字来自Parzen-window sample estimate：Diffusion 317±2.7 bits、Adversarial net 325±2.9、训练数据组成的“perfect model”349±3.3。它不是本文variational lower bound，不能按大小直接与现代bits/dim比较。",
+        "Figure 3同时展示CIFAR holdout、SNR=1 Gaussian corruption、conditional denoising samples和unconditional samples；Figure 5展示bark中央100×100区域的posterior inpainting。",
+        "v8脚注说明早期版本CIFAR更高likelihood源于模型学习8-bit quantization；当前5.4±0.2是在加uniform noise去量化后的下界。这是重要的评估口径修正。"
+      ]
+    },
+    {
+      "title": "有效性与局限",
+      "bullets": [
+        "“exact sampling”指从明确定义的有限reverse Markov chain逐步抽样，而非一步闭式采样；图像需500或1000次sequential transitions，2015实现并不快速。",
+        "log-likelihood通常由下界K评估；只有forward/reverse trajectories完全匹配的quasi-static理想情形下界才取等。论文没有证明有限网络和有限步数达到该条件。",
+        "reverse Gaussian covariance限制为diagonal，表达能力依赖很多小步；网络结构与现代生成模型不同，样本视觉质量不应跨时代直接排名。",
+        "MNIST比较采用Parzen estimator，其bandwidth、有限samples和dataset normalization带来偏差；作者也明确说它只为对齐当时文献，不能把Table 2当精确likelihood排行榜。",
+        "CIFAR脚注展示离散像素量化可虚增density数字；不同dequantization convention下的bits/pixel不可直接比较。",
+        "Posterior multiplication依赖r在每步变化足够平滑或能与Gaussian/binomial闭式相乘；一般约束可能需要额外归一化近似。",
+        "论文公开代码但本站未重跑Theano/SFO环境、训练、AIS式概率估计或图像评测；没有独立复现证据。"
+      ]
+    },
+    {
+      "title": "复现与资源",
+      "bullets": [
+        "原始参考实现：https://github.com/Sohl-Dickstein/Diffusion-Probabilistic-Models；应固定历史Theano/Blocks/SFO依赖，避免用现代DDPM代码替代后宣称复现。",
+        "先复现20-bit heartbeat：2000-step binomial chain、真实−2.322 bits/sequence与K=−2.414的差距可作为方程和下界实现单元测试。",
+        "再做Swiss roll的40-step Gaussian实验，保存forward marginals、reverse marginals、path-ratio variance与K；逐步增大T检验quasi-static gap是否收缩。",
+        "图像复现必须记录dequantization、variance scaling、T、β schedule、Parzen bandwidth与采样数；CIFAR尤其要区分论文早期量化版本和v8连续化版本。",
+        "条件推断可从bark中央mask开始，检查known pixels约束是否保持以及多次posterior samples的不确定性，而非只展示一张图。",
+        "本站 PDF SHA-256：17a29449579ceb4fb906f2f3d5643eb22cea54e5975017ff8788ddf73d8b44ad。",
+        "Evidence status: full-text verified; no independent reproduction performed."
+      ]
+    },
+    {
+      "title": "阅读指南",
+      "bullets": [
+        "先看Figure 1与Eqs. (1–5)，把forward inference chain和reverse generative chain分清。",
+        "再读Eqs. (6–15)及Appendix B，确认模型概率、importance ratio和variational lower bound分别是什么。",
+        "接着读Section 2.5的distribution multiplication，理解denoising/inpainting是posterior sampling而非另训任务网络。",
+        "最后逐项核对Tables 1–2、CIFAR dequantization脚注和Appendix D的步数；这能避免用现代扩散模型指标误读历史论文。"
+      ]
+    }
+  ],
+  "evidence_refs": [
+    "paper.pdf pp. 1-3: motivation, physics connections and forward/reverse construction",
+    "paper.pdf pp. 4-6: path probability, likelihood bound and training objective",
+    "paper.pdf pp. 6-8: conditional distribution multiplication and entropy bounds",
+    "paper.pdf pp. 8-10: dataset metrics, dequantization correction and qualitative samples",
+    "paper.pdf pp. 10-11: MNIST/CIFAR/dead-leaf/bark scope and conclusion",
+    "paper.pdf pp. 12-18: likelihood derivation, kernels, step counts and network details",
+    "Evidence status: full-text verified; no independent reproduction performed."
+  ],
+  "card_standard_version": "2.3",
+  "paper_profile": "ai_empirical",
+  "style_reference": "physicist_daily_arxiv",
+  "provenance": {
+    "program": "Collection",
+    "catalog": "Paper Collection",
+    "catalog_record_id": "f3e6efb4e89a1e17",
+    "catalog_record_ids": [
+      "f3e6efb4e89a1e17"
+    ],
+    "catalog_topic": "Statistical Physics",
+    "collection_date": "2026-08-24",
+    "sampled_at": "2026-08-26",
+    "selected_by": "full_collection_backfill",
+    "sampling_seed": "not_applicable_full_collection",
+    "candidate_count": 452,
+    "legacy_full_text_card": "1503.03585.json"
+  },
+  "equation_refs": [],
+  "figure_refs": [],
+  "cover": {
+    "mode": "title_abstract",
+    "abstract_text": "A central problem in machine learning involves modeling complex data-sets using highly flexible families of probability distributions in which learning, sampling, inference, and evaluation are still analytically or computationally tractable. Here, we develop an approach that simultaneously achieves both flexibility and tractability. The essential idea, inspired by non-equilibrium statistical physics, is to systematically and slowly destroy structure in a data distribution through an iterative forward diffusion process. We then learn a reverse diffusion process that restores structure in data, yielding a highly flexible and tractable generative model of the data. This approach allows us to rapidly learn, sample from, and evaluate probabilities in deep generative models with thousands of layers or time steps, as well as to compute conditional and posterior probabilities under the learned m",
+    "selection_rationale": "该旧版全文证据包没有经过 v2.3 的逐图导出与图号核验；为避免错配图片，封面使用论文题目和经全文核对的摘要，关键论证保留在卡片正文中。"
+  }
+}

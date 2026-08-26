@@ -1,0 +1,136 @@
+{
+  "arxiv_id": "2105.04641",
+  "source_version": "v2",
+  "source_pdf": "https://arxiv.org/pdf/2105.04641",
+  "title_en": "Learning to Control Active Matter",
+  "title_zh": "学习控制活性物质",
+  "curation_status": "full_text_verified",
+  "verified_metadata": {
+    "arxiv_id": "2105.04641",
+    "version": "v2",
+    "title": "Learning to Control Active Matter",
+    "abstract": "The study of active matter has revealed novel non-equilibrium collective behaviors, illustrating their potential as a new materials platform. However, most works treat active matter as unregulated systems with uniform microscopic energy input, which we refer to as activity. In contrast, functionality in biological materials results from regulating and controlling activity locally over space and time, as has only recently become experimentally possible for engineered active matter. Designing functionality requires navigation of the high dimensional space of spatio-temporal activity patterns, but brute force approaches are unlikely to be successful without system-specific intuition. Here, we apply reinforcement learning to the task of inducing net transport in a specific direction for a simulated system of Vicsek-like self-propelled disks using a spotlight that increases activity locally. The resulting time-varying patterns of activity learned exploit the distinct physics of the strong and weak coupling regimes. Our work shows how reinforcement learning can reveal physically interpretable protocols for controlling collective behavior in non-equilibrium systems.",
+    "authors": [
+      "Martin J Falk",
+      "Vahid Alizadehyazdi",
+      "Heinrich Jaeger",
+      "Arvind Murugan"
+    ],
+    "categories": [
+      "cond-mat.soft"
+    ],
+    "primary_category": "cond-mat.soft",
+    "published": "2021-05-10T19:51:44Z",
+    "comment": "11 pages, 7 figures"
+  },
+  "sections": [
+    {
+      "title": "作者信息",
+      "bullets": [
+        "作者：Martin J Falk、Vahid Alizadehyazdi、Heinrich Jaeger、Arvind Murugan，University of Chicago Physics。",
+        "官方快照：arXiv:2105.04641v2，正文/附录共 13 页、7 个主图；分类 cond-mat.soft；期刊 Phys. Rev. Research 3, 033291。",
+        "成果来自 Vicsek-like 自推进圆盘的数值仿真；文中讨论光控实验动机，但没有在真实 active-matter apparatus 上闭环部署。"
+      ]
+    },
+    {
+      "title": "摘要",
+      "bullets": [
+        "任务是在二维周期盒中仅用椭圆 spotlight 调节局部自推进 speed 的标量场，最大化 +x 总动量；light 不直接改变粒子方向、alignment、rotational diffusion 或 interaction。",
+        "online TD actor–critic 输入 coarse-grained density/velocity fields 和当前 spotlight descriptors，连续动作改变中心、长度与 aspect ratio，instantaneous x-momentum 作为 dense reward。",
+        "RL 在弱耦合学到向右移动的狭条形“purification”协议，在强 alignment 耦合学到根据 collective polarity 开/关 spotlight 的协议；物理简化模型解释两种策略。"
+      ]
+    },
+    {
+      "title": "背景",
+      "bullets": [
+        "实验已能用光局部调节细菌、胶体或细胞骨架 activity，但 spatiotemporal illumination protocol 维度很高，且 scalar speed control 如何产生 vector transport 并不直观。",
+        "系统是带 WCA 排斥、热噪声和 Vicsek-like polarity coupling k 的 144 粒子模型；k 从弱耦合无集体方向跨入强耦合 flocking regime。",
+        "作者把 model-free 理解为 RL 不使用显式方程求策略；环境 transitions 本身仍由已知 simulator 产生，state/action/reward 和 spotlight family 都由研究者设计。"
+      ]
+    },
+    {
+      "title": "模型与方法",
+      "bullets": [
+        "state 将粒子粗粒化成 3×3 density 与 x/y velocity grids，再拼 spotlight center/ratio/length；这保证 permutation invariance，但作者承认 coarse-graining 可能破坏 Markov property。",
+        "action 为 4 维增量 (δx,δy,δratio,δlength)，Gaussian policy 的均值/方差由 actor 输出并 clip；只允许单一固定强度、固定 tilt 的 ellipse，因此最优性只在受限 protocol class 内。",
+        "critic 是 2×400 hidden units，actor 是 2×40，均用 ELU；Adam，critic lr 10^-4、actor 2×10^-6，discount 1−10^-3，batch 1 online updates。",
+        "每 episode 100 training steps，每步推进 50 simulation timesteps；每 900 episodes 从 square lattice 与随机 polarities 重置。不同图训练约 14k–63k episodes。",
+        "reward 是所有粒子 x velocities 之和；未加入 illumination energy、switching cost、safety 或 robustness penalty，所以协议只优化 transport。"
+      ]
+    },
+    {
+      "title": "核心结果与证据",
+      "bullets": [
+        "Figure 2 的 running average 显示弱/强 coupling 下 episode x-momentum 随训练增加，但 raw curves 高度 stochastic；论文没有统一表格给多 seed return confidence interval。",
+        "弱耦合策略把 spotlight 在 y 方向拉满、以特征速度 vγ 向 +x 移动；右行粒子与光共移保持活性，左行粒子更快离开光区而停下，形成方向 purification。",
+        "一维 flux-balance 模型预测 vγ≈particle active speed vp，且 spotlight 太短受 excluded volume、太长不能净化而有中间 optimum；Figure 3B/C 的 learned points 与 scaling 一致。",
+        "强耦合下 collective polarity 已形成；策略在整体指向 +x 时扩大 spotlight，指向 −x 时减小/波动，利用 flocking 的方向记忆而非移动光带。",
+        "Figure 4 的 purification order parameter 随 k 上升而降、on/off parameter 随 k 上升而升；crossover 同时具有两种成分。",
+        "在强耦合低密度的多 flock domains 与 4 倍粒子数对照中，agent 仍获得正动量/重现策略类型，但 evidence 是同一 simulator family 的扩展，不是跨物理系统 transfer。"
+      ]
+    },
+    {
+      "title": "有效性与局限",
+      "bullets": [
+        "只控制单 spotlight 的中心/长度/aspect ratio，固定 intensity/tilt；作者明确说协议仅保证在该受限空间局部最优，多光源或连续任意场可能有完全不同策略。",
+        "state coarse-graining 可能非 Markov，TD actor–critic 的收敛与最优性没有理论保证；batch-one online RL 也对 seed 与非平稳 sampling 敏感。",
+        "论文自己引用 RL reproducibility concern，但主要展示单条/少量 training trajectories、running averages 与 boxplots，缺乏多独立训练 seed 的 standardized return statistics。",
+        "weak-coupling 1D theory 假设分段常密度、instant direction randomization、固定 fractions 与 rectangular light；ρev 又从已收敛策略拟合，因此是事后解释模型而非盲预测。",
+        "奖励没有功耗成本；更大 spotlight 在强耦合时可占满系统，所以“有效控制”不等价于 energy-efficient protocol。没有实验 actuator delay、observation noise 或 sim-to-real robustness。"
+      ]
+    },
+    {
+      "title": "复现与资源",
+      "bullets": [
+        "仿真使用 HOOMD-blue 2.9.0、二维 periodic box、WCA radius 0.5、drag 5、kT 0.03、active speed 默认 3.9、144 particles、number density 0.25、dt=0.005。",
+        "每 5 timesteps 更新 polarity：邻域 radius 1.33 的 mean alignment 与 k 混合、归一，再加 π/√1000·N(0,1) rotation；必须冻结这一更新顺序。",
+        "保存每 episode seed、return、spotlight trajectory、particle states、collective polarity、spotlight area 与 vγ；至少重跑多个 independent actor/critic initializations，而不只复用同一 trajectory frames。",
+        "weak theory复现需独立估计 reversal rate r=0.32 与 excluded-volume threshold ρev≈9 linear density，并预注册 Fig. 3 phase-diagram comparison。",
+        "本站 PDF SHA-256：a7162a543db900fa065f303aeb4ab96eca8528323ea1d42365716e97dd010d9f。",
+        "Evidence status: full-text verified; no independent reproduction performed."
+      ]
+    },
+    {
+      "title": "阅读指南",
+      "bullets": [
+        "先读 Methods 的 state/action/reward 定义，确认“控制 activity”具体只意味着改变 propulsion speed 和单 ellipse。",
+        "再读 Figures 2–4，把 learned behavior、弱耦合 flux model 和 strong-coupling order parameters三类证据分开。",
+        "最后读 Appendices A/B/F：仿真/RL 超参数、低密度反例和 reproducibility caveat 决定该工作能否外推到真实实验。"
+      ]
+    }
+  ],
+  "evidence_refs": [
+    "paper.pdf pp. 1-3: task, Vicsek-like dynamics, restricted spotlight state/action/reward and actor-critic choice",
+    "paper.pdf pp. 4-6: learned weak/strong protocols, purification theory and Figures 2-4",
+    "paper.pdf p. 6: conclusion, scope and reproducibility concern",
+    "paper.pdf pp. 8-10: HOOMD simulation, coarse-grained state, actor/critic architecture and training schedule",
+    "paper.pdf pp. 10-12: flux model parameter estimation and flocking diagnostics",
+    "paper.pdf pp. 12-13: strongly coupled dilute-regime policy",
+    "Evidence status: full-text verified; no independent reproduction performed."
+  ],
+  "card_standard_version": "2.3",
+  "paper_profile": "ai_empirical",
+  "style_reference": "physicist_daily_arxiv",
+  "provenance": {
+    "program": "Collection",
+    "catalog": "Paper Collection",
+    "catalog_record_id": "968aa04a14848371",
+    "catalog_record_ids": [
+      "968aa04a14848371"
+    ],
+    "catalog_topic": "Active Matter",
+    "collection_date": "2026-08-24",
+    "sampled_at": "2026-08-26",
+    "selected_by": "full_collection_backfill",
+    "sampling_seed": "not_applicable_full_collection",
+    "candidate_count": 452,
+    "legacy_full_text_card": "2105.04641.json"
+  },
+  "equation_refs": [],
+  "figure_refs": [],
+  "cover": {
+    "mode": "title_abstract",
+    "abstract_text": "The study of active matter has revealed novel non-equilibrium collective behaviors, illustrating their potential as a new materials platform. However, most works treat active matter as unregulated systems with uniform microscopic energy input, which we refer to as activity. In contrast, functionality in biological materials results from regulating and controlling activity locally over space and time, as has only recently become experimentally possible for engineered active matter. Designing functionality requires navigation of the high dimensional space of spatio-temporal activity patterns, but brute force approaches are unlikely to be successful without system-specific intuition. Here, we apply reinforcement learning to the task of inducing net transport in a specific direction for a simulated system of Vicsek-like self-propelled disks using a spotlight that increases activity locally. ",
+    "selection_rationale": "该旧版全文证据包没有经过 v2.3 的逐图导出与图号核验；为避免错配图片，封面使用论文题目和经全文核对的摘要，关键论证保留在卡片正文中。"
+  }
+}

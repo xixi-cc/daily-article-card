@@ -1,0 +1,153 @@
+{
+  "arxiv_id": "2309.15293",
+  "source_version": "v5",
+  "source_pdf": "https://arxiv.org/pdf/2309.15293v5",
+  "title_en": "Maximum diffusion reinforcement learning",
+  "title_zh": "最大扩散强化学习",
+  "curation_status": "full_text_verified",
+  "verified_metadata": {
+    "arxiv_id": "2309.15293",
+    "version": "v5",
+    "title": "Maximum diffusion reinforcement learning",
+    "abstract": "Robots and animals both experience the world through their bodies and senses. Their embodiment constrains their experiences, ensuring they unfold continuously in space and time. As a result, the experiences of embodied agents are intrinsically correlated. Correlations create fundamental challenges for machine learning, as most techniques rely on the assumption that data are independent and identically distributed. In reinforcement learning, where data are directly collected from an agent's sequential experiences, violations of this assumption are often unavoidable. Here, we derive a method that overcomes this issue by exploiting the statistical mechanics of ergodic processes, which we term maximum diffusion reinforcement learning. By decorrelating agent experiences, our approach provably enables single-shot learning in continuous deployments over the course of individual task attempts. Moreover, we prove our approach generalizes well-known maximum entropy techniques, and robustly exceeds state-of-the-art performance across popular benchmarks. Our results at the nexus of physics, learning, and control form a foundation for transparent and reliable decision-making in embodied reinforcement learning agents.",
+    "authors": [
+      "Thomas A. Berrueta",
+      "Allison Pinosky",
+      "Todd D. Murphey"
+    ],
+    "categories": [
+      "cs.LG",
+      "cond-mat.stat-mech",
+      "cs.AI",
+      "cs.RO"
+    ],
+    "primary_category": "cs.LG",
+    "published": "2023-09-26T22:14:56Z",
+    "doi": "10.1038/s42256-024-00829-3"
+  },
+  "sections": [
+    {
+      "title": "作者信息",
+      "bullets": [
+        "Thomas A. Berrueta、Allison Pinosky与Todd D. Murphey来自Northwestern University机械工程系。",
+        "官方快照arXiv:2309.15293v5，主分类cs.LG，另含cond-mat.stat-mech、cs.AI与cs.RO；合集PDF 58页，含正文、方法和补充材料。",
+        "版本记录关联Nature Machine Intelligence论文DOI 10.1038/s42256-024-00829-3，并声明代码、数据与补充视频资源。"
+      ]
+    },
+    {
+      "title": "摘要",
+      "bullets": [
+        "MaxDiff RL不只最大化动作策略熵，而是最大化由策略与环境动力学共同诱导的状态轨迹分布熵，以直接削弱experience temporal correlations。",
+        "maximum-caliber变分在连续路径和局部波动约束下得到各向异性、空间非均匀扩散的最优path distribution；其样本路径为Markov且ergodic。",
+        "实践目标在task reward上加入局部path entropy bonus α/2 log det C[x_t]；本文实现与NN-MPPI的差别仅为该项。",
+        "理论把MaxEnt作为state transitions已decorrelated的特例，并在额外PAC-MDP存在条件下给seed鲁棒性和single-shot asymptotic guarantees。",
+        "实验覆盖可控性toy point mass、MuJoCo swimmer/ant、embodiment transfer和continuous single-shot learning，对比NN-MPPI与SAC。"
+      ]
+    },
+    {
+      "title": "背景",
+      "bullets": [
+        "经验回放能在优化时打乱序列，但不能改变采集时由物理连续性产生的相关；MaxEnt随机化actions也未必让states有效扩散。",
+        "embodied system受Newtonian smoothness、actuation和controllability约束；当某方向近乎不可控时，不同动作仍生成高度相关的状态序列。",
+        "maximum caliber把maximum entropy从静态分布推广到path ensemble；ergodicity则令单条长轨迹的统计渐近等价于trajectory ensemble。",
+        "本文所谓‘i.i.d.-indistinguishable’指global asymptotic statistics，不是相邻状态真正独立，也不消除有限时间mixing bias。"
+      ]
+    },
+    {
+      "title": "模型与方法",
+      "bullets": [
+        "toy system是4维planar double integrator，β∈[0,1]调x方向controllability；从固定起点到目标，从零学习reward、dynamics与policy。",
+        "对trajectory density P[x(t)]最大化caliber，并用局部integrated autocovariance C[x]约束有限时间可达波动，得到P_max∝exp[−1/2∫ẋ^T C^{-1}[x]ẋdt]。",
+        "引入reward后的离散target path distribution将p_max(x_{t+1}|x_t)与exp r(x_t,u_t)相乘；最小化agent path distribution到target的KL。",
+        "等价SOC reward为r̂=r−α log[p(x_{t+1}|x_t,u_t)π(u_t|x_t)/p_max(x_{t+1}|x_t)]；fully controllable/decorrelated极限约化为MaxEnt。",
+        "实际模型无关近似用Σ_t[r(x_t,u_t)+(α/2)log det C[x_t]]，C由邻域state transitions估计；α平衡task exploitation与diffusive exploration。",
+        "swimmer比较三链质量、两关节控制和tail mass m_s=1或0.1；每条件10 seeds、每seed 100 evaluations。",
+        "single-shot不reset，持续数百万steps学习；swimmer无明显sink，ant可翻倒进入不可逆state，用于检验ergodicity-breaking。"
+      ]
+    },
+    {
+      "title": "核心结果与证据",
+      "bullets": [
+        "Figure 1中β从1降至0.001时NN-MPPI和SAC误差大幅增加，MaxDiff仍完成point-mass task；每条件n=1000 evaluations，组间Welch t-test报告P<0.001。",
+        "Theorem 1说明若policy-induced transition已decorrelated，则MaxDiff最优在p_π=p_max处约化为MaxEnt；它是条件性关系，不说明一般MaxEnt等价。",
+        "Figure 3显示swimmer上α从1增至100提高return，再增大则diffusion压过reward并破坏相对于potential的ergodicity；临界α需经验调节。",
+        "m_s=0.1、α=100时MaxDiff在10 seeds上learning curve几乎重合，terminal return平均优于NN-MPPI与SAC且方差更低。",
+        "Theorem 2在‘存在优化MaxDiff objective的PAC-MDP算法’前提下，用Birkhoff定理推出不同initializations渐近达到相同ε-optimality。",
+        "Figure 4的heavy/light swimmer transfer中，NN-MPPI与SAC跨embodiment均退化；MaxDiff heavy-to-light受益，light训练也改善heavy部署，提示training controllability比deployment embodiment更重要。",
+        "Theorem 3在相同PAC-MDP与ergodic条件下，把单一长deployment的渐近统计等同于多initialization ensemble，因此multi-shot可学则single-shot可学。",
+        "Figure 5中single-shot swimmer保持接近multi-shot表现；ant翻倒形成sink、破坏理论条件后，MaxDiff仍优于SAC但variance上升，且multi-shot与NN-MPPI接近。"
+      ]
+    },
+    {
+      "title": "有效性与局限",
+      "bullets": [
+        "三条主要定理包含强前提：maximally diffusive policy可实现、相应算法PAC-MDP、Markov chain ergodic；它们不证明本文神经实现对任意连续高维任务满足这些条件。",
+        "单轨迹与ensemble等价是渐近结论；真实部署有限时长，mixing time可能很长，不能直称有限样本i.i.d.。",
+        "log det C需要稳定估计局部full-rank covariance；高维、稀疏访问或近约束流形会病态，regularization和窗口选择影响bonus。",
+        "α没有通用选取法，作者明确指出过大可导致ergodicity-breaking；实验在swimmer中据sweep选α=100，存在task-specific tuning。",
+        "MaxDiff实现建立在NN-MPPI model-based stack上，而SAC是model-free；对比同时混合framework与base algorithm差异，最干净因果对照是NN-MPPI加/不加entropy项。",
+        "benchmarks集中在toy point mass与MuJoCo swimmer/ant，未包含视觉输入、真实robot、contact-rich manipulation或nonstationary environments。",
+        "统计检验把每seed的100 evaluations合成n=1000可能低估clustered uncertainty；seed才是训练独立单位，应同时给seed-level interval。",
+        "embodiment transfer同时迁移policy、reward和dynamics representations，缺少逐模块ablation；zero-shot结果不代表任意形态变化。",
+        "ant结果已显示不可逆sink使理论保证失效；现实硬件故障、安全边界与reset constraints更普遍，需额外safe exploration机制。",
+        "本站没有重跑公开代码、视频或外部Nature版本。"
+      ]
+    },
+    {
+      "title": "复现与资源",
+      "bullets": [
+        "先复现β-point-mass，直接算controllability Gramian、state autocorrelation与x-direction coverage，把性能下降与相关性而非optimizer偶然性对应。",
+        "在同一NN-MPPI代码和seed上做paired ablation，仅切换α/2 log det C；保留C eigenvalues、condition number、regularizer和每步bonus。",
+        "α sweep需预注册范围并在validation environments选取，test environments冻结；报告reward、coverage、mixing proxy和ergodicity violations的Pareto曲线。",
+        "把training seed作为独立统计单位，至少多seed复算mean、median、bootstrap CI与failure rate；evaluation rollouts作为seed内重复而非独立n。",
+        "single-shot实验保存不间断checkpoint、sink-state events、windowed returns与wall-clock；禁止把多次reset的最好trajectory拼成single-shot。",
+        "transfer拆分policy-only、dynamics-only、reward-only与全量迁移，并扫描tail mass连续区间，判断改善来自哪一representation。",
+        "真实机器人前先加入constraint-aware C estimation、safe set与不可逆故障停止规则；模拟中注入actuator saturation、latency和sensor noise。",
+        "本站PDF SHA-256：d5b5232b98757c7201a4842c55c2673c33b88e0c3ac6f67d4b6feb295d1a91ab。",
+        "Evidence status: full-text verified; no independent reproduction performed."
+      ]
+    },
+    {
+      "title": "阅读指南",
+      "bullets": [
+        "先读Figures 1–2，区分action entropy与state-path entropy，并理解controllability为何决定随机动作能否探索。",
+        "再看Eqs. (1)–(6)与Theorem 1，注意理论target distribution、KL objective和实际log-det bonus是三个层次。",
+        "Figures 3–4给α敏感性、seed与embodiment evidence；优先读误差条单位与baseline是否共享NN-MPPI实现。",
+        "最后读Figure 5及Theorems 2–3，把single-shot结论限定在PAC-MDP、ergodic和asymptotic条件内。"
+      ]
+    }
+  ],
+  "evidence_refs": [
+    "paper.pdf pp. 1-4: temporal-correlation motivation and controllability toy benchmark",
+    "paper.pdf pp. 4-7: maximum-caliber path distribution, MaxDiff objective and MaxEnt reduction",
+    "paper.pdf pp. 7-10: seed robustness, embodiment transfer and conditional PAC-MDP theorem",
+    "paper.pdf pp. 10-13: single-shot swimmer/ant evidence, ergodicity failure and methods",
+    "paper.pdf pp. 20-58: formal derivations, path synthesis, implementation details and supplementary results",
+    "Evidence status: full-text verified; no independent reproduction performed."
+  ],
+  "card_standard_version": "2.3",
+  "paper_profile": "ai_empirical",
+  "style_reference": "physicist_daily_arxiv",
+  "provenance": {
+    "program": "Collection",
+    "catalog": "Paper Collection",
+    "catalog_record_id": "d5b5232b98757c72",
+    "catalog_record_ids": [
+      "d5b5232b98757c72"
+    ],
+    "catalog_topic": "Control & Reinforcement Learning",
+    "collection_date": "2026-08-23",
+    "sampled_at": "2026-08-26",
+    "selected_by": "full_collection_backfill",
+    "sampling_seed": "not_applicable_full_collection",
+    "candidate_count": 452,
+    "legacy_full_text_card": "2309.15293.json"
+  },
+  "equation_refs": [],
+  "figure_refs": [],
+  "cover": {
+    "mode": "title_abstract",
+    "abstract_text": "Robots and animals both experience the world through their bodies and senses. Their embodiment constrains their experiences, ensuring they unfold continuously in space and time. As a result, the experiences of embodied agents are intrinsically correlated. Correlations create fundamental challenges for machine learning, as most techniques rely on the assumption that data are independent and identically distributed. In reinforcement learning, where data are directly collected from an agent's sequential experiences, violations of this assumption are often unavoidable. Here, we derive a method that overcomes this issue by exploiting the statistical mechanics of ergodic processes, which we term maximum diffusion reinforcement learning. By decorrelating agent experiences, our approach provably enables single-shot learning in continuous deployments over the course of individual task attempts. M",
+    "selection_rationale": "该旧版全文证据包没有经过 v2.3 的逐图导出与图号核验；为避免错配图片，封面使用论文题目和经全文核对的摘要，关键论证保留在卡片正文中。"
+  }
+}

@@ -1,0 +1,153 @@
+{
+  "arxiv_id": "2510.25553",
+  "source_version": "v2",
+  "source_pdf": "https://arxiv.org/pdf/2510.25553",
+  "title_en": "Renormalization group for deep neural networks: Universality of learning and scaling laws",
+  "title_zh": "深度神经网络的重整化群：学习普适性与标度律",
+  "curation_status": "full_text_verified",
+  "sections": [
+    {
+      "title": "作者信息",
+      "bullets": [
+        "作者：Gorka Peraza Coppola、Moritz Helias、Zohar Ringel。",
+        "研究机构：Jülich Research Centre; RWTH Aachen University; Hebrew University of Jerusalem。",
+        "来源：arXiv:2510.25553v2；年份：2026；主题：Renormalization Group、Deep Learning Theory、Scaling Laws。",
+        "本文按本地全文快照制作，官方元数据核验版本为 2510.25553v2。"
+      ]
+    },
+    {
+      "title": "摘要",
+      "bullets": [
+        "本文的论证主线由以下经过全文核验的节点构成：机器学习有幂律，却没有天然的空间尺度；有限宽修正把 GP 变成弱相互作用场论；离散谱下应谈 scaling interval，而非单一 scaling dimension；框架假设弱 quartic 非高斯修正、幂律谱和可用的 kernel 特征基；强 feature learning 可能离开微扰区域；训练以非高斯 process regression/Langevin equilibrium 表述，与有限时间 SGD、分类损失和现代大模型仍有距离；universality 是大数据 GP-like UV fixed point 附近的条件性结论；有限样本跨 separatrix 时可显著失效。",
+        "卡片内容来自已完成冷读与逐页检查的 paper_presentation.json，并回链到原论文页码、图或公式。"
+      ]
+    },
+    {
+      "title": "背景",
+      "bullets": [
+        "论证节点“机器学习有幂律，却没有天然的空间尺度”。",
+        "数据谱、语言 Zipf 律和 learning curve 普遍呈幂律，且跨架构常显示弱普适性。",
+        "传统 RG 依赖平移不变、连续动量与明确 coarse-graining；真实数据谱离散且特征模态不具空间局域性。",
+        "本文为弱非高斯、non-lazy 网络在幂律数据上的学习建立 RG，并研究自相似何时成立、何时破缺。",
+        "论文针对离散谱和非平移不变数据建立神经网络学习的 RG 框架 （p. 1; source/tex/manuscript.tex）",
+        "研究问题的表述以论文给出的对象和评价目标为边界；背景动机不自动构成方法有效性的证据。"
+      ]
+    },
+    {
+      "title": "模型与方法",
+      "bullets": [
+        "论证节点“有限宽修正把 GP 变成弱相互作用场论”。",
+        "设定：按数据 kernel 本征模 $k$ 展开；$r$ 为 ridge/mass，$U$ 表示有限宽诱导的四阶非高斯耦合。",
+        "关键关系：S[f] &= \\frac12\\sum_k(\\lambda_k^{-1}+r)f_k^2 \\\\ &\\quad+\\frac{U}{4!}\\sum_{k_1\\cdots k_4}V_{k_1k_2k_3k_4}f_{k_1}\\cdots f_{k_4}",
+        "推导含义：Gaussian 部分对应等效 GP；quartic interaction 捕捉 non-lazy/finite-width 偏离，overlap tensor $V$ 保存数据特征结构。",
+        "结论边界：RG 的对象不是网络层，而是按 kernel 特征值逐步消去“已被数据学会”的模态。",
+        "论文从有限宽修正导出 Gaussian 加 quartic interaction 的弱非高斯场论 （p. 4; source/tex/manuscript.tex）",
+        "方法部分按 presentation 中的数学关系、算法结构或实验设计重述；公式只在相应证据页定义的符号与条件下成立。"
+      ]
+    },
+    {
+      "title": "核心结果与证据",
+      "bullets": [
+        "2：归一化 $(U,r)$ RG 流场显示不同初始条件、nullcline 与 separatrix；流随 decimation scale $\\tau=\\ln\\ell$ 演化。",
+        "证据解释：Gaussian-process-like UV fixed point控制大数据极限，但 separatrix 决定有限样本下非高斯扰动是否衰减或放大。",
+        "完整 RG 流揭示 GP-like fixed point、separatrix 与非高斯耦合的不同 basin （p. 14; figure Figure 2; source/tex/manuscript.tex）",
+        "论证节点“离散谱下应谈 scaling interval，而非单一 scaling dimension”。",
+        "cutoff 每跨过一个离散特征模，耦合的有效幂次可改变；缺少平移不变意味着 overlap tensor 也随模态结构变化。",
+        "因此相关/无关性可能只在某个样本规模区间成立，而不是由一个全局 scaling dimension 决定。",
+        "这解释了 learning curve 可在不同 $P$ 区间呈现不同斜率，以及微观扰动何时会破坏表观普适性。",
+        "论文以 scaling intervals 替代传统全局 scaling dimensions 来处理离散非平移不变谱 （p. 10; source/tex/manuscript.tex）",
+        "4：三个不同样本规模系统比较 mean discrepancy；RG transfer 按 flow 重设 ridge/interaction，优于直接复用原超参数或忽略非高斯项。",
+        "证据解释：若两个训练规模位于同一 RG trajectory，可沿流传递有效超参数，而不是为每个 $P$ 从头搜索。",
+        "RG flow 用于不同训练样本规模之间的超参数迁移并与数值结果比较 （p. 17; figure Figure 4; source/tex/manuscript.tex）",
+        "论证节点“learning curve 指数由数据谱、目标对齐与相互作用共同决定”。",
+        "Gaussian 基线的损失标度由 kernel eigenvalue falloff 与 target overlap 的幂律决定。",
+        "quartic perturbation 若在当前 interval relevant，会改变有限 $P$ 的振幅甚至有效斜率；irrelevant 时大样本回到 GP-like 普适行为。",
+        "数值流程用幂律合成数据和 CIFAR-10 谱检查 RG prediction、Langevin equilibrium 与 saddle-point 解。",
+        "先识别 $P$ 所在的 scaling interval，再拟合斜率；跨 crossover 强行拟合单一指数会混合不同流区。",
+        "论文推导 Gaussian 与非 Gaussian learning curve 标度并进行数值工作流验证 （p. 19; figure Figure 5; source/tex/manuscript.tex）",
+        "证据状态：上述结论均来自逐页审阅后的 presentation manifest；这里只确认论文原文支持，不把作者实验视为本站独立复现。"
+      ]
+    },
+    {
+      "title": "有效性与局限",
+      "bullets": [
+        "论证节点“这是弱非线性平衡场论，不是所有深网的通用 RG”。",
+        "框架假设弱 quartic 非高斯修正、幂律谱和可用的 kernel 特征基；强 feature learning 可能离开微扰区域。",
+        "训练以非高斯 process regression/Langevin equilibrium 表述，与有限时间 SGD、分类损失和现代大模型仍有距离。",
+        "universality 是大数据 GP-like UV fixed point 附近的条件性结论；有限样本跨 separatrix 时可显著失效。",
+        "scaling interval 也意味着用一条全局幂律拟合有限范围数据可能掩盖 crossover。",
+        "RG 的真正贡献是给“哪些有限宽细节会随数据规模消失”一个可计算判据，而不是宣称所有神经标度律都属于同一普适类。",
+        "讨论部分限定弱非高斯场论、离散谱和条件性普适范围 （p. 22; source/tex/manuscript.tex）",
+        "适用边界以卡片列出的目标、假设、数据集或物理参数区间为准；未在原文证据中出现的外推不计入论文结论。",
+        "该卡完成的是全文证据审计，未重新运行训练、仿真或实验，因此不能据此声称独立复现、稳健性复核或跨任务泛化。"
+      ]
+    },
+    {
+      "title": "复现与资源",
+      "bullets": [
+        "原文：https://arxiv.org/abs/2510.25553；PDF：https://arxiv.org/pdf/2510.25553。",
+        "本地证据源：2510.25553/source/paper.pdf；SHA-256：44f4b819cf2f8dc8abbc677e3ab70ef0af9b905e14e0468bc0b38b2d352d2e80。",
+        "来源格式：tex；来源包状态：downloaded；presentation 证据条目数：7。",
+        "presentation 及其质量报告保留了页面审阅、编译和冷读状态；它们用于追溯卡片，不等同于作者代码或数据已公开。",
+        "Evidence status: full-text verified; no independent reproduction performed."
+      ]
+    },
+    {
+      "title": "阅读指南",
+      "bullets": [
+        "快速阅读可先看证据页 1, 4, 10, 14, 17, 19，这些页覆盖问题、方法与主要结论。",
+        "图证据优先查看 Figure 2；结合图注和正文，不只依据视觉趋势下结论。",
+        "建议按“研究问题 → 方法/数学对象 → 证据 → 局限”的顺序阅读，避免从摘要直接跳到强结论。",
+        "若要复现，先从证据引用恢复具体设置，再补齐随机种子、计算资源、评价指标和失败案例。"
+      ]
+    }
+  ],
+  "evidence_refs": [
+    "paper.pdf pages 1, 4, 10, 14, 17, 19, 22: page-addressable claims",
+    "paper_presentation.json: 7 substantive slides and 7 evidence entries",
+    "source-provenance.json: PDF SHA-256 44f4b819cf2f8dc8abbc677e3ab70ef0af9b905e14e0468bc0b38b2d352d2e80",
+    "Evidence status: full-text verified; no independent reproduction performed."
+  ],
+  "verified_metadata": {
+    "arxiv_id": "2510.25553",
+    "version": "v2",
+    "title": "Renormalization group for deep neural networks: Universality of learning and scaling laws",
+    "abstract": "Self-similarity, where observables at different length scales exhibit similar behavior, is ubiquitous in natural systems. Such systems are typically characterized by power-law correlations and universality, and are studied using the powerful framework of the renormalization group (RG). Intriguingly, power laws and weak forms of universality also pervade real-world datasets and deep learning models, motivating the application of RG ideas to the analysis of deep learning. In this work, we develop an RG framework to analyze self-similarity and its breakdown in learning curves for a class of weakly non-linear (non-lazy) neural networks trained on power-law distributed data. Features often neglected in standard treatments -- such as spectrum discreteness and lack of translation invariance -- lead to both quantitative and qualitative departures from conventional perturbative RG. In particular, we find that the concept of scaling intervals naturally replaces that of scaling dimensions. Despite these differences, the framework retains key RG features: it enables the classification of perturbations as relevant or irrelevant, and reveals a form of universality at large data limits, governed by a Gaussian Process-like UV fixed point.",
+    "authors": [
+      "Gorka Peraza Coppola",
+      "Moritz Helias",
+      "Zohar Ringel"
+    ],
+    "categories": [
+      "cond-mat.dis-nn"
+    ],
+    "primary_category": "cond-mat.dis-nn",
+    "published": "2025-10-29T14:20:13Z",
+    "comment": ""
+  },
+  "card_standard_version": "2.3",
+  "paper_profile": "ai_empirical",
+  "style_reference": "physicist_daily_arxiv",
+  "provenance": {
+    "program": "Collection",
+    "catalog": "Paper Collection",
+    "catalog_record_id": "e52ccd55b8707b36",
+    "catalog_record_ids": [
+      "e52ccd55b8707b36"
+    ],
+    "catalog_topic": "Renormalization Group",
+    "collection_date": "2026-06-24",
+    "sampled_at": "2026-08-26",
+    "selected_by": "full_collection_backfill",
+    "sampling_seed": "not_applicable_full_collection",
+    "candidate_count": 452,
+    "legacy_full_text_card": "2510.25553.json"
+  },
+  "equation_refs": [],
+  "figure_refs": [],
+  "cover": {
+    "mode": "title_abstract",
+    "abstract_text": "Self-similarity, where observables at different length scales exhibit similar behavior, is ubiquitous in natural systems. Such systems are typically characterized by power-law correlations and universality, and are studied using the powerful framework of the renormalization group (RG). Intriguingly, power laws and weak forms of universality also pervade real-world datasets and deep learning models, motivating the application of RG ideas to the analysis of deep learning. In this work, we develop an RG framework to analyze self-similarity and its breakdown in learning curves for a class of weakly non-linear (non-lazy) neural networks trained on power-law distributed data. Features often neglected in standard treatments -- such as spectrum discreteness and lack of translation invariance -- lead to both quantitative and qualitative departures from conventional perturbative RG. In particular,",
+    "selection_rationale": "该旧版全文证据包没有经过 v2.3 的逐图导出与图号核验；为避免错配图片，封面使用论文题目和经全文核对的摘要，关键论证保留在卡片正文中。"
+  }
+}

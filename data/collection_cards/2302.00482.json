@@ -1,0 +1,144 @@
+{
+  "arxiv_id": "2302.00482",
+  "source_version": "v4",
+  "source_pdf": "https://arxiv.org/pdf/2302.00482",
+  "title_en": "Improving and generalizing flow-based generative models with minibatch optimal transport",
+  "title_zh": "用小批量最优传输改进并推广基于流的生成模型",
+  "curation_status": "full_text_verified",
+  "verified_metadata": {
+    "arxiv_id": "2302.00482",
+    "version": "v4",
+    "title": "Improving and generalizing flow-based generative models with minibatch optimal transport",
+    "abstract": "Continuous normalizing flows (CNFs) are an attractive generative modeling technique, but they have been held back by limitations in their simulation-based maximum likelihood training. We introduce the generalized conditional flow matching (CFM) technique, a family of simulation-free training objectives for CNFs. CFM features a stable regression objective like that used to train the stochastic flow in diffusion models but enjoys the efficient inference of deterministic flow models. In contrast to both diffusion models and prior CNF training algorithms, CFM does not require the source distribution to be Gaussian or require evaluation of its density. A variant of our objective is optimal transport CFM (OT-CFM), which creates simpler flows that are more stable to train and lead to faster inference, as evaluated in our experiments. Furthermore, we show that when the true OT plan is available, our OT-CFM method approximates dynamic OT. Training CNFs with CFM improves results on a variety of conditional and unconditional generation tasks, such as inferring single cell dynamics, unsupervised image translation, and Schrödinger bridge inference.",
+    "authors": [
+      "Alexander Tong",
+      "Kilian Fatras",
+      "Nikolay Malkin",
+      "Guillaume Huguet",
+      "Yanlei Zhang",
+      "Jarrid Rector-Brooks",
+      "Guy Wolf",
+      "Yoshua Bengio"
+    ],
+    "categories": [
+      "cs.LG"
+    ],
+    "primary_category": "cs.LG",
+    "published": "2023-02-01T14:47:17Z",
+    "comment": "TMLR. Code: https://github.com/atong01/conditional-flow-matching",
+    "journal_ref": "Transactions on Machine Learning Research (03/2024)"
+  },
+  "sections": [
+    {
+      "title": "作者信息",
+      "bullets": [
+        "作者：Alexander Tong、Kilian Fatras、Nikolay Malkin、Guillaume Huguet、Yanlei Zhang、Jarrid Rector-Brooks、Guy Wolf、Yoshua Bengio；Mila/Montréal/McGill。",
+        "官方快照：arXiv:2302.00482v4；34 页；TMLR 2024；代码 torchcfm。前三位作者 equal contribution。",
+        "论文推广 CFM 到任意 source–target coupling，并提出 minibatch OT-CFM 与 Schrödinger-bridge CFM。"
+      ]
+    },
+    {
+      "title": "摘要",
+      "bullets": [
+        "generalized CFM 以任意 coupling z 条件化 source/target probability paths；训练仍是 conditional vector-field regression，不要求 source 为 Gaussian 或能评估其 density。",
+        "OT-CFM 在每个 minibatch 内求 source–target 2-Wasserstein matching，再回归近直线 conditional flows；目的既是减少 regression-target variance，也让 ODE 更易积分。",
+        "当可采样真实 static OT plan 且 σ²→0、满足 regularity 时，marginal flow 解 dynamic OT；实际大数据只用 minibatch plan，因此是近似而非 theorem 所述 exact OT。"
+      ]
+    },
+    {
+      "title": "背景",
+      "bullets": [
+        "早期 FM 把单 data endpoint 与 Gaussian source 配对；这限制了 empirical-to-empirical transport、single-cell interpolation、unpaired translation 与一般 bridge。",
+        "dynamic OT 最小化 path kinetic energy，理论等价于 static Wasserstein-2；以 regularizer 强迫 neural ODE 变直常难优化。",
+        "本工作将 coupling 本身视为 CFM 设计轴：independent coupling 给 I-CFM，OT coupling 给 OT-CFM，entropic OT/Brownian bridge 给 SB-CFM。"
+      ]
+    },
+    {
+      "title": "模型与方法",
+      "bullets": [
+        "Theorems 3.1–3.2 将条件变量从单 endpoint 推广为一般 z：posterior-weighted conditional fields 生成 marginal path，CFM 与 FM losses 对 θ 只差常数。",
+        "I-CFM 从 q0、q1 独立抽 x0,x1，并用 mean (1−t)x0+tx1、variance σ² 的 conditional Gaussian bridge；source 可是任意 sampleable empirical distribution。",
+        "OT-CFM 改从 joint plan π(x0,x1) 抽 paired endpoints。Proposition 3.4 在 exact π、regularity、σ²→0 下得到 Benamou–Brenier dynamic OT。",
+        "大数据每批先计算 discrete OT πbatch；complexity 相对全支持 cubic time/quadratic memory低，但 batch plan 不是全局 plan。batch size=1 退化为 I-CFM，等于完整 support 才恢复 exact discrete OT。",
+        "SB-CFM 用 entropic-OT endpoint coupling ε=2σ² 与 Brownian-bridge conditional path；Proposition 3.5 证明 marginal probability path 等于 Schrödinger bridge。ε→0 接 OT-CFM，ε→∞ 接 independent coupling。",
+        "理论还给出 Monge-map、σ→0 时 OT-CFM target variance→0；batch aggregation可进一步以计算换 variance。"
+      ]
+    },
+    {
+      "title": "核心结果与证据",
+      "bullets": [
+        "Table 2 的四个二维分布对、5 seeds：OT-CFM normalized path energy 为 .018/.053/.087/.027，明显低于 I-CFM 的 .222/2.738/.841/.867；但 W2 fit 并非每项都最佳。",
+        "Figure D.2 显示 path-energy error 随 minibatch 增大很快下降并约在 batch≈64 后平台；作者也说明所需 batch size 会随 dataset改变。",
+        "Table 4 的 leave-one-timepoint single-cell EMD：OT-CFM 在 Cite/EB/Multi 为 .882±.058/.790±.068/.937±.054，优于表中 DSB、I-CFM、SB-CFM；这评估 distribution interpolation，不追踪真实单细胞 lineage。",
+        "CIFAR-10 Table 5：新的统一训练 recipe 下 OT-CFM adaptive FID 3.577、NFE 133.94；OT-FM 3.655/143，I-CFM 3.659/146.42。高 NFE fixed-step 时差距很小，低 NFE时 OT-CFM优势更明显。",
+        "作者无法用原文参数复现 Lipman et al. 报告的 OT-FM 6.35，得到 11.527；改用 constant LR、gradient clip、EMA、较小 128-channel net/dropout 后所有方法显著改善。这是重要 provenance，不可把 3.577 与旧 6.35 归因全给算法。",
+        "CelebA 128-d VAE latent unpaired attributes：Table 6 OT-CFM MMD 在 σ=.1/.3/1 均低于 I-CFM；但大 σ alignment被作者视觉判断更不自然，MMD 单指标不足。"
+      ]
+    },
+    {
+      "title": "有效性与局限",
+      "bullets": [
+        "exact dynamic-OT theorem 需要 true plan、regularity 与 σ→0；minibatch OT 会引入高维 coupling error，论文结论中明确列为限制。",
+        "CFM 要求 closed-form conditional flows；若需要直接 regularize unknown marginal vector field，框架不如 simulation-based/regularized CNF灵活。",
+        "minibatch OT 根据当前 batch 强制配对，可能带来 sample-size bias；batch≈64 平台是特定低维实验，不是 universal threshold。",
+        "single-cell ground truth 只有 time-marginal snapshots；较低 EMD 不证明 learned trajectories 是细胞真实因果发展路径或保留 lineage。",
+        "CIFAR recipe 同时改变 LR schedule、channels、dropout、batch、clip 与 EMA；可以支持 reproducibility correction和 within-recipe comparison，不能隔离每项贡献。",
+        "image translation 在 VAE latent进行且用 broad-kernel MMD；作者承认 direct image-space GAN methods仍占优势。",
+        "variance降低的理论针对 conditional target与特定 limits；实际 wall-clock还含 minibatch OT solve，虽文中 CIFAR 报 <1% overhead，也依赖维度、batch和 solver。"
+      ]
+    },
+    {
+      "title": "复现与资源",
+      "bullets": [
+        "使用公开 torchcfm 固定版本，先重建 moons↔8gaussians：同时报告 test W2 fit、normalized path energy、objective variance、steps和 wall time。",
+        "OT audit 扫 batch size 1/16/64/full support 与 σ，保存每批 assignment cost；只在 full support/exact plan 条件下标 exact dynamic OT。",
+        "CIFAR 必须分别复现 original recipe 与 revised recipe，记录 channels=128、dropout=.1、batch=128、LR=2e-4、clip norm=1、EMA=.9999、FID sample count与 adaptive solver batch。",
+        "single-cell leave-one-timepoint split 要按 donor/time避免 leakage，并把 distribution EMD 与 lineage/perturbation prediction分开。",
+        "本站 PDF SHA-256：c98a4834abffe8a5c4e27c13c36a10d83d38e8780c98c3891150c4e028094d0a。",
+        "Evidence status: full-text verified; no independent reproduction performed."
+      ]
+    },
+    {
+      "title": "阅读指南",
+      "bullets": [
+        "先读 Theorems 3.1–3.2，再画出 I-CFM、OT-CFM、SB-CFM 三种 endpoint coupling；差别主要在 q(z)，不是网络架构。",
+        "读 Proposition 3.4 时逐项圈出 exact π、regularity、σ→0；然后与 minibatch paragraph 对照。",
+        "最后读 Tables 2/4/5/6、footnote 3 和 Conclusion；将优化路径、生成拟合、推断成本与科学轨迹真实性四种评价分离。"
+      ]
+    }
+  ],
+  "evidence_refs": [
+    "paper.pdf pp. 1-3: generalized CFM motivation, arbitrary sources and contributions",
+    "paper.pdf pp. 5-8: Theorems 3.1-3.2, I-CFM, OT-CFM and SB-CFM",
+    "paper.pdf pp. 8-10: low-dimensional OT and Schrödinger bridge evidence",
+    "paper.pdf pp. 10-12: single-cell and CIFAR Tables 4-5 plus reproduction caveat",
+    "paper.pdf pp. 12-13: latent translation, variance evidence and explicit limitations",
+    "paper.pdf pp. 22-25: target-variance propositions and batch-size ablations",
+    "Evidence status: full-text verified; no independent reproduction performed."
+  ],
+  "card_standard_version": "2.3",
+  "paper_profile": "theory_experiment",
+  "style_reference": "physicist_daily_arxiv",
+  "provenance": {
+    "program": "Collection",
+    "catalog": "Paper Collection",
+    "catalog_record_id": "03c470e1a0129ba7",
+    "catalog_record_ids": [
+      "03c470e1a0129ba7"
+    ],
+    "catalog_topic": "Generative Models",
+    "collection_date": "2026-08-24",
+    "sampled_at": "2026-08-26",
+    "selected_by": "full_collection_backfill",
+    "sampling_seed": "not_applicable_full_collection",
+    "candidate_count": 452,
+    "legacy_full_text_card": "2302.00482.json"
+  },
+  "equation_refs": [],
+  "figure_refs": [],
+  "cover": {
+    "mode": "title_abstract",
+    "abstract_text": "Continuous normalizing flows (CNFs) are an attractive generative modeling technique, but they have been held back by limitations in their simulation-based maximum likelihood training. We introduce the generalized conditional flow matching (CFM) technique, a family of simulation-free training objectives for CNFs. CFM features a stable regression objective like that used to train the stochastic flow in diffusion models but enjoys the efficient inference of deterministic flow models. In contrast to both diffusion models and prior CNF training algorithms, CFM does not require the source distribution to be Gaussian or require evaluation of its density. A variant of our objective is optimal transport CFM (OT-CFM), which creates simpler flows that are more stable to train and lead to faster inference, as evaluated in our experiments. Furthermore, we show that when the true OT plan is available,",
+    "selection_rationale": "该旧版全文证据包没有经过 v2.3 的逐图导出与图号核验；为避免错配图片，封面使用论文题目和经全文核对的摘要，关键论证保留在卡片正文中。"
+  }
+}

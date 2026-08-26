@@ -1,0 +1,134 @@
+{
+  "arxiv_id": "2504.18267",
+  "source_version": "v2",
+  "source_pdf": "https://arxiv.org/pdf/2504.18267",
+  "title_en": "Neural operators struggle to learn complex PDEs in pedestrian mobility: Hughes model case study",
+  "title_zh": "神经算子难以学习复杂行人流 PDE：Hughes 模型案例",
+  "curation_status": "full_text_verified",
+  "verified_metadata": {
+    "arxiv_id": "2504.18267",
+    "version": "v2",
+    "title": "Neural operators struggle to learn complex PDEs in pedestrian mobility: Hughes model case study",
+    "abstract": "This paper investigates the limitations of neural operators in learning solutions for a Hughes model, a first-order hyperbolic conservation law system for crowd dynamics. The model couples a Fokker-Planck equation representing pedestrian density with a Hamilton-Jacobi-type (eikonal) equation. This Hughes model belongs to the class of nonlinear hyperbolic systems that often exhibit complex solution structures, including shocks and discontinuities. In this study, we assess the performance of three state-of-the-art neural operators (Fourier Neural Operator, Wavelet Neural Operator, and Multiwavelet Neural Operator) in various challenging scenarios. Specifically, we consider (1) discontinuous and Gaussian initial conditions and (2) diverse boundary conditions, while also examining the impact of different numerical schemes. Our results show that these neural operators perform well in easy scenarios with fewer discontinuities in the initial condition, yet they struggle in complex scenarios with multiple initial discontinuities and dynamic boundary conditions, even when trained specifically on such complex samples. The predicted solutions often appear smoother, resulting in a reduction in total variation and a loss of important physical features. This smoothing behavior is similar to issues discussed by Daganzo (1995), where models that introduce artificial diffusion were shown to miss essential features such as shock waves in hyperbolic systems. These results suggest that current neural operator architectures may introduce unintended regularization effects that limit their ability to capture transport dynamics governed by discontinuities. They also raise concerns about generalizing these methods to traffic applications where shock preservation is essential.",
+    "authors": [
+      "Prajwal Chauhan",
+      "Salah Eddine Choutri",
+      "Mohamed Ghattassi",
+      "Nader Masmoudi",
+      "Saif Eddin Jabari"
+    ],
+    "categories": [
+      "cs.LG",
+      "cs.AI"
+    ],
+    "primary_category": "cs.LG",
+    "published": "2025-04-25T11:26:41Z",
+    "comment": ""
+  },
+  "sections": [
+    {
+      "title": "作者信息",
+      "bullets": [
+        "作者：Prajwal Chauhan、Salah Eddine Choutri、Mohamed Ghattassi、Nader Masmoudi、Saif Eddin Jabari；主要来自 NYU Abu Dhabi/Courant/NYU Tandon。",
+        "官方快照：arXiv:2504.18267v2；主分类 cs.LG。",
+        "论文是一项负结果/压力测试：比较 FNO、Wavelet Neural Operator 与 Multiwavelet Neural Operator 在一维 Hughes 行人流模型上的失败模式。"
+      ]
+    },
+    {
+      "title": "摘要",
+      "bullets": [
+        "Hughes 模型把 pedestrian density 的标量守恒律与决定行走方向的 eikonal equation 耦合，turning point 由左右累计 cost 相等确定；解可产生 shocks、多个 discontinuities 与 boundary-driven regime changes。",
+        "三类 neural operators 在少 discontinuities、固定边界等简单条件下可用，但随着初值断点增多或出口动态开闭，relative L2 与 total-variation fidelity 显著恶化。",
+        "主要失败不是只有数值偏差：预测会平滑、放大或漏掉跳跃，产生定性错误的流型；即使复杂样本专门训练、WFT 网格细化也没有根治。"
+      ]
+    },
+    {
+      "title": "背景",
+      "bullets": [
+        "在区间 (-1,1) 上，ρ∈[0,1] 满足通量 f(ρ)=ρ(1−ρ) 的双向守恒律；eikonal cost c(ρ)=1/(1−ρ)，turning point ξ(t) 把向左右出口移动的人群分开。",
+        "这类 inviscid hyperbolic system 与常见 smooth/periodic Darcy、viscous Burgers、moderate-Re Navier–Stokes benchmark 不同；shock preservation 是交通/行人流可用性的核心。",
+        "作者同时检验数据生成器影响：Godunov finite-volume scheme 与 wave-front tracking (WFT) algorithm 的离散误差/稳定性本身会改变学习难度。"
+      ]
+    },
+    {
+      "title": "模型与方法",
+      "bullets": [
+        "Problem I 用不连续 piecewise initial densities，从 easy 到 complex 增加断点数；FNO、MWT、WNO 分别在 Godunov 和 WFT 数据上训练测试。",
+        "除 relative L2 外，定义 signed TV difference=TV(reference)−TV(prediction)，再取正部平均形成 clipped-TV；正值专门指示预测低估 variation 的 smoothing/diffusion，不把 over-sharpening混进去。",
+        "Problem II 设两出口 zero-flux/closed，隔离固定累积边界；Problem III 用单 Gaussian smooth initial condition，比较两出口开放与左出口非周期关闭，并分别只给初值 IVP 或显式给初值+边界 MI-BVP。",
+        "动态边界使 solution operator 出现 boundary integral 和 position-dependent effects；单一近 translation-invariant kernel 会在互相冲突的开/闭 regimes 之间平均。",
+        "效率比较对 2400 个 FNO test samples 计 forward pass，并分别对 150 个 Godunov/WFT samples 计数值求解时间；batching 与离散精度必须同时看。"
+      ]
+    },
+    {
+      "title": "核心结果与证据",
+      "bullets": [
+        "WFT Table 2 中 complex test relative L2：FNO 0.127、MWT 0.128、WNO 0.126；Godunov Table 3 为 0.114/0.119/0.113，均明显差于对应 easy test 的约 0.063–0.085。",
+        "同一六断点样本中，FNO 对 Godunov data 的 relative L2 为 0.173，对 WFT 为 0.215；作者发现 WFT Δρ=1/250 有 cost-integral instability，但改到 Δρ=1/800 并筛 Ecost<0.1 后，Figure 10 的误差仍随断点数明显升高。",
+        "固定双闭出口的简单 Problem II 得到 train/val/test 0.032/0.042/0.042，说明非平凡边界本身不必失败；难点是动态 switching 与 discontinuities 的组合。",
+        "Gaussian initial condition 下，两出口开放 test=0.053；左出口非周期关闭但仅输入初值时 test=0.220，显式输入边界 MI-BVP 后降到 0.155，仍远差于固定开放边界。",
+        "Table 5 中 FNO 单样本约 6 ms、batch 100 摊薄为 0.4 ms；训练所用 Godunov Δx=1/400,Δt=1/400 约 2161 ms，WFT Δρ=1/800 约 2267 ms。加速很大，但作者明确判定复杂解的准确性不足以可靠替代。"
+      ]
+    },
+    {
+      "title": "有效性与局限",
+      "bullets": [
+        "论文只测试一维 Hughes variant 与三种特定实现，不能推出所有 neural operators 或所有 hyperbolic PDE 都失败。",
+        "Godunov 与 WFT reference 并非同一误差性质；WFT coarse discretization 的 instability 会污染监督标签，因此模型误差必须与 solver consistency 分开。",
+        "relative L2 会弱化窄 shock 的位置/幅值错误；clipped-TV 能抓 smoothing，却不能区分正确 shock 位移、spurious oscillation 与局部 conservation violation，仍需 shock-location 和 mass/cost balance 指标。",
+        "边界机制的解释是基于 kernel intuition 和现象对照，未做专门 architecture ablation 来证明单 kernel 是唯一原因。",
+        "速度数字是特定 hardware/batch/discretization 下的 forward timing，且不含数据生成和训练；不能单凭 0.4 ms 宣称可靠实时部署。"
+      ]
+    },
+    {
+      "title": "复现与资源",
+      "bullets": [
+        "复现应按 easy/complex、Godunov/WFT、固定/动态边界分层保存数据，并记录 Δx、Δt、Δρ、cost-integral balance Ecost 与每个 initial discontinuity count。",
+        "评价至少同时报告 relative L2、signed/clipped TV、mass/cost balance、shock/turning-point position；用同一具体样本对照两个 solvers，先排除 reference instability。",
+        "动态边界实验必须区分 IVP 与 MI-BVP 输入；若未把 boundary condition 给模型，不能把失败全归因于 operator architecture。",
+        "本站 PDF SHA-256：74644c82c0edfb440b4423d05aa73453f83c1ceda96019948e34982f4bb3a561。",
+        "Evidence status: full-text verified; no independent reproduction performed."
+      ]
+    },
+    {
+      "title": "阅读指南",
+      "bullets": [
+        "先读 Hughes equations (1)–(7)，理解 turning point 和左右出口 cost balance。",
+        "再读 Tables 2–3 与 Figures 7–10，把数据生成器误差和模型 smoothing 分开；clipped-TV 是比单一 L2 更有物理含义的诊断。",
+        "最后读 Table 4、Figures 13–14 和 Table 5：边界作为输入能改善但未解决动态 regime，速度优势也不能补偿 shock fidelity。"
+      ]
+    }
+  ],
+  "evidence_refs": [
+    "paper.pdf pp. 1-5: Hughes conservation/eikonal system, turning point and neural-operator motivation",
+    "paper.pdf pp. 11-18: dataset construction, Godunov/WFT schemes, relative-L2 and clipped-TV definitions",
+    "paper.pdf pp. 18-22: Tables 2-4 and discontinuity/boundary-condition failure analyses",
+    "paper.pdf pp. 22-24: timing Table 5 and conclusions about shock fidelity",
+    "Evidence status: full-text verified; no independent reproduction performed."
+  ],
+  "card_standard_version": "2.3",
+  "paper_profile": "ai_empirical",
+  "style_reference": "physicist_daily_arxiv",
+  "provenance": {
+    "program": "Collection",
+    "catalog": "Paper Collection",
+    "catalog_record_id": "cee7619e23629279",
+    "catalog_record_ids": [
+      "cee7619e23629279"
+    ],
+    "catalog_topic": "Neural Operators",
+    "collection_date": "2026-08-24",
+    "sampled_at": "2026-08-26",
+    "selected_by": "full_collection_backfill",
+    "sampling_seed": "not_applicable_full_collection",
+    "candidate_count": 452,
+    "legacy_full_text_card": "2504.18267.json"
+  },
+  "equation_refs": [],
+  "figure_refs": [],
+  "cover": {
+    "mode": "title_abstract",
+    "abstract_text": "This paper investigates the limitations of neural operators in learning solutions for a Hughes model, a first-order hyperbolic conservation law system for crowd dynamics. The model couples a Fokker-Planck equation representing pedestrian density with a Hamilton-Jacobi-type (eikonal) equation. This Hughes model belongs to the class of nonlinear hyperbolic systems that often exhibit complex solution structures, including shocks and discontinuities. In this study, we assess the performance of three state-of-the-art neural operators (Fourier Neural Operator, Wavelet Neural Operator, and Multiwavelet Neural Operator) in various challenging scenarios. Specifically, we consider (1) discontinuous and Gaussian initial conditions and (2) diverse boundary conditions, while also examining the impact of different numerical schemes. Our results show that these neural operators perform well in easy sce",
+    "selection_rationale": "该旧版全文证据包没有经过 v2.3 的逐图导出与图号核验；为避免错配图片，封面使用论文题目和经全文核对的摘要，关键论证保留在卡片正文中。"
+  }
+}

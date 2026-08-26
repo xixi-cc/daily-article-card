@@ -1,0 +1,175 @@
+{
+  "arxiv_id": "2406.02154",
+  "source_version": "v1",
+  "source_pdf": "https://arxiv.org/pdf/2406.02154",
+  "title_en": "Learning Hamiltonian neural Koopman operator and simultaneously sustaining and discovering conservation law",
+  "title_zh": "哈密顿神经 Koopman 算子：预测动力学并维持、发现守恒律",
+  "curation_status": "full_text_verified",
+  "sections": [
+    {
+      "title": "作者信息",
+      "bullets": [
+        "作者：Jingdong Zhang、Qunxi Zhu、Wei Lin。",
+        "研究机构：Fudan University and Shanghai AI Laboratory。",
+        "来源：arXiv:2406.02154；年份：2024；主题：Koopman、Hamiltonian、守恒律。",
+        "本文按本地全文快照制作，官方元数据核验版本为 2406.02154v1。"
+      ]
+    },
+    {
+      "title": "摘要",
+      "bullets": [
+        "本文的论证主线由以下经过全文核验的节点构成：普通 neural Koopman 可线性化动力学，却不自动守恒；Encoder—正交 Koopman 推进—Decoder 构成闭环；指数参数化把 Koopman 矩阵锁在正交群；测试覆盖低维混沌到数百/数千自由度系统；Koopman latent 提供线性推进，但几何约束决定长期可信度；HNKO 用正交 Koopman 矩阵保持 latent 范数，降低噪声下的轨道和能量漂移；latent 不变量可生成候选守恒律，但必须映回物理空间并独立验证。",
+        "卡片内容来自已完成冷读与逐页检查的 paper_presentation.json，并回链到原论文页码、图或公式。"
+      ]
+    },
+    {
+      "title": "背景",
+      "bullets": [
+        "论证节点“普通 neural Koopman 可线性化动力学，却不自动守恒”。",
+        "Koopman 方法用 encoder 把非线性状态映到 latent，再用线性算子推进。",
+        "若只最小化重构与一步预测，噪声和有限数据会破坏能量型守恒量。",
+        "HNKO 把 latent Koopman 矩阵限制在 special orthogonal group，使其推进时保持 latent 范数。",
+        "encoder 再把物理轨道嵌到球面流形；特征组合可诱导候选 Hamiltonian。",
+        "关键不是多加一个能量 penalty，而是把正交性做成算子的硬参数化。",
+        "论文以 Hamiltonian Koopman operator 的 unitary 性为依据，采用正交神经网络。 （p. 1; source/tex/main.tex:66-103）",
+        "研究问题的表述以论文给出的对象和评价目标为边界；背景动机不自动构成方法有效性的证据。"
+      ]
+    },
+    {
+      "title": "模型与方法",
+      "bullets": [
+        "论证节点“普通 neural Koopman 可线性化动力学，却不自动守恒”。",
+        "Koopman 方法用 encoder 把非线性状态映到 latent，再用线性算子推进。",
+        "若只最小化重构与一步预测，噪声和有限数据会破坏能量型守恒量。",
+        "HNKO 把 latent Koopman 矩阵限制在 special orthogonal group，使其推进时保持 latent 范数。",
+        "encoder 再把物理轨道嵌到球面流形；特征组合可诱导候选 Hamiltonian。",
+        "关键不是多加一个能量 penalty，而是把正交性做成算子的硬参数化。",
+        "论文以 Hamiltonian Koopman operator 的 unitary 性为依据，采用正交神经网络。 （p. 1; source/tex/main.tex:66-103）",
+        "论证节点“指数参数化把 Koopman 矩阵锁在正交群”。",
+        "设定：Hamiltonian flow 的 Koopman operator 是 unitary；有限维实表示采用正交近似。",
+        "关键关系：K &= \\exp(A-A^\\top) \\\\ K K^\\top &= I \\\\ z_{t+1} &\\approx K z_t",
+        "推导含义：反对称生成元的矩阵指数天然落在 $SO(p)$；动力学损失学习推进，重构与球面损失学习坐标变换。",
+        "结论边界：硬正交参数化比仅在 loss 中惩罚守恒漂移更直接，但它保持的是 latent 范数，并非一般辛条件。",
+        "论文用 skew-symmetric Lie algebra 的指数映射参数化正交 Koopman 矩阵。 （p. 2; equation K=exp(A-A^T); source/tex/main.tex:79-103）",
+        "论证节点“测试覆盖低维混沌到数百/数千自由度系统”。",
+        "代表系统包含单摆/双摆、刚体或 N 体等 Hamiltonian dynamics。",
+        "比较 HNKO、普通 neural Koopman、Hamiltonian neural network 等基线。",
+        "指标同时看状态预测、轨道形状和守恒量漂移，而不是只看一步 MSE。",
+        "实验加入观测噪声，并扩展到高自由度，检验结构先验的可扩展性。",
+        "长时程守恒误差是比短期拟合更严格的机制检验。",
+        "实验比较多个 Hamiltonian 系统、噪声水平和自由度规模。 （p. 3; source/tex/main.tex:330-520）",
+        "论证节点““发现守恒律”依赖 latent 不变量可映回物理量”。",
+        "在线性 latent dynamics 中，左零空间/不变二次型给出候选守恒量。",
+        "decoder/encoder 将候选量映回原状态，可与已知 Hamiltonian 或角动量比较。",
+        "若未知守恒量只在训练轨迹上常数，仍可能是数据覆盖不足造成的伪不变量。",
+        "因此需要新初值、噪声和更长时间区间上的独立验证。",
+        "发现不是看到一条平线；候选不变量必须跨轨道、跨初值成立。",
+        "论文从学得 Koopman/Hamiltonian 结构提取并验证守恒量。 （p. 5; source/tex/main.tex:420-560）",
+        "方法部分按 presentation 中的数学关系、算法结构或实验设计重述；公式只在相应证据页定义的符号与条件下成立。"
+      ]
+    },
+    {
+      "title": "核心结果与证据",
+      "bullets": [
+        "论证节点“Encoder—正交 Koopman 推进—Decoder 构成闭环”。",
+        "Fig. 1：观测状态经 encoder 嵌入球面上的低维流形，正交矩阵 $K$ 在线性 latent 空间推进，再由 decoder 映回原状态。",
+        "证据解释：正交推进保持 latent 范数，为能量型守恒提供结构来源。",
+        "Fig. 1 展示 encoder、球面 latent manifold、正交 Koopman 矩阵与 decoder。 （p. 1; figure Fig. 1; source/tex/fig1.pdf）",
+        "论证节点“结构约束减少轨道漂移并恢复守恒量”。",
+        "Fig. 3：相空间轨迹、状态误差与守恒量曲线显示 HNKO 在长时间预测中更接近参考动力学；无结构模型更易出现能量漂移。",
+        "证据解释：优势来自保持几何，而不是单纯增加网络容量。",
+        "结果图比较轨道重构、预测误差与 Hamiltonian 漂移。 （p. 4; figure Fig. 3; source/tex/fig3.pdf）",
+        "证据状态：上述结论均来自逐页审阅后的 presentation manifest；这里只确认论文原文支持，不把作者实验视为本站独立复现。"
+      ]
+    },
+    {
+      "title": "有效性与局限",
+      "bullets": [
+        "论证节点“边界：先验强度与未知坐标的可辨识性”。",
+        "HNKO 针对 Hamiltonian/近 Hamiltonian 系统；耗散、驱动或接触系统需要扩展。",
+        "canonical latent 坐标并不唯一，守恒量表达可能受 encoder gauge 影响。",
+        "高自由度实验展示可行性，但复杂真实系统中的缺失变量与非平稳噪声更困难。",
+        "应区分“维持已知守恒”与“从未知数据发现新定律”的证据强度。",
+        "结构保持证据扎实；新守恒律的科学主张需要更严格外部验证。",
+        "论文结论讨论 Hamiltonian 适用范围与结构学习价值。 （p. 5; source/tex/main.tex:520-590）",
+        "论证节点“三点带走：线性化、正交推进、跨轨道守恒检验”。",
+        "Koopman latent 提供线性推进，但几何约束决定长期可信度。",
+        "HNKO 用正交 Koopman 矩阵保持 latent 范数，降低噪声下的轨道和能量漂移。",
+        "latent 不变量可生成候选守恒律，但必须映回物理空间并独立验证。",
+        "在物理机器学习中，正确结构往往比更深网络更能保护长期预测。",
+        "论文总结 HNKO 在预测、守恒维持和守恒发现上的结果。 （p. 5; source/tex/main.tex:520-590）",
+        "适用边界以卡片列出的目标、假设、数据集或物理参数区间为准；未在原文证据中出现的外推不计入论文结论。",
+        "该卡完成的是全文证据审计，未重新运行训练、仿真或实验，因此不能据此声称独立复现、稳健性复核或跨任务泛化。"
+      ]
+    },
+    {
+      "title": "复现与资源",
+      "bullets": [
+        "原文：https://arxiv.org/abs/2406.02154；PDF：https://arxiv.org/pdf/2406.02154。",
+        "本地证据源：2406.02154/source/paper.pdf；SHA-256：dba9e7dafa79fb186c627e9d89e97998aadbfb0cb00ecb845d86468de5eb91c7。",
+        "来源格式：tex；来源包状态：downloaded；presentation 证据条目数：8。",
+        "presentation 及其质量报告保留了页面审阅、编译和冷读状态；它们用于追溯卡片，不等同于作者代码或数据已公开。",
+        "Evidence status: full-text verified; no independent reproduction performed."
+      ]
+    },
+    {
+      "title": "阅读指南",
+      "bullets": [
+        "快速阅读可先看证据页 1, 2, 3, 4, 5，这些页覆盖问题、方法与主要结论。",
+        "图证据优先查看 Fig. 1；结合图注和正文，不只依据视觉趋势下结论。",
+        "公式链优先查看 K=exp(A-A^T)；核对符号、假设与前后推导。",
+        "建议按“研究问题 → 方法/数学对象 → 证据 → 局限”的顺序阅读，避免从摘要直接跳到强结论。",
+        "若要复现，先从证据引用恢复具体设置，再补齐随机种子、计算资源、评价指标和失败案例。"
+      ]
+    }
+  ],
+  "evidence_refs": [
+    "paper.pdf pages 1, 2, 3, 4, 5: page-addressable claims",
+    "paper_presentation.json: 8 substantive slides and 8 evidence entries",
+    "source-provenance.json: PDF SHA-256 dba9e7dafa79fb186c627e9d89e97998aadbfb0cb00ecb845d86468de5eb91c7",
+    "Evidence status: full-text verified; no independent reproduction performed."
+  ],
+  "verified_metadata": {
+    "arxiv_id": "2406.02154",
+    "version": "v1",
+    "title": "Learning Hamiltonian neural Koopman operator and simultaneously sustaining and discovering conservation law",
+    "abstract": "Accurately finding and predicting dynamics based on the observational data with noise perturbations is of paramount significance but still a major challenge presently. Here, for the Hamiltonian mechanics, we propose the Hamiltonian Neural Koopman Operator (HNKO), integrating the knowledge of mathematical physics in learning the Koopman operator, and making it automatically sustain and even discover the conservation laws. We demonstrate the outperformance of the HNKO and its extension using a number of representative physical systems even with hundreds or thousands of freedoms. Our results suggest that feeding the prior knowledge of the underlying system and the mathematical theory appropriately to the learning framework can reinforce the capability of machine learning in solving physical problems.",
+    "authors": [
+      "Jingdong Zhang",
+      "Qunxi Zhu",
+      "Wei Lin"
+    ],
+    "categories": [
+      "math-ph",
+      "cs.LG"
+    ],
+    "primary_category": "math-ph",
+    "published": "2024-06-04T09:42:34Z",
+    "comment": ""
+  },
+  "card_standard_version": "2.3",
+  "paper_profile": "ai_empirical",
+  "style_reference": "physicist_daily_arxiv",
+  "provenance": {
+    "program": "Collection",
+    "catalog": "Paper Collection",
+    "catalog_record_id": "dba9e7dafa79fb18",
+    "catalog_record_ids": [
+      "dba9e7dafa79fb18"
+    ],
+    "catalog_topic": "Machine Learning",
+    "collection_date": "2026-08-23",
+    "sampled_at": "2026-08-26",
+    "selected_by": "full_collection_backfill",
+    "sampling_seed": "not_applicable_full_collection",
+    "candidate_count": 452,
+    "legacy_full_text_card": "2406.02154.json"
+  },
+  "equation_refs": [],
+  "figure_refs": [],
+  "cover": {
+    "mode": "title_abstract",
+    "abstract_text": "Accurately finding and predicting dynamics based on the observational data with noise perturbations is of paramount significance but still a major challenge presently. Here, for the Hamiltonian mechanics, we propose the Hamiltonian Neural Koopman Operator (HNKO), integrating the knowledge of mathematical physics in learning the Koopman operator, and making it automatically sustain and even discover the conservation laws. We demonstrate the outperformance of the HNKO and its extension using a number of representative physical systems even with hundreds or thousands of freedoms. Our results suggest that feeding the prior knowledge of the underlying system and the mathematical theory appropriately to the learning framework can reinforce the capability of machine learning in solving physical problems.",
+    "selection_rationale": "该旧版全文证据包没有经过 v2.3 的逐图导出与图号核验；为避免错配图片，封面使用论文题目和经全文核对的摘要，关键论证保留在卡片正文中。"
+  }
+}

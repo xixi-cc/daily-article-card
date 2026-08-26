@@ -1,0 +1,102 @@
+{
+  "arxiv_id": "2608.10384",
+  "source_version": "v1",
+  "source_pdf": "https://arxiv.org/pdf/2608.10384",
+  "title_en": "Generator-Guided Inverse Sampling for Lévy-Driven Generative Models",
+  "title_zh": "生成元引导的 Lévy 驱动生成模型逆采样",
+  "curation_status": "full_text_verified",
+  "sections": [
+    {
+      "title": "作者信息",
+      "bullets": [
+        "作者：Tianfu Qi、Jun Wang、Jun Zhang。",
+        "版本：arXiv:2608.10384v1，2026-08-11；分类 cs.LG。",
+        "主题：Lévy 跳过程、时间反演生成元与逆采样。"
+      ]
+    },
+    {
+      "title": "研究问题",
+      "paragraphs": [
+        "扩散模型的反向 drift 可由局部 score 表示，但带无限跳活动的 Lévy 过程在时间反演后，jump kernel 依赖 $p_t(x+v)/p_t(x)$ 的非局部密度比；score 本身不够。本文从 Markov generator 出发，分解反向 diffusion、小跳与大跳，并为各向同性线性对称 $\\alpha$-stable SDE 构造可计算 sampler。"
+      ]
+    },
+    {
+      "title": "模型与方法",
+      "bullets": [
+        "先求 forward generator 的扩散、drift 与 Lévy integral，再相对时刻边缘密度推导 reversed generator；反向大跳一般成为 state/time-dependent Markov jump process。",
+        "以 cutoff $\\epsilon$ 将小跳用局部 diffusion 近似，其 generator 误差由密度的三阶局部正则项控制；大跳保留离散 event。",
+        "在线性 isotropic $\\alpha$-stable forward kernel 可解析时，条件 density ratio 可由训练样本的 mixture/importance weights 表示。",
+        "神经网络只 amortize 大跳总 rate，而不是黑箱输出 jump amplitude；发生跳跃后，幅度/方向从解析推导的 conditional law 采样，提高可解释和可控性。",
+        "实现包括 rate 积分近似、快速条件抽样和对 inverse problems 的 posterior/data-consistency 适配；实验比较 rate 估计与结构消融。"
+      ]
+    },
+    {
+      "title": "核心结果与证据",
+      "bullets": [
+        "Proposition 1 证明反向 jump kernel 含非局部 density ratio，形式上解释为何把 diffusion score sampler 直接搬到 Lévy 动力学不正确。",
+        "小跳 Gaussianization 给出受控近似，而大跳保留重尾/跨模态能力；两者与普通反向 diffusion 构成 structured sampler。",
+        "Theorem 1 给出可用边缘/条件 trainable functions，使大跳 rate 可从 forward conditional samples 学习，无需每步显式估计全维边缘密度。",
+        "解析 amplitude distribution 与 learned rate 的分工在消融中优于完全神经化或省略 rate correction，尤其对 impulsive/heavy-tail 目标。",
+        "论文还适配图像 inverse sampling，但理论可计算性集中在对称 isotropic linear $\\alpha$-stable 类，不代表一般 Lévy process 都已有实用算法。"
+      ]
+    },
+    {
+      "title": "有效性与局限",
+      "bullets": [
+        "一般反向 jump kernel 仍需非局部密度比；闭式/高效 sampler 依赖线性、各向同性、对称 stable 假设。",
+        "cutoff $\\epsilon$ 在计算量与小跳近似偏差之间权衡，密度不够光滑或近零时误差控制会恶化。",
+        "learned rate 的误差会同时影响 jump count 与轨迹分布，解析 amplitude 并不消除模型误差。",
+        "无限活动过程的离散时间积分和大跳 sampling 有额外数值稳定问题。",
+        "图像恢复结果是经验验证，尚不能替代离散 sampler 向连续反向过程的整体收敛定理。"
+      ]
+    },
+    {
+      "title": "复现与资源",
+      "bullets": [
+        "原文 PDF：https://arxiv.org/pdf/2608.10384。",
+        "本次全文核查未发现论文专属代码链接。",
+        "复现应分别测 rate error、jump-size law、终点分布与 inverse-task metric，并扫描 $\\alpha,\\epsilon$ 和时间步。"
+      ]
+    },
+    {
+      "title": "阅读指南",
+      "bullets": [
+        "先读 reversed generator，抓住 density ratio 而非 score。",
+        "再读 small/large jump decomposition 与误差条件。",
+        "Theorem 1 后核对 learned rate/analytic amplitude 的接口。",
+        "最后看消融与 inverse sampling，限制到论文实际处理的 stable SDE。"
+      ]
+    }
+  ],
+  "evidence_refs": [
+    "paper.pdf pp. 1-4: authors, reverse generator, nonlocal density ratio, and jump decomposition",
+    "paper.pdf pp. 4-8: small-jump approximation, Theorem 1, large-jump rate and analytic conditional law",
+    "paper.pdf pp. 8-13: efficient implementation, experiments, and ablations",
+    "Evidence status: full-text verified; no independent reproduction performed."
+  ],
+  "card_standard_version": "2.3",
+  "paper_profile": "theory_experiment",
+  "style_reference": "physicist_daily_arxiv",
+  "provenance": {
+    "program": "Collection",
+    "catalog": "Paper Collection",
+    "catalog_record_id": "e8bfcc6769249a39",
+    "catalog_record_ids": [
+      "e8bfcc6769249a39"
+    ],
+    "catalog_topic": "Generative Models",
+    "collection_date": "2026-08-23",
+    "sampled_at": "2026-08-26",
+    "selected_by": "full_collection_backfill",
+    "sampling_seed": "not_applicable_full_collection",
+    "candidate_count": 452,
+    "legacy_full_text_card": "2608.10384.json"
+  },
+  "equation_refs": [],
+  "figure_refs": [],
+  "cover": {
+    "mode": "title_abstract",
+    "abstract_text": "扩散模型的反向 drift 可由局部 score 表示，但带无限跳活动的 Lévy 过程在时间反演后，jump kernel 依赖 $p_t(x+v)/p_t(x)$ 的非局部密度比；score 本身不够。本文从 Markov generator 出发，分解反向 diffusion、小跳与大跳，并为各向同性线性对称 $\\alpha$-stable SDE 构造可计算 sampler。",
+    "selection_rationale": "该旧版全文证据包没有经过 v2.3 的逐图导出与图号核验；为避免错配图片，封面使用论文题目和经全文核对的摘要，关键论证保留在卡片正文中。"
+  }
+}

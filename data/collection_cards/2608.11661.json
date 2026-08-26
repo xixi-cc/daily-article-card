@@ -1,0 +1,104 @@
+{
+  "arxiv_id": "2608.11661",
+  "source_version": "v1",
+  "source_pdf": "https://arxiv.org/pdf/2608.11661",
+  "title_en": "Low-Interaction-Rank Learning: Unifying Multiplicative Dual-Encoder Heads",
+  "title_zh": "低交互秩学习：统一乘性双编码器头",
+  "curation_status": "full_text_verified",
+  "sections": [
+    {
+      "title": "作者信息",
+      "bullets": [
+        "作者：Zijian Zhao、Sen Li（通讯作者）。",
+        "机构：香港科技大学；香港科技大学（广州）。",
+        "版本：arXiv:2608.11661v1，2026-08-12；论文提供 Mul-Net 代码仓库。"
+      ]
+    },
+    {
+      "title": "研究问题",
+      "paragraphs": [
+        "CLIP 相似度、DeepONet branch–trunk、双塔检索、目标条件强化学习等都用两个独立编码器的内积 $F(u,v)\\approx\\langle f_\\theta(u),g_\\phi(v)\\rangle$，但各领域分别讨论维度、归一化与失效条件。本文把它们统一为低交互秩函数：交互谱决定需要多少乘性模式，也决定这种架构是否值得使用。"
+      ]
+    },
+    {
+      "title": "模型与方法",
+      "bullets": [
+        "对 $F\\in L^2(\\mu_U\\otimes\\mu_V)$ 作 Schmidt 分解 $F=\\sum_k\\sigma_k a_k\\otimes b_k$；embedding width $d$ 就是保留的交互秩。",
+        "rank-$d$ 逼近误差拆成不可避免的谱截断 $\\sum_{k>d}\\sigma_k^2$ 与两个 encoder 对前 $d$ 个模式的实现误差。",
+        "统计复杂度由两个 encoder 假设类复杂度之和控制，而非二者乘积；对谱快速衰减的光滑目标，最优秩只随样本量对数增长。",
+        "编码具有 $f\\mapsto Af,\\ g\\mapsto A^{-T}g$ 的线性 gauge 自由度；论文把归一化解释为 gauge fixing，并证明 whitening 可把模式确定到置换与符号。",
+        "给出 interaction spectrum 的可用性判据，并以谱隙控制有限样本 whitening 的模式恢复误差。"
+      ]
+    },
+    {
+      "title": "核心结果与证据",
+      "bullets": [
+        "线性矩阵回归实例中，Theorem 7 的 excess-risk 标度为 $\\sigma^2d(2p-d)/n$；图 1 对样本数、秩和环境维度的扫描支持该标度。",
+        "七种 normalization 的四随机种子比较显示 hard whitening 同时实现最高模式对齐、可控协方差条件数与跨种子零 gauge 距离；cosine normalization 仍保留任意正交旋转。",
+        "有限样本模式识别随谱隙和样本量退化，图 3 中 $\\text{error}\\,\\Delta\\sqrt n$ 约为 2.48，符合 $O((\\Delta\\sqrt n)^{-1})$。",
+        "负结果给出适用边界：m-bit Boolean equality kernel 达到 10% 相对误差所需秩随 $2^m$ 增长；窄带周期 Gaussian kernel 的秩随 $1/h$ 线性增长；平谱目标存在 $1-d/N$ 的相对平方误差下限。",
+        "DeepONet 实验比较 heat、antiderivative 与 boxcar block operator：heat 从 $d=4$ 到 8 仅改善约 5%，antiderivative 改善约 31%，而严格平谱 boxcar 呈现预测误差地板。",
+        "两个独立训练的 CLIP 表征可由单一旋转对齐；whitening 去除该自由度后出现可解释 concept axes，说明原坐标不可解释不等于交互子空间没有结构。"
+      ]
+    },
+    {
+      "title": "有效性与局限",
+      "bullets": [
+        "低交互秩是假设而非普遍事实；平谱、equality 与窄带 kernel 是作者明确给出的反例。",
+        "whitening 依赖可靠协方差估计和非退化谱隙；谱隙趋小时，单个模式的身份本身不稳定。",
+        "理论主要在 $L^2$ 总体分布与平方误差下表述，实际负采样、非平稳数据和下游决策损失可能改变结论。",
+        "CLIP 的旋转/概念轴结果是表征层实证，不证明所有 contrastive 模型都能恢复相同语义基。",
+        "框架回答乘性 head 的表达与统计问题，不替代对 encoder 优化难度、计算成本和校准的分析。"
+      ]
+    },
+    {
+      "title": "复现与资源",
+      "bullets": [
+        "原文 PDF：https://arxiv.org/pdf/2608.11661。",
+        "代码：https://github.com/RS2002/Mul-Net。",
+        "复现时应同时报告 interaction spectrum、截断误差、encoder realization error、不同 normalization 的 mode alignment/condition number，以及 equality/boxcar 负对照。"
+      ]
+    },
+    {
+      "title": "阅读指南",
+      "bullets": [
+        "先读第 2 节的 Schmidt 谱与十类统一实例。",
+        "第 3 节看逼近分解与 gauge symmetry，第 4 节看统计复杂度和禁用判据。",
+        "图 2–3 检查 whitening 与谱隙，图 4–5 专门看架构失效案例。",
+        "不要把 embedding 维度当作越大越好；应先根据谱衰减选择秩。"
+      ]
+    }
+  ],
+  "evidence_refs": [
+    "paper.pdf pp. 1-6: unified head, interaction spectrum, approximation, gauge fixing, and sample-complexity statements",
+    "paper.pdf pp. 7-9: normalization, spectral-gap, risk-scaling, and negative-result experiments",
+    "paper.pdf pp. 15-28: ten-family mapping and supporting theorems/proofs",
+    "paper.pdf pp. 29-32: Figures 2-5 and Table 7, including whitening, error floors, and operator rank selection",
+    "Evidence status: full-text verified; no independent reproduction performed."
+  ],
+  "card_standard_version": "2.3",
+  "paper_profile": "ai_empirical",
+  "style_reference": "physicist_daily_arxiv",
+  "provenance": {
+    "program": "Collection",
+    "catalog": "Paper Collection",
+    "catalog_record_id": "627cdead07cb305c",
+    "catalog_record_ids": [
+      "627cdead07cb305c"
+    ],
+    "catalog_topic": "Machine Learning",
+    "collection_date": "2026-08-23",
+    "sampled_at": "2026-08-26",
+    "selected_by": "full_collection_backfill",
+    "sampling_seed": "not_applicable_full_collection",
+    "candidate_count": 452,
+    "legacy_full_text_card": "2608.11661.json"
+  },
+  "equation_refs": [],
+  "figure_refs": [],
+  "cover": {
+    "mode": "title_abstract",
+    "abstract_text": "CLIP 相似度、DeepONet branch–trunk、双塔检索、目标条件强化学习等都用两个独立编码器的内积 $F(u,v)\\approx\\langle f_\\theta(u),g_\\phi(v)\\rangle$，但各领域分别讨论维度、归一化与失效条件。本文把它们统一为低交互秩函数：交互谱决定需要多少乘性模式，也决定这种架构是否值得使用。",
+    "selection_rationale": "该旧版全文证据包没有经过 v2.3 的逐图导出与图号核验；为避免错配图片，封面使用论文题目和经全文核对的摘要，关键论证保留在卡片正文中。"
+  }
+}

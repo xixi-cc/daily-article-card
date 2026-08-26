@@ -1,0 +1,166 @@
+{
+  "arxiv_id": "2608.16590",
+  "source_version": "v1",
+  "source_pdf": "https://arxiv.org/pdf/2608.16590",
+  "title_en": "Zetta $ζ$: An Efficient Closed-Loop Embodied Harness for Self-Evolving Physical Intelligence",
+  "title_zh": "Zetta：用于具身智能自演化的闭环 Harness",
+  "curation_status": "full_text_verified",
+  "sections": [
+    {
+      "title": "作者信息",
+      "bullets": [
+        "作者：Xin Ding、Liang Mi、Mingzhe Huang、Zixuan Wang、Chao Zhang、Zixu Hao、Fu Chen、Xiangyu Li、Yikai Zheng、Yaoyu Guo、Weijun Wang、Kun Li、Hao Wu、Yunxin Liu、Ting Cao。",
+        "研究机构：Institute for AI Industry Research, Tsinghua University; Z-Trans AI。",
+        "来源：arXiv:2608.16590v1；年份：2026；主题：Embodied AI、VLA、Agent Harness。",
+        "本文按本地全文快照制作，官方元数据核验版本为 2608.16590v1。"
+      ]
+    },
+    {
+      "title": "摘要",
+      "bullets": [
+        "本文的论证主线由以下经过全文核验的节点构成：端到端 VLA 与事后反思之间缺少执行中的治理层；三个时间尺度分别负责动作、rollout 与能力更新；提案、离线通过与环境成功必须分层记账；这是部署期 harness 演化，不是基础 VLA 权重自训练；能力取决于 critic 可观测性和 recovery 表达空间；LIBERO-Pro 与 RoboCasa 是仿真 benchmark；论文结果不能直接等同于开放世界真实机器人可靠性；累计改动可能存在任务/实现特异性，跨模型、硬件和长周期回归仍需独立复现。",
+        "卡片内容来自已完成冷读与逐页检查的 paper_presentation.json，并回链到原论文页码、图或公式。"
+      ]
+    },
+    {
+      "title": "背景",
+      "bullets": [
+        "论证节点“端到端 VLA 与事后反思之间缺少执行中的治理层”。",
+        "VLA/WAM 扩大模型与示范数据，但部署分布变化使固定策略脆弱。",
+        "既有 embodied agent 常在 episode 后反思；执行时仍沿固定 skill 或预规划轨迹，无法跟踪快速变化的接触与抓取状态。",
+        "Zetta 保持 base policy 冻结，把可演化部分放在代码化 critic、recovery skill 与验证门控的 harness。",
+        "让高频运行时治理与低频大模型反思分离，避免要求 agentic model 在每个控制周期决策。",
+        "Zetta 针对具身 agent 仅事后反思、执行中开环的缺口，并保持基础策略冻结 （p. 3; source/tex/arxiv_submission/tex/introduction.tex）",
+        "研究问题的表述以论文给出的对象和评价目标为边界；背景动机不自动构成方法有效性的证据。"
+      ]
+    },
+    {
+      "title": "模型与方法",
+      "bullets": [
+        "论证节点“三个时间尺度分别负责动作、rollout 与能力更新”。",
+        "动作频率运行时 critic 读取当前状态，在已有 recovery 范围内触发、抑制或切换，不等待大模型重新规划。",
+        "Rollout 频率对失败轨迹做机制聚类与层级因果诊断，生成 critic--recovery 候选。",
+        "演化频率候选必须通过闭环验证、回归与推广条件，才进入累计 harness；基础 VLA 保持冻结。",
+        "方法以在线治理、rollout 诊断和验证门控更新构成三阶段闭环 （p. 7; source/tex/arxiv_submission/tex/method.tex）",
+        "方法部分按 presentation 中的数学关系、算法结构或实验设计重述；公式只在相应证据页定义的符号与条件下成立。"
+      ]
+    },
+    {
+      "title": "核心结果与证据",
+      "bullets": [
+        "2：在线 rollout 由固定动作策略与可演化 harness 协作；失败经聚类、因果诊断、critic--recovery 提案和验证后，才合并为可复用能力。",
+        "证据解释：Zetta 把“发现失败—提出修复—同条件验证—推广复用”做成有权限边界的闭环，而不是直接改 VLA 权重。",
+        "Zetta 的在线执行、离线演化和验证门控整体架构 （p. 5; figure Figure 2; source/tex/arxiv_submission/tex/method.tex）",
+        "论证节点“提案、离线通过与环境成功必须分层记账”。",
+        "Critic 只报告当前风险与候选干预；它的接受不等于动作已执行。",
+        "Recovery 必须在相同失败机制和固定预算下验证，并检查是否引入新失败。",
+        "只有环境终止条件确认的任务完成，才计入成功率；累计版本还需保留此前有效能力。",
+        "因此所谓“自演化”发生在 harness 代码与技能库，不是在线更新基础模型参数。",
+        "论文规定 critic-guided repair 的验证、成功判据和能力推广流程 （p. 10; source/tex/arxiv_submission/tex/method.tex）",
+        "6：RoboCasa 18 个任务上的累计版本从冻结 parent harness 出发，逐轮加入经验证的全局修复；论文报告 macro-average 由 $73.56\\%$ 提升到 $93.56\\%$。",
+        "证据解释：作者把提升归因于累计 critic--recovery 能力；该曲线是论文协议下的内部累计评测，不应脱离 seed、预算和 success 定义单独解读。",
+        "论文报告 RoboCasa 累计 harness 的宏平均成功率由 73.56% 增至 93.56% （p. 24; figure Figure 6; source/tex/arxiv_submission/tex/experiment.tex）",
+        "论证节点“论文报告成功率、迁移与吞吐三类结果”。",
+        "在当前 rollout budget 下，作者报告 LIBERO-Pro $90.8\\%$、RoboCasa $93.6\\%$。",
+        "Goal-T/Goal-S 与 RoboCasa 曲线展示累计能力、跨任务零样本迁移和若干“故障前沿后移”案例。",
+        "Z-Infra 解耦 control plane、environment worker 与 rollout worker；论文报告并发 64 时 $35.1$ ep/min，并相对并发 16 的基线达到 $7.7\\times$ 与 $12.8\\times$ 吞吐。",
+        "结果只支持论文所记录版本、固定 seed/预算与对应 harness 干预；不能把 proposal acceptance 或某个中间版本称为已实现物理成功。",
+        "论文摘要报告 LIBERO-Pro 90.8%、RoboCasa 93.6% 和 11.1 倍推理加速 （p. 1; source/tex/arxiv_submission/main.tex）",
+        "Z-Infra 报告并发 64 的 35.1 ep/min 和相对吞吐提升 （p. 30; figure Figure 12; source/tex/arxiv_submission/tex/experiment.tex）",
+        "证据状态：上述结论均来自逐页审阅后的 presentation manifest；这里只确认论文原文支持，不把作者实验视为本站独立复现。"
+      ]
+    },
+    {
+      "title": "有效性与局限",
+      "bullets": [
+        "论证节点“结论边界在 harness、benchmark 与当前预算内”。",
+        "这是部署期 harness 演化，不是基础 VLA 权重自训练；能力取决于 critic 可观测性和 recovery 表达空间。",
+        "LIBERO-Pro 与 RoboCasa 是仿真 benchmark；论文结果不能直接等同于开放世界真实机器人可靠性。",
+        "累计改动可能存在任务/实现特异性，跨模型、硬件和长周期回归仍需独立复现。",
+        "系统最值得保留的是可审计闭环：失败事实、原子机制修改、同条件验证与环境终止证据分开记录。",
+        "论文结论聚焦闭环 harness 和 rollout infrastructure，并提出进一步扩展方向 （p. 33; source/tex/arxiv_submission/tex/conclusion.tex）",
+        "适用边界以卡片列出的目标、假设、数据集或物理参数区间为准；未在原文证据中出现的外推不计入论文结论。",
+        "该卡完成的是全文证据审计，未重新运行训练、仿真或实验，因此不能据此声称独立复现、稳健性复核或跨任务泛化。"
+      ]
+    },
+    {
+      "title": "复现与资源",
+      "bullets": [
+        "原文：https://arxiv.org/abs/2608.16590；PDF：https://arxiv.org/pdf/2608.16590。",
+        "本地证据源：2608.16590/source/paper.pdf；SHA-256：00e89f549666c4b174eb66a8dd3a0edd6f45c6ec6393530eef8f21d45c6dfc18。",
+        "来源格式：tex；来源包状态：downloaded；presentation 证据条目数：8。",
+        "presentation 及其质量报告保留了页面审阅、编译和冷读状态；它们用于追溯卡片，不等同于作者代码或数据已公开。",
+        "Evidence status: full-text verified; no independent reproduction performed."
+      ]
+    },
+    {
+      "title": "阅读指南",
+      "bullets": [
+        "快速阅读可先看证据页 1, 3, 5, 7, 10, 24，这些页覆盖问题、方法与主要结论。",
+        "图证据优先查看 Figure 2；结合图注和正文，不只依据视觉趋势下结论。",
+        "建议按“研究问题 → 方法/数学对象 → 证据 → 局限”的顺序阅读，避免从摘要直接跳到强结论。",
+        "若要复现，先从证据引用恢复具体设置，再补齐随机种子、计算资源、评价指标和失败案例。"
+      ]
+    }
+  ],
+  "evidence_refs": [
+    "paper.pdf pages 1, 3, 5, 7, 10, 24, 30, 33: page-addressable claims",
+    "paper_presentation.json: 7 substantive slides and 8 evidence entries",
+    "source-provenance.json: PDF SHA-256 00e89f549666c4b174eb66a8dd3a0edd6f45c6ec6393530eef8f21d45c6dfc18",
+    "Evidence status: full-text verified; no independent reproduction performed."
+  ],
+  "verified_metadata": {
+    "arxiv_id": "2608.16590",
+    "version": "v1",
+    "title": "Zetta $ζ$: An Efficient Closed-Loop Embodied Harness for Self-Evolving Physical Intelligence",
+    "abstract": "Embodied agents are increasingly used to close the gap left by end-to-end policy models. Yet the agentic path has not realized closed-loop learning in physical execution: existing harnesses remain largely open-loop, following fixed skills during rollout and reflecting only after an episode completes. Such post-hoc reflection cannot govern execution as it unfolds, because physical interaction requires decisions to track rapidly changing robot-environment states at a frequency beyond today's large agentic models. We present Zetta, a closed-loop embodied harness that evolves code-based runtime critics and recovery skills online while keeping the base policy frozen. Through three timescale-separated loops, Zetta provides action-frequency governance, rollout-level critic-recovery proposal, and validation-gated skill updates. Together with Z-Infra, a rollout infrastructure decoupling agent logic from heterogeneous execution resources, Zetta achieves state-of-the-art success on LIBERO-Pro and RoboCasa under our current rollout budget, reaching 90.8% and 93.6%, with an 11.1x inference speedup; success continues to scale with self-exploration experience; learned skills transfer zero-shot, and clear robotic \"Aha Moments\" emerge. These results show that closed-loop harness self-evolution opens a scaling path for reliable physical intelligence.",
+    "authors": [
+      "Xin Ding",
+      "Liang Mi",
+      "Mingzhe Huang",
+      "Zixuan Wang",
+      "Chao Zhang",
+      "Zixu Hao",
+      "Fu Chen",
+      "Xiangyu Li",
+      "Yikai Zheng",
+      "Yaoyu Guo",
+      "Weijun Wang",
+      "Kun Li",
+      "Hao Wu",
+      "Yunxin Liu",
+      "Ting Cao"
+    ],
+    "categories": [
+      "cs.RO"
+    ],
+    "primary_category": "cs.RO",
+    "published": "2026-08-17T13:49:43Z",
+    "comment": ""
+  },
+  "card_standard_version": "2.3",
+  "paper_profile": "ai_empirical",
+  "style_reference": "physicist_daily_arxiv",
+  "provenance": {
+    "program": "Collection",
+    "catalog": "Paper Collection",
+    "catalog_record_id": "00e89f549666c4b1",
+    "catalog_record_ids": [
+      "00e89f549666c4b1"
+    ],
+    "catalog_topic": "Robotics",
+    "collection_date": "2026-08-23",
+    "sampled_at": "2026-08-26",
+    "selected_by": "full_collection_backfill",
+    "sampling_seed": "not_applicable_full_collection",
+    "candidate_count": 452,
+    "legacy_full_text_card": "2608.16590.json"
+  },
+  "equation_refs": [],
+  "figure_refs": [],
+  "cover": {
+    "mode": "title_abstract",
+    "abstract_text": "Embodied agents are increasingly used to close the gap left by end-to-end policy models. Yet the agentic path has not realized closed-loop learning in physical execution: existing harnesses remain largely open-loop, following fixed skills during rollout and reflecting only after an episode completes. Such post-hoc reflection cannot govern execution as it unfolds, because physical interaction requires decisions to track rapidly changing robot-environment states at a frequency beyond today's large agentic models. We present Zetta, a closed-loop embodied harness that evolves code-based runtime critics and recovery skills online while keeping the base policy frozen. Through three timescale-separated loops, Zetta provides action-frequency governance, rollout-level critic-recovery proposal, and validation-gated skill updates. Together with Z-Infra, a rollout infrastructure decoupling agent log",
+    "selection_rationale": "该旧版全文证据包没有经过 v2.3 的逐图导出与图号核验；为避免错配图片，封面使用论文题目和经全文核对的摘要，关键论证保留在卡片正文中。"
+  }
+}

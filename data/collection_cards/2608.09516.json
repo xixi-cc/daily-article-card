@@ -1,0 +1,158 @@
+{
+  "arxiv_id": "2608.09516",
+  "source_version": "v1",
+  "source_pdf": "https://arxiv.org/pdf/2608.09516v1",
+  "title_en": "HarnessWAM: Bridging Prediction and Deliberation in World Action Models",
+  "title_zh": "HarnessWAM：弥合世界动作模型的预测与审议鸿沟",
+  "curation_status": "full_text_verified",
+  "verified_metadata": {
+    "arxiv_id": "2608.09516",
+    "version": "v1",
+    "title": "HarnessWAM: Bridging Prediction and Deliberation in World Action Models",
+    "abstract": "World Action Models provide finite-horizon prediction and local control but do not by themselves maintain global task state, verify outcomes, or recover across long embodied episodes. HarnessWAM adds a model-external VLM Task Manager with evidence-grounded scene belief and a structured task graph, projects open-ended plans into the validated skill interface of the WAM, and coordinates execution through a fast progress loop and event-triggered slow deliberation. With a fixed LingBot-VA checkpoint in controlled comparisons, the framework reaches 59.6% full-task and 69.9% subtask success on RoboMemArena; it reaches 23.7% on RoboCerebra Ideal. Ablations identify executable-space projection as the largest contributor, while task state, progress events, semantic verification, and local embodiment recovery make separable contributions.",
+    "authors": [
+      "Zhaopeng Gu",
+      "Bingke Zhu",
+      "Tianxi Lin",
+      "Guibo Zhu",
+      "Yingying Chen",
+      "Kai Wang",
+      "Tingyu Yuan",
+      "Chaoyang Zhao",
+      "Zhaowen Li",
+      "Peng Su",
+      "Jinqiao Wang"
+    ],
+    "categories": [
+      "cs.RO"
+    ],
+    "primary_category": "cs.RO",
+    "published": "2026-08-10T12:15:59Z"
+  },
+  "sections": [
+    {
+      "title": "作者信息",
+      "bullets": [
+        "作者来自中国科学院自动化研究所、中国科学院大学人工智能学院、引望智能、北京理工大学与武汉人工智能研究院；Bingke Zhu与Zhaowen Li为通讯作者。",
+        "官方快照为arXiv:2608.09516v1，主分类cs.RO，共15页。",
+        "工作把WAM保持为局部执行器，将长期记忆、规划、验证与恢复放入外部agentic runtime。"
+      ]
+    },
+    {
+      "title": "摘要",
+      "bullets": [
+        "论文将有限时域WAM与长期具身任务所需的持续审议之间的不匹配称为prediction–deliberation gap。",
+        "HarnessWAM以VLM Task Manager维护可追溯视觉证据的scene belief、task memory与有依赖关系的task graph。",
+        "开放语义计划先投影到WAM验证过的primitive集合，再由事件驱动的双时间尺度循环决定继续、推进、补充观察、重规划或恢复。",
+        "在RoboMemArena上报告59.6% full-task与69.9% subtask success，在RoboCerebra Ideal上报告23.7% SR。"
+      ]
+    },
+    {
+      "title": "背景",
+      "bullets": [
+        "WAM联合未来观测、环境状态与动作生成，擅长短时物理预测和局部操作，但不显式保存跨阶段证据。",
+        "抽屉关闭后，当前图像不再显示此前内容；若只依赖当前帧，未观察与已观察为空会被混淆。",
+        "数字agent常有离散工具和明确反馈，物理环境却连续、部分可观测且可能发生不可逆变化，因此需要显式状态与能力边界。",
+        "论文的核心主张不是修改WAM权重，而是检验外部运行时能否把同一局部策略组织成长程行为。"
+      ]
+    },
+    {
+      "title": "模型与方法",
+      "bullets": [
+        "事件状态z_k=(B_k,G_k,M_k,r_k)分别保存scene belief、task graph、task memory与active-skill execution state；harness在事件时刻更新状态并选下一个局部目标。",
+        "scene fact写成subject、predicate、object、value、epistemic status、confidence与RGB evidence引用，明确区分observed、inferred和unknown。",
+        "task graph节点包含operation、typed arguments、preconditions、effects、termination与recovery，并允许unresolved symbolic variables延迟到证据充分时绑定。",
+        "capability-conditioned projection检查primitive能力、参数类型、依赖、holding/embodiment state和当前场景，只允许改写尚未执行的graph suffix。",
+        "快循环由WAM action chunks与progress estimator组成；估计器读取最近5步双视角RGB和skill instruction。慢循环只在milestone、failure、budget或binding变化等语义事件触发VLM。",
+        "progress只提出candidate event，不能单独推进task graph；Task Manager还需按当前RGB、历史、belief和预期effect做semantic verification。",
+        "每个motor node保存初始arm与gripper状态；局部失败时先恢复embodiment state、清除局部WAM history，再保留全局scene knowledge修订剩余计划。"
+      ]
+    },
+    {
+      "title": "核心结果与证据",
+      "bullets": [
+        "RoboMemArena含26个长程任务，平均1076 environment steps，68.9%的subtasks依赖历史；四类为transfer、occlusion、counting与sequence。",
+        "每个任务20 rollouts，并匹配initial states、random seeds、observation interfaces和task-level budgets；同WAM诊断与消融共享同一LingBot-VA checkpoint。",
+        "Table 1中HarnessWAM平均SRtask/SRsub为59.6/69.9，比公开PrediMem高21.1/14.7个百分点；与同checkpoint的Static Plan相比高11.7/7.9点。",
+        "四类中相对Static Plan的full-task提升在occlusion为16.8点、sequence为12.5点；counting的subtask下降1.9点但full-task上升6.4点，显示局部完成率与正确组合不同。",
+        "Table 2在RoboCerebra Ideal给23.70%，高于GPT-4o Planner + OpenVLA的21.92%和HPE的21.10%；这是公开方法间比较，不等同同checkpoint控制实验。",
+        "Table 3移除executable projection后平均full/subtask由59.6/69.9降至18.5/38.3，为最大消融；移除progress events降至38.3/50.7，移除task state降至47.7/61.1。",
+        "progress-only switching仍有68.4% subtask却仅55.4% full-task；sequence上97.9% subtask对应72.5% full-task，支持语义结果验证不能由进度阈值替代。",
+        "移除recovery使平均full/subtask下降5.4/2.2点；该消融把failure后的恢复改为终止，因此测得的是完整恢复机制的边际作用。",
+        "Table 4中raw VLM plan的executability仅13.8%；normalization后42.3%，完整projection后72.9%，同时dependency satisfaction由67.5%升至92.9%。",
+        "Figure 3展示探索三个抽屉、保存非空顶层抽屉证据、重新打开并放入cookie的单个代表性rollout，是机制示意而非成功率统计。"
+      ]
+    },
+    {
+      "title": "有效性与局限",
+      "bullets": [
+        "最强因果证据来自共享LingBot-VA权重、初始状态和seeds的内部变体；与PrediMem、π0.5等公开数字仍可能受模型、训练数据和评测实现差异影响。",
+        "RoboMemArena与RoboCerebra均为benchmark结果；论文把real-world manipulation列为未来方向，不能据此声称真实机器人部署已经验证。",
+        "Task Manager固定为Qwen3-VL-32B-Instruct，未给不同VLM规模、成本、延迟或故障模式的系统敏感性分析。",
+        "progress estimator有专门训练目标与episode-level split，但正文未报告其单独校准误差、误报漏报或跨域泛化。",
+        "恢复依赖保存的arm/gripper state并回到局部初态；在不可逆接触、碰撞或场景物体已变化时不保证安全或可恢复。",
+        "有限task graph与bounded budget保证终止，不保证成功；59.6%的full-task也意味着约四成RoboMemArena rollout未完成。",
+        "计划质量Table 4使用reference decompositions做离线节点/依赖分析，虽不馈入在线agent，仍与最终环境成功不同。",
+        "全文没有给统计置信区间或显著性检验；20 rollouts/task提供重复，但表中仅报告macro averages。",
+        "开放的primitive ontology受WAM训练分布约束，增加新技能仍需先验证能力与control interface。",
+        "作者未在正文提供代码仓库链接；可复现性依赖LingBot-VA checkpoint、benchmark环境、Task Manager prompts和progress-estimator训练数据是否公开。"
+      ]
+    },
+    {
+      "title": "复现与资源",
+      "bullets": [
+        "冻结每个benchmark的LingBot-VA checkpoint，并为Whole Task、Static Plan、HarnessWAM及五个消融复用相同initial states、20 seeds、observation interface和budget。",
+        "保存每个事件的RGB引用、scene facts、confidence、symbol bindings、graph revision、retry count、progress trace和Task Manager decision，而不只保存最终success。",
+        "分别实现SRtask乘积式全任务判据、macro-average SRsub以及RoboCerebra key-state completion，避免混用指标。",
+        "检查progress predictions永不直接推进graph；必须有语义outcome verification，并记录候选事件到最终decision的对应关系。",
+        "projection复现实验按raw、normalization、full constraints三阶段保存syntax、dependency、binding和executability，核对Table 4。",
+        "恢复实验保存节点初始q/u、failure frame、restore trajectory、清空的local state与保留的global memory，以判断恢复是否真正归因于机制。",
+        "对公开基线仅复述论文表格，不把其视作同配置复现；优先报告同checkpoint的Whole Task和Static Plan差值。",
+        "本站PDF SHA-256：e123b7056eb7011730c4ce5fc289f3df7a74b187228cdb5ba029daf46dddcad9。",
+        "Evidence status: full-text verified; no independent reproduction performed."
+      ]
+    },
+    {
+      "title": "阅读指南",
+      "bullets": [
+        "先看Figure 1理解抽屉任务中当前图像不足以承载历史证据，再读3.2的scene fact与task graph。",
+        "3.3解释为何语义上合理的VLM plan仍可能超出WAM执行接口；Table 4给最直接的中间量证据。",
+        "3.4与Algorithm 1要关注progress event和semantic verification的分工，以及失败时保留全局记忆、重置局部状态的边界。",
+        "最后并读Tables 1–3：先分开公开基线与同checkpoint诊断，再用消融判断各模块贡献，避免只引用59.6%的总分。"
+      ]
+    }
+  ],
+  "evidence_refs": [
+    "paper.pdf pp. 1-3: prediction-deliberation gap, contributions and architecture overview",
+    "paper.pdf pp. 4-8: runtime state, evidence-grounded task graph, executable projection, event loop and recovery",
+    "paper.pdf pp. 8-10: benchmarks, metrics, matched-rollout protocol and implementation details",
+    "paper.pdf pp. 10-12, Tables 1-4 and Figure 3: controlled results, ablations, plan diagnosis and qualitative rollout",
+    "paper.pdf p. 12: conclusion and stated future directions",
+    "Evidence status: full-text verified; no independent reproduction performed."
+  ],
+  "card_standard_version": "2.3",
+  "paper_profile": "theory",
+  "style_reference": "physicist_daily_arxiv",
+  "provenance": {
+    "program": "Collection",
+    "catalog": "Paper Collection",
+    "catalog_record_id": "e123b7056eb70117",
+    "catalog_record_ids": [
+      "e123b7056eb70117"
+    ],
+    "catalog_topic": "World Models",
+    "collection_date": "2026-08-23",
+    "sampled_at": "2026-08-26",
+    "selected_by": "full_collection_backfill",
+    "sampling_seed": "not_applicable_full_collection",
+    "candidate_count": 452,
+    "legacy_full_text_card": "2608.09516.json"
+  },
+  "equation_refs": [],
+  "figure_refs": [],
+  "cover": {
+    "mode": "title_abstract",
+    "abstract_text": "World Action Models provide finite-horizon prediction and local control but do not by themselves maintain global task state, verify outcomes, or recover across long embodied episodes. HarnessWAM adds a model-external VLM Task Manager with evidence-grounded scene belief and a structured task graph, projects open-ended plans into the validated skill interface of the WAM, and coordinates execution through a fast progress loop and event-triggered slow deliberation. With a fixed LingBot-VA checkpoint in controlled comparisons, the framework reaches 59.6% full-task and 69.9% subtask success on RoboMemArena; it reaches 23.7% on RoboCerebra Ideal. Ablations identify executable-space projection as the largest contributor, while task state, progress events, semantic verification, and local embodiment recovery make separable contributions.",
+    "selection_rationale": "该旧版全文证据包没有经过 v2.3 的逐图导出与图号核验；为避免错配图片，封面使用论文题目和经全文核对的摘要，关键论证保留在卡片正文中。"
+  }
+}

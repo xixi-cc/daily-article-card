@@ -1,0 +1,145 @@
+{
+  "arxiv_id": "2302.07400",
+  "source_version": "v3",
+  "source_pdf": "https://arxiv.org/pdf/2302.07400",
+  "title_en": "Score-based Diffusion Models in Function Space",
+  "title_zh": "函数空间中的基于得分的扩散模型",
+  "curation_status": "full_text_verified",
+  "verified_metadata": {
+    "arxiv_id": "2302.07400",
+    "version": "v3",
+    "title": "Score-based Diffusion Models in Function Space",
+    "abstract": "Diffusion models have recently emerged as a powerful framework for generative modeling. They consist of a forward process that perturbs input data with Gaussian white noise and a reverse process that learns a score function to generate samples by denoising. Despite their tremendous success, they are mostly formulated on finite-dimensional spaces, e.g., Euclidean, limiting their applications to many domains where the data has a functional form, such as in scientific computing and 3D geometric data analysis. This work introduces a mathematically rigorous framework called Denoising Diffusion Operators (DDOs) for training diffusion models in function space. In DDOs, the forward process perturbs input functions gradually using a Gaussian process. The generative process is formulated by a function-valued annealed Langevin dynamic. Our approach requires an appropriate notion of the score for the perturbed data distribution, which we obtain by generalizing denoising score matching to function spaces that can be infinite-dimensional. We show that the corresponding discretized algorithm generates accurate samples at a fixed cost independent of the data resolution. We theoretically and numerically verify the applicability of our approach on a set of function-valued problems, including generating solutions to the Navier-Stokes equation viewed as the push-forward distribution of forcings from a Gaussian Random Field (GRF), as well as volcano InSAR and MNIST-SDF.",
+    "authors": [
+      "Jae Hyun Lim",
+      "Nikola B. Kovachki",
+      "Ricardo Baptista",
+      "Christopher Beckham",
+      "Kamyar Azizzadenesheli",
+      "Jean Kossaifi",
+      "Vikram Voleti",
+      "Jiaming Song",
+      "Karsten Kreis",
+      "Jan Kautz",
+      "Christopher Pal",
+      "Arash Vahdat",
+      "Anima Anandkumar"
+    ],
+    "categories": [
+      "cs.LG",
+      "math.FA",
+      "stat.ML"
+    ],
+    "primary_category": "cs.LG",
+    "published": "2023-02-14T23:50:53Z",
+    "comment": ""
+  },
+  "sections": [
+    {
+      "title": "作者信息",
+      "bullets": [
+        "作者：Jae Hyun Lim、Nikola B. Kovachki、Ricardo Baptista 等 13 人；Université de Montréal/Mila、NVIDIA、Caltech 等合作。",
+        "官方快照：arXiv:2302.07400v3，63 页；分类 cs.LG/math.FA/stat.ML。",
+        "论文把理论框架称 Denoising Diffusion Operators (DDO)，并用 FNO/UNO 实现；重点是 function-space consistency，而非单一图像生成分数。"
+      ]
+    },
+    {
+      "title": "摘要",
+      "bullets": [
+        "有限维 diffusion 的 Gaussian white noise 在网格加密时不是 Hilbert-space-valued function；固定容量 score network 需追逐越来越多独立高频，模型/采样成本会随 resolution 增长。",
+        "DDO 改用 trace-class Gaussian process corruption，在 reference Gaussian measure 相对密度上定义 preconditioned score，并用 neural operator 近似，再以 function-valued annealed Langevin dynamics 采样。",
+        "理论给出 well-defined denoising score matching 与 neural-operator approximation；数值在 Gaussian mixture、Navier–Stokes pushforward、Volcano InSAR、MNIST-SDF 和 Darcy Bayesian inverse 上检验跨分辨率。"
+      ]
+    },
+    {
+      "title": "背景",
+      "bullets": [
+        "无限维空间没有 Lebesgue density，不能直接照搬 ∇log p；Gaussian measures 的平移还可能互相奇异，Cameron–Martin range condition 决定 score/loss 是否有限。",
+        "white noise 的 covariance identity 非 trace class，因此样本不在目标 Hilbert space；平滑 GRF noise 的 Fourier spectrum 可收敛，使同一模型在 mesh refinement 下看到一致随机函数。",
+        "分辨率不变要求两部分同时成立：noise process 在函数空间有意义，score architecture 也必须是 discretization-consistent operator；只换其中一个不足。"
+      ]
+    },
+    {
+      "title": "模型与方法",
+      "bullets": [
+        "数据 measure 与 centered Gaussian noise convolution 后，相对 Gaussian reference measure 定义 logarithmic derivative/preconditioned score；denoising objective 用可采样 conditional Gaussian score，避免未知 data density。",
+        "Theorems 2–5 建立 functional denoising-score equivalence、score operator approximation 与 conditional extension；小 noise 极限仍有 singularity，需要 uniform continuity/integrability 等明确假设。",
+        "采样用一系列由大到小 covariance/noise scales 的 Euler–Maruyama annealed Langevin steps；FNO/UNO 表达每层的 function-to-function score。",
+        "Gaussian-mixture 实验固定 FNO capacity，在多 resolutions 分别比较 white 与 trace-class noise；Navier–Stokes 用 128² 训练、1024² 直接生成；Volcano 用 RBF covariance smoothness γ；MNIST-SDF 用 filtered upsampling 让 noise basis 被训练网格观测。",
+        "评估不仅看图：Navier–Stokes 对比 spectrum、pointwise density、total kinetic-energy density；Volcano 对 circular variance/skew histograms 算 W1；MNIST-SDF 报 FID/precision/recall；Darcy posterior 对 10,000 MCMC/model samples 的 mean/variance。"
+      ]
+    },
+    {
+      "title": "核心结果与证据",
+      "bullets": [
+        "Gaussian mixture Figure 2：white-noise model 在低 resolution 可用但谱误差随网格加密增长；trace-class noise 的谱 sup-error 跨 resolutions 近似稳定，直接展示“固定模型容量”的差异。",
+        "Navier–Stokes Re=500：DDO 用 128² data 训练后在 1024² 无重训生成，并匹配作者选择的 spectrum、pointwise-value 与 kinetic-energy distributions；这是 distributional proxy，不是逐轨迹预测。",
+        "MNIST-SDF Table 1：64/128/256 resolution 的 DDO FID 为 2.74/7.96/17.76，GANO 为 3.41/13.05/23.89；DDO recall 为 0.68/0.60/0.39，均最高，但 training-resolution precision 0.73 略低于 GANO 0.75。",
+        "Volcano 60²→120² 中 independent noise 表现极差；training-optimal rough γ=0.05 在 super-resolution 也不好，较平滑 γ=0.2 最好，说明合适 covariance 依任务和目标 resolution 而变。",
+        "Darcy posterior Table 2 中 DDO mean error 0.26/0.27/0.28，优于 GANO 0.28/0.32/0.34，但 MultilevelDiff 0.26/0.23/0.23 更好；variance error DDO 0.69/0.78/0.79 也差于 MultilevelDiff 0.52/0.61/0.72。",
+        "所有方法在 Darcy posterior 都未准确重现 MCMC variation，DDO/MultilevelDiff variance 随 resolution 减少；该负结果限制了“准确样本、固定成本”的普适表述。"
+      ]
+    },
+    {
+      "title": "有效性与局限",
+      "bullets": [
+        "理论结果依赖 data regularity、Cameron–Martin inclusion、trace-class covariance、integrability 与 score approximation；并未给 approximate score 下完整 generative error bound。",
+        "作者在结论明确把 continuous-time backward SDE、time reversibility 条件、adaptive covariance 与 rigorous error analysis 留作未来工作。",
+        "spectral FNO 会因 mode cutoff 在 MNIST 边界产生 curved/wavy artifacts；continuous convolution 又可能 overfit，operator choice 与 noise choice共同决定结果。",
+        "“resolution-independent cost”指固定 architecture/steps 的离散执行与参数规模思想，不代表 FFT 计算的实际 FLOPs 不随 grid points 增加。",
+        "Navier–Stokes 训练 data 本身由 1024² 解下采样，1024² generation 不是与独立高分辨率真实数据的全面统计验证。"
+      ]
+    },
+    {
+      "title": "复现与资源",
+      "bullets": [
+        "复现需保存每个 Gaussian covariance eigen-spectrum、trace-class decay、noise scales/Langevin steps、FNO/UNO modes 与训练/生成 grids；仅写 noise standard deviation 不足。",
+        "必须把 white-noise 与 trace-class-noise 模型保持固定 capacity，并跨 progressive grids 比谱误差；若随 resolution 增大网络或 steps，结论已改变。",
+        "Navier–Stokes/Volcano/MNIST/Darcy 分别保留完整 distribution metrics 与 raw samples；Darcy 用相同 10,000 MCMC reference samples 比 mean/variance，不能只展示代表图。",
+        "本站 PDF SHA-256：cc2b23959c55b2c2485e5a2f9dd249841939a6192958e055c257f31e8fdd0d1f。",
+        "Evidence status: full-text verified; no independent reproduction performed."
+      ]
+    },
+    {
+      "title": "阅读指南",
+      "bullets": [
+        "先读 Introduction、Figure 1 与 Appendix H，理解 white noise 在无限维中的失败不是普通调参问题。",
+        "再读 Section 4/Theorems 2–5，逐项核对 Gaussian reference、Cameron–Martin 与小噪声假设。",
+        "最后把 Figures 2–4、Table 1 和 Darcy Table 2 合读：DDO 的跨网格优势真实存在于若干 proxy，但 posterior variance 与 spectral artifacts 仍是公开失败。"
+      ]
+    }
+  ],
+  "evidence_refs": [
+    "paper.pdf pp. 1-5: infinite-dimensional white-noise problem, DDO framework and contributions",
+    "paper.pdf pp. 7-13: Gaussian-reference scores, denoising objectives, approximation and Langevin sampling",
+    "paper.pdf pp. 14-20: Gaussian mixture, Navier-Stokes, Volcano and MNIST-SDF resolution experiments",
+    "paper.pdf pp. 20-24: MNIST Table 1, Darcy posterior Table 2 and conclusions",
+    "paper.pdf pp. 31-40: technical assumptions and proofs for score existence/approximation",
+    "Evidence status: full-text verified; no independent reproduction performed."
+  ],
+  "card_standard_version": "2.3",
+  "paper_profile": "ai_empirical",
+  "style_reference": "physicist_daily_arxiv",
+  "provenance": {
+    "program": "Collection",
+    "catalog": "Paper Collection",
+    "catalog_record_id": "5741dd405b567ba7",
+    "catalog_record_ids": [
+      "5741dd405b567ba7"
+    ],
+    "catalog_topic": "Generative Models",
+    "collection_date": "2026-08-24",
+    "sampled_at": "2026-08-26",
+    "selected_by": "full_collection_backfill",
+    "sampling_seed": "not_applicable_full_collection",
+    "candidate_count": 452,
+    "legacy_full_text_card": "2302.07400.json"
+  },
+  "equation_refs": [],
+  "figure_refs": [],
+  "cover": {
+    "mode": "title_abstract",
+    "abstract_text": "Diffusion models have recently emerged as a powerful framework for generative modeling. They consist of a forward process that perturbs input data with Gaussian white noise and a reverse process that learns a score function to generate samples by denoising. Despite their tremendous success, they are mostly formulated on finite-dimensional spaces, e.g., Euclidean, limiting their applications to many domains where the data has a functional form, such as in scientific computing and 3D geometric data analysis. This work introduces a mathematically rigorous framework called Denoising Diffusion Operators (DDOs) for training diffusion models in function space. In DDOs, the forward process perturbs input functions gradually using a Gaussian process. The generative process is formulated by a function-valued annealed Langevin dynamic. Our approach requires an appropriate notion of the score for th",
+    "selection_rationale": "该旧版全文证据包没有经过 v2.3 的逐图导出与图号核验；为避免错配图片，封面使用论文题目和经全文核对的摘要，关键论证保留在卡片正文中。"
+  }
+}

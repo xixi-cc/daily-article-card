@@ -1,0 +1,165 @@
+{
+  "arxiv_id": "2603.19312",
+  "source_version": "v3",
+  "source_pdf": "https://arxiv.org/pdf/2603.19312",
+  "title_en": "LeWorldModel: Stable End-to-End Joint-Embedding Predictive Architecture from Pixels",
+  "title_zh": "LeWorldModel：从像素稳定端到端训练 JEPA 世界模型",
+  "curation_status": "full_text_verified",
+  "sections": [
+    {
+      "title": "作者信息",
+      "bullets": [
+        "作者：Lucas Maes、Quentin Le Lidec、Damien Scieur、Yann LeCun、Randall Balestriero。",
+        "研究机构：Mila / NYU / Samsung SAIL / Brown。",
+        "来源：arXiv；年份：2026；主题：世界模型、JEPA、机器人规划。",
+        "本文按本地全文快照制作，官方元数据核验版本为 2603.19312v3。"
+      ]
+    },
+    {
+      "title": "摘要",
+      "bullets": [
+        "本文的论证主线由以下经过全文核验的节点构成：端到端 JEPA 为什么容易坍缩？；SIGReg 用随机投影正态性阻止常数坍缩；JEPA 只预测下一 latent embedding，不承担像素重建；SIGReg 通过随机投影高斯性提供防坍缩约束；两损失、15M 参数和单 GPU 训练显著降低世界模型门槛。",
+        "卡片内容来自已完成冷读与逐页检查的 paper_presentation.json，并回链到原论文页码、图或公式。"
+      ]
+    },
+    {
+      "title": "背景",
+      "bullets": [
+        "论证节点“端到端 JEPA 为什么容易坍缩？”。",
+        "世界模型希望在紧凑 latent space 预测未来，而非重建每个像素。",
+        "已有 JEPA 常依赖 stop-gradient、EMA、预训练 encoder 或多项辅助损失防坍缩。",
+        "唯一既有端到端替代使用多达六个损失超参数，训练脆弱。",
+        "LeWM 只保留 next-embedding prediction 与 SIGReg 两项损失。",
+        "作者把稳定性问题收缩为：如何让潜变量既可预测又保持分布多样性。",
+        "JEPA 坍缩问题与 LeWM 两损失设计。 （p. 1）",
+        "研究问题的表述以论文给出的对象和评价目标为边界；背景动机不自动构成方法有效性的证据。"
+      ]
+    },
+    {
+      "title": "模型与方法",
+      "bullets": [
+        "论证节点“SIGReg 用随机投影正态性阻止常数坍缩”。",
+        "设定：$u_k$ 为随机单位方向，$Z$ 为 batch embedding",
+        "关键关系：\\mathcal L &= \\\\\\|\\hat z_{t+1}-z_{t+1}\\\\\\|_2^2+\\lambda\\,\\mathcal R_{SIG}(Z) \\\\ \\mathcal R_{SIG}(Z) &= \\frac1K\\sum_k NormalityTest(u_k^\\top Z)",
+        "推导含义：多个一维投影接近标准高斯，依据 Cramer--Wold 思路约束整体嵌入。",
+        "结论边界：预测损失保留动力学，SIGReg 防止所有样本缩到同一点。",
+        "两项损失与随机投影 SIGReg。 （p. 5; equation Eqs. 1-3; sections/3-method.tex）",
+        "方法部分按 presentation 中的数学关系、算法结构或实验设计重述；公式只在相应证据页定义的符号与条件下成立。"
+      ]
+    },
+    {
+      "title": "核心结果与证据",
+      "bullets": [
+        "Fig. 1：encoder 从像素得到 $z_t$；predictor 用动作预测 $z_{t+1}$；SIGReg 同时约束两端嵌入。",
+        "证据解释：无需冻结分支、EMA 或预训练表征，encoder 与 predictor 可共同反向传播。",
+        "LeWM 训练管线。 （p. 1; figure Fig. 1）",
+        "Fig. 2：编码、潜在动力学 rollout 与 CEM 动作序列搜索组成规划循环。",
+        "证据解释：15M 参数模型可在单 GPU 数小时训练，并把基础模型式世界模型规划加速最高 $48\\times$。",
+        "LeWM 潜在规划流程与速度结论。 （p. 6; figure Fig. 2）",
+        "论证节点“规划表现：更轻量，同时保持或提高任务成功”。",
+        "在 PushT 上相对 PLDM 成功率提高 $18$ 个百分点。",
+        "在多种 2D/3D 像素控制任务上与更重基线保持竞争。",
+        "固定 FLOP 比较显示收益不只是更多搜索预算。",
+        "训练只剩一个有效损失权重 $\\lambda$；$[0.01,0.2]$ 上 PushT 成功率均超过 $80\\%$。",
+        "方法优势主要体现在训练简化、规划速度与稳定性，而非每个环境绝对领先。",
+        "控制结果、速度与 lambda 消融。 （p. 7; figure Figs. 3,6）",
+        "Fig. 5：对视觉或物理不可能扰动，预测误差形成 surprise 峰；不同环境可分性不同。",
+        "证据解释：潜空间编码了一些物理结构，但 OGBench-Cube 上并非所有扰动都显著可检出。",
+        "violation-of-expectation 物理理解测试。 （p. 8; figure Fig. 5）",
+        "证据状态：上述结论均来自逐页审阅后的 presentation manifest；这里只确认论文原文支持，不把作者实验视为本站独立复现。"
+      ]
+    },
+    {
+      "title": "有效性与局限",
+      "bullets": [
+        "论证节点“短 horizon、离线覆盖与动作标签是当前瓶颈”。",
+        "规划仍局限短时域，长任务需要分层世界模型。",
+        "训练依赖覆盖充分的 offline action-labelled 数据。",
+        "低复杂度、低多样性环境中，高维高斯匹配可能削弱 SIGReg。",
+        "可用大规模视频预训练或逆动力学减少域数据与动作标签依赖。",
+        "稳定端到端训练已被验证，但并未解决长期开放世界建模。",
+        "作者列出的 planning horizon、coverage 与 action label 局限。 （p. 9）",
+        "论证节点“LeWM 以分布正则替代训练技巧堆栈”。",
+        "JEPA 只预测下一 latent embedding，不承担像素重建。",
+        "SIGReg 通过随机投影高斯性提供防坍缩约束。",
+        "两损失、15M 参数和单 GPU 训练显著降低世界模型门槛。",
+        "规划、probe 与 surprise 测试提供互补证据，也暴露环境依赖边界。",
+        "最可信的贡献是“简单且稳定的端到端 JEPA 基线”，而不是完整物理推理系统。",
+        "论文结论概括稳定性、效率与物理表征。 （p. 9）",
+        "适用边界以卡片列出的目标、假设、数据集或物理参数区间为准；未在原文证据中出现的外推不计入论文结论。",
+        "该卡完成的是全文证据审计，未重新运行训练、仿真或实验，因此不能据此声称独立复现、稳健性复核或跨任务泛化。"
+      ]
+    },
+    {
+      "title": "复现与资源",
+      "bullets": [
+        "原文：https://arxiv.org/abs/2603.19312；PDF：https://arxiv.org/pdf/2603.19312。",
+        "本地证据源：2603.19312/source/paper.pdf；SHA-256：553a01501ac74ec56721cfdb936d3825ac941734133a1fd761f614c01b6887e9。",
+        "来源格式：tex；来源包状态：downloaded；presentation 证据条目数：8。",
+        "presentation 及其质量报告保留了页面审阅、编译和冷读状态；它们用于追溯卡片，不等同于作者代码或数据已公开。",
+        "Evidence status: full-text verified; no independent reproduction performed."
+      ]
+    },
+    {
+      "title": "阅读指南",
+      "bullets": [
+        "快速阅读可先看证据页 1, 5, 6, 7, 8, 9，这些页覆盖问题、方法与主要结论。",
+        "图证据优先查看 Fig. 1；结合图注和正文，不只依据视觉趋势下结论。",
+        "公式链优先查看 Eqs. 1-3；核对符号、假设与前后推导。",
+        "建议按“研究问题 → 方法/数学对象 → 证据 → 局限”的顺序阅读，避免从摘要直接跳到强结论。",
+        "若要复现，先从证据引用恢复具体设置，再补齐随机种子、计算资源、评价指标和失败案例。"
+      ]
+    }
+  ],
+  "evidence_refs": [
+    "paper.pdf pages 1, 5, 6, 7, 8, 9: page-addressable claims",
+    "paper_presentation.json: 8 substantive slides and 8 evidence entries",
+    "source-provenance.json: PDF SHA-256 553a01501ac74ec56721cfdb936d3825ac941734133a1fd761f614c01b6887e9",
+    "Evidence status: full-text verified; no independent reproduction performed."
+  ],
+  "verified_metadata": {
+    "arxiv_id": "2603.19312",
+    "version": "v3",
+    "title": "LeWorldModel: Stable End-to-End Joint-Embedding Predictive Architecture from Pixels",
+    "abstract": "Joint Embedding Predictive Architectures (JEPAs) offer a compelling framework for learning world models in compact latent spaces, yet existing methods remain fragile, relying on complex multi-term losses, exponential moving averages, pre-trained encoders, or auxiliary supervision to avoid representation collapse. In this work, we introduce LeWorldModel (LeWM), the first JEPA that trains stably end-to-end from raw pixels using only two loss terms: a next-embedding prediction loss and a regularizer enforcing Gaussian-distributed latent embeddings. This reduces tunable loss hyperparameters from six to one compared to the only existing end-to-end alternative. With ~15M parameters trainable on a single GPU in a few hours, LeWM plans up to 48x faster than foundation-model-based world models while remaining competitive across diverse 2D and 3D control tasks. Beyond control, we show that LeWM's latent space encodes meaningful physical structure through probing of physical quantities. Surprise evaluation confirms that the model reliably detects physically implausible events.",
+    "authors": [
+      "Lucas Maes",
+      "Quentin Le Lidec",
+      "Damien Scieur",
+      "Yann LeCun",
+      "Randall Balestriero"
+    ],
+    "categories": [
+      "cs.LG",
+      "cs.AI"
+    ],
+    "primary_category": "cs.LG",
+    "published": "2026-03-13T19:48:14Z",
+    "comment": ""
+  },
+  "card_standard_version": "2.3",
+  "paper_profile": "theory",
+  "style_reference": "physicist_daily_arxiv",
+  "provenance": {
+    "program": "Collection",
+    "catalog": "Paper Collection",
+    "catalog_record_id": "58dd56c906a98b98",
+    "catalog_record_ids": [
+      "58dd56c906a98b98"
+    ],
+    "catalog_topic": "World Models",
+    "collection_date": "2026-08-23",
+    "sampled_at": "2026-08-26",
+    "selected_by": "full_collection_backfill",
+    "sampling_seed": "not_applicable_full_collection",
+    "candidate_count": 452,
+    "legacy_full_text_card": "2603.19312.json"
+  },
+  "equation_refs": [],
+  "figure_refs": [],
+  "cover": {
+    "mode": "title_abstract",
+    "abstract_text": "Joint Embedding Predictive Architectures (JEPAs) offer a compelling framework for learning world models in compact latent spaces, yet existing methods remain fragile, relying on complex multi-term losses, exponential moving averages, pre-trained encoders, or auxiliary supervision to avoid representation collapse. In this work, we introduce LeWorldModel (LeWM), the first JEPA that trains stably end-to-end from raw pixels using only two loss terms: a next-embedding prediction loss and a regularizer enforcing Gaussian-distributed latent embeddings. This reduces tunable loss hyperparameters from six to one compared to the only existing end-to-end alternative. With ~15M parameters trainable on a single GPU in a few hours, LeWM plans up to 48x faster than foundation-model-based world models while remaining competitive across diverse 2D and 3D control tasks. Beyond control, we show that LeWM's ",
+    "selection_rationale": "该旧版全文证据包没有经过 v2.3 的逐图导出与图号核验；为避免错配图片，封面使用论文题目和经全文核对的摘要，关键论证保留在卡片正文中。"
+  }
+}

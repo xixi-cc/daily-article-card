@@ -1,0 +1,128 @@
+{
+  "arxiv_id": "2305.01582",
+  "source_version": "v3",
+  "source_pdf": "https://arxiv.org/pdf/2305.01582",
+  "title_en": "Interpretable Machine Learning for Science with PySR and SymbolicRegression.jl",
+  "title_zh": "用 PySR 与 SymbolicRegression.jl 做可解释科学机器学习",
+  "curation_status": "full_text_verified",
+  "verified_metadata": {
+    "arxiv_id": "2305.01582",
+    "version": "v3",
+    "title": "Interpretable Machine Learning for Science with PySR and SymbolicRegression.jl",
+    "abstract": "PySR is an open-source library for practical symbolic regression, a type of machine learning which aims to discover human-interpretable symbolic models. PySR was developed to democratize and popularize symbolic regression for the sciences, and is built on a high-performance distributed back-end, a flexible search algorithm, and interfaces with several deep learning packages. PySR's internal search algorithm is a multi-population evolutionary algorithm, which consists of a unique evolve-simplify-optimize loop, designed for optimization of unknown scalar constants in newly-discovered empirical expressions. PySR's backend is the extremely optimized Julia library SymbolicRegression.jl, which can be used directly from Julia. It is capable of fusing user-defined operators into SIMD kernels at runtime, performing automatic differentiation, and distributing populations of expressions to thousands of cores across a cluster. In describing this software, we also introduce a new benchmark, \"EmpiricalBench,\" to quantify the applicability of symbolic regression algorithms in science. This benchmark measures recovery of historical empirical equations from original and synthetic datasets.",
+    "authors": [
+      "Miles Cranmer"
+    ],
+    "categories": [
+      "astro-ph.IM",
+      "cs.LG",
+      "cs.NE",
+      "cs.SC",
+      "physics.data-an"
+    ],
+    "primary_category": "astro-ph.IM",
+    "published": "2023-05-02T16:31:35Z",
+    "comment": ""
+  },
+  "sections": [
+    {
+      "title": "作者信息",
+      "bullets": [
+        "作者：Miles Cranmer。",
+        "官方快照：arXiv:2305.01582v3；主分类 astro-ph.IM。",
+        "论文同时是算法、软件系统与 EmpiricalBench benchmark 描述，结果与特定版本和运行配置绑定。"
+      ]
+    },
+    {
+      "title": "摘要",
+      "bullets": [
+        "PySR 是面向科学方程发现的开源 symbolic regression 工具；Python 前端连接高性能 Julia 后端 SymbolicRegression.jl，以多种群进化搜索表达式的误差—复杂度 Pareto 前沿。",
+        "核心循环是 evolve–simplify–optimize：结构突变后做代数化简，再用 BFGS 等数值优化新表达式中的实常数。",
+        "论文还提出九条历史经验定律组成的 EmpiricalBench，要求算法在噪声、真实量纲范围和未知非整数常数下恢复函数形式。"
+      ]
+    },
+    {
+      "title": "背景",
+      "bullets": [
+        "symbolic regression 不只追求预测误差，还要在可解释复杂度上做多目标选择；科学用户通常需要一组 Pareto 候选，而非单一黑盒最优式。",
+        "常见 Feynman/Nguyen 合成 benchmark 往往直接给定物理常数、使用规整采样和简单噪声；这与历史上从不完美观测中同时发现结构和常数的任务有距离。",
+        "PySR 的设计强调自定义算符、量纲/复杂度约束、非光滑表达式、并行种群与深度学习接口，目标是可用的软件而非只在一个合成表上得分。"
+      ]
+    },
+    {
+      "title": "模型与方法",
+      "bullets": [
+        "每个种群维护表达式树，锦标赛选择后执行节点/算符变异或 crossover；模拟退火式接受准则允许暂时变差，migration 在种群间传递候选，hall of fame 保存每个复杂度的最佳式（Figs. 1–4, Algorithms 1–4）。",
+        "默认复杂度统计运算节点、变量和常数，但用户可按领域设定；自适应 parsimony 根据种群中各复杂度频率调整惩罚，避免搜索只停在简单或庞大表达式。",
+        "EmpiricalBench 含 Hubble、Kepler、Newton、Planck、Leavitt、Schechter、Bode、ideal gas、Rydberg 九条定律；原数据可得时直接使用或从原图表数字化，否则按现实变量范围生成并加噪。",
+        "六种方法各对九个任务跑 5 次，每次最多 1 小时、8 个 AMD Rome CPU cores；整条 Pareto front 由人工判断 correct/almost/failed/incorrect。"
+      ]
+    },
+    {
+      "title": "核心结果与证据",
+      "bullets": [
+        "Table 3 中 PySR 在 Hubble、Kepler、Newton、Leavitt、Schechter、Bode、ideal gas 七项均为 5/5 correct，在 Planck 与 Rydberg 为 0/5，总计 35/45。",
+        "DSR 在 Kepler 4/5、Leavitt/Schechter/ideal gas 各 5/5，但有多项 failed；Operon 只有 Newton 1/5、Schechter 5/5、Bode 3/5。EQL 与 SR-Transformer 没有 correct trial，QLattice 仅 Schechter 5/5。",
+        "作者把 crash、domain error 和未定义表达式计入失败，强调软件稳定性是科学可用性的一部分；但也承认作者更熟悉 PySR 环境，可能让它获得配置与稳定性优势。",
+        "所有方法都未恢复 Planck 与 Rydberg，说明复杂指数/倒数结构与实常数仍是共同难点；结果不是“PySR 可发现任意物理定律”。"
+      ]
+    },
+    {
+      "title": "有效性与局限",
+      "bullets": [
+        "benchmark 只有九条定律、每项五次，人工目检允许忽略小常数误差；没有独立盲评或置信区间，算法排序对任务和配置敏感。",
+        "全部数据用于训练，因为评价对象是表达式本身；因此结果衡量结构恢复，不衡量留出集泛化。",
+        "一小时/8-core 预算没有逐算法调优；作者团队对自家软件更熟悉，其他包的 crash 或配置失败不一定代表其最佳能力。",
+        "EmpiricalBench 不统计函数评估次数、搜索能耗或数值预测精度，也混合原始与合成数据；35/45 是该协议下的结构恢复计数。"
+      ]
+    },
+    {
+      "title": "复现与资源",
+      "bullets": [
+        "PySR：https://github.com/MilesCranmer/PySR；Julia 后端：https://github.com/MilesCranmer/SymbolicRegression.jl；论文 benchmark 与全部 Pareto fronts：https://github.com/MilesCranmer/pysr_paper。",
+        "复现需锁定 v3 代码依赖、算符集、复杂度规则、CPU/线程、1 小时预算和五个随机种子；应保存所有 fronts、crash 日志与人工分类依据。",
+        "本站 PDF SHA-256：231a9e250e879938a5119d1269764b34101de743181351fe77f4507a62b835b9。",
+        "Evidence status: full-text verified; no independent reproduction performed."
+      ]
+    },
+    {
+      "title": "阅读指南",
+      "bullets": [
+        "先看 Figs. 3–4 理解内外循环，再看 Section 2 的 simplify/constant optimization/adaptive parsimony；这些是 PySR 与朴素遗传编程的主要差异。",
+        "随后读 Fig. 5、Tables 2–3，把每个 5-run 分解中的 failed 与 incorrect 分开，不要只看总正确数。",
+        "实际使用时先定义允许算符与复杂度，再检查量纲、稳定性和外推；Pareto front 上的简洁式仍需物理验证。"
+      ]
+    }
+  ],
+  "evidence_refs": [
+    "paper.pdf pp. 4-13: evolutionary search, simplify-optimize loop, complexity and software architecture",
+    "paper.pdf pp. 14-17: EmpiricalBench data protocol and Tables 2-3",
+    "paper.pdf pp. 16-18: manual scoring, stability caveat, omissions and conclusion",
+    "Evidence status: full-text verified; no independent reproduction performed."
+  ],
+  "card_standard_version": "2.3",
+  "paper_profile": "ai_empirical",
+  "style_reference": "physicist_daily_arxiv",
+  "provenance": {
+    "program": "Collection",
+    "catalog": "Paper Collection",
+    "catalog_record_id": "b42bfb25f6d0c823",
+    "catalog_record_ids": [
+      "b42bfb25f6d0c823"
+    ],
+    "catalog_topic": "Machine Learning",
+    "collection_date": "2026-08-24",
+    "sampled_at": "2026-08-26",
+    "selected_by": "full_collection_backfill",
+    "sampling_seed": "not_applicable_full_collection",
+    "candidate_count": 452,
+    "legacy_full_text_card": "2305.01582.json"
+  },
+  "equation_refs": [],
+  "figure_refs": [],
+  "cover": {
+    "mode": "title_abstract",
+    "abstract_text": "PySR is an open-source library for practical symbolic regression, a type of machine learning which aims to discover human-interpretable symbolic models. PySR was developed to democratize and popularize symbolic regression for the sciences, and is built on a high-performance distributed back-end, a flexible search algorithm, and interfaces with several deep learning packages. PySR's internal search algorithm is a multi-population evolutionary algorithm, which consists of a unique evolve-simplify-optimize loop, designed for optimization of unknown scalar constants in newly-discovered empirical expressions. PySR's backend is the extremely optimized Julia library SymbolicRegression.jl, which can be used directly from Julia. It is capable of fusing user-defined operators into SIMD kernels at runtime, performing automatic differentiation, and distributing populations of expressions to thousand",
+    "selection_rationale": "该旧版全文证据包没有经过 v2.3 的逐图导出与图号核验；为避免错配图片，封面使用论文题目和经全文核对的摘要，关键论证保留在卡片正文中。"
+  }
+}

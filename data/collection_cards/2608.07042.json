@@ -1,0 +1,104 @@
+{
+  "arxiv_id": "2608.07042",
+  "source_version": "v1",
+  "source_pdf": "https://arxiv.org/pdf/2608.07042",
+  "title_en": "Limit Points of Reflow with Minibatch Optimal Transport",
+  "title_zh": "带小批量最优传输的 Reflow 极限点",
+  "curation_status": "full_text_verified",
+  "sections": [
+    {
+      "title": "作者信息",
+      "bullets": [
+        "作者：Antonin Chambolle、Johannes Hertrich。",
+        "机构：Université Paris Dauphine–PSL & Inria；ENS Paris。",
+        "版本：arXiv:2608.07042v1，2026-08-07；分类 math.PR。"
+      ]
+    },
+    {
+      "title": "研究问题",
+      "paragraphs": [
+        "Rectified flow 通过学习时变速度场连接潜分布与目标分布，Reflow 则反复用当前流诱导的新 coupling 训练，希望把轨迹“拉直”以减少采样步数。本文研究这一迭代真正能收敛到什么，尤其当每轮先做固定 batch size 的 minibatch optimal transport 时，极限 coupling 与全局最优传输之间还有多大差距。"
+      ]
+    },
+    {
+      "title": "模型与方法",
+      "bullets": [
+        "作者先把有限能量速度场产生的更新扩展为 weak rectified coupling，使没有经典光滑 ODE 解时 Reflow 仍有良定义的集合值更新。",
+        "Minibatch OT 被写成 coupling 空间上的算子 $F_N$：从原 coupling 独立抽取 $N$ 对样本，只在 batch 内按二次代价最优重配，再对采样取平均。",
+        "固定点由 $N$-cyclical monotonicity 刻画：任取至多 $N$ 对支持点，循环置换终点都不能降低总二次代价；只有对所有 $N$ 都成立才等价于全局 OT 最优性。",
+        "Algorithm 1 交替执行 $F_N$ 与普通 rectification，利用二次传输代价单调下降、coupling 的紧性和 $F_N$ 连续性研究子序列极限。",
+        "Algorithm 2 进一步把速度限制为 Wasserstein tangent space 中的梯度场；作者再借助单调映射、Brenier 理论和中间密度的支撑/可积条件判断固定点是否为 OT。"
+      ]
+    },
+    {
+      "title": "核心结果与证据",
+      "bullets": [
+        "定理 11：Algorithm 1 的任一极限点都是 $N$-循环单调，而且 minibatch-OT 前后极限点具有相同二次代价；推论 12 在 $\\mu_0$ 绝对连续时进一步得到 rectifiable 和 straight，即最优 flow-matching loss 为 0。",
+        "命题 13 说明一条收敛子序列之后的任意有限步仍趋于同一极限，且更新前后序列具有相同极限点集合；但作者明确不能由此推出整个序列收敛。",
+        "定理 16：若 $\\mu_0,\\mu_1$ 密度有界、coupling 为 $N$-循环单调且 gradient-constrained rectification loss 为 0，并存在中间时刻使 $\\mu_t$ 绝对连续且 $1/\\mu_t\\in L^1_{loc}$，则该 coupling 是端点间的最优传输。",
+        "推论 18 给出迭代极限为 OT 的可检验版本，但需要中间逆密度 $1/\\mu_{t,n_k}$ 在 $L^1_{loc}$ 中弱收敛；gradient 属性对一般弱收敛并不封闭。",
+        "第 5 节圆周多模态反例取 $M=2N+1$，构造 coupling 是 $N$-但非 $N+1$-循环单调。图 2 的 $M=5$ 对 $N=2$ 已是固定点，图 3 的 $M=7$ 对 $N=3$ 已是固定点；增大 batch 才继续向恒等 OT 移动，且可能很慢。"
+      ]
+    },
+    {
+      "title": "有效性与局限",
+      "bullets": [
+        "固定 batch size 只强制有限阶循环单调，不等于全局 OT；增大 $N$ 才逐步加强约束。",
+        "论文主要刻画极限点，未在一般条件下证明整个 Reflow 序列收敛，也没有统一迭代速度。",
+        "梯度约束版本得到 OT 需要中间密度支撑连通及逆密度局部可积等额外条件；文中给出这些条件失败时的非最优固定点。",
+        "分析在二次代价、有限二阶矩和绝对连续等假设下进行，对其他代价或奇异数据分布不能直接照搬。",
+        "数值图是针对专门构造的二维多模态反例，用于验证 batch-size 机制，不是生成质量基准。"
+      ]
+    },
+    {
+      "title": "复现与资源",
+      "bullets": [
+        "原文 PDF：https://arxiv.org/pdf/2608.07042。",
+        "HAL 记录：https://hal.science/hal-05538982/。",
+        "最小复现应构造式 (12) 的 $M=5,7$ 圆周混合分布，分别运行 $N=2,3,4$，同时记录二次代价、轨迹弯曲度与 coupling 是否变化。"
+      ]
+    },
+    {
+      "title": "阅读指南",
+      "bullets": [
+        "先读定义 6 与命题 8，弄清 $N$-循环单调和完整循环单调的差别。",
+        "再读定理 11、推论 12、命题 13，区分“每个极限点的性质”和“全序列收敛”。",
+        "梯度约束部分重点看定理 16 的中间密度条件与推论 18 的弱收敛条件。",
+        "最后用第 5 节反例和图 1–3检查为何小 batch 会停在直但非全局最优的 coupling。"
+      ]
+    }
+  ],
+  "evidence_refs": [
+    "paper.pdf p. 1: title, authors, abstract, and scope",
+    "paper.pdf pp. 3-6: weak rectified couplings and minibatch OT definition",
+    "paper.pdf pp. 7-12: N-cyclical monotonicity, Theorem 11, Corollary 12, Proposition 13",
+    "paper.pdf pp. 14-18: Theorem 16, density assumptions, and Corollary 18",
+    "paper.pdf pp. 18-20: M=2N+1 counterexample and Figures 1-3",
+    "Evidence status: full-text verified; no independent reproduction performed."
+  ],
+  "card_standard_version": "2.3",
+  "paper_profile": "theory_numerics",
+  "style_reference": "physicist_daily_arxiv",
+  "provenance": {
+    "program": "Collection",
+    "catalog": "Paper Collection",
+    "catalog_record_id": "a5484591a903e089",
+    "catalog_record_ids": [
+      "a5484591a903e089"
+    ],
+    "catalog_topic": "Fluid Dynamics",
+    "collection_date": "2026-08-23",
+    "sampled_at": "2026-08-26",
+    "selected_by": "full_collection_backfill",
+    "sampling_seed": "not_applicable_full_collection",
+    "candidate_count": 452,
+    "legacy_full_text_card": "2608.07042.json"
+  },
+  "equation_refs": [],
+  "figure_refs": [],
+  "cover": {
+    "mode": "title_abstract",
+    "abstract_text": "Rectified flow 通过学习时变速度场连接潜分布与目标分布，Reflow 则反复用当前流诱导的新 coupling 训练，希望把轨迹“拉直”以减少采样步数。本文研究这一迭代真正能收敛到什么，尤其当每轮先做固定 batch size 的 minibatch optimal transport 时，极限 coupling 与全局最优传输之间还有多大差距。",
+    "selection_rationale": "该旧版全文证据包没有经过 v2.3 的逐图导出与图号核验；为避免错配图片，封面使用论文题目和经全文核对的摘要，关键论证保留在卡片正文中。"
+  }
+}

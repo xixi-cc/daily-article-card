@@ -1,0 +1,181 @@
+{
+  "arxiv_id": "1805.00909",
+  "source_version": "v3",
+  "source_pdf": "https://arxiv.org/pdf/1805.00909",
+  "title_en": "Reinforcement Learning and Control as Probabilistic Inference: Tutorial and Review",
+  "title_zh": "把强化学习与控制写成概率推断",
+  "curation_status": "full_text_verified",
+  "sections": [
+    {
+      "title": "作者信息",
+      "bullets": [
+        "作者：Sergey Levine。",
+        "研究机构：UC Berkeley。",
+        "来源：arXiv；年份：2018；主题：强化学习、概率推断、最大熵控制。",
+        "本文按本地全文快照制作，官方元数据核验版本为 1805.00909v3。"
+      ]
+    },
+    {
+      "title": "摘要",
+      "bullets": [
+        "本文的论证主线由以下经过全文核验的节点构成：控制即推断：把高奖励事件编码为概率模型；奖励通过 optimality likelihood 进入联合分布；确定性动力学可精确等价，随机动力学需要变分近似；soft Bellman 递推来自 log-sum-exp 消息；optimality variable 把奖励变成轨迹似然；后向消息给出 soft value，条件后验给出策略；确定性下精确；随机动力学下需约束变分推断。",
+        "卡片内容来自已完成冷读与逐页检查的 paper_presentation.json，并回链到原论文页码、图或公式。"
+      ]
+    },
+    {
+      "title": "背景",
+      "bullets": [
+        "论证节点“控制即推断：把高奖励事件编码为概率模型”。",
+        "MDP 给定状态 $s_t$、动作 $a_t$、动力学与奖励 $r(s_t,a_t)$。",
+        "引入二元 optimality 变量 $O_t$，令高奖励轨迹更可能满足 $O_t=1$。",
+        "动作后验 $p(a_t\\\\|s_t,O_t:T=1)$ 因而成为控制策略。",
+        "这样可复用图模型、消息传递与变分推断工具。",
+        "奖励被指数化为似然后，规划就变成对“最优轨迹”条件化。",
+        "图模型中的 optimality variables 与奖励似然。 （p. 3; figure Fig. 1）",
+        "研究问题的表述以论文给出的对象和评价目标为边界；背景动机不自动构成方法有效性的证据。"
+      ]
+    },
+    {
+      "title": "模型与方法",
+      "bullets": [
+        "论证节点“奖励通过 optimality likelihood 进入联合分布”。",
+        "设定：奖励需平移/缩放使指数似然可归一",
+        "关键关系：p(O_t=1\\\\|s_t,a_t) &\\propto \\exp(r(s_t,a_t)) \\\\ p(\\tau,O_{1:T}=1) &\\propto p(\\tau)\\exp\\!\\left(\\sum_t r_t\\right)",
+        "推导含义：$p(\\tau)$ 保留动力学与动作先验；条件化偏向高回报轨迹。",
+        "结论边界：概率乘积对应回报求和，sum-product 消息传递对应 soft 动态规划。",
+        "optimality likelihood 与轨迹后验。 （p. 4; equation Eqs. 3-5; main.tex）",
+        "论证节点“确定性动力学可精确等价，随机动力学需要变分近似”。",
+        "确定性动力学下，后验策略对应最大熵 RL 的精确推断。",
+        "随机动力学若直接条件化，会产生“策略偏好可控转移”的乐观偏差。",
+        "用结构化变分分布固定真实动力学，得到正确的 maximum-entropy objective。",
+        "因此“控制等于推断”必须说明动力学假设与变分族。",
+        "随机环境中的等价性不是免费得到的；约束变分形式负责纠偏。",
+        "确定性精确推断与随机动力学变分推断的区别。 （p. 7）",
+        "论证节点“soft Bellman 递推来自 log-sum-exp 消息”。",
+        "设定：温度取 1；连续动作把求和换成积分",
+        "关键关系：Q(s,a) &= r(s,a)+\\mathbb E_{s'}[V(s')] \\\\ V(s) &= \\log\\int \\exp(Q(s,a))\\,da \\\\ \\pi(a\\\\|s) &= \\exp(Q(s,a)-V(s))",
+        "推导含义：$V$ 是后向 optimality message 的对数；策略为归一化指数 $Q$。",
+        "结论边界：熵项不是附加技巧，而是概率归一化自然产生的结果。",
+        "maximum-entropy Bellman equations 与策略后验。 （p. 9; equation Eqs. 20-22）",
+        "论证节点“统一视角连接 policy gradient、actor--critic 与 soft Q-learning”。",
+        "变分下界对策略参数求导得到最大熵 policy gradient。",
+        "交替估计 soft $Q$ 与改进策略得到 maximum-entropy actor--critic。",
+        "直接拟合 log-partition 递推得到 soft Q-learning。",
+        "图模型还能自然扩展到部分可观测、层级策略和结构化潜变量。",
+        "这些算法共享概率目标，但近似方式、采样分布与稳定性仍然不同。",
+        "函数逼近下的三类算法推导。 （p. 12）",
+        "论证节点“最大熵目标改变的不只是探索噪声”。",
+        "目标为期望回报加策略熵，温度控制两者权衡。",
+        "最优策略在动作价值接近时保留多模态，而非过早坍缩为单动作。",
+        "熵有利于组合、鲁棒与 off-policy 学习，但也改变任务最优性定义。",
+        "若真正目标是标准期望回报，温度退火或约束形式需要单独设计。",
+        "应把 entropy regularization 当作明确的控制偏好，而不是默认无害的探索项。",
+        "maximum entropy objective 的解释与温度角色。 （p. 14）",
+        "方法部分按 presentation 中的数学关系、算法结构或实验设计重述；公式只在相应证据页定义的符号与条件下成立。"
+      ]
+    },
+    {
+      "title": "核心结果与证据",
+      "bullets": [
+        "论证节点“控制即推断：把高奖励事件编码为概率模型”。",
+        "MDP 给定状态 $s_t$、动作 $a_t$、动力学与奖励 $r(s_t,a_t)$。",
+        "引入二元 optimality 变量 $O_t$，令高奖励轨迹更可能满足 $O_t=1$。",
+        "动作后验 $p(a_t\\\\|s_t,O_t:T=1)$ 因而成为控制策略。",
+        "这样可复用图模型、消息传递与变分推断工具。",
+        "奖励被指数化为似然后，规划就变成对“最优轨迹”条件化。",
+        "图模型中的 optimality variables 与奖励似然。 （p. 3; figure Fig. 1）",
+        "证据状态：上述结论均来自逐页审阅后的 presentation manifest；这里只确认论文原文支持，不把作者实验视为本站独立复现。"
+      ]
+    },
+    {
+      "title": "有效性与局限",
+      "bullets": [
+        "论证节点“框架的力量来自建模自由，也带来建模责任”。",
+        "奖励指数化的尺度决定策略熵与回报的相对权重。",
+        "随机动力学下错误的推断图会产生偏向低熵转移的风险敏感策略。",
+        "近似推断误差会转化为控制偏差；算法收敛不由统一视角自动保证。",
+        "教程综述建立概念联系，不是一个单独算法的 benchmark 论文。",
+        "每次使用“control as inference”都应写明 optimality likelihood、变分约束与温度。",
+        "综述讨论随机动力学、建模与近似限制。 （p. 17）",
+        "论证节点“一张概率图解释最大熵控制的共同骨架”。",
+        "optimality variable 把奖励变成轨迹似然。",
+        "后向消息给出 soft value，条件后验给出策略。",
+        "确定性下精确；随机动力学下需约束变分推断。",
+        "policy gradient、actor--critic 与 soft Q-learning 是不同近似路线。",
+        "控制即推断最有价值之处，是把算法差异暴露为概率模型与推断选择。",
+        "教程结论与未来方向。 （p. 18）",
+        "适用边界以卡片列出的目标、假设、数据集或物理参数区间为准；未在原文证据中出现的外推不计入论文结论。",
+        "该卡完成的是全文证据审计，未重新运行训练、仿真或实验，因此不能据此声称独立复现、稳健性复核或跨任务泛化。"
+      ]
+    },
+    {
+      "title": "复现与资源",
+      "bullets": [
+        "原文：https://arxiv.org/abs/1805.00909；PDF：https://arxiv.org/pdf/1805.00909。",
+        "本地证据源：1805.00909/source/paper.pdf；SHA-256：98f4831608edb32de2d80fd5bfd1a7661968f6c4b32559c68d15cee974dc60e2。",
+        "来源格式：tex；来源包状态：downloaded；presentation 证据条目数：8。",
+        "presentation 及其质量报告保留了页面审阅、编译和冷读状态；它们用于追溯卡片，不等同于作者代码或数据已公开。",
+        "Evidence status: full-text verified; no independent reproduction performed."
+      ]
+    },
+    {
+      "title": "阅读指南",
+      "bullets": [
+        "快速阅读可先看证据页 3, 4, 7, 9, 12, 14，这些页覆盖问题、方法与主要结论。",
+        "图证据优先查看 Fig. 1；结合图注和正文，不只依据视觉趋势下结论。",
+        "公式链优先查看 Eqs. 3-5；核对符号、假设与前后推导。",
+        "建议按“研究问题 → 方法/数学对象 → 证据 → 局限”的顺序阅读，避免从摘要直接跳到强结论。",
+        "若要复现，先从证据引用恢复具体设置，再补齐随机种子、计算资源、评价指标和失败案例。"
+      ]
+    }
+  ],
+  "evidence_refs": [
+    "paper.pdf pages 3, 4, 7, 9, 12, 14, 17, 18: page-addressable claims",
+    "paper_presentation.json: 8 substantive slides and 8 evidence entries",
+    "source-provenance.json: PDF SHA-256 98f4831608edb32de2d80fd5bfd1a7661968f6c4b32559c68d15cee974dc60e2",
+    "Evidence status: full-text verified; no independent reproduction performed."
+  ],
+  "verified_metadata": {
+    "arxiv_id": "1805.00909",
+    "version": "v3",
+    "title": "Reinforcement Learning and Control as Probabilistic Inference: Tutorial and Review",
+    "abstract": "The framework of reinforcement learning or optimal control provides a mathematical formalization of intelligent decision making that is powerful and broadly applicable. While the general form of the reinforcement learning problem enables effective reasoning about uncertainty, the connection between reinforcement learning and inference in probabilistic models is not immediately obvious. However, such a connection has considerable value when it comes to algorithm design: formalizing a problem as probabilistic inference in principle allows us to bring to bear a wide array of approximate inference tools, extend the model in flexible and powerful ways, and reason about compositionality and partial observability. In this article, we will discuss how a generalization of the reinforcement learning or optimal control problem, which is sometimes termed maximum entropy reinforcement learning, is equivalent to exact probabilistic inference in the case of deterministic dynamics, and variational inference in the case of stochastic dynamics. We will present a detailed derivation of this framework, overview prior work that has drawn on this and related ideas to propose new reinforcement learning and control algorithms, and describe perspectives on future research.",
+    "authors": [
+      "Sergey Levine"
+    ],
+    "categories": [
+      "cs.LG",
+      "cs.AI",
+      "cs.RO",
+      "stat.ML"
+    ],
+    "primary_category": "cs.LG",
+    "published": "2018-05-02T17:11:20Z",
+    "comment": ""
+  },
+  "card_standard_version": "2.3",
+  "paper_profile": "ai_empirical",
+  "style_reference": "physicist_daily_arxiv",
+  "provenance": {
+    "program": "Collection",
+    "catalog": "Paper Collection",
+    "catalog_record_id": "98f4831608edb32d",
+    "catalog_record_ids": [
+      "98f4831608edb32d"
+    ],
+    "catalog_topic": "Control & Reinforcement Learning",
+    "collection_date": "2026-08-23",
+    "sampled_at": "2026-08-26",
+    "selected_by": "full_collection_backfill",
+    "sampling_seed": "not_applicable_full_collection",
+    "candidate_count": 452,
+    "legacy_full_text_card": "1805.00909.json"
+  },
+  "equation_refs": [],
+  "figure_refs": [],
+  "cover": {
+    "mode": "title_abstract",
+    "abstract_text": "The framework of reinforcement learning or optimal control provides a mathematical formalization of intelligent decision making that is powerful and broadly applicable. While the general form of the reinforcement learning problem enables effective reasoning about uncertainty, the connection between reinforcement learning and inference in probabilistic models is not immediately obvious. However, such a connection has considerable value when it comes to algorithm design: formalizing a problem as probabilistic inference in principle allows us to bring to bear a wide array of approximate inference tools, extend the model in flexible and powerful ways, and reason about compositionality and partial observability. In this article, we will discuss how a generalization of the reinforcement learning or optimal control problem, which is sometimes termed maximum entropy reinforcement learning, is eq",
+    "selection_rationale": "该旧版全文证据包没有经过 v2.3 的逐图导出与图号核验；为避免错配图片，封面使用论文题目和经全文核对的摘要，关键论证保留在卡片正文中。"
+  }
+}

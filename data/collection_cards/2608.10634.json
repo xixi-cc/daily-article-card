@@ -1,0 +1,103 @@
+{
+  "arxiv_id": "2608.10634",
+  "source_version": "v1",
+  "source_pdf": "https://arxiv.org/pdf/2608.10634",
+  "title_en": "IADD-TR: Intervention-Aware Dynamics Decoupling with Targeted Regularization for Model-Based Reinforcement Learning",
+  "title_zh": "IADD-TR：面向模型强化学习的干预感知动力学解耦与靶向正则化",
+  "curation_status": "full_text_verified",
+  "sections": [
+    {
+      "title": "作者信息",
+      "bullets": [
+        "作者：Zefeng Liang、Jie Qiao、Ruichu Cai、Weilin Chen、Zhifeng Hao。",
+        "版本：arXiv:2608.10634v1，2026-08-11；分类 cs.LG。",
+        "主题：模型强化学习、动作干预分解与 targeted policy-gradient estimation。"
+      ]
+    },
+    {
+      "title": "研究问题",
+      "paragraphs": [
+        "离线/回放数据中的动作由历史策略选择，动作与状态演化纠缠；稀有反事实动作的 critic 误差又被 policy gradient 放大。IADD-TR 分别处理两处偏差：IADD 把转移拆成即时 action intervention 与 action-free natural evolution，TR 用 efficient influence function 校正低 propensity 动作的价值误差。"
+      ]
+    },
+    {
+      "title": "模型与方法",
+      "bullets": [
+        "IADD 学习 $s,a\\to\\tilde s_o\\to s'$ 两阶段：第一阶段编码动作效应，第二阶段不再输入动作，只演化环境。",
+        "分解本身不唯一，故加入 zero-action anchor：$a=0$ 时 observable intermediate $\\tilde s_o=s$；真实零动作只占交互内预定比例，不加入 actor/critic replay。",
+        "Theorem 3 的 EIF 含 $1/\\pi_\\beta(a|s)$，揭示低覆盖动作会放大 critic residual；标准 TD loss 不针对这个 policy-gradient sensitivity。",
+        "TR 构造 $Q_{adj}=Q+\\epsilon_\\xi(a)/\\tilde\\pi_\\beta$，冻结 baseline critic 学 residual correction，使 EIF score 近零。Theorem 4 在 critic 或 replay density 任一一致时给 double robustness。",
+        "五个 MuJoCo 任务与 SAC/PPO/SLBO/MBPO 比较 5 seeds；另用可观测中间态的 damped-oscillator 合成系统和 Hopper Monte Carlo gradient 做机制诊断。"
+      ]
+    },
+    {
+      "title": "核心结果与证据",
+      "bullets": [
+        "IADD-TR 在 HalfCheetah、Walker2d、Ant、Humanoid 相对 MBPO 提升最明显，Hopper 前期更快且最终相当；IADD 与 TR 单独通常各有增益，组合在多任务最强。",
+        "合成系统将 zero-action ratio 从 0 增到 0.40，post-intervention-state MSE 由 4.043 降至 0.0109（99.7%），action-effect correlation 由 0.346 升至 0.973。",
+        "$\\lambda_0=0.10$ 时 next-state MSE 从 $2.325\\times10^{-4}$ 改善至 $2.156\\times10^{-4}$；更高比例仍在 $2.325$–$2.434\\times10^{-4}$，说明中间态可识别性提升未明显牺牲终态拟合。",
+        "Hopper 六个 actor checkpoints 上，TR 的 critic-gradient 与有限样本 MC reference cosine 均更高；epoch 50 从 0.728→0.771，epoch 300 从 0.918→0.928，配对增益 0.009–0.044。",
+        "零动作诊断 sweep 只有一个 completed training seed，10,000 held-out transitions 是同一模型的评估点而非独立重复；论文没有虚报跨 seed 不确定度。"
+      ]
+    },
+    {
+      "title": "有效性与局限",
+      "bullets": [
+        "需要有物理意义的 zero-action anchor；持续漂移或零动作并非“无干预”的系统可能不满足。",
+        "两阶段 latent 分解仍依赖 identifiability 假设，真实 MuJoCo 没有中间态 ground truth。",
+        "double robustness 有 overlap、moment、empirical-process 和 EIF score 条件，非自动有限样本保证。",
+        "MC gradient 参考也是 32 trajectories/state、horizon 500 的有限估计，cosine 只测方向不测尺度。",
+        "zero-action 数据改变探索动作的 10%，虽总交互预算相同，仍是 IADD 专属采样机制。"
+      ]
+    },
+    {
+      "title": "复现与资源",
+      "bullets": [
+        "原文 PDF：https://arxiv.org/pdf/2608.10634。",
+        "复现需固定 MuJoCo 2.0、5 seeds、$\\lambda_0=0.1$、TR 权重 1，并分开 MBPO+TR、IADD、IADD+TR。",
+        "机制 sweep 要标注单 seed；不能把 held-out transition 数当重复次数。"
+      ]
+    },
+    {
+      "title": "阅读指南",
+      "bullets": [
+        "先看图 1–2与两阶段 factorization/anchor。",
+        "读 Theorems 3–4，理解 propensity 放大与 double robustness。",
+        "图 3–4看 return，图 5–6看机制；两类证据不要混合。",
+        "最后读 identifiability 与 zero-action 适用条件。"
+      ]
+    }
+  ],
+  "evidence_refs": [
+    "paper.pdf pp. 1-5: authors, IADD factorization, zero-action anchor, and model objective",
+    "paper.pdf pp. 6-7: EIF, targeted critic, and double robustness",
+    "paper.pdf pp. 7-10: five-task results, ablations, single-seed dynamics sweep, and MC-gradient diagnostic",
+    "paper.pdf appendices pp. 10-16: hyperparameters, synthetic ODE, and assumptions",
+    "Evidence status: full-text verified; no independent reproduction performed."
+  ],
+  "card_standard_version": "2.3",
+  "paper_profile": "ai_empirical",
+  "style_reference": "physicist_daily_arxiv",
+  "provenance": {
+    "program": "Collection",
+    "catalog": "Paper Collection",
+    "catalog_record_id": "4df44d1db80e07a7",
+    "catalog_record_ids": [
+      "4df44d1db80e07a7"
+    ],
+    "catalog_topic": "Control & Reinforcement Learning",
+    "collection_date": "2026-08-23",
+    "sampled_at": "2026-08-26",
+    "selected_by": "full_collection_backfill",
+    "sampling_seed": "not_applicable_full_collection",
+    "candidate_count": 452,
+    "legacy_full_text_card": "2608.10634.json"
+  },
+  "equation_refs": [],
+  "figure_refs": [],
+  "cover": {
+    "mode": "title_abstract",
+    "abstract_text": "离线/回放数据中的动作由历史策略选择，动作与状态演化纠缠；稀有反事实动作的 critic 误差又被 policy gradient 放大。IADD-TR 分别处理两处偏差：IADD 把转移拆成即时 action intervention 与 action-free natural evolution，TR 用 efficient influence function 校正低 propensity 动作的价值误差。",
+    "selection_rationale": "该旧版全文证据包没有经过 v2.3 的逐图导出与图号核验；为避免错配图片，封面使用论文题目和经全文核对的摘要，关键论证保留在卡片正文中。"
+  }
+}

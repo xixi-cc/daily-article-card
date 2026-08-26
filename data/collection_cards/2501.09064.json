@@ -1,0 +1,161 @@
+{
+  "arxiv_id": "2501.09064",
+  "source_version": "v1",
+  "source_pdf": "https://arxiv.org/pdf/2501.09064",
+  "title_en": "Generative diffusion model with inverse renormalization group flows",
+  "title_zh": "用重整化群设计扩散模型的多尺度生成过程",
+  "curation_status": "full_text_verified",
+  "sections": [
+    {
+      "title": "作者信息",
+      "bullets": [
+        "作者：Kanta Masuki、Yuto Ashida。",
+        "研究机构：The University of Tokyo。",
+        "来源：arXiv:2501.09064；年份：2025；主题：Diffusion models、Renormalization group、Multiscale generative modeling。",
+        "本文按本地全文快照制作，官方元数据核验版本为 2501.09064v1。"
+      ]
+    },
+    {
+      "title": "摘要",
+      "bullets": [
+        "本文的论证主线由以下经过全文核验的节点构成：标准扩散同时破坏所有尺度，RG 则按尺度逐层消元；前向扩散像 RG：先消去高频；反向生成像逆 RG；动量依赖协方差把扩散时间变成截止尺度；网络计算量随有效自由度一起下降；RG 视角把扩散时间与物理分辨率尺度连接起来；动量依赖噪声和投影层实现先低频、后高频的逆向生成；多尺度数据可获得质量—效率收益，但基底选择决定适用边界。",
+        "卡片内容来自已完成冷读与逐页检查的 paper_presentation.json，并回链到原论文页码、图或公式。"
+      ]
+    },
+    {
+      "title": "背景",
+      "bullets": [
+        "论证节点“标准扩散同时破坏所有尺度，RG 则按尺度逐层消元”。",
+        "DDPM 常用白噪声：每一步都扰动全部频率，网络需反复修复已学会的长波结构。",
+        "重整化群（RG）按动量尺度积分掉短波自由度，并保留长波有效理论。",
+        "论文设计带颜色、依赖动量的噪声日程，使前向过程模拟逐层粗粒化。",
+        "反向过程从低频骨架逐步恢复高频细节，因此形成明确的 coarse-to-fine 生成顺序。",
+        "扩散时间不再只是信噪比，而是与物理分辨率尺度对应。",
+        "论文建立扩散过程与 RG 粗粒化之间的对应并提出动量依赖噪声。 （p. 1; main.tex）",
+        "研究问题的表述以论文给出的对象和评价目标为边界；背景动机不自动构成方法有效性的证据。"
+      ]
+    },
+    {
+      "title": "模型与方法",
+      "bullets": [
+        "论证节点“动量依赖协方差把扩散时间变成截止尺度”。",
+        "设定：在 Fourier 空间中用动量 $k$ 标记模式，并令截止尺度 $\\Lambda_t$ 随时间降低。",
+        "关键关系：x_t(k) &= \\alpha_t(k)x_0(k)+\\sigma_t(k)\\epsilon(k) \\\\ \\sigma_t^2(k) &\\approx 1-\\alpha_t^2(k)",
+        "推导含义：$\\alpha_t(k)$ 对高动量模式更早衰减；低频模式在更晚时间仍保留信息。",
+        "结论边界：投影层显式删除已积分掉的模式，使网络无需在每一步处理完整分辨率。",
+        "论文构造动量依赖噪声核和投影算子以实现逐尺度扩散。 （p. 4; equation Eqs. (5–9); main.tex）",
+        "方法部分按 presentation 中的数学关系、算法结构或实验设计重述；公式只在相应证据页定义的符号与条件下成立。"
+      ]
+    },
+    {
+      "title": "核心结果与证据",
+      "bullets": [
+        "论证节点“前向扩散像 RG：先消去高频；反向生成像逆 RG”。",
+        "Fig. 1, p. 2：标准扩散均匀加噪；RG 启发方案按尺度抹去模式。生成时先确定全局结构，再逐步补充局部细节。",
+        "证据解释：扩散与重整化群流程的概念对照。",
+        "RGDM 使用尺度有序的加噪与反向恢复过程。 （p. 2; figure Fig. 1）",
+        "论证节点“网络计算量随有效自由度一起下降”。",
+        "Fig. 2, pp. 4--5：当高频模式在前向过程中被消去，对应反向阶段只需在当前有效分辨率上计算；投影层避免把算力浪费在尚未恢复的尺度。",
+        "证据解释：RG 扩散架构与多尺度投影。",
+        "多尺度投影随时间调整网络处理的有效模式数。 （p. 5; figure Fig. 2）",
+        "论证节点“可控分布验证：模式恢复顺序符合尺度设计”。",
+        "Fig. 3, pp. 6--7：在具有明确长短程结构的合成数据上，模型先重建低频统计，再恢复高频相关；这直接检验了逆 RG 解释。",
+        "证据解释：合成数据的生成轨迹与统计量。",
+        "合成实验展示了按尺度有序的统计恢复。 （p. 7; figure Fig. 3）",
+        "论证节点“图像与蛋白质：粗到细生成兼顾样本质量和速度”。",
+        "Fig. 4, pp. 8--10：论文在图像和蛋白质构象数据上比较标准扩散；RG 日程利用多尺度结构减少计算，并保持或改善论文报告的质量指标。",
+        "证据解释：真实数据上的样本、质量和速度比较。",
+        "RGDM 在图像与蛋白质数据上展示质量—效率收益。 （p. 10; figure Fig. 4）",
+        "证据状态：上述结论均来自逐页审阅后的 presentation manifest；这里只确认论文原文支持，不把作者实验视为本站独立复现。"
+      ]
+    },
+    {
+      "title": "有效性与局限",
+      "bullets": [
+        "论证节点“RG 类比最适合有明确尺度结构的数据”。",
+        "Fourier 动量是规则网格上的自然尺度；图、点云或强非平稳数据需要新的基底。",
+        "colored noise 和投影层改变训练与采样实现，实际加速取决于算子、分辨率和硬件。",
+        "coarse-to-fine 生成与 RG 有结构对应，但学习网络并不等于严格求出物理 RG 流。",
+        "论文实验支持选定图像和蛋白质分布，尚不能保证所有多尺度数据都优于 DDPM。",
+        "论文讨论尺度基底、计算实现与推广范围。 （p. 11; main.tex）",
+        "论证节点“三句话带走”。",
+        "RG 视角把扩散时间与物理分辨率尺度连接起来。",
+        "动量依赖噪声和投影层实现先低频、后高频的逆向生成。",
+        "多尺度数据可获得质量—效率收益，但基底选择决定适用边界。",
+        "适用边界以卡片列出的目标、假设、数据集或物理参数区间为准；未在原文证据中出现的外推不计入论文结论。",
+        "该卡完成的是全文证据审计，未重新运行训练、仿真或实验，因此不能据此声称独立复现、稳健性复核或跨任务泛化。"
+      ]
+    },
+    {
+      "title": "复现与资源",
+      "bullets": [
+        "原文：https://arxiv.org/abs/2501.09064；PDF：https://arxiv.org/pdf/2501.09064。",
+        "本地证据源：2501.09064/source/paper.pdf；SHA-256：d5f9896b23484efd451ca4104abc673fb152e70cf96e4174b79debc08fb73147。",
+        "来源格式：tex；来源包状态：downloaded；presentation 证据条目数：7。",
+        "presentation 及其质量报告保留了页面审阅、编译和冷读状态；它们用于追溯卡片，不等同于作者代码或数据已公开。",
+        "Evidence status: full-text verified; no independent reproduction performed."
+      ]
+    },
+    {
+      "title": "阅读指南",
+      "bullets": [
+        "快速阅读可先看证据页 1, 2, 4, 5, 7, 10，这些页覆盖问题、方法与主要结论。",
+        "图证据优先查看 Fig. 1；结合图注和正文，不只依据视觉趋势下结论。",
+        "公式链优先查看 Eqs. (5–9)；核对符号、假设与前后推导。",
+        "建议按“研究问题 → 方法/数学对象 → 证据 → 局限”的顺序阅读，避免从摘要直接跳到强结论。",
+        "若要复现，先从证据引用恢复具体设置，再补齐随机种子、计算资源、评价指标和失败案例。"
+      ]
+    }
+  ],
+  "evidence_refs": [
+    "paper.pdf pages 1, 2, 4, 5, 7, 10, 11: page-addressable claims",
+    "paper_presentation.json: 8 substantive slides and 7 evidence entries",
+    "source-provenance.json: PDF SHA-256 d5f9896b23484efd451ca4104abc673fb152e70cf96e4174b79debc08fb73147",
+    "Evidence status: full-text verified; no independent reproduction performed."
+  ],
+  "verified_metadata": {
+    "arxiv_id": "2501.09064",
+    "version": "v1",
+    "title": "Generative diffusion model with inverse renormalization group flows",
+    "abstract": "Diffusion models represent a class of generative models that produce data by denoising a sample corrupted by white noise. Despite the success of diffusion models in computer vision, audio synthesis, and point cloud generation, so far they overlook inherent multiscale structures in data and have a slow generation process due to many iteration steps. In physics, the renormalization group offers a fundamental framework for linking different scales and giving an accurate coarse-grained model. Here we introduce a renormalization group-based diffusion model that leverages multiscale nature of data distributions for realizing a high-quality data generation. In the spirit of renormalization group procedures, we define a flow equation that progressively erases data information from fine-scale details to coarse-grained structures. Through reversing the renormalization group flows, our model is able to generate high-quality samples in a coarse-to-fine manner. We validate the versatility of the model through applications to protein structure prediction and image generation. Our model consistently outperforms conventional diffusion models across standard evaluation metrics, enhancing sample quality and/or accelerating sampling speed by an order of magnitude. The proposed method alleviates the need for data-dependent tuning of hyperparameters in the generative diffusion models, showing promise for systematically increasing sample efficiency based on the concept of the renormalization group.",
+    "authors": [
+      "Kanta Masuki",
+      "Yuto Ashida"
+    ],
+    "categories": [
+      "cond-mat.stat-mech",
+      "cond-mat.dis-nn",
+      "cs.LG",
+      "physics.app-ph",
+      "physics.bio-ph"
+    ],
+    "primary_category": "cond-mat.stat-mech",
+    "published": "2025-01-15T19:00:01Z",
+    "comment": ""
+  },
+  "card_standard_version": "2.3",
+  "paper_profile": "ai_empirical",
+  "style_reference": "physicist_daily_arxiv",
+  "provenance": {
+    "program": "Collection",
+    "catalog": "Paper Collection",
+    "catalog_record_id": "d5f9896b23484efd",
+    "catalog_record_ids": [
+      "d5f9896b23484efd"
+    ],
+    "catalog_topic": "Renormalization Group",
+    "collection_date": "2026-08-23",
+    "sampled_at": "2026-08-26",
+    "selected_by": "full_collection_backfill",
+    "sampling_seed": "not_applicable_full_collection",
+    "candidate_count": 452,
+    "legacy_full_text_card": "2501.09064.json"
+  },
+  "equation_refs": [],
+  "figure_refs": [],
+  "cover": {
+    "mode": "title_abstract",
+    "abstract_text": "Diffusion models represent a class of generative models that produce data by denoising a sample corrupted by white noise. Despite the success of diffusion models in computer vision, audio synthesis, and point cloud generation, so far they overlook inherent multiscale structures in data and have a slow generation process due to many iteration steps. In physics, the renormalization group offers a fundamental framework for linking different scales and giving an accurate coarse-grained model. Here we introduce a renormalization group-based diffusion model that leverages multiscale nature of data distributions for realizing a high-quality data generation. In the spirit of renormalization group procedures, we define a flow equation that progressively erases data information from fine-scale details to coarse-grained structures. Through reversing the renormalization group flows, our model is abl",
+    "selection_rationale": "该旧版全文证据包没有经过 v2.3 的逐图导出与图号核验；为避免错配图片，封面使用论文题目和经全文核对的摘要，关键论证保留在卡片正文中。"
+  }
+}

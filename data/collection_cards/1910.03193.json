@@ -1,0 +1,128 @@
+{
+  "arxiv_id": "1910.03193",
+  "source_version": "v3",
+  "source_pdf": "https://arxiv.org/pdf/1910.03193",
+  "title_en": "DeepONet: Learning nonlinear operators for identifying differential equations based on the universal approximation theorem of operators",
+  "title_zh": "DeepONet：基于算子普适逼近定理学习非线性算子",
+  "curation_status": "full_text_verified",
+  "verified_metadata": {
+    "arxiv_id": "1910.03193",
+    "version": "v3",
+    "title": "DeepONet: Learning nonlinear operators for identifying differential equations based on the universal approximation theorem of operators",
+    "abstract": "While it is widely known that neural networks are universal approximators of continuous functions, a less known and perhaps more powerful result is that a neural network with a single hidden layer can approximate accurately any nonlinear continuous operator. This universal approximation theorem is suggestive of the potential application of neural networks in learning nonlinear operators from data. However, the theorem guarantees only a small approximation error for a sufficient large network, and does not consider the important optimization and generalization errors. To realize this theorem in practice, we propose deep operator networks (DeepONets) to learn operators accurately and efficiently from a relatively small dataset. A DeepONet consists of two sub-networks, one for encoding the input function at a fixed number of sensors $x_i, i=1,\\dots,m$ (branch net), and another for encoding the locations for the output functions (trunk net). We perform systematic simulations for identifying two types of operators, i.e., dynamic systems and partial differential equations, and demonstrate that DeepONet significantly reduces the generalization error compared to the fully-connected networks. We also derive theoretically the dependence of the approximation error in terms of the number of sensors (where the input function is defined) as well as the input function type, and we verify the theorem with computational results. More importantly, we observe high-order error convergence in our computational tests, namely polynomial rates (from half order to fourth order) and even exponential convergence with respect to the training dataset size.",
+    "authors": [
+      "Lu Lu",
+      "Pengzhan Jin",
+      "George Em Karniadakis"
+    ],
+    "categories": [
+      "cs.LG",
+      "stat.ML"
+    ],
+    "primary_category": "cs.LG",
+    "published": "2019-10-08T03:21:14Z",
+    "comment": ""
+  },
+  "sections": [
+    {
+      "title": "作者信息",
+      "bullets": [
+        "作者：Lu Lu、Pengzhan Jin、George Em Karniadakis。",
+        "官方快照：arXiv:1910.03193v3；主分类 cs.LG。",
+        "这是早期 DeepONet 架构论文；实验集中于合成 ODE/PDE operators，不是后来所有 DeepONet 变体的综合 benchmark。"
+      ]
+    },
+    {
+      "title": "摘要",
+      "bullets": [
+        "DeepONet 把输入函数 u 在固定 sensors x1…xm 的取值送入 branch net，把查询位置 y 送入 trunk net；两者输出做内积并加 bias，得到 G(u)(y)。",
+        "架构动机来自非线性连续算子的 universal approximation theorem，但作者强调定理只约束 approximation error，不保证 optimization 或 generalization error。",
+        "论文在 antiderivative、nonlinear ODE、gravity pendulum 与 diffusion–reaction PDE 上比较 stacked/unstacked、bias、sensor 数、训练规模、预测时间和输入函数复杂度。"
+      ]
+    },
+    {
+      "title": "背景",
+      "bullets": [
+        "普通 FNN 若把 m 个 function samples 与 y 一起输入，忽略了“一个 u 对应许多 y 查询”的共享结构；branch/trunk 分解把函数编码与坐标基函数显式分开。",
+        "stacked DeepONet 为每个 trunk basis 配一套 branch network；unstacked 共享 branch hidden layers，因此参数更少。输出 bias 不在原普适定理结构中，但经验上显著降低误差。",
+        "训练数据点定义为 triplet (u,y,G(u)(y))，因此“10000 points”可能来自远少于 10000 个独立 input functions；论文在 PDE 部分另行报告 u samples 与每个 u 的 query 数 P。"
+      ]
+    },
+    {
+      "title": "模型与方法",
+      "bullets": [
+        "默认 GRF input length scale l=0.2、100 sensors；ODE/pendulum 多用 10000 train triplets、100000 test triplets，PDE 用 100×100 网格的随机 query。",
+        "antiderivative baseline FNN 对 depth 2–4、width 10–2560、learning rate 10^-4–10^-2 网格搜索；DeepONet 则未做同等规模超参搜索，主要比较结构变体。",
+        "Theorem 2 把 input interpolation/sensor error 与算子输出误差联系：m 需使 T exp(cT) κ(m,V) 足够小；附录基于 compact function space 与算子普适逼近给出证明。",
+        "所有数值用训练/测试 MSE，并通过随机训练数据与初始化重复部分实验；OOD examples 改变 input shape/幅度用于展示 nonlinear ODE extrapolation。"
+      ]
+    },
+    {
+      "title": "核心结果与证据",
+      "bullets": [
+        "antiderivative 的最佳 FNN test MSE 约 10^-4（depth 2、width 2560、lr 0.001）；unstacked DeepONet+output bias 的 generalization gap 更小、test error 最低，且参数少于 stacked 版本（Figs. 2–3）。",
+        "nonlinear ODE 十次随机运行中，unstacked 的 train MSE 可更高但 test MSE 更低；证据说明该设置下共享结构减小 generalization error，不是证明所有 operator/data distribution 都如此。",
+        "pendulum error 随较长 prediction horizon 快速增加；width 从小到 100 改善，继续增大反而变差，作者归因可能是 optimization error。sensor 所需数量随 horizon、frequency/length scale 改变。",
+        "训练规模较小时 test/generalization error 被拟合为 exp(-x/2000)，大规模转为约 x^-0.5 与 x^-1；这是有限实验区间的经验趋势，而非普遍深度学习收敛定理。",
+        "diffusion–reaction PDE 中 100 个独立 u、每个 P=1000 queries 时 test error 约 10^-5；增加 P 或 u samples 先下降后饱和，说明 triplet 数与独立函数覆盖必须分开报告。"
+      ]
+    },
+    {
+      "title": "有效性与局限",
+      "bullets": [
+        "普适逼近只给存在性且需足够大网络，不给所需 width/depth、优化可达性或有限样本泛化；作者明确说尚不理解 DeepONet 小 generalization error 的理论原因。",
+        "baseline 是拼接输入的 FNN，且其超参搜索与 DeepONet设置不完全等预算；没有与 FNO、kernel/operator regression 等后来方法比较。",
+        "输入 functions 都在固定 sensor locations 采样，主要来自已知 GRF/多项式分布；跨网格、复杂几何、噪声与真实测量不在本论文范围。",
+        "所谓 exponential convergence 来自有限 sample range 与特定生成分布，误差饱和和长时增长同样存在；不应外推为任意 PDE 的指数样本效率。"
+      ]
+    },
+    {
+      "title": "复现与资源",
+      "bullets": [
+        "代码在 DeepXDE 仓库：https://github.com/lululxvi/deepxde；需按论文 v3 对应历史版本复现，因为当前库实现可能已变化。",
+        "复现应保存独立 u function count、每函数 query P、sensor locations、GRF length scale、random seeds、train/test MSE 和 generalization gap；对收敛率需报告拟合区间与不确定度。",
+        "本站 PDF SHA-256：4b0bea3d69cbcb044b4e6b754de87ad3dc6efe7e5f2606cb090bca0e00bbad4a。",
+        "Evidence status: full-text verified; no independent reproduction performed."
+      ]
+    },
+    {
+      "title": "阅读指南",
+      "bullets": [
+        "先读 Fig. 1 与 Eq. 2，确认 branch/trunk 内积表示；再读 Table 1，区分 triplets 与独立 input functions。",
+        "随后按 Figs. 2–4 看 generalization gap，而非只看 train loss；再读 Figs. 6–10 的 sensor/horizon/sample scaling。",
+        "最后读结论和附录定理边界：存在性、插值误差和经验收敛是三种不同证据。"
+      ]
+    }
+  ],
+  "evidence_refs": [
+    "paper.pdf pp. 2-6: operator theorem, branch-trunk architectures and error decomposition",
+    "paper.pdf pp. 6-15: Tables 1-2, ODE/PDE experiments and empirical convergence regimes",
+    "paper.pdf pp. 15-22: stated theoretical gaps and proofs of sensor-dependent approximation",
+    "Evidence status: full-text verified; no independent reproduction performed."
+  ],
+  "card_standard_version": "2.3",
+  "paper_profile": "ai_empirical",
+  "style_reference": "physicist_daily_arxiv",
+  "provenance": {
+    "program": "Collection",
+    "catalog": "Paper Collection",
+    "catalog_record_id": "9ae5933a40d0368d",
+    "catalog_record_ids": [
+      "9ae5933a40d0368d"
+    ],
+    "catalog_topic": "Neural Operators",
+    "collection_date": "2026-08-24",
+    "sampled_at": "2026-08-26",
+    "selected_by": "full_collection_backfill",
+    "sampling_seed": "not_applicable_full_collection",
+    "candidate_count": 452,
+    "legacy_full_text_card": "1910.03193.json"
+  },
+  "equation_refs": [],
+  "figure_refs": [],
+  "cover": {
+    "mode": "title_abstract",
+    "abstract_text": "While it is widely known that neural networks are universal approximators of continuous functions, a less known and perhaps more powerful result is that a neural network with a single hidden layer can approximate accurately any nonlinear continuous operator. This universal approximation theorem is suggestive of the potential application of neural networks in learning nonlinear operators from data. However, the theorem guarantees only a small approximation error for a sufficient large network, and does not consider the important optimization and generalization errors. To realize this theorem in practice, we propose deep operator networks (DeepONets) to learn operators accurately and efficiently from a relatively small dataset. A DeepONet consists of two sub-networks, one for encoding the input function at a fixed number of sensors $x_i, i=1,\\dots,m$ (branch net), and another for encoding ",
+    "selection_rationale": "该旧版全文证据包没有经过 v2.3 的逐图导出与图号核验；为避免错配图片，封面使用论文题目和经全文核对的摘要，关键论证保留在卡片正文中。"
+  }
+}

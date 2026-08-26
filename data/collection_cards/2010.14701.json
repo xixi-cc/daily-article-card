@@ -1,0 +1,166 @@
+{
+  "arxiv_id": "2010.14701",
+  "source_version": "v2",
+  "source_pdf": "https://arxiv.org/pdf/2010.14701v2",
+  "title_en": "Scaling Laws for Autoregressive Generative Modeling",
+  "title_zh": "自回归生成建模的缩放定律",
+  "curation_status": "full_text_verified",
+  "verified_metadata": {
+    "arxiv_id": "2010.14701",
+    "version": "v2",
+    "title": "Scaling Laws for Autoregressive Generative Modeling",
+    "abstract": "We identify empirical scaling laws for the cross-entropy loss in four domains: generative image modeling, video modeling, multimodal image-text models, and mathematical problem solving. In all cases autoregressive Transformers smoothly improve in performance as model size and compute budgets increase, following a power-law plus constant scaling law. The optimal model size also depends on the compute budget through a power-law, with exponents that are nearly universal across all data domains. The cross-entropy loss has an information theoretic interpretation as S(True) + DKL(True||Model), and the empirical scaling laws suggest a prediction for both the true data distribution entropy and the KL divergence between the true and model distributions.",
+    "authors": [
+      "Tom Henighan",
+      "Jared Kaplan",
+      "Mor Katz",
+      "Mark Chen",
+      "Christopher Hesse",
+      "Jacob Jackson",
+      "Heewoo Jun",
+      "Tom B. Brown",
+      "Prafulla Dhariwal",
+      "Scott Gray",
+      "Chris Hallacy",
+      "Benjamin Mann",
+      "Alec Radford",
+      "Aditya Ramesh",
+      "Nick Ryder",
+      "Daniel M. Ziegler",
+      "John Schulman",
+      "Dario Amodei",
+      "Sam McCandlish"
+    ],
+    "categories": [
+      "cs.LG",
+      "cs.CL",
+      "cs.CV"
+    ],
+    "primary_category": "cs.LG",
+    "published": "2020-10-28T02:17:24Z"
+  },
+  "sections": [
+    {
+      "title": "作者信息",
+      "bullets": [
+        "Tom Henighan、Jared Kaplan、Mor Katz等19位作者来自OpenAI；Kaplan另属Johns Hopkins University。",
+        "官方快照arXiv:2010.14701v2，主分类cs.LG，另含cs.CL与cs.CV；版本备注为20页正文加17页附录、33幅图。",
+        "这是2020年的经验缩放研究；其compute-optimal结论属于当时的Transformer、数据重复和训练范围，不能替代后来的Chinchilla等更新口径。"
+      ]
+    },
+    {
+      "title": "摘要",
+      "bullets": [
+        "统一用decoder-only autoregressive Transformer研究pixel/VQ image、VQ video、image-text multimodal与procedural mathematics，并引用既有language结果。",
+        "各域test cross-entropy随non-embedding parameters N或training compute C可拟合L∞+(x0/x)^α；形式相似，但α和L∞均随域与编码改变。",
+        "在观测的compute frontier上，最优模型规模近似Nopt∝C^β，β约0.64–0.75；作者总结为跨域约0.7，并据此提出数据量次线性增长。",
+        "将cross entropy分解为true entropy加KL需要无限数据后无限模型/算力能精确拟合分布的假设；拟合常数不是直接测得的Shannon entropy。",
+        "图像分类微调、跨难度数学外推与图文互信息也呈平滑趋势，但各自证据和定义不同。"
+      ]
+    },
+    {
+      "title": "背景",
+      "bullets": [
+        "论文延伸Kaplan et al.语言缩放律，问同一架构与cross-entropy目标是否跨模态呈可预测规模规律。",
+        "‘universal’主要指函数形状与Nopt(C)指数近似，而不是相同loss exponent：Table 1中model-size α从约0.037到0.24不等。",
+        "loss按nats/token报告，但token可为RGB channel、VQ code、BPE或数学字符；跨域纵轴数值和irreducible constant不可直接当作任务难度排名。",
+        "模型规模N排除embedding参数，compute近似6N乘processed tokens；稀疏/稠密attention和序列长度使真实FLOPs与系统效率仍有差异。"
+      ]
+    },
+    {
+      "title": "模型与方法",
+      "bullets": [
+        "image用约10^8张YFCC100M web images，分辨率8×8、16×16、32×32逐RGB token；另把64×64编码为16×16或32×32 VQ grids。",
+        "video约7×10^5段、总计约100小时，64×64 frame经16×16 VQ编码，16 frames形成4096-token sequence；image/video用交替banded与fixed-stride sparse attention。",
+        "multimodal把32×32 RGB tokens与最多128 BPE caption tokens串联，分别训练text-to-image与image-to-text；总loss人为设L=9Limage+Ltext，来自一次weight scan。",
+        "math用DeepMind procedural generator，训练难度≤10，测试到更高difficulty；采用dense attention与0.05 weight decay，故compute trend可能受早期优化拖累。",
+        "math/image/video取dmodel/nlayer约10且FC width=dmodel、attention width=dmodel/4；language/multimodal用4dmodel FC，language最优aspect ratio约100，所谓单架构仍有结构和超参差异。",
+        "模型量趋势取训练到convergence/early stopping的best test loss；compute趋势取学习曲线convex hull。Nopt(C)由frontier points拟合，外推对指数微小误差高度敏感。"
+      ]
+    },
+    {
+      "title": "核心结果与证据",
+      "bullets": [
+        "Table 1：Nopt指数为language 0.73、image variants约0.64–0.75、video 0.71、math 0.69、multimodal约0.70–0.72；这是‘约0.7’的实证来源。",
+        "Figure 1显示减去拟合L∞后的reducible loss随compute近似直线；Figure 3显示极小video/high-resolution image models偏离，作者归因于context length接近parameter count。",
+        "8×8 YFCC上接近10^9参数时reducible loss降到每图数nats，作者称近乎完美；对更高分辨率达到同等每图KL需巨大外推算力，未实际训练到该点。",
+        "Figure 9从16-frame video预测final-frame reducible loss外推约10^13参数、10^4 PF-days才到数nats/frame；它是远区拟合预测，不是实测模型。",
+        "Figure 10/17显示1000张32×32测试图的loss percentiles与若干individual examples也平滑；样本量与选择范围不证明所有long-tail样本一致。",
+        "Figure 11：YFCC生成预训练后微调ImageNet 32×32，classification loss与error继续随模型量呈幂律，即使generative total loss已接近拟合常数；这支持last few bits含语义，但只测一项下游任务。",
+        "Figure 12中最大约十亿参数multimodal model提取图文约8 nats；text-to-image infogain约10%，把32×32图换算为最佳image-to-text模型的2–3 words，不是人类图像信息量。",
+        "Figure 13：不同规模math models在相同training loss下，训练内与更难外推集表现几乎相同；规模主要通过降低训练loss改善外推，没有额外strong-generalization advantage。",
+        "Figures 14–15发现L(C)外推最终穿过由L(D)和Nopt(C)推得的下界，证明至少一条幂律必须弯折；作者猜测大模型单epoch优化趋近sample-efficiency bound。"
+      ]
+    },
+    {
+      "title": "有效性与局限",
+      "bullets": [
+        "所有缩放律是有限规模区间拟合；power-law plus constant在区间外可能因数据耗尽、优化改变、架构切换或有限支持而弯折，论文自身Section 6已给反例约束。",
+        "L∞≈S(True)要求先D→∞再N,C→∞且Transformer可精确建模；web data分布、预处理和量化会改变entropy，故常数不是自然图像的本征值。",
+        "reducible loss≈KL同样依赖L∞估计；当model misspecification、finite data或拟合偏差存在时，‘remaining nats’不能直接当作尚未理解的语义。",
+        "compute-optimal D∝N^0.4来自当时β约0.7及单epoch关系，作者明确承认尚未进入compute-optimal恰为one epoch的区域；后续工作可改变该结论。",
+        "跨域模型并非完全相同：attention pattern、FC ratio、weight decay、tokenization、context和multimodal loss weighting不同；near-universality不构成architecture-independent定理。",
+        "image/video数据来自web且细节有限，multimodal由web search curated；论文未系统报告版权、偏差、去重、污染或安全属性。",
+        "ImageNet只在32×32微调，低分辨率限制任务；没有与专门判别模型、相同训练算力或多个下游任务做全面比较。",
+        "图文MI是model-based empirical estimate，通过blanked inputs微调10k steps缓解out-of-distribution；它不是数据分布真实MI的无偏直接测量。",
+        "数学数据程序生成且答案确定，难度指标由generator定义；结果不等同自然语言证明、开放数学或algorithmic reasoning的一般缩放。",
+        "正文没有多seed error bars覆盖所有拟合，也没有公开完整训练代码与每次run telemetry供独立拟合。"
+      ]
+    },
+    {
+      "title": "复现与资源",
+      "bullets": [
+        "先冻结每个domain的tokenizer/VQ-VAE、dataset snapshot、split、dedup和preprocessing；N只计non-embedding参数，C同时用actual FLOPs与6ND近似报告。",
+        "每个规模至少多seed，保存完整train/test learning curves、early-stop rule、batch/learning-rate schedule和frontier selection；拟合时传播run uncertainty。",
+        "对L∞与α比较power-law-plus-constant、broken power law与finite-data模型，并用held-out largest scales做extrapolation test而非参与拟合。",
+        "compute-optimal结论需在相同硬件利用率下测wall-clock/FLOPs，并扩展到single-epoch boundary；监测training tokens、unique tokens和重复次数。",
+        "图文MI复现必须同时报告blank-input分布、10k-step mixture finetune、两个方向与confidence intervals；不要把2–3 words说成人类等价。",
+        "数学外推按problem family分层，匹配training loss比较不同N，并加入完全未见算法与长度外推，区分difficulty interpolation和structural novelty。",
+        "本站PDF SHA-256：01d07443e3f26a7e9a952c5dde195a36d6c5880ad37ff9d9a963ff45049257fb。",
+        "Evidence status: full-text verified; no independent reproduction performed."
+      ]
+    },
+    {
+      "title": "阅读指南",
+      "bullets": [
+        "先看Table 1而不是只看Figure 2：逐域核对α、L∞、β与loss unit，理解‘约0.7’和‘相同缩放律’的准确含义。",
+        "再读Section 2.1的数据和architecture差异，特别是VQ、sparse attention、multimodal 9:1 loss与math weight decay。",
+        "读Section 3–5时把实测区间和远程外推分开，并将生成loss、下游分类、empirical MI、数学accuracy视为四类不同证据。",
+        "最后必读Section 6：论文自己说明三条经验律不能无限同时成立；Discussion中的普适语言应受此因果约束。"
+      ]
+    }
+  ],
+  "evidence_refs": [
+    "paper.pdf pp. 1-6: central scaling-law claims, information-theoretic interpretation and scoped summary",
+    "paper.pdf pp. 6-11: domain datasets, architectures, Table 1 and compute-frontier fitting",
+    "paper.pdf pp. 11-16: image/video scaling, individual examples, ImageNet finetuning and multimodal information gain",
+    "paper.pdf pp. 16-20: math extrapolation, scaling-law inconsistency and discussion",
+    "paper.pdf pp. 22-37: image, math, multimodal, language and hyperparameter appendices",
+    "Evidence status: full-text verified; no independent reproduction performed."
+  ],
+  "card_standard_version": "2.3",
+  "paper_profile": "theory_numerics",
+  "style_reference": "physicist_daily_arxiv",
+  "provenance": {
+    "program": "Collection",
+    "catalog": "Paper Collection",
+    "catalog_record_id": "9eb614bda1130862",
+    "catalog_record_ids": [
+      "9eb614bda1130862"
+    ],
+    "catalog_topic": "Scaling Laws",
+    "collection_date": "2026-08-24",
+    "sampled_at": "2026-08-26",
+    "selected_by": "full_collection_backfill",
+    "sampling_seed": "not_applicable_full_collection",
+    "candidate_count": 452,
+    "legacy_full_text_card": "2010.14701.json"
+  },
+  "equation_refs": [],
+  "figure_refs": [],
+  "cover": {
+    "mode": "title_abstract",
+    "abstract_text": "We identify empirical scaling laws for the cross-entropy loss in four domains: generative image modeling, video modeling, multimodal image-text models, and mathematical problem solving. In all cases autoregressive Transformers smoothly improve in performance as model size and compute budgets increase, following a power-law plus constant scaling law. The optimal model size also depends on the compute budget through a power-law, with exponents that are nearly universal across all data domains. The cross-entropy loss has an information theoretic interpretation as S(True) + DKL(True||Model), and the empirical scaling laws suggest a prediction for both the true data distribution entropy and the KL divergence between the true and model distributions.",
+    "selection_rationale": "该旧版全文证据包没有经过 v2.3 的逐图导出与图号核验；为避免错配图片，封面使用论文题目和经全文核对的摘要，关键论证保留在卡片正文中。"
+  }
+}

@@ -1,0 +1,136 @@
+{
+  "arxiv_id": "2603.26800",
+  "source_version": "v1",
+  "source_pdf": "https://arxiv.org/pdf/2603.26800",
+  "title_en": "DSO: Dual-Scale Neural Operators for Stable Long-term Fluid Dynamics Forecasting",
+  "title_zh": "DSO：用于稳定长期流体动力学预测的双尺度神经算子",
+  "curation_status": "full_text_verified",
+  "verified_metadata": {
+    "arxiv_id": "2603.26800",
+    "version": "v1",
+    "title": "DSO: Dual-Scale Neural Operators for Stable Long-term Fluid Dynamics Forecasting",
+    "abstract": "Long-term fluid dynamics forecasting is a critically important problem in science and engineering. While neural operators have emerged as a promising paradigm for modeling systems governed by partial differential equations (PDEs), they often struggle with long-term stability and precision. We identify two fundamental failure modes in existing architectures: (1) local detail blurring, where fine-scale structures such as vortex cores and sharp gradients are progressively smoothed, and (2) global trend deviation, where the overall motion trajectory drifts from the ground truth during extended rollouts. We argue that these failures arise because existing neural operators treat local and global information processing uniformly, despite their inherently different evolution characteristics in physical systems. To bridge this gap, we propose the Dual-Scale Neural Operator (DSO), which explicitly decouples information processing into two complementary modules: depthwise separable convolutions for fine-grained local feature extraction and an MLP-Mixer for long-range global aggregation. Through numerical experiments on vortex dynamics, we demonstrate that nearby perturbations primarily affect local vortex structure while distant perturbations influence global motion trends, providing empirical validation for our design choice. Extensive experiments on turbulent flow benchmarks show that DSO achieves state-of-the-art accuracy while maintaining robust long-term stability, reducing prediction error by over 88% compared to existing neural operators.",
+    "authors": [
+      "Huanshuo Dong",
+      "Hao Wu",
+      "Hong Wang",
+      "Qin-Yi Zhang",
+      "Zhezheng Hao"
+    ],
+    "categories": [
+      "cs.LG",
+      "cs.AI",
+      "physics.flu-dyn"
+    ],
+    "primary_category": "cs.LG",
+    "published": "2026-03-26T03:03:12Z",
+    "comment": ""
+  },
+  "sections": [
+    {
+      "title": "作者信息",
+      "bullets": [
+        "作者：Huanshuo Dong、Hao Wu、Hong Wang、Qin-Yi Zhang、Zhezheng Hao；来自中国科大、清华、中科院自动化所、浙江大学。",
+        "官方快照：arXiv:2603.26800v1；分类 cs.LG/cs.AI/physics.flu-dyn。",
+        "稿件排版仍保留 ACM 模板占位符（Conference acronym XX、2018、虚拟 DOI），因此不能据此声称已正式会议发表。"
+      ]
+    },
+    {
+      "title": "摘要",
+      "bullets": [
+        "论文将长期 autoregressive fluid forecast 的失败拆为 local detail blurring（涡核/梯度逐步平滑）和 global trend deviation（整体轨迹/相位漂移）。",
+        "DSO 的 encoder–translator–decoder 中，每个 translator block 先用 depthwise-separable convolution 提取局部结构，再用 spatial/channel MLP-Mixer 汇聚全域信息。",
+        "在 forced 与 decaying 2D Navier–Stokes turbulence 上，DSO 的 all-step MSE 最低；最大相对改善来自 99-step decaying rollout，但结果来自单一固定 seed 与两个合成 benchmark。"
+      ]
+    },
+    {
+      "title": "背景",
+      "bullets": [
+        "one-step model 在测试时把预测反复作为下一步输入，小误差会复合；仅看早期 MSE 会掩盖数值 collapse、涡旋形态消失和位置漂移。",
+        "作者用 vortex dipole 加近/远 perturbing vortex 的数值实验作设计动机：近扰动使最大局部梯度 +45%，远扰动则为 −29%；全局位移分别 0.8 与 0.6，差异主要在影响类型而非简单幅度。",
+        "该动机支持分别处理 bounded local interactions 与 domain-wide coupling，但并未证明 pressure coupling 必须由 MLP-Mixer 或先局部后全局的唯一架构实现。"
+      ]
+    },
+    {
+      "title": "模型与方法",
+      "bullets": [
+        "Encoder 以多层卷积降采样并保留浅层 skip；decoder 用 transposed convolution 重建。Translator 堆叠 8 个 dual-path blocks，hidden dimensions 128/256。",
+        "Local pathway 是 residual depthwise convolution + pointwise channel mixing；global pathway 是 residual spatial MLP 后接 channel MLP，提供 all-to-all spatial communication。",
+        "所有模型用 8×A100 40GB 训练、单 A100 推理；batch 20、500 epochs、初始 learning rate 0.001、固定 random seed 42。训练做 one-step，测试从首帧递归 rollout。",
+        "NS-Forced 含 1200×20×1×64×64，ν=10^-5 且低波数持续外力，预测 19 steps；NS-Decaying 含 1200×100×1×128×128，无外力自然衰减，预测 99 steps。",
+        "比较对象含 FNO/UNO/CNO/LSM、ResNet/U-Net/Swin、ConvLSTM/PastNet/SimVP；评价 all-step 与特定 horizon MSE，并补充 SSIM、gradient-vector error 和 divergence error。"
+      ]
+    },
+    {
+      "title": "核心结果与证据",
+      "bullets": [
+        "Table 2：NS-Forced all-step MSE 为 DSO 0.0153、次优 FNO 0.0263；19-step 为 0.1086 对 0.1852，约为 FNO 的 58.6%。",
+        "NS-Decaying all-step 为 DSO 0.1714、次优 SimVP 1.5510，即 DSO 为其 11.0%，对应误差降低约 89%；99-step 为 0.4986，对 FNO 2.9465、SimVP 3.2480。",
+        "UNO 在 decaying long horizon 出现 NaN；可视化中 FNO 模糊细节、ConvLSTM collapse、LSM 保留形态但有运动漂移。Figure 4 的 SSIM 说明相似 MSE 的模型仍可能有不同结构保真度。",
+        "Ablation Table 3：去 convolution 后 all-step/99-step 为 0.2059/0.5871；去 MLP-Mixer 后升为 1.1335/2.4606。两路都有贡献，global path 对长期稳定更关键。",
+        "论文摘要称 over 88%，正文结论写 up to 89%；精确来源是 0.1714 相对 1.5510 的 decaying all-step 比较，而不是对所有 baselines/datasets 的统一改善。"
+      ]
+    },
+    {
+      "title": "有效性与局限",
+      "bullets": [
+        "只覆盖二维周期域上的 forced/decaying synthetic turbulence；作者也承认需扩展到更多 physical scenarios 与 boundary conditions。",
+        "训练只报告 seed 42，没有多 seed 均值、置信区间或 seed-level raw results；曲线阴影是不同 samples 的 variance，不能替代训练随机性检验。",
+        "各 baseline 参数量、训练细节和 inductive bias 不完全匹配；8×A100 资源下的精度表也没有报告 wall-clock、memory、FLOPs 或 solver speedup。",
+        "MSE、SSIM、gradient/divergence 都是有用 proxy，但没有 energy/enstrophy spectrum、conservation drift 或独立 DNS stability gate；视觉近似不等于物理轨迹正确。",
+        "arXiv v1 的会议模板元数据未清理且正文未给代码仓库链接，降低了发表状态与可复现性的可核查程度。"
+      ]
+    },
+    {
+      "title": "复现与资源",
+      "bullets": [
+        "严格复现应保存固定 80/10/10 split、所有 1200 trajectories、one-step checkpoints、逐 rollout step predictions，以及 MSE/SSIM/gradient/divergence raw arrays。",
+        "必须用多个训练 seeds 重跑，并确保所有 baseline 获得同等 tuning budget；对 NaN/collapse 保存首次失稳 step 和数值范围，而非只在表中记 nan。",
+        "建议增加 energy/enstrophy spectra、vortex-center trajectory、长期守恒误差与推理吞吐，才能分别验证 local detail、global drift 和部署成本。",
+        "本站 PDF SHA-256：9db7768b011a3d8cdf17192913c19f460a81fb419dd036ff4995bf339b120fd8。",
+        "Evidence status: full-text verified; no independent reproduction performed."
+      ]
+    },
+    {
+      "title": "阅读指南",
+      "bullets": [
+        "先看 Figure 2/Table 1，判断局部/全局动机证据的范围；它是设计启发，不是唯一机制证明。",
+        "再读 Figure 3 与 equations (7)–(13)，明确卷积和 MLP-Mixer 各自处理什么。",
+        "最后把 Table 2、Figure 4、Table 3 与 Limitations 合读：89% 数字来自单个 decaying all-step 对照，真正下一步是多 seed、复杂边界和物理守恒验证。"
+      ]
+    }
+  ],
+  "evidence_refs": [
+    "paper.pdf pp. 1-4: two failure modes, vortex-perturbation motivation and Table 1",
+    "paper.pdf pp. 4-6: encoder-translator-decoder and local/global pathways",
+    "paper.pdf pp. 6-9: dataset protocol, Table 2 MSE results, SSIM and physical-error diagnostics",
+    "paper.pdf pp. 9-10: ablation Table 3, conclusion and stated scope limitation",
+    "paper.pdf pp. 10-13: dataset shapes, split, environment and hyperparameters",
+    "Evidence status: full-text verified; no independent reproduction performed."
+  ],
+  "card_standard_version": "2.3",
+  "paper_profile": "ai_empirical",
+  "style_reference": "physicist_daily_arxiv",
+  "provenance": {
+    "program": "Collection",
+    "catalog": "Paper Collection",
+    "catalog_record_id": "ce900e20f76ed5c2",
+    "catalog_record_ids": [
+      "ce900e20f76ed5c2"
+    ],
+    "catalog_topic": "Neural Operators",
+    "collection_date": "2026-08-24",
+    "sampled_at": "2026-08-26",
+    "selected_by": "full_collection_backfill",
+    "sampling_seed": "not_applicable_full_collection",
+    "candidate_count": 452,
+    "legacy_full_text_card": "2603.26800.json"
+  },
+  "equation_refs": [],
+  "figure_refs": [],
+  "cover": {
+    "mode": "title_abstract",
+    "abstract_text": "Long-term fluid dynamics forecasting is a critically important problem in science and engineering. While neural operators have emerged as a promising paradigm for modeling systems governed by partial differential equations (PDEs), they often struggle with long-term stability and precision. We identify two fundamental failure modes in existing architectures: (1) local detail blurring, where fine-scale structures such as vortex cores and sharp gradients are progressively smoothed, and (2) global trend deviation, where the overall motion trajectory drifts from the ground truth during extended rollouts. We argue that these failures arise because existing neural operators treat local and global information processing uniformly, despite their inherently different evolution characteristics in physical systems. To bridge this gap, we propose the Dual-Scale Neural Operator (DSO), which explicitly",
+    "selection_rationale": "该旧版全文证据包没有经过 v2.3 的逐图导出与图号核验；为避免错配图片，封面使用论文题目和经全文核对的摘要，关键论证保留在卡片正文中。"
+  }
+}

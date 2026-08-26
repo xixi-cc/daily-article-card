@@ -288,9 +288,9 @@ def main() -> int:
     extra_rows = sorted(set(rows) - {path.stem for path in daily_paths})
     if extra_rows:
         errors.append(f"papers.md rows without curated cards: {extra_rows}")
-    overlap = sorted({path.stem for path in daily_paths} & {path.stem for path in collection_paths})
-    if overlap:
-        errors.append(f"Daily and Collection identifiers overlap: {overlap}")
+    # A work may belong to both programs, provided each copy carries the
+    # program-specific provenance validated above. Collection membership must
+    # never promote a paper into Daily or inherit its Daily score/date.
 
     if SITE_PAPERS_DIR.exists() or SITE_COLLECTION_PAPERS_DIR.exists():
         missing_math = []

@@ -1,0 +1,136 @@
+{
+  "arxiv_id": "2602.18801",
+  "source_version": "v2",
+  "source_pdf": "https://arxiv.org/pdf/2602.18801",
+  "title_en": "SGNO: Spectral Generator Neural Operators for Stable Long Horizon PDE Rollouts",
+  "title_zh": "SGNO：用于稳定长时域 PDE 展开的谱生成元神经算子",
+  "curation_status": "full_text_verified",
+  "verified_metadata": {
+    "arxiv_id": "2602.18801",
+    "version": "v2",
+    "title": "SGNO: Spectral Generator Neural Operators for Stable Long Horizon PDE Rollouts",
+    "abstract": "Autoregressive neural PDE surrogates predict future states by repeatedly applying a learned one-step operator. This is a simple and widely used method, but small one-step errors can accumulate during long rollouts. The resulting drift often appears as spectral amplitude distortion, phase misalignment, and nonlinear mode-interaction error. These effects are especially important for time-dependent PDEs with clear Fourier structure. We introduce the Spectral Generator Neural Operator (SGNO), a structured autoregressive neural operator for long-horizon PDE forecasting. SGNO organizes each learned one-step map as a structured spectral evolution update. A real-valued nonpositive diagonal generator provides a gain-controlled spectral backbone, while a learned correction pathway with complex-valued spectral mixing completes the residual evolution. This design gives the autoregressive step an evolution-like structure while retaining the flexibility needed for dissipative, dispersive, transport-dominated, and nonlinear PDEs. SGNO is designed for periodic linear and semilinear evolution PDEs with Fourier multiplier linear dynamics. Across ten mechanism-matched APEBench tasks spanning this regime, SGNO consistently outperforms strong single-step autoregressive baselines in long-horizon rollout accuracy, reducing GMean100 by a median of 74.8% relative to the strongest available non-SGNO baseline, with per-task reductions ranging from 13.6% to 92.9%. The gains are strongest on dispersive and transport-dominated tasks, as well as tasks involving nonlinear closure and mode coupling. Spectral diagnostics show lower spectral energy error and improved rollout-level phase fidelity. Ablations show that the constrained generator, the structured update, and the learned correction pathway each contribute to performance. The code is available at https://github.com/cruiseresearchgroup/SGNO.",
+    "authors": [
+      "Jiayi Li",
+      "Penghao Jiang",
+      "Hira Saleem",
+      "Zhaonan Wang",
+      "Piotr Koniusz",
+      "Flora D. Salim"
+    ],
+    "categories": [
+      "cs.LG"
+    ],
+    "primary_category": "cs.LG",
+    "published": "2026-02-21T11:22:01Z",
+    "comment": ""
+  },
+  "sections": [
+    {
+      "title": "作者信息",
+      "bullets": [
+        "作者：Jiayi Li、Penghao Jiang、Hira Saleem、Zhaonan Wang、Piotr Koniusz、Flora D. Salim。",
+        "官方快照：arXiv:2602.18801v2；主分类 cs.LG。",
+        "论文提供公开代码仓库，并按 APEBench 协议报告多次独立训练 seed；卡片仍将其视为作者实验，未做本站独立运行。"
+      ]
+    },
+    {
+      "title": "摘要",
+      "bullets": [
+        "SGNO 面向周期域、线性部分有 Fourier multiplier 的 linear/semilinear evolution PDE；它把一步预测组织成 spectral carry + learned correction，而不是无结构黑箱。",
+        "real-valued nonpositive diagonal generator 使 retained modes 的 carry gain exp(λ)≤1；ETD-inspired ϕ1 weighting 与 complex spectral mixer/correction path 表达 forcing、phase、dispersion 和 nonlinear mode coupling。",
+        "十个 APEBench tasks 上，前 100 步 nRMSE 几何均值 GMean100 相对每项最强非 SGNO baseline 的中位降幅 74.8%，范围 13.6%–92.9%；并用谱误差、多 seed、机制消融支持。"
+      ]
+    },
+    {
+      "title": "背景",
+      "bullets": [
+        "autoregressive step 的误差可表现为 spectral amplitude distortion、phase drift 与 nonlinear mode-interaction error；这些在反馈循环中累积，即使 one-step MSE 很低也会崩坏。",
+        "对 ∂tu=Lphysu+Nphys(u)，常系数线性部分在 Fourier mode k 上由 symbol Mphys(k) 表示；variation-of-constants/ETD 自然分成 exp(ΔtM) carry 和 forcing integral。",
+        "SGNO 借用这种结构，但不是固定数值 ETD solver：generator、spectral mixing 和 correction 都从数据学习，适用范围由训练分布与架构假设共同限定。"
+      ]
+    },
+    {
+      "title": "模型与方法",
+      "bullets": [
+        "输入 state 与 coordinates lifting 到 latent field；每层结合 local path、对 retained modes 的 diagonal generator carry、ϕ1-weighted correction budget、complex spectral mixing 和 nonlinear correction，最后预测 residual increment 并加回当前 state。",
+        "训练用 history length 1 的 one-step teacher forcing/MSE；测试是 200-step closed-loop rollout。每 seed 的 GMean100 是 steps 1–100 mean nRMSE 的 geometric mean，再对独立 network seeds 取 median。",
+        "1D tasks 训练 50 seeds，2D/3D tasks 训练 20 seeds；数据 generation seeds 固定而网络 initialization/mini-batch keys 变化，因而统计针对训练随机性而非数据集变化。",
+        "十项涵盖 advection、diffusion、dispersion、KdV、Kuramoto–Sivashinsky、2D mixed dispersion/Kolmogorov flow、3D diagonal diffusion/unbalanced advection/advection-diffusion。",
+        "基线包括 Conv、Res、U-Net、dilated network、FNO、CNO；Table 1 对不可用 3D CNO 留空且不纳入 best-baseline 比率。"
+      ]
+    },
+    {
+      "title": "核心结果与证据",
+      "bullets": [
+        "Table 1 中 SGNO 在十项都最低：例如 disp1d 0.0008 对 CNO 0.0110（ratio 0.071），ks1d 0.0294 对 Dil 0.1580（0.186），unbaladv3d 0.0220 对 Res 0.1340（0.165）。",
+        "较小改善出现在 advdiff3d：0.0650 对 U-Net 0.0750，ratio 0.864，即 13.6% reduction；最大改善约来自 0.071 ratio，即 92.9%。这些定义解释了摘要的范围。",
+        "Spectral Table 2 的五项诊断中，SGNO/baseline spectral-energy ratio 中位 0.178、low-band ratio 0.224；adv1d/disp1d phase ratios 为 0.455/0.115，中位约 0.285。",
+        "Table 3 消融：去 nonpositive constraint 的误差比 full 高 1.022–2.260 倍；改成普通 residual update 高 1.564–265.44 倍；去 correction 在 adv1d non-finite，在 disp1d 高 94.83 倍。",
+        "Appendix Table 6 在 kolm2d 用同一 64² checkpoint 推到 64²/128²/256²，GMean100 为 0.5581/0.5550/0.5705，ratio 1/0.995/1.022，显示该任务上的 resolution extrapolation 稳定。",
+        "理论 Proposition A.1 只证明 spectral carry 非扩张；full learned step 含 local/correction/mixer/nonlinearity/outer residual，只有在额外 Lipschitz 假设下才有 et+1≤Lf et+δ 的有限时域递推，并非无条件稳定。"
+      ]
+    },
+    {
+      "title": "有效性与局限",
+      "bullets": [
+        "适用域明确限制为 periodic、固定 time step/resolution、linear part 有 Fourier-structured symbol 的 PDE；variable coefficients、irregular geometry 和一般 boundary conditions 尚未覆盖。",
+        "diagonal generator 只能直接控制 mode-wise gain；phase、跨 channel/跨 mode coupling 和非线性都交给 correction，因此 carry 非扩张不保证完整 map contractive。",
+        "APEBench 任务机制丰富但仍为合成 benchmark；没有真实测量、复杂工程网格、solver wall-clock 或 conservation-law deployment validation。",
+        "主指标只用前 100 步，尽管 rollout 200 步；表中未裁剪的大于 1/NaN 能揭示 collapse，但不同 baseline 的可用配置与 tuning 范围仍影响相对排名。",
+        "resolution test 只在 kolm2d 一项；不能推广为所有 1D/3D tasks 的 zero-shot grid consistency。"
+      ]
+    },
+    {
+      "title": "复现与资源",
+      "bullets": [
+        "代码：https://github.com/cruiseresearchgroup/SGNO；应锁定论文对应 revision、APEBench version、数据 seeds、20/50 network keys 和未裁剪 raw metrics。",
+        "逐 seed 保存 200-step nRMSE、state rollouts、spectral/low-band energy 与 phase diagnostics；最终先算每 seed GMean100 再取 median，不能把所有 trajectories/seeds 混合后再算。",
+        "机制验证应复跑三种消融，并在 non-finite 时记录首次失稳 step；full-map Lipschitz 或 empirical gain 也应与只看 constrained carry 分开。",
+        "本站 PDF SHA-256：7d21f5a9231e5d32126615e41f5608694f961541b2f38bc4da2a5151fc796925。",
+        "Evidence status: full-text verified; no independent reproduction performed."
+      ]
+    },
+    {
+      "title": "阅读指南",
+      "bullets": [
+        "先读 equations (1)–(10)，理解 PDE spectral form、closed-loop protocol 与 GMean100 aggregation。",
+        "再读 SGNO layer 和 Appendix A：最重要的逻辑边界是 carry nonexpansive 不等于 full step stable。",
+        "最后核 Table 1–3 与 Appendix Table 6；多 seed 和机制消融是强项，周期/Fourier 假设与仅一项 grid extrapolation 是范围边界。"
+      ]
+    }
+  ],
+  "evidence_refs": [
+    "paper.pdf pp. 1-4: spectral error taxonomy, PDE class and multi-seed GMean100 protocol",
+    "paper.pdf pp. 4-6: SGNO carry-correction architecture and gain constraint",
+    "paper.pdf pp. 6-9: ten-task Table 1, spectral Table 2 and mechanism-ablation Table 3",
+    "paper.pdf pp. 9-13: explicit limitations and conditional backbone/rollout analysis",
+    "paper.pdf pp. 14-17: APEBench task definitions, protocol details and kolm2d resolution extrapolation",
+    "Evidence status: full-text verified; no independent reproduction performed."
+  ],
+  "card_standard_version": "2.3",
+  "paper_profile": "ai_empirical",
+  "style_reference": "physicist_daily_arxiv",
+  "provenance": {
+    "program": "Collection",
+    "catalog": "Paper Collection",
+    "catalog_record_id": "5c6b1c9b793b7001",
+    "catalog_record_ids": [
+      "5c6b1c9b793b7001"
+    ],
+    "catalog_topic": "Neural Operators",
+    "collection_date": "2026-08-24",
+    "sampled_at": "2026-08-26",
+    "selected_by": "full_collection_backfill",
+    "sampling_seed": "not_applicable_full_collection",
+    "candidate_count": 452,
+    "legacy_full_text_card": "2602.18801.json"
+  },
+  "equation_refs": [],
+  "figure_refs": [],
+  "cover": {
+    "mode": "title_abstract",
+    "abstract_text": "Autoregressive neural PDE surrogates predict future states by repeatedly applying a learned one-step operator. This is a simple and widely used method, but small one-step errors can accumulate during long rollouts. The resulting drift often appears as spectral amplitude distortion, phase misalignment, and nonlinear mode-interaction error. These effects are especially important for time-dependent PDEs with clear Fourier structure. We introduce the Spectral Generator Neural Operator (SGNO), a structured autoregressive neural operator for long-horizon PDE forecasting. SGNO organizes each learned one-step map as a structured spectral evolution update. A real-valued nonpositive diagonal generator provides a gain-controlled spectral backbone, while a learned correction pathway with complex-valued spectral mixing completes the residual evolution. This design gives the autoregressive step an evo",
+    "selection_rationale": "该旧版全文证据包没有经过 v2.3 的逐图导出与图号核验；为避免错配图片，封面使用论文题目和经全文核对的摘要，关键论证保留在卡片正文中。"
+  }
+}

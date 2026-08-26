@@ -1,0 +1,144 @@
+{
+  "arxiv_id": "1612.00410",
+  "source_version": "v7",
+  "source_pdf": "https://arxiv.org/pdf/1612.00410v7",
+  "title_en": "Deep Variational Information Bottleneck",
+  "title_zh": "深度变分信息瓶颈",
+  "curation_status": "full_text_verified",
+  "verified_metadata": {
+    "arxiv_id": "1612.00410",
+    "version": "v7",
+    "title": "Deep Variational Information Bottleneck",
+    "abstract": "We present a variational approximation to the information bottleneck of Tishby et al. (1999). This variational approach allows us to parameterize the information bottleneck model using a neural network and leverage the reparameterization trick for efficient training. We call this method Deep Variational Information Bottleneck, or Deep VIB. We show that models trained with the VIB objective outperform those that are trained with other forms of regularization, in terms of generalization performance and robustness to adversarial attack.",
+    "authors": [
+      "Alexander A. Alemi",
+      "Ian Fischer",
+      "Joshua V. Dillon",
+      "Kevin Murphy"
+    ],
+    "categories": [
+      "cs.LG",
+      "cs.IT"
+    ],
+    "primary_category": "cs.LG",
+    "published": "2016-12-01T20:12:40Z",
+    "comment": "19 pages, 8 figures, Accepted to ICLR17",
+    "journal_ref": "Proceedings of ICLR 2017"
+  },
+  "sections": [
+    {
+      "title": "作者信息",
+      "bullets": [
+        "作者：Alexander A. Alemi、Ian Fischer、Joshua V. Dillon、Kevin Murphy；Google Research。",
+        "官方快照：arXiv:1612.00410v7；ICLR 2017；19页、8图；分类 cs.LG、cs.IT。",
+        "论文研究监督分类中的stochastic representation；Appendix另给unsupervised变体，但主实验不是生成建模或无监督IB。"
+      ]
+    },
+    {
+      "title": "摘要",
+      "bullets": [
+        "Information Bottleneck目标最大化I(Z;Y)−βI(Z;X)：Z应保留对标签Y有用的信息，同时压缩输入X中的其余细节。",
+        "Deep VIB用decoder q(y|z)给I(Z;Y)下界，用固定variational marginal r(z)给I(Z;X)上界，再以Gaussian encoder和reparameterization trick端到端训练。",
+        "MNIST与预计算ImageNet feature实验显示适中β可改善分类并提高对当时FGS/Carlini–Wagner攻击的抵抗；这些是2017 threat model下的经验结果，不是现代certified robustness。"
+      ]
+    },
+    {
+      "title": "背景",
+      "bullets": [
+        "若只最大化I(Z;Y)，identity mapping Z=X即可保留信息却不形成简洁表示；IB通过约束I(X;Z)≤Ic或Lagrange multiplier β选择压缩—预测折中。",
+        "精确mutual information对高维连续变量难算；传统IB主要易用于离散变量或joint Gaussian。VIB以variational bounds把它转成可采样、可反传的神经网络目标。",
+        "本文与VAE的联系是：无监督VIB在β=1时恢复一种VAE目标；监督主文不含重构x的likelihood，只优化标签预测与representation compression。"
+      ]
+    },
+    {
+      "title": "模型与方法",
+      "bullets": [
+        "假设Markov chain Y↔X↔Z，即encoder p(z|x)不直接看标签。对不可解p(y|z)引入decoder q(y|z)，由KL非负得到I(Z;Y)的variational lower bound。",
+        "对aggregate marginal p(z)=∫p(z|x)p(x)引入r(z)，得到I(Z;X)≤E_x KL[p(z|x)||r(z)]。该项只是上界；图中的“bits”是这一variational estimate，不必等于真实MI。",
+        "合并后最小化 J=E_{data,ε}[−log q(y|f(x,ε))]+βKL[p(Z|x)||r(Z)]；论文取Gaussian encoder、r=N(0,I)，单个reparameterized sample给期望梯度的unbiased estimate。",
+        "MNIST encoder为784–1024–1024–2K MLP，K=256时diagonal Gaussian，decoder仅logistic regression；训练200 epochs，Adam lr 10⁻4，batch 100，无其他regularization。",
+        "预测与攻击评估对VIB平均12个posterior samples，另测过mean mode且称结果无明显变化。β控制压缩：β太小令σ趋零近似deterministic，β过大使classes在Z中重叠。",
+        "ImageNet并非端到端重训：先用公开Inception-ResNet-v2提取1536维penultimate features并whiten，再用两层1024 MLP、1024维spherical Gaussian bottleneck和logistic decoder。"
+      ]
+    },
+    {
+      "title": "核心结果与证据",
+      "bullets": [
+        "Table 1 permutation-invariant MNIST、K=256：baseline error 1.38%、dropout 1.34%、作者复现confidence penalty 1.36%、label smoothing 1.40%，VIB β=10⁻3为1.13%；原参考论文的CP 1.17%、LS 1.23%使用不同hyperparameters。",
+        "Figure 1对5个trials绘制train/test error与β；β约10⁻3至10⁻2时最好，对应I(X;Z)上界约10–100 bits。β超过约10⁻2后低于log2(10) bits并出现分类collapse。",
+        "K=2可视化中，β增大使Gaussian ellipses扩大并重叠；Figure 2同时报告单sample与12-sample error，展示stochastic code的不确定性，但二维模型准确率低于K=256。",
+        "MNIST FGS和C&W L2实验用前1000 test images、每β三个models并重复攻击；Figure 6中deterministic/dropout在所用L2攻击下accuracy为0，而一段β范围内VIB仍有非零准确率。",
+        "ImageNet feature分类：原pretrained network 80.4%；VIB β=0.01为80.12%、MI上界约45 bits；β=0为78.87%，相同上层deterministic baseline 78.75%。作者承认都略低于原模型且可能未充分调参。",
+        "ImageNet targeted C&W把30张正确分类图指向soccer-ball：Table 2成功率 Determ 1.0、原IRv2 1.0、VIB 0.567；成功扰动平均L2为6.45、14.43、43.27，L∞为0.18、0.44、0.92。",
+        "脚注明确：VIB攻击仍常导致其他错误类别，只是未命中目标；因此43.3%“抵抗”是targeted success失败率，不是保持原分类的robust accuracy。"
+      ]
+    },
+    {
+      "title": "有效性与局限",
+      "bullets": [
+        "I(Z;X)数值来自E KL[p(z|x)||N(0,I)]上界；variational prior不匹配aggregate posterior时会松，不能把“45 bits”解释为精确存储量或通信码长。",
+        "MNIST是无augmentation、无卷积的permutation-invariant小任务；1.13%与其他正则化的差异很小，作者也明确说不足以断言VIB是最佳regularizer。",
+        "ImageNet只训练冻结feature之上的classifier；其robustness涉及穿过原IRv2梯度的全图攻击，但不等同于端到端VIB视觉模型。样本仅30张且统一target label。",
+        "攻击来自2016–2017版本FGS/C&W设置；论文没有adaptive EOT、多重restart、AutoAttack、certified radius或如今的robustness benchmark，stochastic defense可能受更强攻击影响。",
+        "Table 2的扰动norm只对successful attacks如何平均并不完全透明，且L2/L∞不是human perceptual metric；更大norm不能独立证明可感知安全性。",
+        "β→0仍有robustness被归因于Gaussian/softmax形成近似quadratic classifier；Appendix给二阶近似/上界，不是对所有输入和有限β的精确鲁棒性证明。",
+        "本站未重训任何seed或攻击模型，所有准确率和robustness均为论文内部证据。"
+      ]
+    },
+    {
+      "title": "复现与资源",
+      "bullets": [
+        "先在MNIST严格复现784–1024–1024架构、K=256、r=N(0,I)、200 epochs、Adam参数与Polyak averaging；逐β保存5+ seeds而非只取最佳。",
+        "同时报告cross-entropy、test error、KL上界、aggregate posterior与r的偏差；可用更灵活r(z)检查45 bits/10–100 bits结论对variational prior的敏感性。",
+        "攻击评估应冻结checkpoint，以EOT处理随机encoder，增加多restart C&W、PGD/AutoAttack，并分别报告untargeted robust accuracy、targeted success与conditional distortion。",
+        "ImageNet需明确复用哪一IRv2 checkpoint、feature whitening统计和30图subset；扩展到完整validation set及多个targets，避免soccer-ball单target偏差。",
+        "对端到端主张需训练真正VIB视觉backbone并与同参数量、同clean accuracy的现代baseline比较；冻结feature实验不能代替这一验证。",
+        "本站 PDF SHA-256：fa263720581a88a56961ec654ef54f757b4b13dce2e64f6d2158fc0d19e17496。",
+        "Evidence status: full-text verified; no independent reproduction performed."
+      ]
+    },
+    {
+      "title": "阅读指南",
+      "bullets": [
+        "先读Eqs. (1–3)理解IB约束，再读Eqs. (8–17)区分真实MI、下界和上界。",
+        "看Table 1与Figure 1时同时检查β、5 trials和MI axis，避免只摘1.13%最佳点。",
+        "读adversarial部分先固定attack定义与12-sample evaluation；特别注意target miss不等于correct classification。",
+        "最后读ImageNet Section 4.2.5和Table 2，牢记它是冻结IRv2 feature上的小规模targeted attack。"
+      ]
+    }
+  ],
+  "evidence_refs": [
+    "paper.pdf pp. 1-3: IB objective, scope and related variational formulations",
+    "paper.pdf pp. 3-4: lower/upper mutual-information bounds and VIB loss",
+    "paper.pdf pp. 4-7: MNIST architecture, Table 1 and beta/IB curves",
+    "paper.pdf pp. 8-12: attack definitions, stochastic evaluation and MNIST robustness",
+    "paper.pdf pp. 13-15: frozen-feature ImageNet accuracy and targeted attack Table 2",
+    "paper.pdf pp. 17-19: training hyperparameters and theoretical/unsupervised appendices",
+    "Evidence status: full-text verified; no independent reproduction performed."
+  ],
+  "card_standard_version": "2.3",
+  "paper_profile": "theory_numerics",
+  "style_reference": "physicist_daily_arxiv",
+  "provenance": {
+    "program": "Collection",
+    "catalog": "Paper Collection",
+    "catalog_record_id": "897f8f1177809141",
+    "catalog_record_ids": [
+      "897f8f1177809141"
+    ],
+    "catalog_topic": "Information Theory",
+    "collection_date": "2026-08-24",
+    "sampled_at": "2026-08-26",
+    "selected_by": "full_collection_backfill",
+    "sampling_seed": "not_applicable_full_collection",
+    "candidate_count": 452,
+    "legacy_full_text_card": "1612.00410.json"
+  },
+  "equation_refs": [],
+  "figure_refs": [],
+  "cover": {
+    "mode": "title_abstract",
+    "abstract_text": "We present a variational approximation to the information bottleneck of Tishby et al. (1999). This variational approach allows us to parameterize the information bottleneck model using a neural network and leverage the reparameterization trick for efficient training. We call this method Deep Variational Information Bottleneck, or Deep VIB. We show that models trained with the VIB objective outperform those that are trained with other forms of regularization, in terms of generalization performance and robustness to adversarial attack.",
+    "selection_rationale": "该旧版全文证据包没有经过 v2.3 的逐图导出与图号核验；为避免错配图片，封面使用论文题目和经全文核对的摘要，关键论证保留在卡片正文中。"
+  }
+}

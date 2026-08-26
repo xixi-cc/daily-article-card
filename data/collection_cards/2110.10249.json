@@ -1,0 +1,132 @@
+{
+  "arxiv_id": "2110.10249",
+  "source_version": "v8",
+  "source_pdf": "https://arxiv.org/pdf/2110.10249",
+  "title_en": "Neural Stochastic PDEs: Resolution-Invariant Learning of Continuous Spatiotemporal Dynamics",
+  "title_zh": "神经随机偏微分方程：连续时空动力学的分辨率不变学习",
+  "curation_status": "full_text_verified",
+  "verified_metadata": {
+    "arxiv_id": "2110.10249",
+    "version": "v8",
+    "title": "Neural Stochastic PDEs: Resolution-Invariant Learning of Continuous Spatiotemporal Dynamics",
+    "abstract": "Stochastic partial differential equations (SPDEs) are the mathematical tool of choice for modelling spatiotemporal PDE-dynamics under the influence of randomness. Based on the notion of mild solution of an SPDE, we introduce a novel neural architecture to learn solution operators of PDEs with (possibly stochastic) forcing from partially observed data. The proposed Neural SPDE model provides an extension to two popular classes of physics-inspired architectures. On the one hand, it extends Neural CDEs and variants – continuous-time analogues of RNNs – in that it is capable of processing incoming sequential information arriving at arbitrary spatial resolutions. On the other hand, it extends Neural Operators – generalizations of neural networks to model mappings between spaces of functions – in that it can parameterize solution operators of SPDEs depending simultaneously on the initial condition and a realization of the driving noise. By performing operations in the spectral domain, we show how a Neural SPDE can be evaluated in two ways, either by calling an ODE solver (emulating a spectral Galerkin scheme), or by solving a fixed point problem. Experiments on various semilinear SPDEs, including the stochastic Navier-Stokes equations, demonstrate how the Neural SPDE model is capable of learning complex spatiotemporal dynamics in a resolution-invariant way, with better accuracy and lighter training data requirements compared to alternative models, and up to 3 orders of magnitude faster than traditional solvers.",
+    "authors": [
+      "Cristopher Salvi",
+      "Maud Lemercier",
+      "Andris Gerasimovics"
+    ],
+    "categories": [
+      "cs.LG"
+    ],
+    "primary_category": "cs.LG",
+    "published": "2021-10-19T20:35:37Z",
+    "comment": ""
+  },
+  "sections": [
+    {
+      "title": "作者信息",
+      "bullets": [
+        "作者：Cristopher Salvi、Maud Lemercier、Andris Gerasimovics；机构包括 Imperial College London、The Alan Turing Institute、University of Warwick 与 University of Bath。",
+        "官方快照：arXiv:2110.10249v8，23 页，NeurIPS 2022；分类 cs.LG。",
+        "本文处理给定初值与一条驱动噪声 realization 的 pathwise solution-operator learning，不是只学习 SPDE 解的边缘分布。"
+      ]
+    },
+    {
+      "title": "摘要",
+      "bullets": [
+        "Neural SPDE 从 mild solution 出发，把初值 u0 与连续时空 forcing ξ 提升到 latent function space；谱域 kernel 表达线性传播，神经网络表达状态与 forcing 的非线性交互。",
+        "同一模型有两种数值化：只在空间做 Fourier transform 后交给 ODE solver，或在时空域写成 Picard fixed-point problem；两者分别可用 adjoint 与 implicit differentiation 节省反向传播内存。",
+        "Ginzburg–Landau、随机 KdV 与二维随机 Navier–Stokes 实验比较 NCDE、NRDE、NCDE-FNO、DeepONet、FNO；结果支持特定设置下的数据效率、zero-shot super-resolution 与相对传统 solver 的推理加速。"
+      ]
+    },
+    {
+      "title": "背景",
+      "bullets": [
+        "普通 Neural CDE/RDE 对时间采样具有连续性，但把每个空间点当 channel 会随空间维度爆炸，且不是 space-resolution invariant；普通 FNO 又通常没有把一条外生随机时空信号作为连续驱动显式处理。",
+        "论文把 SPDE 写成 du=(Lu+F(u))dt+G(u)dW，并对 W 做平滑，得到 random PDE 的 mild form；学习对象因此是 (u0, ξ)→u，而不是只由 u0 唯一决定的确定性算子。",
+        "作者专门把 u0→u、ξ→u 与 (u0,ξ)→u 三种信息条件分开；缺失 ξ 时误差高是信息论上的 sanity check，不能当作模型本身失败。"
+      ]
+    },
+    {
+      "title": "模型与方法",
+      "bullets": [
+        "lift Lθ 把初值映射到 dh 维 latent field，readout Πθ 投回物理场；Hθ,ξ(z)=Fθ(z)+Gθ(z)ξ 把非线性漂移和观测 forcing 合并。",
+        "ODE 版本在空间 Fourier coefficients 上求 v̇=Av+F_d(Hθ,ξ(F_d^{-1}v))，近似 spectral Galerkin；fixed-point 版本对完整时空做 FFT，迭代 z=Φθ,ξ(z)。",
+        "在实验选取下两种算法复杂度可比，但 ODE 版本为达到相近表现需约 20 倍 latent width，且实测约慢 10 倍；作者把部分差距归因于 torchdiffeq 与高度优化 FFT 的实现差异。",
+        "所谓 resolution invariance 来自连续函数输入/输出与 Fourier truncation 后可在不同网格求值；对 irregular observations 仍要先插值到 regular grid，FFT approximation 才可靠。",
+        "训练使用 relative pathwise L2 loss、grid search 与 Tesla P100；三类 SPDE 都由数值 solver 产生监督轨迹，因此这里验证的是对给定生成器的 surrogate fidelity。"
+      ]
+    },
+    {
+      "title": "核心结果与证据",
+      "bullets": [
+        "Ginzburg–Landau Table 1：N=10,000 时 (u0,ξ)→u 的 NSPDE error 为 0.006，NCDE/NRDE/NCDE-FNO 为 0.072/0.083/0.069；N=1,000 时 NSPDE 为 0.012。",
+        "随机 KdV Table 2a：N=1,000、T=0.5 时 ξ→u 为 0.004，对比 FNO 0.079；(u0,ξ)→u 为 0.008，对比 NCDE-FNO 0.259。T=1 时 NSPDE ξ→u 0.009、FNO 0.112。",
+        "KdV 缺失观测实验揭示条件性：随机丢 50% 空间点时 error 0.004→0.005，丢 10% 时间点时升至 0.076；Brownian forcing 在时间更粗糙，因此“可处理 irregular data”不等于任意缺失都鲁棒。",
+        "Navier–Stokes Table 3：ξ→u 的 NSPDE/FNO 为 0.034/0.039，只是小幅领先；联合输入任务 NSPDE 0.049、NCDE-FNO 0.178。Figure 2 展示 16² 训练后 64² 求值，但只是同一模拟体系中的示例轨迹。",
+        "Table 4 在相同离散化上报告相对数值 solver 加速：Ginzburg–Landau 59×、KdV 80×、Navier–Stokes 300×；摘要的“up to 3 orders”应读作这组三个比值的最大值，而不是所有任务都千倍。"
+      ]
+    },
+    {
+      "title": "有效性与局限",
+      "bullets": [
+        "误差表没有多随机种子误差条；作者 checklist 明确称因 NCDE/NRDE/NCDE-FNO 成本过高而未报告 error bars，因此模型排序的不确定性没有量化。",
+        "无限维噪声的 mollification 收敛对一般 differential operator 缺少完整证明；Section 3.6 明确把 generic operator 下的严格结果留作未来工作。",
+        "Fourier kernel 带来 irregular-grid、aliasing 与 mode truncation 问题；插值误差尤其会破坏时间粗糙 forcing，Table 2c 已给出实证反例。",
+        "zero-shot super-resolution 是在数值模拟、相同方程/分布与下采样网格之间验证，不证明对真实传感器、参数外推或未见 forcing law 的泛化。",
+        "速度比依赖 hardware、solver、容差、batch 与实现；论文只给 ratio，不能脱离相同 discretization 的比较条件解释为通用 wall-clock 定律。"
+      ]
+    },
+    {
+      "title": "复现与资源",
+      "bullets": [
+        "论文称代码、数据、模型与 instructions 随 supplementary material 提供，assets 为 MIT license；复现时仍应固定 v8 附件快照并记录依赖版本。",
+        "需分别保存三种 input-information settings、训练样本数、空间/时间网格、forcing covariance、solver 步长、Fourier modes、latent width、Picard iterations/ODE tolerance 与 grid-search candidates。",
+        "必须保留逐 seed raw errors 和 runtime distribution；原论文没有 error bars，独立复现至少应补多 seed，并将 59×/80×/300× 分解为 batch、device 与 solver tolerance。",
+        "本站 PDF SHA-256：d5a5198689f0e8e02b927bf633a5729f60237113a61d723328abcfc044342672。",
+        "Evidence status: full-text verified; no independent reproduction performed."
+      ]
+    },
+    {
+      "title": "阅读指南",
+      "bullets": [
+        "先读 pp. 1–3 的问题设定，确认外生 noise realization 是输入的一部分；这正是与普通 FNO 的关键边界。",
+        "再读 Figure 1 与 Sections 3.2–3.6，对照 ODE/fixed-point 两条执行路径、复杂度、插值条件和无限维收敛缺口。",
+        "最后联读 Tables 1–4、Figure 2 与 checklist：数值优势清楚，但没有 error bars，且 super-resolution、速度与理论收敛都带限定条件。"
+      ]
+    }
+  ],
+  "evidence_refs": [
+    "paper.pdf pp. 1-3: problem setting, related work, contributions and mild SPDE formulation",
+    "paper.pdf pp. 4-6: Neural SPDE architecture, ODE and fixed-point solvers, resolution and convergence discussion",
+    "paper.pdf pp. 7-9: Ginzburg-Landau, KdV and Navier-Stokes Tables 1-3 and Figure 2",
+    "paper.pdf p. 10: runtime Table 4, conclusion and Fourier/irregular-grid limitations",
+    "paper.pdf pp. 12-13: reproducibility checklist, absence of error bars and asset statements",
+    "Evidence status: full-text verified; no independent reproduction performed."
+  ],
+  "card_standard_version": "2.3",
+  "paper_profile": "ai_empirical",
+  "style_reference": "physicist_daily_arxiv",
+  "provenance": {
+    "program": "Collection",
+    "catalog": "Paper Collection",
+    "catalog_record_id": "27be254755870b20",
+    "catalog_record_ids": [
+      "27be254755870b20"
+    ],
+    "catalog_topic": "Neural Operators",
+    "collection_date": "2026-08-24",
+    "sampled_at": "2026-08-26",
+    "selected_by": "full_collection_backfill",
+    "sampling_seed": "not_applicable_full_collection",
+    "candidate_count": 452,
+    "legacy_full_text_card": "2110.10249.json"
+  },
+  "equation_refs": [],
+  "figure_refs": [],
+  "cover": {
+    "mode": "title_abstract",
+    "abstract_text": "Stochastic partial differential equations (SPDEs) are the mathematical tool of choice for modelling spatiotemporal PDE-dynamics under the influence of randomness. Based on the notion of mild solution of an SPDE, we introduce a novel neural architecture to learn solution operators of PDEs with (possibly stochastic) forcing from partially observed data. The proposed Neural SPDE model provides an extension to two popular classes of physics-inspired architectures. On the one hand, it extends Neural CDEs and variants – continuous-time analogues of RNNs – in that it is capable of processing incoming sequential information arriving at arbitrary spatial resolutions. On the other hand, it extends Neural Operators – generalizations of neural networks to model mappings between spaces of functions – in that it can parameterize solution operators of SPDEs depending simultaneously on the initial condi",
+    "selection_rationale": "该旧版全文证据包没有经过 v2.3 的逐图导出与图号核验；为避免错配图片，封面使用论文题目和经全文核对的摘要，关键论证保留在卡片正文中。"
+  }
+}

@@ -1,0 +1,164 @@
+{
+  "arxiv_id": "2509.05041",
+  "source_version": "v2",
+  "source_pdf": "https://arxiv.org/pdf/2509.05041",
+  "title_en": "Dynamical Learning in Deep Asymmetric Recurrent Neural Networks",
+  "title_zh": "非对称循环神经网络中的学习与动态表征",
+  "curation_status": "full_text_verified",
+  "sections": [
+    {
+      "title": "作者信息",
+      "bullets": [
+        "作者：Davide Badalotti、Carlo Baldassi、Marc Mézard、Mattia Scardecchia、Riccardo Zecchina。",
+        "研究机构：Bocconi University et al.。",
+        "来源：arXiv:2509.05041；年份：2025；主题：Recurrent neural networks、Dynamical systems、Biologically plausible learning。",
+        "本文按本地全文快照制作，官方元数据核验版本为 2509.05041v2。"
+      ]
+    },
+    {
+      "title": "摘要",
+      "bullets": [
+        "本文的论证主线由以下经过全文核验的节点构成：循环网络既要形成记忆，又要能用局部信号学习；自耦合把单一动态相变成高维稳定吸引子流形；非对称连接负责混合，自耦合负责稳定记忆；性能峰值位于稳定性与可塑性的折中区；非对称混合加适度自耦合，可产生大量稳定且输入可达的表征；局部瞬态可塑性利用动态流形完成任务，不依赖时间反传；结果连接了吸引子动力学与学习，但现代序列任务仍待验证。",
+        "卡片内容来自已完成冷读与逐页检查的 paper_presentation.json，并回链到原论文页码、图或公式。"
+      ]
+    },
+    {
+      "title": "背景",
+      "bullets": [
+        "论证节点“循环网络既要形成记忆，又要能用局部信号学习”。",
+        "对称连接便于能量函数分析，却限制动力学；完全随机非对称网络又可能进入混沌。",
+        "论文研究强非对称 RNN：它能否拥有大量可访问的稳定表征，并用局部规则完成分类？",
+        "两个控制旋钮是自耦合 $J_D$，以及稀疏模块间耦合 $\\lambda$。",
+        "训练只在短暂输入期间使用局部、无梯度的可塑性，不需要正负对比阶段。",
+        "先刻画未训练网络的吸引子相图，再检验任务学习是否利用这片表征流形。",
+        "论文研究非对称 RNN 的稳定动态表征与局部学习。 （p. 1; main.tex）",
+        "研究问题的表述以论文给出的对象和评价目标为边界；背景动机不自动构成方法有效性的证据。"
+      ]
+    },
+    {
+      "title": "模型与方法",
+      "bullets": [
+        "论证节点“非对称连接负责混合，自耦合负责稳定记忆”。",
+        "设定：状态 $s_i$ 接收非对称递归输入、外部刺激和自反馈。",
+        "关键关系：s_i(t+1) &= sign\\!\\left(\\sum_{j\\neq i}J_{ij}s_j(t)+J_Ds_i(t)+I_i(t)\\right)",
+        "推导含义：$J_D$ 增强状态保持；随机非对称项提供高维混合和输入依赖轨迹。",
+        "结论边界：当 $J_D$ 越过稳定阈值，许多瞬态状态被‘冻结’为可访问定点，形成表示库。",
+        "模型用非对称随机耦合与对角自耦合共同控制网络相态。 （p. 2; equation Model definition; main.tex）",
+        "论证节点“学习发生在瞬态轨迹上，而不是等待稳态后反传”。",
+        "输入推动网络沿高维轨迹演化；监督信号只在有限时间窗内调制局部突触。",
+        "更新不要求先跑自由相、再跑钳制相，也不计算跨时间反向梯度。",
+        "稀疏模块间耦合 $\\lambda$ 可在保留局部动力学的同时整合更大系统。",
+        "网络并非先存好类别原型；学习把已有动态流形沿任务读出方向重新组织。",
+        "论文提出局部、无梯度、瞬态监督的可塑性规则。 （p. 6; main.tex）",
+        "方法部分按 presentation 中的数学关系、算法结构或实验设计重述；公式只在相应证据页定义的符号与条件下成立。"
+      ]
+    },
+    {
+      "title": "核心结果与证据",
+      "bullets": [
+        "论证节点“自耦合把单一动态相变成高维稳定吸引子流形”。",
+        "Fig. 1, pp. 3--4：增大自耦合后，网络出现大量与输入可达的稳定定点；它们不是孤立模板，而是在状态空间形成扩展表征流形。",
+        "证据解释：吸引子数量、稳定性与几何结构。",
+        "足够大的自耦合产生指数多且动态可达的稳定定点。 （p. 4; figure Fig. 1）",
+        "论证节点“性能峰值位于稳定性与可塑性的折中区”。",
+        "Fig. 3, pp. 7--8：自耦合过小，表征不稳定；过大，状态过度冻结、可塑性下降。中间区域获得最佳分类性能。",
+        "证据解释：自耦合对学习性能和动态稳定性的影响。",
+        "分类性能随自耦合呈非单调变化，最佳区间对应稳定又可塑的动力学。 （p. 8; figure Fig. 3）",
+        "论证节点“局部短暂监督可达到同规模 MLP 的可比表现”。",
+        "Fig. 4, pp. 9--10：在 EMNIST 等分类任务上，RNN 只在刺激阶段更新局部连接；论文将其与参数量相近的 MLP 和其他变体比较。",
+        "证据解释：基准任务性能及模型规模比较。",
+        "局部学习的非对称 RNN 在图像分类基准上达到与同参数量 MLP 可比的准确率。 （p. 10; figure Fig. 4）",
+        "证据状态：上述结论均来自逐页审阅后的 presentation manifest；这里只确认论文原文支持，不把作者实验视为本站独立复现。"
+      ]
+    },
+    {
+      "title": "有效性与局限",
+      "bullets": [
+        "论证节点“这是受控动力系统模型，不是现成的序列学习替代品”。",
+        "主要实验是离散神经元与分类任务，尚未覆盖连续值长序列、语言或控制。",
+        "局部规则的硬件或生物可实现性是动机，不构成神经生理证据。",
+        "自耦合与模块耦合需落在合适相区；规模、噪声和分布外输入会改变相边界。",
+        "与 MLP 的可比准确率不等价于在现代深度基线上全面占优。",
+        "论文讨论模型简化、任务范围与扩展方向。 （p. 11; main.tex）",
+        "论证节点“三句话带走”。",
+        "非对称混合加适度自耦合，可产生大量稳定且输入可达的表征。",
+        "局部瞬态可塑性利用动态流形完成任务，不依赖时间反传。",
+        "结果连接了吸引子动力学与学习，但现代序列任务仍待验证。",
+        "适用边界以卡片列出的目标、假设、数据集或物理参数区间为准；未在原文证据中出现的外推不计入论文结论。",
+        "该卡完成的是全文证据审计，未重新运行训练、仿真或实验，因此不能据此声称独立复现、稳健性复核或跨任务泛化。"
+      ]
+    },
+    {
+      "title": "复现与资源",
+      "bullets": [
+        "原文：https://arxiv.org/abs/2509.05041；PDF：https://arxiv.org/pdf/2509.05041。",
+        "本地证据源：2509.05041/source/paper.pdf；SHA-256：dd41517b1203369d67eebfe148c9bcb17191ce768d41ec7369848d2d3979a92d。",
+        "来源格式：tex；来源包状态：downloaded；presentation 证据条目数：7。",
+        "presentation 及其质量报告保留了页面审阅、编译和冷读状态；它们用于追溯卡片，不等同于作者代码或数据已公开。",
+        "Evidence status: full-text verified; no independent reproduction performed."
+      ]
+    },
+    {
+      "title": "阅读指南",
+      "bullets": [
+        "快速阅读可先看证据页 1, 2, 4, 6, 8, 10，这些页覆盖问题、方法与主要结论。",
+        "图证据优先查看 Fig. 1；结合图注和正文，不只依据视觉趋势下结论。",
+        "公式链优先查看 Model definition；核对符号、假设与前后推导。",
+        "建议按“研究问题 → 方法/数学对象 → 证据 → 局限”的顺序阅读，避免从摘要直接跳到强结论。",
+        "若要复现，先从证据引用恢复具体设置，再补齐随机种子、计算资源、评价指标和失败案例。"
+      ]
+    }
+  ],
+  "evidence_refs": [
+    "paper.pdf pages 1, 2, 4, 6, 8, 10, 11: page-addressable claims",
+    "paper_presentation.json: 8 substantive slides and 7 evidence entries",
+    "source-provenance.json: PDF SHA-256 dd41517b1203369d67eebfe148c9bcb17191ce768d41ec7369848d2d3979a92d",
+    "Evidence status: full-text verified; no independent reproduction performed."
+  ],
+  "verified_metadata": {
+    "arxiv_id": "2509.05041",
+    "version": "v2",
+    "title": "Dynamical Learning in Deep Asymmetric Recurrent Neural Networks",
+    "abstract": "We investigate recurrent neural networks with asymmetric interactions and demonstrate that the inclusion of self-couplings or sparse excitatory inter-module connections leads to the emergence of a densely connected manifold of dynamically accessible stable configurations. This representation manifold is exponentially large in system size and is reachable through simple local dynamics, despite constituting a subdominant subset of the global configuration space. We further show that learning can be implemented directly on this structure via a fully local, gradient-free mechanism that selectively stabilizes a single task-relevant network configuration. Unlike error-driven or contrastive learning schemes, this approach does not require explicit comparisons between network states obtained with and without output supervision. Instead, transient supervisory signals bias the dynamics toward the representation manifold, after which local plasticity consolidates the attained configuration, effectively shaping the latent representation space. Numerical evaluations on standard image classification benchmarks indicate performance comparable to that of multilayer perceptrons trained using backpropagation. More generally, these results suggest that the dynamical accessibility of fixed points and the stabilization of internal network dynamics constitute viable alternative principles for learning in recurrent systems, with conceptual links to statistical physics and potential implications for biologically motivated and neuromorphic computing architectures.",
+    "authors": [
+      "Davide Badalotti",
+      "Carlo Baldassi",
+      "Marc Mézard",
+      "Mattia Scardecchia",
+      "Riccardo Zecchina"
+    ],
+    "categories": [
+      "cond-mat.dis-nn",
+      "cs.LG",
+      "q-bio.NC"
+    ],
+    "primary_category": "cond-mat.dis-nn",
+    "published": "2025-09-05T12:05:09Z",
+    "comment": ""
+  },
+  "card_standard_version": "2.3",
+  "paper_profile": "ai_empirical",
+  "style_reference": "physicist_daily_arxiv",
+  "provenance": {
+    "program": "Collection",
+    "catalog": "Paper Collection",
+    "catalog_record_id": "dd41517b1203369d",
+    "catalog_record_ids": [
+      "dd41517b1203369d"
+    ],
+    "catalog_topic": "Machine Learning",
+    "collection_date": "2026-08-23",
+    "sampled_at": "2026-08-26",
+    "selected_by": "full_collection_backfill",
+    "sampling_seed": "not_applicable_full_collection",
+    "candidate_count": 452,
+    "legacy_full_text_card": "2509.05041.json"
+  },
+  "equation_refs": [],
+  "figure_refs": [],
+  "cover": {
+    "mode": "title_abstract",
+    "abstract_text": "We investigate recurrent neural networks with asymmetric interactions and demonstrate that the inclusion of self-couplings or sparse excitatory inter-module connections leads to the emergence of a densely connected manifold of dynamically accessible stable configurations. This representation manifold is exponentially large in system size and is reachable through simple local dynamics, despite constituting a subdominant subset of the global configuration space. We further show that learning can be implemented directly on this structure via a fully local, gradient-free mechanism that selectively stabilizes a single task-relevant network configuration. Unlike error-driven or contrastive learning schemes, this approach does not require explicit comparisons between network states obtained with and without output supervision. Instead, transient supervisory signals bias the dynamics toward the ",
+    "selection_rationale": "该旧版全文证据包没有经过 v2.3 的逐图导出与图号核验；为避免错配图片，封面使用论文题目和经全文核对的摘要，关键论证保留在卡片正文中。"
+  }
+}

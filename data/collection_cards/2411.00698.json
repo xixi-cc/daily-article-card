@@ -1,0 +1,170 @@
+{
+  "arxiv_id": "2411.00698",
+  "source_version": "v2",
+  "source_pdf": "https://arxiv.org/pdf/2411.00698",
+  "title_en": "Wasserstein Flow Matching: Generative modeling over families of distributions",
+  "title_zh": "Wasserstein 流匹配：生成“分布的分布”",
+  "curation_status": "full_text_verified",
+  "sections": [
+    {
+      "title": "作者信息",
+      "bullets": [
+        "作者：Doron Haviv、Aram-Alexandre Pooladian、Dana Peer、Brandon Amos。",
+        "研究机构：Weill Cornell / MSKCC / NYU / Meta AI。",
+        "来源：ICML；年份：2025；主题：流匹配、最优传输、空间组学。",
+        "本文按本地全文快照制作，官方元数据核验版本为 2411.00698v2。"
+      ]
+    },
+    {
+      "title": "摘要",
+      "bullets": [
+        "本文的论证主线由以下经过全文核验的节点构成：当每个样本本身是一条分布，普通 flow matching 失去几何；Wasserstein 测地线提供合法 conditional flow；高斯与一般点云使用不同的最优传输原语；每个样本可为高斯或经验点云分布；Wasserstein 测地线保证 conditional flow 的几何合法性；闭式 Bures 路径服务高斯；entropic OT 加 attention 服务一般分布。",
+        "卡片内容来自已完成冷读与逐页检查的 paper_presentation.json，并回链到原论文页码、图或公式。"
+      ]
+    },
+    {
+      "title": "背景",
+      "bullets": [
+        "论证节点“当每个样本本身是一条分布，普通 flow matching 失去几何”。",
+        "图像像素通常是欧氏点；点云、细胞生态位与高斯统计对象则各自是一条概率分布。",
+        "把均值、协方差或点云直接展平，会忽略分布间 Wasserstein 几何。",
+        "WFM 学习的是 $\\mathcal P(\\mathbb R^d)$ 上“分布的分布”之间的连续流。",
+        "输入可为解析高斯，也可为样本数可变的经验点云。",
+        "模型输出不是一个点，而是一整个新分布。",
+        "论文定义 families of distributions 的生成任务。 （p. 1）",
+        "研究问题的表述以论文给出的对象和评价目标为边界；背景动机不自动构成方法有效性的证据。"
+      ]
+    },
+    {
+      "title": "模型与方法",
+      "bullets": [
+        "论证节点“Wasserstein 测地线提供合法 conditional flow”。",
+        "设定：配对 $\\mu_0,\\mu_1$，$T$ 为最优传输映射",
+        "关键关系：\\mu_t &= ((1-t)I+tT)_{\\#}\\mu_0 \\\\ \\mathcal L(\\theta) &= \\mathbb E\\,\\\\\\|v_\\theta(t,\\mu_t)-\\dot\\mu_t\\\\\\|^2_{T_{\\mu_t}\\mathcal P_2}",
+        "推导含义：McCann 插值给出分布空间测地线；切向量是速度场而非普通坐标差。",
+        "结论边界：WFM 可视为在 Wasserstein 黎曼流形上的 conditional flow matching。",
+        "Wasserstein geodesic 与 WFM objective。 （p. 6; equation Eqs. 8-12; wfm_icml.tex）",
+        "论证节点“高斯与一般点云使用不同的最优传输原语”。",
+        "高斯族位于 Bures--Wasserstein 子流形，均值与协方差测地线有闭式表达。",
+        "BW-FM 用全连接网络分别预测均值和协方差速度。",
+        "一般分布用 entropic OT / Sinkhorn 估计映射，并由多头注意力处理点云。",
+        "rounded matching 或 out-of-sample estimator 适配等长与变长点云。",
+        "统一目标保留不变，但几何求解器必须匹配数据表示。",
+        "BW-FM 与 general WFM 的两套实现。 （p. 7）",
+        "方法部分按 presentation 中的数学关系、算法结构或实验设计重述；公式只在相应证据页定义的符号与条件下成立。"
+      ]
+    },
+    {
+      "title": "核心结果与证据",
+      "bullets": [
+        "Fig. 1：源与目标的每个训练样本分别为高斯或经验点云；WFM 学习它们在 Wasserstein 空间中的流。",
+        "证据解释：把样本空间从 $\\mathbb R^d$ 提升到 $\\mathcal P(\\mathbb R^d)$ 是方法的核心。",
+        "WFM 概念图与两类表示。 （p. 2; figure Fig. 1）",
+        "Fig. 4：MNIST 与字母图像被转成可变大小的前景坐标点云；WFM 直接生成新点云分布。",
+        "证据解释：模型不需把可变大小点云填充成固定欧氏向量。",
+        "可变大小经验分布生成。 （p. 10; figure Fig. 4）",
+        "Fig. 7：真实与生成的 Sst 神经元生态位在 Wasserstein 嵌入中覆盖相似组织结构。",
+        "证据解释：条件 WFM 的标签准确率 $63.86\\%$，接近真实测试数据的 $62.19\\%$。",
+        "空间转录组细胞微环境生成。 （p. 12; figure Fig. 7）",
+        "论证节点“高维生物与形状实验给出互补检验”。",
+        "COVID-19 MetaCell 条件 BW-FM 标签准确率为 $93.13\\%$。",
+        "ModelNet 条件生成分类准确率 $77.66\\%$，真实测试纯度为 $79.98\\%$。",
+        "ShapeNet 使用 $2048$ 点、单 A100 训练约 3 天。",
+        "其余实验多为 10 万步，约 3--4 GPU 小时。",
+        "WFM 展示了跨解析高斯、3D 点云与空间组学的同一几何接口。",
+        "补充实验中的标签准确率与训练成本。 （p. 19）",
+        "证据状态：上述结论均来自逐页审阅后的 presentation manifest；这里只确认论文原文支持，不把作者实验视为本站独立复现。"
+      ]
+    },
+    {
+      "title": "有效性与局限",
+      "bullets": [
+        "论证节点“注意力与 OT 都是点云规模的二次瓶颈”。",
+        "Transformer attention 与 Sinkhorn OT 对点数均近似二次复杂度。",
+        "ShapeNet 训练成本高，限制更大点云和更高分辨率。",
+        "entropic OT 引入正则偏差，几何质量依赖样本数与 $\\epsilon$。",
+        "1-NN、标签准确率与可视化只覆盖部分 fidelity，不能证明生物机制正确。",
+        "WFM 的新能力是真实的，但扩展性与科学解释仍需单独验证。",
+        "实现细节明确指出二次复杂度和训练成本。 （p. 18）",
+        "论证节点“WFM 把生成建模提升到概率测度空间”。",
+        "每个样本可为高斯或经验点云分布。",
+        "Wasserstein 测地线保证 conditional flow 的几何合法性。",
+        "闭式 Bures 路径服务高斯；entropic OT 加 attention 服务一般分布。",
+        "形状与空间组学结果展示能力，二次复杂度决定当前边界。",
+        "当数据对象天然是分布时，应在分布空间中学习流，而不是先展平再补救。",
+        "论文结论与 outlook。 （p. 13）",
+        "适用边界以卡片列出的目标、假设、数据集或物理参数区间为准；未在原文证据中出现的外推不计入论文结论。",
+        "该卡完成的是全文证据审计，未重新运行训练、仿真或实验，因此不能据此声称独立复现、稳健性复核或跨任务泛化。"
+      ]
+    },
+    {
+      "title": "复现与资源",
+      "bullets": [
+        "原文：https://arxiv.org/abs/2411.00698；PDF：https://arxiv.org/pdf/2411.00698。",
+        "本地证据源：2411.00698/source/paper.pdf；SHA-256：6f44a4c799b9ed73f7d6cfb6549e875aa17e46bcf4e5cae5640a33d95996e610。",
+        "来源格式：tex；来源包状态：downloaded；presentation 证据条目数：9。",
+        "presentation 及其质量报告保留了页面审阅、编译和冷读状态；它们用于追溯卡片，不等同于作者代码或数据已公开。",
+        "Evidence status: full-text verified; no independent reproduction performed."
+      ]
+    },
+    {
+      "title": "阅读指南",
+      "bullets": [
+        "快速阅读可先看证据页 1, 2, 6, 7, 10, 12，这些页覆盖问题、方法与主要结论。",
+        "图证据优先查看 Fig. 1；结合图注和正文，不只依据视觉趋势下结论。",
+        "公式链优先查看 Eqs. 8-12；核对符号、假设与前后推导。",
+        "建议按“研究问题 → 方法/数学对象 → 证据 → 局限”的顺序阅读，避免从摘要直接跳到强结论。",
+        "若要复现，先从证据引用恢复具体设置，再补齐随机种子、计算资源、评价指标和失败案例。"
+      ]
+    }
+  ],
+  "evidence_refs": [
+    "paper.pdf pages 1, 2, 6, 7, 10, 12, 13, 18, 19: page-addressable claims",
+    "paper_presentation.json: 9 substantive slides and 9 evidence entries",
+    "source-provenance.json: PDF SHA-256 6f44a4c799b9ed73f7d6cfb6549e875aa17e46bcf4e5cae5640a33d95996e610",
+    "Evidence status: full-text verified; no independent reproduction performed."
+  ],
+  "verified_metadata": {
+    "arxiv_id": "2411.00698",
+    "version": "v2",
+    "title": "Wasserstein Flow Matching: Generative modeling over families of distributions",
+    "abstract": "Generative modeling typically concerns transporting a single source distribution to a target distribution via simple probability flows. However, in fields like computer graphics and single-cell genomics, samples themselves can be viewed as distributions, where standard flow matching ignores their inherent geometry. We propose Wasserstein flow matching (WFM), which lifts flow matching onto families of distributions using the Wasserstein geometry. Notably, WFM is the first algorithm capable of generating distributions in high dimensions, whether represented analytically (as Gaussians) or empirically (as point-clouds). Our theoretical analysis establishes that Wasserstein geodesics constitute proper conditional flows over the space of distributions, making for a valid FM objective. Our algorithm leverages optimal transport theory and the attention mechanism, demonstrating versatility across computational regimes: exploiting closed-form optimal transport paths for Gaussian families, while using entropic estimates on point-clouds for general distributions. WFM successfully generates both 2D & 3D shapes and high-dimensional cellular microenvironments from spatial transcriptomics data. Code is available at https://github.com/DoronHav/WassersteinFlowMatching .",
+    "authors": [
+      "Doron Haviv",
+      "Aram-Alexandre Pooladian",
+      "Dana Pe'er",
+      "Brandon Amos"
+    ],
+    "categories": [
+      "cs.LG"
+    ],
+    "primary_category": "cs.LG",
+    "published": "2024-11-01T15:55:07Z",
+    "comment": ""
+  },
+  "card_standard_version": "2.3",
+  "paper_profile": "ai_empirical",
+  "style_reference": "physicist_daily_arxiv",
+  "provenance": {
+    "program": "Collection",
+    "catalog": "Paper Collection",
+    "catalog_record_id": "e4bf7b8b669248c9",
+    "catalog_record_ids": [
+      "e4bf7b8b669248c9"
+    ],
+    "catalog_topic": "Flow Matching",
+    "collection_date": "2026-08-23",
+    "sampled_at": "2026-08-26",
+    "selected_by": "full_collection_backfill",
+    "sampling_seed": "not_applicable_full_collection",
+    "candidate_count": 452,
+    "legacy_full_text_card": "2411.00698.json"
+  },
+  "equation_refs": [],
+  "figure_refs": [],
+  "cover": {
+    "mode": "title_abstract",
+    "abstract_text": "Generative modeling typically concerns transporting a single source distribution to a target distribution via simple probability flows. However, in fields like computer graphics and single-cell genomics, samples themselves can be viewed as distributions, where standard flow matching ignores their inherent geometry. We propose Wasserstein flow matching (WFM), which lifts flow matching onto families of distributions using the Wasserstein geometry. Notably, WFM is the first algorithm capable of generating distributions in high dimensions, whether represented analytically (as Gaussians) or empirically (as point-clouds). Our theoretical analysis establishes that Wasserstein geodesics constitute proper conditional flows over the space of distributions, making for a valid FM objective. Our algorithm leverages optimal transport theory and the attention mechanism, demonstrating versatility across",
+    "selection_rationale": "该旧版全文证据包没有经过 v2.3 的逐图导出与图号核验；为避免错配图片，封面使用论文题目和经全文核对的摘要，关键论证保留在卡片正文中。"
+  }
+}

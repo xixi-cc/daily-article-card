@@ -1,0 +1,105 @@
+{
+  "arxiv_id": "2608.11831",
+  "source_version": "v1",
+  "source_pdf": "https://arxiv.org/pdf/2608.11831",
+  "title_en": "Kernel Methods for Learning Operators with Multiple Inputs and Outputs",
+  "title_zh": "多输入多输出算子学习的核方法",
+  "curation_status": "full_text_verified",
+  "sections": [
+    {
+      "title": "作者信息",
+      "bullets": [
+        "作者：Adrien Weihs、Chunyang Liao、Jingmin Sun、Hayden Schaeffer。",
+        "机构：UCLA、University of Arkansas、Johns Hopkins University。",
+        "版本：arXiv:2608.11831v1，2026-08-12；代码仓库 kernelMO。"
+      ]
+    },
+    {
+      "title": "研究问题",
+      "paragraphs": [
+        "多算子学习需要从参数函数与一个或多个输入函数预测一个或多个输出函数。直接把无限维对象塞入单一网络，会混合 observation、representation、learning 与 reconstruction 误差。本文给出 Hilbert 空间上的核 encoder–decoder 统一框架，并问：输入/输出数量增加时，误差率是否必然遭遇整体维数灾难。"
+      ]
+    },
+    {
+      "title": "模型与方法",
+      "bullets": [
+        "用线性测量算子 $E_X,E_Y$ 编码函数，通过 minimum-norm/regularized optimal recovery decoder $D_X,D_Y$ 重建；只在有限维 measurement spaces 学习核 surrogate $\\widehat G$。",
+        "误差分解为 representation error、learning error 和 data-consistency error；乘积空间情形进一步由各输入/输出分量中最差的 reconstruction error 控制。",
+        "证明 latent surrogate 上的 operator-valued kernel 经 encoder/decoder 可诱导原函数空间上的 kernel，从而把闭式 kernel ridge training 与函数空间保证连接起来。",
+        "KernelMO-OV 把参数映到整个算子，kernel matrix 规模主要随参数实例数 $n_\\alpha$；KernelMO-PS 学习 $(\\alpha,u)\\mapsto v$，可同时外推参数与输入，但矩阵随 $n_\\alpha n_u$ 增长。",
+        "另给 pointwise $(\\alpha,u,x)\\mapsto v(x)$ 的 mesh-independent 完整乘积表述；灵活性更高，但 kernel system 随输出位置数继续膨胀。",
+        "实验用 RBF/Matérn 与可选 PCA encoder，对比 DeepONet、DeepONet-C、MIONet、MNO。"
+      ]
+    },
+    {
+      "title": "核心结果与证据",
+      "bullets": [
+        "近似理论的关键结论是：多输入/多输出数量可增加，但收敛率由最难的 constituent approximation 控制，而不是所有分量维数相乘；常数和测量预算仍会随任务数增长。",
+        "五类参数 PDE：conservation law、diffusion–reaction–advection、nonlinear Klein–Gordon、parametric diffusion–reaction、parametric wave；统一以 128×64 网格上的 mean relative $L^2$ error 评估 ID/OOD。",
+        "operator-valued conservation law 上，最佳 KernelMO 为 0.01% ID、0.77% OOD；最佳神经基线分别为 1.23% 与 3.97%。nonlinear Klein–Gordon 从神经基线 4.63% 降到 0.21%，OOD 从 18.50% 降到 PCA 版本 4.11%。",
+        "product-space 中显式 product kernel 明显优于 vanilla KernelO；parametric wave 例为 2.13% 对 59.28%。但 OOD 没有统一赢家，分布移位类型和 PDE 决定幅度。",
+        "效率只在 conservation-law 基准详测：KernelMO-OV 训练低于 0.5 s，而神经算子为 158–250 s；推理约 0.04 ms/sample，PCA 后约 0.004 ms/sample。",
+        "product-space 全维训练 14.8–15.5 s，对比神经基线 226.79–397.46 s；PCA 降至 4.7–5.19 s，但推理与 MIONet/MNO 大致同量级。"
+      ]
+    },
+    {
+      "title": "有效性与局限",
+      "bullets": [
+        "优势定位在 moderate-data regime；kernel matrix 的平方存储/立方求解趋势限制大样本扩展，完整 pointwise 形式尤其昂贵。",
+        "PCA 不是普遍增益：conservation-law ID error 可从 0.01% 升至 1.77%，只是计算/正则化折中。",
+        "Matérn 多数更稳，但 kernel family 与 length scale 明显依赖 PDE；RBF 在部分 OOD 移位可严重退化。",
+        "理论使用预设有限维测量和 decoder；learned encoder/decoder、无限维 observation space 与跨 observation operator transfer 被列为未来工作。",
+        "实验表明竞争力而非所有任务绝对 SOTA，且效率数字来自单一 PDE 与特定硬件/实现。"
+      ]
+    },
+    {
+      "title": "复现与资源",
+      "bullets": [
+        "原文 PDF：https://arxiv.org/pdf/2608.11831。",
+        "代码：https://github.com/liaochunyang/kernelMO。",
+        "复现须分 OV/PS、ID/OOD、PCA/full、RBF/Matérn 报误差，并把 kernel solve、PCA 和 neural training 的 wall time 与硬件统一。"
+      ]
+    },
+    {
+      "title": "阅读指南",
+      "bullets": [
+        "第 2–3 节先看 optimal recovery、error decomposition 与乘积空间 rate。",
+        "图 4–5 区分 OV、PS 和 pointwise 三种问题。",
+        "图 6–9 与各 PDE 表格读精度，表 15–16/图 20–21读成本。",
+        "结论中的 learned representation 与 scalability 是方法当前边界。"
+      ]
+    }
+  ],
+  "evidence_refs": [
+    "paper.pdf pp. 1-18: framework, error decomposition, product-space theory, and KernelMO formulations",
+    "paper.pdf pp. 20-39: five-PDE protocol, ID/OOD errors, ablations, and qualitative results",
+    "paper.pdf pp. 39-41: Tables 15-16, efficiency comparisons, conclusion, and future work",
+    "paper.pdf pp. 46-57: mathematical proofs and experimental details",
+    "Evidence status: full-text verified; no independent reproduction performed."
+  ],
+  "card_standard_version": "2.3",
+  "paper_profile": "ai_empirical",
+  "style_reference": "physicist_daily_arxiv",
+  "provenance": {
+    "program": "Collection",
+    "catalog": "Paper Collection",
+    "catalog_record_id": "1896beebfcd3fb9c",
+    "catalog_record_ids": [
+      "1896beebfcd3fb9c"
+    ],
+    "catalog_topic": "Machine Learning",
+    "collection_date": "2026-08-23",
+    "sampled_at": "2026-08-26",
+    "selected_by": "full_collection_backfill",
+    "sampling_seed": "not_applicable_full_collection",
+    "candidate_count": 452,
+    "legacy_full_text_card": "2608.11831.json"
+  },
+  "equation_refs": [],
+  "figure_refs": [],
+  "cover": {
+    "mode": "title_abstract",
+    "abstract_text": "多算子学习需要从参数函数与一个或多个输入函数预测一个或多个输出函数。直接把无限维对象塞入单一网络，会混合 observation、representation、learning 与 reconstruction 误差。本文给出 Hilbert 空间上的核 encoder–decoder 统一框架，并问：输入/输出数量增加时，误差率是否必然遭遇整体维数灾难。",
+    "selection_rationale": "该旧版全文证据包没有经过 v2.3 的逐图导出与图号核验；为避免错配图片，封面使用论文题目和经全文核对的摘要，关键论证保留在卡片正文中。"
+  }
+}

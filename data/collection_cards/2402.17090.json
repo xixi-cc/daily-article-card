@@ -1,0 +1,140 @@
+{
+  "arxiv_id": "2402.17090",
+  "source_version": "v2",
+  "source_pdf": "https://arxiv.org/pdf/2402.17090",
+  "title_en": "Renormalization Group flow, Optimal Transport and Diffusion-based Generative Model",
+  "title_zh": "重整化群流、最优传输与扩散生成模型",
+  "curation_status": "full_text_verified",
+  "verified_metadata": {
+    "arxiv_id": "2402.17090",
+    "version": "v2",
+    "title": "Renormalization Group flow, Optimal Transport and Diffusion-based Generative Model",
+    "abstract": "Diffusion-based generative models represent a forefront direction in generative AI research today. Recent studies in physics have suggested that the renormalization group (RG) can be conceptualized as a diffusion process. This insight motivates us to develop a novel diffusion-based generative model by reversing the momentum-space RG flow. We establish a framework that interprets RG flow as optimal transport gradient flow, which minimizes a functional analogous to the Kullback-Leibler divergence, thereby bridging statistical physics and information theory. Our model applies forward and reverse diffusion processes in Fourier space, exploiting the sparse representation of natural images in this domain to efficiently separate signal from noise and manage image features across scales. By introducing a scale-dependent noise schedule informed by a dispersion relation, the model optimizes denoising performance and image generation in Fourier space, taking advantage of the distinct separation of macro and microscale features. Experimental validations on standard datasets demonstrate the model's capability to generate high-quality images while significantly reducing training time compared to existing image-domain diffusion models. This approach not only enhances our understanding of the generative processes in images but also opens new pathways for research in generative AI, leveraging the convergence of theoretical physics, optimal transport, and machine learning principles.",
+    "authors": [
+      "Artan Sheshmani",
+      "Yi-Zhuang You",
+      "Baturalp Buyukates",
+      "Amir Ziashahabi",
+      "Salman Avestimehr"
+    ],
+    "categories": [
+      "cond-mat.dis-nn"
+    ],
+    "primary_category": "cond-mat.dis-nn",
+    "published": "2024-02-26T23:56:34Z",
+    "comment": "18 pages, 7 figures"
+  },
+  "sections": [
+    {
+      "title": "作者信息",
+      "bullets": [
+        "作者：Artan Sheshmani、Yi-Zhuang You、Baturalp Buyukates、Amir Ziashahabi、Salman Avestimehr。",
+        "官方快照：arXiv:2402.17090v2；PDF 19 页；cond-mat.dis-nn。",
+        "论文包含两层贡献：特定 exact-RG equation 的 Wasserstein-gradient-flow改写，以及工程上的 Frequency Domain Diffusion Model (FDDM)。"
+      ]
+    },
+    {
+      "title": "摘要",
+      "bullets": [
+        "理论部分令 RG covariance schedule诱导 metric g=−2(∂tΣ)^{-1}，把 exact RG density equation改写为 Fokker–Planck/Wasserstein gradient flow。",
+        "生成部分并未直接数值反演该 RG方程，而是对图像 patches做 YCbCr+DCT，在频率 mode上使用由 tight-binding dispersion/Fermi schedule定义的不同噪声强度。",
+        "FDDM牺牲 CelebA-64 FID换取更少 MACs和更高 inference steps/s；因此主要证据是 efficiency–quality tradeoff，而非质量提升。"
+      ]
+    },
+    {
+      "title": "背景",
+      "bullets": [
+        "forward RG coarse-graining把复杂分布推向简单 Gaussian；形式上反演可联想到 noise-to-data diffusion generation。",
+        "Wasserstein gradient flow把 free energy下降写成 Fokker–Planck relaxation；Benamou–Brenier给 probability-density path与velocity的动态OT表述。",
+        "自然图像在 DCT域能量集中于低频；JPEG-style patching和按频率分组可缩小 spatial resolution，但会弱化跨patch与细节建模。"
+      ]
+    },
+    {
+      "title": "模型与方法",
+      "bullets": [
+        "Eq. (17) 从带 covariance Σ与 free/interacting action 的 exact RG density dynamics出发；要求 ∂tΣ≤0，使 g^{-1}=−∂tΣ/2 positive semidefinite。",
+        "改写后 Eq. (19) 是 diffusion加向 free action漂移；Eq. (20) 给 F[μ]=∫μ(2Sfree+logμ)，形式上等于相对于 exp(−2Sfree) normalized target 的 KL加常数。",
+        "FDDM把每个 RGB image转 YCbCr，切 d×d patches，逐patch DCT，再把相同frequency coefficients跨patch regroup成3d² channels。",
+        "forward Eq. (26) 在DCT域用 elementwise αbar_{t,k}加Gaussian noise；αbar是 Fermi–Dirac形 schedule，dispersion εk=−cos(πk1)−cos(πk2)，μt从4线性降到−4、T'=0.5。",
+        "network预测 clean DCT x0而非noise，loss为frequency-domain MSE；sampling用 DDIM-like Eq. (27)，inverse DCT和unpatch返回图像。",
+        "实验固定 T=I=1000、batch128、800k steps、Adam 2e-4、A100 40GB；Fashion-MNIST d=7，CelebA-64 d=4/8。"
+      ]
+    },
+    {
+      "title": "核心结果与证据",
+      "bullets": [
+        "Table 1 CelebA-64、128-sample compute：DDPM 3099G MACs、5.344 steps/s、FID3.26；FDDM d=4 为1781G、14.655、FID18.17；d=8 为449G、45.76、FID20.65。",
+        "相对 DDPM，吞吐约2.74×与8.56×，MAC约下降43%与86%；但 FID恶化约5.6×与6.3×。这是显著质量代价，不应称为 modest而不报数。",
+        "FID据称用200,000 CelebA samples；Figure 5是 uncurated，而 Figure 6明确是 curated，视觉展示必须优先看未筛样本。",
+        "Figure 4只显示 Fashion-MNIST uncurated samples，没有 quantitative likelihood/FID或baseline。",
+        "RG部分的等价是对指定 density equation和metric的代数改写；FDDM的 Fermi schedule受RG/momentum直觉启发，正文没有证明其训练 dynamics等于前述 exact RG Wasserstein geodesic。",
+        "论文宣称适合下游分类的细节损失，但未运行 hair/glasses classifier或任何 downstream utility实验。"
+      ]
+    },
+    {
+      "title": "有效性与局限",
+      "bullets": [
+        "Eq. (20) 后打印的 q(x)=−e^{-2Sfree}/2 含负号且缺正常 partition normalization，不能是 probability density；将F称KL必须按 q∝e^{-2Sfree}修正并验证常数。",
+        "metric符号在正文 Eq. (18) OCR/排版与后文 g=−2(∂tΣ)^{-1}需一致；只有 covariance derivative满足符号/非退化条件时才构成正定Wasserstein metric。",
+        "从 RG gradient-flow到 FDDM没有定理连接：DCT patch diffusion是工程构造，不能由前半的 exact-RG公式直接推出。",
+        "摘要称 significantly reducing training time，但主结果 Table 1报告 MACs与 inference steps/s，没有 measured training wall-clock或收敛到同质量的训练成本。",
+        "比较网络并非完全同计算图：FDDM保持低spatial resolution、增加channels且patch size改变；speedup来自patch/regroup architecture，不足以归因给 RG schedule。",
+        "只比较一个早期 DDPM baseline、一个数据集的FID；没有 modern fast diffusion、frequency-domain ablation、相同FID下速度或相同compute下质量。",
+        "patch boundaries和 DCT coefficient独立噪声可能损害global structure/high-frequency details；d=8更快且FID更差符合这一风险。",
+        "作者用“FID18不表示6倍更差”作解释是合理的metric caveat，但不能替代 perceptual study或downstream验证。"
+      ]
+    },
+    {
+      "title": "复现与资源",
+      "bullets": [
+        "先独立审计 Eqs. (17–20)：固定 Gaussian Sfree与Σ(t)，检查probability conservation、metric positivity、F下降与正确normalized KL target。",
+        "工程复现锁定 YCbCr transform、DCT normalization、patch ordering、frequency regroup、μt/T'、η、T/I与 U-Net channel layout；这些细节任一错位都会破坏逆变换。",
+        "做 d=1/2/4/8、uniform vs scale-dependent schedule、pixel vs DCT、patch vs full-image四因素ablation；报告同FID下wall time与同time下FID。",
+        "保存200k FID所用 real/generated sets、evaluator hash、uncurated grids和 per-frequency reconstruction error，并测试 downstream classifier再讨论utility。",
+        "本站 PDF SHA-256：3afef71b930851ff3f448a4762ad5e8d26fea282b9a9b0828bf9f80aa33699ac。",
+        "Evidence status: full-text verified; no independent reproduction performed."
+      ]
+    },
+    {
+      "title": "阅读指南",
+      "bullets": [
+        "先读 Section 3/Eqs. (17–20)，逐一检查metric符号和KL normalization，不接受“RG=OT”作为无条件口号。",
+        "再读 Section 5.2–5.3，把 Fermi noise schedule、patching和network reshape画成数据流。",
+        "最后只以 Table 1 与 uncurated figures评价；把理论类比、速度收益、图像质量和训练时间四种claim分开。"
+      ]
+    }
+  ],
+  "evidence_refs": [
+    "paper.pdf pp. 2-4: motivation and stated RG-to-FDDM bridge",
+    "paper.pdf pp. 6-8: Wasserstein discretization and RG equations 17-20",
+    "paper.pdf pp. 9-13: DCT-domain forward/reverse process, schedule and algorithms",
+    "paper.pdf pp. 14-15: training setup, curated status and CelebA Table 1",
+    "paper.pdf pp. 15-17: graph-Wasserstein appendix and assumptions",
+    "Evidence status: full-text verified; no independent reproduction performed."
+  ],
+  "card_standard_version": "2.3",
+  "paper_profile": "ai_empirical",
+  "style_reference": "physicist_daily_arxiv",
+  "provenance": {
+    "program": "Collection",
+    "catalog": "Paper Collection",
+    "catalog_record_id": "a380a4d5043e88ad",
+    "catalog_record_ids": [
+      "a380a4d5043e88ad"
+    ],
+    "catalog_topic": "Renormalization Group",
+    "collection_date": "2026-08-24",
+    "sampled_at": "2026-08-26",
+    "selected_by": "full_collection_backfill",
+    "sampling_seed": "not_applicable_full_collection",
+    "candidate_count": 452,
+    "legacy_full_text_card": "2402.17090.json"
+  },
+  "equation_refs": [],
+  "figure_refs": [],
+  "cover": {
+    "mode": "title_abstract",
+    "abstract_text": "Diffusion-based generative models represent a forefront direction in generative AI research today. Recent studies in physics have suggested that the renormalization group (RG) can be conceptualized as a diffusion process. This insight motivates us to develop a novel diffusion-based generative model by reversing the momentum-space RG flow. We establish a framework that interprets RG flow as optimal transport gradient flow, which minimizes a functional analogous to the Kullback-Leibler divergence, thereby bridging statistical physics and information theory. Our model applies forward and reverse diffusion processes in Fourier space, exploiting the sparse representation of natural images in this domain to efficiently separate signal from noise and manage image features across scales. By introducing a scale-dependent noise schedule informed by a dispersion relation, the model optimizes denois",
+    "selection_rationale": "该旧版全文证据包没有经过 v2.3 的逐图导出与图号核验；为避免错配图片，封面使用论文题目和经全文核对的摘要，关键论证保留在卡片正文中。"
+  }
+}

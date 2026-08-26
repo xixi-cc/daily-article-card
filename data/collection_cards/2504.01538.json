@@ -1,0 +1,128 @@
+{
+  "arxiv_id": "2504.01538",
+  "source_version": "v2",
+  "source_pdf": "https://arxiv.org/pdf/2504.01538",
+  "title_en": "AI-Newton: A Concept-Driven Physical Law Discovery System without Prior Physical Knowledge",
+  "title_zh": "AI-Newton：无需先验物理知识的概念驱动物理规律发现系统",
+  "curation_status": "full_text_verified",
+  "verified_metadata": {
+    "arxiv_id": "2504.01538",
+    "version": "v2",
+    "title": "AI-Newton: A Concept-Driven Physical Law Discovery System without Prior Physical Knowledge",
+    "abstract": "While current AI-driven methods excel at deriving empirical models from individual experiments, a significant challenge remains in uncovering the common fundamental physics that underlie these models -- a task at which human physicists are adept. To bridge this gap, we introduce AI-Newton, a novel framework for concept-driven scientific discovery. Our system autonomously derives general physical laws directly from raw, multi-experiment data, operating without supervision or prior physical knowledge. Its core innovations are twofold: (1) proposing interpretable physical concepts to construct laws, and (2) progressively generalizing these laws to broader domains. Applied to a large, noisy dataset of mechanics experiments, AI-Newton successfully rediscovers foundational and universal laws, such as Newton's second law, the conservation of energy, and the universal gravitation. This work represents a significant advance toward autonomous, human-like scientific discovery.",
+    "authors": [
+      "You-Le Fang",
+      "Dong-Shan Jian",
+      "Xiang Li",
+      "Yan-Qing Ma"
+    ],
+    "categories": [
+      "cs.AI",
+      "cs.LG",
+      "cs.SC",
+      "hep-ph",
+      "physics.class-ph"
+    ],
+    "primary_category": "cs.AI",
+    "published": "2025-04-02T09:25:34Z",
+    "comment": ""
+  },
+  "sections": [
+    {
+      "title": "作者信息",
+      "bullets": [
+        "作者：You-Le Fang、Dong-Shan Jian、Xiang Li、Yan-Qing Ma。",
+        "机构：School of Physics 与 Center for High Energy Physics, Peking University。",
+        "官方快照：arXiv:2504.01538v2；主分类 cs.AI，并交叉 cs.LG/cs.SC/hep-ph/physics.class-ph。"
+      ]
+    },
+    {
+      "title": "摘要",
+      "bullets": [
+        "AI-Newton 不只为单个实验拟合方程，而是维护 experiment base 与显式 theory base，在多个实验之间提出可测量的物理概念，再把已有规律通过 plausible reasoning 扩展到更广系统。",
+        "在 46 个带 Gaussian noise 的经典力学模拟实验上，作者报告系统逐步重新发现质量、能量、力以及 Newton 第二定律、能量守恒和万有引力等规律。"
+      ]
+    },
+    {
+      "title": "背景",
+      "bullets": [
+        "现有 neural/symbolic discovery 多从单个实验得到 problem-specific model；论文认为接近人类物理学家的关键是跨实验识别共同概念与 general laws。",
+        "为避免把已知物理直接喂给系统，初始 concept layer 只含时空坐标；实验输入只给对象、几何、参数与时空坐标，mass、energy 等概念必须由系统建立（p. 1）。"
+      ]
+    },
+    {
+      "title": "模型与方法",
+      "bullets": [
+        "theory base 用 physical DSL 存 symbols、concepts 和 laws；概念分 dynamical、intrinsic 与 universal constant，并记录 intrinsic concept 的测量实验，使同一概念能跨问题调用（pp. 1–2, Eqs. 1–2）。",
+        "规律分 specific 与 general。SR 结合 direct instantiation-verification 和 PCA-based differential polynomial regression；plausible reasoning 在旧规律对新实验失效时允许加入简单项，例如从 kinetic-energy conservation 扩展出含 elastic/gravitational potential 的总能量守恒（p. 3）。",
+        "测试覆盖 46 个实验、五类问题，包括直线/抛体、碰撞、斜面、弹簧和天体引力；逐步增加对象数与维度，并用微分方程生成带 Gaussian errors 的数据（pp. 3–4）。"
+      ]
+    },
+    {
+      "title": "核心结果与证据",
+      "bullets": [
+        "运行平台为 Intel Xeon Platinum 8370C、NVIDIA A40、64 CPU cores；max trials=1200，平均约 48 h。作者称每次测试平均发现约 90 个 concepts 和 50 条 general laws（p. 4）。",
+        "10 个 test cases 的统计进程显示先发现 mass 等简单概念，再形成 force 等复杂概念；能量守恒从碰撞中的 kinetic energy 起步，随后加入 spring、near-Earth gravity 与 universal-gravity potential（pp. 4–5, Figs. 2–3）。",
+        "系统从静态弹簧伸长与水平弹簧振荡两条路径分别定义 gravitational mass 与 inertial mass，并在数值上验证二者等价；作者将其解读为从数据触及 weak equivalence principle（p. 5）。",
+        "正文确认重新发现 Newton’s second law、conservation of energy 和 universal gravitation；这是已知力学上的 proof-of-concept，不是未知物理发现。"
+      ]
+    },
+    {
+      "title": "有效性与局限",
+      "bullets": [
+        "全部数据由已知微分方程模拟并添加 Gaussian noise，experiment family 和 DSL operational space 由作者设计；因此“without prior physical knowledge”不等于没有结构先验。",
+        "测试目标均是已知经典力学，不能评估面对未知概念、模型失配、真实传感器系统误差或不完备观测时能否可靠发现新定律。",
+        "作者说明未直接使用 LLM，因为 LLM 已知这些定律；未来才考虑用 LLM 替换/增强 DSL、recommendation 与 plausible reasoning。",
+        "约 48 h、1200 trials 的结果需结合 10 次测试的均值/方差；论文正文没有与强 symbolic-regression baselines 在同一 46-experiment protocol 下做完整消融。"
+      ]
+    },
+    {
+      "title": "复现与资源",
+      "bullets": [
+        "代码：https://github.com/Science-Discovery/AI-Newton；补充材料描述 DSL、recommendation engine 与 computational engine。",
+        "复现应保存 46 个 generator、noise seed、era-control、trial trace、concept/law database，并分别验证 specific-to-general transfer 与最终方程的数值误差。",
+        "本站 PDF SHA-256：bce6758e3ec33fe715b2df7132733107f98f1e928abb9ead89b9b7e2b3a8cdc1。",
+        "Evidence status: full-text verified; no independent reproduction performed."
+      ]
+    },
+    {
+      "title": "阅读指南",
+      "bullets": [
+        "先读 Fig. 1 和 pp. 1–3 的 DSL/theory base，再读 Fig. 2 看 46 个实验与主要规律的覆盖关系。",
+        "Fig. 3 是最重要的过程证据：它展示概念发现的 timing 分布，而不是只列最终成功案例。",
+        "最后读 p. 5 Summary 中作者自己给出的边界：当前先重新发现已知物理，LLM 与 frontier science 都是未来方向。"
+      ]
+    }
+  ],
+  "evidence_refs": [
+    "paper.pdf pp. 1-3: concept-driven objective, DSL, theory base and plausible reasoning",
+    "paper.pdf pp. 3-5: 46 experiments, compute budget, Figs. 2-3 and discovered laws",
+    "paper.pdf p. 5: summary and explicit frontier-science/LLM boundary",
+    "Evidence status: full-text verified; no independent reproduction performed."
+  ],
+  "card_standard_version": "2.3",
+  "paper_profile": "theory_experiment",
+  "style_reference": "physicist_daily_arxiv",
+  "provenance": {
+    "program": "Collection",
+    "catalog": "Paper Collection",
+    "catalog_record_id": "19c6b72f81e0dea5",
+    "catalog_record_ids": [
+      "19c6b72f81e0dea5"
+    ],
+    "catalog_topic": "AI for Science",
+    "collection_date": "2026-08-24",
+    "sampled_at": "2026-08-26",
+    "selected_by": "full_collection_backfill",
+    "sampling_seed": "not_applicable_full_collection",
+    "candidate_count": 452,
+    "legacy_full_text_card": "2504.01538.json"
+  },
+  "equation_refs": [],
+  "figure_refs": [],
+  "cover": {
+    "mode": "title_abstract",
+    "abstract_text": "While current AI-driven methods excel at deriving empirical models from individual experiments, a significant challenge remains in uncovering the common fundamental physics that underlie these models -- a task at which human physicists are adept. To bridge this gap, we introduce AI-Newton, a novel framework for concept-driven scientific discovery. Our system autonomously derives general physical laws directly from raw, multi-experiment data, operating without supervision or prior physical knowledge. Its core innovations are twofold: (1) proposing interpretable physical concepts to construct laws, and (2) progressively generalizing these laws to broader domains. Applied to a large, noisy dataset of mechanics experiments, AI-Newton successfully rediscovers foundational and universal laws, such as Newton's second law, the conservation of energy, and the universal gravitation. This work repr",
+    "selection_rationale": "该旧版全文证据包没有经过 v2.3 的逐图导出与图号核验；为避免错配图片，封面使用论文题目和经全文核对的摘要，关键论证保留在卡片正文中。"
+  }
+}

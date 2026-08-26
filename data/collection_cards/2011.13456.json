@@ -1,0 +1,149 @@
+{
+  "arxiv_id": "2011.13456",
+  "source_version": "v2",
+  "source_pdf": "https://arxiv.org/pdf/2011.13456v2",
+  "title_en": "Score-Based Generative Modeling through Stochastic Differential Equations",
+  "title_zh": "基于随机微分方程的分数生成建模",
+  "curation_status": "full_text_verified",
+  "verified_metadata": {
+    "arxiv_id": "2011.13456",
+    "version": "v2",
+    "title": "Score-Based Generative Modeling through Stochastic Differential Equations",
+    "abstract": "Creating noise from data is easy; creating data from noise is generative modeling. We present a stochastic differential equation that smoothly transforms a complex data distribution to a known prior distribution by slowly injecting noise, and a corresponding reverse-time SDE that transforms the prior distribution back into the data distribution by slowly removing the noise. Crucially, the reverse-time SDE depends only on the time-dependent gradient field, or score, of the perturbed data distribution.",
+    "authors": [
+      "Yang Song",
+      "Jascha Sohl-Dickstein",
+      "Diederik P. Kingma",
+      "Abhishek Kumar",
+      "Stefano Ermon",
+      "Ben Poole"
+    ],
+    "categories": [
+      "cs.LG",
+      "stat.ML"
+    ],
+    "primary_category": "cs.LG",
+    "published": "2020-11-26T19:39:10Z",
+    "comment": "ICLR 2021 Oral"
+  },
+  "sections": [
+    {
+      "title": "作者信息",
+      "bullets": [
+        "作者：Yang Song、Jascha Sohl-Dickstein、Diederik P. Kingma、Abhishek Kumar、Stefano Ermon、Ben Poole。",
+        "官方快照：arXiv:2011.13456v2；ICLR 2021 Oral；分类cs.LG、stat.ML。",
+        "论文统一SMLD与DDPM的连续时间视角，同时提出sampler、likelihood与architecture改进；最终FID不是只由SDE公式单独带来的。"
+      ]
+    },
+    {
+      "title": "摘要",
+      "bullets": [
+        "forward Itô SDE dx=f(x,t)dt+g(t)dw把data p0连续扰动到tractable prior pT；reverse-time drift多出−g²∇x log pt(x)，因此只要估计各时刻score即可从噪声生成。",
+        "continuous denoising score matching以已知Gaussian perturbation kernel训练sθ(x,t)；VE对应SMLD极限，VP对应DDPM极限，sub-VP为本文为likelihood提出的变体。",
+        "predictor-corrector把reverse-SDE数值步与Langevin等MCMC校正交替；probability-flow ODE与SDE共享每个时刻的marginal densities，并允许density evaluation与deterministic encoding。"
+      ]
+    },
+    {
+      "title": "背景",
+      "bullets": [
+        "SMLD在多个noise scales上学score并用annealed Langevin采样；DDPM的noise-prediction/variational objective也可重写为加权denoising score objectives。",
+        "连续SDE框架把noise schedule、training objective和sampling discretization解耦，使通用SDE solvers、ancestral/reverse-diffusion、PC与ODE sampling可在同一score model上组合。",
+        "关键对象是marginal score ∇log pt，而不是单样本forward conditional score本身；denoising identity保证对conditional target做回归的population optimum等于marginal score。"
+      ]
+    },
+    {
+      "title": "模型与方法",
+      "bullets": [
+        "reverse SDE为dx=[f−g²∇log pt]dt+g d w-bar，时间从T到0；公式成立依赖适当regularity与真实marginal score。实际用sθ替代后同时有estimation和discretization error。",
+        "训练Eq. (7)均匀采t，x0~pdata、xt~p0t(.|x0)，最小化λ(t)||sθ(xt,t)−∇xt log p0t(xt|x0)||²；充分数据/容量/优化下才恢复score。",
+        "VE SDE无drift且variance随σ²(t)增长；VP为Ornstein–Uhlenbeck型drift −β(t)x/2、diffusion √β；sub-VP降低intermediate diffusion variance。三者affine drift使transition Gaussian闭式可得。",
+        "PC sampler每个noise time先用任意reverse-SDE predictor前进一步，再用score-based MCMC corrector逼近当前pt；本文常用1000 predictor+1000 corrector score evaluations。",
+        "probability-flow ODE dx=[f−g²∇log pt/2]dt与forward/reverse SDE具有相同one-time marginals，不是同一随机path law；以sθ代入后成为continuous normalizing flow。",
+        "log density沿ODE由divergence积分；高维trace用Hutchinson estimator，RK45 atol=rtol=10⁻5，CIFAR bits/dim对test set做5次估计平均。",
+        "conditional reverse score加∇x log pt(y|x)；class guidance另训time-dependent classifier，inpainting/colorization则利用known coordinates或heuristic likelihood gradients。"
+      ]
+    },
+    {
+      "title": "核心结果与证据",
+      "bullets": [
+        "Table 1相同score-evaluation预算下，CIFAR VP reverse-diffusion P2000 FID 3.19±.02，PC1000 3.18±.01；probability-flow P2000 3.23±.03，PC1000 3.06±.03。改善存在但部分仅0.01–0.17 FID。",
+        "VE下corrector作用更大：reverse-diffusion P1000 4.79±.07，PC1000 3.60±.02；但PC1000相对P1000计算翻倍，公平对照应看P2000 4.74±.08。",
+        "Table 2 last-checkpoint、RK45 ODE评估：deep DDPM++ continuous sub-VP NLL 2.99 bits/dim、FID 2.92；deep VP为3.13、3.08。likelihood与sample-quality最佳SDE并不相同。",
+        "Table 3用训练过程中最低FID checkpoint和PC sampling：NCSN++ continuous deep VE达FID 2.20、IS 9.89；deep DDPM++ VP/sub-VP均FID 2.41。该表与Table 2的checkpoint/sampler口径不同。",
+        "基础NCSN++ VE为2.45，continuous objective改至2.38，doubling residual blocks再到2.20；因此2.20包含architecture、objective、depth、checkpoint selection和PC sampler的联合变化。",
+        "Figure 3在CelebA-HQ probability-flow ODE中以NFE 14/86/548展示tolerance—计算权衡；“减少90%仍不伤视觉质量”是图像定性观察，不是统一FID/NLL guarantee。",
+        "1024×1024 CelebA-HQ展示高保真samples，但没有相应FID、precision/recall或与GAN同分辨率定量benchmark。"
+      ]
+    },
+    {
+      "title": "有效性与局限",
+      "bullets": [
+        "所谓“exact likelihood”指learned probability-flow ODE有标准change-of-variables density，而不是score网络等于真实data score；数值ODE tolerance与Hutchinson trace仍引入误差/随机性。",
+        "SDE与probability-flow ODE共享marginal distributions，不共享individual stochastic trajectories；不能把deterministic latent path解释为原reverse diffusion某条唯一物理路径。",
+        "pT通常仅近似forward终点分布，计算避开t=0：VE训练/求解和VP likelihood常用ε=10⁻5，VP sampling ε=10⁻3；更小ε会改变likelihood与稳定性。",
+        "PC sampler有SNR、corrector steps、predictor与noise interpolation等hyperparameters；论文逐格搜索CIFAR SNR并承认sampler breadth增加调参负担。",
+        "Table 3挑全训练过程最低FID，而architecture exploration又用checkpoint区间平均；选择规则不同会带来optimistic selection，不能混合排名。",
+        "FID基于50k generated samples且所有方法最后加一次Tweedie denoise；论文指出denoising步骤会影响FID，跨论文比较需核对此细节。",
+        "conditional generation需额外classifier或对measurement score的近似；它不是unconditional score自动精确解任意inverse problem。",
+        "作者明确承认sampling仍慢于同数据GAN；高质量通常约1000–2000 score evaluations，2.20并非快速生成结果。",
+        "本站未下载checkpoint、采样或重算FID/NLL。"
+      ]
+    },
+    {
+      "title": "复现与资源",
+      "bullets": [
+        "代码与checkpoints：https://github.com/yang-song/score_sde；固定v2对应config、checkpoint、TensorFlow GAN FID与sampling denoise规则。",
+        "先在低维Gaussian mixture上用解析score核对forward marginals、reverse SDE和probability-flow ODE one-time marginals；同时证明paths不同。",
+        "CIFAR复现分开保存training seed、checkpoint selection、sampler seed、NFE、FID、IS、NLL与wall-clock；Table 1应至少复现5 sampling runs。",
+        "likelihood审计扫描Hutchinson vectors、RK45 atol/rtol和ε，报告estimate variance与solver error；不能只输出2.99单点。",
+        "sampler公平比较以score evaluations和wall-clock双重配平，分别对P1000、P2000、PC1000和ODE；显式记录SNR grid selection。",
+        "本站 PDF SHA-256：b244b740e60628d01bc3d4b98d721c2343be1fb9b67ad22593c8555e66f4d4a6。",
+        "Evidence status: full-text verified; no independent reproduction performed."
+      ]
+    },
+    {
+      "title": "阅读指南",
+      "bullets": [
+        "先读Eqs. (5–7)，分清forward conditional target、marginal score和reverse-time drift。",
+        "再读Eqs. (9–13)，把VE/VP/sub-VP与probability-flow ODE放在同一符号下比较。",
+        "看Tables 1–3时必须同时读caption：score预算、last/best checkpoint、ODE/PC sampler各不相同。",
+        "最后读Appendices C、D、G、H，核对ε、trace estimator、denoise step、SNR search和architecture ablations。"
+      ]
+    }
+  ],
+  "evidence_refs": [
+    "paper.pdf pp. 3-5: forward/reverse SDE, score objective and VE/VP/sub-VP definitions",
+    "paper.pdf pp. 5-7: sampler comparison Table 1 and predictor-corrector construction",
+    "paper.pdf pp. 7-8: probability-flow ODE, exact-density claim and adaptive NFE",
+    "paper.pdf pp. 8-9: Tables 2-3, architecture contributions and conditional generation",
+    "paper.pdf pp. 14-20: epsilon endpoints, probability-flow derivation and likelihood estimator",
+    "paper.pdf pp. 24-31: sampler hyperparameters, denoising rule, checkpoint policy and architecture ablations",
+    "paper.pdf pp. 32-36: 1024px and conditional/inverse-problem details",
+    "Evidence status: full-text verified; no independent reproduction performed."
+  ],
+  "card_standard_version": "2.3",
+  "paper_profile": "theory_numerics",
+  "style_reference": "physicist_daily_arxiv",
+  "provenance": {
+    "program": "Collection",
+    "catalog": "Paper Collection",
+    "catalog_record_id": "973f8c462f936860",
+    "catalog_record_ids": [
+      "973f8c462f936860"
+    ],
+    "catalog_topic": "Generative Models",
+    "collection_date": "2026-08-24",
+    "sampled_at": "2026-08-26",
+    "selected_by": "full_collection_backfill",
+    "sampling_seed": "not_applicable_full_collection",
+    "candidate_count": 452,
+    "legacy_full_text_card": "2011.13456.json"
+  },
+  "equation_refs": [],
+  "figure_refs": [],
+  "cover": {
+    "mode": "title_abstract",
+    "abstract_text": "Creating noise from data is easy; creating data from noise is generative modeling. We present a stochastic differential equation that smoothly transforms a complex data distribution to a known prior distribution by slowly injecting noise, and a corresponding reverse-time SDE that transforms the prior distribution back into the data distribution by slowly removing the noise. Crucially, the reverse-time SDE depends only on the time-dependent gradient field, or score, of the perturbed data distribution.",
+    "selection_rationale": "该旧版全文证据包没有经过 v2.3 的逐图导出与图号核验；为避免错配图片，封面使用论文题目和经全文核对的摘要，关键论证保留在卡片正文中。"
+  }
+}

@@ -1,0 +1,152 @@
+{
+  "arxiv_id": "2607.24502",
+  "source_version": "v1",
+  "source_pdf": "https://arxiv.org/pdf/2607.24502v1",
+  "title_en": "Self-Attention Dynamics with Rotary Position Embeddings: Twisted States and Explicit Consensus Rates on the Sphere",
+  "title_zh": "带旋转位置编码的自注意力动力学：球面上的扭曲态与显式共识速率",
+  "curation_status": "full_text_verified",
+  "verified_metadata": {
+    "arxiv_id": "2607.24502",
+    "version": "v1",
+    "title": "Self-Attention Dynamics with Rotary Position Embeddings: Twisted States and Explicit Consensus Rates on the Sphere",
+    "abstract": "We analyze the continuous-time normalized residual limit of self-attention in which RoPE rotates queries and keys while values remain on the unit sphere. The attention kernel is reversible and has a sharp state-uniform softmax floor, although the natural RoPE interaction energy is not monotone even within one fixed system. Consensus remains an equilibrium, with transverse dynamics governed by a row-normalized position kernel. On resonant rings its spectrum admits an exact Bessel-aliasing formula and can exhibit exponentially slow consensus at large inverse temperature. Pairwise non-obtuse configurations and strict open semicircles contract at explicit rates, while the antipodal boundary admits stationary non-consensus states. RoPE also selects score-flattening twisted equilibria: the generic resonant branch is non-hyperbolic and linearly unstable, and an odd antipodal family is a hyperbolic saddle after quotienting rotation. Multi-frequency consensus gaps can vary non-monotonically with plane energy. Independent numerical calculations cross-check the analytical spectra, bounds and conventions.",
+    "authors": [
+      "Hao Ye"
+    ],
+    "categories": [
+      "math.DS",
+      "cs.LG"
+    ],
+    "primary_category": "math.DS",
+    "published": "2026-07-27T14:36:30Z"
+  },
+  "sections": [
+    {
+      "title": "作者信息",
+      "bullets": [
+        "Hao Ye来自中国科学院西安光学精密机械研究所与中国科学院大学。",
+        "官方快照为arXiv:2607.24502v1，主分类math.DS，另含cs.LG；28页、4幅图，附完整证明与数值交叉检查。",
+        "文章研究受控的球面自注意力动力系统，而非直接分析训练后Transformer的端到端性能。"
+      ]
+    },
+    {
+      "title": "摘要",
+      "bullets": [
+        "模型只对queries/keys施加RoPE rotation，values保持未旋转并投影在单位球面，得到normalized residual layer的一阶连续时间极限。",
+        "注意力核可逆且具有sharp uniform softmax floor，但自然RoPE interaction energy在同一个固定非平凡系统内可正可负，不能作统一Lyapunov函数。",
+        "所有consensus states仍是平衡点；resonant ring上的局部谱可用Bessel aliasing精确写出，large-beta下可指数变慢。",
+        "局部之外，pairwise non-obtuse与strict open semicircle区域以显式速率收缩，但antipodal boundary存在非共识静止态。",
+        "RoPE还选出score-flattening twisted branch，并使多频率共识速率随plane-energy allocation非单调。"
+      ]
+    },
+    {
+      "title": "背景",
+      "bullets": [
+        "vanilla spherical self-attention的得分与value coupling对齐，常可从interaction energy得到单调性；RoPE引入position-dependent query/key rotations后，这一符号结构被打破。",
+        "分析必须区分标准query/key-only RoPE与rotate-values变体；本文坚持values unrotated。",
+        "共识存在、局部稳定、区域吸引与任意初态全局收敛是不同强度命题；论文只在各定理适用边界内给结论。",
+        "finite sampled positions产生frequency aliasing，所以不能仅按数值频率高低推断收敛快慢。"
+      ]
+    },
+    {
+      "title": "模型与方法",
+      "bullets": [
+        "n个token状态x_i位于S^{d-1}，d=2r；位置p_i固定，每个二维plane按频率omega_l旋转query/key。得分为<R_{p_i}x_i,R_{p_j}x_j>，kernel W_ij=exp(beta s_ij)。",
+        "row-normalized A_ij=W_ij/Z_i驱动x-dot_i=P_{x_i}^perp sum_j A_ij x_j；它来自归一化residual step在h趋零的一阶展开。",
+        "Theorem 3.1由product sphere compactness给global well-posedness，并以s_ij属于[-1,1]得到sharp floor a_{beta,n}=e^{-2beta}/(n-1+e^{-2beta})。",
+        "kernel W对称但A通常不对称；以pi_i正比Z_i满足detailed balance，因此consensus linearization可视为reversible Markov operator。",
+        "single-frequency resonant ring取omega=2pi m/n、g=gcd(m,n)、effective period L=n/g，用Fourier modes与modified Bessel functions处理非互素aliasing。",
+        "全局区域结果仅使用row stochasticity与uniform positive floor，通过Dini derivative控制最小内积或lifted phase diameter。",
+        "数值部分独立比较direct matrix、Bessel/Fourier、generalized eigenproblem、finite-difference Jacobian、phase DOP853及retracted sphere RK4。"
+      ]
+    },
+    {
+      "title": "核心结果与证据",
+      "bullets": [
+        "Proposition 3.2在n=3、positions(0,1,2)、beta=1、omega=pi的同一系统给两个确定状态，使自然能量导数分别为正和负；它只否定该能量及其负值的统一单调性。",
+        "Theorem 4.3给consensus tangent Jacobian J_C=(A*-I_n) tensor I_{d-1}，consensus kernel只依赖各RoPE plane中的能量a_l。",
+        "Theorem 5.1给resonant ring eigenvalues为满足mk=q mod n的Bessel系数和之比；若g不整除q则eigenvalue为0，正确保留non-coprime结构。",
+        "Theorem 5.3中effective period L=2时gap gamma=1-tanh(beta)约2e^{-2beta}；L>=3时gamma约2 Delta_L exp(-beta Delta_L)，显示fixed-ring exponential slowdown。",
+        "Theorem 6.2若初始pairwise inner products非负，则half-angle quantity rho以至少4a_{beta,n}指数衰减；Theorem 6.3给circle strict open semicircle相应直径界。",
+        "Proposition 6.4证明任意positions/frequencies下混合正负u的bipodal configuration皆是stationary non-consensus，说明直径pi边界不可放宽。",
+        "Corollary 6.5进一步给每个token到共同极限x_infty的显式geodesic tail，强于只证明diameter趋零。",
+        "Proposition 7.1的generic resonant twisted states有growing modes与large center subspace、无stable modes，因此是non-hyperbolic且linearly unstable，不应称普通saddle。",
+        "Proposition 7.2的odd antipodal exception在去除global phase rotation后是hyperbolic saddle，稳定与不稳定维数各为r。",
+        "Propositions 7.4与7.5分别给plane-energy non-monotonicity及frequency-order reversal的解析反例；n=256与384的有限上下文甚至交换高低频gap排序。",
+        "Table 2交叉检查144个resonant spectra、7057个几何不等式/轨迹评估、70个equilibria、50个nonresonant cases及320个PSD stress configurations；最大谱差约1.554e-15，nonlinear rate误差保持在报告容差内。"
+      ]
+    },
+    {
+      "title": "有效性与局限",
+      "bullets": [
+        "Q=K=V=I仅在query/key RoPE处例外，且每个token被归一化到sphere；learned Q/K/V、FFN、multi-head、causal mask、stochastic depth均未纳入。",
+        "连续动力学只是finite residual step的一阶极限；正文只数值检查first-order convergence，没有给有限depth Transformer的统一误差定理。",
+        "全局收缩结论是regional：closed hemisphere虽forward invariant却不保证consensus；明确收缩需pairwise non-obtuse或circle strict open semicircle。",
+        "softmax floor在beta大时极小，所以uniform global guarantee可能远慢于指定consensus point的exact local gap。",
+        "自然能量反例不排除别的Lyapunov函数，也不证明每个频率都符号不定。",
+        "twisted state的线性不稳定不刻画large center subspace的非线性动力学；需要center-manifold或专门轨迹证据。",
+        "dense-phase beta,L同时增大的1/(2beta)预期缺少uniform aliasing error proof；nonresonant finite-chain limit仍需Diophantine与boundary control。",
+        "数值验证是确定性公式交叉检查而非数据驱动实验；coverage counts是parameter configurations，不是统计replicates或独立外部复现。",
+        "文章不声称RoPE普遍阻止token collapse；结果恰好表明consensus局部稳定且在指定区域吸引。"
+      ]
+    },
+    {
+      "title": "复现与资源",
+      "bullets": [
+        "先实现normalized residual update与sphere ODE两条独立路径，随h减小验证一阶收敛并逐stage retraction。",
+        "对n,m,beta网格同时计算direct A* spectrum、congruence-filtered Bessel sum与stable Fourier gap；以gcd mask识别structural zeros，不能用浮点阈值代替。",
+        "复算能量符号witness：(theta1,theta2)=(pi/6,pi/3)与(pi/6,0)，保存analytic directional derivative和centered difference。",
+        "区域收缩实验记录min pairwise inner product、lifted diameter、half-angle observable及theorem comparison solution；包含orthogonal与exact antipodal controls。",
+        "twisted branch分别测试generic resonance、even anti-alignment、odd antipodal与fixed-frequency nonresonant drift，并比较analytic和finite-difference Jacobians。",
+        "多频率检查应通过symmetric similarity、normalized Laplacian与generalized eigenproblem三路计算，扫描plane energy而不是只测端点。",
+        "保留Appendix D给定的parameter grids、integrator tolerances、step-halving和rate-fit windows，以区分数值误差与定理残差。",
+        "本站PDF SHA-256：6fa456a96217035f52c874db9947c96ae2ca2589b5d2484e0c78ef21936ab9ca。",
+        "Evidence status: full-text verified; no independent reproduction performed."
+      ]
+    },
+    {
+      "title": "阅读指南",
+      "bullets": [
+        "先读Section 3的方程(2)–(7)，确认RoPE仅在score path且sharp floor如何产生。",
+        "随后并读Proposition 3.2与作者的限定语，避免把‘某个自然能量不单调’扩大成‘系统无Lyapunov函数’。",
+        "Sections 4–6按equilibrium、local spectrum、regional global bound推进；尤其比较exact local gap gamma与uniform floor rate 2a_{beta,n}。",
+        "Section 7是反直觉部分：generic twisted branch、odd antipodal exception和multi-frequency ordering必须分别理解。",
+        "最后以Table 2和Limitations核对哪些公式被独立数值检查、哪些dense/nonresonant极限仍是开放问题。"
+      ]
+    }
+  ],
+  "evidence_refs": [
+    "paper.pdf pp. 1-4: scope, RoPE spherical flow, sharp floor and energy-sign counterexample",
+    "paper.pdf pp. 5-8: consensus kernel, tangent linearization and Bessel-aliasing rates",
+    "paper.pdf pp. 8-10: invariant regions, explicit contraction and antipodal boundary",
+    "paper.pdf pp. 11-14: twisted-state spectra and multi-frequency non-monotonicity",
+    "paper.pdf pp. 14-16 and Table 2: independent numerical cross-checks, limitations and conclusion",
+    "paper.pdf pp. 17-28: complete proofs and numerical protocol details",
+    "Evidence status: full-text verified; no independent reproduction performed."
+  ],
+  "card_standard_version": "2.3",
+  "paper_profile": "ai_empirical",
+  "style_reference": "physicist_daily_arxiv",
+  "provenance": {
+    "program": "Collection",
+    "catalog": "Paper Collection",
+    "catalog_record_id": "9caed7beb916e4e6",
+    "catalog_record_ids": [
+      "9caed7beb916e4e6"
+    ],
+    "catalog_topic": "Transformer Theory",
+    "collection_date": "2026-08-24",
+    "sampled_at": "2026-08-26",
+    "selected_by": "full_collection_backfill",
+    "sampling_seed": "not_applicable_full_collection",
+    "candidate_count": 452,
+    "legacy_full_text_card": "2607.24502.json"
+  },
+  "equation_refs": [],
+  "figure_refs": [],
+  "cover": {
+    "mode": "title_abstract",
+    "abstract_text": "We analyze the continuous-time normalized residual limit of self-attention in which RoPE rotates queries and keys while values remain on the unit sphere. The attention kernel is reversible and has a sharp state-uniform softmax floor, although the natural RoPE interaction energy is not monotone even within one fixed system. Consensus remains an equilibrium, with transverse dynamics governed by a row-normalized position kernel. On resonant rings its spectrum admits an exact Bessel-aliasing formula and can exhibit exponentially slow consensus at large inverse temperature. Pairwise non-obtuse configurations and strict open semicircles contract at explicit rates, while the antipodal boundary admits stationary non-consensus states. RoPE also selects score-flattening twisted equilibria: the generic resonant branch is non-hyperbolic and linearly unstable, and an odd antipodal family is a hyperbo",
+    "selection_rationale": "该旧版全文证据包没有经过 v2.3 的逐图导出与图号核验；为避免错配图片，封面使用论文题目和经全文核对的摘要，关键论证保留在卡片正文中。"
+  }
+}

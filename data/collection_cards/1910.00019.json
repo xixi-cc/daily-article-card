@@ -1,0 +1,145 @@
+{
+  "arxiv_id": "1910.00019",
+  "source_version": "v2",
+  "source_pdf": "https://arxiv.org/pdf/1910.00019v2",
+  "title_en": "Non-Gaussian processes and neural networks at finite widths",
+  "title_zh": "有限宽神经网络与非高斯过程",
+  "curation_status": "full_text_verified",
+  "verified_metadata": {
+    "arxiv_id": "1910.00019",
+    "version": "v2",
+    "title": "Non-Gaussian processes and neural networks at finite widths",
+    "abstract": "Gaussian processes are ubiquitous in nature and engineering. A case in point is a class of neural networks in the infinite-width limit, whose priors correspond to Gaussian processes. Here we perturbatively extend this correspondence to finite-width neural networks, yielding non-Gaussian processes as priors. The methodology developed herein allows us to track the flow of preactivation distributions by progressively integrating out random variables from lower to higher layers, reminiscent of renormalization-group flow. We further develop a perturbative procedure to perform Bayesian inference with weakly non-Gaussian priors.",
+    "authors": [
+      "Sho Yaida"
+    ],
+    "categories": [
+      "stat.ML",
+      "cond-mat.dis-nn",
+      "cs.LG",
+      "hep-th"
+    ],
+    "primary_category": "stat.ML",
+    "published": "2019-09-30T18:00:02Z"
+  },
+  "sections": [
+    {
+      "title": "作者信息",
+      "bullets": [
+        "Sho Yaida当时来自Facebook AI Research；单作者论文，v2为MSML 2020接收终稿。",
+        "官方快照arXiv:1910.00019v2，主分类stat.ML，另含cond-mat.dis-nn、cs.LG与hep-th；33页、3图。",
+        "研究的是Gaussian parameter prior下MLP的有限宽prior与Bayesian inference，不是SGD训练后网络分布。"
+      ]
+    },
+    {
+      "title": "摘要",
+      "bullets": [
+        "论文把无限宽NNGP系统扩展到leading 1/n：每层preactivation distribution由core kernel K、自能修正S与connected four-point vertex V描述。",
+        "通过逐层积分preactivations与weights，R1–R3递推把K/S/V从输入推进到输出；高阶connected cumulants在当前阶为O(1/n²)。",
+        "对弱非Gaussian prior，作者从Bayes rule做background-field expansion，推导posterior mean相对GP预测的leading finite-width correction。",
+        "单输入MNIST输出分布实验验证理论到linear约n=10、ReLU约n=30；quadratic-network分类示例显示小训练集时有限宽prior可能正则化。"
+      ]
+    },
+    {
+      "title": "背景",
+      "bullets": [
+        "MLP各层bias与weight独立零均值Gaussian，weight variance按前层宽度1/n缩放；输入n0与输出nL保持固定，所有hidden widths按共同n→∞。",
+        "第一层preactivation在任意宽度都严格Gaussian；非Gaussian性从非线性activation后的有限和进入下一层并逐层累积。",
+        "无限宽kernel递推支持exact GP Bayesian inference；有限宽需要整座高阶correlator tower，作者截断到2-point correction与connected 4-point。",
+        "零均值weight/bias令所有odd preactivation moments为零；若prior有均值或非Gaussian参数，这套具体层级需修改。"
+      ]
+    },
+    {
+      "title": "模型与方法",
+      "bullets": [
+        "二点写G2=δij[K+S/nprev+O(1/n²)]；connected四点写成三种neuron Kronecker pairing乘V/nprev+O(1/n²)。",
+        "G→H步骤用Gaussian expectation加self-energy operator OS与four-point operator OV；H→下一层G再对Gaussian weights作Wick contraction，构成ZIGZAG递推。",
+        "R1更新core NNGP kernel；R2更新self-energy；R3更新four-point vertex。一般activation只需最高四维Gaussian数值积分，polynomial/ReLU特殊情形可解析。",
+        "deep linear、zero-bias/unit-variance时K层不变、S=0，V随各层Σ1/nl累积；单输入ReLU也出现同一depth/width累积因子。",
+        "输出prior用H=H0+εH1、ε=1/nL−1展开；H1同时含quadratic self-energy与quartic vertex terms。",
+        "Bayesian posterior把train targets固定为background，对test fluctuation作Gaussian contractions，得到NGPM公式；适用于任意weakly non-Gaussian prior，不限神经网络。"
+      ]
+    },
+    {
+      "title": "核心结果与证据",
+      "bullets": [
+        "Figure 1用单个未预处理28×28 MNIST二值图像、depth L=3、宽(784,n,2n,1)、zero bias，对每个n抽样10^6套Gaussian weights。",
+        "linear CW=1与ReLU CW=2的输出histogram随变窄偏离GP；leading理论曲线分别可追到约n=10与n=30，再小则高阶项不可忽略。",
+        "Appendix Figure S1加入quadratic activation并改变depth，证实non-Gaussian correction随Σl1/nl累积；更深或更高次activation更快越出微扰域。",
+        "deep linear网络的leading posterior-mean finite-width correction恰好为零；这不表示所有有限宽效应消失，只说明首个非零项在本文未算的更高阶。",
+        "Figure 2用L=2、quadratic σ(z)=z²、CW=1/3、zero bias，在MNIST 10000 test images上做Bayesian分类；每个训练集大小平均10个subsamples。",
+        "训练样本少时accuracy随1/width先上升后下降，峰值在有限宽，支持非Gaussian prior的regularization解释；正文未把某个width宣布为普适最优。",
+        "作者把层间递推称RG-like：逐层积分微观随机变量并让couplings流动；结论明确说这是resemblance与待探索的dream，不是已证明的物理RG固定点。"
+      ]
+    },
+    {
+      "title": "有效性与局限",
+      "bullets": [
+        "展开要求hidden widths共同大且depth/width≪1；深度增长会累积Σ1/nl，即使每层看似宽也可能破坏leading-order截断。",
+        "输入/输出维数固定是关键；若输出nL也随n增长，quartic potential成为large-n vector model，需重求无限bubble diagrams。",
+        "理论只保留O(1/n)，高阶cumulants归入O(1/n²)；n低于Figure 1经验阈值后的density可能不准，不能继续外推。",
+        "输出分布验证只用一个MNIST输入与fully-connected prior；10^6 draws提高精度但不覆盖数据、architecture或训练变化。",
+        "分类只用quadratic浅层网络与MNIST、10个subsamples；没有与SGD、其他Bayesian approximation或现代CNN比较，作者自己要求更大规模实验。",
+        "所谓finite-width regularization是posterior-predictive示例，不证明实际有限宽SGD网络因同一机制改善。",
+        "一般activation的四维integrals与全dataset tensors随样本数迅速昂贵，公式‘actionable’不等于大数据可扩展。",
+        "层作为scale的RG解释未给固定点、relevant operator谱或observable invariance；应保持为数学类比。",
+        "本站未独立重算递推、抽样10^6网络或运行MNIST Bayesian inference。"
+      ]
+    },
+    {
+      "title": "复现与资源",
+      "bullets": [
+        "从固定小ND输入开始，实现R0–R3并用automatic Gaussian quadrature；逐层保存K、S、V及每项1/n量级。",
+        "复现Figure 1需冻结原始MNIST像素、(784,n,2n,1)、activation/CW、10^6 draws与histogram bins，并报告density normalization和negative Edgeworth regions。",
+        "用多个输入、多个随机图像与多个depth验证误差是否由Σ1/nl collapse，而不只复现单条曲线。",
+        "分类严格分离train-subsample seed与prior Monte Carlo/analytic computation，报告10 subsamples散布及GP、finite-width、SGD baselines。",
+        "在逐渐减宽时比较leading、next-order或direct Monte Carlo posterior，定义微扰失效阈值；不要用test accuracy选择width后再报同一test。",
+        "本站PDF SHA-256：4ef2b35ed050f399dc04e1e2e919e9faf8f34900cb7d762e144e1baae156ee85。",
+        "Evidence status: full-text verified; no independent reproduction performed."
+      ]
+    },
+    {
+      "title": "阅读指南",
+      "bullets": [
+        "先读Section II-B的scaling ansatz与脚注：fixed output dimension和depth/width条件决定整个推导。",
+        "R1–R3先看结构再进Appendix B；它们分别控制Gaussian core、self-energy和quartic vertex。",
+        "Figure 1是prior density验证，Figure 2才是Bayesian inference；两者不能混称训练效果。",
+        "最后读‘Dreams’：作者把RG固定点、CNN、NTK和feature learning都列为未来方向，说明现有结论边界。"
+      ]
+    }
+  ],
+  "evidence_refs": [
+    "paper.pdf pp. 1-5: finite-width ansatz, fixed-dimension assumptions and RG-like framing",
+    "paper.pdf pp. 5-9: layerwise R1-R3 derivation and truncation",
+    "paper.pdf pp. 9-11: linear/ReLU examples and one-input prior experiment",
+    "paper.pdf pp. 11-14: weak-NGP Bayesian inference, MNIST result and explicit future-work limits",
+    "paper.pdf pp. 17-27: inductive proof and analytic examples",
+    "paper.pdf pp. 27-33: extended output-distribution tests and actionable posterior formulas",
+    "Evidence status: full-text verified; no independent reproduction performed."
+  ],
+  "card_standard_version": "2.3",
+  "paper_profile": "ai_empirical",
+  "style_reference": "physicist_daily_arxiv",
+  "provenance": {
+    "program": "Collection",
+    "catalog": "Paper Collection",
+    "catalog_record_id": "485b76318e41d653",
+    "catalog_record_ids": [
+      "485b76318e41d653"
+    ],
+    "catalog_topic": "Machine Learning",
+    "collection_date": "2026-08-24",
+    "sampled_at": "2026-08-26",
+    "selected_by": "full_collection_backfill",
+    "sampling_seed": "not_applicable_full_collection",
+    "candidate_count": 452,
+    "legacy_full_text_card": "1910.00019.json"
+  },
+  "equation_refs": [],
+  "figure_refs": [],
+  "cover": {
+    "mode": "title_abstract",
+    "abstract_text": "Gaussian processes are ubiquitous in nature and engineering. A case in point is a class of neural networks in the infinite-width limit, whose priors correspond to Gaussian processes. Here we perturbatively extend this correspondence to finite-width neural networks, yielding non-Gaussian processes as priors. The methodology developed herein allows us to track the flow of preactivation distributions by progressively integrating out random variables from lower to higher layers, reminiscent of renormalization-group flow. We further develop a perturbative procedure to perform Bayesian inference with weakly non-Gaussian priors.",
+    "selection_rationale": "该旧版全文证据包没有经过 v2.3 的逐图导出与图号核验；为避免错配图片，封面使用论文题目和经全文核对的摘要，关键论证保留在卡片正文中。"
+  }
+}

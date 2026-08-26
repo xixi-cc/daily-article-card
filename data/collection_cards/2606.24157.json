@@ -1,0 +1,151 @@
+{
+  "arxiv_id": "2606.24157",
+  "source_version": "v1",
+  "source_pdf": "https://arxiv.org/pdf/2606.24157v1",
+  "title_en": "The Geometry Behind Diffusion and Flow Matching: Gradient Flows and Geodesics in Wasserstein Space",
+  "title_zh": "扩散与流匹配背后的几何：Wasserstein空间中的梯度流与测地线",
+  "curation_status": "full_text_verified",
+  "verified_metadata": {
+    "arxiv_id": "2606.24157",
+    "version": "v1",
+    "title": "The Geometry Behind Diffusion and Flow Matching: Gradient Flows and Geodesics in Wasserstein Space",
+    "abstract": "This tutorial develops a common Wasserstein-space language for diffusion and optimal-transport flow matching. The continuity equation represents tangent motion of probability measures, while the Benamou–Brenier action identifies W2 geodesics with minimum-kinetic-energy transport paths. For a Gibbs target, the Fokker–Planck equation is the Wasserstein gradient flow of the KL free energy, and the JKO proximal scheme is its implicit-Euler discretization. Diffusion and OT Flow Matching therefore use two different variational principles on the same space: an initial-value free-energy descent and a boundary-value geodesic problem. The article maps score, velocity and drift parameterizations to this geometry and discusses DDPM, DDIM, NCSN/SMLD, Energy Matching and Flow Matching, carefully noting where practical algorithms replace an implicit new-point score by an explicit learned score.",
+    "authors": [
+      "Yian Yao",
+      "Weiwei Zhang"
+    ],
+    "categories": [
+      "cs.AI"
+    ],
+    "primary_category": "cs.AI",
+    "published": "2026-06-23T05:25:24Z"
+  },
+  "sections": [
+    {
+      "title": "作者信息",
+      "bullets": [
+        "作者为Yian Yao与Weiwei Zhang；PDF首页未给机构信息。",
+        "官方快照为arXiv:2606.24157v1，主分类cs.AI，共98页。",
+        "这是一篇自包含的几何教程与统一阐释，不报告新模型、训练数据集或生成质量benchmark。"
+      ]
+    },
+    {
+      "title": "摘要",
+      "bullets": [
+        "P2(R^d)在quadratic Wasserstein distance下是complete metric space，并可用Otto calculus形式化为Riemannian manifold。",
+        "Diffusion对应free energy F(rho)=KL(rho||pi)的Wasserstein gradient flow，是给定初态的initial-value problem。",
+        "OT Flow Matching对应固定source与target端点后的Benamou–Brenier minimum-action geodesic，是boundary-value problem。",
+        "JKO scheme是gradient flow的Wasserstein implicit Euler；文章用这一字典解释score、velocity、drift及多种生成算法。",
+        "两类方法可达同一data endpoint，但路径和变分目标不同，不能简单视作同一个过程。"
+      ]
+    },
+    {
+      "title": "背景",
+      "bullets": [
+        "普通KL或L2距离不表达概率质量移动的空间代价，W2通过coupling或transport map刻画搬运成本。",
+        "continuity equation只表达mass conservation和velocity field，不需要energy；Fokker–Planck则在drift与diffusion给定后规定density evolution。",
+        "Benamou–Brenier把静态OT改写为满足continuity equation的kinetic action最小化，从而把W2解释为geodesic distance。",
+        "教程的目标是将常见生成模型中的方程放进同一几何框架，而不是证明所有flow matching路径都是最优传输测地线。"
+      ]
+    },
+    {
+      "title": "模型与方法",
+      "bullets": [
+        "W2^2(mu,nu)由所有couplings上的squared Euclidean transport cost下确界定义；绝对连续source下Brenier map给gradient-of-convex-potential形式。",
+        "Benamou–Brenier公式在固定rho_0、rho_1及continuity equation约束下最小化int_0^1 int |v_t|^2 rho_t dxdt；McCann interpolation沿optimal map做粒子直线运动。",
+        "Langevin SDE dX_t=-grad V(X_t)dt+sqrt(2)dB_t对应Fokker–Planck partial_t rho=Delta rho+div(rho grad V)。",
+        "free energy F=int rho log rho+int V rho等于KL(rho||pi)加常数，其first variation为log rho+1+V，Wasserstein gradient为grad(log rho+V)。",
+        "令velocity等于负Wasserstein gradient并代入continuity equation，就恢复Fokker–Planck；energy dissipation是relative Fisher information的负值。",
+        "JKO步rho_{k+1}=argmin_rho[F(rho)+(1/(2tau))W2^2(rho,rho_k)]，transport map方向取new distribution到old distribution。",
+        "在V为lambda-convex并有quadratic growth等条件下，piecewise-constant JKO interpolation随tau趋零在W2中收敛到唯一Fokker–Planck解。"
+      ]
+    },
+    {
+      "title": "核心结果与证据",
+      "bullets": [
+        "Section 3从continuity equation与minimum kinetic energy推导W2 geodesics，并强调Flow Matching只有在端点coupling取OT时才对应Wasserstein geodesic。",
+        "Equation (49)给grad_W F=grad log rho+grad V；Equations (50)-(51)直接得到Fokker–Planck是KL free-energy gradient flow。",
+        "JKO一阶条件使用T_k#rho_{k+1}=rho_k，离散velocity为(id-T_k)/tau=-grad log rho_{k+1}-grad V，明确force在新点计算。",
+        "Theorem 6.2陈述lambda-convex potential与quadratic growth下JKO convergence；证明路线包括existence、energy decay、uniform estimates和limit identification。",
+        "教程指出标准JKO若令F=0，最小解只是rho_{k+1}=rho_k；OT Flow Matching的运动来自同时固定rho_1的Benamou–Brenier boundary condition。",
+        "对DDPM，精确JKO particle equation含unknown new-point score；实际score update以当前点/当前marginal替换它，是small-step smooth-path下的explicit approximation，不是精确求解proximal subproblem。",
+        "DDIM被解释为去掉fresh noise的deterministic transport implementation；NCSN/SMLD对应多noise scales的entropy-driven score steps；Energy Matching直接学习JKO energy。",
+        "Flow Matching loss拟合paired endpoints的x_1-x_0；只有OT pairing时才瞄准Benamou–Brenier minimizer，通常的conditional coupling不自动等于全局OT。",
+        "若要把一般learned velocity重写为scalar-potential free-energy flow，-v_t-epsilon grad log p_t必须curl-free；一般neural field有rotational component时不存在该potential。",
+        "Section 7总结：diffusion是free-energy descent，OT Flow Matching是geodesic minimum action，probability-flow ODE则是把diffusion density evolution写成deterministic continuity equation。"
+      ]
+    },
+    {
+      "title": "有效性与局限",
+      "bullets": [
+        "本文主要重述Monge–Kantorovich、Brenier、Benamou–Brenier、JKO与Otto calculus的经典结果，贡献是教学整合而非新的数学定理。",
+        "Otto的Riemannian manifold语言在文中被标为formal；严格结论需要metric gradient-flow框架及正则性、绝对连续性和有限二阶矩等假设。",
+        "‘denoising step realizes one JKO step’在正文被进一步限定：实际DDPM使用old-point learned score替代implicit new-point score，因此应读作显式近似解释。",
+        "DDIM、NCSN与Energy Matching的统一表是几何对应，不等于算法完全等价或共享相同objective、noise schedule和likelihood。",
+        "一般Flow Matching并不保证OT coupling或geodesic；mini-batch OT仍可能偏离population Brenier map。",
+        "diffusion path通常不是两个端点之间的W2 geodesic；二者共享空间和endpoint并不能推出相同trajectory。",
+        "正文没有数值实验、代码、误差曲线或与原始算法实现逐项对照，不能用它支持性能或采样步数的经验结论。",
+        "98页含大量基础附录，适合作概念入口；研究级使用仍应回查JKO、AGS、Benamou–Brenier和各生成模型原始文献。",
+        "PDF首页作者署名使用非标准affiliation表述，卡片不推断其正式机构。"
+      ]
+    },
+    {
+      "title": "复现与资源",
+      "bullets": [
+        "符号复现先固定JKO map orientation T_k:rho_{k+1}->rho_k；错误反向会翻转discrete velocity符号。",
+        "以一维Gaussian或OU process同时计算Fokker–Planck solution、KL decay、probability-flow ODE与small-tau JKO step，保存W2 convergence curve。",
+        "Benamou–Brenier例应同时比较independent pairing、arbitrary pairing和monotone/Brenier OT pairing，验证只有后者给minimum action。",
+        "DDPM解释实验需并列求implicit new-point equation与old-point explicit score approximation，扫描step size而不是宣称二者恒等。",
+        "检查F=0的JKO确实产生identity update，再加入fixed endpoint约束验证geodesic来自boundary-value formulation。",
+        "对learned velocity做curl或Helmholtz decomposition诊断，测试是否可能由scalar time-dependent potential表示。",
+        "所有推导记录density regularity、second moment、lambda-convexity和growth assumptions，避免只保存形式等式。",
+        "本站PDF SHA-256：c8b598359680077f2fd1222da48a10900c29fe2d57f12db1ca587bf1539edefb。",
+        "Evidence status: full-text verified; no independent reproduction performed."
+      ]
+    },
+    {
+      "title": "阅读指南",
+      "bullets": [
+        "先读Outline与Section 7的总图，建立continuity equation、gradient flow和geodesic三者的层级。",
+        "Sections 1–3负责W2与Benamou–Brenier；已有OT基础可直接从Section 3开始。",
+        "Sections 4–5跟随Fokker–Planck到KL free-energy gradient的等式链，重点检查Equation (49)-(51)。",
+        "Section 6读JKO时特别留意map orientation、implicit score与practical explicit update的差别。",
+        "最后读6.9的Flow Matching段落：F=0不产生geodesic、端点约束才是关键，这是避免统一叙事过度扩张的核心限定。"
+      ]
+    }
+  ],
+  "evidence_refs": [
+    "paper.pdf pp. 1-7: abstract, roadmap, notation and claimed scope",
+    "paper.pdf pp. 18-32: Wasserstein distance, continuity equation and Benamou-Brenier geometry",
+    "paper.pdf pp. 33-50: Fokker-Planck derivation and KL free-energy Wasserstein gradient",
+    "paper.pdf pp. 50-55: JKO orientation, optimality condition and convergence assumptions",
+    "paper.pdf pp. 56-61: DDPM/DDIM/NCSN/Energy Matching mappings and OT Flow Matching distinction",
+    "paper.pdf pp. 65-98: measure, geometry, analysis, score-velocity and convex-analysis appendices",
+    "Evidence status: full-text verified; no independent reproduction performed."
+  ],
+  "card_standard_version": "2.3",
+  "paper_profile": "ai_empirical",
+  "style_reference": "physicist_daily_arxiv",
+  "provenance": {
+    "program": "Collection",
+    "catalog": "Paper Collection",
+    "catalog_record_id": "4622bb8c184fb5fd",
+    "catalog_record_ids": [
+      "4622bb8c184fb5fd"
+    ],
+    "catalog_topic": "Flow Matching",
+    "collection_date": "2026-08-24",
+    "sampled_at": "2026-08-26",
+    "selected_by": "full_collection_backfill",
+    "sampling_seed": "not_applicable_full_collection",
+    "candidate_count": 452,
+    "legacy_full_text_card": "2606.24157.json"
+  },
+  "equation_refs": [],
+  "figure_refs": [],
+  "cover": {
+    "mode": "title_abstract",
+    "abstract_text": "This tutorial develops a common Wasserstein-space language for diffusion and optimal-transport flow matching. The continuity equation represents tangent motion of probability measures, while the Benamou–Brenier action identifies W2 geodesics with minimum-kinetic-energy transport paths. For a Gibbs target, the Fokker–Planck equation is the Wasserstein gradient flow of the KL free energy, and the JKO proximal scheme is its implicit-Euler discretization. Diffusion and OT Flow Matching therefore use two different variational principles on the same space: an initial-value free-energy descent and a boundary-value geodesic problem. The article maps score, velocity and drift parameterizations to this geometry and discusses DDPM, DDIM, NCSN/SMLD, Energy Matching and Flow Matching, carefully noting where practical algorithms replace an implicit new-point score by an explicit learned score.",
+    "selection_rationale": "该旧版全文证据包没有经过 v2.3 的逐图导出与图号核验；为避免错配图片，封面使用论文题目和经全文核对的摘要，关键论证保留在卡片正文中。"
+  }
+}

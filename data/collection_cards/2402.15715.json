@@ -1,0 +1,129 @@
+{
+  "arxiv_id": "2402.15715",
+  "source_version": "v1",
+  "source_pdf": "https://arxiv.org/pdf/2402.15715",
+  "title_en": "Operator Learning: Algorithms and Analysis",
+  "title_zh": "算子学习：算法与分析",
+  "curation_status": "full_text_verified",
+  "verified_metadata": {
+    "arxiv_id": "2402.15715",
+    "version": "v1",
+    "title": "Operator Learning: Algorithms and Analysis",
+    "abstract": "Operator learning refers to the application of ideas from machine learning to approximate (typically nonlinear) operators mapping between Banach spaces of functions. Such operators often arise from physical models expressed in terms of partial differential equations (PDEs). In this context, such approximate operators hold great potential as efficient surrogate models to complement traditional numerical methods in many-query tasks. Being data-driven, they also enable model discovery when a mathematical description in terms of a PDE is not available. This review focuses primarily on neural operators, built on the success of deep neural networks in the approximation of functions defined on finite dimensional Euclidean spaces. Empirically, neural operators have shown success in a variety of applications, but our theoretical understanding remains incomplete. This review article summarizes recent progress and the current state of our theoretical understanding of neural operators, focusing on an approximation theoretic point of view.",
+    "authors": [
+      "Nikola B. Kovachki",
+      "Samuel Lanthaler",
+      "Andrew M. Stuart"
+    ],
+    "categories": [
+      "cs.LG",
+      "math.NA"
+    ],
+    "primary_category": "cs.LG",
+    "published": "2024-02-24T04:40:27Z",
+    "comment": ""
+  },
+  "sections": [
+    {
+      "title": "作者信息",
+      "bullets": [
+        "作者：Nikola B. Kovachki、Samuel Lanthaler、Andrew M. Stuart。",
+        "官方快照：arXiv:2402.15715v1，36 页；主分类 cs.LG。",
+        "本文是以逼近论为主线的算法与理论综述；没有提出一个新的统一模型或新的基准排行榜。"
+      ]
+    },
+    {
+      "title": "摘要",
+      "bullets": [
+        "论文把 operator learning 定义为从有限 input-output function pairs 学习 Banach 函数空间之间的映射，并强调先在连续函数层面设计、再离散化的观点。",
+        "它统一介绍 PCA-Net、DeepONet、FNO 与 random-feature/kernel 方法，随后分别讨论 universality、参数复杂度和样本复杂度。",
+        "中心判断是：通用逼近已经覆盖很广，但只是必要条件；真正决定可行性的，是模型能否利用全纯性、低维潜结构或 PDE 特有结构，避免精度提升时的复杂度灾难。"
+      ]
+    },
+    {
+      "title": "背景",
+      "bullets": [
+        "把高维网格张量视为函数，可把像素数或网格数 N 与问题本身分开；理想模型应捕捉连续对象的结构，而不是绑定某一离散分辨率。",
+        "监督数据写成 {un, Ψ†(un)}，un∼μ；训练最小化经验风险，测试关注 μ 下的 population risk。因此任何误差结论都依赖函数空间、输入分布、范数和数据生成器。",
+        "典型 PDE 示例是 Darcy coefficient-to-solution map；多查询场景中，前期 solver 数据成本可换取推理期的快速 surrogate，但不是对任意单次求解都天然更便宜。"
+      ]
+    },
+    {
+      "title": "模型与方法",
+      "bullets": [
+        "PCA-Net 用输入/输出 PCA 投影作编码解码，中间为有限维神经网络；DeepONet用线性传感器编码、branch net 输出系数、trunk net 给出输出基函数。二者输出落在固定有限维线性子空间。",
+        "FNO 把有限维网络的 affine-plus-activation 结构提升到函数空间，用 Fourier-domain integral kernel 实现非局域层；连续定义仍需在等距网格上以 DFT 离散执行。",
+        "Random feature method 固定随机隐藏特征、只优化线性末层，因而更容易把有限样本、有限参数和优化误差同时纳入分析；如何为 operator problem 设计高效特征仍未解决。",
+        "理论层次从 universal approximation 到 quantitative complexity：前者允许无限参数/样本，后者追问达到误差 ε 实际需要多少参数、多少训练对和多高数值精度。"
+      ]
+    },
+    {
+      "title": "核心结果与证据",
+      "bullets": [
+        "Theorem 4.1 给出抽象 encoder-decoder-net 的通用逼近：若 U、V 是具有 approximation property 的可分 Banach 空间，则连续算子可在 compact input set 上任意逼近；常用 Lebesgue、Sobolev、Besov 空间满足该条件。",
+        "Theorem 4.2 将该结论具体化为 DeepONet 型 sensor/branch/trunk 展开；论文另汇总 PCA-Net 与 FNO 的 universality。它们证明可表达性，不规定可接受的网络规模、样本量或训练可达性。",
+        "对一般 smooth/Lipschitz operator，encoder 和 reconstruction dimension 随 ε 缩放后，标准网络大小可出现 exp(c ε^{-1/α})；连续 nonlinear n-width 下界也只按 log(n)^{-s/d} 衰减。",
+        "Proposition 5.4 表明对一类任意高阶 Fréchet differentiable functionals，ReLU DeepONet 仍有指数参数下界；类似限制也适用于 PCA-Net、FNO 等标准结构。",
+        "反面结果不是说所有 PDE 都不可学：对 (b,ε)-holomorphic operators，模型大小与样本复杂度可随 ε^{-1} 代数增长；对 Darcy、Navier–Stokes、reaction-diffusion、inviscid Burgers 等具体算子，利用解析或数值算法结构也可得到代数收敛结果。"
+      ]
+    },
+    {
+      "title": "有效性与局限",
+      "bullets": [
+        "综述聚焦 approximation theory，未系统评价 optimization landscape、噪声鲁棒性、校准不确定性或不同工程实现的壁钟成本。",
+        "Universality 是在 compact set、指定范数和足够模型容量下的存在性陈述，不能据此声称某个训练算法会找到参数，或跨网格、跨分布必然泛化。",
+        "指数上下界针对很大的通用 operator classes；把它直接套到有额外结构的具体 PDE 会过度悲观。反之，仅以某一 benchmark 的经验成功也不能推翻 worst-case 结论。",
+        "部分突破依赖非标准 activation/connectivity 或高精度权重；参数个数减少可能转化为每个参数所需 bit 数和敏感性增加，实际复杂度仍需核算。"
+      ]
+    },
+    {
+      "title": "复现与资源",
+      "bullets": [
+        "本文为理论综述，复核路径应从 Section 2 的风险定义、Section 3 的四类架构、Section 4 的 universality 假设，到 Section 5 的参数/样本复杂度逐层检查。",
+        "若复现实验性主张，应固定 μ、输入输出范数、train/test grid、encoder/decoder dimension、solver accuracy 与总数据生成成本；只报告网络参数数目不足以验证效率。",
+        "本站 PDF SHA-256：112912f518575ebe58cc81e886a38178782f217fc4ee2d7ee9aeec05da287a30。",
+        "Evidence status: full-text verified; no independent reproduction performed."
+      ]
+    },
+    {
+      "title": "阅读指南",
+      "bullets": [
+        "先看 Figures 1–3 与 Section 2，理解 continuum-first 和 latent encoder/decoder；再用 Table 1 对照 FEM/FVM/FD 与数据驱动架构。",
+        "接着读 Section 4 时始终把“存在任意精度逼近”与“有限资源可达到”分开。",
+        "最后精读 Sections 5.2–5.3 和 Conclusion：全纯性、低维结构与可模拟数值算法，是从 worst-case 指数复杂度走向可用 surrogate 的三条不同证据路径。"
+      ]
+    }
+  ],
+  "evidence_refs": [
+    "paper.pdf pp. 1-11: continuum-first formulation, supervised risk and PCA-Net/DeepONet/FNO/random-feature definitions",
+    "paper.pdf pp. 12-17: universal approximation theorems and their assumptions",
+    "paper.pdf pp. 18-29: linear, holomorphic and general operator parameter/sample complexity bounds",
+    "paper.pdf pp. 29-30: conclusions and open challenge of characterizing exploitable operator structure",
+    "Evidence status: full-text verified; no independent reproduction performed."
+  ],
+  "card_standard_version": "2.3",
+  "paper_profile": "ai_empirical",
+  "style_reference": "physicist_daily_arxiv",
+  "provenance": {
+    "program": "Collection",
+    "catalog": "Paper Collection",
+    "catalog_record_id": "e671184d5faabf92",
+    "catalog_record_ids": [
+      "e671184d5faabf92"
+    ],
+    "catalog_topic": "Neural Operators",
+    "collection_date": "2026-08-24",
+    "sampled_at": "2026-08-26",
+    "selected_by": "full_collection_backfill",
+    "sampling_seed": "not_applicable_full_collection",
+    "candidate_count": 452,
+    "legacy_full_text_card": "2402.15715.json"
+  },
+  "equation_refs": [],
+  "figure_refs": [],
+  "cover": {
+    "mode": "title_abstract",
+    "abstract_text": "Operator learning refers to the application of ideas from machine learning to approximate (typically nonlinear) operators mapping between Banach spaces of functions. Such operators often arise from physical models expressed in terms of partial differential equations (PDEs). In this context, such approximate operators hold great potential as efficient surrogate models to complement traditional numerical methods in many-query tasks. Being data-driven, they also enable model discovery when a mathematical description in terms of a PDE is not available. This review focuses primarily on neural operators, built on the success of deep neural networks in the approximation of functions defined on finite dimensional Euclidean spaces. Empirically, neural operators have shown success in a variety of applications, but our theoretical understanding remains incomplete. This review article summarizes rec",
+    "selection_rationale": "该旧版全文证据包没有经过 v2.3 的逐图导出与图号核验；为避免错配图片，封面使用论文题目和经全文核对的摘要，关键论证保留在卡片正文中。"
+  }
+}

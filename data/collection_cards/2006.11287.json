@@ -1,0 +1,135 @@
+{
+  "arxiv_id": "2006.11287",
+  "source_version": "v2",
+  "source_pdf": "https://arxiv.org/pdf/2006.11287",
+  "title_en": "Discovering Symbolic Models from Deep Learning with Inductive Biases",
+  "title_zh": "借助归纳偏置从深度学习中发现符号模型",
+  "curation_status": "full_text_verified",
+  "verified_metadata": {
+    "arxiv_id": "2006.11287",
+    "version": "v2",
+    "title": "Discovering Symbolic Models from Deep Learning with Inductive Biases",
+    "abstract": "We develop a general approach to distill symbolic representations of a learned deep model by introducing strong inductive biases. We focus on Graph Neural Networks (GNNs). The technique works as follows: we first encourage sparse latent representations when we train a GNN in a supervised setting, then we apply symbolic regression to components of the learned model to extract explicit physical relations. We find the correct known equations, including force laws and Hamiltonians, can be extracted from the neural network. We then apply our method to a non-trivial cosmology example-a detailed dark matter simulation-and discover a new analytic formula which can predict the concentration of dark matter from the mass distribution of nearby cosmic structures. The symbolic expressions extracted from the GNN using our technique also generalized to out-of-distribution data better than the GNN itself. Our approach offers alternative directions for interpreting neural networks and discovering novel physical principles from the representations they learn.",
+    "authors": [
+      "Miles Cranmer",
+      "Alvaro Sanchez-Gonzalez",
+      "Peter Battaglia",
+      "Rui Xu",
+      "Kyle Cranmer",
+      "David Spergel",
+      "Shirley Ho"
+    ],
+    "categories": [
+      "cs.LG",
+      "astro-ph.CO",
+      "astro-ph.IM",
+      "physics.comp-ph",
+      "stat.ML"
+    ],
+    "primary_category": "cs.LG",
+    "published": "2020-06-19T18:00:00Z",
+    "comment": ""
+  },
+  "sections": [
+    {
+      "title": "作者信息",
+      "bullets": [
+        "作者：Miles Cranmer、Alvaro Sanchez-Gonzalez、Peter Battaglia、Rui Xu、Kyle Cranmer、David Spergel、Shirley Ho。",
+        "官方快照：arXiv:2006.11287v2；主分类 cs.LG。",
+        "研究结合图网络、Hamiltonian 归纳偏置和符号回归；宇宙学公式是模拟数据上的候选经验关系。"
+      ]
+    },
+    {
+      "title": "摘要",
+      "bullets": [
+        "方法先训练具有物理分解结构的 Graph Network（GN），用 bottleneck、L1、KL 或 Hamiltonian 结构迫使 message 变得低维；随后只对内部 edge/node function 做符号回归，再把局部表达式组合为整体公式。",
+        "这种“先神经分解、后符号搜索”把高维直接搜索拆成较小子问题：若两个函数各有 10^9 个候选，直接组合约 10^18，而分开拟合约 2×10^9。",
+        "论文在合成 n-body 系统恢复已知力和势能，并在 215854 个 dark-matter halos 的模拟快照上提出 overdensity 公式；后者仍需独立物理研究验证。"
+      ]
+    },
+    {
+      "title": "背景",
+      "bullets": [
+        "纯符号回归在高维粒子状态上组合爆炸，深度网络能拟合却难解释。GN 的 edge、node、global 模块提供接近相互作用分解的结构，使解释目标从整网降为局部函数。",
+        "关键假设是内部表征必须足够稀疏或低维，才能与真实力分量形成简单变换；普通 100-dimensional message 即使预测好，也未必可符号化。",
+        "研究因此把预测精度与可解释表征分开：先用新随机种子数据测 acceleration，再用真实力对 message 做线性拟合，最后才运行 symbolic regression。"
+      ]
+    },
+    {
+      "title": "模型与方法",
+      "bullets": [
+        "Newtonian case 训练 Standard（100 message components）、Bottleneck（2/3 components）、L1（权重 10^-2）和 KL 四类 GN，以粒子瞬时加速度的 MAE 为损失；FlatHGN 则把 pair/self Hamiltonian 显式拆开。",
+        "选择最高方差或 KL 的 D 个 message features，与真实力分量线性拟合；随后对最显著 component 记录样本，用 Eureqa 在质量、电荷、位移、距离等输入上搜索 Pareto expressions，并以相邻复杂度的最大 log-MAE 降幅选式。",
+        "宇宙学案例用公开 N-body 模拟最终时刻：215854 halos，50 distance units 内连边，共 30437218 条有向边、平均 71 neighbors；L1 GN 预测局部 smoothed overdensity。",
+        "OOD 检验遮蔽 δ>1 的 20% halos，只在其余数据训练 GN、提取表达式并拟合常数，再分别比较训练区和遮蔽区误差。"
+      ]
+    },
+    {
+      "title": "核心结果与证据",
+      "bullets": [
+        "Table 1 显示 Standard message 与真力几乎不相关（R² 多为 0–0.036）；Bottleneck 在八个系统为 0.947–1.000，L1 除 charge cases 为 0.002/0.004 外，其余多为 0.977–1.000。紧凑性是可解释性的关键，但 L1 并非每类系统都成功。",
+        "符号回归从合适的 L1/Bottleneck 模型恢复 spring、1/r、1/r² 与 discontinuous force 的结构；FlatHGN 的 charge case 得到 H_pair≈0.0019 q1q2/r 加不影响动力学的偏置项（pp. 7, 22–23）。",
+        "宇宙学 Table 2 中手工 simple formula 的平均绝对误差为 0.121，新公式 without mass 为 0.120、with mass 为 0.0882；作者解释式中邻居质量和距离依赖符合 bias–mass 直觉，但其他差异尚不清楚。",
+        "遮蔽 δ>1 后，GN 的 train/OOD error 为 0.0634/0.142，抽取的符号式为 0.0811/0.0892：符号式牺牲训练误差却在这一单次 OOD 切分更好，不能直接推广成普遍结论。",
+        "Appendix 的 raw Eureqa 对完整多粒子输入即使收敛也给出无意义、差拟合表达式；因而证据支持的是“GN 归纳偏置后的局部符号化”，不是 Eureqa 单独解决高维发现。"
+      ]
+    },
+    {
+      "title": "有效性与局限",
+      "bullets": [
+        "作者明确不试图给出符号恢复何时成功的普遍判据；成功依赖 message dimensionality、正则化、算符集、复杂度选择和训练随机性。",
+        "多项力学实验来自已知生成方程的合成数据，并向符号回归提供 Δx 与 r 等简化变量；这比未知实验坐标和未知有用变量的真实发现更容易。",
+        "宇宙学只用一套模拟的 zeroth run/final timestep；候选公式优于特定 hand-designed baseline，不等同于优于现代宇宙学模型或被观测确认。",
+        "OOD 结果是单一 δ threshold 划分，且符号式由同一个 GN 表征抽取；需要多 simulation、不同 cosmology、halo finder 与观测选择效应测试。"
+      ]
+    },
+    {
+      "title": "复现与资源",
+      "bullets": [
+        "代码、模拟器、模型、参数与视频：https://github.com/MilesCranmer/symbolic_deep_learning。论文实验主要用 Eureqa；受控附录表改用 PySR，因为它能固定超参数和 mutation steps。",
+        "复现应固定 v2、数据 seed、GN 架构与 L1/KL 权重、symbolic operator set、复杂度选择、Eureqa/PySR 预算，并保留每个 force/config 的成功与失败。",
+        "本站 PDF SHA-256：ef904ce3dbf383df047e734ae7d1a13aab6895adf777a1c28f91c9ced60e9329。",
+        "Evidence status: full-text verified; no independent reproduction performed."
+      ]
+    },
+    {
+      "title": "阅读指南",
+      "bullets": [
+        "先读 Fig. 1 与 Fig. 3，理解神经网络只是高维分解器；再看 Table 1，确认预测网络内部是否真的学到低维力。",
+        "读宇宙学 Table 2 和 OOD 段落时同时记下样本、连边、误差和遮蔽规则；“new law”应读成模拟上的候选关系。",
+        "最后读 Appendix C 的失败表与 raw Eureqa 反例，避免只收集正文中的成功公式。"
+      ]
+    }
+  ],
+  "evidence_refs": [
+    "paper.pdf pp. 2-7: GN factorization, inductive biases and message-force R2 evidence",
+    "paper.pdf pp. 7-9: extracted force/Hamiltonian laws, cosmology formula and OOD errors",
+    "paper.pdf pp. 21-24: controlled symbolic-regression details, raw-search failure and reconstruction audit",
+    "Evidence status: full-text verified; no independent reproduction performed."
+  ],
+  "card_standard_version": "2.3",
+  "paper_profile": "ai_empirical",
+  "style_reference": "physicist_daily_arxiv",
+  "provenance": {
+    "program": "Collection",
+    "catalog": "Paper Collection",
+    "catalog_record_id": "7dab7d89d3aeda7c",
+    "catalog_record_ids": [
+      "7dab7d89d3aeda7c"
+    ],
+    "catalog_topic": "Machine Learning",
+    "collection_date": "2026-08-24",
+    "sampled_at": "2026-08-26",
+    "selected_by": "full_collection_backfill",
+    "sampling_seed": "not_applicable_full_collection",
+    "candidate_count": 452,
+    "legacy_full_text_card": "2006.11287.json"
+  },
+  "equation_refs": [],
+  "figure_refs": [],
+  "cover": {
+    "mode": "title_abstract",
+    "abstract_text": "We develop a general approach to distill symbolic representations of a learned deep model by introducing strong inductive biases. We focus on Graph Neural Networks (GNNs). The technique works as follows: we first encourage sparse latent representations when we train a GNN in a supervised setting, then we apply symbolic regression to components of the learned model to extract explicit physical relations. We find the correct known equations, including force laws and Hamiltonians, can be extracted from the neural network. We then apply our method to a non-trivial cosmology example-a detailed dark matter simulation-and discover a new analytic formula which can predict the concentration of dark matter from the mass distribution of nearby cosmic structures. The symbolic expressions extracted from the GNN using our technique also generalized to out-of-distribution data better than the GNN itsel",
+    "selection_rationale": "该旧版全文证据包没有经过 v2.3 的逐图导出与图号核验；为避免错配图片，封面使用论文题目和经全文核对的摘要，关键论证保留在卡片正文中。"
+  }
+}

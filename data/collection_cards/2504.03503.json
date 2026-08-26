@@ -1,0 +1,127 @@
+{
+  "arxiv_id": "2504.03503",
+  "source_version": "v1",
+  "source_pdf": "https://arxiv.org/pdf/2504.03503",
+  "title_en": "Operator Learning: A Statistical Perspective",
+  "title_zh": "算子学习：统计学视角",
+  "curation_status": "full_text_verified",
+  "verified_metadata": {
+    "arxiv_id": "2504.03503",
+    "version": "v1",
+    "title": "Operator Learning: A Statistical Perspective",
+    "abstract": "Operator learning has emerged as a powerful tool in scientific computing for approximating mappings between infinite-dimensional function spaces. A primary application of operator learning is the development of surrogate models for the solution operators of partial differential equations (PDEs). These methods can also be used to develop black-box simulators to model system behavior from experimental data, even without a known mathematical model. In this article, we begin by formalizing operator learning as a function-to-function regression problem and review some recent developments in the field. We also discuss PDE-specific operator learning, outlining strategies for incorporating physical and mathematical constraints into architecture design and training processes. Finally, we end by highlighting key future directions such as active data collection and the development of rigorous uncertainty quantification frameworks.",
+    "authors": [
+      "Unique Subedi",
+      "Ambuj Tewari"
+    ],
+    "categories": [
+      "stat.ML",
+      "cs.LG"
+    ],
+    "primary_category": "stat.ML",
+    "published": "2025-04-04T14:58:45Z",
+    "comment": ""
+  },
+  "sections": [
+    {
+      "title": "作者信息",
+      "bullets": [
+        "作者：Unique Subedi、Ambuj Tewari。",
+        "官方快照：arXiv:2504.03503v1；主分类 stat.ML。",
+        "这是统计理论视角的综述/立场文章，不提供新的大规模统一实验；卡片重点是误差分解与尚未解决的理论问题。"
+      ]
+    },
+    {
+      "title": "摘要",
+      "bullets": [
+        "文章把 operator learning 写成随机 input function v∼μ、output G(v) 的 function-to-function regression；学习器从 n 个 i.i.d. pairs 构造 F̂n，并以 population risk 衡量。",
+        "与有限维 supervised learning 相比，除了 approximation、optimization/statistical error，还必须显式考虑 input/output representation 的 truncation error 和 grid sampling/evaluation 的 discretization error。",
+        "作者审视 kernel、PCA/functional regression、FNO、DeepONet、random-feature/operator models，并提出 active data collection、uncertainty quantification 和 non-i.i.d. solver-query theory。"
+      ]
+    },
+    {
+      "title": "背景",
+      "bullets": [
+        "operator 的输入输出是函数，但训练时只能看到有限 sensors/grid；模型通常还通过 encoder E、finite latent map h、decoder D，把无限维对象截断为有限维。",
+        "训练 input 常从 GP(0,α(-Δ+βI)^-γ) 的 Karhunen–Loève expansion 截断采样；γ 控制 smoothness，截断 modes 与 grid 会把 prior 假设写入 benchmark。",
+        "因此 test error 不只是“模型好坏”：训练 μ、函数 smoothness、solver、截断 basis、grid 和 loss metric 共同决定风险。"
+      ]
+    },
+    {
+      "title": "模型与方法",
+      "bullets": [
+        "统计框架定义 hypothesis class F、loss ℓ、source distribution μ 与 learning rule；well-specified 假设要求 G 可被 F 小误差逼近，否则 approximation error 即使 n→∞ 也不消失。",
+        "FNO 通过 Fourier truncation/kernel layers近似 operator；DeepONet 常以固定 sensor vector E(v) 编码，若不改 encoder 就不能自然接受另一 input grid。inner-product/integral encoder 可改善 discretization invariance。",
+        "评价建议既做 in-distribution held-out μ，也通过改变 GP smoothness γ、Karhunen–Loève coefficients 分布或 PDE parameters 构造 OOD；只换 output grid 不是完整 OOD。",
+        "physics-informed loss 可看成 empirical risk 加约束 regularizer，可能缩小有效 hypothesis class并提升 sample efficiency，但权重、方程误设与 residual sampling 影响统计解释。"
+      ]
+    },
+    {
+      "title": "核心结果与证据",
+      "bullets": [
+        "文章给出核心分解：approximation error 来自 G∉F；statistical error 来自有限 n；truncation error来自 GP/data、encoder/decoder、Fourier/PCA modes；discretization error来自有限 grid 上训练与评价。",
+        "现有 universality/error-bound 工作主要解决 approximation；对“train grid N1、test grid N2”的一般 multiresolution generalization 仍缺理论，因此 zero-shot super-resolution 的经验成功尚无统一统计基础。",
+        "一般 Lipschitz operator class 的 minimax error 可慢至约 (log n)^-1，说明仅用 Lipschitz 正则的类太大；实际可高效学习的 PDE operator 必须利用更强结构。",
+        "DeepONet/FNO 的现有 generalization bounds 往往通过 covering/Rademacher complexity，随参数量或层数指数恶化，数值上过松，不能解释经验成功。",
+        "i.i.d. μ 模型本身可能不适合可主动调用 solver 的场景；active learner 可选择 vi、resolution 和 acquisition，理论目标应包括单次 label 的 solver cost 与信息量。"
+      ]
+    },
+    {
+      "title": "有效性与局限",
+      "bullets": [
+        "文章是选择性理论综述，未穷尽快速发展的 operator-learning 文献；提出的统一误差图景不等于已证明各项可独立相加。",
+        "很多理论假设 compactness、smoothness、Gaussian input 或已知 function spaces，与 shock、irregular geometry、adaptive mesh 和实验噪声有距离。",
+        "population risk 对 μ 平均，可能掩盖 rare/extreme inputs；OOD、worst-case、conservation 与 calibrated uncertainty 需额外目标。",
+        "physics constraints 并不自动带来正确性：若 PDE/BC 不完整或模型误设，regularizer 会系统性偏向错误 operator。"
+      ]
+    },
+    {
+      "title": "复现与资源",
+      "bullets": [
+        "论文 Figure 1 的 FNO heat-equation notebook由正文链接提供；其余主要资源是被综述论文而非统一代码库。",
+        "设计实验时应分别改变 n、input truncation modes、train/test grid、sensor locations 和 model capacity，测出四类误差的可识别 proxy；同时记录 solver discretization truth。",
+        "本站 PDF SHA-256：2dff71d04ac3c86804e22c27facc2370ac6af100d8e1d08ff0ff0ed6ad9e111a。",
+        "Evidence status: full-text verified; no independent reproduction performed."
+      ]
+    },
+    {
+      "title": "阅读指南",
+      "bullets": [
+        "先读 Section 2 的统计定义，再读 Section 5 的四类误差；用这套分解审查任何 operator benchmark。",
+        "随后对照 FNO/DeepONet encoding 与 Section 4 的 GP sampling，判断所谓 OOD 到底改变了什么。",
+        "最后读 active learning 与 UQ 展望；真正可比较的样本效率应把 solver query cost 和 resolution 纳入预算。"
+      ]
+    }
+  ],
+  "evidence_refs": [
+    "paper.pdf pp. 3-10: statistical formulation, operator models, GP sampling and evaluation distributions",
+    "paper.pdf pp. 11-16: approximation, truncation, discretization and statistical error review",
+    "paper.pdf pp. 16-22: physics constraints, active learning, uncertainty and scaling open problems",
+    "Evidence status: full-text verified; no independent reproduction performed."
+  ],
+  "card_standard_version": "2.3",
+  "paper_profile": "ai_empirical",
+  "style_reference": "physicist_daily_arxiv",
+  "provenance": {
+    "program": "Collection",
+    "catalog": "Paper Collection",
+    "catalog_record_id": "cb81349fdf71cda0",
+    "catalog_record_ids": [
+      "cb81349fdf71cda0"
+    ],
+    "catalog_topic": "Neural Operators",
+    "collection_date": "2026-08-24",
+    "sampled_at": "2026-08-26",
+    "selected_by": "full_collection_backfill",
+    "sampling_seed": "not_applicable_full_collection",
+    "candidate_count": 452,
+    "legacy_full_text_card": "2504.03503.json"
+  },
+  "equation_refs": [],
+  "figure_refs": [],
+  "cover": {
+    "mode": "title_abstract",
+    "abstract_text": "Operator learning has emerged as a powerful tool in scientific computing for approximating mappings between infinite-dimensional function spaces. A primary application of operator learning is the development of surrogate models for the solution operators of partial differential equations (PDEs). These methods can also be used to develop black-box simulators to model system behavior from experimental data, even without a known mathematical model. In this article, we begin by formalizing operator learning as a function-to-function regression problem and review some recent developments in the field. We also discuss PDE-specific operator learning, outlining strategies for incorporating physical and mathematical constraints into architecture design and training processes. Finally, we end by highlighting key future directions such as active data collection and the development of rigorous uncer",
+    "selection_rationale": "该旧版全文证据包没有经过 v2.3 的逐图导出与图号核验；为避免错配图片，封面使用论文题目和经全文核对的摘要，关键论证保留在卡片正文中。"
+  }
+}

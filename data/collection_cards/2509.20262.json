@@ -1,0 +1,154 @@
+{
+  "arxiv_id": "2509.20262",
+  "source_version": "v2",
+  "source_pdf": "https://arxiv.org/pdf/2509.20262v2",
+  "title_en": "Are Neural Networks Collision Resistant?",
+  "title_zh": "神经网络具有抗碰撞性吗？",
+  "curation_status": "full_text_verified",
+  "verified_metadata": {
+    "arxiv_id": "2509.20262",
+    "version": "v2",
+    "title": "Are Neural Networks Collision Resistant?",
+    "abstract": "When neural networks are trained to classify a dataset, one finds a set of weights from which the network produces a label for each data point. We study the algorithmic complexity of finding a collision in a single-layer neural net, where a collision is defined as two distinct sets of weights that assign the same labels to all data. For binary perceptrons with oscillating activation functions, we establish the emergence of an overlap gap property in the space of collisions. This is a topological property believed to be a barrier to the performance of efficient algorithms. The hardness is supported by numerical experiments using approximate message passing algorithms, for which the algorithms stop working well below the value predicted by our analysis. Neural networks provide a new category of candidate collision resistant functions, which for some parameter setting depart from constructions based on lattices. Beyond relevance to cryptography, our work uncovers new forms of computational hardness emerging in large neural networks which may be of independent interest.",
+    "authors": [
+      "Marco Benedetti",
+      "Andrej Bogdanov",
+      "Enrico M. Malatesta",
+      "Marc Mézard",
+      "Gianmarco Perrupato",
+      "Alon Rosen",
+      "Nikolaj I. Schwartzbach",
+      "Riccardo Zecchina"
+    ],
+    "categories": [
+      "cond-mat.dis-nn",
+      "cs.CR",
+      "math.PR"
+    ],
+    "primary_category": "cond-mat.dis-nn",
+    "published": "2025-09-24T15:50:41Z"
+  },
+  "sections": [
+    {
+      "title": "作者信息",
+      "bullets": [
+        "Marco Benedetti等八位作者来自Bocconi University与University of Ottawa，团队横跨统计物理、计算复杂性和密码学。",
+        "官方快照arXiv:2509.20262v2，主分类cond-mat.dis-nn，另含cs.CR与math.PR；31页、12幅图。",
+        "论文研究单层binary perceptron作为随机函数族的典型碰撞几何，而不是分析训练后深层网络的经验鲁棒性。"
+      ]
+    },
+    {
+      "title": "摘要",
+      "bullets": [
+        "给定A∈R^{P×N}和binary input x∈{−1,1}^N，函数f_A(x)=φ(Ax)输出P个二值标签；碰撞是x≠y但f_A(x)=f_A(y)。",
+        "选择周期square-wave activation φδ，研究N,P→∞且α=P/N固定时，碰撞存在阈值和m-overlap gap property。",
+        "在一段仍存在指数多碰撞的参数区，解空间出现external-overlap forbidden interval；这能排除stable algorithms，但不是一般多项式时间硬度证明。",
+        "用error-correcting code排除q≈1的近邻碰撞后，作者提出仍具压缩率α̃<1的候选collision-resistant hash family。",
+        "local search与reinforced AMP在理论OGP区之前即失效，为难度猜想提供算法证据，但未建立密码学归约或生产级安全性。"
+      ]
+    },
+    {
+      "title": "背景",
+      "bullets": [
+        "inversion固定输出标签，second-preimage固定一个输入，collision-finding允许攻击者联合选择两个输入；三者的典型复杂性不能混同。",
+        "密码学CRH要求任何高效算法找到碰撞的概率可忽略，且hash还需输出短于输入；随机CSP中的OGP只覆盖稳定、低阶或若干已知算法类。",
+        "binary perceptron把通常所称网络权重x反过来当函数输入，把随机pattern matrix A当public instance，因此‘neural network hash’是特定理论构造。",
+        "周期激活的快速符号翻转类比模运算，但作者还研究截断和随机化切换点，主张关键更可能是高频sign switches而非严格周期性。"
+      ]
+    },
+    {
+      "title": "模型与方法",
+      "bullets": [
+        "Square Wave Perceptron用φδ(h)=sgn[(h/(2δ)) mod 1]，δ控制振荡周期；内部重叠q_i=x^Ty/N等价于碰撞输入的归一化Hamming距离。",
+        "碰撞数Z(q1;A)的quenched free entropy Φ=lim N^{-1}E log Z；first-moment annealed entropy给不存在碰撞的上界，replica-symmetric计算在本文模型中与其重合。",
+        "两碰撞c_a=(x_a,y_a)、c_b的external overlap定义为(x_a^Tx_b+y_a^Ty_b)/(2N)；m-OGP要求任意m个固定q1碰撞不能两两落入某个中间overlap区间。",
+        "通过Markov inequality把m-tuple数的annealed entropy ϕ_m^a(p,q1)≤0转成excluded interval；其计算化为2m×2m covariance matrix Q上的变分最大化。",
+        "为可计算性采用symmetric ansatz，把交叉块降为一个q0；δ→0 strong-hashing limit中m=2可证明该ansatz且q0=p+q1−1，对m>2主要在此ansatz下推导。",
+        "有限系统用exhaustive collision search检查SAT/UNSAT和ansatz；攻击实验包括从随机超立方体顶点bit-flip local search与reinforced approximate message passing。"
+      ]
+    },
+    {
+      "title": "核心结果与证据",
+      "bullets": [
+        "Figure 1显示固定δ、q1时存在α_c(q1)：高于它，给定extensive overlap的碰撞以高概率不存在；q1→1时α_c发散，因为相同或sub-extensive近邻输入总会留下碰撞。",
+        "strong-hashing limit给annealed存在阈值α_c^a(q1)=1+H_B(q1)/log2，随q1单调下降；有限尺寸exhaustive search支持RS/annealed阈值，但并非渐近严格等式证明。",
+        "Figures 2–3展示m=5时ϕ_m^a(p)在中间p形成负区，从而产生m-OGP；该阈值严格低于碰撞消失阈值，于是二者之间仍有指数多解却猜测难找。",
+        "δ→0时在symmetric ansatz下α_OGP^m(q1)=[log2+H_B(q1)]/log(1+m)，随m增大降低；更大的m给stable-algorithm障碍更强的上界。",
+        "由于任何δ>0的OGP曲线在q1→1附近发散，单独SWP不能阻止近邻碰撞；上游ECC把codewords限制到q1≤q_code。",
+        "用Gilbert–Varshamov存在界r=1−H_2(q_code)并取α_adv=max_{q1≤q_code}α_OGP，Figure 5出现α̃=α_adv/r<1区域，构成候选压缩CRH。",
+        "δ=0.6时rAMP只在α约0.15以下找到q1≈0碰撞，而m=5 OGP估计约0.9；Figure 6的T_sol显示接近α_r时幂律发散与finite-size collapse。",
+        "局部有限bit-flip邻域的期望碰撞数在P=O(N)时消失，说明从随机reference的朴素local search不可行；这仍不是对自适应全局攻击的排除。"
+      ]
+    },
+    {
+      "title": "有效性与局限",
+      "bullets": [
+        "论文反复把结果称为candidate与conjecture：OGP严格排除的是stable algorithms等特定类别，不能推出所有PPT攻击都失败。",
+        "没有Ajtai/SIS式worst-case-to-average-case reduction，也没有基于标准密码困难假设的security proof；因此不能用于实际密码协议。",
+        "RS存在阈值与symmetric covariance ansatz并非全参数严格成立；作者只在strong-hashing、m=2等受限情形证明，并以小系统exhaustive checks支持其余区域。",
+        "annealed m-tuple entropy通过Markov不等式给OGP出现的充分上界，未必等于真实quenched阈值；m=5图不能代表m→∞。",
+        "ECC部分使用Gilbert–Varshamov码率存在界；没有给出同时达到该码率、可高效编码且与网络组合的具体完整实现。",
+        "A为随机i.i.d.矩阵且渐近N,P同比增长；存储A、计算Ax与输出bit成本会影响实际hash效率，正文未做硬件/吞吐基准。",
+        "算法证据只覆盖local search和特定rAMP，二者早于OGP阈值失败也可能反映算法次优，不能校准真正attack threshold。",
+        "‘neural network’这里只是binary single-layer random perceptron与特殊不连续激活，不说明常规ReLU/Transformer或训练网络具有碰撞抗性。",
+        "量子攻击、side channel、结构化A、finite-precision实现和多目标攻击未评估；候选构造离密码学部署仍远。"
+      ]
+    },
+    {
+      "title": "复现与资源",
+      "bullets": [
+        "先固定N、α、δ、A分布和random seeds，枚举小N的全部pairs，分别估计每个q1 bin的collision count与SAT probability。",
+        "实现ϕ_m^a变分时保存Q eigenvalues、q0 optimum和多起点结果；对m=2 strong-hashing解析式做单元测试，再扩展m与有限δ。",
+        "有限尺寸阈值至少用多N外推和bootstrap，区分annealed bound、RS conjecture、observed exhaustive threshold与OGP sufficient threshold。",
+        "rAMP复现需冻结initialization、reinforcement schedule、convergence criterion和最大iterations；报告成功率而不仅T_sol，并与random restart及其他CSP solvers比较。",
+        "ECC组合应给具体code family、block length、minimum distance、encoder complexity和总体α̃；逐项验证shrinking、domain separation与近邻碰撞排除。",
+        "密码审计必须加入通用birthday、meet-in-the-middle、SAT/MILP、lattice-inspired和quantum query attacks，且不要用OGP图替代security parameter估算。",
+        "公开实现前还需定义A如何生成/发布、矩阵与激活精度、hash output serialization和constant-time要求。",
+        "本站PDF SHA-256：927c9a43f19d68b42e73557e9bc4c67410d192c46d9f1dd8a642a3d17ce7f1ff。",
+        "Evidence status: full-text verified; no independent reproduction performed."
+      ]
+    },
+    {
+      "title": "阅读指南",
+      "bullets": [
+        "先读Introduction和Section I，明确inversion、second-preimage、collision-finding以及本文CRH主张的条件语气。",
+        "Section II的α_c回答‘碰撞是否存在’，Section III的m-OGP回答‘某类算法是否被几何障碍阻挡’，不要混成一个阈值。",
+        "Section IV最值得批判性读：ECC补上q≈1漏洞，但GV bound和OGP仍只给候选构造。",
+        "Section V与Figure 6是算法sanity check；最后结合Supplement的ansatz、exhaustive finite-size数据判断证据等级。"
+      ]
+    }
+  ],
+  "evidence_refs": [
+    "paper.pdf pp. 1-3: collision problem, square-wave perceptron and collision existence threshold",
+    "paper.pdf pp. 3-6: m-overlap gap definition, annealed bound and strong-hashing analysis",
+    "paper.pdf pp. 6-8: ECC composition, compression rate, Ajtai comparison and algorithmic attacks",
+    "paper.pdf pp. 8-10: rAMP scaling evidence and conclusions",
+    "paper.pdf pp. 11-31: entropy derivations, ansatz checks, exhaustive search and attack details",
+    "Evidence status: full-text verified; no independent reproduction performed."
+  ],
+  "card_standard_version": "2.3",
+  "paper_profile": "ai_empirical",
+  "style_reference": "physicist_daily_arxiv",
+  "provenance": {
+    "program": "Collection",
+    "catalog": "Paper Collection",
+    "catalog_record_id": "927c9a43f19d68b4",
+    "catalog_record_ids": [
+      "927c9a43f19d68b4"
+    ],
+    "catalog_topic": "Machine Learning",
+    "collection_date": "2026-08-23",
+    "sampled_at": "2026-08-26",
+    "selected_by": "full_collection_backfill",
+    "sampling_seed": "not_applicable_full_collection",
+    "candidate_count": 452,
+    "legacy_full_text_card": "2509.20262.json"
+  },
+  "equation_refs": [],
+  "figure_refs": [],
+  "cover": {
+    "mode": "title_abstract",
+    "abstract_text": "When neural networks are trained to classify a dataset, one finds a set of weights from which the network produces a label for each data point. We study the algorithmic complexity of finding a collision in a single-layer neural net, where a collision is defined as two distinct sets of weights that assign the same labels to all data. For binary perceptrons with oscillating activation functions, we establish the emergence of an overlap gap property in the space of collisions. This is a topological property believed to be a barrier to the performance of efficient algorithms. The hardness is supported by numerical experiments using approximate message passing algorithms, for which the algorithms stop working well below the value predicted by our analysis. Neural networks provide a new category of candidate collision resistant functions, which for some parameter setting depart from constructi",
+    "selection_rationale": "该旧版全文证据包没有经过 v2.3 的逐图导出与图号核验；为避免错配图片，封面使用论文题目和经全文核对的摘要，关键论证保留在卡片正文中。"
+  }
+}

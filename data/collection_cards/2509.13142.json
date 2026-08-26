@@ -1,0 +1,125 @@
+{
+  "arxiv_id": "2509.13142",
+  "source_version": "v1",
+  "source_pdf": "https://arxiv.org/pdf/2509.13142",
+  "title_en": "Formalizing dimensional analysis using the Lean theorem prover",
+  "title_zh": "用 Lean 定理证明器形式化量纲分析",
+  "curation_status": "full_text_verified",
+  "verified_metadata": {
+    "arxiv_id": "2509.13142",
+    "version": "v1",
+    "title": "Formalizing dimensional analysis using the Lean theorem prover",
+    "abstract": "Dimensional analysis is fundamental to the formulation and validation of physical laws, ensuring that equations are dimensionally homogeneous and scientifically meaningful. In this work, we use Lean 4 to formalize the mathematics of dimensional analysis. We define physical dimensions as mappings from base dimensions to exponents, prove that they form an Abelian group under multiplication, and implement derived dimensions and dimensional homogeneity theorems. Building on this foundation, we introduce a definition of physical variables that combines numeric values with dimensions, extend the framework to incorporate SI base units and fundamental constants, and implement the Buckingham Pi Theorem. Finally, we demonstrate the approach on an example: the Lennard-Jones potential, where our framework enforces dimensional consistency and enables formal proofs of physical properties such as zero-energy separation and the force law. This work establishes a reusable, formally verified framework for dimensional analysis in Lean, providing a foundation for future libraries in formalized science and a pathway toward scientific computing environments with built-in guarantees of dimensional correctness.",
+    "authors": [
+      "Maxwell P. Bobbin",
+      "Colin Jones",
+      "John Velkey",
+      "Tyler R. Josephson"
+    ],
+    "categories": [
+      "physics.chem-ph"
+    ],
+    "primary_category": "physics.chem-ph",
+    "published": "2025-09-16T14:59:08Z",
+    "comment": ""
+  },
+  "sections": [
+    {
+      "title": "作者信息",
+      "bullets": [
+        "作者：Maxwell P. Bobbin、Colin Jones、John Velkey、Tyler R. Josephson。",
+        "机构：University of Maryland Baltimore County 的 Chemical, Biochemical, and Environmental Engineering，以及 Computer Science and Electrical Engineering。",
+        "官方快照：arXiv:2509.13142v1，physics.chem-ph；正文说明使用 Lean 4 与 Mathlib 4.23.0-rc1。"
+      ]
+    },
+    {
+      "title": "摘要",
+      "bullets": [
+        "论文把量纲定义为从基量纲类型 B 到指数环 E 的映射 D=B→E，并在 Lean 4 内证明量纲乘法构成 Abelian group。随后作者建立导出量纲、量纲齐次性、带数值与量纲的 PhysicalVariable、SI 基本单位与常数、Buckingham Pi 定理，并以 Lennard–Jones 势验证框架能在类型检查阶段阻止量纲错误。",
+        "这是形式化数学与科学计算基础设施工作：核心证据是机器检查的定义和定理，不是数值 benchmark。"
+      ]
+    },
+    {
+      "title": "背景",
+      "bullets": [
+        "普通编程语言和 CAS 已能做单位检查或 Buckingham Pi 计算，但作者指出此前实现没有同时形式化量纲的代数结构、物理变量运算和定理级正确性。Lean 的 kernel 可检查每个通过解析的证明，使“公式能运行”与“量纲关系已证明”分开。",
+        "论文区分 physical quantity、physical variable、unit 与 dimension；物理变量抽象为 P=⟨V,D⟩，算符分别作用在数值和量纲上（正文 pp. 2–3, Eqs. 1–2）。"
+      ]
+    },
+    {
+      "title": "模型与方法",
+      "bullets": [
+        "核心类型为 dimension B E := B → E，其中 E 满足 CommRing；抽象的 B 允许用户定义 ISQ、kinematic 或自定义基量纲系统（p. 4）。",
+        "乘除法对应指数逐项加减，单位量纲是零映射，逆元是指数取负；作者把这些实例接入 Lean type classes，并证明量纲在乘法下满足结合律、单位元、逆元和交换律（pp. 4–8）。",
+        "PhysicalVariable 把值与量纲绑定；同量纲变量可加减，不同量纲变量通过乘除和幂运算生成新类型。自定义 cast 与 tactic 自动证明形式不同但逐基量纲相等的表达式（pp. 8–12）。",
+        "补充材料把 Buckingham Pi 写成量纲矩阵的 kernel：Pi 群数量 p=n−rank，具体无量纲组合来自矩阵核（SI pp. 17–18, Eqs. 9–11）。"
+      ]
+    },
+    {
+      "title": "核心结果与证据",
+      "bullets": [
+        "Lennard–Jones 势 V=4ε[(σ/r)^12−(σ/r)^6] 被编码为输出 energy 量纲的函数；类型系统自动处理 (σ/r) 的无量纲幂与 energy×dimensionless 的转换（p. 14, Eq. 8）。",
+        "作者给出 LJ_zero_energy 定理：当 r=σ 且 σ.value≠0 时，势能等于零；另一个定理形式化势能对距离的导数，并得到 force 量纲的解析表达式（p. 14）。",
+        "正文结论还包括 derived dimensions、dimensional homogeneity theorem、SI units/fundamental constants 与可复用代码库；证据是 Lean 源码链接和文中展示的定理陈述。",
+        "结论类型：代数性质与示例定理是 kernel 检查的形式化证明；“可作为未来形式化科学基础”是作者的工程展望，不是已完成的大规模用户研究。"
+      ]
+    },
+    {
+      "title": "有效性与局限",
+      "bullets": [
+        "量纲正确只是物理正确的必要条件，不能证明方程描述现实，也不能检查模型假设、近似、边界条件或参数有效区间。",
+        "框架依赖用户正确声明基量纲、指数类型、单位和物理变量；错误的语义建模仍可能得到内部一致的证明。",
+        "Lennard–Jones 案例证明了零点与导数关系，但论文没有给出与主流单位库的性能、可用性或大型科学代码迁移 benchmark。",
+        "Buckingham Pi 的矩阵核给出无量纲组合空间，但具体选择并不唯一；形式化结果也不自动决定哪些 Pi 群最有物理解释力。"
+      ]
+    },
+    {
+      "title": "复现与资源",
+      "bullets": [
+        "论文在正文 Methods 声明代码托管于 GitHub，并让各代码块的 source 按钮链接到对应行；复现应固定 Lean 4 与 Mathlib 4.23.0-rc1，再运行全部 theorem checks。",
+        "本站证据 PDF：automation_outputs/paper_collection_daily_cards_2026-08-24/evidence/2509.13142/paper.pdf；SHA-256：69bb78b53cd71a226f1bb75d3502afac36878b620c76dd08e7a196d3c9f6de03。",
+        "建议额外做负向测试：交换不相容量纲、错误的幂和遗漏 cast 应在编译期失败；这些测试比只重跑正例更能验证安全边界。",
+        "Evidence status: full-text verified; no independent reproduction performed."
+      ]
+    },
+    {
+      "title": "阅读指南",
+      "bullets": [
+        "先读 pp. 2–4 的 P=⟨V,D⟩ 与 D=B→E，再读 pp. 6–8 的 Abelian-group instances，能最快理解设计骨架。",
+        "关注 pp. 8–12 的 PhysicalVariable/cast/tactic，因为它们决定形式化结构能否用于实际科学代码。",
+        "最后读 p. 14 的 Lennard–Jones 两个定理和 SI pp. 17–18 的 Buckingham Pi 矩阵核；把机器证明与作者对未来工具链的展望分开。"
+      ]
+    }
+  ],
+  "evidence_refs": [
+    "paper.pdf pp. 1-4: problem, definitions, Eqs. (1)-(7)",
+    "paper.pdf pp. 4-14: Lean implementation, Abelian group, PhysicalVariable, Lennard-Jones theorems",
+    "paper.pdf SI pp. 17-19: Buckingham Pi dimensional matrix and derivatives",
+    "Evidence status: full-text verified; no independent reproduction performed."
+  ],
+  "card_standard_version": "2.3",
+  "paper_profile": "theory_numerics",
+  "style_reference": "physicist_daily_arxiv",
+  "provenance": {
+    "program": "Collection",
+    "catalog": "Paper Collection",
+    "catalog_record_id": "feb006436d857bb3",
+    "catalog_record_ids": [
+      "feb006436d857bb3"
+    ],
+    "catalog_topic": "AI for Science",
+    "collection_date": "2026-08-24",
+    "sampled_at": "2026-08-26",
+    "selected_by": "full_collection_backfill",
+    "sampling_seed": "not_applicable_full_collection",
+    "candidate_count": 452,
+    "legacy_full_text_card": "2509.13142.json"
+  },
+  "equation_refs": [],
+  "figure_refs": [],
+  "cover": {
+    "mode": "title_abstract",
+    "abstract_text": "Dimensional analysis is fundamental to the formulation and validation of physical laws, ensuring that equations are dimensionally homogeneous and scientifically meaningful. In this work, we use Lean 4 to formalize the mathematics of dimensional analysis. We define physical dimensions as mappings from base dimensions to exponents, prove that they form an Abelian group under multiplication, and implement derived dimensions and dimensional homogeneity theorems. Building on this foundation, we introduce a definition of physical variables that combines numeric values with dimensions, extend the framework to incorporate SI base units and fundamental constants, and implement the Buckingham Pi Theorem. Finally, we demonstrate the approach on an example: the Lennard-Jones potential, where our framework enforces dimensional consistency and enables formal proofs of physical properties such as zero-",
+    "selection_rationale": "该旧版全文证据包没有经过 v2.3 的逐图导出与图号核验；为避免错配图片，封面使用论文题目和经全文核对的摘要，关键论证保留在卡片正文中。"
+  }
+}

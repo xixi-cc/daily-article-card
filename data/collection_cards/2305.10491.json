@@ -1,0 +1,145 @@
+{
+  "arxiv_id": "2305.10491",
+  "source_version": "v3",
+  "source_pdf": "https://arxiv.org/pdf/2305.10491v3",
+  "title_en": "Bayesian Renormalization",
+  "title_zh": "贝叶斯重整化",
+  "curation_status": "full_text_verified",
+  "verified_metadata": {
+    "arxiv_id": "2305.10491",
+    "version": "v3",
+    "title": "Bayesian Renormalization",
+    "abstract": "In this note we present a fully information theoretic approach to renormalization inspired by Bayesian statistical inference, which we refer to as Bayesian Renormalization. The main insight of Bayesian Renormalization is that the Fisher metric defines a correlation length that plays the role of an emergent RG scale quantifying the distinguishability between nearby points in the space of probability distributions. This RG scale can be interpreted as a proxy for the maximum number of unique observations that can be made about a given system during a statistical inference experiment. The role of the Bayesian Renormalization scheme is subsequently to prepare an effective model for a given system up to a precision which is bounded by the aforementioned scale. In applications of Bayesian Renormalization to physical systems, the emergent information theoretic scale is naturally identified with the maximum energy that can be probed by current experimental apparatus, and thus Bayesian Renormalization coincides with ordinary renormalization. However, Bayesian Renormalization is sufficiently general to apply even in circumstances in which an immediate physical scale is absent, and thus provides an ideal approach to renormalization in data science contexts. To this end, we provide insight into how the Bayesian Renormalization scheme relates to existing methods for data compression and data generation such as the information bottleneck and the diffusion learning paradigm. We conclude by designing an explicit form of Bayesian Renormalization inspired by Wilson's momentum shell renormalization scheme in Quantum Field Theory. We apply this Bayesian Renormalization scheme to a simple Neural Network and verify the sense in which it organizes the parameters of the model according to a hierarchy of information theoretic importance.",
+    "authors": [
+      "David S. Berman",
+      "Marc S. Klinger",
+      "Alexander G. Stapleton"
+    ],
+    "categories": [
+      "hep-th",
+      "cond-mat.dis-nn",
+      "cs.AI"
+    ],
+    "primary_category": "hep-th",
+    "published": "2023-05-17T18:00:28Z"
+  },
+  "sections": [
+    {
+      "title": "作者信息",
+      "bullets": [
+        "David S. Berman与Alexander G. Stapleton来自Queen Mary University of London，Marc S. Klinger来自UIUC并为通讯作者。",
+        "官方快照arXiv:2305.10491v3，主分类hep-th，另含cond-mat.dis-nn、cs.AI；DOI 10.1088/2632-2153/ad0102。",
+        "v3新增完整神经网络示例，共30页、2表5图；早期arXiv comment所写20页无图不适用于本站PDF。"
+      ]
+    },
+    {
+      "title": "摘要",
+      "bullets": [
+        "论文把贝叶斯学习随数据增加的模型空间流反向，定义丢弃数据、让posterior predictive变宽的Bayesian Renormalization（DB-RG）。",
+        "Fisher metric量化相邻概率模型的可区分性，充当非物理数据模型中的涌现尺度；stiff/sloppy方向类比relevant/irrelevant operators。",
+        "作者把一类exact RG写成Fokker–Planck扩散/Markov粗粒化，再将反向Dynamical Bayes映射到由Fisher信息控制的ERG kernel。",
+        "数值示例仅是在MNIST线性autoencoder上按encoder Fisher diagonal硬剪枝；它演示信息层级，不是完整动态DB-RG算法的端到端验证。"
+      ]
+    },
+    {
+      "title": "背景",
+      "bullets": [
+        "Dynamical Bayesian inference中，随观察数T增加，posterior在MAP路径附近收缩并趋向data-generating distribution；反向时间τ则扩散并混合更多不可区分模型。",
+        "exact RG保留cutoff以下相关函数；Wegner–Morris divergence flow可对应随机微分方程和Fokker–Planck方程，令粗粒化与概率分布演化等价。",
+        "普通diffusion可以丢信息，却没有说明应先丢哪些信息；Bayesian方案以Fisher几何提供模型空间的距离与层级。",
+        "‘UV/IR’在数据语境中被重新解释为可利用信息多/少，而非必然等于真实动量或空间尺度。"
+      ]
+    },
+    {
+      "title": "模型与方法",
+      "bullets": [
+        "参数族p(y|θ)的Fisher metric来自score covariance，也给KL divergence在邻近模型间的二阶展开；小eigenvalue方向被称sloppy，大eigenvalue方向为stiff。",
+        "模型空间反向Bayes让posterior宽度随τ增加；经生成映射G推到data space后，作者识别出Bayesian diffusion kernel与ERG kernel的对应。",
+        "实验网络是784输入/输出、20维latent、无bias的两层dense autoencoder，encoder与decoder均ReLU，MSE loss、Adam(0.001,0.9,0.999,10^−8)。",
+        "训练后固定decoder，只计算encoder共15680个权重的Fisher信息；阈值Λ从0到2.375以0.125步长扫描。",
+        "实际information-shell rule用Iii>Λ保留、Iii≤Λ置零；这按坐标对角元素剪枝，而不是对Fisher eigenvectors整模积分。",
+        "比较基线在每一步删除同样数量的随机参数或最小绝对值参数，从而把sparsity控制为相同。"
+      ]
+    },
+    {
+      "title": "核心结果与证据",
+      "bullets": [
+        "Table 2报告encoder diagonal Fisher均值0.7148；Figure 5的直方图在Λ约0.1有大gap，作者据此把低于gap的权重视为genuinely sloppy。",
+        "Λ=0.125时删除10168/15680个encoder参数，即64.8%；Figure 3仍给出视觉上较好的重建。",
+        "Figure 2中Fisher剪枝loss在Λ≲0.1前近乎稳定，随后快速上升形成hockey-stick；进入stiff区域后甚至比magnitude pruning更差。",
+        "同等sparsity的random pruning图像明显更快退化；从反向‘逐个加入参数’角度，Fisher顺序在这三个方案中最快到低loss。",
+        "Λ=1.25删除13879个即82.1%，Λ=1.75删除15386个即98.1%，Λ=2.375删除全部；这些图展示渐进信息损失，而非给出公认压缩率。",
+        "文章还指出KL divergence可作ERG monotone，并将其框架与information bottleneck、variational autoencoder及score-based diffusion作概念连接。"
+      ]
+    },
+    {
+      "title": "有效性与局限",
+      "bullets": [
+        "作者Discussion明确说当前与compression/generation的联系‘largely conceptual’，未来才希望产生自动化方法；不能表述为已建立新SOTA压缩器。",
+        "实验只有单一MNIST autoencoder、单次训练描述和一个latent size；未报告多seed、误差条、分类下游任务、泛化或计算收益。",
+        "把exp(−MSE)写成likelihood省略了normalization/noise scale的细节；由此得到的Fisher数值依赖参数化与实现。",
+        "理论强调Fisher eigenvalues/geometry，但实现用coordinate diagonal Iii；对权重重参数化或旋转并不不变，也不等价于删除完整eigenmodes。",
+        "剪枝后decoder保持不变且未见fine-tuning；这隔离encoder作用，却不是常用全网prune-and-retrain比较。",
+        "普通Fisher可奇异或高维昂贵，文章示例避开full matrix；规模扩展、近似误差和在线更新成本没有实证。",
+        "物理RG与Bayesian RG‘coincides’需要生成映射、kernel和可观测尺度的具体匹配；概念类比本身不证明任意ML剪枝是RG。",
+        "Figure 2只对random和magnitude两基线，未比较Optimal Brain Damage、K-FAC、modern saliency或结构化剪枝。",
+        "本站未运行作者公开的fisher_pruning代码或独立复现实验。"
+      ]
+    },
+    {
+      "title": "复现与资源",
+      "bullets": [
+        "作者给出示例仓库github.com/xand-stapleton/fisher_pruning；复现时固定commit、MNIST split、epochs、batch与seed并记录trained checkpoint hash。",
+        "先重现15680 encoder参数、Fisher mean 0.7148、Λ约0.1 gap与Figure 2 loss curve；核对ρ(y|θ,ϕ)的normalization和Fisher estimator。",
+        "至少30 seeds比较Fisher diagonal、magnitude、random，并给相同sparsity下MSE、图像指标与置信区间；把threshold选择与test evaluation分开。",
+        "增加full/low-rank Fisher eigenmode、K-FAC与diagonal近似，做参数旋转测试，量化coordinate dependence。",
+        "加入prune-only与prune-finetune两条协议，并扩展FashionMNIST/CIFAR与非线性更深autoencoder，检查gap和hockey-stick是否稳定。",
+        "本站PDF SHA-256：58581cfbd40357ec1ce5bd62ad508d8abf7642a62b744447b25a9a0fdc4db5ce。",
+        "Evidence status: full-text verified; no independent reproduction performed."
+      ]
+    },
+    {
+      "title": "阅读指南",
+      "bullets": [
+        "先读Introduction与Section 2，区分‘一类ERG可视作扩散’和‘所有扩散都有有意义尺度’。",
+        "再读Sections 3.1–3.5，沿model-space Fisher geometry、reverse Bayes、pushforward到data space三步检查映射。",
+        "阅读Section 4时特别标注：这是直接应用哲学的pruning示例，阈值用Iii而不是完整Fisher eigenmodes。",
+        "最后把Figure 2的hockey-stick与Discussion的‘largely conceptual’并读，避免以单个MNIST结果替代通用算法证据。"
+      ]
+    }
+  ],
+  "evidence_refs": [
+    "paper.pdf pp. 1-4: information-geometric proposal and scope",
+    "paper.pdf pp. 4-10: ERG as diffusion and limits of naive diffusion",
+    "paper.pdf pp. 10-16: Fisher geometry, reverse Bayes and data-space mapping",
+    "paper.pdf pp. 16-19: autoencoder, likelihood convention and diagonal-Fisher cutoff",
+    "paper.pdf pp. 19-23: exact pruning settings, losses, reconstructions and Fisher gap",
+    "paper.pdf pp. 23-24: conceptual status and future-work limitations",
+    "Evidence status: full-text verified; no independent reproduction performed."
+  ],
+  "card_standard_version": "2.3",
+  "paper_profile": "ai_empirical",
+  "style_reference": "physicist_daily_arxiv",
+  "provenance": {
+    "program": "Collection",
+    "catalog": "Paper Collection",
+    "catalog_record_id": "31835a0579aa03b0",
+    "catalog_record_ids": [
+      "31835a0579aa03b0"
+    ],
+    "catalog_topic": "Training Dynamics",
+    "collection_date": "2026-08-24",
+    "sampled_at": "2026-08-26",
+    "selected_by": "full_collection_backfill",
+    "sampling_seed": "not_applicable_full_collection",
+    "candidate_count": 452,
+    "legacy_full_text_card": "2305.10491.json"
+  },
+  "equation_refs": [],
+  "figure_refs": [],
+  "cover": {
+    "mode": "title_abstract",
+    "abstract_text": "In this note we present a fully information theoretic approach to renormalization inspired by Bayesian statistical inference, which we refer to as Bayesian Renormalization. The main insight of Bayesian Renormalization is that the Fisher metric defines a correlation length that plays the role of an emergent RG scale quantifying the distinguishability between nearby points in the space of probability distributions. This RG scale can be interpreted as a proxy for the maximum number of unique observations that can be made about a given system during a statistical inference experiment. The role of the Bayesian Renormalization scheme is subsequently to prepare an effective model for a given system up to a precision which is bounded by the aforementioned scale. In applications of Bayesian Renormalization to physical systems, the emergent information theoretic scale is naturally identified with ",
+    "selection_rationale": "该旧版全文证据包没有经过 v2.3 的逐图导出与图号核验；为避免错配图片，封面使用论文题目和经全文核对的摘要，关键论证保留在卡片正文中。"
+  }
+}

@@ -1,0 +1,136 @@
+{
+  "arxiv_id": "2202.11737",
+  "source_version": "v3",
+  "source_pdf": "https://arxiv.org/pdf/2202.11737",
+  "title_en": "Renormalization Group Flow as Optimal Transport",
+  "title_zh": "作为最优输运的重整化群流",
+  "curation_status": "full_text_verified",
+  "verified_metadata": {
+    "arxiv_id": "2202.11737",
+    "version": "v3",
+    "title": "Renormalization Group Flow as Optimal Transport",
+    "abstract": "We establish that Polchinski's equation for exact renormalization group flow is equivalent to the optimal transport gradient flow of a field-theoretic relative entropy. This provides a compelling information-theoretic formulation of the exact renormalization group, expressed in the language of optimal transport. A striking consequence is that a regularization of the relative entropy is in fact an RG monotone. We compute this monotone in several examples. Our results apply more broadly to other exact renormalization group flow equations, including widely used specializations of Wegner-Morris flow. Moreover, our optimal transport framework for RG allows us to reformulate RG flow as a variational problem. This enables new numerical techniques and establishes a systematic connection between neural network methods and RG flows of conventional field theories.",
+    "authors": [
+      "Jordan Cotler",
+      "Semon Rezchikov"
+    ],
+    "categories": [
+      "hep-th",
+      "math-ph",
+      "math.PR",
+      "quant-ph"
+    ],
+    "primary_category": "hep-th",
+    "published": "2022-02-23T19:02:01Z",
+    "comment": "34+12 pages, 4 figures; v2: typos fixed, references and comments added; v3: more typos fixed, Appendix expanded"
+  },
+  "sections": [
+    {
+      "title": "作者信息",
+      "bullets": [
+        "作者：Jordan Cotler（Harvard Society of Fellows/Black Hole Initiative/Center for Fundamental Laws of Nature）与 Semon Rezchikov（Harvard Mathematics）。",
+        "官方快照：arXiv:2202.11737v3，34+12 页、4 图；分类 hep-th/math-ph/math.PR/quant-ph；期刊 Phys. Rev. D 108, 025003。",
+        "这是 ERG、概率测度几何与变分数值法的理论论文；神经网络部分是算法方案，不包含训练结果或数值 benchmark。"
+      ]
+    },
+    {
+      "title": "摘要",
+      "bullets": [
+        "论文把 Wegner–Morris/Polchinski exact RG 的 probability-functional continuity equation，识别为相对于 kernel-weighted functional Wasserstein-2 metric 的 relative-entropy gradient flow。",
+        "RG scheme 由 transport metric 中的 Cdot_Λ kernel 与 reference functional Q_Λ∝exp(−2Ŝ_Λ) 共同决定；coarse graining 是 P_Λ 沿 S(P_Λ||Q_Λ) 的最速下降。",
+        "由此构造带 −log Z_Q 修正且需严格 regularization prescription 的非微扰 RG monotone，并把离散 RG step 写成 JKO 型变分问题；CNN/normalizing-flow 参数化只是后续求解建议。"
+      ]
+    },
+    {
+      "title": "背景",
+      "bullets": [
+        "ERG 不依赖小 coupling expansion，而以 functional differential equation 保持低于 cutoff 的关联函数；Polchinski flow 是更一般 Wegner–Morris reparameterization flow 的一个 scheme。",
+        "有限维 Wasserstein gradient flow 把 density 演化写成 continuity equation；这里把 transport cost 推广到场配置，Cdot_Λ^{-1} 对改变 cutoff 附近尺度的 field modes 加权。",
+        "relative entropy 在 continuum 中比 differential entropy 更自然，因为 P/Q 的比值消去 measure unit；但 functional integral 仍有 contact divergences，不能只凭形式写 KL 就假定有限。"
+      ]
+    },
+    {
+      "title": "模型与方法",
+      "bullets": [
+        "定义 tangent metric <δP1,δP2>_W2，以 P 和 Cdot_Λ 加权两个 potential 的 functional gradients；对应 W2 是所有 coupling functional Π 中场差二次 cost 的 infimum。",
+        "取 Q_Λ[φ]=exp(−2Ŝ_Λ[φ])/Z_Q，functional variation 与两次分部积分给 −Λ∂_ΛP_Λ=−∇_W2 S(P_Λ||Q_Λ)，逐项等价于 Wegner–Morris equation。",
+        "对于 quadratic seed action，formal monotone M_Λ=S(P_Λ||Q_Λ)−log Z_Q；其 RG derivative 是 relative-Fisher-information 型正项加 cutoff derivative 正项，因此 −Λ dM/dΛ≥0。",
+        "因为 path-integral limit 与 Λ derivative 不交换，真正定义采用 Eq. (4.24)：从 reference Λ0 对 differentiated-under-integral expression 积分；δ^d(0) contact factor 可在有限体积格点上正规化。",
+        "JKO discretization 每步最小化 W2(P_old,P)^2/(2τ)+S(P||Q)；再用 Monge pushforward F 把嵌套 infimum 化为单个 reparameterization optimization。"
+      ]
+    },
+    {
+      "title": "核心结果与证据",
+      "bullets": [
+        "Eqs. (3.7)/(3.12) 给出主要等价性，且不限于 Polchinski：适用于 Cdot_Λ positive-semidefinite、指定 functional form 的 Wegner–Morris flows。",
+        "Eqs. (4.5)–(4.7) 证明 monotonicity；−log Z_Q 不是装饰项，删去后 partition-function derivative 可为负并破坏不等式。",
+        "free massive scalar 的 Eq. (5.2) 给 −ΛdM/dΛ=(3/2)δ^d(0)∫dp Λ∂_Λlog K_Λ≥0；数值依 cutoff family，且 integral 可能仍发散。",
+        "φ^4 只在初始 Λ0 对小 λ 展开到 O(λ²)：Eq. (5.15) 为 δ^d(0)[3f0/2−λf1/2+7λ²f2/24+O(λ³)]；正性结论明确限于 perturbatively small λ。",
+        "variational Section 6 给 sampling/pushforward Algorithm 1 和 SGD Algorithm 2；它们是从公式导出的伪代码，论文没有报告任何 lattice field training curve、RG observable error 或速度。"
+      ]
+    },
+    {
+      "title": "有效性与局限",
+      "bullets": [
+        "functional W2 metric 与分部积分使用形式化无限维 calculus；Appendix A 支持 infinitesimal metric，但完整测度空间的存在性、边界项与 domain 假设未达到一般 constructive-QFT 定理的覆盖面。",
+        "monotone 的 bare expression 发散且 order of limits 不交换；必须使用 Eq. (4.24) prescription 或有限体积/格点 regulator，不能直接把未正规化 KL 当有限 c-function。",
+        "monotone 依 Q_Λ/seed action 与 transport kernel，即有 scheme dependence；文中证明的是特定类 flow 的 monotonic quantity，不是与 Zamolodchikov c 或自由度计数自动相同。",
+        "φ^4 例子只是单个 infinitesimal step、二阶 perturbation；Wilson–Fisher 邻域、gauge theories 与更多 interacting examples 都列为未来工作。",
+        "CNN proposal 遇到 invertibility、dimension-reducing pooling 的 Jacobian determinant、large-dimensional log-det 和逐步误差累积；作者明确称 proposal 只是 practical method 的第一步。"
+      ]
+    },
+    {
+      "title": "复现与资源",
+      "bullets": [
+        "解析复现应固定 v3、Fourier/sign conventions、Cdot positivity、K_Λ/hat-K_Λ、Green function、finite volume 与 order-of-limits prescription，并逐式核对 (3.1)–(3.12)、(4.3)–(4.7)。",
+        "自由场数值化先在有限 lattice volume 检查 δ^d(0) 的体积归一，再比较 direct finite-dimensional KL derivative 与 Eq. (5.2)；不同 regulators 需单独记录。",
+        "φ^4 diagrammatic check 保存 f0/f1/f2 integrals、coupling order、Λ0 和 residual O(λ³)；不能用小 λ 的正性替代强 coupling 验证。",
+        "若实现 CNN-JKO，需冻结 samples、τ、architecture、invertibility/log-det estimator、SGD seeds，并与直接 ERG integrator 比 action coefficients、correlators 和 semigroup error。",
+        "本站 PDF SHA-256：2c83eaac8910e88ab62ea794154d232b5daac697ea9d417b0b40b498852643a5。",
+        "Evidence status: full-text verified; no independent reproduction performed."
+      ]
+    },
+    {
+      "title": "阅读指南",
+      "bullets": [
+        "先读 Sections 2.1、3.1，把 probability-functional continuity equation、metric 和 reference Q 的对应关系逐项写出。",
+        "再读 Section 4 尤其 Eqs. (4.22)–(4.24)：这是避免把 formal KL monotonicity误读为有限、regulator-free quantity 的关键。",
+        "最后将 Section 5 的两个解析例子与 Section 6.2/Discussion 对照；前者是已算结果，后者是尚未实证的机器学习路线图。"
+      ]
+    }
+  ],
+  "evidence_refs": [
+    "paper.pdf pp. 3-10: exact RG and Polchinski/Wegner-Morris setup",
+    "paper.pdf pp. 15-19: functional W2 metric, reference measure and gradient-flow equivalence",
+    "paper.pdf pp. 19-24: monotonicity proof, contact divergences and order-of-limits prescription",
+    "paper.pdf pp. 24-26: free scalar and perturbative phi4 examples",
+    "paper.pdf pp. 26-33: JKO/Monge variational formulation and proposed CNN-SGD algorithms",
+    "paper.pdf pp. 33-34: numerical obstacles, discussion and explicitly future empirical work",
+    "Evidence status: full-text verified; no independent reproduction performed."
+  ],
+  "card_standard_version": "2.3",
+  "paper_profile": "theory_numerics",
+  "style_reference": "physicist_daily_arxiv",
+  "provenance": {
+    "program": "Collection",
+    "catalog": "Paper Collection",
+    "catalog_record_id": "2c83eaac8910e88a",
+    "catalog_record_ids": [
+      "2c83eaac8910e88a"
+    ],
+    "catalog_topic": "Renormalization Group",
+    "collection_date": "2026-08-23",
+    "sampled_at": "2026-08-26",
+    "selected_by": "full_collection_backfill",
+    "sampling_seed": "not_applicable_full_collection",
+    "candidate_count": 452,
+    "legacy_full_text_card": "2202.11737.json"
+  },
+  "equation_refs": [],
+  "figure_refs": [],
+  "cover": {
+    "mode": "title_abstract",
+    "abstract_text": "We establish that Polchinski's equation for exact renormalization group flow is equivalent to the optimal transport gradient flow of a field-theoretic relative entropy. This provides a compelling information-theoretic formulation of the exact renormalization group, expressed in the language of optimal transport. A striking consequence is that a regularization of the relative entropy is in fact an RG monotone. We compute this monotone in several examples. Our results apply more broadly to other exact renormalization group flow equations, including widely used specializations of Wegner-Morris flow. Moreover, our optimal transport framework for RG allows us to reformulate RG flow as a variational problem. This enables new numerical techniques and establishes a systematic connection between neural network methods and RG flows of conventional field theories.",
+    "selection_rationale": "该旧版全文证据包没有经过 v2.3 的逐图导出与图号核验；为避免错配图片，封面使用论文题目和经全文核对的摘要，关键论证保留在卡片正文中。"
+  }
+}

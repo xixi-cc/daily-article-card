@@ -1,0 +1,130 @@
+{
+  "arxiv_id": "2411.16416",
+  "source_version": "v2",
+  "source_pdf": "https://arxiv.org/pdf/2411.16416",
+  "title_en": "A Multi-agent Framework for Physical Laws Discovery",
+  "title_zh": "用于发现物理规律的多智能体框架",
+  "curation_status": "full_text_verified",
+  "verified_metadata": {
+    "arxiv_id": "2411.16416",
+    "version": "v2",
+    "title": "A Multi-agent Framework for Physical Laws Discovery",
+    "abstract": "Discovering explicit physical laws has traditionally depended on human intuition and domain expertise. Recent advances in artificial intelligence, particularly large language models (LLMs), offer a new route to accelerate this process by automating key steps from hypothesis generation to interpretable model construction. Here we develop an LLM-based multi-agent framework for physical-law discovery that integrates literature-guided variable selection, hypothesis formulation, symbolic regression, formula derivation, and mechanistic explanation. We validate the framework on three representative materials problems: the glass-forming ability (GFA) of metallic glasses, the Vickers hardness of compounds, and the Young's modulus of multi-component alloys. Using physically and chemically meaningful descriptors as inputs, the discovered formulas achieve strong agreement with reference data, with correlation coefficients up to 0.94 (GFA), 0.86 (hardness), and 0.94 (Young's modulus), while remaining compact and interpretable. Beyond fitting, the Young's modulus formula generalizes to quaternary and quinary alloys, improving prediction accuracy by up to 78.8% relative to the classical rule of mixtures. By integrating cross-disciplinary knowledge, reflection mechanisms, and expert-like reasoning ability into symbolic regression, our AI-centric framework offers a robust and extensible platform for automated physical laws discovery, demonstrating that AI can increasingly serve as an essential role in modern scientific research by thinking and acting like field experts.",
+    "authors": [
+      "Bo Hu",
+      "Siyu Liu",
+      "Beilin Ye",
+      "Yun Hao",
+      "Yanhui Liu",
+      "Yang Lu",
+      "Ju Li",
+      "David J. Srolovitz",
+      "Tongqi Wen"
+    ],
+    "categories": [
+      "cond-mat.mtrl-sci",
+      "physics.comp-ph"
+    ],
+    "primary_category": "cond-mat.mtrl-sci",
+    "published": "2024-11-25T14:19:35Z",
+    "comment": ""
+  },
+  "sections": [
+    {
+      "title": "作者信息",
+      "bullets": [
+        "作者：Bo Hu、Siyu Liu、Beilin Ye、Yun Hao、Yanhui Liu、Yang Lu、Ju Li、David J. Srolovitz、Tongqi Wen。",
+        "机构：The University of Hong Kong、HKU-SIRI、South China University of Technology、Institute of Physics CAS、MIT。",
+        "官方快照：arXiv:2411.16416v2；主分类 cond-mat.mtrl-sci。"
+      ]
+    },
+    {
+      "title": "摘要",
+      "bullets": [
+        "框架把文献检索、变量/算符选择、LLM 生成候选公式、数值拟合与复杂度评分、reflection、beam search 和 RAG 解释串成闭环，在金属玻璃 GFA、化合物 Vickers hardness 与多主元合金 Young’s modulus 三个任务上搜索紧凑闭式关系。",
+        "论文报告三任务最高 R² 分别约 0.94、0.86、0.94；Young’s-modulus 公式进一步用于未见 quaternary/quinary alloys，但这些数字来自作者协议，不等于独立复现。"
+      ]
+    },
+    {
+      "title": "背景",
+      "bullets": [
+        "深度模型可预测材料性质，却常缺少可解释机制；传统 symbolic regression 又面对组合搜索和变量选择。作者将 LLM 的跨领域先验用于提出物理上可读的公式 skeleton，再用确定性的数值评分筛选。",
+        "LLM 幻觉被明确视为风险：RAG、允许算符集合、可执行 Python 表达式、无效表达式剔除和 reflection 是约束层，但它们不能保证发现的是因果定律。"
+      ]
+    },
+    {
+      "title": "模型与方法",
+      "bullets": [
+        "流程含六阶段：文献/数据准备、任务 prompt、beam 初始化、候选生成与评分、科学解释、下游设计（pp. 2–3, Fig. 1）。Gemini-2.5-flash 与 DeepSeek-V3 在固定变量和算符下各独立运行三次。",
+        "候选按 s(f)=Error(f,y)+λC(f) 排名；Error 默认 NMSE，C 是加权 operator count。每层保留 K 个节点、每节点生成 N 个子式，搜索到深度 D；trajectory memory 和 reflection 反馈抑制重复与无效语法（pp. 2–4, Eqs. 1–2, Algorithm 1）。",
+        "数据规模分别为 GFA 56 个 metallic-glass compositions、hardness 61 compounds、Young’s modulus 170 binary/ternary compositions；descriptor 由实验、DFT 或 matminer 提供（Methods pp. 9–10）。"
+      ]
+    },
+    {
+      "title": "核心结果与证据",
+      "bullets": [
+        "hardness 轨迹从 bulk-modulus baseline 经指数修正到加入 shear modulus，score 从 0.254 降至 0.193；最终平均 R²≈0.85，与同数据既有研究相近（p. 4, Fig. 2）。",
+        "Young’s-modulus 公式在 held-out binary/ternary 数据上 R² 接近 0.97；去掉平均质量项后 test R² 从 0.97 降到 0.89，展示 accuracy–interpretability 权衡（pp. 5–6）。",
+        "quaternary Mo–Nb–Ta–W 扫描中，formula 相对 DPA-3.1-3M 的 MAPE 大多 <5%，LoM 某些组成超过 17%；特定组成的 MAPE 相对 LoM 最多降低 78.8%（pp. 6–7, Fig. 3）。",
+        "quinary Mo–Nb–Ta–W–V 用 NSGA-II 同时优化 E 与 B/G，各元素 5–35 at.%、1 at.% 步长；三组 Pareto compositions 与 DPA-3.1-3M 比较时两个目标 MAPE 均 <10%（p. 8, Table II）。"
+      ]
+    },
+    {
+      "title": "有效性与局限",
+      "bullets": [
+        "LLM 对专业物理领域的深度依赖训练语料；当前 RAG 每任务只用代表性文献，数据整理与文献选择仍需人工。",
+        "symbolic regression 仍是高成本搜索；goodness-of-fit 主导的选择可能产生敏感常数或过复杂公式。作者把量纲一致性、稳健性和先验物理约束列为后续选择准则。",
+        "三个案例都是小型 tabular materials datasets；没有多模态原始谱图/显微图，也不能据此断言框架会发现未知基本定律。",
+        "代码说明为“upon acceptance/按请求提供”，因此当前卡片不把代码可得性或完整复现性视为已确认。"
+      ]
+    },
+    {
+      "title": "复现与资源",
+      "bullets": [
+        "复现需固定两种 base model、三次独立运行、beam 的 D/N/K、λ 和 operator weights，并保存每个 trajectory、拟合参数、无效表达式与 reflection。",
+        "数据：GFA 56 样本在 SI；其他数据来自引用论文。quaternary 验证使用 DPA-3.1-3M/APEX/LAMMPS，quinary 优化使用 NSGA-II。",
+        "本站 PDF SHA-256：410b5458f697e836f40a1800f036844df08d57a5dd92fb3a8c8f520e2174c1b7。",
+        "Evidence status: full-text verified; no independent reproduction performed."
+      ]
+    },
+    {
+      "title": "阅读指南",
+      "bullets": [
+        "先读 Fig. 1 与 Eqs. 1–2，把 LLM proposal 与数值评分分开；再看 Fig. 2 的公式演化，判断 reflection 是否带来可解释增量。",
+        "最关键的外推证据是 Fig. 3 和 Table II；同时读 pp. 8–9 的 limitations，避免把拟合/迁移结果称作因果定律发现。",
+        "复现时优先重跑三 seed 分布和 human-in-the-loop ablation，而不是只报告 best formula。"
+      ]
+    }
+  ],
+  "evidence_refs": [
+    "paper.pdf pp. 1-4: architecture, objective, beam/reflection and formula trajectory",
+    "paper.pdf pp. 4-8: three-task results, quaternary and quinary transfer",
+    "paper.pdf pp. 8-10: limitations, agent setup, datasets and availability",
+    "Evidence status: full-text verified; no independent reproduction performed."
+  ],
+  "card_standard_version": "2.3",
+  "paper_profile": "theory_numerics",
+  "style_reference": "physicist_daily_arxiv",
+  "provenance": {
+    "program": "Collection",
+    "catalog": "Paper Collection",
+    "catalog_record_id": "4e8bf8c8c318b027",
+    "catalog_record_ids": [
+      "4e8bf8c8c318b027"
+    ],
+    "catalog_topic": "AI for Science",
+    "collection_date": "2026-08-24",
+    "sampled_at": "2026-08-26",
+    "selected_by": "full_collection_backfill",
+    "sampling_seed": "not_applicable_full_collection",
+    "candidate_count": 452,
+    "legacy_full_text_card": "2411.16416.json"
+  },
+  "equation_refs": [],
+  "figure_refs": [],
+  "cover": {
+    "mode": "title_abstract",
+    "abstract_text": "Discovering explicit physical laws has traditionally depended on human intuition and domain expertise. Recent advances in artificial intelligence, particularly large language models (LLMs), offer a new route to accelerate this process by automating key steps from hypothesis generation to interpretable model construction. Here we develop an LLM-based multi-agent framework for physical-law discovery that integrates literature-guided variable selection, hypothesis formulation, symbolic regression, formula derivation, and mechanistic explanation. We validate the framework on three representative materials problems: the glass-forming ability (GFA) of metallic glasses, the Vickers hardness of compounds, and the Young's modulus of multi-component alloys. Using physically and chemically meaningful descriptors as inputs, the discovered formulas achieve strong agreement with reference data, with c",
+    "selection_rationale": "该旧版全文证据包没有经过 v2.3 的逐图导出与图号核验；为避免错配图片，封面使用论文题目和经全文核对的摘要，关键论证保留在卡片正文中。"
+  }
+}

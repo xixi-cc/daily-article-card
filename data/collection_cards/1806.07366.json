@@ -1,0 +1,145 @@
+{
+  "arxiv_id": "1806.07366",
+  "source_version": "v5",
+  "source_pdf": "https://arxiv.org/pdf/1806.07366v5",
+  "title_en": "Neural Ordinary Differential Equations",
+  "title_zh": "神经常微分方程",
+  "curation_status": "full_text_verified",
+  "verified_metadata": {
+    "arxiv_id": "1806.07366",
+    "version": "v5",
+    "title": "Neural Ordinary Differential Equations",
+    "abstract": "We introduce a new family of deep neural network models. Instead of specifying a discrete sequence of hidden layers, we parameterize the derivative of the hidden state using a neural network. The output of the network is computed using a black-box differential equation solver. These continuous-depth models have constant memory cost, adapt their evaluation strategy to each input, and can explicitly trade numerical precision for speed. We demonstrate these properties in continuous-depth residual networks and continuous-time latent variable models. We also construct continuous normalizing flows, a generative model that can train by maximum likelihood, without partitioning or ordering the data dimensions. For training, we show how to scalably backpropagate through any ODE solver, without access to its internal operations.",
+    "authors": [
+      "Ricky T. Q. Chen",
+      "Yulia Rubanova",
+      "Jesse Bettencourt",
+      "David Duvenaud"
+    ],
+    "categories": [
+      "cs.LG",
+      "cs.AI",
+      "stat.ML"
+    ],
+    "primary_category": "cs.LG",
+    "published": "2018-06-19T17:50:12Z",
+    "comment": "NeurIPS 2018"
+  },
+  "sections": [
+    {
+      "title": "作者信息",
+      "bullets": [
+        "作者：Ricky T. Q. Chen、Yulia Rubanova、Jesse Bettencourt、David Duvenaud；University of Toronto / Vector Institute。",
+        "官方快照：arXiv:1806.07366v5；NeurIPS 2018；分类cs.LG、cs.AI、stat.ML。",
+        "论文同时包含continuous-depth classifier、continuous normalizing flow和latent time-series三条线；其原始实验规模较小，不能只用后续Neural ODE影响力替代本文证据。"
+      ]
+    },
+    {
+      "title": "摘要",
+      "bullets": [
+        "把residual update h_{t+1}=h_t+f(h_t,θ_t)取连续极限，令dz/dt=f(z,t,θ)，网络输出由black-box ODE solver从t0积分到t1。",
+        "adjoint sensitivity method反向解增广ODE，理论上无需存储所有solver internals，得到相对于初态、参数和时间的梯度。",
+        "instantaneous change-of-variables把flow的log-Jacobian determinant替换为vector field Jacobian trace，形成continuous normalizing flows；另以latent ODE建模不规则采样时间序列。"
+      ]
+    },
+    {
+      "title": "背景",
+      "bullets": [
+        "离散ResNet层数固定、每层要存activation；ODE表示将“深度”交给adaptive solver，用tolerance控制function evaluations与数值误差。",
+        "传统normalizing flow每层需可逆映射并计算log determinant，宽dense Jacobian代价高；连续流在Lipschitz uniqueness条件下整体自动可逆，密度变化只需trace。",
+        "RNN通常把时间间隔离散化或附加Δt；latent ODE由共享continuous dynamics在任意observation times求状态，天然支持不规则时间戳。"
+      ]
+    },
+    {
+      "title": "模型与方法",
+      "bullets": [
+        "ODE block计算z(t1)=z(t0)+∫f(z(t),t,θ)dt；solver按absolute/relative tolerance自适应选步，NFE是更实际的implicit depth。",
+        "定义adjoint a(t)=∂L/∂z(t)，满足da/dt=−a^T∂f/∂z；从t1反向同时重建z并积分parameter VJP，Algorithm 1用一次augmented ODE solve求梯度。",
+        "该constant-memory说法针对不保存forward solver trajectory的adjoint实现；vector-Jacobian products由autodiff计算，时间仍随forward/backward NFE与f成本增长。",
+        "CNF定理：若f对z uniformly Lipschitz且对t连续，d log p(z(t))/dt=−tr(∂f/∂z)。trace对sum线性，使M hidden units代价随M线性而非dense determinant的立方。",
+        "MNIST ODE-Net把6个residual blocks替为ODESolve；论文用SciPy LSODE/VODE implicit Adams、GPU TensorFlow dynamics和Python autograd adjoint。",
+        "latent ODE用25-unit RNN识别z0 posterior、4维latent、20-hidden-unit dynamics和20-hidden-unit decoder；数据为1000条双向二维spirals、每条100 time points加Gaussian noise。"
+      ]
+    },
+    {
+      "title": "核心结果与证据",
+      "bullets": [
+        "Table 1 MNIST：ResNet test error 0.41%、0.60M params、memory O(L)；RK-Net 0.47%、0.22M、memory/time O(L~)；adjoint ODE-Net 0.42%、0.22M、memory O(1)、time O(L~)。",
+        "Figure 3显示tolerance越严NFE与forward time越高，并验证output error随tolerance受控；训练过程中NFE上升，说明solver为变复杂的vector field自动增加计算。",
+        "同一Figure报告backward NFE约为forward一半，从而作者在该MNIST实现中观察到adjoint不仅省memory也较direct-through-solver反传省计算；这不是所有ODE/solver的普遍保证。",
+        "CNF toy density matching中CNF用Adam 10,000 iterations，planar NF按原建议用RMSprop 500,000 iterations；Figure 4常见CNF loss更低，但optimizer和训练预算不等，不能视为严格同成本architecture ablation。",
+        "64-wide CNF与64个单hidden-unit NF layers的two-circles/two-moons图显示CNF能平滑旋转/变形density；论文未给标准图像likelihood或高维bits/dim benchmark。",
+        "Table 2 irregular spiral extrapolation RMSE：30/100 observations时RNN 0.3937、Latent ODE 0.1642；50点0.3202 vs 0.1502；100点0.1813 vs 0.1346。",
+        "classification tolerance可放宽至10⁻3、density至10⁻5而无观察到性能下降；sequence默认1.5×10⁻8。数值为本文配置经验，不是跨任务安全阈值。"
+      ]
+    },
+    {
+      "title": "有效性与局限",
+      "bullets": [
+        "ODE-Net不是求解已知物理ODE：f本身由网络学习；连续时间参数化提供inductive bias和solver interface，但不自动带来物理守恒、可解释性或因果动力学。",
+        "O(1) memory依赖从终点反向重建state；若forward dynamics反向不稳定或solver误差累积，gradient会偏。Section 6建议checkpointing，但正文实验只作informal reversal check。",
+        "adaptive batching可能由最难样本决定全batch步数，理论最坏可比单独solve多K倍；刚性系统和不光滑vector fields也可能显著增加NFE。",
+        "Picard uniqueness需uniform Lipschitz与finite weights；数值solver仍只近似轨迹，可逆连续flow也无法让trajectories crossing，从而限制某些拓扑变换。",
+        "MNIST结果只说明小网络accuracy可匹配ResNet，未验证CIFAR/ImageNet规模、wall-clock优势或硬件利用率；implicit CPU/Fortran solver与GPU callbacks也不代表现代部署。",
+        "CNF比较的optimizer与iterations差异巨大，而且只是二维toy targets；“more expressive/easier to train”证据是特定设置下的loss与图。",
+        "latent ODE只在合成spirals上比较简单RNN，没有真实clinical/irregular dataset、calibration或long-horizon stability。",
+        "本站未运行torchdiffeq、adjoint gradient check或任何训练。"
+      ]
+    },
+    {
+      "title": "复现与资源",
+      "bullets": [
+        "代码：https://github.com/rtqichen/torchdiffeq；应固定论文v5对应历史commit、solver、dtype与tolerances，现代默认实现可能不同。",
+        "先用小ODE对adjoint gradient与高精度direct differentiation/finite differences比较，扫描forward/backward tolerance和dynamics stiffness，并记录state reconstruction error。",
+        "MNIST复现同时保存test error、params、peak memory、wall-clock、forward/backward NFE分布；把accuracy与solver tolerance的Pareto curve而非单点作为结果。",
+        "CNF公平比较统一optimizer、updates、function evaluations与parameter count，除toy loss外报告sampling/inversion error和density normalization checks。",
+        "spiral实验固定1000 trajectories及30/50/100 sampling protocol，并增加多seed、interpolation/extrapolation分段RMSE；与Δt-aware RNN采用同等调参预算。",
+        "本站 PDF SHA-256：435299cc42b75f9ad43d9aa246c96d3d7bdcc3297aa57f419bdc571b9c25137c。",
+        "Evidence status: full-text verified; no independent reproduction performed."
+      ]
+    },
+    {
+      "title": "阅读指南",
+      "bullets": [
+        "先读Figure 1与Eq. (2)理解continuous-depth定义；再读Algorithm 1，区分forward solve、reverse reconstruction和adjoint。",
+        "看Table 1与Figure 3时同时追踪NFE、memory和tolerance，不把O(1) memory误写成O(1) compute。",
+        "读Eqs. (6–10)确认CNF的创新是instantaneous trace公式与wide dynamics，而非任意flow都免Jacobian成本。",
+        "最后读Table 2与Section 6；论文自身对minibatching、uniqueness、tolerance和reverse numerical error给出了关键边界。"
+      ]
+    }
+  ],
+  "evidence_refs": [
+    "paper.pdf pp. 1-3: continuous-depth definition and adjoint algorithm",
+    "paper.pdf pp. 3-4: MNIST Table 1, tolerance and NFE evidence",
+    "paper.pdf pp. 4-6: instantaneous change of variables and CNF toy experiments",
+    "paper.pdf pp. 6-8: latent ODE model and spiral RMSE Table 2",
+    "paper.pdf pp. 8-9: minibatching, uniqueness, tolerances and reverse-error limitations",
+    "paper.pdf pp. 10-18: theorem proof, adjoint derivation and experiment algorithms",
+    "Evidence status: full-text verified; no independent reproduction performed."
+  ],
+  "card_standard_version": "2.3",
+  "paper_profile": "ai_empirical",
+  "style_reference": "physicist_daily_arxiv",
+  "provenance": {
+    "program": "Collection",
+    "catalog": "Paper Collection",
+    "catalog_record_id": "633ee36ab4dd4efe",
+    "catalog_record_ids": [
+      "633ee36ab4dd4efe"
+    ],
+    "catalog_topic": "Neural Operators",
+    "collection_date": "2026-08-24",
+    "sampled_at": "2026-08-26",
+    "selected_by": "full_collection_backfill",
+    "sampling_seed": "not_applicable_full_collection",
+    "candidate_count": 452,
+    "legacy_full_text_card": "1806.07366.json"
+  },
+  "equation_refs": [],
+  "figure_refs": [],
+  "cover": {
+    "mode": "title_abstract",
+    "abstract_text": "We introduce a new family of deep neural network models. Instead of specifying a discrete sequence of hidden layers, we parameterize the derivative of the hidden state using a neural network. The output of the network is computed using a black-box differential equation solver. These continuous-depth models have constant memory cost, adapt their evaluation strategy to each input, and can explicitly trade numerical precision for speed. We demonstrate these properties in continuous-depth residual networks and continuous-time latent variable models. We also construct continuous normalizing flows, a generative model that can train by maximum likelihood, without partitioning or ordering the data dimensions. For training, we show how to scalably backpropagate through any ODE solver, without access to its internal operations.",
+    "selection_rationale": "该旧版全文证据包没有经过 v2.3 的逐图导出与图号核验；为避免错配图片，封面使用论文题目和经全文核对的摘要，关键论证保留在卡片正文中。"
+  }
+}

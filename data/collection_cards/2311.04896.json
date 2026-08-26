@@ -1,0 +1,151 @@
+{
+  "arxiv_id": "2311.04896",
+  "source_version": "v2",
+  "source_pdf": "https://arxiv.org/pdf/2311.04896v2",
+  "title_en": "Machine-learning optimized measurements of chaotic dynamical systems via the information bottleneck",
+  "title_zh": "通过信息瓶颈机器学习优化混沌动力系统的测量",
+  "curation_status": "full_text_verified",
+  "verified_metadata": {
+    "arxiv_id": "2311.04896",
+    "version": "v2",
+    "title": "Machine-learning optimized measurements of chaotic dynamical systems via the information bottleneck",
+    "abstract": "Deterministic chaos permits a precise notion of a perfect measurement as one that, when obtained repeatedly, captures all of the information created by the system's evolution with minimal redundancy. Finding an optimal measurement is challenging, and has generally required intimate knowledge of the dynamics. We establish an equivalence between a perfect measurement and a variant of the information bottleneck. As a consequence, we employ machine learning to optimize measurement processes that efficiently extract information from trajectory data. We obtain approximately optimal measurements for multiple chaotic maps and lay the groundwork for efficient information extraction from general time series.",
+    "authors": [
+      "Kieran A. Murphy",
+      "Dani S. Bassett"
+    ],
+    "categories": [
+      "cs.LG",
+      "cs.IT",
+      "nlin.CD"
+    ],
+    "primary_category": "cs.LG",
+    "published": "2023-11-08T18:56:29Z"
+  },
+  "sections": [
+    {
+      "title": "作者信息",
+      "bullets": [
+        "Kieran A. Murphy与Dani S. Bassett来自University of Pennsylvania，Bassett兼属Santa Fe Institute及多个生医/物理学系。",
+        "官方快照arXiv:2311.04896v2，主分类cs.LG，另含cs.IT与nlin.CD；正文5页加7页Supplemental Material。",
+        "项目公开代码与Colab，实验在单张12 GB RTX 3060上运行；论文对象是三个已知低维chaotic maps。"
+      ]
+    },
+    {
+      "title": "摘要",
+      "bullets": [
+        "连续状态x通过固定partition U=f(X)变为符号；反复测量所得symbol sequence若entropy rate h∞(U)=KS entropy h_KS，就捕获系统每步产生的全部信息。",
+        "理想partition还最小化单次measurement entropy H(U)，避免用极细网格以高冗余达到同一entropy rate。",
+        "作者把length-L trajectory的每个state分别压缩、同时最大化compressed sequence对reference state的信息，写成distributed information bottleneck。",
+        "神经网络以variational KL bottleneck和soft vector quantization学习binary partitions，InfoNCE让symbol sequence预测reference-state representation。",
+        "Ikeda、Hénon与logistic maps上，L约10–12时学得partition的估计entropy rate达到至少0.99h_KS，并接近已知generating partitions或其iterates。"
+      ]
+    },
+    {
+      "title": "背景",
+      "bullets": [
+        "chaotic continuous trajectory包含无限精度状态，但metric entropy给每步真正产生的新information rate；超过这一rate的measurement precision在渐近预测信息上是冗余。",
+        "generating partition可用极少symbols让symbolic dynamics保留全部information，但传统构造依赖stable/unstable manifolds、homoclinic tangencies或周期轨道等系统知识。",
+        "普通forecast ML常把full-precision state作为输入；本文优化的不是forecast dynamics本身，而是反复使用的state-space sensor/quantizer。",
+        "KS entropy是所有partitions的entropy-rate supremum；单次H(U)只给上界，balanced random partition可有高H(U)却因symbol redundancy得到低h∞。"
+      ]
+    },
+    {
+      "title": "模型与方法",
+      "bullets": [
+        "对ergodic discrete mapF和invariant measure p(x)，从long trajectory抽stationary subsequences X_L；固定U=f(X)逐点产生U_L。",
+        "目标L=−I(U_L;X_ref)+βΣ_iI(U_i;X_i)：第一项保留aggregate trajectory information，第二项惩罚每次测量传输的信息。",
+        "严格等价于minimum-entropy full-information partition需要L→∞；finite L用reference state代表trajectory information并产生可优化近似。",
+        "encoder第一MLP把x映到8维Gaussian bottleneck并以KL到N(0,1)惩罚信息；第二MLP输出two-symbol softmax，训练后argmax硬化。",
+        "第三MLP聚合concatenated U_L，第四MLP编码X_ref；2048 batch的InfoNCE在32维shared representation中比较paired与negative states。",
+        "β从10到10^−4 logarithmically anneal，达到约1 bit/measurement停止；输入增加sin(2^kx) positional features。",
+        "评估用context-tree weighting对2千到2百万symbol lengths作finite-size fit h_N=h∞+c logN/N^γ，而不是用training objective本身冒充entropy rate。",
+        "benchmark maps为logistic r=3.7115、Hénon a=1.4,b=0.3与Ikeda a=1,b=0.9,κ=0.4,η=6。"
+      ]
+    },
+    {
+      "title": "核心结果与证据",
+      "bullets": [
+        "Figure 1b把random neural partitions投到(H(U),h∞)平面；学得Ikeda binary partition靠近h_KS上界且H(U)约一bit，说明高entropy rate并非随机coloring的普遍结果。",
+        "Figure 2对每个L做20 trials：L增加时h∞相对h_KS的shortfall收缩、分布变窄；L≈10后稳定找到≥0.99h_KS的partitions。",
+        "L=12最佳Hénon/logistic partitions是文献generator的轻微变体；Ikeda partition不同于若干既有generator，但一个base cut与prior work接近。",
+        "Figure 3显示选择X_ref在trajectory中的不同位置会得到同一base partition的forward/backward iterates；这些iterates也都是generators。",
+        "减慢β annealing可在base partition的iterates中走得更深，表明optimization path与information schedule影响得到哪一个等价partition。",
+        "不同partition iterate需要aggregation network以不同方式组合多个symbols；训练同时选择measurement geometry与finite-sequence decoder。",
+        "Supplement用已知generators比较Lempel–Ziv、cross parsing、block entropy和CTW，选择CTW finite-size extrapolation以减少entropy-rate估计偏差。",
+        "完整分析可从公开repository/Colab运行；每个optimization加entropy estimation在报告硬件上耗时数分钟。"
+      ]
+    },
+    {
+      "title": "有效性与局限",
+      "bullets": [
+        "‘perfect’是information-theoretic渐近定义，不是有限horizon state reconstruction、forecast error为零或传感器无噪声。",
+        "distributed-IB等价严格成立于L→∞；0.99h_KS是三个maps上的finite-L empirical benchmark，非理论保证。",
+        "只测试一维/二维、已知参数、ergodic且noise-free discrete maps；高维spatiotemporal chaos、continuous flows和nonstationarity未验证。",
+        "h_KS与generator在benchmark中已知，便于评价；未知系统需要另估metric entropy，误差会直接影响‘接近optimal’结论。",
+        "entropy-rate estimator依赖CTW与finite-size ansatz，partition-specific convergence可变；error bars未包含所有model-selection uncertainty。",
+        "binary alphabet和约1 bit stop rule适合所选h_KS；高entropy systems需更多symbols或更高per-state capacity。",
+        "positional encoding、architecture、InfoNCE bound、negative sampling与β schedule都会塑造partition，尚无global-optimum或identifiability保证。",
+        "soft stochastic encoder训练后突然hard argmax，可能产生train–inference gap；论文以final hard-symbol entropy评估缓解但未系统扫描。",
+        "generator不唯一，学得partition与文献cut不同不代表错误；反之视觉相似也不证明所有generating properties。",
+        "项目页面/代码可用性是复现资源，但本站未执行notebook或验证当前dependency state。"
+      ]
+    },
+    {
+      "title": "复现与资源",
+      "bullets": [
+        "先从公开代码复现三maps与Figure S1的known-generator entropy rates；固定trajectory seed并保存CTW sequence-length fits与residuals。",
+        "每个L至少20 random initializations，报告best/median/worst h∞、H(U)、InfoNCE和KL path，避免只选最佳partition。",
+        "hard partition评估须用独立long trajectory，不与training subsequences重叠；同时测symbol imbalance、conditional block entropies和forecast/reconstruction probes。",
+        "对β schedule、reference index、alphabet size、positional features、encoder capacity与softmax hardening做factorial ablation，验证iterates解释。",
+        "加入observation noise、parameter drift和missing samples，检查partition boundary stability与h∞ degradation；这是实际sensor设计的关键。",
+        "扩展continuous flow时明确sampling interval，避免oversampling使symbol redundancy人为增大；对interval扫描并与flow entropy rate换算。",
+        "高维测试应限制sensor complexity/latency并和random projection、k-means、predictive IB及domain-informed sensors比较。",
+        "本站PDF SHA-256：b6934c217c1df0f8d6e50d42076e4fd49b3134d642d65fbaff1d67cf6da6a915。",
+        "Evidence status: full-text verified; no independent reproduction performed."
+      ]
+    },
+    {
+      "title": "阅读指南",
+      "bullets": [
+        "先看Figure 1b并区分H(U)、h∞(U)、h_KS三个量；理想点是entropy rate饱和且单次entropy低。",
+        "Eq. (2)是概念核心：distributed sources是trajectory states，auxiliary/reference是同一trajectory中的一个continuous state。",
+        "Figure 2判断finite-L性能，Figure 3解释为何不同runs会得到不同但相关的partitions。",
+        "最后读Supplement B–C，entropy-rate外部评估和完整training schedule决定0.99h_KS数字是否可信。"
+      ]
+    }
+  ],
+  "evidence_refs": [
+    "paper.pdf pp. 1-3: metric entropy, generating partitions and distributed information-bottleneck objective",
+    "paper.pdf pp. 3-4: neural bottleneck, vector quantization, InfoNCE and entropy-rate evaluation",
+    "paper.pdf pp. 4-5: three-map results, partition iterates, conclusions and scope limits",
+    "paper.pdf pp. 6-8: map definitions and CTW finite-size entropy-rate benchmarks",
+    "paper.pdf pp. 8-12: network architecture, annealing, hardening and supplemental partition analyses",
+    "Evidence status: full-text verified; no independent reproduction performed."
+  ],
+  "card_standard_version": "2.3",
+  "paper_profile": "ai_empirical",
+  "style_reference": "physicist_daily_arxiv",
+  "provenance": {
+    "program": "Collection",
+    "catalog": "Paper Collection",
+    "catalog_record_id": "b6934c217c1df0f8",
+    "catalog_record_ids": [
+      "b6934c217c1df0f8"
+    ],
+    "catalog_topic": "Information Theory",
+    "collection_date": "2026-08-23",
+    "sampled_at": "2026-08-26",
+    "selected_by": "full_collection_backfill",
+    "sampling_seed": "not_applicable_full_collection",
+    "candidate_count": 452,
+    "legacy_full_text_card": "2311.04896.json"
+  },
+  "equation_refs": [],
+  "figure_refs": [],
+  "cover": {
+    "mode": "title_abstract",
+    "abstract_text": "Deterministic chaos permits a precise notion of a perfect measurement as one that, when obtained repeatedly, captures all of the information created by the system's evolution with minimal redundancy. Finding an optimal measurement is challenging, and has generally required intimate knowledge of the dynamics. We establish an equivalence between a perfect measurement and a variant of the information bottleneck. As a consequence, we employ machine learning to optimize measurement processes that efficiently extract information from trajectory data. We obtain approximately optimal measurements for multiple chaotic maps and lay the groundwork for efficient information extraction from general time series.",
+    "selection_rationale": "该旧版全文证据包没有经过 v2.3 的逐图导出与图号核验；为避免错配图片，封面使用论文题目和经全文核对的摘要，关键论证保留在卡片正文中。"
+  }
+}

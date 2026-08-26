@@ -1,0 +1,142 @@
+{
+  "arxiv_id": "1802.02840",
+  "source_version": "v4",
+  "source_pdf": "https://arxiv.org/pdf/1802.02840v4",
+  "title_en": "Neural Network Renormalization Group",
+  "title_zh": "神经网络重整化群",
+  "curation_status": "full_text_verified",
+  "verified_metadata": {
+    "arxiv_id": "1802.02840",
+    "version": "v4",
+    "title": "Neural Network Renormalization Group",
+    "abstract": "We present a variational renormalization group (RG) approach using a deep generative model based on normalizing flows. The model performs hierarchical change-of-variables transformations from the physical space to a latent space with reduced mutual information. Conversely, the neural net directly maps independent Gaussian noises to physical configurations following the inverse RG flow. The model has an exact and tractable likelihood, which allows unbiased training and direct access to the renormalized energy function of the latent variables. To train the model, we employ probability density distillation for the bare energy function of the physical problem, in which the training loss provides a variational upper bound of the physical free energy. We demonstrate practical usage of the approach by identifying mutually independent collective variables of the Ising model and performing accelerated hybrid Monte Carlo sampling in the latent space. Lastly, we comment on the connection of the present approach to the wavelet formulation of RG and the modern pursuit of information preserving RG.",
+    "authors": [
+      "Shuo-Hui Li",
+      "Lei Wang"
+    ],
+    "categories": [
+      "cond-mat.stat-mech",
+      "cs.LG",
+      "stat.ML"
+    ],
+    "primary_category": "cond-mat.stat-mech",
+    "published": "2018-02-08T13:16:01Z"
+  },
+  "sections": [
+    {
+      "title": "作者信息",
+      "bullets": [
+        "Shuo-Hui Li与Lei Wang来自中国科学院物理研究所；论文后续发表于Physical Review Letters 121, 260601 (2018)，DOI 10.1103/PhysRevLett.121.260601。",
+        "官方快照arXiv:1802.02840v4，主分类cond-mat.stat-mech，另含cs.LG、stat.ML；arXiv备注给出实现仓库github.com/li012589/NeuralRG。",
+        "本文提出NeuralRG：用MERA式分层可逆生成模型同时做概率变换、粗粒化解释和潜空间采样。"
+      ]
+    },
+    {
+      "title": "摘要",
+      "bullets": [
+        "NeuralRG把物理变量x与标准高斯潜变量z通过可逆映射x=g(z)相连；精确Jacobian使q(x)的归一化似然和诱导的潜空间有效能量都可计算。",
+        "网络交替使用disentangler与decimator：前者降低局部相关，后者把部分输出留给更粗尺度、其余作为不同尺度注入的潜变量。",
+        "训练最小化KL(q||π/Z)等价的probability-density-distillation损失，它是无量纲自由能−ln Z的变分上界；不是把mutual information最大化直接作为优化目标。",
+        "16×16临界二维Ising连续对偶模型上，作者展示自由能下降、潜变量互信息降低，并在相同HMC步数下让潜空间链比物理空间链更快到达结构因子参考值。"
+      ]
+    },
+    {
+      "title": "背景",
+      "bullets": [
+        "传统RG丢弃无关自由度而形成semigroup；normalizing flow整体可逆，因此NeuralRG保留生成方向，可从不同层注入独立噪声重建物理配置。",
+        "MERA启发来自分层因果锥与logarithmic depth，而不是把量子张量网络原封不动移植：这里变换的是经典概率密度，bijector可非线性且长程连接。",
+        "对于只含局部disentangler的网络，临界系统所需深度随线性尺寸增长；MERA式decimation把覆盖全系统的深度降到对数级。",
+        "论文用Eq. (2)说明在边界变量独立的理想条件下，decimation前后两区域互信息保持；瓶颈容量必须足够。它并未给出一个以最大化环境互信息为目标的RSMI训练算法。"
+      ]
+    },
+    {
+      "title": "模型与方法",
+      "bullets": [
+        "change-of-variables为ln q(x)=ln p(z)−ln|det ∂x/∂z|，p(z)=N(0,I)；逐层log-Jacobian可解释为对有效耦合的修正。",
+        "Real NVP bijector用仿射coupling x_<=z_<、x_>=z_>exp s(z_<)+t(z_<)，三角Jacobian可快速求值；补充材料每个block组合10步，s/t网络各有64个ELU hidden units。",
+        "损失L=∫q(x)[ln q(x)−lnπ(x)]dx，满足L+ln Z=KL(q||π/Z)≥0；从高斯z采样并重参数化后可直接用bare energy和Jacobian无偏估计L的Monte Carlo期望。",
+        "这是reverse KL，可能偏向目标的一个mode；作者用Z2 symmetrized mixture和低温额外对称正则缓和塌缩，但不改变有限容量带来的自由能gap。",
+        "潜空间HMC使用U(z)=−ln p(z)−lnπ(g(z))+ln q(g(z))，leapfrog后做Metropolis校正；所以最终物理observable不依赖生成模型近似精确命中目标，但效率取决于学得坐标是否改善混合。",
+        "Ising离散spin先经Gaussian积分构造连续场密度π(x)，再可按π(s|x)采样spin；K+αI取正定且最小特征值设为0.1。"
+      ]
+    },
+    {
+      "title": "核心结果与证据",
+      "bullets": [
+        "Figure 3使用N=16×16、周期边界、临界耦合的二维Ising连续对偶模型；Figure 3a中variational free energy随训练下降，但仍未达到有限格点exact lower bound。",
+        "Figure 3b比较uniform spin structure factor：潜空间HMC很快靠近直接Ising参考线，而在作者展示的相同HMC steps内，物理空间HMC没有thermalize。正文称计入网络训练和evaluation overhead后仍显著更高效，但未给wall-clock曲线或多实现公平基准。",
+        "Figure 4a对四个top-level latent variables的平均Jacobian响应呈现互不重叠的空间区域，类似非线性、data-adaptive wavelets；这是响应可视化，不是唯一的real-space block-spin识别。",
+        "Figure 4b/c的估计显示latent variables之间MI远小于physical variables之间MI，但不为零，与自由能gap一致；估计器引用Kraskov方法，正文图中未给置信区间。",
+        "Supplement Figure S1在32×32系统跨温度比较depth 2–5：更深网络自由能更低，临界附近误差更大；高温短程相关下浅层接近深层。",
+        "Supplement Figure S2/S3继续展示生成配置与温度依赖，但论文的定量中心仍是一类Ising模型，没有第二种物理系统或独立数据集。"
+      ]
+    },
+    {
+      "title": "有效性与局限",
+      "bullets": [
+        "可逆性保证变量变换和likelihood bookkeeping精确，不保证有限网络的q等于目标；free-energy gap与剩余潜变量MI直接显示近似误差。",
+        "reverse KL可mode-seeking；对称化需要已知Z2 symmetry，额外低温正则说明原始目标在broken-symmetry区域会遇到mode collapse风险。",
+        "传统RG追求固定点和反复应用同一尺度变换；NeuralRG允许各层不同并把分布映到预设高斯，因此学得collective variables不必等同于传统relevant operators，也未报告critical exponents或Hamiltonian flow。",
+        "‘mutually independent collective variables’在实验中是近似说法：Figure 4b明确仍有非零MI；top-level response的wavelet相似性主要是定性图像。",
+        "HMC加速只在一个连续化二维Ising设置、一个主要observable和展示的轨迹长度上验证；缺少effective sample size、autocorrelation time、acceptance、训练摊销、system-size scaling和多seed误差。",
+        "模型要求连续可微变量和可计算bare energy；离散Ising借助专门的continuous relaxation，方法能否直接处理受约束离散变量、frustration、fermion sign或分子奇异势并未验证。",
+        "MERA-like depth/MI论证给出架构动机，不是有限block容量下的普适逼近或复杂度定理；长程耦合和更高维系统的成本尚未量化。",
+        "本站没有运行作者代码、复现自由能或独立测量HMC混合。"
+      ]
+    },
+    {
+      "title": "复现与资源",
+      "bullets": [
+        "固定arXiv v4、16×16 PBC critical Ising coupling、continuous relaxation、α shift和Z2 symmetrization；保存PDF、代码commit、环境与所有随机种子。",
+        "逐epoch记录L、相对free-energy error、mode occupancy、各层MI、Jacobian尺度与数值稳定性；不要只报最优checkpoint。",
+        "HMC比较应匹配force evaluations和wall-clock预算，同时报告acceptance、ESS/s、integrated autocorrelation、R-hat、burn-in以及训练成本何时摊销。",
+        "用多seed和多observable复现Figure 3，包括structure factor、energy和magnetization分布；对物理空间HMC调参，避免把未thermalize基线当作固定结论。",
+        "做L=8,16,32,64 scaling及临界/非临界温度，比较不同depth、block width、普通flow、wavelet和cluster Monte Carlo；明确每项是否保持exact Metropolis correction。",
+        "作者资源：https://github.com/li012589/NeuralRG；本站PDF SHA-256：013297fed626bfcdfc8ecb92e7d7cb9150f353b3c4f38eaed8d4f27a0a050d19。",
+        "Evidence status: full-text verified; no independent reproduction performed."
+      ]
+    },
+    {
+      "title": "阅读指南",
+      "bullets": [
+        "先读Figure 1和Eq. (1)，确认inference RG与generation inverse-RG是同一个bijective flow的两个方向。",
+        "接着读Figure 2和Eq. (2)，把MI conservation的条件性架构论证与实际训练损失区分开。",
+        "再读Eq. (3)–(6)，核对reverse KL、自由能上界以及潜空间HMC经Metropolis校正后为何仍可给无偏目标采样。",
+        "最后对照Figures 3–4和Supplement S1：把训练近似、采样正确性、混合效率与物理RG解释分别评价，不把一次Ising演示外推成通用RG求解器。"
+      ]
+    }
+  ],
+  "evidence_refs": [
+    "paper.pdf pp. 1-2: NeuralRG architecture, bijective change of variables and mutual-information argument",
+    "paper.pdf pp. 3-4: PDD/free-energy objective, latent-space HMC and critical Ising setup",
+    "paper.pdf pp. 4-5: free-energy, structure-factor, response and mutual-information results with discussion",
+    "paper.pdf pp. 8-9: Real NVP implementation, HMC algorithm and symmetry treatment",
+    "paper.pdf p. 10: temperature/depth ablation and mode-collapse regularization",
+    "Evidence status: full-text verified; no independent reproduction performed."
+  ],
+  "card_standard_version": "2.3",
+  "paper_profile": "ai_empirical",
+  "style_reference": "physicist_daily_arxiv",
+  "provenance": {
+    "program": "Collection",
+    "catalog": "Paper Collection",
+    "catalog_record_id": "bcd11d0a54fedb0e",
+    "catalog_record_ids": [
+      "bcd11d0a54fedb0e"
+    ],
+    "catalog_topic": "Renormalization Group",
+    "collection_date": "2026-08-24",
+    "sampled_at": "2026-08-26",
+    "selected_by": "full_collection_backfill",
+    "sampling_seed": "not_applicable_full_collection",
+    "candidate_count": 452,
+    "legacy_full_text_card": "1802.02840.json"
+  },
+  "equation_refs": [],
+  "figure_refs": [],
+  "cover": {
+    "mode": "title_abstract",
+    "abstract_text": "We present a variational renormalization group (RG) approach using a deep generative model based on normalizing flows. The model performs hierarchical change-of-variables transformations from the physical space to a latent space with reduced mutual information. Conversely, the neural net directly maps independent Gaussian noises to physical configurations following the inverse RG flow. The model has an exact and tractable likelihood, which allows unbiased training and direct access to the renormalized energy function of the latent variables. To train the model, we employ probability density distillation for the bare energy function of the physical problem, in which the training loss provides a variational upper bound of the physical free energy. We demonstrate practical usage of the approach by identifying mutually independent collective variables of the Ising model and performing accele",
+    "selection_rationale": "该旧版全文证据包没有经过 v2.3 的逐图导出与图号核验；为避免错配图片，封面使用论文题目和经全文核对的摘要，关键论证保留在卡片正文中。"
+  }
+}

@@ -1,0 +1,146 @@
+{
+  "arxiv_id": "2102.06701",
+  "source_version": "v2",
+  "source_pdf": "https://arxiv.org/pdf/2102.06701v2",
+  "title_en": "Explaining Neural Scaling Laws",
+  "title_zh": "解释神经网络缩放定律",
+  "curation_status": "full_text_verified",
+  "verified_metadata": {
+    "arxiv_id": "2102.06701",
+    "version": "v2",
+    "title": "Explaining Neural Scaling Laws",
+    "abstract": "The population loss of trained deep neural networks often follows precise power-law scaling relations with either the size of the training dataset or the number of parameters in the network. We propose a theory that explains the origins of and connects these scaling laws. We identify variance-limited and resolution-limited scaling behavior for both dataset and model size, for a total of four scaling regimes. The variance-limited scaling follows simply from the existence of a well-behaved infinite data or infinite width limit, while the resolution-limited regime can be explained by positing that models are effectively resolving a smooth data manifold. In the large width limit, this can be equivalently obtained from the spectrum of certain kernels, and we present evidence that large width and large dataset resolution-limited scaling exponents are related by a duality. We exhibit all four scaling regimes in the controlled setting of large random feature and pretrained models and test the predictions empirically on a range of standard architectures and datasets. We also observe several empirical relationships between datasets and scaling exponents under modifications of task and architecture aspect ratio. Our work provides a taxonomy for classifying different scaling regimes, underscores that there can be different mechanisms driving improvements in loss, and lends insight into the microscopic origins of and relationships between scaling exponents.",
+    "authors": [
+      "Yasaman Bahri",
+      "Ethan Dyer",
+      "Jared Kaplan",
+      "Jaehoon Lee",
+      "Utkarsh Sharma"
+    ],
+    "categories": [
+      "cs.LG",
+      "cond-mat.dis-nn",
+      "stat.ML"
+    ],
+    "primary_category": "cs.LG",
+    "published": "2021-02-12T18:57:46Z"
+  },
+  "sections": [
+    {
+      "title": "作者信息",
+      "bullets": [
+        "五位作者声明等量贡献，来自Google DeepMind与Johns Hopkins University；Utkarsh Sharma部分工作在Google实习期间完成。",
+        "官方快照为arXiv:2102.06701v2，主分类cs.LG，另含cond-mat.dis-nn与stat.ML；后发表于PNAS 121(27), e2311878121 (2024)。",
+        "论文解释population/test loss随数据量D或参数/宽度P、w变化的幂律机制，不给出训练compute最优分配。"
+      ]
+    },
+    {
+      "title": "摘要",
+      "bullets": [
+        "作者提出一个2×2分类：以数据量或模型宽度扩展，各自又分variance-limited与resolution-limited，共四种缩放区间。",
+        "variance-limited来自有限系统围绕良好无限D或无限宽极限的波动，光滑loss的leading correction普遍约为D^−1或w^−1。",
+        "resolution-limited把模型视为逐步解析光滑数据流形；指数依赖流形维数、kernel谱与数据/模型细节，通常不具普适数值。",
+        "在线性random-feature teacher-student模型中，参数与数据resolution exponents存在精确谱对偶；深网络实验证据是近似支持，而非同等严格的证明。"
+      ]
+    },
+    {
+      "title": "背景",
+      "bullets": [
+        "记L(D,P)为对初始化、训练集抽样和优化随机性平均的test loss；αD、αP、αW分别表示数据、参数数和宽度指数。",
+        "四象限可按相对大小理解：D≫P的数据variance区；w≫D的宽度variance区；P≫D的数据resolution区；D≫P的参数resolution区。",
+        "同一条经验幂律可能由不同机制产生，因此仅拟合斜率不足以识别机制；需要确认相对尺度hierarchy与减去的asymptotic floor。"
+      ]
+    },
+    {
+      "title": "模型与方法",
+      "bullets": [
+        "Theorem 1：若网络输出围绕均值的二阶及更高矩为O(ε)，且loss是有限阶多项式、二阶导有界或2-Hölder，则平均loss与均值输出loss之差为O(ε)。",
+        "对训练集抽样，平滑优化下输出矩以D^−1集中，得到variance-limited L(D,P)−L(P)=O(D^−1)；对宽网络的有限宽波动得到约w^−1。",
+        "resolution分析假设样本均匀位于compact d-dimensional manifold、teacher F与student f光滑且插值训练点；最近邻距离约D^−1/d给出L(D)=O(D^−1/d)上界。",
+        "参数侧把P个区域/点看作对F的分片解析，类似得到L(P)=O(P^−1/d)上界；作者进一步把上界当typical estimate需要额外analytic expansion，不是定理本身。",
+        "random-feature线性模型以feature covariance C或kernel K求解test error；若λi∝i^−(1+αK)，则resolution区L(D)∝D^−αK、L(P)∝P^−αK，故αD=αP=αK。",
+        "足够光滑的Ct kernel在d维空间的谱尾受λn≲n^−(1+t/d)限制；只有在谱饱和该界等generic条件下，才把指数与1/d直接联系。"
+      ]
+    },
+    {
+      "title": "核心结果与证据",
+      "bullets": [
+        "Figure 1在teacher-student、CIFAR-10/100、SVHN、FashionMNIST、MNIST等设置展示四个象限；variance-limited拟合多接近1，resolution值约0.26–0.62且随数据集改变。",
+        "teacher-student输入维数d=2…9时经验关系更接近α≈4/d，而不是最松的1/d上界；真实CNN/WRN用embedding intrinsic dimension proxy时关系明显较散。",
+        "Figure 2的pooled-MNIST random features同时展示四区，并验证kernel spectral exponent与数据/参数resolution exponents沿αD=αP=αK附近排列。",
+        "Figure 3将CIFAR-100合并成5至100个superclasses，loss水平变但αD约0.38–0.42基本不变；给CIFAR-10输入加Gaussian noise则指数由约0.58降至0.29。",
+        "真实resolution实验用WRN-28-10训练78125 steps、cosine decay、random crop/flip；参数侧另用depth-10 residual network变宽。",
+        "宽度variance实验固定100训练样本、两层FC网络宽64至11585，减去每个初始化对应linearized infinite-width loss后平均50个初始化。",
+        "深teacher-student用宽96/192的两层FC、8 seeds、d=2…9、MSE/Adam、batch64、40000 steps并early stopping。"
+      ]
+    },
+    {
+      "title": "有效性与局限",
+      "bullets": [
+        "variance指数1要求输出有良好集中极限与loss平滑；论文附录含违反smoothness并产生其他指数的反例，因此不是所有metric都必为1。",
+        "深网络的P通常不等同width；正文严格结果部分直接关于w或线性模型P，把直觉推广到任意参数扩展需谨慎。",
+        "resolution Theorems 2–3首先是upper bounds；把它们提升为实际幂律和4/d需要典型性、解析性与低阶项不抵消等额外假设。",
+        "数据流形没有精确定义；真实数据只用训练网络最终embedding的nearest-neighbor距离估intrinsic dimension，可能把模型偏置当成数据几何。",
+        "random-feature/NTK模型在无限宽对应深网，但有限宽特征会在训练中动态演化；作者明确把feature learning的理论纳入未来工作。",
+        "所有理论均为asymptotic，而实验D、P有限；当P≫D或D≫P的hierarchy丢失时Figure 1/2已经显示预言破坏。",
+        "superclass不改指数只在CIFAR-100/WRN设置观测，不证明task普遍无关；noise既改几何也改Bayes error与可学习信号。",
+        "本站未复算谱、intrinsic dimension或训练任何模型。"
+      ]
+    },
+    {
+      "title": "复现与资源",
+      "bullets": [
+        "先画完整D×P相图并预注册四个拟合窗口；同时拟合c+aD^−α或c+aP^−α，避免未减floor导致斜率偏差。",
+        "variance实验对训练集与初始化分别做多seed averaging，直接测output variance是否按1/D或1/w，而不只测loss。",
+        "random-feature实验保存C/K eigenvalues、谱拟合区间与tail diagnostics，验证αK、αD、αP三者及finite-size corrections。",
+        "manifold实验同时报告多个intrinsic-dimension estimators、输入空间与learned embedding结果，并用synthetic known-d teacher-student校准。",
+        "在相同数据上比较frozen random features、NTK linearization与feature-learning network，量化训练中kernel drift对exponent的影响。",
+        "本站PDF SHA-256：4ec8fb5466f22e983f970ed6d6d7ab269d1bbb33c3b267ab3ffddb70d146d150。",
+        "Evidence status: full-text verified; no independent reproduction performed."
+      ]
+    },
+    {
+      "title": "阅读指南",
+      "bullets": [
+        "先看Figure 1的四象限，再读Section 2.1；确认variance scaling测的是减去无限极限后的差值。",
+        "接着区分Theorems 2/3的1/d上界、teacher-student的4/d经验关系和kernel谱的αK精确结果。",
+        "读Figures 2–3时把random-feature精确对偶与真实WRN相关性分层，不把同一图上的拟合都叫理论验证。",
+        "最后读Section 4.1和附录实验设置；asymptotic hierarchy、manifold proxy与feature learning是三条主要边界。"
+      ]
+    }
+  ],
+  "evidence_refs": [
+    "paper.pdf pp. 1-4: four-regime taxonomy and stated contribution levels",
+    "paper.pdf pp. 4-6: concentration theorem and manifold bounds",
+    "paper.pdf pp. 6-9: random-feature solution, spectral exponent and duality",
+    "paper.pdf pp. 9-11: real-data experiments, discussion and limitations",
+    "paper.pdf pp. 17-18: exact Figure 1 architectures, seeds and training schedules",
+    "paper.pdf pp. 18-33: supplementary fits, proofs and counterexamples",
+    "Evidence status: full-text verified; no independent reproduction performed."
+  ],
+  "card_standard_version": "2.3",
+  "paper_profile": "ai_empirical",
+  "style_reference": "physicist_daily_arxiv",
+  "provenance": {
+    "program": "Collection",
+    "catalog": "Paper Collection",
+    "catalog_record_id": "baf3f2b22980bf29",
+    "catalog_record_ids": [
+      "baf3f2b22980bf29"
+    ],
+    "catalog_topic": "Scaling Laws",
+    "collection_date": "2026-08-24",
+    "sampled_at": "2026-08-26",
+    "selected_by": "full_collection_backfill",
+    "sampling_seed": "not_applicable_full_collection",
+    "candidate_count": 452,
+    "legacy_full_text_card": "2102.06701.json"
+  },
+  "equation_refs": [],
+  "figure_refs": [],
+  "cover": {
+    "mode": "title_abstract",
+    "abstract_text": "The population loss of trained deep neural networks often follows precise power-law scaling relations with either the size of the training dataset or the number of parameters in the network. We propose a theory that explains the origins of and connects these scaling laws. We identify variance-limited and resolution-limited scaling behavior for both dataset and model size, for a total of four scaling regimes. The variance-limited scaling follows simply from the existence of a well-behaved infinite data or infinite width limit, while the resolution-limited regime can be explained by positing that models are effectively resolving a smooth data manifold. In the large width limit, this can be equivalently obtained from the spectrum of certain kernels, and we present evidence that large width and large dataset resolution-limited scaling exponents are related by a duality. We exhibit all four s",
+    "selection_rationale": "该旧版全文证据包没有经过 v2.3 的逐图导出与图号核验；为避免错配图片，封面使用论文题目和经全文核对的摘要，关键论证保留在卡片正文中。"
+  }
+}

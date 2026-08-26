@@ -1,0 +1,144 @@
+{
+  "arxiv_id": "1806.07572",
+  "source_version": "v4",
+  "source_pdf": "https://arxiv.org/pdf/1806.07572v4",
+  "title_en": "Neural Tangent Kernel: Convergence and Generalization in Neural Networks",
+  "title_zh": "神经切线核：神经网络中的收敛与泛化",
+  "curation_status": "full_text_verified",
+  "verified_metadata": {
+    "arxiv_id": "1806.07572",
+    "version": "v4",
+    "title": "Neural Tangent Kernel: Convergence and Generalization in Neural Networks",
+    "abstract": "At initialization, artificial neural networks are equivalent to Gaussian processes in the infinite-width limit. We prove that the evolution of an ANN during training can also be described by a kernel: during gradient descent on the parameters, the network function follows the kernel gradient of the functional cost with respect to a new kernel, the Neural Tangent Kernel. While the NTK is random at initialization and varies during training, in the infinite-width limit it converges to an explicit limiting kernel and it stays constant during training.",
+    "authors": [
+      "Arthur Jacot",
+      "Franck Gabriel",
+      "Clément Hongler"
+    ],
+    "categories": [
+      "cs.LG",
+      "cs.NE",
+      "math.PR",
+      "stat.ML"
+    ],
+    "primary_category": "cs.LG",
+    "published": "2018-06-20T06:35:46Z",
+    "journal_ref": "Advances in Neural Information Processing Systems 31 (2018)"
+  },
+  "sections": [
+    {
+      "title": "作者信息",
+      "bullets": [
+        "作者：Arthur Jacot、Franck Gabriel、Clément Hongler；EPFL。",
+        "官方快照：arXiv:1806.07572v4；NeurIPS 2018；分类cs.LG、cs.NE、math.PR、stat.ML。",
+        "论文提出NTK并证明fully connected网络的无限宽训练极限；实验是toy regression和MNIST kernel PCA，不是标准分类accuracy benchmark。"
+      ]
+    },
+    {
+      "title": "摘要",
+      "bullets": [
+        "任意参数化网络的function-space速度可写成当前parameter Jacobians形成的kernel作用在cost functional derivative上；这个数据依赖kernel即NTK。",
+        "对固定深度、各hidden width依次趋于无穷的fully connected网络，初始化NTK收敛到deterministic recursion；在受控连续gradient-flow训练区间内它保持常数。",
+        "least-squares下function evolution成为线性ODE，沿NTK Gram/operator的大eigenvalue方向更快收敛；作者以此解释spectral bias式的early stopping。"
+      ]
+    },
+    {
+      "title": "背景",
+      "bullets": [
+        "无限宽随机网络在初始化时趋于GP prior，但训练会移动参数；NTK补上“梯度训练过程在函数空间如何演化”的描述。",
+        "finite network的NTK Θθ(x,x')=Σp ∂θp fθ(x)⊗∂θp fθ(x')，本来是随机且随θ变化；只有特定宽度缩放和极限令其冻结。",
+        "kernel gradient把只在训练distribution上定义的cost derivative扩展到全输入域；若kernel对该measure正定，function-space cost沿gradient flow下降。"
+      ]
+    },
+    {
+      "title": "模型与方法",
+      "bullets": [
+        "网络采用paper的NTK parameterization：每层按1/√n缩放weighted sum，并有bias parameter β；实验β=0.1。该缩放是非平凡条件，标准parameterization与learning-rate scaling需换算。",
+        "Proposition 1：Lipschitz activation下，初始化outputs在hidden widths依次趋∞时成为iid centered GPs，covariance Σ^(L)逐层递归。",
+        "Theorem 1：同一极限下Θ^(L)以概率收敛到Θ∞^(L)⊗I；递推为Θ∞^{L+1}=Θ∞^L Σdot^{L+1}+Σ^{L+1}，因此兼有lower-layer和last-layer learning贡献。",
+        "Theorem 2额外要求activation Lipschitz、二次可微且second derivative bounded，并要求训练方向在[0,T]的积分norm stochastic bounded；此时NTK在有限T上一致趋于常数。",
+        "Proposition 2：若σ非多项式Lipschitz、inputs位于unit sphere且depth L≥2，limiting NTK为positive definite；这是特定domain/nonlinearity条件，不是任意数据上的无条件定理。",
+        "least-squares operator Π的eigenfunctions是kernel principal components，解ft=f*+exp(−tΠ)(f0−f*)；第i方向以e^{−λ_i t}衰减。",
+        "有限dataset且Gram invertible时t→∞解等于zero-regularization kernel ridge/MAP mean加一个在training points方差为零的centered Gaussian residual。"
+      ]
+    },
+    {
+      "title": "核心结果与证据",
+      "bullets": [
+        "Figure 1 depth-4 ReLU、unit-circle输入：宽度500与10,000各10次初始化；训练200 steps、lr=1。10,000宽的NTK方差更小且训练前后近乎固定，500宽出现明显kernel inflation。",
+        "Figure 2只在unit circle四个training points上做regression；width 50与1000各10次初始化、1000 steps。两者function分布的mean/variance都大致接近用width10,000近似出的无限宽Gaussian分位数。",
+        "MNIST实验不做digit classification：从N=512的一批28×28图像计算width10,000 NTK的前三个non-centered kernel PCs；eigenvalues 0.0457、0.00108、0.00078。",
+        "Figure 3人为设目标f*=fθ(0)+0.5 f^(2)，检验网络是否沿第二PC直线收敛；width 100、1000、10,000各2 trials，越宽orthogonal deviation越小，主方向趋近理论e^{−λ2t}。",
+        "小网络在step数上看似收敛更快，作者归因于NTK inflation相当于更大effective learning rate；论文明确提醒比较速度需同时控制kernel尺度与learning rate。",
+        "这些数值支持finite-width接近lazy/kernel极限的机制，但没有测generalization error、真实label learning、不同optimizers、SGD noise或feature-learning收益。"
+      ]
+    },
+    {
+      "title": "有效性与局限",
+      "bullets": [
+        "constant NTK是无限宽、fixed depth、NTK scaling、连续gradient-flow及有限时间的极限；有限宽网络可显著改变kernel，这正是feature learning而非定理失败。",
+        "Theorem 2不直接覆盖ReLU，因为其不twice differentiable且second derivative不以普通函数bounded；论文数值用ReLU，理论需平滑近似或额外论证，卡片不能把两者无缝等同。",
+        "positive-definiteness证明限定unit sphere与non-polynomial activation；实际datasets可能有重复/共线点或finite Gram singularity，convergence仍依赖dataset kernel spectrum。",
+        "least-squares推导与zero-ridge interpolation不等于cross-entropy分类、finite-step SGD、weight decay或batch normalization训练。",
+        "early stopping偏向大eigenvalue directions是数学事实，但“这些方向更relevant、低eigenvalue更noisy”依赖kernel/task；论文以RBF直觉举例而非一般定理。",
+        "实验极小：4-point regression、10/2 seeds与512 MNIST无标签batch；width10,000只是近似Θ∞/Σ，未独立计算closed-form limit。",
+        "无限宽NTK解释的是lazy regime；它不解释有限网络通过representation movement获得的全部泛化能力。",
+        "本站未运行任何网络或kernel PCA。"
+      ]
+    },
+    {
+      "title": "复现与资源",
+      "bullets": [
+        "从paper parameterization逐层实现Σ与Θ recursion，并用Monte Carlo finite widths 100…10,000核对初始化均值、variance和operator-norm error。",
+        "训练时保存Θ(t)−Θ(0)、parameter displacement与function loss；分别用lr按宽度正确缩放和错误缩放，展示冻结条件的敏感性。",
+        "ReLU理论边界应显式测试：用softplus等平滑activation满足Theorem 2，再比较ReLU；不要仅凭Figure 1声称定理已覆盖ReLU。",
+        "复现Figure 3需固定N=512、β=0.1、non-centered PCA、λ2=0.00108与人为目标；报告每width更多seeds及deviation confidence interval。",
+        "扩展到真实任务时同时比较frozen empirical NTK、evolving NTK和actual network，以分离kernel prediction与feature learning增益。",
+        "本站 PDF SHA-256：e052eb972f646747ac4554a294eb62874077e59a5f585f459e2dbd5cb2a0975d。",
+        "Evidence status: full-text verified; no independent reproduction performed."
+      ]
+    },
+    {
+      "title": "阅读指南",
+      "bullets": [
+        "先读Section 3–4定义Θθ并理解parameter gradient如何诱导function-space kernel gradient。",
+        "细读Theorems 1–2的极限、smoothness与bounded-direction条件；不要只引用“NTK stays constant”。",
+        "再读Section 5，把e^{−λt}谱收敛与zero-ridge/MAP表达分开。",
+        "最后读Figures 1–3：它们验证kernel冻结和人工PC轨迹，不是MNIST分类性能。"
+      ]
+    }
+  ],
+  "evidence_refs": [
+    "paper.pdf pp. 2-5: network parameterization, kernel gradient and NTK definition",
+    "paper.pdf pp. 5-6: limiting NTK recursion, training constancy and positive-definiteness conditions",
+    "paper.pdf pp. 6-7: least-squares spectral dynamics and kernel-regression limit",
+    "paper.pdf pp. 7-9: finite-width NTK, four-point regression and MNIST PCA experiments",
+    "paper.pdf pp. 10-19: proofs, smoothness assumptions and sphere positive-definiteness",
+    "Evidence status: full-text verified; no independent reproduction performed."
+  ],
+  "card_standard_version": "2.3",
+  "paper_profile": "ai_empirical",
+  "style_reference": "physicist_daily_arxiv",
+  "provenance": {
+    "program": "Collection",
+    "catalog": "Paper Collection",
+    "catalog_record_id": "967d799a2604e1f8",
+    "catalog_record_ids": [
+      "967d799a2604e1f8"
+    ],
+    "catalog_topic": "Machine Learning",
+    "collection_date": "2026-08-24",
+    "sampled_at": "2026-08-26",
+    "selected_by": "full_collection_backfill",
+    "sampling_seed": "not_applicable_full_collection",
+    "candidate_count": 452,
+    "legacy_full_text_card": "1806.07572.json"
+  },
+  "equation_refs": [],
+  "figure_refs": [],
+  "cover": {
+    "mode": "title_abstract",
+    "abstract_text": "At initialization, artificial neural networks are equivalent to Gaussian processes in the infinite-width limit. We prove that the evolution of an ANN during training can also be described by a kernel: during gradient descent on the parameters, the network function follows the kernel gradient of the functional cost with respect to a new kernel, the Neural Tangent Kernel. While the NTK is random at initialization and varies during training, in the infinite-width limit it converges to an explicit limiting kernel and it stays constant during training.",
+    "selection_rationale": "该旧版全文证据包没有经过 v2.3 的逐图导出与图号核验；为避免错配图片，封面使用论文题目和经全文核对的摘要，关键论证保留在卡片正文中。"
+  }
+}

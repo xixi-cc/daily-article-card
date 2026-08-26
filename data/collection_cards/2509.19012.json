@@ -1,0 +1,185 @@
+{
+  "arxiv_id": "2509.19012",
+  "source_version": "v3",
+  "source_pdf": "https://arxiv.org/pdf/2509.19012",
+  "title_en": "Pure Vision Language Action (VLA) Models: A Comprehensive Survey",
+  "title_zh": "纯视觉—语言—动作模型：方法、数据、硬件与挑战综述",
+  "curation_status": "full_text_verified",
+  "sections": [
+    {
+      "title": "作者信息",
+      "bullets": [
+        "作者：Dapeng Zhang、Jing Sun、Chenghui Hu、Xiaoyan Wu、Zhenlong Yuan、Rui Zhou、Fei Shen、Qingguo Zhou。",
+        "研究机构：Lanzhou University and collaborators。",
+        "来源：arXiv:2509.19012；年份：2025；主题：VLA、具身智能、综述。",
+        "本文按本地全文快照制作，官方元数据核验版本为 2509.19012v3。"
+      ]
+    },
+    {
+      "title": "摘要",
+      "bullets": [
+        "本文的论证主线由以下经过全文核验的节点构成：VLA 把 VLM 从被动理解器变成闭环行动策略；领域地图同时包含模型、数据、机器人与挑战；自回归 VLA：统一 token 化，但控制延迟与误差累积突出；Diffusion / flow 路线：适合多峰连续动作，但采样成本更高；自回归擅长语义统一，diffusion/flow 擅长连续多峰动作；RL 与 hybrid 扩展在线适应，却增加系统归因难度；数据/benchmark/hardware 与模型共同决定可部署性。",
+        "卡片内容来自已完成冷读与逐页检查的 paper_presentation.json，并回链到原论文页码、图或公式。"
+      ]
+    },
+    {
+      "title": "背景",
+      "bullets": [
+        "论证节点“VLA 把 VLM 从被动理解器变成闭环行动策略”。",
+        "输入通常包含视觉观测、语言指令与机器人状态，输出离散/连续动作或动作块。",
+        "综述覆盖 300 余篇工作，并区分 autoregressive、diffusion、reinforcement、hybrid 与 specialized 方法。",
+        "还系统整理数据集、benchmark、simulator 与 robot hardware。",
+        "“pure VLA”强调端到端视觉—语言—动作建模，但实际系统仍可能包含规划、控制与安全模块。",
+        "VLA 不是单一架构，而是一组跨模型、数据和控制栈的设计选择。",
+        "综述给出 VLA 定义、五类方法与覆盖范围。 （p. 1; source/tex/vla_v4.tex:98-166）",
+        "研究问题的表述以论文给出的对象和评价目标为边界；背景动机不自动构成方法有效性的证据。"
+      ]
+    },
+    {
+      "title": "模型与方法",
+      "bullets": [
+        "论证节点“自回归 VLA：统一 token 化，但控制延迟与误差累积突出”。",
+        "把动作离散化为 token，与视觉/语言 token 在同一序列中建模。",
+        "优势：复用大模型训练范式，易接入语义推理和长上下文。",
+        "代价：逐 token 生成带来 latency，量化误差会影响连续控制。",
+        "常见补救包括 action chunk、分层规划、压缩 token 与闭环重规划。",
+        "自回归路线的核心权衡是语义统一性对控制实时性。",
+        "综述总结 autoregressive VLA 的方法、推理与效率问题。 （p. 4; source/tex/vla_v4.tex:207-460）",
+        "论证节点“Diffusion / flow 路线：适合多峰连续动作，但采样成本更高”。",
+        "直接对连续 action chunk 建模，能表达多模态轨迹分布。",
+        "条件可来自 VLM 表示、机器人状态与历史观测。",
+        "优势是平滑连续控制与多解表示；缺点是多步去噪/流积分的计算开销。",
+        "蒸馏、少步采样、缓存和异步执行是部署关键。",
+        "连续生成质量只有与闭环频率一起报告才有意义。",
+        "综述分类 diffusion-based VLA 并讨论连续动作与采样效率。 （p. 8; source/tex/vla_v4.tex:461-650）",
+        "论证节点“RL 与混合架构负责把 imitation 能力推向在线适应”。",
+        "RL-based 方法用环境反馈修正 imitation 的分布偏移和长时程错误。",
+        "Hybrid 方法组合 autoregression、diffusion、world model 或分层 planner。",
+        "Specialized 方法针对 mobile manipulation、bimanual、navigation 或触觉等约束。",
+        "组合越复杂，越需要明确训练阶段、冻结模块与成功归因。",
+        "混合系统提升能力，也让“谁贡献了成功”更难回答。",
+        "综述覆盖 reinforcement、hybrid 与 specialized VLA 方法。 （p. 12; source/tex/vla_v4.tex:650-950）",
+        "方法部分按 presentation 中的数学关系、算法结构或实验设计重述；公式只在相应证据页定义的符号与条件下成立。"
+      ]
+    },
+    {
+      "title": "核心结果与证据",
+      "bullets": [
+        "论证节点“领域地图同时包含模型、数据、机器人与挑战”。",
+        "Survey structure：综述结构从 VLA 定义出发，连接方法分类、数据/benchmark、机器人平台与未来挑战。",
+        "证据解释：单看模型排行榜无法回答真实部署问题，必须把数据与硬件纳入同一图景。",
+        "综述结构图展示方法、数据、平台和开放问题的组织关系。 （p. 2; figure survey structure; source/tex/vla_02.png）",
+        "论证节点“时间线显示 VLA 从单范式走向多分支融合”。",
+        "VLA timeline：时间线按年份串联代表性 VLA 工作，显示模型规模、数据与控制范式在近年快速扩展。",
+        "证据解释：时间线适合看演化速度；方法优劣仍需回到训练目标和控制接口比较。",
+        "综述时间线整理代表性 VLA 工作的年份与演化。 （p. 1; figure VLA timeline; source/tex/vla_01.png）",
+        "论证节点“数据决定 VLA 能学到哪些动作，而 benchmark 决定我们看见什么”。",
+        "真实数据昂贵且 embodiment-specific；遥操作、互联网视频和仿真各有 domain gap。",
+        "跨 embodiment 混合需要统一 action/state 表示与元数据。",
+        "benchmark 应同时报告任务成功、泛化、干扰恢复、速度与安全事件。",
+        "simulator 提供规模和可重复性，却不能替代真实接触与传感噪声。",
+        "数据量不是唯一尺度；覆盖、标注一致性和闭环真实性同样关键。",
+        "综述系统整理真实/仿真数据集、benchmarks 与 simulators。 （p. 16; source/tex/vla_v4.tex:950-1180）",
+        "论证节点“VLA 数据覆盖从桌面机械臂扩展到移动与自动驾驶平台”。",
+        "Dataset examples：代表数据包含桌面操作、移动机器人、自动驾驶与多视角交互；不同 embodiment 的相机、动作空间和时间尺度差异显著。",
+        "证据解释：跨平台训练的难点不只是数据拼接，而是语义和控制接口对齐。",
+        "数据示例图展示多个机器人平台与数据源。 （p. 16; figure dataset examples; source/tex/vla_04.png）",
+        "论证节点“七类开放问题决定 VLA 能否走出实验室”。",
+        "数据稀缺、异构与伪交互；长时程推理和分层规划。",
+        "实时性、资源效率与边缘部署；跨 embodiment/任务的泛化。",
+        "人机协作、安全、鲁棒性与 benchmark 标准化。",
+        "可解释性与失败归因；从仿真到真实的 transfer。",
+        "下一阶段竞争焦点会从单任务成功率转向可靠泛化与系统效率。",
+        "综述第 7 节列出数据、推理、效率、泛化、安全与评测挑战。 （p. 19; source/tex/vla_v4.tex:1180-1300）",
+        "证据状态：上述结论均来自逐页审阅后的 presentation manifest；这里只确认论文原文支持，不把作者实验视为本站独立复现。"
+      ]
+    },
+    {
+      "title": "有效性与局限",
+      "bullets": [
+        "论证节点“四点带走：范式、数据、闭环、归因”。",
+        "自回归擅长语义统一，diffusion/flow 擅长连续多峰动作。",
+        "RL 与 hybrid 扩展在线适应，却增加系统归因难度。",
+        "数据/benchmark/hardware 与模型共同决定可部署性。",
+        "阅读 VLA 论文时要核对冻结模块、评测 seed、控制频率与失败定义。",
+        "最成熟的 VLA 评价不应只问“成功率多高”，还要问“在什么闭环和证据协议下”。",
+        "综述结论汇总方法格局与未来研究方向。 （p. 21; source/tex/vla_v4.tex:1280-1350）",
+        "适用边界以卡片列出的目标、假设、数据集或物理参数区间为准；未在原文证据中出现的外推不计入论文结论。",
+        "该卡完成的是全文证据审计，未重新运行训练、仿真或实验，因此不能据此声称独立复现、稳健性复核或跨任务泛化。"
+      ]
+    },
+    {
+      "title": "复现与资源",
+      "bullets": [
+        "原文：https://arxiv.org/abs/2509.19012；PDF：https://arxiv.org/pdf/2509.19012。",
+        "本地证据源：2509.19012/source/paper.pdf；SHA-256：60096bf95584ec8b520919978d9ee12b69306d3bb8b7b3114d485a04e290453b。",
+        "来源格式：tex；来源包状态：downloaded；presentation 证据条目数：10。",
+        "presentation 及其质量报告保留了页面审阅、编译和冷读状态；它们用于追溯卡片，不等同于作者代码或数据已公开。",
+        "Evidence status: full-text verified; no independent reproduction performed."
+      ]
+    },
+    {
+      "title": "阅读指南",
+      "bullets": [
+        "快速阅读可先看证据页 1, 2, 4, 8, 12, 16，这些页覆盖问题、方法与主要结论。",
+        "图证据优先查看 survey structure；结合图注和正文，不只依据视觉趋势下结论。",
+        "建议按“研究问题 → 方法/数学对象 → 证据 → 局限”的顺序阅读，避免从摘要直接跳到强结论。",
+        "若要复现，先从证据引用恢复具体设置，再补齐随机种子、计算资源、评价指标和失败案例。"
+      ]
+    }
+  ],
+  "evidence_refs": [
+    "paper.pdf pages 1, 2, 4, 8, 12, 16, 19, 21: page-addressable claims",
+    "paper_presentation.json: 10 substantive slides and 10 evidence entries",
+    "source-provenance.json: PDF SHA-256 60096bf95584ec8b520919978d9ee12b69306d3bb8b7b3114d485a04e290453b",
+    "Evidence status: full-text verified; no independent reproduction performed."
+  ],
+  "verified_metadata": {
+    "arxiv_id": "2509.19012",
+    "version": "v3",
+    "title": "Pure Vision Language Action (VLA) Models: A Comprehensive Survey",
+    "abstract": "The emergence of Vision Language Action (VLA) models marks a paradigm shift from traditional policy-based control to generalized robotics, reframing Vision Language Models (VLMs) from passive sequence generators into active agents for manipulation and decision-making in complex, dynamic environments. This survey delves into advanced VLA methods, aiming to provide a clear taxonomy and a systematic, comprehensive review of existing research. It presents a comprehensive analysis of VLA applications across different scenarios and classifies VLA approaches into several paradigms: autoregression-based, diffusion-based, reinforcement-based, hybrid, and specialized methods; while examining their motivations, core strategies, and implementations in detail. In addition, foundational datasets, benchmarks, and simulation platforms are introduced. Building on the current VLA landscape, the review further proposes perspectives on key challenges and future directions to advance research in VLA models and generalizable robotics. By synthesizing insights from over three hundred recent studies, this survey maps the contours of this rapidly evolving field and highlights the opportunities and challenges that will shape the development of scalable, general-purpose VLA methods.",
+    "authors": [
+      "Dapeng Zhang",
+      "Jing Sun",
+      "Chenghui Hu",
+      "Xiaoyan Wu",
+      "Zhenlong Yuan",
+      "Rui Zhou",
+      "Fei Shen",
+      "Qingguo Zhou"
+    ],
+    "categories": [
+      "cs.RO",
+      "cs.AI"
+    ],
+    "primary_category": "cs.RO",
+    "published": "2025-09-23T13:53:52Z",
+    "comment": ""
+  },
+  "card_standard_version": "2.3",
+  "paper_profile": "ai_empirical",
+  "style_reference": "physicist_daily_arxiv",
+  "provenance": {
+    "program": "Collection",
+    "catalog": "Paper Collection",
+    "catalog_record_id": "60096bf95584ec8b",
+    "catalog_record_ids": [
+      "60096bf95584ec8b"
+    ],
+    "catalog_topic": "Robotics",
+    "collection_date": "2026-08-23",
+    "sampled_at": "2026-08-26",
+    "selected_by": "full_collection_backfill",
+    "sampling_seed": "not_applicable_full_collection",
+    "candidate_count": 452,
+    "legacy_full_text_card": "2509.19012.json"
+  },
+  "equation_refs": [],
+  "figure_refs": [],
+  "cover": {
+    "mode": "title_abstract",
+    "abstract_text": "The emergence of Vision Language Action (VLA) models marks a paradigm shift from traditional policy-based control to generalized robotics, reframing Vision Language Models (VLMs) from passive sequence generators into active agents for manipulation and decision-making in complex, dynamic environments. This survey delves into advanced VLA methods, aiming to provide a clear taxonomy and a systematic, comprehensive review of existing research. It presents a comprehensive analysis of VLA applications across different scenarios and classifies VLA approaches into several paradigms: autoregression-based, diffusion-based, reinforcement-based, hybrid, and specialized methods; while examining their motivations, core strategies, and implementations in detail. In addition, foundational datasets, benchmarks, and simulation platforms are introduced. Building on the current VLA landscape, the review fur",
+    "selection_rationale": "该旧版全文证据包没有经过 v2.3 的逐图导出与图号核验；为避免错配图片，封面使用论文题目和经全文核对的摘要，关键论证保留在卡片正文中。"
+  }
+}

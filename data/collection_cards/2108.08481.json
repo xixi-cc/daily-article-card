@@ -1,0 +1,137 @@
+{
+  "arxiv_id": "2108.08481",
+  "source_version": "v6",
+  "source_pdf": "https://arxiv.org/pdf/2108.08481",
+  "title_en": "Neural Operator: Learning Maps Between Function Spaces",
+  "title_zh": "神经算子：学习函数空间之间的映射",
+  "curation_status": "full_text_verified",
+  "verified_metadata": {
+    "arxiv_id": "2108.08481",
+    "version": "v6",
+    "title": "Neural Operator: Learning Maps Between Function Spaces",
+    "abstract": "The classical development of neural networks has primarily focused on learning mappings between finite dimensional Euclidean spaces or finite sets. We propose a generalization of neural networks to learn operators, termed neural operators, that map between infinite dimensional function spaces. We formulate the neural operator as a composition of linear integral operators and nonlinear activation functions. We prove a universal approximation theorem for our proposed neural operator, showing that it can approximate any given nonlinear continuous operator. The proposed neural operators are also discretization-invariant, i.e., they share the same model parameters among different discretization of the underlying function spaces. Furthermore, we introduce four classes of efficient parameterization, viz., graph neural operators, multi-pole graph neural operators, low-rank neural operators, and Fourier neural operators. An important application for neural operators is learning surrogate maps for the solution operators of partial differential equations (PDEs). We consider standard PDEs such as the Burgers, Darcy subsurface flow, and the Navier-Stokes equations, and show that the proposed neural operators have superior performance compared to existing machine learning based methodologies, while being several orders of magnitude faster than conventional PDE solvers.",
+    "authors": [
+      "Nikola Kovachki",
+      "Zongyi Li",
+      "Burigede Liu",
+      "Kamyar Azizzadenesheli",
+      "Kaushik Bhattacharya",
+      "Andrew Stuart",
+      "Anima Anandkumar"
+    ],
+    "categories": [
+      "cs.LG",
+      "math.NA"
+    ],
+    "primary_category": "cs.LG",
+    "published": "2021-08-19T03:56:49Z",
+    "comment": ""
+  },
+  "sections": [
+    {
+      "title": "作者信息",
+      "bullets": [
+        "作者：Nikola Kovachki、Zongyi Li、Burigede Liu、Kamyar Azizzadenesheli、Kaushik Bhattacharya、Andrew Stuart、Anima Anandkumar。",
+        "官方快照：arXiv:2108.08481v6；对应 JMLR 23 (2022), 1–97，正文为 CC BY 4.0。",
+        "这篇长文建立 neural-operator 总框架并汇总 GNO、LNO、MGNO、FNO；其比较来自作者自己的数据、实现与超参数搜索。"
+      ]
+    },
+    {
+      "title": "摘要",
+      "bullets": [
+        "论文把普通网络的“有限维线性层+非线性”提升为“函数空间线性积分算子+点态非线性”，目标是直接学习 Banach 空间之间的连续 operator。",
+        "它给出 discretization invariance 的三项要求：接受任意输入采样点、可在任意输出点查询、网格加密时收敛到连续 operator，并要求参数数目固定。",
+        "作者证明所定义 neural operator 的通用逼近，提出 graph、low-rank、multipole 与 Fourier 四种高效参数化，并在 Burgers、Darcy、Navier–Stokes 上做跨分辨率和速度实验。"
+      ]
+    },
+    {
+      "title": "背景",
+      "bullets": [
+        "直接把函数离散成固定向量再用 MLP/CNN，会把架构维度绑定到训练网格；能接受可变分辨率的 GNN/Transformer 也不必然在网格加密时收敛到同一连续 operator。",
+        "PDE 本身局部，但 coefficient/initial-condition 到 solution 的映射通常非局域，因此 kernel integral 或 spectral multiplication 是自然的 operator layer。",
+        "论文区分 resolution invariance 与严格 discretization invariance：后者不仅能运行，还要求固定参数下离散近似随 mesh refinement 一致收敛。"
+      ]
+    },
+    {
+      "title": "模型与方法",
+      "bullets": [
+        "总体结构先用 pointwise lifting P 把输入 a 提升到 feature field，反复应用 Wv+∫κ(x,y)v(y)dν(y)+b 后接 activation，最后由 pointwise Q 投影为输出函数。",
+        "GNO 用 Nyström/Monte Carlo 在图上近似 kernel integral，可处理任意网格但全节点成本 O(J²)；MGNO 用多层粗细图和近远场分解降低成本。",
+        "LNO 将 kernel 写成低秩展开，理想复杂度 O(J)，适合近低秩问题；FNO 限制为 convolution，在均匀 structured grid 上通过 FFT 达到 O(J log J)。",
+        "FNO 的理论连续定义并不限矩形/周期域，但本文快速 FFT 实现依赖均匀网格，并通过 padding 和 pointwise W/b 处理部分非周期边界；不能把理论类与具体快速实现混为一谈。",
+        "总误差被分成 architecture approximation 与 data discretization 两项；有限训练集、经验风险优化和未到 global minimum 还会另加 statistical/optimization error。"
+      ]
+    },
+    {
+      "title": "核心结果与证据",
+      "bullets": [
+        "Table 2 的 Darcy relative L2 中，FNO 在 s=85/141/211/421 分别约 0.0108/0.0109/0.0109/0.0098；FCN 则从 0.0253 恶化到 0.1097，展示固定网格 CNN 的分辨率迁移问题。",
+        "Table 3 的 Burgers 实验里 FNO 在 s=256–8192 约 0.0018–0.0020，较列出的其他基线低近一数量级；作者同时承认 problem-specific feature engineering 可显著改善 DeepONet 等基线。",
+        "Navier–Stokes Table 4 中，数据充分时 FNO-3D 最优：ν=10^-3,N=1000 为 0.0086；ν=10^-4,N=10000 为 0.0820。数据不足的 ν=10^-4 或 10^-5,N=1000 配置中所有方法误差均超过 15%，FNO-2D 仅是其中最低。",
+        "Table 5 显示 FNO-3D 从 64 到 256 网格误差约 0.0098→0.0106，而 U-Net 0.0253→0.0344；Figure 11 展示 64×64×20 训练、256×256×80 推理的时空 zero-shot super-resolution。",
+        "Bayesian inverse 示例需 30,000 次 forward evaluations：FNO 单次 0.005 s、总 MCMC 约 2.5 min；传统 pseudo-spectral solver 单次 2.2 s、总计超过 18 h。若计入约 12 h 数据生成+训练，单次任务仍更快，但优势更适用于重复查询。",
+        "作者的 universality 只保证 compact set 上存在任意精度近似；Section 9 明确未分析有限数据、离散误差、optimization error 和参数随容差的增长，后者一般可能超指数。"
+      ]
+    },
+    {
+      "title": "有效性与局限",
+      "bullets": [
+        "实验数据均由已知 PDE solver 生成，且多数 resolution study 的粗网格是从同一高分辨率解下采样；这不是跨 solver、真实测量或未知物理的验证。",
+        "“mesh-free”是架构层面的连续定义，不代表每种实现同样高效：GNO 可任意网格却可能二次成本，FNO 快但主要依赖结构化网格与 FFT。",
+        "zero-shot super-resolution 证明固定参数可在更细网格评价，不等于恢复训练数据中不存在的真实高频物理；误差仍有不可消除的有限数据/模型项。",
+        "速度比较是 amortized surrogate 场景；数据生成、训练、硬件、精度和新 parameter distribution 的再训练成本都必须纳入。",
+        "作者未给出 sample complexity 或 optimization guarantee；通用逼近不能说明 SGD 会找到解，也不能排除达到 ε 所需参数数目的 curse。"
+      ]
+    },
+    {
+      "title": "复现与资源",
+      "bullets": [
+        "复现至少分别检查 Darcy Table 2、Burgers Table 3、Navier–Stokes Tables 4–5，并保存每种 train/test resolution、原始高分辨率 solver 数据与下采样规则。",
+        "验证 discretization invariance 应固定同一 checkpoint 和参数，在逐步加密网格上比较 prediction convergence；重新训练每个 resolution 不能证明该性质。",
+        "逆问题速度应同时报告 30,000 次推理、offline 数据生成/训练约 12 h、传统 solver 超过 18 h，以及 posterior/push-forward 误差，而非只报 0.005 s。",
+        "本站 PDF SHA-256：49cfb7b76ab9b422da6d0c61d6ba8538b9b4dab1cc4b07a8e78dc767f1081165。",
+        "Evidence status: full-text verified; no independent reproduction performed."
+      ]
+    },
+    {
+      "title": "阅读指南",
+      "bullets": [
+        "先读 Figure 1 与定义部分，分清“可接受不同网格”“可在任意点查询”“网格加密时收敛”三层要求。",
+        "再看 Figure 2 和 Section 4，比较 GNO/LNO/MGNO/FNO 的积分近似、网格适用性和复杂度。",
+        "最后把 Tables 2–5、Figure 11、inverse example 与 Sections 9–10 一起读：经验精度/加速成立于具体分布，而理论尚未覆盖有限样本、训练失败与资源缩放。"
+      ]
+    }
+  ],
+  "evidence_refs": [
+    "paper.pdf pp. 1-6: discretization-invariance definition, architecture motivation and Table 1",
+    "paper.pdf pp. 12-27: neural-operator layers and GNO/LNO/MGNO/FNO parameterizations",
+    "paper.pdf pp. 37-47: Darcy, Burgers and Navier-Stokes benchmark tables, zero-shot resolution and inverse-problem timing",
+    "paper.pdf pp. 52-59: approximation theorems, unanalysed error sources, conclusions and future directions",
+    "Evidence status: full-text verified; no independent reproduction performed."
+  ],
+  "card_standard_version": "2.3",
+  "paper_profile": "ai_empirical",
+  "style_reference": "physicist_daily_arxiv",
+  "provenance": {
+    "program": "Collection",
+    "catalog": "Paper Collection",
+    "catalog_record_id": "cd13d8918751a55a",
+    "catalog_record_ids": [
+      "cd13d8918751a55a"
+    ],
+    "catalog_topic": "Neural Operators",
+    "collection_date": "2026-08-24",
+    "sampled_at": "2026-08-26",
+    "selected_by": "full_collection_backfill",
+    "sampling_seed": "not_applicable_full_collection",
+    "candidate_count": 452,
+    "legacy_full_text_card": "2108.08481.json"
+  },
+  "equation_refs": [],
+  "figure_refs": [],
+  "cover": {
+    "mode": "title_abstract",
+    "abstract_text": "The classical development of neural networks has primarily focused on learning mappings between finite dimensional Euclidean spaces or finite sets. We propose a generalization of neural networks to learn operators, termed neural operators, that map between infinite dimensional function spaces. We formulate the neural operator as a composition of linear integral operators and nonlinear activation functions. We prove a universal approximation theorem for our proposed neural operator, showing that it can approximate any given nonlinear continuous operator. The proposed neural operators are also discretization-invariant, i.e., they share the same model parameters among different discretization of the underlying function spaces. Furthermore, we introduce four classes of efficient parameterization, viz., graph neural operators, multi-pole graph neural operators, low-rank neural operators, and ",
+    "selection_rationale": "该旧版全文证据包没有经过 v2.3 的逐图导出与图号核验；为避免错配图片，封面使用论文题目和经全文核对的摘要，关键论证保留在卡片正文中。"
+  }
+}

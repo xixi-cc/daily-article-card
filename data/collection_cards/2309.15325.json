@@ -1,0 +1,131 @@
+{
+  "arxiv_id": "2309.15325",
+  "source_version": "v5",
+  "source_pdf": "https://arxiv.org/pdf/2309.15325",
+  "title_en": "Neural Operators for Accelerating Scientific Simulations and Design",
+  "title_zh": "用神经算子加速科学模拟与工程设计",
+  "curation_status": "full_text_verified",
+  "verified_metadata": {
+    "arxiv_id": "2309.15325",
+    "version": "v5",
+    "title": "Neural Operators for Accelerating Scientific Simulations and Design",
+    "abstract": "Scientific discovery and engineering design are currently limited by the time and cost of physical experiments, selected mostly through trial-and-error and intuition that require deep domain expertise. Numerical simulations present an alternative to physical experiments but are usually infeasible for complex real-world domains due to the computational requirements of existing numerical methods. Artificial intelligence (AI) presents a potential paradigm shift by developing fast data-driven surrogate models. In particular, an AI framework, known as Neural Operators, presents a principled framework for learning mappings between functions defined on continuous domains, e.g., spatiotemporal processes and partial differential equations (PDE). They can extrapolate and predict solutions at new locations unseen during training, i.e., perform zero-shot super-resolution. Neural Operators can augment or even replace existing simulators in many applications, such as computational fluid dynamics, weather forecasting, and material modeling, while being 4-5 orders of magnitude faster. Further, Neural Operators can be integrated with physics and other domain constraints enforced at finer resolutions to obtain high-fidelity solutions and good generalization. Since Neural Operators are differentiable, they can directly optimize parameters for inverse design and other inverse problems. We believe that Neural Operators present a transformative approach to simulation and design, enabling rapid research and development.",
+    "authors": [
+      "Kamyar Azizzadenesheli",
+      "Nikola Kovachki",
+      "Zongyi Li",
+      "Miguel Liu-Schiaffini",
+      "Jean Kossaifi",
+      "Anima Anandkumar"
+    ],
+    "categories": [
+      "cs.LG",
+      "physics.comp-ph"
+    ],
+    "primary_category": "cs.LG",
+    "published": "2023-09-27T00:12:07Z",
+    "comment": ""
+  },
+  "sections": [
+    {
+      "title": "作者信息",
+      "bullets": [
+        "作者：Kamyar Azizzadenesheli、Nikola Kovachki、Zongyi Li、Miguel Liu-Schiaffini、Jean Kossaifi、Anima Anandkumar。",
+        "官方快照：arXiv:2309.15325v5；主分类 cs.LG。",
+        "文章是观点/综述性质，汇总多个团队的架构、应用和速度数字；它没有在一个统一代码库和硬件上重新 benchmark 全部主张。"
+      ]
+    },
+    {
+      "title": "摘要",
+      "bullets": [
+        "神经算子学习函数空间之间的映射，而非固定维向量之间的映射；目标是同一组参数在不同网格/查询点上近似连续 operator，并支持 zero-shot super-resolution。",
+        "通用 neural-operator block 是可学习 integral kernel 加 pointwise nonlinearities；FNO 用 Fourier convolution 获得全局 receptive field，GNO 用图邻域积分，DeepONet 用 branch/trunk basis 表示。",
+        "文章讨论 PINO、生成式神经算子、逆问题、天气/CFD/材料/碳封存等应用，并把大规模数据、物理外推、混沌长时稳定和公平 benchmark 列为开放问题。"
+      ]
+    },
+    {
+      "title": "背景",
+      "bullets": [
+        "固定网格 CNN/UNet 的 receptive field 与 discretization 绑定，换分辨率通常需要插值或改网络；算子学习试图让离散化只是连续函数的采样表示。",
+        "discretization convergence 指网格细化时模型收敛到唯一 operator；但 band-limited/representation-equivalent 方法受预定义频谱空间限制，无法凭空恢复训练表示之外的任意高频。",
+        "“zero-shot super-resolution”是同一 operator 在更细 query grid 上评价，不保证训练数据未解析的物理尺度、冲击或湍流高频被正确重建。"
+      ]
+    },
+    {
+      "title": "模型与方法",
+      "bullets": [
+        "kernel operator K(a)(x)=∫κ(x,y)a(y)dy 与 local linear transform、activation 交替，前后用 lifting/projection 把物理通道映到 latent functions。",
+        "FNO 在 Fourier domain 参数化有限 modes，FFT 给出准线性计算；GNO 的局部 radius 若小于真实非局部作用范围会限制表达力，multipole/hierarchical 变体扩展全局交互。",
+        "PINO 同时用低分辨率 data loss 与更细网格 PDE residual，既学习 solution operator，又可对单个 test instance 做 physics-based fine-tuning；这与每个实例从头优化的 PINN 不同。",
+        "文章从引用论文收集 45000× weather、26000× automotive 等速度案例，并列出 neuraloperator 软件和 PDEBench/其他 benchmark；不同速度包含不同 baseline、精度、硬件与摊销。"
+      ]
+    },
+    {
+      "title": "核心结果与证据",
+      "bullets": [
+        "Fig. 1 的 Darcy 例比较固定 architecture：分辨率提高时 UNet error 增大，FNO/GNO 更一致；这展示 discretization behavior，但不是所有 CNN 和所有 PDE 的定理性排除。",
+        "文中称应用常可在接近 numerical solver 精度时获得 4–5 orders speedup，并举 GraphCast 类天气 45000×、汽车 26000×；这些是跨文献案例，不应汇总成统一平均加速。",
+        "FNO/PINO 的理论文献给出 continuous-operator universal approximation 与 error bounds；普适性是给定函数空间/连续性/容量条件下的存在性，仍不保证有限数据优化成功。",
+        "PINO 可在高分辨率施加 PDE constraint、减少纯 data-driven 的 distribution shift；但 residual gradient 计算层级、边界条件、stiffness 与方程错误会决定实际收益。",
+        "文章列出 weather、carbon storage、urban microclimate、材料应变、plasma、seismic inversion 等大量实例，证据层级从已发表 benchmark 到概念性应用不一。"
+      ]
+    },
+    {
+      "title": "有效性与局限",
+      "bullets": [
+        "训练场数据巨大，I/O 与 network bandwidth 可超过计算瓶颈；高分辨率 3D/time 数据需要 tensor/model/domain parallelism 和内存优化。",
+        "纯 data-driven operator 对未见 parameter regime、geometry、boundary 和 forcing 可能失效；climate 等领域训练/测试分布也可能随时间漂移。",
+        "sharp gradients、discontinuities 与 turbulent high frequencies 对有限 Fourier modes/平滑 loss 困难；混沌系统微小单步误差会在 autoregressive rollout 累积。",
+        "现有 PDE benchmarks 常训练数据未充分解析、评价只报 pointwise error 或不同论文设置不一致；速度必须同时报告精度、数据生成成本、训练成本和 amortization query count。"
+      ]
+    },
+    {
+      "title": "复现与资源",
+      "bullets": [
+        "Neural Operator Library：https://github.com/neuraloperator；文章也指向 PDEBench、SuperBench、BubbleML 等外部资源。",
+        "复现应用主张时应锁定 PDE/solver tolerance、train/test parameter split、grid、modes、rollout horizon 与硬件；同时测守恒、谱误差、极值、OOD 和 wall-clock，而非只测 relative L2。",
+        "本站 PDF SHA-256：e0080c903e8c80457f7953fe019f455f4b65c05e8d1d2e2f97f60895bde3db2a。",
+        "Evidence status: full-text verified; no independent reproduction performed."
+      ]
+    },
+    {
+      "title": "阅读指南",
+      "bullets": [
+        "先读 Fig. 2–3 和 integral-kernel 定义，区分固定分辨率 NN、连续 operator 与 FNO 实现。",
+        "再读 PINO 段落和 applications；遇到速度倍数应回到原引用核对 baseline、误差和硬件。",
+        "最后读 Challenges and Outlook，把 zero-shot grid evaluation 与真正 OOD physics generalization 分开设计测试。"
+      ]
+    }
+  ],
+  "evidence_refs": [
+    "paper.pdf pp. 2-9: discretization convergence, operator blocks, FNO/GNO/DeepONet and PINO",
+    "paper.pdf pp. 9-13: applications, cross-paper speed claims, inverse problems and benchmarks",
+    "paper.pdf pp. 13-15: data systems, sharp features, distribution shift and chaotic rollout limitations",
+    "Evidence status: full-text verified; no independent reproduction performed."
+  ],
+  "card_standard_version": "2.3",
+  "paper_profile": "ai_empirical",
+  "style_reference": "physicist_daily_arxiv",
+  "provenance": {
+    "program": "Collection",
+    "catalog": "Paper Collection",
+    "catalog_record_id": "0e770c23d85e7101",
+    "catalog_record_ids": [
+      "0e770c23d85e7101"
+    ],
+    "catalog_topic": "Neural Operators",
+    "collection_date": "2026-08-24",
+    "sampled_at": "2026-08-26",
+    "selected_by": "full_collection_backfill",
+    "sampling_seed": "not_applicable_full_collection",
+    "candidate_count": 452,
+    "legacy_full_text_card": "2309.15325.json"
+  },
+  "equation_refs": [],
+  "figure_refs": [],
+  "cover": {
+    "mode": "title_abstract",
+    "abstract_text": "Scientific discovery and engineering design are currently limited by the time and cost of physical experiments, selected mostly through trial-and-error and intuition that require deep domain expertise. Numerical simulations present an alternative to physical experiments but are usually infeasible for complex real-world domains due to the computational requirements of existing numerical methods. Artificial intelligence (AI) presents a potential paradigm shift by developing fast data-driven surrogate models. In particular, an AI framework, known as Neural Operators, presents a principled framework for learning mappings between functions defined on continuous domains, e.g., spatiotemporal processes and partial differential equations (PDE). They can extrapolate and predict solutions at new locations unseen during training, i.e., perform zero-shot super-resolution. Neural Operators can augmen",
+    "selection_rationale": "该旧版全文证据包没有经过 v2.3 的逐图导出与图号核验；为避免错配图片，封面使用论文题目和经全文核对的摘要，关键论证保留在卡片正文中。"
+  }
+}

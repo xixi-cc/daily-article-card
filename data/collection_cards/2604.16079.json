@@ -1,0 +1,150 @@
+{
+  "arxiv_id": "2604.16079",
+  "source_version": "v2",
+  "source_pdf": "https://arxiv.org/pdf/2604.16079v2",
+  "title_en": "The Amazing Stability of Flow Matching",
+  "title_zh": "流匹配令人惊讶的稳定性",
+  "curation_status": "full_text_verified",
+  "verified_metadata": {
+    "arxiv_id": "2604.16079",
+    "version": "v2",
+    "title": "The Amazing Stability of Flow Matching",
+    "abstract": "This empirical study probes whether flow-matching generators preserve quality, diversity and seed-aligned outputs under dataset pruning, disjoint training subsets, same-domain dataset swaps and architecture changes. On CelebA-HQ, models trained after removing half the data retain high ArcFace similarity to an unpruned model, even when some pruning rules worsen FID. A balanced CLIP-cluster selection improves FID from 24.24 to 22.80 at 50% pruning. Same-seed outputs also remain similar across disjoint halves, CelebA-HQ versus FFHQ, and DiT capacity changes, though a switch to U-Net weakens the effect. The work interprets this as global stability of learned flow trajectories and proposes gradient-, loss- and cluster-based pruning strategies, but evaluates one face domain and does not establish a theoretical stability guarantee.",
+    "authors": [
+      "Rania Briq",
+      "Michael Kamp",
+      "Ohad Fried",
+      "Sarel Cohen",
+      "Stefan Kesselheim"
+    ],
+    "categories": [
+      "cs.CV"
+    ],
+    "primary_category": "cs.CV",
+    "published": "2026-04-17T14:05:33Z"
+  },
+  "sections": [
+    {
+      "title": "作者信息",
+      "bullets": [
+        "作者来自Forschungszentrum Jülich、TU Dortmund、Lamarr Institute、Institute for AI in Medicine Essen、Reichman University、Helmholtz AI与University of Cologne。",
+        "官方快照为arXiv:2604.16079v2，主分类cs.CV，共7页；论文曾发表于EurIPS 2025 PriGM workshop。",
+        "代码与实验细节链接为github.com/briqr/fm_stability，正文未提供commit hash或环境锁定信息。"
+      ]
+    },
+    {
+      "title": "摘要",
+      "bullets": [
+        "研究问题是flow-matching generator在删减训练数据、替换数据域内样本和改变architecture后，是否保持分布指标及同seed生成语义。",
+        "在CelebA-HQ删去50%数据时，多数方法的same-seed ArcFace similarity仍高于0.79，而unmatched pairs约0.37。",
+        "balanced cluster pruning的FID为22.80，优于full-data模型的24.24；但high-loss或low-gradient筛选会显著恶化FID。",
+        "disjoint halves、CelebA-HQ到FFHQ以及DiT缩小仍出现seed-aligned相似输出，U-Net替换则相似度下降。",
+        "证据是单一人脸域上的经验现象，论文没有证明一般FM stability theorem。"
+      ]
+    },
+    {
+      "title": "背景",
+      "bullets": [
+        "FM训练velocity field，使Gaussian latent沿ODE走向data manifold；其训练成本使dataset pruning具有实际价值。",
+        "扩散模型已有同seed、不同数据子集仍生成相似图像的观察，但FM不依赖同样的entropic transport稳定性解释。",
+        "作者把quality/diversity用FID测量，把同seed输出的identity-level stability用ArcFace cosine similarity测量。",
+        "‘stable’在此主要指相同初始噪声对应的输出接近及FID未明显退化，不等于优化轨迹、参数或每个样本完全相同。"
+      ]
+    },
+    {
+      "title": "模型与方法",
+      "bullets": [
+        "基础模型是DiT加flow-matching transport，沿Gaussian noise到data的linear interpolants训练u_theta(x,t)；图像由在目标数据上训练的VQ-VAE编码。",
+        "Random pruning作为低成本baseline；Grad与Loss策略用约7%完整训练schedule的surrogate，对每样本取M=2 shared noisy endpoints与T=8 timesteps并做noise-band EMA normalization。",
+        "Grad score平均squared parameter-gradient norm，Loss以training loss替换；每种还测试保留最低分的inverse criterion。",
+        "Clust使用pretrained CLIP embeddings与k-means，k=24；数量可按cluster size proportional或各cluster balanced，cluster内可选near-center或farther samples。",
+        "主要pruning fraction为0.5；定量生成N=4096图像，Random FID报告3 seeds，其余表格未报告training-seed重复。",
+        "稳定性stress tests还包括两个disjoint random halves、PaliGemma zero-shot gender split、CelebA-HQ/FFHQ swap，以及675M DiT-XL/2、33M DiT-S/4和U-Net切换。"
+      ]
+    },
+    {
+      "title": "核心结果与证据",
+      "bullets": [
+        "Table 1a中Unpruned FID为24.24，Random 25.25±0.38，Grad 24.62，Grad inverse 29.75，Loss 33.92，Loss inverse 23.49，balanced Clust 22.80。",
+        "Table 1b中所有50%-pruned model相对Unpruned的matched-seed ArcFace mean为0.79–0.83，pair-level SD约0.11–0.13；unmatched pairs为0.37±0.11。",
+        "两个disjoint random subsets训练的模型之间matched-seed similarity为0.69±0.12，unrelated为0.34±0.10，支持现象不只来自与full model比较。",
+        "按PaliGemma二元gender attribute拆分后，两个分区模型的相似度分别0.76±0.17与0.58±0.16；作者同时承认gender概念与社会含义远复杂于该技术二分。",
+        "用FFHQ替换CelebA-HQ但保留CelebHQ VAE时same-seed similarity为0.58±0.15，对照unrelated 0.30±0.10。",
+        "DiT从675M缩至33M仍为0.81±0.12，切换到U-Net则降至0.55±0.13，说明capacity与architecture perturbation不能混作同强度结论。",
+        "high-loss samples筛选的FID最差33.92，作者解释这些可能来自low-density regions，过度代表会扭曲velocity field；相反Loss inverse达到23.49。",
+        "balanced clustering在只用一半数据时把FID改善1.44点，但没有跨training seeds的不确定性，因此不能确认稳定显著优于full-data baseline。",
+        "Figure 1与2均使用固定随机噪声序列且声明非手工挑图，只从更长序列截取连续范围；图像证据仍属定性补充。"
+      ]
+    },
+    {
+      "title": "有效性与局限",
+      "bullets": [
+        "实验集中在CelebA-HQ/FFHQ人脸域，并共享CelebHQ VAE；same-domain dataset swap不能代表跨域或文本条件生成。",
+        "除Random FID外，多数配置未给多training seeds、confidence intervals或显著性检验；ArcFace的±是4096 image pairs间SD，不是独立训练run间误差。",
+        "FID只用4000/4096生成样本，估计偏差可能较大；22.80对24.24的差异需要重复训练与更大样本确认。",
+        "ArcFace偏重face identity，无法完整衡量背景、细节、多样性、artifact或非人脸语义；高similarity与较差FID可同时出现。",
+        "训练两套disjoint subsets虽提供更强扰动，却未与完全独立VAE或latent coordinate system比较；固定VAE可能贡献seed alignment。",
+        "PaliGemma gender split依zero-shot binary classification，可能包含标签错误和社会偏差；该实验不能支持关于真实gender类别的科学结论。",
+        "论文用局部调整flow field解释cluster removal，但没有直接测velocity-field norm、trajectory distance随t变化或causal mechanism。",
+        "pruning scoring使用surrogate约7%训练schedule且Grad昂贵；总体compute savings未连同scoring、clustering与重训练成本完整核算。",
+        "没有在CIFAR、ImageNet、文本到图像或不同FM objective上验证，外推到大型generative models仍是开放问题。",
+        "工作是经验稳定性报告，没有数据扰动到ODE endpoint变化的理论上界。"
+      ]
+    },
+    {
+      "title": "复现与资源",
+      "bullets": [
+        "锁定CelebA-HQ split、VQ-VAE、DiT checkpoint recipe、ODE solver、noise seeds与4096 latent list，保证same-seed pair真正共享x0。",
+        "至少5个training seeds复跑Unpruned、Random、Grad、Loss inverse与balanced Clust，分别报告training-run CI与pair-level dispersion。",
+        "FID同时用4k与标准更大sample count，加入KID/precision-recall；ArcFace外再用LPIPS、CLIP和pixel/trajectory distances。",
+        "保存每个integration time的x_t与u_theta(x_t,t)，检验相似endpoint是否来自全程相近还是不同路径汇合。",
+        "做VAE固定、独立训练和cross-decoder三组control，分离latent coordinate system与FM field的贡献。",
+        "cluster removal按class/attribute之外加入自然语义clusters，并用人工audit量化PaliGemma split error。",
+        "compute账本需包括7% surrogate、M=2、T=8 gradient scoring、CLIP/k-means和最终训练，比较真实节省。",
+        "仓库：https://github.com/briqr/fm_stability；本站PDF SHA-256：fbbb06db77d07c186194ceee8e99f72c053ada7f6520d9186493538c7b703a73。",
+        "Evidence status: full-text verified; no independent reproduction performed."
+      ]
+    },
+    {
+      "title": "阅读指南",
+      "bullets": [
+        "先看Table 1，分清FID的distribution quality与ArcFace的same-seed identity stability是两种指标。",
+        "再读Disjoint subsets、Data swapping和Architectural change，注意每个实验的unmatched control与共享VAE条件。",
+        "Pruning strategies部分最有操作价值：Grad与Loss的inverse结果说明‘高分样本更重要’并非普遍成立。",
+        "最后读Discussion，把global/local flow-field解释视为待检验机制；正文只观察endpoint与图像相似，没有直接场测量。"
+      ]
+    }
+  ],
+  "evidence_refs": [
+    "paper.pdf pp. 1-2: motivation, claimed contributions and pruning-score definitions",
+    "paper.pdf pp. 3-4, Figures 1-2 and Table 1: setup, FID, ArcFace and perturbation results",
+    "paper.pdf p. 5: interpretation, discussion and outlook",
+    "paper.pdf pp. 6-7: cited methodological context",
+    "Evidence status: full-text verified; no independent reproduction performed."
+  ],
+  "card_standard_version": "2.3",
+  "paper_profile": "ai_empirical",
+  "style_reference": "physicist_daily_arxiv",
+  "provenance": {
+    "program": "Collection",
+    "catalog": "Paper Collection",
+    "catalog_record_id": "f5723426304434a6",
+    "catalog_record_ids": [
+      "f5723426304434a6"
+    ],
+    "catalog_topic": "Flow Matching",
+    "collection_date": "2026-08-24",
+    "sampled_at": "2026-08-26",
+    "selected_by": "full_collection_backfill",
+    "sampling_seed": "not_applicable_full_collection",
+    "candidate_count": 452,
+    "legacy_full_text_card": "2604.16079.json"
+  },
+  "equation_refs": [],
+  "figure_refs": [],
+  "cover": {
+    "mode": "title_abstract",
+    "abstract_text": "This empirical study probes whether flow-matching generators preserve quality, diversity and seed-aligned outputs under dataset pruning, disjoint training subsets, same-domain dataset swaps and architecture changes. On CelebA-HQ, models trained after removing half the data retain high ArcFace similarity to an unpruned model, even when some pruning rules worsen FID. A balanced CLIP-cluster selection improves FID from 24.24 to 22.80 at 50% pruning. Same-seed outputs also remain similar across disjoint halves, CelebA-HQ versus FFHQ, and DiT capacity changes, though a switch to U-Net weakens the effect. The work interprets this as global stability of learned flow trajectories and proposes gradient-, loss- and cluster-based pruning strategies, but evaluates one face domain and does not establish a theoretical stability guarantee.",
+    "selection_rationale": "该旧版全文证据包没有经过 v2.3 的逐图导出与图号核验；为避免错配图片，封面使用论文题目和经全文核对的摘要，关键论证保留在卡片正文中。"
+  }
+}

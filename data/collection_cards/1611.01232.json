@@ -1,0 +1,145 @@
+{
+  "arxiv_id": "1611.01232",
+  "source_version": "v2",
+  "source_pdf": "https://arxiv.org/pdf/1611.01232v2",
+  "title_en": "Deep Information Propagation",
+  "title_zh": "深层网络中的信息传播",
+  "curation_status": "full_text_verified",
+  "verified_metadata": {
+    "arxiv_id": "1611.01232",
+    "version": "v2",
+    "title": "Deep Information Propagation",
+    "abstract": "We study the behavior of untrained neural networks whose weights and biases are randomly distributed using mean field theory. We show the existence of depth scales that naturally limit the maximum depth of signal propagation through these random networks. Our main practical result is to show that random networks may be trained precisely when information can travel through them. Thus, the depth scales that we identify provide bounds on how deep a network may be trained for a specific choice of hyperparameters. As a corollary to this, we argue that in networks at the edge of chaos, one of these depth scales diverges. Thus arbitrarily deep networks may be trained only sufficiently close to criticality. We show that the presence of dropout destroys the order-to-chaos critical point and therefore strongly limits the maximum trainable depth for random networks. Finally, we develop a mean field theory for backpropagation and we show that the ordered and chaotic phases correspond to regions of vanishing and exploding gradient respectively.",
+    "authors": [
+      "Samuel S. Schoenholz",
+      "Justin Gilmer",
+      "Surya Ganguli",
+      "Jascha Sohl-Dickstein"
+    ],
+    "categories": [
+      "stat.ML",
+      "cs.LG"
+    ],
+    "primary_category": "stat.ML",
+    "published": "2016-11-04T00:44:32Z"
+  },
+  "sections": [
+    {
+      "title": "作者信息",
+      "bullets": [
+        "Samuel S. Schoenholz与Justin Gilmer共同第一作者；团队来自Google Brain与Stanford，论文发表于ICLR 2017。",
+        "官方快照为arXiv:1611.01232v2，主分类stat.ML，交叉分类cs.LG。",
+        "研究对象是随机初始化、未训练、宽的全连接前馈网络；其理论不是任意现代深度架构的训练动力学定理。"
+      ]
+    },
+    {
+      "title": "摘要",
+      "bullets": [
+        "作者用均场理论把输入方差、输入间相关性与反向梯度随层数的变化归结为若干指数depth scales。",
+        "有序相χ1<1时输入相关性趋同、梯度消失；混沌相χ1>1时输入相关性分离、梯度爆炸；χ1=1的edge of chaos使相关深度尺度ξc发散。",
+        "在MNIST/CIFAR10全连接网络上，训练可行区域大致满足深度L不远大于ξc，经验边界约L≲6ξc；这是有限实验中的必要条件证据，不是充分条件或一般化保证。",
+        "独立dropout mask使c=1不再是固定点，任何keep probability ρ<1都消除尖锐临界点并让ξc有限。"
+      ]
+    },
+    {
+      "title": "背景",
+      "bullets": [
+        "权重Wij^l独立采样N(0,σw²/Nl)，偏置N(0,σb²)，用匹配前两矩的Gaussian近似描述无限宽层的pre-activation。",
+        "单输入方差qaa^l按一维积分递推；双输入协方差qab^l及相关系数cab^l按二维Gaussian积分递推。",
+        "稳定性量χ1=σw²∫Dz[φ′(√q*z)]²；χ1<1时c*=1稳定为有序相，χ1>1时它不稳定并出现c*<1的混沌相。",
+        "文章主要数值图使用有界tanh；作者结尾明确说固定点框架不适用于某些ReLU非有界相。"
+      ]
+    },
+    {
+      "title": "模型与方法",
+      "bullets": [
+        "在fixed point附近线性化方差递推，得到|q^l−q*|约按exp(−l/ξq)衰减；ξq由包含φ″φ项的Jacobian决定。",
+        "对相关性递推线性化得ξc^−1=−log[σw²∫Dz1Dz2 φ′(u1*)φ′(u2*)]；有序相化为−logχ1，因此χ1→1时ξc发散。",
+        "dropout公式用pj~Bernoulli(ρ)并除以ρ；尽管正文把ρ称dropout rate，数学上ρ是保留概率。独立样本mask使c=1下一层严格小于1。",
+        "反向均场还假设forward与backprop使用的权重统计独立；恒宽时gradient variance递推乘χ1，故ξ∇^−1=−logχ1。",
+        "跨样本梯度协方差的渐近衰减由与forward correlation相同的ξc控制，这连接了可区分输入信息与一致梯度信号。",
+        "理论递推用σw²从0.1到3.0、σb²从0.01到0.3等网格数值迭代，并用残差指数拟合测量ξq、ξc。"
+      ]
+    },
+    {
+      "title": "核心结果与证据",
+      "bullets": [
+        "Figure 2中均场预测与递推数值测量吻合：ξq始终有限且比ξc短，ξc在order-to-chaos边界清晰发散。",
+        "Figure 4用深度240、宽度300的随机网络和MNIST cross-entropy测梯度；其层间范数跨多个数量级指数消失/爆炸，预测|ξ∇|与实测拟合大致一致。",
+        "训练实验扫描10≤L≤300、1≤σw²≤4、σb²=0.05；SGD与RMSProp学习率从10^−6到10^−2网格选择。",
+        "Figure 5分别在MNIST 200/14000 steps、CIFAR10 2000 steps以及RMSProp 300 steps下显示训练高准确率区域跟随约6ξc曲线。",
+        "成功区域可过拟合到MNIST 100% train/98% test、CIFAR10 100% train/55% test；作者明确实验目标是trainability，不是优化泛化。",
+        "Figure 6以ρ=0.99、0.98、0.94保留概率测试dropout；即使轻微dropout也把可训练深度压到约100层，ξc比仅看梯度幅值的|1/logχ1|更能预测边界。",
+        "临界点让均场ξc趋于无穷不等于有限宽任意深网络必然可训；Figure 4临界附近偏差正被作者归因于finite-size effects。"
+      ]
+    },
+    {
+      "title": "有效性与局限",
+      "bullets": [
+        "理论直接适用于无限宽极限、i.i.d. Gaussian权重、有bounded activation fixed point的全连接前馈网络；卷积、残差、归一化、attention和结构化权重需另行推导。",
+        "反向推导额外把前向与反向权重视为独立，真实backprop共享同一权重；实验吻合说明近似有用，不把它提升为严格等式。",
+        "L≲6ξc是Figure 5上的经验轮廓，系数6未被解释；只扫描两个小型视觉数据集、两种优化器和单个偏置方差。",
+        "训练成功以有限steps内达到高training accuracy判定；CIFAR10 test仅55%，所以信息可传播最多是optimization必要条件，不保证泛化或任务质量。",
+        "dropout结论依赖不同输入独立mask与普通inverted dropout；论文符号ρ口头称rate却实际为keep probability，复现时需避免反向理解。",
+        "‘arbitrarily deep may be trained’是临界均场极限的推论，有限宽波动、数值精度、optimizer、数据几何与高阶相关都可引入新深度限制。",
+        "ReLU在q递推无固定点的相被明确排除；将结果直接套到现代ReLU/GeLU残差网络会越出论文证明域。",
+        "本站未重跑递推、梯度实验或训练网格。"
+      ]
+    },
+    {
+      "title": "复现与资源",
+      "bullets": [
+        "先精确实现q与c递推，扫描σw²、σb²，分别由Jacobian公式与长层数残差拟合ξq、ξc；保存接近临界点时的finite-width误差。",
+        "梯度实验应复现L=240、width=300、MNIST cross-entropy，并同时测试真实共享权重backprop与论文的独立权重近似。",
+        "训练网格固定初始化seed、batch、预处理和学习率搜索，报告每格多个seeds的train accuracy与time-to-threshold，而不是单张热图。",
+        "对dropout明确记录ρ为keep probability，独立/共享mask策略，并在0.94、0.98、0.99附近加密扫描，验证c*=1消失与深度上限。",
+        "外推现代架构时逐项加入ReLU/GeLU、orthogonal weights、convolution、residual和normalization，重新推导或测量Jacobian spectrum，不能沿用原ξc。",
+        "本站PDF SHA-256：c0f90dbc1c95429487da1511429127d0a54fec9745dd2cec84c6e1c5a34fd21f。",
+        "Evidence status: full-text verified; no independent reproduction performed."
+      ]
+    },
+    {
+      "title": "阅读指南",
+      "bullets": [
+        "先读Sections 2–3，抓住q、c、χ1和ξq/ξc四个量，以及linearization只描述fixed point附近渐近行为。",
+        "再读Section 4及Figure 4，特别标记forward/backward权重独立与恒宽假设。",
+        "读Figures 5–6时看清横轴是σw²、成功定义是training accuracy、ρ是保留概率，并把6ξc当经验边界。",
+        "最后读Discussion明确排除ReLU无固定点相与structured matrices；这两句决定该理论能否被安全迁移。"
+      ]
+    }
+  ],
+  "evidence_refs": [
+    "paper.pdf pp. 1-3: problem, random-network assumptions and order-chaos map",
+    "paper.pdf pp. 3-5: asymptotic depth scales, divergence and dropout fixed-point removal",
+    "paper.pdf pp. 6-8: backpropagation approximation, gradient regimes and finite-width experiment",
+    "paper.pdf pp. 8-9: MNIST/CIFAR10 training grid and empirical 6xi_c boundary",
+    "paper.pdf pp. 9-10: dropout trainability result and scope limitations",
+    "paper.pdf pp. 11-18: derivations and supplementary training-time/optimizer grids",
+    "Evidence status: full-text verified; no independent reproduction performed."
+  ],
+  "card_standard_version": "2.3",
+  "paper_profile": "theory_experiment",
+  "style_reference": "physicist_daily_arxiv",
+  "provenance": {
+    "program": "Collection",
+    "catalog": "Paper Collection",
+    "catalog_record_id": "e2f9f7c34d2ecd6e",
+    "catalog_record_ids": [
+      "e2f9f7c34d2ecd6e"
+    ],
+    "catalog_topic": "Statistical Physics",
+    "collection_date": "2026-08-24",
+    "sampled_at": "2026-08-26",
+    "selected_by": "full_collection_backfill",
+    "sampling_seed": "not_applicable_full_collection",
+    "candidate_count": 452,
+    "legacy_full_text_card": "1611.01232.json"
+  },
+  "equation_refs": [],
+  "figure_refs": [],
+  "cover": {
+    "mode": "title_abstract",
+    "abstract_text": "We study the behavior of untrained neural networks whose weights and biases are randomly distributed using mean field theory. We show the existence of depth scales that naturally limit the maximum depth of signal propagation through these random networks. Our main practical result is to show that random networks may be trained precisely when information can travel through them. Thus, the depth scales that we identify provide bounds on how deep a network may be trained for a specific choice of hyperparameters. As a corollary to this, we argue that in networks at the edge of chaos, one of these depth scales diverges. Thus arbitrarily deep networks may be trained only sufficiently close to criticality. We show that the presence of dropout destroys the order-to-chaos critical point and therefore strongly limits the maximum trainable depth for random networks. Finally, we develop a mean field",
+    "selection_rationale": "该旧版全文证据包没有经过 v2.3 的逐图导出与图号核验；为避免错配图片，封面使用论文题目和经全文核对的摘要，关键论证保留在卡片正文中。"
+  }
+}

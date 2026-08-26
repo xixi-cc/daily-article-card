@@ -1,0 +1,150 @@
+{
+  "arxiv_id": "2001.08361",
+  "source_version": "v1",
+  "source_pdf": "https://arxiv.org/pdf/2001.08361v1",
+  "title_en": "Scaling Laws for Neural Language Models",
+  "title_zh": "神经语言模型的缩放定律",
+  "curation_status": "full_text_verified",
+  "verified_metadata": {
+    "arxiv_id": "2001.08361",
+    "version": "v1",
+    "title": "Scaling Laws for Neural Language Models",
+    "abstract": "We study empirical scaling laws for language model performance on the cross-entropy loss. The loss scales as a power-law with model size, dataset size, and the amount of compute used for training, with some trends spanning more than seven orders of magnitude. Other architectural details such as network width or depth have minimal effects within a wide range. Simple equations govern the dependence of overfitting on model/dataset size and the dependence of training speed on model size. These relationships allow us to determine the optimal allocation of a fixed compute budget. Larger models are significantly more sample-efficient, such that optimally compute-efficient training involves training very large models on a relatively modest amount of data and stopping significantly before convergence.",
+    "authors": [
+      "Jared Kaplan",
+      "Sam McCandlish",
+      "Tom Henighan",
+      "Tom B. Brown",
+      "Benjamin Chess",
+      "Rewon Child",
+      "Scott Gray",
+      "Alec Radford",
+      "Jeffrey Wu",
+      "Dario Amodei"
+    ],
+    "categories": [
+      "cs.LG",
+      "stat.ML"
+    ],
+    "primary_category": "cs.LG",
+    "published": "2020-01-23T03:59:20Z"
+  },
+  "sections": [
+    {
+      "title": "作者信息",
+      "bullets": [
+        "Jared Kaplan、Sam McCandlish共同主导研究；除Kaplan来自Johns Hopkins外，作者团队主要来自OpenAI。",
+        "官方快照为arXiv:2001.08361v1，主分类cs.LG，交叉分类stat.ML；全文30页，正文19页并含附录。",
+        "本文研究的是decoder-only语言模型预训练cross-entropy，不直接回答下游能力、推理成本、数据质量或后训练的最优缩放。"
+      ]
+    },
+    {
+      "title": "摘要",
+      "bullets": [
+        "作者在768至1.5B非嵌入参数、22M至23B tokens以及多种compute budget上观察到loss关于N、D与C的幂律。",
+        "在其拟合域内，固定compute的最优分配为Nopt约随Cmin^0.73增长、单epoch数据量Dopt约随Cmin^0.27增长；因此主张优先扩大模型并显著早停。",
+        "这个著名结论是2020年的经验frontier，后来Chinchilla在不同实验设计下得到N与D近似等比例扩展；本站把二者视为可比较但不可混同的历史结果。"
+      ]
+    },
+    {
+      "title": "背景",
+      "bullets": [
+        "研究把scale拆为非嵌入参数N、训练tokens D与非嵌入训练compute C≈6NBS；其中B是batch tokens、S是参数更新步数。",
+        "WebText2来自Reddit高karma外链：20.3M文档、96GB文本、1.62×10^10 words，经50257词表BPE得到2.29×10^10 tokens，保留6.6×10^8测试tokens。",
+        "主要模型为1024-token context的decoder-only Transformer；作者还用LSTM和Universal Transformer作比较，但中心结论来自Transformer。",
+        "所谓architecture shape影响弱，仅指固定N时在本文探索的depth、width、head和feed-forward范围内，不能外推为所有架构等价。"
+      ]
+    },
+    {
+      "title": "模型与方法",
+      "bullets": [
+        "参数受限拟合L(N)=(Nc/N)^αN，αN约0.076、Nc约8.8×10^13；数据受限早停拟合L(D)=(Dc/D)^αD，αD约0.095、Dc约5.4×10^13 tokens。",
+        "最优compute拟合L(Cmin)=(Ccmin/Cmin)^αCmin，αCmin约0.050、Ccmin约3.1×10^8 PF-days；固定batch的原始C指数0.057不是作者建议外推的量。",
+        "联合过拟合模型L(N,D)把N项与D项组合；其比例意味着避免性能惩罚时D约随N^0.74增长，而不是完全不增加数据。",
+        "critical batch拟合Bcrit(L)=B*/L^(1/αB)，B*约2.1×10^8 tokens、αB约0.21；Cmin与Smin是校正到远低于或远高于critical batch的理想量。",
+        "由αN、αB和训练步数指数αS约0.76推得N、B、S指数约0.73、0.24、0.03，故D=B×S约为Cmin^0.27。",
+        "通常用Adam、512×1024 token batch和25万steps；超过1B参数因显存改用Adafactor，学习率为3000-step warmup后cosine decay。"
+      ]
+    },
+    {
+      "title": "核心结果与证据",
+      "bullets": [
+        "Figure 1/Table 4汇总：幂律跨越约6个数量级N、2个以上数量级D与8个数量级Cmin；但这些跨度由多组受限切片组成，不代表单个模型横跨全部尺度。",
+        "Figure 5显示固定非嵌入参数时shape差异通常仅造成少量loss变化，aspect ratio可变约40倍；这是loss和已探索区域中的经验鲁棒性。",
+        "Figure 10显示本文两个模型的critical batch主要随目标loss变化，最大模型收敛附近约1–2M tokens；远距离外推由附录明确标为低信心。",
+        "Figure 14经验拟合Nopt∝Cmin^0.73、Smin∝Cmin^0.03；10倍compute约对应5倍模型，而训练数据样本约2倍，支持其‘larger model, early stop’策略。",
+        "Figure 12还显示frontier较平：约0.6–2.2倍最优N可用不超过20%的额外compute补偿，因此0.73不是精确且唯一的模型尺寸配方。",
+        "跨Books、Common Crawl、Wikipedia与Internet Books的test loss大体与WebText2保持常数offset，说明分布迁移loss在该实验内同步改善；并非证明下游任务能力等比例改善。",
+        "Section 6.3发现内部矛盾：单epoch D约随C^0.26增长，迟早无法满足避免过拟合所需的约C^0.54；粗略交点C*约10^4 PF-days、N*约10^12、D*约10^12、L*约1.7 nats/token，数值可漂移一个数量级。"
+      ]
+    },
+    {
+      "title": "有效性与局限",
+      "bullets": [
+        "最重要的外部边界是Chinchilla 2022：更广的token配置、匹配schedule与不同拟合给出近似N∝C^0.5、D∝C^0.5；因此Kaplan 0.73/0.27不应作为当前通用定律。",
+        "模型最大仅1.5B、数据上限约23B tokens，却讨论远大规模；Figure 15的10^12参数交点是高度敏感的推测，不是验证过的能力极限。",
+        "N排除词表与位置embedding，C≈6NBS也排除context-dependent compute；当context约大于12dmodel时，这个近似会系统失真。",
+        "WebText2、BPE、1024 context、单epoch/早停和特定optimizer共同定义拟合域；data quality、重复训练、去重、mixture和tokenizer改变都可能改frontier。",
+        "最小D情形一epoch只有40 steps且拟合差；作者未测试regularization或data augmentation，也承认hyperparameter tuning不彻底。",
+        "critical-batch外推远离观测loss时低信心，且最优学习率依赖目标loss；把校正后的Cmin理解成实际硬件吞吐会混淆compute与wall-clock效率。",
+        "训练指标为nats/token；幂律平滑改善不等于涌现能力、可靠推理、安全性或经济价值的幂律。",
+        "本站未重训模型、重拟合曲线或独立核验WebText2。"
+      ]
+    },
+    {
+      "title": "复现与资源",
+      "bullets": [
+        "复现应保存每次run的N定义、真实FLOPs、tokens、unique tokens、epochs、batch、steps、optimizer、schedule、seed和完整train/test curves。",
+        "分别重拟合L(N)、L(D)、L(C)、L(Cmin)与L(N,D)，报告残差、参数协方差和held-out-scale预测；不能只在log-log图上目测直线。",
+        "用多seed、多个IsoFLOP budgets和每个budget足够密的model-size valley估计frontier，并比较0.73/0.27、0.5/0.5及curved frontier。",
+        "固定dataset mixture、tokenizer、architecture family和optimizer做N/D因果对照，再单独改变data quality、重复epoch与context length，识别frontier漂移来源。",
+        "同时报告non-embedding与total parameters、近似6ND与profiled FLOPs，避免不同论文因计数口径产生伪差异。",
+        "本站PDF SHA-256：a41bd7877fd1a6bcbba096b2619618bd2f90e02488f2365644903eb2f7c6a494。",
+        "Evidence status: full-text verified; no independent reproduction performed."
+      ]
+    },
+    {
+      "title": "阅读指南",
+      "bullets": [
+        "先读pp.2–6的定义与summary，特别区分C、Cmin、N是否包含embedding，以及早停的含义。",
+        "再读Sections 3–5和Figures 5、10–11，判断shape、transfer和critical-batch证据各自覆盖的模型与loss范围。",
+        "精读Section 6与Figures 12–15：0.73 frontier、宽松最优区间以及数据受限矛盾必须一起理解。",
+        "最后读Appendix C caveats，并与Chinchilla的三种frontier估计并排；两篇论文的冲突本身比记住一个比例更有方法论价值。"
+      ]
+    }
+  ],
+  "evidence_refs": [
+    "paper.pdf pp. 1-6: abstract, scaling definitions and analytic summary",
+    "paper.pdf pp. 6-10: architecture, compute estimate, WebText2 and empirical ranges",
+    "paper.pdf pp. 10-14: joint N-D law, transfer, learning curves and critical batch",
+    "paper.pdf pp. 14-18: compute allocation, frontier flatness and internal data contradiction",
+    "paper.pdf pp. 20-22: tabulated exponents and compute-efficient allocation",
+    "paper.pdf p. 22: explicit caveats on batch extrapolation, small-D fits, FLOP approximation and tuning",
+    "Evidence status: full-text verified; no independent reproduction performed."
+  ],
+  "card_standard_version": "2.3",
+  "paper_profile": "ai_empirical",
+  "style_reference": "physicist_daily_arxiv",
+  "provenance": {
+    "program": "Collection",
+    "catalog": "Paper Collection",
+    "catalog_record_id": "5a80b953a716eb35",
+    "catalog_record_ids": [
+      "5a80b953a716eb35"
+    ],
+    "catalog_topic": "Scaling Laws",
+    "collection_date": "2026-08-24",
+    "sampled_at": "2026-08-26",
+    "selected_by": "full_collection_backfill",
+    "sampling_seed": "not_applicable_full_collection",
+    "candidate_count": 452,
+    "legacy_full_text_card": "2001.08361.json"
+  },
+  "equation_refs": [],
+  "figure_refs": [],
+  "cover": {
+    "mode": "title_abstract",
+    "abstract_text": "We study empirical scaling laws for language model performance on the cross-entropy loss. The loss scales as a power-law with model size, dataset size, and the amount of compute used for training, with some trends spanning more than seven orders of magnitude. Other architectural details such as network width or depth have minimal effects within a wide range. Simple equations govern the dependence of overfitting on model/dataset size and the dependence of training speed on model size. These relationships allow us to determine the optimal allocation of a fixed compute budget. Larger models are significantly more sample-efficient, such that optimally compute-efficient training involves training very large models on a relatively modest amount of data and stopping significantly before convergence.",
+    "selection_rationale": "该旧版全文证据包没有经过 v2.3 的逐图导出与图号核验；为避免错配图片，封面使用论文题目和经全文核对的摘要，关键论证保留在卡片正文中。"
+  }
+}

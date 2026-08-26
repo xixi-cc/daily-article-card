@@ -1,0 +1,134 @@
+{
+  "arxiv_id": "2210.07182",
+  "source_version": "v7",
+  "source_pdf": "https://arxiv.org/pdf/2210.07182",
+  "title_en": "PDEBENCH: An Extensive Benchmark for Scientific Machine Learning",
+  "title_zh": "PDEBench：面向科学机器学习的大规模偏微分方程基准",
+  "curation_status": "full_text_verified",
+  "verified_metadata": {
+    "arxiv_id": "2210.07182",
+    "version": "v7",
+    "title": "PDEBENCH: An Extensive Benchmark for Scientific Machine Learning",
+    "abstract": "Machine learning-based modeling of physical systems has experienced increased interest in recent years. Despite some impressive progress, there is still a lack of benchmarks for Scientific ML that are easy to use but still challenging and representative of a wide range of problems. We introduce PDEBench, a benchmark suite of time-dependent simulation tasks based on Partial Differential Equations (PDEs). PDEBench comprises both code and data to benchmark the performance of novel machine learning models against both classical numerical simulations and machine learning baselines. Our proposed set of benchmark problems contribute the following unique features: (1) A much wider range of PDEs compared to existing benchmarks, ranging from relatively common examples to more realistic and difficult problems; (2) much larger ready-to-use datasets compared to prior work, comprising multiple simulation runs across a larger number of initial and boundary conditions and PDE parameters; (3) more extensible source codes with user-friendly APIs for data generation and baseline results with popular machine learning models (FNO, U-Net, PINN, Gradient-Based Inverse Method). PDEBench allows researchers to extend the benchmark freely for their own purposes using a standardized API and to compare the performance of new models to existing baseline methods. We also propose new evaluation metrics with the aim to provide a more holistic understanding of learning methods in the context of Scientific ML. With those metrics we identify tasks which are challenging for recent ML methods and propose these tasks as future challenges for the community. The code is available at https://github.com/pdebench/PDEBench.",
+    "authors": [
+      "Makoto Takamoto",
+      "Timothy Praditia",
+      "Raphael Leiteritz",
+      "Dan MacKinlay",
+      "Francesco Alesiani",
+      "Dirk Pflüger",
+      "Mathias Niepert"
+    ],
+    "categories": [
+      "cs.LG",
+      "cs.CV",
+      "physics.flu-dyn",
+      "physics.geo-ph"
+    ],
+    "primary_category": "cs.LG",
+    "published": "2022-10-13T17:03:36Z",
+    "comment": ""
+  },
+  "sections": [
+    {
+      "title": "作者信息",
+      "bullets": [
+        "作者：Makoto Takamoto、Timothy Praditia、Raphael Leiteritz、Dan MacKinlay、Francesco Alesiani、Dirk Pflüger、Mathias Niepert。",
+        "官方快照：arXiv:2210.07182v7；主分类 cs.LG，发表于 NeurIPS 2022 Datasets and Benchmarks Track。",
+        "卡片对应论文 v7；PDEBench 仓库和数据后来可能继续演化，复现应锁定 release/commit。"
+      ]
+    },
+    {
+      "title": "摘要",
+      "bullets": [
+        "PDEBench 提供可下载高保真数据、可配置数据生成代码、统一 API、FNO/U-Net/PINN 与 gradient-based inverse baselines，以及面向科学失败模式的多维指标。",
+        "范围含 1D/2D diffusion-reaction、advection、Burgers、diffusion-sorption、1D/2D/3D compressible NS、2D incompressible NS、Darcy 和 shallow-water，共 11 类表项、不同参数形成 35 datasets。",
+        "论文的核心观察是整体 RMSE 不足以表示物理质量：边界、守恒、最高频谱、局部最大误差和时间 rollout 会暴露不同失败。"
+      ]
+    },
+    {
+      "title": "背景",
+      "bullets": [
+        "每个 PDE、boundary/initial condition 和参数分布定义不同任务，不能像 ImageNet 那样把所有物理系统视为同一 i.i.d. 数据集。",
+        "forward surrogate 近似 state history→future state；inverse benchmark 则从未来 observation 反推 initial condition，再检查该估计经过 surrogate 后能否重现未来。",
+        "ground truth 来自 classical simulators，因此 benchmark 评价的是对给定离散 solver/data-generating assumptions 的模仿，不直接等于实验真值。"
+      ]
+    },
+    {
+      "title": "模型与方法",
+      "bullets": [
+        "Table 1 的规模从 1D 1024×200、10000 samples 到 3D compressible NS 128³×21、100 samples；2D compressible NS 为 512²×21、1000 samples，分辨率与样本数随计算成本明显不同。",
+        "指标含 RMSE、nRMSE、max error、conserved-value RMSE、boundary RMSE，以及 low/mid/high-frequency RMSE；频域指标用于检测 shock/小尺度结构被平均误差掩盖。",
+        "baseline 用 FNO、U-Net、PINN；data-driven split 为 90% train、10% validation/test，PINN 因每次只针对一个 IC/BC，选 10 samples 独立训练并平均。",
+        "autoregressive U-Net 比较 one-step、recurrent 与 pushforward training；inverse 以 gradient 优化 initial condition，通常用 T=15，CFD 用 T=5。"
+      ]
+    },
+    {
+      "title": "核心结果与证据",
+      "bullets": [
+        "FNO 在多数 forward datasets/metrics 优于 U-Net 与 PINN，并在许多问题的频谱上约 4×10^-4 error；但这是论文 baseline 配置，不代表所有后续实现。",
+        "Burgers 非线性增强时 FNO high-frequency fRMSE 可恶化约两个数量级；说明低 overall RMSE 仍可能漏掉 shock/high-frequency dynamics。",
+        "Darcy 的 normalized error 会在 forcing/solution amplitude 很小时显得大；compressible NS overall RMSE 远差于简单 PDE，3D inviscid 反而优于 2D 的现象被作者归因于较低分辨率带来的平滑，而非 3D 更容易。",
+        "autoregressive test error 随 rollout steps 快速累积；pushforward training 在较长 horizon 更稳定，因此论文采用它作 U-Net baseline。训练时间窗之外的 advection/Burgers extrapolation error 单调增长。",
+        "inverse benchmark 中 FNO 通常优于 U-Net，但 initial-condition error 与最终 prediction error并不相同；误差常集中于 mid/high frequencies。"
+      ]
+    },
+    {
+      "title": "有效性与局限",
+      "bullets": [
+        "benchmark 主要是 hydromechanical/time-dependent PDE；未覆盖 quantum、multiphase flows 或 non-rectangular domains，复杂 geometry 与真实传感噪声也有限。",
+        "不同 datasets 的 solver、resolution、sample count 和 time horizon 不同，不能把 raw RMSE 直接跨 PDE 排名难度；低分辨率可人为平滑复杂性。",
+        "PINN 与 amortized operator baseline 训练单位不同：PINN 每实例重训，FNO/U-Net 先跨样本训练；速度/精度比较必须注明 query count 与摊销。",
+        "v7 数据与当前仓库可能有修订；使用 benchmark 时需记录 DOI 文件 hash、生成参数和预处理，而非只引用项目名。"
+      ]
+    },
+    {
+      "title": "复现与资源",
+      "bullets": [
+        "代码：https://github.com/pdebench/PDEBench；数据永久 DOI：10.18419/darus-2986，DaRUS dataverse 提供单数据集下载。",
+        "复现应锁定 dataset filename/hash、equation parameters、solver resolution、split、baseline config 与 random seeds，并同时输出 RMSE/nRMSE/max/cRMSE/bRMSE/fRMSE 和 per-step rollout curves。",
+        "本站 PDF SHA-256：756882062e8e62f70ffdb4339b7f0824201783b336c876c873d83a89cf646386。",
+        "Evidence status: full-text verified; no independent reproduction performed."
+      ]
+    },
+    {
+      "title": "阅读指南",
+      "bullets": [
+        "先读 Table 1 了解数据规模不均，再读 Appendix B 的指标定义；不要只复制 Figure 2 的 aggregate RMSE。",
+        "随后看 Figs. 3–5，重点是 shock 高频、低幅归一化、CFD 分辨率与 rollout accumulation 四类反例。",
+        "最后读 limitations 和数据生成 Appendix D；新增模型应先复用相同文件/split，再做扩展任务。"
+      ]
+    }
+  ],
+  "evidence_refs": [
+    "paper.pdf pp. 3-6: dataset inventory, task definition, metrics and baseline protocols",
+    "paper.pdf pp. 7-10: forward/inverse results, frequency failures and rollout accumulation",
+    "paper.pdf Appendices B-E pp. 17-50: exact metrics, PDE generators, inverse setup and baseline tables",
+    "Evidence status: full-text verified; no independent reproduction performed."
+  ],
+  "card_standard_version": "2.3",
+  "paper_profile": "ai_empirical",
+  "style_reference": "physicist_daily_arxiv",
+  "provenance": {
+    "program": "Collection",
+    "catalog": "Paper Collection",
+    "catalog_record_id": "856c5efb749715d5",
+    "catalog_record_ids": [
+      "856c5efb749715d5"
+    ],
+    "catalog_topic": "AI for Science",
+    "collection_date": "2026-08-24",
+    "sampled_at": "2026-08-26",
+    "selected_by": "full_collection_backfill",
+    "sampling_seed": "not_applicable_full_collection",
+    "candidate_count": 452,
+    "legacy_full_text_card": "2210.07182.json"
+  },
+  "equation_refs": [],
+  "figure_refs": [],
+  "cover": {
+    "mode": "title_abstract",
+    "abstract_text": "Machine learning-based modeling of physical systems has experienced increased interest in recent years. Despite some impressive progress, there is still a lack of benchmarks for Scientific ML that are easy to use but still challenging and representative of a wide range of problems. We introduce PDEBench, a benchmark suite of time-dependent simulation tasks based on Partial Differential Equations (PDEs). PDEBench comprises both code and data to benchmark the performance of novel machine learning models against both classical numerical simulations and machine learning baselines. Our proposed set of benchmark problems contribute the following unique features: (1) A much wider range of PDEs compared to existing benchmarks, ranging from relatively common examples to more realistic and difficult problems; (2) much larger ready-to-use datasets compared to prior work, comprising multiple simulat",
+    "selection_rationale": "该旧版全文证据包没有经过 v2.3 的逐图导出与图号核验；为避免错配图片，封面使用论文题目和经全文核对的摘要，关键论证保留在卡片正文中。"
+  }
+}

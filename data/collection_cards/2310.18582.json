@@ -1,0 +1,152 @@
+{
+  "arxiv_id": "2310.18582",
+  "source_version": "v1",
+  "source_pdf": "https://arxiv.org/pdf/2310.18582v1",
+  "title_en": "Data-driven learning of the generalized Langevin equation with state-dependent memory",
+  "title_zh": "具有状态依赖记忆的广义Langevin方程数据驱动学习",
+  "curation_status": "full_text_verified",
+  "verified_metadata": {
+    "arxiv_id": "2310.18582",
+    "version": "v1",
+    "title": "Data-driven learning of the generalized Langevin equation with state-dependent memory",
+    "abstract": "We present a data-driven method to learn stochastic reduced models of complex systems that retain a state-dependent memory beyond the standard generalized Langevin equation with a homogeneous kernel. The constructed model naturally encodes heterogeneous energy dissipation by jointly learning a set of state features and the non-Markovian coupling among the features. Numerical results demonstrate the limitation of the standard GLE and the essential role of state dependency in predicting molecule kinetics related to conformation relaxation and transition.",
+    "authors": [
+      "Pei Ge",
+      "Zhongqiang Zhang",
+      "Huan Lei"
+    ],
+    "categories": [
+      "physics.comp-ph",
+      "physics.data-an"
+    ],
+    "primary_category": "physics.comp-ph",
+    "published": "2023-10-28T04:10:39Z"
+  },
+  "sections": [
+    {
+      "title": "作者信息",
+      "bullets": [
+        "Pei Ge与Huan Lei来自Michigan State University计算数学/统计系，Zhongqiang Zhang来自Worcester Polytechnic Institute数学科学系。",
+        "官方快照arXiv:2310.18582v1，主分类physics.comp-ph，另含physics.data-an；正文10页加13页appendices。",
+        "论文提出state-dependent GLE（SD-GLE），并在aqueous benzyl bromide的atomistic MD轨迹上与standard GLE比较。"
+      ]
+    },
+    {
+      "title": "摘要",
+      "bullets": [
+        "Mori–Zwanzig投影的一般memory K(q,t)可依赖resolved state；standard GLE把它简化成仅依赖lag的homogeneous kernel，可能抹去构象附近不同耗散。",
+        "作者将memory写成φ(q_t)^TΘ(t−τ)φ(q_τ)，用多个state features编码空间异质性、matrix kernel编码feature间延迟耦合。",
+        "用按初始q*条件化的三点correlations训练φ和Θ，因为ordinary two-point autocorrelation只看到全局平均memory。",
+        "按second fluctuation–dissipation relation构造coherent Gaussian noise，保持canonical invariant density；FFT与fast convolution使长轨迹模拟O(NlogN)。",
+        "benzyl-bromide例中四feature full-kernel模型恢复conditional correlations、relaxation和transition-time distribution，而homogeneous GLE显著预测过快动力学。"
+      ]
+    },
+    {
+      "title": "背景",
+      "bullets": [
+        "投影full Hamiltonian dynamics到少数coarse variables后，unresolved degrees产生free-energy force、history-dependent friction与colored noise。",
+        "标准GLE常由velocity autocorrelation反演单一K(t)，能匹配被选二点统计却不保证不同metastable basins与saddle附近的局域动力学。",
+        "构象转变对barrier region friction极敏感；同一global average kernel可低估saddle耗散，从而错误提高short transition probability。",
+        "本文不直接求昂贵orthogonal dynamics，而问什么可学习model class能保留state-dependent non-Markovian signatures。"
+      ]
+    },
+    {
+      "title": "模型与方法",
+      "bullets": [
+        "resolved q,p满足q̇=M^−1p，ṗ=−∇U(q)−∫φ_t^TΘ(t−τ)φ_τv_τdτ+R_t；本文选constant M并假定U已知。",
+        "features φ_i(q)=H_i^Tψ(q)由piecewise-linear sparse bases组成；kernel Θ(t)=e^−αtΣ_kΘ̂_kcosω_kt，Θ̂_k=Γ_kΓ_k^T保证positive semidefinite。",
+        "训练metric来自g(t;q*)=E{[ṗ_t+∇U(q_t)]v_0^T|q_0=q*}与model convolution；所需C_{ψ,ψ}(t,τ;q*)是conditional three-point correlation。",
+        "稀疏ψ让basis products O(1)评估并预计算correlations；优化H、lower-triangular Γ_k与α，另加overall two-point loss作两阶段训练。",
+        "noise写R_t=φ_t^T R̃(t)，协方差k_BT e^−α|t−τ|Θ(|t−τ|)，从而与memory匹配并保持ρ_eq∝exp[−β(U+p^TM^−1p/2)]。",
+        "测试系统含一benzyl bromide加2400 waters，AMBER/RESP、TIP3P、PME与SHAKE；298 K、1 bar平衡16 ns后NVT production 2.5 μs。",
+        "q是Br到ipso-carbon距离，U(q)=−k_BTlnρ(q)由MD kernel density estimate得到；〈q∇U〉=0.996k_BT作内部检查。"
+      ]
+    },
+    {
+      "title": "核心结果与证据",
+      "bullets": [
+        "Figure 1中standard GLE的overall c_vq已与MD有偏差，而按不同q*条件化的h(t;q*)分散更大；single homogeneous curve无法表示两minima与saddle。",
+        "one-feature φ(q)在saddle q≈3.65处峰值，解释该处effective friction更大、conditional correlation衰减更快。",
+        "Figure 2的four-feature encoders有更复杂空间variation，matrix Θ包含不同frequency/feature channels，不再只是γ(q)乘同一temporal kernel。",
+        "Figure 3显示four-feature SD-GLE在two minima和saddle的c_vq、c_vv上接近full MD；one-feature只改善short-time，long-time仍偏离。",
+        "Figure 4a中standard GLE显著低估conformation relaxation time；作者联系到其忽略saddle附近较大friction、让barrier crossing过快。",
+        "Figure 4b的transition-time distribution中standard GLE过度集中于short times；one-feature改善，four-feature结果恢复MD分布。",
+        "Supplement Figure 6在两个local minima的c_qv、c_vv也显示homogeneous GLE偏差，说明问题不只局限于saddle condition。",
+        "Supplement Figure 7把Θ强制diagonal后仍明显偏离MD；full off-diagonal coupling更好，支持feature间memory interaction是必要模型成分。",
+        "antisymmetric kernel extension在Appendix G给出并满足Θ(−t)=Θ(t)^T，但主实验使用symmetric form。"
+      ]
+    },
+    {
+      "title": "有效性与局限",
+      "bullets": [
+        "Eq. (3)被作者明确称为保留state-dependent memory的model，而非Zwanzig exact kernel的直接近似；learned features未必有唯一microscopic interpretation。",
+        "U(q)从同一2.5 μs MD估计且先验已知；free-energy uncertainty与memory-learning误差未联合传播。",
+        "单一distance q可能遗漏其他slow coordinates，SD-GLE通过memory补偿但不能证明chosen coordinate充分。",
+        "conditional correlations与transition statistics似乎来自同一MD production pool；未清楚展示严格train/test trajectory split或跨force-field transfer。",
+        "只研究一个小分子、一个温度与一条reaction coordinate，四features的普适性和sample complexity未知。",
+        "transition events可能稀少且彼此相关；正文未给distribution confidence intervals、event count或rare-tail calibration。",
+        "positive-semidefinite cosine kernel和symmetric assumption是model restriction；α接近零主要作regularizer，有限cutoff会影响long memory。",
+        "canonical invariant density由matched noise构造保证，但numerical discretization、finite FFT period与estimated kernel可能引入bias。",
+        "standard GLE baseline通过global correlations建立；其它state-dependent friction或nonlinear GLE baselines有限，不能把提升唯一归因于该parameterization。",
+        "本站未运行MD、训练或transition resampling。"
+      ]
+    },
+    {
+      "title": "复现与资源",
+      "bullets": [
+        "复现先冻结MD force field、thermostat、box、sampling stride与q定义；按independent time blocks划train/validation/test，防止long-memory leakage。",
+        "报告每个q* bin的occupancy、effective samples和conditional-correlation uncertainty；saddle附近必须有足够coverage。",
+        "从standard GLE、Markov γ(q)、one-feature、multi-feature diagonal Θ到full Θ逐级ablation，并用held-out correlations与transition events共同选模。",
+        "U(q)用block bootstrap重新估计，将free-energy曲线误差传到relaxation/first-passage distribution；不要把所有偏差归memory。",
+        "验证FDT与numerics：测stationary q,p density、equipartition、noise covariance、energy dissipation和time-step/FFT-window convergence。",
+        "transition统计公开event definition、recrossing处理、censoring、number of transitions及survival curve confidence bands。",
+        "扫描feature count、basis resolution、kernel modes与cutoff，报告validation plateau而非只展示n=4。",
+        "跨温度或不同solvent做held-out transfer可检验features是否编码真实heterogeneous coupling还是单dataset插值。",
+        "本站PDF SHA-256：b02602be10aad06297ac04d9a8cddee8b29f77077221c1cdc48e69400995c161。",
+        "Evidence status: full-text verified; no independent reproduction performed."
+      ]
+    },
+    {
+      "title": "阅读指南",
+      "bullets": [
+        "先读Eqs. (1)–(3)，分清exact projected-form motivation与作者选择的factorized state-feature model。",
+        "Eqs. (4)–(5)给parameterization、conditional training和FDT-consistent simulation，是方法核心。",
+        "Figures 1–3按global→conditional→feature-count读取，能看出普通two-point fit为何不足。",
+        "Figure 4与Supplement Figures 6–7才是kinetics和off-diagonal coupling证据；同时检查single-molecule/same-dataset限制。"
+      ]
+    }
+  ],
+  "evidence_refs": [
+    "paper.pdf pp. 1-5: projected dynamics, feature-factorized state-dependent memory and conditional training objective",
+    "paper.pdf pp. 6-10: benzyl-bromide MD, conditional correlations, relaxation and transition-time results",
+    "paper.pdf pp. 11-15: coherent-noise construction, invariant density and efficient convolution",
+    "paper.pdf pp. 16-18: atomistic protocol, free-energy check and feature-coupling ablations",
+    "paper.pdf pp. 18-23: generalized kernel form and remaining derivations",
+    "Evidence status: full-text verified; no independent reproduction performed."
+  ],
+  "card_standard_version": "2.3",
+  "paper_profile": "ai_empirical",
+  "style_reference": "physicist_daily_arxiv",
+  "provenance": {
+    "program": "Collection",
+    "catalog": "Paper Collection",
+    "catalog_record_id": "b02602be10aad062",
+    "catalog_record_ids": [
+      "b02602be10aad062"
+    ],
+    "catalog_topic": "AI for Science",
+    "collection_date": "2026-08-23",
+    "sampled_at": "2026-08-26",
+    "selected_by": "full_collection_backfill",
+    "sampling_seed": "not_applicable_full_collection",
+    "candidate_count": 452,
+    "legacy_full_text_card": "2310.18582.json"
+  },
+  "equation_refs": [],
+  "figure_refs": [],
+  "cover": {
+    "mode": "title_abstract",
+    "abstract_text": "We present a data-driven method to learn stochastic reduced models of complex systems that retain a state-dependent memory beyond the standard generalized Langevin equation with a homogeneous kernel. The constructed model naturally encodes heterogeneous energy dissipation by jointly learning a set of state features and the non-Markovian coupling among the features. Numerical results demonstrate the limitation of the standard GLE and the essential role of state dependency in predicting molecule kinetics related to conformation relaxation and transition.",
+    "selection_rationale": "该旧版全文证据包没有经过 v2.3 的逐图导出与图号核验；为避免错配图片，封面使用论文题目和经全文核对的摘要，关键论证保留在卡片正文中。"
+  }
+}

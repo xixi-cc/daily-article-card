@@ -1,0 +1,142 @@
+{
+  "arxiv_id": "2509.19972",
+  "source_version": "v3",
+  "source_pdf": "https://arxiv.org/pdf/2509.19972v3",
+  "title_en": "An effective control of large systems of active particles: An application to evacuation problem",
+  "title_zh": "大规模主动粒子系统的有效控制：疏散问题中的应用",
+  "curation_status": "full_text_verified",
+  "verified_metadata": {
+    "arxiv_id": "2509.19972",
+    "version": "v3",
+    "title": "An effective control of large systems of active particles: An application to evacuation problem",
+    "abstract": "Manipulation of large systems of active particles is a serious challenge across diverse domains, including crowd management, control of robotic swarms, and coordinated material transport. The development of advanced control strategies for complex scenarios is hindered, however, by the lack of scalability and robustness of the existing methods, in particular, due to the need of an individual control for each agent. One possible solution involves controlling a system through a leader or a group of leaders, which other agents tend to follow. Using such an approach we develop an effective control strategy for a leader, combining reinforcement learning (RL) with artificial forces acting on the system. To describe the guidance of active particles by a leader we introduce the generalized Vicsek model. This novel method is then applied to the problem of the effective evacuation by a robot-rescuer (leader) of large groups of people from hazardous places. We demonstrate, that while a straightforward application of RL yields suboptimal results, even for advanced architectures, our approach provides a robust and efficient evacuation strategy. The source code supporting this study is publicly available at: https://github.com/cinemere/evacuation.",
+    "authors": [
+      "Albina Klepach",
+      "Egor E. Nuzhin",
+      "Alexey A. Tsukanov",
+      "Nikolay V. Brilliantov"
+    ],
+    "categories": [
+      "cs.RO",
+      "cs.AI"
+    ],
+    "primary_category": "cs.RO",
+    "published": "2025-09-24T10:27:45Z",
+    "doi": "10.1016/j.cnsns.2025.109359"
+  },
+  "sections": [
+    {
+      "title": "作者信息",
+      "bullets": [
+        "作者：Albina Klepach、Egor E. Nuzhin、Alexey A. Tsukanov、Nikolay V. Brilliantov；机构包括 AIRI、Skolkovo Institute of Science and Technology 与 University of Leicester。",
+        "官方快照：arXiv:2509.19972v3，主分类 cs.RO，另含 cs.AI；论文 DOI 10.1016/j.cnsns.2025.109359。",
+        "论文提出一种面向 leader-follower 主动粒子群的状态编码，并在机器人引导疏散的 agent-based 数值环境中验证；没有真实人群、实体机器人或建筑现场实验。"
+      ]
+    },
+    {
+      "title": "摘要",
+      "bullets": [
+        "研究把大规模个体控制压缩为单个 rescuer-leader 的连续二维动作决策，并以 generalized Vicsek model描述人群的局域对齐、噪声和对 leader 的跟随。",
+        "核心方法用两类 inverse-power pseudo-potentials 汇总自由人群对 leader 的 catch force，以及已跟随人数加权的 exit force，再将固定维特征输入 RPO policy。",
+        "60 人与 15 人的仿真显示该编码比直接 feed-forward 和 transformer 输入更快、更稳定地学会疏散；但这些结论只在作者设定的方形单出口 simulator 内成立。"
+      ]
+    },
+    {
+      "title": "背景",
+      "bullets": [
+        "传统逐个操控 N 个 agent 的状态/动作会随群体规模膨胀；leader-follower范式把控制集中到少量 leader，但仍需在继续收集远处人群和把现有 followers带往出口之间权衡。",
+        "人工 potential field在机器人导航中以目标吸引、障碍排斥提供局部方向；本文没有直接把potential加进reward，而是把势的梯度作为不含可训练参数的 observation encoder。",
+        "疏散在黑暗或烟雾房间中建模：个体不知道出口并随机运动，机器人掌握全部个体和出口坐标。这一全局可观测假设比真实应急场景强。"
+      ]
+    },
+    {
+      "title": "模型与方法",
+      "bullets": [
+        "Generalized Vicsek update令普通粒子以定速运动并向邻域平均方向对齐；leader在影响半径内参与平均。进入 exit zone 后，个体不再与leader交互，而被确定性地指向出口。",
+        "Gym环境为边长2L的方形，leader从中心出发，N个个体位置和方向随机初始化；动作a∈R²经归一化为leader运动方向，episode上限2000 steps。",
+        "奖励在每一步扣 p=1；新进入 exit zone 的人数得到 (wA+wBτ)N_new，其中 wA=15、wB=10、τ随episode进度下降，以缓解只在完全疏散后奖励造成的稀疏反馈。",
+        "Catch potential Ucatch=−Σfree|r−ri|^{−α}；exit potential Uexit=−|rexit−r|^{−α}Ncaught。网络输入为leader坐标和两者梯度 Fcatch、Fexit，维度不随N改变。",
+        "比较三种同一RPO训练框架下的表示：原始坐标feed-forward（输入2N+4）、entity-token transformer，以及pseudo-gravitational encoding后接同一类feed-forward decoder。",
+        "默认参数包括N=60、noise ζ=0.2、speed 0.01、Vicsek radius 0.1、leader radius ratio 2；RPO使用3 environments、2048-step rollout、γ=0.99、learning rate 5×10⁻4和25M total timesteps。"
+      ]
+    },
+    {
+      "title": "核心结果与证据",
+      "bullets": [
+        "Figure 4 对60人场景的10次不同环境随机种子训练取平均并画standard error；pseudo-gravitational曲线先收敛到短episode和高reward，transformer更慢，原始feed-forward在图示预算内基本未形成有效策略。",
+        "Appendix Figure C.6 对15人与60人均报告10个训练runs；Appendix Table C.1 的25M-step耗时分别为：15人 FF 8h54m、Transformer 14h58m、Pseudo 9h27m；60人 FF 9h16m、Transformer 1d9h25m、Pseudo 10h5m。",
+        "Table C.1 同时说明pseudo方法约3M steps已达到最优值；正文另称学习约6×10⁴ time-steps，二者很可能采用不同的environment step/aggregate timestep口径，论文没有充分解释换算，不能直接视为同一训练成本数字。",
+        "Figure 5 固定使用训练一次的pseudo policy，在5000个不同随机种子上估计尚未完全疏散的概率；有leader时最后一人获救的时刻，对应无leader基线仅约50% runs完成疏散。",
+        "该50%比较是complete-evacuation probability的分布对照，而不是“leader把获救人数提高一倍”；无leader是随机游走进入exit zone，也不是另外两种RL architecture。",
+        "作者声称 fixed-dimensional encoder原则上可适配任意N；Discussion明确承认真正universality仍需在变化群体规模的episodes上专门训练，本文没有执行这种跨N泛化实验。"
+      ]
+    },
+    {
+      "title": "有效性与局限",
+      "bullets": [
+        "全部结果来自 generalized Vicsek/Gym agent simulation；没有真实参与者、烟雾环境、拥挤接触力、受伤风险、通信失效、感知遮挡或硬件动力学，因此不能直接支持现场疏散安全结论。",
+        "leader观察所有人的精确坐标，个体一进exit zone便确定性朝出口运动；这两条设计显著简化了感知和局部拥塞问题。",
+        "几何只含方形单出口、单机器人、无内墙；多出口、障碍、多leader同步和复杂建筑均被作者列为未来工作。",
+        "baseline控制了RPO optimizer并比较表示，但三种architecture的参数量、计算量和inductive bias不同；transformer配置无residual且只用2 blocks，不能推出attention方法普遍不适用。",
+        "论文对 α 的最优值存在内部冲突：Section 4称实验表明α=3最优且Figure 5用α=3，Appendix D与Figure C.7说明却称α=1。读者应以代码、原始日志或作者勘误确认，不能在卡片中替作者消解。",
+        "Figure 5的network只训练一次，虽在5000随机初态上评估，却没有跨training seeds报告policy uncertainty；训练曲线10或20 seeds不能替代最终policy的独立重复训练。",
+        "源码公开提升可核查性，但本站未执行环境、训练或5000-run评估；所有性能数字均为论文内部证据。"
+      ]
+    },
+    {
+      "title": "复现与资源",
+      "bullets": [
+        "公开代码：https://github.com/cinemere/evacuation；先固定论文v3、依赖和配置，再分别复现15/60人三种表示的25M-step训练。",
+        "记录每个training seed的episode reward、episode length、complete-evacuation time、wall-clock、GPU/CPU型号和参数量；不要只从平滑曲线读单一收敛点。",
+        "独立扫描α=1…5并保存Figure C.7底层数据，核对正文α=3与附录α=1冲突；Figure 5必须分别明确使用哪个checkpoint与α。",
+        "泛化测试至少改变N、方形尺寸、exit位置/宽度、噪声、leader影响半径并加入内墙；随后才可评价fixed-dimensional encoding对群体规模的稳健性。",
+        "现实外推需另建social-force/contact或真人/机器人安全协议，并把部分可观测、定位误差和通信延迟纳入；Vicsek仿真成功不能充当该层验证。",
+        "本站 PDF SHA-256：4c7adb1c5af628c2412287e10025efc4b84ad23cf7d64b9de11cf3ad164deaed。",
+        "Evidence status: full-text verified; no independent reproduction performed."
+      ]
+    },
+    {
+      "title": "阅读指南",
+      "bullets": [
+        "先读 Sections 2.2–2.3，区分Vicsek动力学、exit-zone规则和reward shaping；这里决定了任务到底有多接近真实疏散。",
+        "再读 Eqs. (7–10) 与 Section 3.2，确认创新是fixed-dimensional physics-inspired representation，不是新的RPO optimizer。",
+        "随后对照 Figures 4–5、Table C.1 与Figures C.6–C.7；重点检查step口径、最终policy重复次数和α冲突。",
+        "最后读Discussion的scope：作者自己把跨N训练、复杂几何、多出口和多机器人列作未完成工作。"
+      ]
+    }
+  ],
+  "evidence_refs": [
+    "paper.pdf pp. 2-5: problem scope, prior evacuation work and simulation framing",
+    "paper.pdf pp. 6-10: generalized Vicsek dynamics, Gym environment, observation, action and reward",
+    "paper.pdf pp. 10-14: pseudo-gravitational potentials and three representation architectures",
+    "paper.pdf pp. 15-18: 60-agent training curves and 5000-run completion probability",
+    "paper.pdf pp. 18-20: conclusions, universality caveat and future geometries",
+    "paper.pdf pp. 25-29: training times, 15/60-agent curves, alpha sweep and hyperparameters",
+    "Evidence status: full-text verified; no independent reproduction performed."
+  ],
+  "card_standard_version": "2.3",
+  "paper_profile": "theory_numerics",
+  "style_reference": "physicist_daily_arxiv",
+  "provenance": {
+    "program": "Collection",
+    "catalog": "Paper Collection",
+    "catalog_record_id": "52f02190cdec5aa7",
+    "catalog_record_ids": [
+      "52f02190cdec5aa7"
+    ],
+    "catalog_topic": "Active Matter",
+    "collection_date": "2026-08-24",
+    "sampled_at": "2026-08-26",
+    "selected_by": "full_collection_backfill",
+    "sampling_seed": "not_applicable_full_collection",
+    "candidate_count": 452,
+    "legacy_full_text_card": "2509.19972.json"
+  },
+  "equation_refs": [],
+  "figure_refs": [],
+  "cover": {
+    "mode": "title_abstract",
+    "abstract_text": "Manipulation of large systems of active particles is a serious challenge across diverse domains, including crowd management, control of robotic swarms, and coordinated material transport. The development of advanced control strategies for complex scenarios is hindered, however, by the lack of scalability and robustness of the existing methods, in particular, due to the need of an individual control for each agent. One possible solution involves controlling a system through a leader or a group of leaders, which other agents tend to follow. Using such an approach we develop an effective control strategy for a leader, combining reinforcement learning (RL) with artificial forces acting on the system. To describe the guidance of active particles by a leader we introduce the generalized Vicsek model. This novel method is then applied to the problem of the effective evacuation by a robot-rescue",
+    "selection_rationale": "该旧版全文证据包没有经过 v2.3 的逐图导出与图号核验；为避免错配图片，封面使用论文题目和经全文核对的摘要，关键论证保留在卡片正文中。"
+  }
+}

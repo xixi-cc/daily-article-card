@@ -1,0 +1,139 @@
+{
+  "arxiv_id": "2210.02747",
+  "source_version": "v2",
+  "source_pdf": "https://arxiv.org/pdf/2210.02747",
+  "title_en": "Flow Matching for Generative Modeling",
+  "title_zh": "用于生成建模的流匹配",
+  "curation_status": "full_text_verified",
+  "verified_metadata": {
+    "arxiv_id": "2210.02747",
+    "version": "v2",
+    "title": "Flow Matching for Generative Modeling",
+    "abstract": "We introduce a new paradigm for generative modeling built on Continuous Normalizing Flows (CNFs), allowing us to train CNFs at unprecedented scale. Specifically, we present the notion of Flow Matching (FM), a simulation-free approach for training CNFs based on regressing vector fields of fixed conditional probability paths. Flow Matching is compatible with a general family of Gaussian probability paths for transforming between noise and data samples -- which subsumes existing diffusion paths as specific instances. Interestingly, we find that employing FM with diffusion paths results in a more robust and stable alternative for training diffusion models. Furthermore, Flow Matching opens the door to training CNFs with other, non-diffusion probability paths. An instance of particular interest is using Optimal Transport (OT) displacement interpolation to define the conditional probability paths. These paths are more efficient than diffusion paths, provide faster training and sampling, and result in better generalization. Training CNFs using Flow Matching on ImageNet leads to consistently better performance than alternative diffusion-based methods in terms of both likelihood and sample quality, and allows fast and reliable sample generation using off-the-shelf numerical ODE solvers.",
+    "authors": [
+      "Yaron Lipman",
+      "Ricky T. Q. Chen",
+      "Heli Ben-Hamu",
+      "Maximilian Nickel",
+      "Matt Le"
+    ],
+    "categories": [
+      "cs.LG",
+      "cs.AI",
+      "stat.ML"
+    ],
+    "primary_category": "cs.LG",
+    "published": "2022-10-06T08:32:20Z"
+  },
+  "sections": [
+    {
+      "title": "作者信息",
+      "bullets": [
+        "作者：Yaron Lipman、Ricky T. Q. Chen、Heli Ben-Hamu、Maximilian Nickel、Matt Le；Meta AI (FAIR) 与 Weizmann Institute。",
+        "官方快照：arXiv:2210.02747v2；28 页；cs.LG/cs.AI/stat.ML。",
+        "论文建立 Flow Matching/Conditional Flow Matching 理论并在 CIFAR-10、ImageNet 32/64/128 及超分辨率上验证。"
+      ]
+    },
+    {
+      "title": "摘要",
+      "bullets": [
+        "Flow Matching 直接回归生成指定 probability path 的时间依赖 vector field，用 continuous normalizing flow 的 ODE 从 noise 推到 data。",
+        "难以求取的 marginal target 被拆为以单个 data sample 为条件的 Gaussian paths；Conditional Flow Matching 可采样训练，且对参数的期望梯度与原 FM 完全相同。",
+        "路径选择不局限于 diffusion；论文重点使用 conditional optimal-transport displacement interpolation，得到直线、常速 conditional trajectories，并在实验中改善训练/采样折衷。"
+      ]
+    },
+    {
+      "title": "背景",
+      "bullets": [
+        "CNF 可表达一般 probability path 和 exact likelihood，但传统 maximum-likelihood training 每步需 ODE solve；早期 simulation-free 方法存在难积分或 biased gradients。",
+        "diffusion/score models 训练稳定，却把路径限制在特定随机过程并常需大量 sampling steps；FM 把 probability path 本身提升为可设计对象。",
+        "这里的“simulation-free”严格指训练 loss 不需模拟生成 ODE/SDE；生成、likelihood evaluation 仍需数值 ODE solve。"
+      ]
+    },
+    {
+      "title": "模型与方法",
+      "bullets": [
+        "CNF vector field vt(x;θ) 通过 dφt/dt=vt(φt)、φ0=x 定义 flow，并令 pt=[φt]*p0。FM loss 是 Et,x~pt ||vt−ut||²。",
+        "给定 conditional pt(x|x1) 与其 vector field ut(x|x1)，Eq. (8) 按 posterior weight 聚合得到 marginal ut；Theorem 1 证明它生成 mixture marginal pt。",
+        "CFM loss 对 t~U[0,1]、x1~q、x~pt(.|x1) 回归 conditional vector field；Theorem 2 在 pt>0 条件下证明 LCFM 与 LFM 只差 θ-independent constant，因此 gradients 相同。",
+        "Gaussian conditional family由 mean μt(x1)、std σt(x1) 定义；包含 reversed VP/VE diffusion paths，也包含由 N(0,I) 到 N(x1,σmin²I) 的 OT Gaussian displacement。",
+        "conditional OT flow 是两 Gaussian 间 Wasserstein-2 optimal map、轨迹直线常速；作者明确提醒，这不意味着聚合后的 marginal vector field 是 global OT solution。",
+        "训练用 Dhariwal–Nichol U-Net variants；评测 BPD/NLL、FID 与 adaptive ODE NFE，固定步低成本实验比较 Euler、midpoint、RK4。"
+      ]
+    },
+    {
+      "title": "核心结果与证据",
+      "bullets": [
+        "Table 1 同架构 ablation 中，FM-OT 在 CIFAR-10 得 NLL 2.99、FID 6.35、NFE 142；ImageNet-32 为 3.53/5.02/122，ImageNet-64 为 3.31/14.45/138，均优于表内 DDPM/score baselines。",
+        "ImageNet-128 FM-OT 报 NLL 2.90、FID 20.9；作者称除使用 self-supervised ResNet50 conditioning 的 IC-GAN 外为当时最佳，因此不是对所有生成模型无条件 SOTA。",
+        "Figure 5 显示 ImageNet-64 FM-OT 更快降低 FID；ImageNet-128 用 25% 更大模型、500k iterations、batch 1536，相比所引 diffusion training 声称少约 33% image throughput，不能只按 iteration 比较。",
+        "Figures 6–7：OT-trained flow 较早显出图像结构；在 ImageNet-32、256 seeds、相对 1000-NFE reference 的 midpoint error 下，达到同误差约需 diffusion model 60% NFE。",
+        "Table 2 的 64→256 super-resolution：FM-OT FID 3.4、IS 200.8，优于 SR3 的 5.2/180.1；但 PSNR 24.7、SSIM .747 低于 SR3 的 26.4/.762，显示 perceptual 与 distortion metrics tradeoff。",
+        "Figure 3 的 diffusion path backtracking 与 conditional OT straightness是构造层性质；learned marginal trajectory 的直线性/全局最优性没有 theorem 保证。"
+      ]
+    },
+    {
+      "title": "有效性与局限",
+      "bullets": [
+        "Theorems 1–2 证明路径生成与梯度等价，不证明有限网络、SGD、有限数据会学到准确 target field，也不证明某条路径对所有任务最优。",
+        "conditional endpoint p1=N(x1,σmin²I) 是 data distribution 的平滑 mixture approximation；σmin 带来 bias，且 pt>0 是 Theorem 2 条件。",
+        "FM-OT 的“OT”仅逐样本 Gaussian coupling；marginal OT claim 被论文明确否定，不能把方法等同于 dataset-level optimal transport。",
+        "实验主要是早期 unconditional image benchmarks；没有 text-to-image、video、tabular/scientific data、robustness、memorization 或 human evaluation。",
+        "CIFAR FID 被作者称比既有报告异常偏高，可能因 architecture 未针对该数据优化；跨论文 SOTA 比较还受 preprocessing/evaluator差异影响。",
+        "训练比较虽尽量同架构，ImageNet-128 模型尺寸和 batch/throughput并不完全一致；energy saving 在 Social Responsibility 中是潜在影响，未实测功耗。"
+      ]
+    },
+    {
+      "title": "复现与资源",
+      "bullets": [
+        "先用二维 checkerboard 验证：从 conditional μt、σt 解析计算 ut，数值检查 continuity equation 与 CFM/FM gradient Monte Carlo agreement。",
+        "图像复现固定数据 dequantization、U-Net channels/depth、batch、epochs、optimizer、β schedule、σmin、time epsilon 和 mixed precision；Table 3 给主要超参数。",
+        "likelihood 用 dopri5 atol=rtol=1e-5 与 importance-weighted dequantization；采样同时报告 solver、NFE、wall time 和 FID evaluator版本。",
+        "低 NFE audit 应使用相同 noise seeds，分别对 Euler/midpoint/RK4 比较相对高精度 solution 的 MSE与 FID，避免把数值误差和模型误差混为一谈。",
+        "本站 PDF SHA-256：5eeb39ba516396924aba4787452f9d0abdee88467a4d0c264d9f66cad0c5ee14。",
+        "Evidence status: full-text verified; no independent reproduction performed."
+      ]
+    },
+    {
+      "title": "阅读指南",
+      "bullets": [
+        "先读 Eqs. (5–9) 与 Theorems 1–2：FM 的关键是 conditional regression 对 marginal objective 的无偏等价。",
+        "再读 Section 4/Figures 2–3，牢牢记住 conditional OT 不推出 marginal OT。",
+        "最后读 Table 1、Figures 5–7、Table 2 与 Appendix E；同时核对 throughput、model size、solver tolerance和 metric tradeoff。"
+      ]
+    }
+  ],
+  "evidence_refs": [
+    "paper.pdf pp. 1-4: CNF setup, FM/CFM objectives and Theorems 1-2",
+    "paper.pdf pp. 4-6: Gaussian, diffusion and conditional OT paths plus marginal-OT caveat",
+    "paper.pdf pp. 7-9: datasets, Table 1, training and sampling efficiency",
+    "paper.pdf p. 9: super-resolution Table 2, conclusion and social-responsibility scope",
+    "paper.pdf pp. 19-22: architectures, schedules and evaluation details",
+    "Evidence status: full-text verified; no independent reproduction performed."
+  ],
+  "card_standard_version": "2.3",
+  "paper_profile": "ai_empirical",
+  "style_reference": "physicist_daily_arxiv",
+  "provenance": {
+    "program": "Collection",
+    "catalog": "Paper Collection",
+    "catalog_record_id": "d8d9c97e8215bdcb",
+    "catalog_record_ids": [
+      "d8d9c97e8215bdcb"
+    ],
+    "catalog_topic": "Flow Matching",
+    "collection_date": "2026-08-24",
+    "sampled_at": "2026-08-26",
+    "selected_by": "full_collection_backfill",
+    "sampling_seed": "not_applicable_full_collection",
+    "candidate_count": 452,
+    "legacy_full_text_card": "2210.02747.json"
+  },
+  "equation_refs": [],
+  "figure_refs": [],
+  "cover": {
+    "mode": "title_abstract",
+    "abstract_text": "We introduce a new paradigm for generative modeling built on Continuous Normalizing Flows (CNFs), allowing us to train CNFs at unprecedented scale. Specifically, we present the notion of Flow Matching (FM), a simulation-free approach for training CNFs based on regressing vector fields of fixed conditional probability paths. Flow Matching is compatible with a general family of Gaussian probability paths for transforming between noise and data samples -- which subsumes existing diffusion paths as specific instances. Interestingly, we find that employing FM with diffusion paths results in a more robust and stable alternative for training diffusion models. Furthermore, Flow Matching opens the door to training CNFs with other, non-diffusion probability paths. An instance of particular interest is using Optimal Transport (OT) displacement interpolation to define the conditional probability pat",
+    "selection_rationale": "该旧版全文证据包没有经过 v2.3 的逐图导出与图号核验；为避免错配图片，封面使用论文题目和经全文核对的摘要，关键论证保留在卡片正文中。"
+  }
+}

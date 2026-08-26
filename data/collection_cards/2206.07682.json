@@ -1,0 +1,161 @@
+{
+  "arxiv_id": "2206.07682",
+  "source_version": "v2",
+  "source_pdf": "https://arxiv.org/pdf/2206.07682v2",
+  "title_en": "Emergent Abilities of Large Language Models",
+  "title_zh": "大型语言模型的突现能力",
+  "curation_status": "full_text_verified",
+  "verified_metadata": {
+    "arxiv_id": "2206.07682",
+    "version": "v2",
+    "title": "Emergent Abilities of Large Language Models",
+    "abstract": "Scaling up language models has been shown to predictably improve performance and sample efficiency on a wide range of downstream tasks. This paper instead discusses an unpredictable phenomenon that we refer to as emergent abilities of large language models. We consider an ability to be emergent if it is not present in smaller models but is present in larger models. Thus, emergent abilities cannot be predicted simply by extrapolating the performance of smaller models. The existence of such emergence implies that additional scaling could further expand the range of capabilities of language models.",
+    "authors": [
+      "Jason Wei",
+      "Yi Tay",
+      "Rishi Bommasani",
+      "Colin Raffel",
+      "Barret Zoph",
+      "Sebastian Borgeaud",
+      "Dani Yogatama",
+      "Maarten Bosma",
+      "Denny Zhou",
+      "Donald Metzler",
+      "Ed H. Chi",
+      "Tatsunori Hashimoto",
+      "Oriol Vinyals",
+      "Percy Liang",
+      "Jeff Dean",
+      "William Fedus"
+    ],
+    "categories": [
+      "cs.CL"
+    ],
+    "primary_category": "cs.CL",
+    "published": "2022-06-15T17:32:01Z"
+  },
+  "sections": [
+    {
+      "title": "作者信息",
+      "bullets": [
+        "Jason Wei、Yi Tay等16位作者来自Google Research、Stanford、UNC Chapel Hill与DeepMind。",
+        "官方快照arXiv:2206.07682v2，主分类cs.CL；发表于Transactions on Machine Learning Research 2022，并给出OpenReview记录。",
+        "本文是既有实验结果的survey与概念整理，不提出新模型、训练方法或统一的突现机制。"
+      ]
+    },
+    {
+      "title": "摘要",
+      "bullets": [
+        "论文采用操作性定义：若较小模型在某能力上接近随机、较大模型明显高于随机，且不能由小规模downstream metric曲线简单外推，则称该能力emergent。",
+        "作者汇总GPT-3、LaMDA、Gopher、Chinchilla、PaLM等家族的few-shot tasks，以及chain-of-thought、instruction tuning、scratchpad与calibration等增强策略。",
+        "横轴主要用training FLOPs，附录也用parameter count；两者在当时dense families高度相关，但Chinchilla与MoE说明单一scale proxy并不充分。",
+        "对六个BIG-Bench任务，target cross-entropy在小模型阶段已经平滑改善，而exact match/BLEU/accuracy仍近随机，说明离散任务指标会掩盖连续进展。",
+        "论文没有解释阈值为何出现或预测新能力在哪一规模出现；结论是现象目录与研究议程。"
+      ]
+    },
+    {
+      "title": "背景",
+      "bullets": [
+        "预训练cross-entropy可跨多数量级平滑缩放，但downstream task metric可能在一段规模内平坦后跳升；两者不能互相替代。",
+        "定义借用‘quantitative changes produce qualitative behavior’，并把曲线称作phase transition；这是一种行为类比，论文未构造order parameter、thermodynamic limit或critical exponent。",
+        "能力是否‘不存在’由有限benchmark、prompt、metric与random baseline判定；接近随机不等同模型内部完全没有相关表示或partial competence。",
+        "emergent threshold不是能力的immutable constant：data quality、architecture、objective、tokenization、prompting和finetuning都可移动它。"
+      ]
+    },
+    {
+      "title": "模型与方法",
+      "bullets": [
+        "Figure 2汇总八项few-shot例子：BIG-Bench modular arithmetic、IPA transliteration、word unscramble、Persian QA，以及TruthfulQA、grounded mappings、MMLU与WiC。",
+        "每个点来自不同规模模型，通常也来自不同model family；作者以training FLOPs估scale，并在Figures 11–12改用parameters复画。",
+        "Figure 3把‘增强策略只在足够大模型才优于baseline’也定义为emergence，包括CoT、instruction tuning、8-digit scratchpad和P(True) calibration。",
+        "Table 1列observed emergent scale，例如GPT-3 3-digit arithmetic约2.3×10^22 FLOPs/13B，Gopher TruthfulQA约5×10^23/280B，PaLM WiC约2.5×10^24/540B；这些是首次被所列实验观测的点，不是精确临界值。",
+        "Appendix A对六个BIG-Bench任务计算target sequence cross-entropy，并比较exact-match类metric；任务点稀疏且模型scale grid不连续，无法定位窄阈值或排除平滑sigmoid。",
+        "论文不做controlled ablation：training data、tokenization、architecture、compute allocation和prompt在model families间可能共同变化。"
+      ]
+    },
+    {
+      "title": "核心结果与证据",
+      "bullets": [
+        "Figure 2A中GPT-3/LaMDA arithmetic在多个小规模点接近零，约13B或68B后上升；不同家族出现位置不同，支持threshold受训练配方影响。",
+        "MMLU在约10B以下平均接近guessing，而GPT-3 175B、Chinchilla 70B、Gopher 280B明显高于随机；parameter threshold不统一，training compute也只粗略对应。",
+        "WiC中最大GPT-3与Chinchilla仍近随机，PaLM 540B才高于随机；作者把它当作继续scale可推翻早期‘架构不适合’解释的历史例。",
+        "Figure 3A中CoT对LaMDA约100B才超过standard prompting；Figure 3B早期FLAN decoder-only在≤8B会伤害性能、约100B才改善，但作者立即指出11B encoder-decoder T5后来也获得instruction behavior。",
+        "scratchpad在8-digit addition约40M起有益，说明‘emergent’不专属于百亿模型；threshold取决于任务、intervention与baseline。",
+        "六个BIG-Bench任务的cross-entropy在小规模已改善，说明exact string match、多步final answer与BLEU会把渐进概率变化压成可见跳跃；分类任务仍展示阈值，故作者认为metric artifact不是完整解释。",
+        "PaLM 62B在14个BIG-Bench tasks上超过更大GPT-3 175B/LaMDA 137B，表明data与architecture可比scale更关键；本文没有逐因素消融。",
+        "Figure 4中MMLU对WikiText103 perplexity也像突现，是因为所选Gopher/Chinchilla中perplexity、FLOPs、parameters强相关；不能判定真正控制变量。"
+      ]
+    },
+    {
+      "title": "有效性与局限",
+      "bullets": [
+        "这是跨论文二手汇总，各来源的prompt shots、test split、metric、training data和evaluation protocol并不完全一致；不能当作统一实验矩阵。",
+        "small-model near-random只说明所测metric没有区分力；continuous loss结果证明至少部分‘不可预测’来自观测函数，而非底层能力突然从无到有。",
+        "模型规模采样稀疏，临界点落在相邻runs之间；Table 1所谓emergent scale是上界式首次观测，不提供置信区间或change-point统计检验。",
+        "跨family比较存在严重confounding；FLOPs与parameters相关但非因果，Chinchilla、MoE、retrieval和better data可打破对应关系。",
+        "benchmark accuracy的random baseline可能受label imbalance、prompt calibration和format errors影响；exact match也会把语义正确但格式不同判错。",
+        "‘phase transition’仅作曲线形态语言；有限神经网络没有证明非解析性、普适类或真正物理临界现象。",
+        "能力出现后可能plateau、inverse scale或永不出现；论文明确否认单纯增加scale保证达到所需水平。",
+        "training-set contamination和任务相似数据没有系统审计；few-shot capability可能由memorization、in-context algorithm或二者混合产生。",
+        "风险章节提醒bias、toxicity、memorization与truthfulness随scale可能改善或恶化，但并未提供新的风险实验，也不要求风险严格满足emergent定义。",
+        "本文没有机制模型或前瞻预注册预测，因此‘unpredictable’主要是不能从当时小模型metric简单外推，不是数学不可预测定理。",
+        "本站未重跑任何模型或benchmark。"
+      ]
+    },
+    {
+      "title": "复现与资源",
+      "bullets": [
+        "为每项能力冻结model checkpoint、training-token/compute provenance、prompt template、shot examples、decoding、split、metric implementation与random baseline。",
+        "在阈值附近增加密集scale points和多seed，报告cross-entropy、calibrated probability、partial-credit与exact-match curves；用change-point、smooth sigmoid和power-law alternatives做model comparison。",
+        "同一model family内匹配data mixture和tokenizer，只改变N、tokens、compute；另做fixed-compute、fixed-parameter和fixed-loss三种切片，避免把相关变量当因果。",
+        "对跨family结果做prompt robustness和format normalization，并审计训练数据近重复；保存每题log probabilities和intermediate reasoning而非只存aggregate accuracy。",
+        "对CoT/instruction/scratchpad应报告intervention minus baseline及其confidence interval；能力是方法收益突现还是absolute task能力突现要分开。",
+        "把首次观测规模写成interval [largest failing, smallest succeeding]，而非单个parameter值；新架构若下移threshold，应更新结论。",
+        "本站PDF SHA-256：f457f08102eb381f2300e1653bf4c82a9aa5dce0eb8dba8fe744ccc2500c3755。",
+        "Evidence status: full-text verified; no independent reproduction performed."
+      ]
+    },
+    {
+      "title": "阅读指南",
+      "bullets": [
+        "先读Section 2的定义与脚注，把本文的behavioral emergence和物理phase transition类比区分开。",
+        "Figure 2应逐点看model family与random baseline；不要从连接线推断未训练规模处的真实曲线。",
+        "Figure 3与Table 1分开读：前者常测prompting method的增益，后者混合absolute abilities与augmentation effects。",
+        "最后精读Sections 5.1–5.3和Appendix A：metric、data、architecture与scale proxy的限制正是评价‘突现’主张的关键。"
+      ]
+    }
+  ],
+  "evidence_refs": [
+    "paper.pdf pp. 1-3: operational definition, scale proxies and threshold caveats",
+    "paper.pdf pp. 3-6: few-shot and augmented-prompting examples plus Table 1",
+    "paper.pdf pp. 6-9: metric explanation, beyond-scale confounds and alternative scale views",
+    "paper.pdf pp. 9-13: risk discussion, future directions and explicit absence of mechanism",
+    "paper.pdf pp. 15-30: cross-entropy/metric analysis and additional benchmark curves",
+    "Evidence status: full-text verified; no independent reproduction performed."
+  ],
+  "card_standard_version": "2.3",
+  "paper_profile": "ai_empirical",
+  "style_reference": "physicist_daily_arxiv",
+  "provenance": {
+    "program": "Collection",
+    "catalog": "Paper Collection",
+    "catalog_record_id": "f4d7602eaf0478b5",
+    "catalog_record_ids": [
+      "f4d7602eaf0478b5"
+    ],
+    "catalog_topic": "Transformer Theory",
+    "collection_date": "2026-08-24",
+    "sampled_at": "2026-08-26",
+    "selected_by": "full_collection_backfill",
+    "sampling_seed": "not_applicable_full_collection",
+    "candidate_count": 452,
+    "legacy_full_text_card": "2206.07682.json"
+  },
+  "equation_refs": [],
+  "figure_refs": [],
+  "cover": {
+    "mode": "title_abstract",
+    "abstract_text": "Scaling up language models has been shown to predictably improve performance and sample efficiency on a wide range of downstream tasks. This paper instead discusses an unpredictable phenomenon that we refer to as emergent abilities of large language models. We consider an ability to be emergent if it is not present in smaller models but is present in larger models. Thus, emergent abilities cannot be predicted simply by extrapolating the performance of smaller models. The existence of such emergence implies that additional scaling could further expand the range of capabilities of language models.",
+    "selection_rationale": "该旧版全文证据包没有经过 v2.3 的逐图导出与图号核验；为避免错配图片，封面使用论文题目和经全文核对的摘要，关键论证保留在卡片正文中。"
+  }
+}

@@ -1,0 +1,138 @@
+{
+  "arxiv_id": "2509.02407",
+  "source_version": "v2",
+  "source_pdf": "https://arxiv.org/pdf/2509.02407",
+  "title_en": "Fisher information flow in artificial neural networks",
+  "title_zh": "人工神经网络中的 Fisher 信息流",
+  "curation_status": "full_text_verified",
+  "verified_metadata": {
+    "arxiv_id": "2509.02407",
+    "version": "v2",
+    "title": "Fisher information flow in artificial neural networks",
+    "abstract": "The estimation of continuous parameters from measured data plays a central role in many fields of physics. A key tool in understanding and improving such estimation processes is the concept of Fisher information, which quantifies how information about unknown parameters propagates through a physical system and determines the ultimate limits of precision. With Artificial Neural Networks (ANNs) gradually becoming an integral part of many measurement systems, it is essential to understand how they process and transmit parameter-relevant information internally. Here, we present a method to monitor the flow of Fisher information through an ANN performing a parameter estimation task, tracking it from the input to the output layer. We show that optimal estimation performance corresponds to the maximal transmission of Fisher information, and that training beyond this point results in information loss due to overfitting. This provides a model-free stopping criterion for network training-eliminating the need for a separate validation dataset. To demonstrate the practical relevance of our approach, we apply it to a network trained on data from an imaging experiment, highlighting its effectiveness in a realistic physical setting.",
+    "authors": [
+      "Maximilian Weimar",
+      "Lukas M. Rachbauer",
+      "Ilya Starshynov",
+      "Daniele Faccio",
+      "Linara Adilova",
+      "Dorian Bouchet",
+      "Stefan Rotter"
+    ],
+    "categories": [
+      "cs.LG",
+      "physics.data-an"
+    ],
+    "primary_category": "cs.LG",
+    "published": "2025-09-02T15:17:42Z",
+    "comment": "17 pages, 12 figures"
+  },
+  "sections": [
+    {
+      "title": "作者信息",
+      "bullets": [
+        "作者：Maximilian Weimar、Lukas M. Rachbauer、Ilya Starshynov 等 7 人；TU Wien、University of Glasgow、Ruhr University Bochum、Université Grenoble Alpes 合作。",
+        "官方快照：arXiv:2509.02407v2，17 页、12 图；分类 cs.LG/physics.data-an；期刊版本 Phys. Rev. X 15, 031072 (2025)。",
+        "研究对象是从噪声数据估计连续物理参数的前馈 ANN；Fisher 信息指数据中关于待估参数的信息，不是权重参数的 Fisher matrix。"
+      ]
+    },
+    {
+      "title": "摘要",
+      "bullets": [
+        "论文用 linear Fisher information (LFI) 从各层 activation 样本的均值、协方差和参数有限差分估计信息下界，再用随机线性扩维、分量非线性与微小噪声逐步抬升 LFI，逼近真实 Fisher information。",
+        "层间无 skip 的确定性前馈网络形成 Markov chain，数据处理不等式保证 FI 不随深度增加；训练的作用是把随机初始化时的信息 sink 调整为尽量保真的压缩映射。",
+        "在可解析 Gaussian 数据与低信噪光学成像实验中，训练后输出分别近乎保留全部 FI 和约 80%；作者据此提出训练损失达到 CRLB 时的 early-stopping criterion。"
+      ]
+    },
+    {
+      "title": "背景",
+      "bullets": [
+        "Mutual information 在确定性连续网络中可能发散，高维 density estimation 又遭遇维数灾难；FI 针对连续确定参数，直接约束无偏估计方差 σ²≥1/I。",
+        "LFI J=(∂θμ)^TΣ^{-1}(∂θμ) 只利用一二阶矩且满足 J≤I；它给最佳线性无偏估计器的局部精度，但对由方差携带信息的零均值 Gaussian 可退化为 0。",
+        "实验把刻蚀 space-invader 的水平位置作为 θ：32×64 相机图像在约 13% SNR 下由 readout noise 主导，像素分布明显非 Gaussian，因此是检验 data-driven FI estimate 的现实案例。"
+      ]
+    },
+    {
+      "title": "模型与方法",
+      "bullets": [
+        "样本 LFI 用 PCA pseudoinverse 处理奇异协方差，并用文献给出的有限样本 bias correction；∂θμ 由 θ±Δθ 的对称有限差分计算，精度依赖 parameter spacing 与 sample size。",
+        "LFI maximization 取 X′=AX，再做 Y=ϕ(X′)+ε；随 embedding dimension d′ 增大，若局部 extreme-learning-machine 足以逼近有效估计器，Y 的 LFI 应趋向真实 FI 的 plateau。",
+        "算法用最近三次增长相对初始增长的阈值判断收敛；若 correction 未收敛或优化值低于原 LFI，就回退到 LFI，因此某些层只有保守近似而非已知精确 FI。",
+        "FI-flow 实验对 Gaussian 位置族和真实成像网络逐 epoch、逐 layer 计算；early stopping 则比较 training MSE×I 与 1，达到 CRLB 线时预测 validation minimum。",
+        "成像采集覆盖 13 个位置，中心三点各 300,000 张、其余 50,000 张；FI 流测试用 θ={−0.3,0,0.3 μm} 每点 150,000 张，early-stopping 版本每位置只用 11,000 张。"
+      ]
+    },
+    {
+      "title": "核心结果与证据",
+      "bullets": [
+        "Figure 3 的压力测试从 d=50、初始 LFI=0 的 Gaussian 标准差估计出发，d′ 每次增加 100，样本 100,000；估计曲线随扩维接近解析 FI=100，展示方法可超越原始 LFI。",
+        "Figure 4：Gaussian 网络训练后输出 FI 几乎等于输入；真实成像网络训练后仅传递约 80%，说明物理数据压缩确有可测信息损失，并非所有训练都达到理论极限。",
+        "Figure 5：两套数据中 training MSE×I 向下穿过 1 的 epoch 靠近 validation loss 最小 epoch；真实实验未精确达到 normalized MSE=1，但 crossing 仍给近似停止点。",
+        "Appendix G 对 correlated log-normal 数据重复信息流和 early stopping，说明例子不只覆盖 Gaussian/相机噪声；但它仍是合成可控分布，不能替代更多真实测量体系。",
+        "计算可在 commercial CPU 上完成的陈述来自这些特定维度/大样本设置；协方差矩阵规模随 embedding dimension 平方增长，而非无成本的通用高维 FI oracle。"
+      ]
+    },
+    {
+      "title": "有效性与局限",
+      "bullets": [
+        "“不用 validation set”需要网络可在当前数据规模下接近 CRLB；正文明确指出若任务过难或数据不足，MSE×I=1 可能在已经过拟合后才发生，仍需验证集。",
+        "MSE≈1/I 还假定估计器近似无偏且 FI 对 θ 近似恒定；若有 bias 要用 generalized CRLB，若 FI 随 θ 变化则需在参数域多点计算并平均。",
+        "FI estimate 的准确性依赖足够样本、Δθ、PCA cutoff、embedding/nonlinearity/noise 与 plateau convergence；真实 FI 未知时无法直接预测 approximation error，只能依赖保守下界与方差诊断。",
+        "数据处理单调性要求所分析的 feedforward layers 形成 Markov chain；skip connection、随机层或额外 side information 需要重新界定节点与条件变量。",
+        "真实成像只研究单一平移参数和固定光学装置；对多参数、分类损失、分布漂移及更大现代架构的可扩展性尚未实证。"
+      ]
+    },
+    {
+      "title": "复现与资源",
+      "bullets": [
+        "论文给出实验数据与示例处理代码的引用；复现时应固定 PRX/arXiv v2 数据快照、代码 commit、相机预处理和 LFI maximization 配置。",
+        "需要保存每个 θ/epoch/layer 的 sample mean、covariance spectrum、PCA retained rank、bias correction、raw LFI、optimized LFI、convergence/fallback flag 与置信不确定度。",
+        "early stopping 必须预注册 CRLB crossing rule，并保留 validation curve 只用于事后审计；不能看过 validation minimum 后反调 threshold 再宣称无验证。",
+        "至少跨多个初始化报告 predicted-stop 与 true validation-minimum 的 epoch distance、test MSE 与 FI-retention；原文图示不足以给出跨 seed 稳定性结论。",
+        "本站 PDF SHA-256：b5ca84f79cbc57ce0e6a8241225e89e5341c298f27c9d9b469e167555e87f67b。",
+        "Evidence status: full-text verified; no independent reproduction performed."
+      ]
+    },
+    {
+      "title": "阅读指南",
+      "bullets": [
+        "先读 Sections II.B–II.E，把 FI、LFI、BLUE 和 nonlinear embedding 的数学角色分清；不要把权重 Fisher 与数据参数 Fisher 混用。",
+        "再读 Figures 4–5，分别判断“训练传输信息”和“用 CRLB 停止”两个实证命题；80% retention 是重要负证据。",
+        "最后读 Section IV 的条件段、Discussion 与 Appendices A/E/G，确认数据量、无偏、参数恒定、收敛回退和跨分布测试的边界。"
+      ]
+    }
+  ],
+  "evidence_refs": [
+    "paper.pdf pp. 1-4: imaging setup, FI/CRLB, LFI definition, finite-sample estimator and nonlinear embedding",
+    "paper.pdf pp. 5-7: LFI maximization Figure 3 and layerwise FI-flow Figure 4",
+    "paper.pdf pp. 7-8: CRLB early-stopping Figure 5, assumptions and failure condition",
+    "paper.pdf pp. 8-9: discussion, computational scaling, summary and outlook",
+    "paper.pdf pp. 10-15: experimental acquisition, datasets, architectures, convergence fallbacks and log-normal test",
+    "Evidence status: full-text verified; no independent reproduction performed."
+  ],
+  "card_standard_version": "2.3",
+  "paper_profile": "ai_empirical",
+  "style_reference": "physicist_daily_arxiv",
+  "provenance": {
+    "program": "Collection",
+    "catalog": "Paper Collection",
+    "catalog_record_id": "b5ca84f79cbc57ce",
+    "catalog_record_ids": [
+      "b5ca84f79cbc57ce"
+    ],
+    "catalog_topic": "Information Theory",
+    "collection_date": "2026-08-23",
+    "sampled_at": "2026-08-26",
+    "selected_by": "full_collection_backfill",
+    "sampling_seed": "not_applicable_full_collection",
+    "candidate_count": 452,
+    "legacy_full_text_card": "2509.02407.json"
+  },
+  "equation_refs": [],
+  "figure_refs": [],
+  "cover": {
+    "mode": "title_abstract",
+    "abstract_text": "The estimation of continuous parameters from measured data plays a central role in many fields of physics. A key tool in understanding and improving such estimation processes is the concept of Fisher information, which quantifies how information about unknown parameters propagates through a physical system and determines the ultimate limits of precision. With Artificial Neural Networks (ANNs) gradually becoming an integral part of many measurement systems, it is essential to understand how they process and transmit parameter-relevant information internally. Here, we present a method to monitor the flow of Fisher information through an ANN performing a parameter estimation task, tracking it from the input to the output layer. We show that optimal estimation performance corresponds to the maximal transmission of Fisher information, and that training beyond this point results in information",
+    "selection_rationale": "该旧版全文证据包没有经过 v2.3 的逐图导出与图号核验；为避免错配图片，封面使用论文题目和经全文核对的摘要，关键论证保留在卡片正文中。"
+  }
+}

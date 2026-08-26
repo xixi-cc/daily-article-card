@@ -1,0 +1,146 @@
+{
+  "arxiv_id": "2504.10612",
+  "source_version": "v5",
+  "source_pdf": "https://arxiv.org/pdf/2504.10612",
+  "title_en": "Energy Matching: Unifying Flow Matching and Energy-Based Models for Generative Modeling",
+  "title_zh": "能量匹配：统一流匹配与基于能量的生成模型",
+  "curation_status": "full_text_verified",
+  "verified_metadata": {
+    "arxiv_id": "2504.10612",
+    "version": "v5",
+    "title": "Energy Matching: Unifying Flow Matching and Energy-Based Models for Generative Modeling",
+    "abstract": "Current state-of-the-art generative models map noise to data distributions by matching flows or scores. A key limitation of these models is their inability to readily integrate available partial observations and additional priors. In contrast, energy-based models (EBMs) address this by incorporating corresponding scalar energy terms. Here, we propose Energy Matching, a framework that endows flow-based approaches with the flexibility of EBMs. Far from the data manifold, samples move from noise to data along irrotational, optimal transport paths. As they approach the data manifold, an entropic energy term guides the system into a Boltzmann equilibrium distribution, explicitly capturing the underlying likelihood structure of the data. We parameterize these dynamics with a single time-independent scalar field, which serves as both a powerful generator and a flexible prior for effective regularization of inverse problems. The present method substantially outperforms existing EBMs on CIFAR-10 and ImageNet generation in terms of fidelity, while retaining simulation-free training of transport-based approaches away from the data manifold. Furthermore, we leverage the flexibility of the method to introduce an interaction energy that supports the exploration of diverse modes, which we demonstrate in a controlled protein generation setting. This approach learns a scalar potential energy, without time conditioning, auxiliary generators, or additional networks, marking a significant departure from recent EBM methods. We believe this simplified yet rigorous formulation significantly advances EBMs capabilities and paves the way for their wider adoption in generative modeling in diverse domains.",
+    "authors": [
+      "Michal Balcerak",
+      "Tamaz Amiranashvili",
+      "Antonio Terpin",
+      "Suprosanna Shit",
+      "Lea Bogensperger",
+      "Sebastian Kaltenbach",
+      "Petros Koumoutsakos",
+      "Bjoern Menze"
+    ],
+    "categories": [
+      "cs.LG",
+      "cs.AI",
+      "stat.ML"
+    ],
+    "primary_category": "cs.LG",
+    "published": "2025-04-14T18:10:58Z",
+    "comment": "Accepted to NeurIPS 2025"
+  },
+  "sections": [
+    {
+      "title": "作者信息",
+      "bullets": [
+        "作者：Michal Balcerak、Tamaz Amiranashvili、Antonio Terpin、Suprosanna Shit、Lea Bogensperger、Sebastian Kaltenbach、Petros Koumoutsakos、Bjoern Menze；Zurich/TUM/ETH/Harvard。",
+        "官方快照：arXiv:2504.10612v5；20 页；NeurIPS 2025；代码仓库 EnergyMatching。",
+        "方法学习单个 time-independent scalar Vθ；其梯度兼作远程 transport field 与近数据 EBM score。"
+      ]
+    },
+    {
+      "title": "摘要",
+      "bullets": [
+        "Energy Matching 把生成分成两区：远离 data manifold 时以 ε=0 的 OT-like deterministic flow快速搬运；接近数据时升温并用 Langevin dynamics趋向 exp(−V/εmax)。",
+        "训练先以 minibatch OT直线 pairs回归 −∇V，再联合 contrastive divergence；负样本一半来自 data、一半来自 noise，以同时雕刻局部 density well与远场 landscape。",
+        "显式 scalar energy便于把 measurement fidelity或sample–sample repulsion直接相加，用于 inpainting、protein design和 Hessian-based local intrinsic dimension。"
+      ]
+    },
+    {
+      "title": "背景",
+      "bullets": [
+        "flow/diffusion 擅长 noise-to-data transport，但通常学习 noised marginals上的 vector/score；EBM直接给 unnormalized density且可组合 pri验，却受 MCMC mixing和 mode collapse困扰。",
+        "JKO scheme 在 Wasserstein transport cost、potential energy与 entropy之间做 proximal step；作者让温度 ε(t) 随时间从0升至 εmax。",
+        "“单一场”减少 time conditioning/auxiliary generator，但每次 velocity evaluation要计算 input gradient，并不等于计算免费。"
+      ]
+    },
+    {
+      "title": "模型与方法",
+      "bullets": [
+        "Eq. (1) 的 JKO objective是 W2²/(2Δt)+∫Vdρ+ε(t)∫ρlogρ；first-order condition给 (x−y)/Δt+∇V+ε∇logρ=0。",
+        "ε=0 时得到 OT-like velocity −∇V；长时 x≈y、ε=εmax 时得到 ρeq∝exp(−V/εmax)。这解释同一 V 的 transport和 EBM两种角色。",
+        "LOT 对 minibatch POT map T，在线性插值 xt=(1−t)T(xdata)+txdata 上回归 ∇V(xt)+xdata−T(xdata)=0；time-independent gradient限制为 irrotational field。",
+        "LCD=Edata[V/εmax]−Enegative[V/εmax]；negatives用 Euler–Maruyama Langevin近似 equilibrium且 stop-gradient，不反传 sampler。主训练优化 LOT+λCD LCD。",
+        "sampling用 Euler–Heun，时间 τs有限；inverse problem加入 ε||y−A(x)||²/ζ²，interaction W可鼓励多链在指定区域/sequence space分散。",
+        "LID把 Hessian ∇²V 在 data point的 near-zero eigenvalue数作为 local dimension，threshold由 dataset手设。"
+      ]
+    },
+    {
+      "title": "核心结果与证据",
+      "bullets": [
+        "CIFAR-10 Table 1：50M Energy Matching FID 3.34，优于表内 EBM ImprovedCD 25.1、CLEL-large 8.61及 ensemble Cooperative DRL-large 3.68；但仍不及 NCSN++ 2.45。",
+        "ImageNet32 Table 2：Energy Matching FID 6.64，显著优于表中 EBM 15.47–32.48和 Cooperative DRL 9.35，但 flow matching报告5.02。故主要突破是 EBM fidelity，不是所有生成模型 SOTA。",
+        "Appendix Table 4 同 batch128/GPU：Energy Matching 325 steps、173 s、FID3.34；OT-FM 1000 steps、136 s、3.74；DDPM++ 1000 steps、183 s、3.45。input-gradient使每步约2.15×慢，少步抵消部分成本。",
+        "CIFAR minibatch linear-program OT与 random pairing FID 3.34 vs 3.37，差异很小；不能把全部性能提升归因于精确 OT coupling。POT overhead约1.5% training time。",
+        "protein AAV Medium/Hard 使用 VLGPO latent与预测 fitness；Figure 3 展示 inference-time repulsion移动 fitness–Levenshtein diversity Pareto tradeoff，尚无 wet-lab packaging validation。",
+        "Table 3 LID与 PNG compression Spearman：MNIST .877、CIFAR .901，略高于 NB .864/.894；PNG只是proxy且 threshold τ=3/2手工指定。"
+      ]
+    },
+    {
+      "title": "有效性与局限",
+      "bullets": [
+        "远场训练 LOT 是 simulation-free regression，但主阶段明确运行 MLangevin-step MCMC产生 contrastive negatives，采样也需 Langevin；不能笼统称整个方法 training/sampling simulation-free。",
+        "V/εmax给 unnormalized log-density，partition function未知；“likelihood”主要指相对能量/score，不等同于报告 normalized test NLL。",
+        "finite τs时仅经验观察 CIFAR FID在3.25附近平台；Boltzmann convergence只在 τs→∞保证，high-dimensional mixing仍可能偏置。",
+        "time-independent irrotational field是强约束；同一空间点需要不同时间速度或存在 circulation的 transport可能无法表达。",
+        "作者报告额外 input gradient增加20–40% training memory；full Hessian LID为 O(d³)，高分辨率不可直接扩展。",
+        "FID表混合 reproduced与 best reported、参数量和 steps不同；跨论文优劣不能解释为单因素算法因果。",
+        "inpainting只给质性例图；protein fitness由 predictor评估且在 latent space生成，repulsion提高多样性不保证可合成、结构稳定或真实包装。",
+        "LID near-zero cutoff敏感，Hessian of learned energy未被证明等于 manifold normal curvature；较高 compression correlation不是 dimension ground truth。"
+      ]
+    },
+    {
+      "title": "复现与资源",
+      "bullets": [
+        "分阶段复现：先记录 warm-up LOT convergence和 noise-to-data FID，再开启 LCD，分别保存 data/noise initialized negative chains及energy histograms。",
+        "ablation必须含 LOT-only、LCD-only、dual objective、LP-OT vs random pairing、τ*、λCD、εmax、MLangevin、Δt与τs sweep。",
+        "报告 normalized wall-clock：forward、input-gradient、OT solve、negative MCMC分项；同时给 steps、FID sample count、EMA和 evaluator版本。",
+        "inverse/protein任务保存每个 interaction strength的 fidelity、diversity、novelty与 predictor uncertainty；物理或生物成功需独立实验，不能由 predictor代替。",
+        "本站 PDF SHA-256：d06fe64ed362e6c63bbddd6e575c581d4589e15c976bb4fc8dcb7b4520217e79。",
+        "Evidence status: full-text verified; no independent reproduction performed."
+      ]
+    },
+    {
+      "title": "阅读指南",
+      "bullets": [
+        "先读 JKO Eq. (1) 与 first-order Eq. (4–6)，理解同一势能如何在 ε=0/ε>0 两区切换。",
+        "再读 Algorithms 1–3：尤其数清 main training里的 Langevin negative steps，校正“simulation-free”表述。",
+        "最后读 Tables 1–4、Figures 2–4与 Limitations；把 EBM fidelity、全类SOTA、normalized likelihood、inverse-task validation四件事分开。"
+      ]
+    }
+  ],
+  "evidence_refs": [
+    "paper.pdf pp. 1-3: motivation, two-regime contribution and JKO setup",
+    "paper.pdf pp. 3-6: first-order conditions, OT and contrastive objectives, Algorithms 1-2",
+    "paper.pdf pp. 6-9: CIFAR/ImageNet, inverse design and LID Tables 1-3",
+    "paper.pdf pp. 9-10: explicit memory/Hessian limitations",
+    "paper.pdf pp. 11-13: landscape, FID/time/OT-pairing ablations and sampling-cost Table 4",
+    "paper.pdf pp. 15-20: LID derivation, hyperparameters and architectures",
+    "Evidence status: full-text verified; no independent reproduction performed."
+  ],
+  "card_standard_version": "2.3",
+  "paper_profile": "ai_empirical",
+  "style_reference": "physicist_daily_arxiv",
+  "provenance": {
+    "program": "Collection",
+    "catalog": "Paper Collection",
+    "catalog_record_id": "e9c527ecf58323a6",
+    "catalog_record_ids": [
+      "e9c527ecf58323a6"
+    ],
+    "catalog_topic": "Flow Matching",
+    "collection_date": "2026-08-24",
+    "sampled_at": "2026-08-26",
+    "selected_by": "full_collection_backfill",
+    "sampling_seed": "not_applicable_full_collection",
+    "candidate_count": 452,
+    "legacy_full_text_card": "2504.10612.json"
+  },
+  "equation_refs": [],
+  "figure_refs": [],
+  "cover": {
+    "mode": "title_abstract",
+    "abstract_text": "Current state-of-the-art generative models map noise to data distributions by matching flows or scores. A key limitation of these models is their inability to readily integrate available partial observations and additional priors. In contrast, energy-based models (EBMs) address this by incorporating corresponding scalar energy terms. Here, we propose Energy Matching, a framework that endows flow-based approaches with the flexibility of EBMs. Far from the data manifold, samples move from noise to data along irrotational, optimal transport paths. As they approach the data manifold, an entropic energy term guides the system into a Boltzmann equilibrium distribution, explicitly capturing the underlying likelihood structure of the data. We parameterize these dynamics with a single time-independent scalar field, which serves as both a powerful generator and a flexible prior for effective regul",
+    "selection_rationale": "该旧版全文证据包没有经过 v2.3 的逐图导出与图号核验；为避免错配图片，封面使用论文题目和经全文核对的摘要，关键论证保留在卡片正文中。"
+  }
+}

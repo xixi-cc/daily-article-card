@@ -1,0 +1,126 @@
+{
+  "arxiv_id": "2604.23002",
+  "source_version": "v1",
+  "source_pdf": "https://arxiv.org/pdf/2604.23002",
+  "title_en": "FormalScience: Scalable Human-in-the-Loop Autoformalisation of Science with Agentic Code Generation in Lean",
+  "title_zh": "FormalScience：用 Lean 智能体代码生成实现可扩展的人机协同科学形式化",
+  "curation_status": "full_text_verified",
+  "verified_metadata": {
+    "arxiv_id": "2604.23002",
+    "version": "v1",
+    "title": "FormalScience: Scalable Human-in-the-Loop Autoformalisation of Science with Agentic Code Generation in Lean",
+    "abstract": "Formalising informal mathematical reasoning into formally verifiable code is a significant challenge for large language models. In scientific fields such as physics, domain-specific machinery (\\textit{e.g.} Dirac notation, vector calculus) imposes additional formalisation challenges that modern LLMs and agentic approaches have yet to tackle. To aid autoformalisation in scientific domains, we present FormalScience; a domain-agnostic human-in-the-loop agentic pipeline that enables a single domain expert (without deep formal language experience) to produce \\textit{syntactically correct} and \\textit{semantically aligned} formal proofs of informal reasoning for low economic cost. Applying FormalScience to physics, we construct FormalPhysics, a dataset of 200 university-level (LaTeX) physics problems and solutions (primarily quantum mechanics and electromagnetism), along with their Lean4 formal representations. Compared to existing formal math benchmarks, FormalPhysics achieves perfect formal validity and exhibits greater statement complexity. We evaluate open-source models and proprietary systems on a statement autoformalisation task on our dataset via zero-shot prompting, self-refinement with error feedback, and a novel multi-stage agentic approach, and explore autoformalisation limitations in modern LLM-based approaches. We provide the first systematic characterisation of semantic drift in physics autoformalisation in terms of concepts such as notational collapse and abstraction elevation which reveals what formal language verifies when full semantic preservation is unattainable. We release the codebase together with an interactive UI-based FormalScience system which facilitates autoformalisation and theorem proving in scientific domains beyond physics.https://github.com/jmeadows17/formal-science",
+    "authors": [
+      "Jordan Meadows",
+      "Lan Zhang",
+      "Andre Freitas"
+    ],
+    "categories": [
+      "cs.AI",
+      "cs.CL"
+    ],
+    "primary_category": "cs.AI",
+    "published": "2026-04-24T20:47:22Z",
+    "comment": ""
+  },
+  "sections": [
+    {
+      "title": "作者信息",
+      "bullets": [
+        "作者：Jordan Meadows、Lan Zhang、Andre Freitas。",
+        "官方快照：arXiv:2604.23002v1；主分类 cs.AI。",
+        "项目定位是科学推理的半自动形式化与 benchmark 建设，不是新的物理定理发现。"
+      ]
+    },
+    {
+      "title": "摘要",
+      "bullets": [
+        "FormalScience 把自然语言/LaTeX 科学推导转成 Lean4：LLM 生成代码，Lean 编译器提供可执行错误反馈，agent 迭代修补，人类领域专家对语义对齐作二元判断。",
+        "应用到物理后得到 FormalPhysics：200 道大学水平问题、非形式化解答及 Lean4 statement-proof，主要覆盖量子力学与电磁学。",
+        "核心结论是“能编译”不等于“保留物理语义”：数据达到 100% formal validity，但 logical preservation 72.0%、mathematical consistency 72.5%，并出现系统性语义漂移。"
+      ]
+    },
+    {
+      "title": "背景",
+      "bullets": [
+        "数学 autoformalisation 常依赖 Mathlib 已有对象；物理中的 Dirac notation、非交换算符、矢量微积分和积分使自然语言到 Lean 的映射更难。",
+        "论文区分四个对象：自然语言 statement/proof 与形式语言 statement/proof。FormalPhysics 是少数四者齐全的数据集，因此既可测试 theorem proving，也可测试完整 autoformalisation。",
+        "研究目标不是消灭人类环节，而是让不精通 Lean 的领域专家把判断集中在“形式代码是否仍代表原推导”。"
+      ]
+    },
+    {
+      "title": "模型与方法",
+      "bullets": [
+        "管线先由少量人写示例扩展问题，再由 Claude Sonnet 4.5 生成 Lean；编译失败时根据结构错误或语义错误选择重生成或最小 unified-diff patch，最多 25 次。成功编译后，人类判断对齐，拒绝则让 LLM 按固定 prompt 改写再编译（Section 2, Appendix A–C）。",
+        "benchmark 比较从每个数据集随机取 200 例；Formal Validity 由 Lean4 编译器给出，其余 Formal Quality、Logical Preservation、Mathematical Consistency 由 GPT-4.1-mini 判断，并用 Qwen2.5-Coder-7B 做约 6000 个成对判断的稳健性分析。",
+        "模型实验含 zero-shot、带编译错误的 self-refinement、无人工 agentic pipeline 与完整 FormalScience；agent 可调用表面 guard、编译、错误分类和 patch 工具。"
+      ]
+    },
+    {
+      "title": "核心结果与证据",
+      "bullets": [
+        "Table 2 中 FormalPhysics 平均每题含 6.41±2.34 个对象和 6.22±2.13 个公式，复杂度接近 Herald-Proof，高于 miniF2F 等数学集；其 FV=100%、FQ=73.5%、LP=72.0%、MC=72.5%。",
+        "Table 3 的 GPT-5.1 zero-shot 只有 14.5% FV，self-refinement 为 17.0%；GPT-OSS-20B agentic 管线把 FV 从不足 10% 提到 31.0%，而完整 GPT-5.1/Claude-4.5 人机管线为 100%。这些设置模型、工具与人工投入不同，不能当作纯模型排名。",
+        "第二判断器更保守，但两者在所有 metric/setting 都把 GPT-5.1 排第一；phi=0.28–0.37 且 p<10^-19，说明共享一定质量信号。Kendall τ 在六个比较中为 0.2–1.0，中位数 0.80，次级效应仍依赖 judge。",
+        "定性审查发现 notational collapse 与 abstraction elevation：例如原问题需要三维线积分，Lean 可能只证明 x−0=x；约 25% 样本出现 abstraction elevation。编译成功只证明替代形式对象内部一致，未必证明 Maxwell 方程或原物理推导（Figs. 2–3）。"
+      ]
+    },
+    {
+      "title": "有效性与局限",
+      "bullets": [
+        "FormalPhysics 仅 200 例，集中在量子力学、电磁学与大学难度，不能外推到统计物理、广义相对论、化学或生物。",
+        "Lean4/Mathlib 缺少关键物理原语本身会迫使抽象化；因此 semantic drift 既可能来自模型，也可能来自目标形式库的表达能力。",
+        "LP/MC/FQ 主要依赖 LLM-as-a-judge；独立 judge 支持主趋势但给出不同绝对分数和部分不同的 self-refinement 效应。",
+        "完整管线约需一个月专家时间；每个 200-example agent baseline 在 RTX 5090 上超过 100 GPU-hours。100% 编译率没有消除成本或语义核验负担。"
+      ]
+    },
+    {
+      "title": "复现与资源",
+      "bullets": [
+        "代码、数据与交互 UI：https://github.com/jmeadows17/formal-science。",
+        "复现需固定 v1 数据快照、Lean4/Mathlib 版本、模型版本、prompt、25-step 上限和 judge；除编译率外，应人工抽样重建原 statement 与 Lean theorem 的对象级对应。",
+        "本站 PDF SHA-256：df7a7d0956f67776a798d89568f51266511d3e0fa72bf57e0229290f7e289e39。",
+        "Evidence status: full-text verified; no independent reproduction performed."
+      ]
+    },
+    {
+      "title": "阅读指南",
+      "bullets": [
+        "先看 Tables 2–4，把 formal validity 与语义 alignment 分开；只报 100% FV 会遗漏论文最重要的反例。",
+        "再看 Figs. 2–3，逐例追问 Lean 究竟验证了什么对象；这比宏观平均分更能理解 notational collapse。",
+        "最后读 limitations 与 Appendix D.1，核对数据规模、人工月级成本和 judge disagreement。"
+      ]
+    }
+  ],
+  "evidence_refs": [
+    "paper.pdf pp. 2-7: pipeline, FormalPhysics construction and Tables 1-4",
+    "paper.pdf pp. 7-10: semantic drift taxonomy and Figures 2-3",
+    "paper.pdf pp. 10-12 and Appendix D.1: limitations, compute/expert cost and judge robustness",
+    "Evidence status: full-text verified; no independent reproduction performed."
+  ],
+  "card_standard_version": "2.3",
+  "paper_profile": "theory_experiment",
+  "style_reference": "physicist_daily_arxiv",
+  "provenance": {
+    "program": "Collection",
+    "catalog": "Paper Collection",
+    "catalog_record_id": "6ce0e7d14f58b7c4",
+    "catalog_record_ids": [
+      "6ce0e7d14f58b7c4"
+    ],
+    "catalog_topic": "AI for Science",
+    "collection_date": "2026-08-24",
+    "sampled_at": "2026-08-26",
+    "selected_by": "full_collection_backfill",
+    "sampling_seed": "not_applicable_full_collection",
+    "candidate_count": 452,
+    "legacy_full_text_card": "2604.23002.json"
+  },
+  "equation_refs": [],
+  "figure_refs": [],
+  "cover": {
+    "mode": "title_abstract",
+    "abstract_text": "Formalising informal mathematical reasoning into formally verifiable code is a significant challenge for large language models. In scientific fields such as physics, domain-specific machinery (\\textit{e.g.} Dirac notation, vector calculus) imposes additional formalisation challenges that modern LLMs and agentic approaches have yet to tackle. To aid autoformalisation in scientific domains, we present FormalScience; a domain-agnostic human-in-the-loop agentic pipeline that enables a single domain expert (without deep formal language experience) to produce \\textit{syntactically correct} and \\textit{semantically aligned} formal proofs of informal reasoning for low economic cost. Applying FormalScience to physics, we construct FormalPhysics, a dataset of 200 university-level (LaTeX) physics problems and solutions (primarily quantum mechanics and electromagnetism), along with their Lean4 forma",
+    "selection_rationale": "该旧版全文证据包没有经过 v2.3 的逐图导出与图号核验；为避免错配图片，封面使用论文题目和经全文核对的摘要，关键论证保留在卡片正文中。"
+  }
+}

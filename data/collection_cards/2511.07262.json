@@ -1,0 +1,128 @@
+{
+  "arxiv_id": "2511.07262",
+  "source_version": "v2",
+  "source_pdf": "https://arxiv.org/pdf/2511.07262",
+  "title_en": "AgenticSciML: Collaborative Multi-Agent Systems for Emergent Discovery in Scientific Machine Learning",
+  "title_zh": "AgenticSciML：用于科学机器学习涌现式发现的协作多智能体系统",
+  "curation_status": "full_text_verified",
+  "verified_metadata": {
+    "arxiv_id": "2511.07262",
+    "version": "v2",
+    "title": "AgenticSciML: Collaborative Multi-Agent Systems for Emergent Discovery in Scientific Machine Learning",
+    "abstract": "Scientific Machine Learning (SciML) integrates data-driven inference with physical modeling to solve complex problems in science and engineering. However, the design of SciML architectures, loss formulations, and training strategies remains an expert-driven research process, requiring extensive experimentation and problem-specific insights. Here we introduce AgenticSciML, a collaborative multi-agent system in which over 10 specialized AI agents collaborate to propose, critique, and refine SciML solutions through structured reasoning and iterative evolution. The framework integrates structured debate, retrieval-augmented method memory, and ensemble-guided evolutionary search, enabling the agents to generate and assess new hypotheses about architectures and optimization procedures. Across physics-informed learning and operator learning tasks, the framework discovers solution methods that outperform single-agent and human-designed baselines by up to four orders of magnitude in error reduction. The agents produce novel strategies -- including adaptive mixture-of-expert architectures, decomposition-based PINNs, and physics-informed operator learning models -- that do not appear explicitly in the curated knowledge base. These results show that collaborative reasoning among AI agents can yield emergent methodological innovation, suggesting a path toward scalable, transparent, and autonomous discovery in scientific computing.",
+    "authors": [
+      "Qile Jiang",
+      "George Karniadakis"
+    ],
+    "categories": [
+      "cs.AI",
+      "cs.CE",
+      "cs.LG"
+    ],
+    "primary_category": "cs.AI",
+    "published": "2025-11-10T16:06:33Z",
+    "comment": ""
+  },
+  "sections": [
+    {
+      "title": "作者信息",
+      "bullets": [
+        "作者：Qile Jiang、George Karniadakis。",
+        "官方快照：arXiv:2511.07262v2；主分类 cs.AI。",
+        "论文研究的是 SciML 方案搜索；“emergent discovery”按作者定义为冠军策略不直接出现在其 curated knowledge base，而非发现新的自然定律。"
+      ]
+    },
+    {
+      "title": "摘要",
+      "bullets": [
+        "AgenticSciML 用十余种角色完成数据分析、评价合同、单 agent 根解、知识检索、proposal–critic 四轮辩论、代码实现/调试、数值评价和多模型 selector voting。",
+        "六个问题覆盖不连续函数拟合、L-shaped Poisson PINN、Burgers PINN、反导数 operator、多输入 reaction-diffusion operator 与稀疏含噪 cylinder-wake 重建。",
+        "冠军相对单次 root engineer 的 error 改善从 10× 到 11169×；这是同一框架内 root/champion 比，不是与穷尽的人类专家或公平算力基线的统一比较。"
+      ]
+    },
+    {
+      "title": "背景",
+      "bullets": [
+        "SciML 的架构、loss、采样和优化常需领域专家反复实验。传统 AutoML/NAS 多在预定义搜索空间调参，而该系统让 LLM 对问题结构和训练失败提出可执行的方案修改。",
+        "用户提供 Problem、Requirements、Evaluation 与可选 Data；evaluator 生成固定 eval.py/guidelines 后必须由人批准，避免搜索中改动评分规则。",
+        "knowledge base 含论文、摘要、方法与代码片段；retriever 每个 parent 最多提供一条相关记录，persistent analysis base 保存 parent/sibling/uncle 的数值与图像诊断。"
+      ]
+    },
+    {
+      "title": "模型与方法",
+      "bullets": [
+        "每轮总是扩展当前最好解，同时由 Gemini-2.5-pro、GPT-5-mini、Grok-4-fast selector ensemble 投票选探索 parents；每个 parent 经 4-round proposer–critic debate，engineer 只按最终 proposal 修改父代码，debugger 修到可执行或达到上限。",
+        "champion 是固定 evaluator 下最小 score 的树节点；单 agent root 无 knowledge base、debate 或 tree search，因此 multi-agent 后续既获得更多 LLM calls，也获得多次 GPU training/evaluation。",
+        "六项分别使用 MSE 或 relative L2 error；全部运行于 NVIDIA A6000。主文报告用户文字少于 0.3%，但工程/selector 的 word count 被排除，所以该比例不是人类工时或总系统信息量。",
+        "KB ablation 只在不连续函数任务控制：相同 root/evaluator/agents、6 iterations、batch size 4，比较 70-entry Full KB、No KB 与 Random KB。"
+      ]
+    },
+    {
+      "title": "核心结果与证据",
+      "bullets": [
+        "root→champion 数值为：函数拟合 MSE 0.283→1.46×10^-3（194×）；L-shaped Poisson 0.0332→3.58×10^-5（约927×）；Burgers 0.0449→4.02×10^-6（11169×）。",
+        "反导数 operator relative L2 为 0.810→0.00121（约669×）；multi-input operator 为 0.137→0.00878（约15.6×）；cylinder wake 为 0.238→0.0232（约10.3×）。任务和指标不同，倍率不能直接比较科学难度。",
+        "冠军策略包含 sigmoid-gated MoE、known-particular-solution+corner importance sampling、三阶段 gPINN/RAR/L-BFGS、linear bias-free DeepONet branch、derivative-enhanced FNO 与 CNO-style bandlimit filter；Table 1 显示这些组合不逐字出现在检索条目。",
+        "KB ablation 的共同 root MSE=0.2828776240；Full/No/Random KB 最佳分别为 0.0014631104、0.0034207932、0.0303153563。No-KB 仍大幅改善，Random KB 则比 Full 高 20.720×，支持检索相关性影响搜索轨迹，但证据只有一个任务。",
+        "每项 LLM API 成本 $2.07–$11.30；训练常是时间瓶颈，例如 Poisson GPU 5.6h vs LLM 1.7h，multi-input 10.7h vs 2.1h。成本没有计入研究设计、人类审核、知识库整理和硬件折旧。"
+      ]
+    },
+    {
+      "title": "有效性与局限",
+      "bullets": [
+        "每题主要展示一次 evolutionary run 的最好节点；大倍率可能受较弱 root、试验次数和 winner selection 影响，缺少多 seed 分布与等算力 random/AutoML/search baseline。",
+        "“不在 KB”只排除了 70-entry curated memory 的直接文本，不证明策略在完整文献中原创；许多冠军是已知组件的组合与问题特化。",
+        "agent debate 的文字合理性仍由 LLM 产生，真正约束来自 fixed numerical evaluator；若 evaluator 与科学目标错位，搜索可优化错误代理。",
+        "评价成本随 tree expansion 增长，真实 multiphysics、turbulence、data assimilation 和实验流程尚未验证；knowledge base 覆盖与 retrieval grounding 也是显式局限。"
+      ]
+    },
+    {
+      "title": "复现与资源",
+      "bullets": [
+        "作者声明代码与全部实验结果将发布：https://github.com/Qile-J/AgenticSciML。卡片基于 v2 PDF 的 availability statement，未把“will be available”视为已确认可运行 release。",
+        "复现需冻结 root prompt、evaluation contract、六题数据 splits、KB 70 entries、selector/model versions、tree parameters、debug retries 和 A6000 环境；至少运行多 seeds，并加同 evaluation budget 的 random mutation、single-agent iterative 与 AutoML baselines。",
+        "本站 PDF SHA-256：9c3043aa8f2b86443d61f0a3d824d0b6db4d2cf208381faf9f137ef2cc633816。",
+        "Evidence status: full-text verified; no independent reproduction performed."
+      ]
+    },
+    {
+      "title": "阅读指南",
+      "bullets": [
+        "先读 Algorithm 1，标出人类审批、固定 evaluator、root baseline 和每轮额外训练预算；这决定倍率如何解释。",
+        "再对照 Supplementary S1 的六个 root/champion 原始分数，不要只看 Fig. 3 的对数倍率。",
+        "最后读 S2.2 KB ablation 与 limitations；判断 emergent 时应另外检索完整文献，并要求多 seed、等预算基线。"
+      ]
+    }
+  ],
+  "evidence_refs": [
+    "paper.pdf pp. 3-10: algorithm, six tasks, champion strategies, costs and limitations",
+    "paper.pdf Supplement S1 pp. 12-39: root/champion scores, data protocols and per-run telemetry",
+    "paper.pdf Supplement S2.2 pp. 40-42: controlled KB ablation and trajectory comparison",
+    "Evidence status: full-text verified; no independent reproduction performed."
+  ],
+  "card_standard_version": "2.3",
+  "paper_profile": "ai_empirical",
+  "style_reference": "physicist_daily_arxiv",
+  "provenance": {
+    "program": "Collection",
+    "catalog": "Paper Collection",
+    "catalog_record_id": "aed809c2b334b178",
+    "catalog_record_ids": [
+      "aed809c2b334b178"
+    ],
+    "catalog_topic": "AI for Science",
+    "collection_date": "2026-08-24",
+    "sampled_at": "2026-08-26",
+    "selected_by": "full_collection_backfill",
+    "sampling_seed": "not_applicable_full_collection",
+    "candidate_count": 452,
+    "legacy_full_text_card": "2511.07262.json"
+  },
+  "equation_refs": [],
+  "figure_refs": [],
+  "cover": {
+    "mode": "title_abstract",
+    "abstract_text": "Scientific Machine Learning (SciML) integrates data-driven inference with physical modeling to solve complex problems in science and engineering. However, the design of SciML architectures, loss formulations, and training strategies remains an expert-driven research process, requiring extensive experimentation and problem-specific insights. Here we introduce AgenticSciML, a collaborative multi-agent system in which over 10 specialized AI agents collaborate to propose, critique, and refine SciML solutions through structured reasoning and iterative evolution. The framework integrates structured debate, retrieval-augmented method memory, and ensemble-guided evolutionary search, enabling the agents to generate and assess new hypotheses about architectures and optimization procedures. Across physics-informed learning and operator learning tasks, the framework discovers solution methods that o",
+    "selection_rationale": "该旧版全文证据包没有经过 v2.3 的逐图导出与图号核验；为避免错配图片，封面使用论文题目和经全文核对的摘要，关键论证保留在卡片正文中。"
+  }
+}

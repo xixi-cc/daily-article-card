@@ -1,0 +1,129 @@
+{
+  "arxiv_id": "2605.12997",
+  "source_version": "v1",
+  "source_pdf": "https://arxiv.org/pdf/2605.12997",
+  "title_en": "Frequency Bias and OOD Generalization in Neural Operators under a Variable-Coefficient Wave Equation",
+  "title_zh": "变系数波动方程下神经算子的频率偏置与分布外泛化",
+  "curation_status": "full_text_verified",
+  "verified_metadata": {
+    "arxiv_id": "2605.12997",
+    "version": "v1",
+    "title": "Frequency Bias and OOD Generalization in Neural Operators under a Variable-Coefficient Wave Equation",
+    "abstract": "Neural operators learn to map initial conditions to the terminal solution of partial differential equations (PDEs), providing a surrogate for the full operator mapping. This enables rapid prediction across different input configurations. While recent neural operator architectures have demonstrated strong performance on diverse PDE tasks, their behavior under structured distribution shifts remains insufficiently understood. To investigate this, we study operator learning in a wave propagation setting governed by a one-dimensional variable-coefficient wave equation, using two representative architectures, the Fourier Neural Operator (FNO) and the Deep Operator Network (DeepONet). To examine their generalization under distribution shifts, we consider structured out-of-distribution (OOD) settings that independently vary input frequency and coefficient smoothness. The results show that under smoothness shifts, both models maintain stable performance, with FNO achieving lower error. In contrast, under frequency shifts, FNO exhibits a sharp increase in error under unseen high-frequency inputs, whereas DeepONet shows milder degradation despite higher overall error. Our analysis reveals that these differences arise from how each architecture represents and responds to variations in frequency structure. Together, these findings highlight a fundamental gap between strong in-distribution performance and generalization under distribution shifts in operator learning, underscoring the role of architectural representation bias in developing more reliable neural operators for physics-based PDE simulations beyond the training distribution.",
+    "authors": [
+      "Runlong Xie",
+      "An Luo"
+    ],
+    "categories": [
+      "cs.LG"
+    ],
+    "primary_category": "cs.LG",
+    "published": "2026-05-13T04:53:36Z",
+    "comment": ""
+  },
+  "sections": [
+    {
+      "title": "作者信息",
+      "bullets": [
+        "作者：Runlong Xie、An Luo。",
+        "官方快照：arXiv:2605.12997v1，14 页；主分类 cs.LG。",
+        "本文是受控的单方程、两架构 OOD 诊断研究，不是大规模 neural-operator 排行榜。"
+      ]
+    },
+    {
+      "title": "摘要",
+      "bullets": [
+        "研究对象是一维保守型变系数波动方程 utt=∂x(c(x)^2 ux)，输入为初位移 u0(x) 和波速场 c(x)，输出为固定终止时刻 u(x,T)。",
+        "作者独立构造两类 shift：训练未见的高频初值，以及改变 c(x) 空间粗糙度；相同数据、优化条件下比较 FNO 与 DeepONet。",
+        "FNO 在 ID 和 smoothness shift 下误差更低，却在 high-frequency OOD 下突然恶化；DeepONet 总体误差更高，但退化更平缓。增加 FNO retained modes 没有修复该问题。"
+      ]
+    },
+    {
+      "title": "背景",
+      "bullets": [
+        "标准随机 held-out 可能保持同一频谱结构，因而掩盖模型只在训练频带内插值；波动问题恰能把输入频率和介质平滑性分别控制。",
+        "FNO 在 Fourier space 学习全局谱耦合并截断为固定低频 modes，隐含偏向平滑结构；DeepONet 以 branch coefficients 与 coordinate-conditioned trunk bases 展开，没有显式固定频率截断。",
+        "论文关注 representation bias，而刻意不引入预训练、attention 或多分辨率模型等额外因素；因此结论只针对两种 canonical implementations。"
+      ]
+    },
+    {
+      "title": "模型与方法",
+      "bullets": [
+        "训练/ID 初值由 Ku≤Ktrain 的随机 sine sums 生成；frequency OOD 使用 Ku>Ktrain。波速场为 Kc 项随机频率叠加，并以 smooth/medium/rough regimes 构造 smoothness shift。",
+        "reference data 用空间和时间二阶、flux-based conservative finite differences，满足 CFL 条件，并在系数界面 harmonic averaging；边界为 homogeneous Dirichlet，初速度为零。",
+        "两模型都用 Adam、relative L2、batch 32、最多 100 epochs、early stopping 10、固定 seed 2026 和 128 grid points；FNO 默认 16 modes/width 64/4 layers，DeepONet branch/trunk/latent 均 128。",
+        "除 relative L2 外，作者计算 c(x)^2 ux^2 的空间积分作 energy-like diagnostic，并做 prediction error 的 Fourier spectral decomposition；该量并未宣称为严格守恒总能量。"
+      ]
+    },
+    {
+      "title": "核心结果与证据",
+      "bullets": [
+        "Figures 2–4 显示 FNO 在 Validation、ID、OOD-smoothness 保持波形与较低误差，但 high-frequency OOD 出现局部 phase shift 和 oscillatory distortion；DeepONet 的误差升高较缓且空间分布更均匀。",
+        "Figure 5 表明 FNO 的失败不是仅丢掉最高清晰度：误差跨多个 mid-to-high modes 同时抬升，说明训练得到的谱耦合关系在新频率输入下整体失稳。",
+        "Table 2 的 retained-mode ablation：8/16/32 modes 的 ID relative L2 为 0.2073/0.1989/0.2390，而 frequency-OOD 为 1.2978/1.3564/1.4673；扩大谱容量反而未改善 OOD。",
+        "同一消融的 smoothness-OOD 误差约 0.0594/0.0588/0.0602，明显稳定；因此 frequency content shift 与 coefficient smoothness shift 不能合并成一个笼统 OOD 分数。",
+        "作者将差异解释为 architecture representation bias；这是由受控现象和消融支持的机制推断，不是已经证明的普适因果定理。"
+      ]
+    },
+    {
+      "title": "有效性与局限",
+      "bullets": [
+        "只有一维、固定终止时间、合成初值和变系数波动方程；不能直接外推到 shocks、二维/三维 turbulence、真实传感器或长期 autoregressive rollout。",
+        "所有主实验用固定随机种子 2026；虽然 train/validation/ID/OOD 分别用独立 seeds，仍缺多 seed 均值与置信区间，结果对训练随机性有待核验。",
+        "FNO 与 DeepONet 的参数化和 activation 不同，所谓公平比较是相同训练预算而非完全匹配容量；DeepONet 的较平缓退化伴随更高绝对误差。",
+        "增加 modes 的消融只能排除“默认 modes 太少”这一简单解释；不能证明所有频率自适应、anti-aliasing 或 hybrid FNO 都会同样失败。",
+        "energy-like diagnostic 不含完整动能项，不能当作波动方程总能量守恒检验。"
+      ]
+    },
+    {
+      "title": "复现与资源",
+      "bullets": [
+        "复现需使用 appendix 的 Ku/Kc split 规则、独立随机 seeds、同一 conservative solver/CFL/harmonic averaging，并明确 Ktrain 和三个 coefficient regimes。",
+        "至少输出四个 split 的 relative L2、逐 mode spectral MSE、空间 residual、energy-like diagnostic，以及 8/16/32 retained-mode 表；只复现 ID 分数无法验证主结论。",
+        "进一步核验应运行多个训练 seeds，并增加同参数量的 local-spectral/hybrid baselines，检查现象是否由架构还是优化偶然性驱动。",
+        "本站 PDF SHA-256：6d083fcfabccb0ba2bc950acc505d605197fa0915c75e04f2fe21155727e1da1。",
+        "Evidence status: full-text verified; no independent reproduction performed."
+      ]
+    },
+    {
+      "title": "阅读指南",
+      "bullets": [
+        "先读 Sections 2 与 4.1–4.2，确认两个 OOD axis 分别改变哪个输入函数。",
+        "再看 Figures 2–5，把总 relative L2、局部 phase error 和跨频带误差联系起来。",
+        "最后看 Figure 6/Table 2 和结论：最关键的负结果是“更多 Fourier modes 不等于更好的未见频率外推”，但它尚待多 seed 与更多架构验证。"
+      ]
+    }
+  ],
+  "evidence_refs": [
+    "paper.pdf pp. 3-5: variable-coefficient wave problem, FNO/DeepONet representations and controlled OOD data design",
+    "paper.pdf pp. 5-8: metrics, spatial/spectral failure patterns and architectural-bias interpretation",
+    "paper.pdf pp. 8-9: conclusions, scope and proposed adaptive spectral directions",
+    "paper.pdf pp. 11-14: split construction, hyperparameters, extra cases and retained-mode numeric ablation",
+    "Evidence status: full-text verified; no independent reproduction performed."
+  ],
+  "card_standard_version": "2.3",
+  "paper_profile": "ai_empirical",
+  "style_reference": "physicist_daily_arxiv",
+  "provenance": {
+    "program": "Collection",
+    "catalog": "Paper Collection",
+    "catalog_record_id": "dc2d5cd4a2625a22",
+    "catalog_record_ids": [
+      "dc2d5cd4a2625a22"
+    ],
+    "catalog_topic": "Neural Operators",
+    "collection_date": "2026-08-24",
+    "sampled_at": "2026-08-26",
+    "selected_by": "full_collection_backfill",
+    "sampling_seed": "not_applicable_full_collection",
+    "candidate_count": 452,
+    "legacy_full_text_card": "2605.12997.json"
+  },
+  "equation_refs": [],
+  "figure_refs": [],
+  "cover": {
+    "mode": "title_abstract",
+    "abstract_text": "Neural operators learn to map initial conditions to the terminal solution of partial differential equations (PDEs), providing a surrogate for the full operator mapping. This enables rapid prediction across different input configurations. While recent neural operator architectures have demonstrated strong performance on diverse PDE tasks, their behavior under structured distribution shifts remains insufficiently understood. To investigate this, we study operator learning in a wave propagation setting governed by a one-dimensional variable-coefficient wave equation, using two representative architectures, the Fourier Neural Operator (FNO) and the Deep Operator Network (DeepONet). To examine their generalization under distribution shifts, we consider structured out-of-distribution (OOD) settings that independently vary input frequency and coefficient smoothness. The results show that under ",
+    "selection_rationale": "该旧版全文证据包没有经过 v2.3 的逐图导出与图号核验；为避免错配图片，封面使用论文题目和经全文核对的摘要，关键论证保留在卡片正文中。"
+  }
+}

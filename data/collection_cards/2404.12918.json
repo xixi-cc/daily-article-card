@@ -1,0 +1,145 @@
+{
+  "arxiv_id": "2404.12918",
+  "source_version": "v1",
+  "source_pdf": "https://arxiv.org/pdf/2404.12918v1",
+  "title_en": "Interpreting neural operators: how nonlinear waves propagate in non-reciprocal solids",
+  "title_zh": "解释神经算子：非互易固体中的非线性波如何传播",
+  "curation_status": "full_text_verified",
+  "verified_metadata": {
+    "arxiv_id": "2404.12918",
+    "version": "v1",
+    "title": "Interpreting neural operators: how nonlinear waves propagate in non-reciprocal solids",
+    "abstract": "We present a data-driven pipeline for model building that combines interpretable machine learning, hydrodynamic theories, and microscopic models. The goal is to uncover the underlying processes governing nonlinear dynamics experiments. We exemplify our method with data from microfluidic experiments where crystals of streaming droplets support the propagation of nonlinear waves absent in passive crystals. By combining physics-inspired neural networks, known as neural operators, with symbolic regression tools, we generate the solution, as well as the mathematical form, of a nonlinear dynamical system that accurately models the experimental data. Finally, we interpret this continuum model from fundamental physics principles. Informed by machine learning, we coarse grain a microscopic model of interacting droplets and discover that non-reciprocal hydrodynamic interactions stabilise and promote nonlinear wave propagation.",
+    "authors": [
+      "Jonathan Colen",
+      "Alexis Poncet",
+      "Denis Bartolo",
+      "Vincenzo Vitelli"
+    ],
+    "categories": [
+      "cond-mat.soft",
+      "physics.flu-dyn"
+    ],
+    "primary_category": "cond-mat.soft",
+    "published": "2024-04-19T14:42:42Z"
+  },
+  "sections": [
+    {
+      "title": "作者信息",
+      "bullets": [
+        "Jonathan Colen、Alexis Poncet、Denis Bartolo与Vincenzo Vitelli合作；机构包括University of Chicago、Old Dominion University与ENS de Lyon/CNRS。",
+        "官方快照arXiv:2404.12918v1，主分类cond-mat.soft，另含physics.flu-dyn；正文6页4图、补充材料11页4图。",
+        "工作把微流控液滴实验、Fourier neural operator、SINDy稀疏回归和非互易液滴链粗粒化串成一条机制发现链。"
+      ]
+    },
+    {
+      "title": "摘要",
+      "bullets": [
+        "实验对象是直径140微米、在有机溶剂中被驱动的一维水滴流；t=0的人为堵塞产生传播激波。",
+        "网络用卷积编码器把密度ρ映到潜变量ϕ，单层线性Fourier neural operator推进ϕ，再由卷积解码器恢复ρ；非线性来自编解码变换。",
+        "SINDy从潜空间辨识出含三阶空间导数的线性方程，提示实验密度应由KdV–Burgers而非纯Burgers描述。",
+        "微观过阻尼液滴链表明：互易弹性产生耗散，非互易流体动力相互作用同时产生平流、非线性和色散，从而在无惯性系统中支撑孤立波。"
+      ]
+    },
+    {
+      "title": "背景",
+      "bullets": [
+        "早先对同一实验做最低阶梯度展开得到无粘Burgers方程∂tρ+(c−αρ)∂xρ=0，能形成激波，但没有解释实验中保持锋利的波前。",
+        "神经算子通常擅长预测PDE解映射，却难直接给出所学物理机制；本文把可解释的线性潜动力学限制与symbolic regression结合。",
+        "非平衡软物质与溶剂持续交换动量，有效相互作用可违反牛顿第三定律；仅凭对称性和守恒律往往不足以闭合观测变量。",
+        "核心问题不是网络是否拟合电影，而是其潜在传播核是否暴露Burgers模型遗漏的色散项，并能否追溯到微观非互易作用。"
+      ]
+    },
+    {
+      "title": "模型与方法",
+      "bullets": [
+        "把实验电影粗粒化为ρ(x,t)，切成重叠的3 s×9 mm样本；每个样本以ρ0(x)为输入并预测完整时空响应。",
+        "架构依次为1D CNN encoder、single-layer linear FNO和1D CNN decoder；只有中央算子推进时间，因而可把它读作潜变量ϕ的Green函数。",
+        "实验训练所得核在共移动坐标中振幅衰减但宽度近似不变；对照网络在精确Burgers合成电影上学到类似扩散核、宽度随时间增长。",
+        "对ϕ及其空间导数做SINDy，得到∂tϕ−1.86∂xϕ=−0.31ϕ+0.003∂x²ϕ−0.008∂x³ϕ，重建网络潜动力学R²=0.96。",
+        "随后直接从实验拟合Burgers(β=0)、KdV(D=0)和KdV–Burgers：∂tρ+(c−αρ)∂xρ=D∂x²ρ+β∂x³ρ。",
+        "微观方程ζ(∂tRn−v0)=Σm≠n(fH_m→n+fE_m→n)；相邻弹性力用线性弹簧，非互易流体力取A csch²(πr/W)。",
+        "数值设周期边界、ζ=a=1、W=2、A=−(π/W)²，并以KdV双孤子解作初态，扫描弹性k=0、0.02、0.2；再做长波x̃=ε(n−ct)、长时t̃=ε³t展开。"
+      ]
+    },
+    {
+      "title": "核心结果与证据",
+      "bullets": [
+        "Figure 2显示实验训练的Green函数随时间衰减但几乎不展宽，因而预测的shock保持锋利；Burgers/Cole–Hopf扩散核明显展宽，说明网络学到不同物理。",
+        "Equation (2)的三阶导数系数−0.008比二阶扩散系数0.003更显著；SINDy方程对潜变量预测达到R²=0.96，输出解码后也准确重建密度。",
+        "Figure 3中KdV–Burgers与Burgers对全场的平均绝对误差相近，且都逊于神经网络；差异集中在距shock front 1 mm区域，KdV–Burgers保持更尖的锋并有更低局部误差。",
+        "k=0时微观模拟由KdV极限捕获，两个孤子穿越传播；k=0.2时形状不保持并形成Burgers型shock；k=0.02时完整KdV–Burgers定量预测传播与弹性阻尼。",
+        "长波推导把D唯一归因于互易弹性；c、α、β由流体力的导数矩给出。非互易流体相互作用使非线性与色散协同，无需惯性即可稳定并推进孤立波。",
+        "机器学习在此扮演‘maximal model’：先指出遗漏的KdV项；微观模拟与渐近理论再提供该项的第一性机制，而非把网络权重本身当解释。"
+      ]
+    },
+    {
+      "title": "有效性与局限",
+      "bullets": [
+        "训练样本来自同一实验电影且使用重叠时空裁剪；全文未展示跨实验装置、通道宽度或独立轨迹的严格held-out泛化。",
+        "R²=0.96检验的是稀疏方程复现网络潜变量，不等于从原始实验独立验证唯一密度PDE。",
+        "编码器和解码器仍是非线性黑箱；潜变量ϕ不是直接测量的物理场，潜空间坐标变换可能影响稀疏方程形式。",
+        "SINDy结果依赖导数估计、候选库、正则化与阈值；三阶项的稳定性需要不同采样率、噪声和seed下检验。",
+        "全场误差上KdV–Burgers并未显著胜过Burgers，主要增益在shock邻域；因此证据支持局部色散修正，不支持所有时空尺度全面替代。",
+        "微观模型是一维、成对相互作用、线性接触弹簧和特定csch²流体核；拥挤、多体流体作用、边界及液滴变形被理想化。",
+        "连续体推导是长波、长时、小密度扰动的渐近结果；‘孤子’在无耗散KdV极限最严格，有限D时是受阻尼孤立波。",
+        "数值验证共享建模假设与初态，不是独立实验复现；本站也未重训网络或重跑微观模拟。"
+      ]
+    },
+    {
+      "title": "复现与资源",
+      "bullets": [
+        "先保存原始movie、粒子追踪和ρ(x,t)粗粒化参数；按整段实验或独立run划分训练/验证，避免重叠裁剪泄漏。",
+        "冻结encoder/FNO/decoder结构、optimizer、时间采样和多seed；报告实验网络与Burgers synthetic-control的预测误差、kernel幅度和FWHM置信区间。",
+        "导出ϕ(x,t)后对SINDy library、derivative stencil、smoothing和threshold做敏感性扫描，检查∂x³项的selection frequency与系数区间。",
+        "密度PDE比较同时报告full-field和shock-within-1-mm误差，并加入相同参数数目或information criterion约束，防止额外β参数只带来机械优势。",
+        "微观链逐k和system size扫描，分别对KdV、KdV–Burgers、Burgers极限做残差、收敛和两孤子相位偏移检验。",
+        "机制归因需改变弹性而固定流体核、改变流体核而固定弹性，验证D与(c,α,β)的分离响应。",
+        "本站PDF SHA-256：5e4de6bbf5e1e027f201109f2e55462d3023291335c5a514f9c9d09f32a360aa。",
+        "Evidence status: full-text verified; no independent reproduction performed."
+      ]
+    },
+    {
+      "title": "阅读指南",
+      "bullets": [
+        "先读Figures 1–2，抓住‘实验核不展宽、Burgers扩散核展宽’这一直观差异。",
+        "再读Equation (2)与Figure 3，把潜空间SINDy证据和密度空间三种PDE拟合严格分开。",
+        "Figure 4及其前后文字给出最关键机制闭环：k扫描连接KdV、KdV–Burgers和Burgers三种极限。",
+        "最后读补充材料中的网络、SINDy、误差表和渐近推导；复现时优先审计数据切分与三阶项稳健性。"
+      ]
+    }
+  ],
+  "evidence_refs": [
+    "paper.pdf pp. 1-2: experiment, coarse graining, neural-operator architecture and Burgers baseline",
+    "paper.pdf pp. 2-3: learned Green function, synthetic Burgers control and SINDy latent PDE",
+    "paper.pdf pp. 3-4: KdV-Burgers density equation and full-field versus shock-front comparisons",
+    "paper.pdf pp. 4-5: microscopic nonreciprocal droplet chain, elasticity scan and continuum mechanism",
+    "paper.pdf pp. 7-17: network, sparse regression, coefficients, continuum derivation and supplementary tests",
+    "Evidence status: full-text verified; no independent reproduction performed."
+  ],
+  "card_standard_version": "2.3",
+  "paper_profile": "ai_empirical",
+  "style_reference": "physicist_daily_arxiv",
+  "provenance": {
+    "program": "Collection",
+    "catalog": "Paper Collection",
+    "catalog_record_id": "5e4de6bbf5e1e027",
+    "catalog_record_ids": [
+      "5e4de6bbf5e1e027"
+    ],
+    "catalog_topic": "Neural Operators",
+    "collection_date": "2026-08-23",
+    "sampled_at": "2026-08-26",
+    "selected_by": "full_collection_backfill",
+    "sampling_seed": "not_applicable_full_collection",
+    "candidate_count": 452,
+    "legacy_full_text_card": "2404.12918.json"
+  },
+  "equation_refs": [],
+  "figure_refs": [],
+  "cover": {
+    "mode": "title_abstract",
+    "abstract_text": "We present a data-driven pipeline for model building that combines interpretable machine learning, hydrodynamic theories, and microscopic models. The goal is to uncover the underlying processes governing nonlinear dynamics experiments. We exemplify our method with data from microfluidic experiments where crystals of streaming droplets support the propagation of nonlinear waves absent in passive crystals. By combining physics-inspired neural networks, known as neural operators, with symbolic regression tools, we generate the solution, as well as the mathematical form, of a nonlinear dynamical system that accurately models the experimental data. Finally, we interpret this continuum model from fundamental physics principles. Informed by machine learning, we coarse grain a microscopic model of interacting droplets and discover that non-reciprocal hydrodynamic interactions stabilise and promo",
+    "selection_rationale": "该旧版全文证据包没有经过 v2.3 的逐图导出与图号核验；为避免错配图片，封面使用论文题目和经全文核对的摘要，关键论证保留在卡片正文中。"
+  }
+}

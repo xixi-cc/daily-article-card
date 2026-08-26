@@ -1,0 +1,134 @@
+{
+  "arxiv_id": "2504.08066",
+  "source_version": "v1",
+  "source_pdf": "https://arxiv.org/pdf/2504.08066",
+  "title_en": "The AI Scientist-v2: Workshop-Level Automated Scientific Discovery via Agentic Tree Search",
+  "title_zh": "AI Scientist-v2：基于智能体树搜索的工作坊级自动科学发现",
+  "curation_status": "full_text_verified",
+  "verified_metadata": {
+    "arxiv_id": "2504.08066",
+    "version": "v1",
+    "title": "The AI Scientist-v2: Workshop-Level Automated Scientific Discovery via Agentic Tree Search",
+    "abstract": "AI is increasingly playing a pivotal role in transforming how scientific discoveries are made. We introduce The AI Scientist-v2, an end-to-end agentic system capable of producing the first entirely AI generated peer-review-accepted workshop paper. This system iteratively formulates scientific hypotheses, designs and executes experiments, analyzes and visualizes data, and autonomously authors scientific manuscripts. Compared to its predecessor (v1, Lu et al., 2024 arXiv:2408.06292), The AI Scientist-v2 eliminates the reliance on human-authored code templates, generalizes effectively across diverse machine learning domains, and leverages a novel progressive agentic tree-search methodology managed by a dedicated experiment manager agent. Additionally, we enhance the AI reviewer component by integrating a Vision-Language Model (VLM) feedback loop for iterative refinement of content and aesthetics of the figures. We evaluated The AI Scientist-v2 by submitting three fully autonomous manuscripts to a peer-reviewed ICLR workshop. Notably, one manuscript achieved high enough scores to exceed the average human acceptance threshold, marking the first instance of a fully AI-generated paper successfully navigating a peer review. This accomplishment highlights the growing capability of AI in conducting all aspects of scientific research. We anticipate that further advancements in autonomous scientific discovery technologies will profoundly impact human knowledge generation, enabling unprecedented scalability in research productivity and significantly accelerating scientific breakthroughs, greatly benefiting society at large. We have open-sourced the code at https://github.com/SakanaAI/AI-Scientist-v2 to foster the future development of this transformative technology. We also discuss the role of AI in science, including AI safety.",
+    "authors": [
+      "Yutaro Yamada",
+      "Robert Tjarko Lange",
+      "Cong Lu",
+      "Shengran Hu",
+      "Chris Lu",
+      "Jakob Foerster",
+      "Jeff Clune",
+      "David Ha"
+    ],
+    "categories": [
+      "cs.AI",
+      "cs.CL",
+      "cs.LG"
+    ],
+    "primary_category": "cs.AI",
+    "published": "2025-04-10T18:44:41Z",
+    "comment": ""
+  },
+  "sections": [
+    {
+      "title": "作者信息",
+      "bullets": [
+        "作者：Yutaro Yamada、Robert Tjarko Lange、Cong Lu、Shengran Hu、Chris Lu、Jakob Foerster、Jeff Clune、David Ha。",
+        "官方快照：arXiv:2504.08066v1；主分类 cs.AI。",
+        "研究与 ICLR 2025 ICBINB workshop、ICLR leadership 协调并获 UBC IRB H24-02652；达到接收分数的稿件按事先约定撤回，未进入正式公开论文记录。"
+      ]
+    },
+    {
+      "title": "摘要",
+      "bullets": [
+        "AI Scientist-v2 从一般研究 idea 出发，不依赖人写实验模板；Experiment Progress Manager 管四阶段 agentic tree search，节点生成/运行代码、保存结果、画图并由 VLM 检查，最终自动写作与修改论文。",
+        "团队把三篇完全由系统在单次 run 内生成的稿件送入 ICLR workshop 盲审；一篇得 6、7、6，平均 6.33，达到工作坊接收线，另两篇拒稿。",
+        "“完全自主”只适用于被选中的单次 run 内部：人类提供 workshop 主题，从约 40 个 AI ideas 中挑 3 个，多 seed 运行后再挑每个 idea 的最好完整稿件提交。"
+      ]
+    },
+    {
+      "title": "背景",
+      "bullets": [
+        "v1 依赖 human-authored code template 且线性改进；v2 提高抽象层级，先做 idea/literature search，再用分支树分别 debug、improve、hyperparameter tune、ablate、replicate 和 aggregate。",
+        "四阶段为 initial implementation、baseline establishment、research agenda execution、ablation；每阶段由 LLM manager 选择 best node 进入下一阶段，并在结尾做不同 seed replications。",
+        "VLM 同时检查实验图的异常/可读性，以及写作阶段 caption、正文引用与图像是否一致；它改善呈现但不能替代代码和统计正确性审查。"
+      ]
+    },
+    {
+      "title": "模型与方法",
+      "bullets": [
+        "code generation 用 Claude 3.5 Sonnet v2，LLM/VLM feedback 与 summary 用 GPT-4o；每节点最大 1 小时，debug depth 3，四阶段 node allocations 为 21/12/12/12，单篇总运行通常数小时、上限 15 小时。",
+        "三个投稿先由系统围绕 ICBINB negative-results 主题生成约 20 ideas，再经人为 prompt 调整到真实领域再生成约 20；人挑 3 ideas，分别多 seed 运行，并从多个完整 manuscripts 中挑最好者。",
+        "43 篇 workshop submissions 中混入三篇 AI 稿；reviewers 预先知道可能有 AI 稿且可 opt out，但不知道具体稿件。达到接收线的稿件在 meta-review/出版前依协议撤回。",
+        "作者随后人工审查三篇的实验、代码、方法、引用和图文；附录公开完整稿件、内部评语与部分获授权的 workshop reviews。"
+      ]
+    },
+    {
+      "title": "核心结果与证据",
+      "bullets": [
+        "唯一达到接收线的稿件研究 LSTM temporal/compositional regularization 的负结果，review scores 6/7/6，平均 6.33，约在 43 篇投稿 top 45%；两篇关于 calibration label noise 与 pest detection 的稿件被拒。",
+        "workshop reviewers 欣赏清晰呈现负结果，但要求更好理论动机、更多架构和真实任务；这支持“可达 workshop 边界”，不支持 main-track 质量。",
+        "作者内部 code review 发现 train/test 约 57% overlap、Figure 3 caption 误释 validation loss、Figure 5 明显显示 attention model 优于 LSTM 却与文字冲突，并质疑简单任务上的 100% accuracy。",
+        "该稿限制于短序列和 synthetic arithmetic，regularization 实际施加于 input embeddings 而非容易被读者理解的 hidden states；缺关键 LSTM 引用。作者判定 borderline workshop accept，但不够 full conference。",
+        "结果是强 selection：目标明确为“至少一篇存活”，不是估计生成论文的接收率；从约 40 ideas→3 funded ideas→每 idea 多 seeds→最佳完整输出→3 submissions→1 达线，不能把 1/3 当系统自然成功概率。"
+      ]
+    },
+    {
+      "title": "有效性与局限",
+      "bullets": [
+        "workshop 通常接收率约 60–80%，领先主会约 20–30%；作者明确说 v2 既未稳定达到 workshop level，也未达到顶会标准。",
+        "reviewers 知道可能出现 AI 稿且可退出，样本只有三篇、一个 workshop，无法估计匿名常规评审中的普遍表现。",
+        "peer-review acceptance signal 没有发现 57% overlap、caption/claim 冲突等全部问题，说明过审不能替代代码审计与独立复现。",
+        "idea 与 run 的人工 meta-selection 是实质资源分配和 winner selection；虽然没有改选中稿件文本/代码，仍影响最终展示的能力边界。"
+      ]
+    },
+    {
+      "title": "复现与资源",
+      "bullets": [
+        "开源代码：https://github.com/SakanaAI/AI-Scientist-v2；论文声明同时开放 ICLR 2025 workshop experiment data，附录 Table 4 链接各稿材料。",
+        "复现应统计完整漏斗：生成 idea 数、入选 idea、每 idea seeds、失败/超时 nodes、所有完整稿、提交与评审结果；并冻结模型/API、57-node budget、1h/node 与 15h/paper limit。",
+        "本站 PDF SHA-256：53bafd3028e3f8829a3d85220e84dcf0d18934f9b75c092a60de303ff3644bd2。",
+        "Evidence status: full-text verified; no independent reproduction performed."
+      ]
+    },
+    {
+      "title": "阅读指南",
+      "bullets": [
+        "先读 pp. 4–8 和 Tables 2–3，理解树搜索预算与模型配置；再读 pp. 8–13 的完整 selection/review/withdrawal 流程。",
+        "重点核对 pp. 10–12 的内部代码审计，它比“首篇过审”标题更能反映科学可靠性。",
+        "最后看 Appendix C 的三篇全稿与拒稿材料；评价系统时应以全漏斗、代码正确性和独立复现为单位，而不是最佳稿。"
+      ]
+    }
+  ],
+  "evidence_refs": [
+    "paper.pdf pp. 4-8 and Appendix A: experiment manager, tree node types, VLM loop and budgets",
+    "paper.pdf pp. 8-13: blind review protocol, human meta-selection, scores, withdrawal and internal code audit",
+    "paper.pdf Appendix C pp. 31-69: all three submissions, reviews, code findings and rejected cases",
+    "Evidence status: full-text verified; no independent reproduction performed."
+  ],
+  "card_standard_version": "2.3",
+  "paper_profile": "theory_experiment",
+  "style_reference": "physicist_daily_arxiv",
+  "provenance": {
+    "program": "Collection",
+    "catalog": "Paper Collection",
+    "catalog_record_id": "d303debab0c75f9b",
+    "catalog_record_ids": [
+      "d303debab0c75f9b"
+    ],
+    "catalog_topic": "AI for Science",
+    "collection_date": "2026-08-24",
+    "sampled_at": "2026-08-26",
+    "selected_by": "full_collection_backfill",
+    "sampling_seed": "not_applicable_full_collection",
+    "candidate_count": 452,
+    "legacy_full_text_card": "2504.08066.json"
+  },
+  "equation_refs": [],
+  "figure_refs": [],
+  "cover": {
+    "mode": "title_abstract",
+    "abstract_text": "AI is increasingly playing a pivotal role in transforming how scientific discoveries are made. We introduce The AI Scientist-v2, an end-to-end agentic system capable of producing the first entirely AI generated peer-review-accepted workshop paper. This system iteratively formulates scientific hypotheses, designs and executes experiments, analyzes and visualizes data, and autonomously authors scientific manuscripts. Compared to its predecessor (v1, Lu et al., 2024 arXiv:2408.06292), The AI Scientist-v2 eliminates the reliance on human-authored code templates, generalizes effectively across diverse machine learning domains, and leverages a novel progressive agentic tree-search methodology managed by a dedicated experiment manager agent. Additionally, we enhance the AI reviewer component by integrating a Vision-Language Model (VLM) feedback loop for iterative refinement of content and aesth",
+    "selection_rationale": "该旧版全文证据包没有经过 v2.3 的逐图导出与图号核验；为避免错配图片，封面使用论文题目和经全文核对的摘要，关键论证保留在卡片正文中。"
+  }
+}

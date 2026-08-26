@@ -1,0 +1,135 @@
+{
+  "arxiv_id": "2605.15419",
+  "source_version": "v2",
+  "source_pdf": "https://arxiv.org/pdf/2605.15419",
+  "title_en": "Lagrangian Flow Matching: A Least-Action Framework for Principled Path Design",
+  "title_zh": "拉格朗日流匹配：用于原则化路径设计的最小作用量框架",
+  "curation_status": "full_text_verified",
+  "verified_metadata": {
+    "arxiv_id": "2605.15419",
+    "version": "v2",
+    "title": "Lagrangian Flow Matching: A Least-Action Framework for Principled Path Design",
+    "abstract": "Flow matching trains a neural velocity field by regression against a target velocity associated with a prescribed probability path connecting a simple initial distribution to the data distribution. A central design choice is the path itself. Existing constructions, including rectified and optimal-transport-based paths, transport samples along straight lines between coupled endpoints and thus cover only a narrow class of dynamics. We observe that this corresponds to the simplest case of the least-action principle in classical mechanics, in which the kinetic Lagrangian yields free-particle straight-line trajectories. Building on this observation, we propose Lagrangian flow matching, a physics-based framework in which the probability path and velocity field are determined by minimizing the action of a general Lagrangian subject to the continuity equation and the prescribed endpoints. We show that this dynamic problem admits an equivalent static optimal transport (OT) formulation, yielding a family of simulation-free training objectives that recover OT-based flow matching as the kinetic special case and the trigonometric variance-preserving diffusion path as the harmonic-oscillator case. More general Lagrangians give rise to new probability paths and velocity fields, and numerical experiments show that they induce meaningful changes in the learned dynamics while remaining competitive with existing conditional flow matching models.",
+    "authors": [
+      "Shukai Du",
+      "Junzhe Zhang",
+      "Yiming Li"
+    ],
+    "categories": [
+      "cs.LG"
+    ],
+    "primary_category": "cs.LG",
+    "published": "2026-05-14T21:05:03Z",
+    "comment": ""
+  },
+  "sections": [
+    {
+      "title": "作者信息",
+      "bullets": [
+        "作者：Shukai Du、Junzhe Zhang、Yiming Li，Syracuse University 数学系与 EECS。",
+        "官方快照：arXiv:2605.15419v2，27 页；分类 cs.LG；预印本提供代码项目 junzhez/lagrangian-flow-matching。",
+        "论文贡献是为 flow-matching path 选择提供 least-action 参数化；不是声称生成模型真实遵循经典力学。"
+      ]
+    },
+    {
+      "title": "摘要",
+      "bullets": [
+        "标准 flow matching 先规定 probability path 再回归对应 velocity；Lagrangian Flow Matching 反过来用 L(x,v,t) 的最小作用量同时选择 endpoint cost、coupling 与逐对 trajectory。",
+        "静态–动态等价把 continuity-equation 下的 density/velocity action minimum 化为 endpoint OT with cost c_L(x0,x1)，只要逐对 Euler–Lagrange trajectory 有 closed form，训练仍是 simulation-free regression。",
+        "自由粒子 L=|v|²/2 恢复直线 OT-CFM；harmonic oscillator 产生 ω 控制的弯曲路径，ω→0 回到 OT-CFM，ω=π/2 对应 trigonometric variance-preserving marginal path。"
+      ]
+    },
+    {
+      "title": "背景",
+      "bullets": [
+        "CNF likelihood training 需反复 ODE solves；flow matching 避免训练时积分，但路径本身是强 inductive bias。现有 affine/OT constructions 大多对应固定 endpoint 之间的直线。",
+        "Benamou–Brenier 动态 OT 是 kinetic action under continuity equation；论文把 kinetic term 扩展为 K(v)−V(x)，用 classical least action 选择 curved path。",
+        "conditional formulation把难以直接抽样的 marginal velocity 写成 conditional velocity posterior average；mini-batch版本令条件 z 为 source/target empirical batches，并在每步解 assignment。"
+      ]
+    },
+    {
+      "title": "模型与方法",
+      "bullets": [
+        "理论限定 K 为 positive-definite quadratic form，V 足够正则且受 kinetic term 控制，确保每对 endpoints 有唯一 action minimizer；Theorem 2.1 建立静态 c_L-OT 与动态 action 的等价。",
+        "mini-batch objective 先以 c_L 构造 n×n cost matrix，用 Hungarian/Sinkhorn 求 π_z*，再对 matched pair 的 closed-form γ(t)、γdot(t) 回归 vθ；finite n 只是 global coupling 的近似。",
+        "isotropic harmonic cost 在固定 empirical marginals 下与 squared Euclidean cost 只差 permutation-independent terms，所以 coupling 与 OT-CFM 相同，改变的是中间 trajectory。",
+        "实验比较 OT-CFM、OT-SI、ω={0.001,1,π/2} 的 OT-Harmonic；CIFAR 另有一次性从协方差拟合并冻结 A 的 anisotropic harmonic variant。",
+        "所有方法在每条 track 内共享 architecture、optimizer、steps 与 batch；2D/单细胞用 time-conditioned MLP，CIFAR-10 用 [29] 的 U-Net。主要结果跨 5 次独立 retrains。"
+      ]
+    },
+    {
+      "title": "核心结果与证据",
+      "bullets": [
+        "2D Table 1：ω=1 在 4 对分布中 3 对 W2 优于两基线，例如 N→moons 为 0.188±0.016，OT-CFM 0.197±0.026；但 N→S-curve 为 1.023±0.241，反而差于 0.976±0.198。",
+        "同表 NPE_ω=1 显示 ω=1 更接近 harmonic-OT path；ω=0.001 与 OT-CFM 的 W2/NPE 在 seed variation 内几乎重合，是极限实现的 sanity check。",
+        "单细胞 Table 2：OT-CFM 与 ω=0.001 最强且三数据差在 0.0015 内；ω 增大单调恶化，ω=1 比 leaders 差约 4–8%，所以 2D 优势没有迁移。",
+        "CIFAR Table 3 adaptive DOPRI5：ω=0.001 FID 3.681/NFE 133.12，略优于同训练预算 OT-CFM 3.706/133.12；差值 0.025，表中未给跨 seed FID uncertainty。",
+        "100-step Euler 时 OT-SI FID 4.474 最好；足够 steps 后 OT-Harmonic 0.001 最好，说明 path curvature 与 ODE discretization budget 共同影响排名。",
+        "OT-Aniso adaptive FID 4.078，差于 OT-CFM/所有 isotropic harmonic；一次性 PCA covariance geometry 没提供有效图像 inductive bias。"
+      ]
+    },
+    {
+      "title": "有效性与局限",
+      "bullets": [
+        "static–dynamic theorem只覆盖 canonical separable L=K−V；更一般 L 若无 closed-form boundary-value solution，就需数值解 Euler–Lagrange，失去 simulation-free 优势。",
+        "potential/harmonic ω 由手工指定；anisotropic A 只从 1,280 张图拟合一次并冻结，而 d=3,072 导致 1,792 个 null-space directions 随机补全，这是明确瓶颈。",
+        "没有单一 Lagrangian 占优：ω=1 偏爱若干 2D geometry，ω≈0 在单细胞/CIFAR更强；尚无从数据原则化选择 V/ω 的算法。",
+        "CIFAR 只训练 400k steps，短于原 OT-CFM 500k，论文自己的 OT-CFM 3.706 也差于文献 3.577；绝对 FID 不应跨训练预算比较。",
+        "经验范围止于 2D、低维单细胞 embedding 与 CIFAR-10 32²；没有高分辨率、文本条件、视频/分子实验。框架是 deterministic continuity flow，不包含 diffusion 的 stochastic path law。"
+      ]
+    },
+    {
+      "title": "复现与资源",
+      "bullets": [
+        "项目 URL 已给出，但 Appendix H.5 表述为代码/config/checkpoints 将于发表时发布；复现前需核对实际 commit 与 artifacts 是否已经公开，而非只依链接存在。",
+        "2D 每配置 Adam 20k steps、batch 256；W2 用 held-out 2,048 samples，NPE 用 512+512 assignment、RK4 200 steps/Simpson integration；保留五 seed raw values。",
+        "单细胞冻结 seeds 42–46、leave-one-timepoint splits、MLP width 64、AdamW 1e-3、weight decay 1e-5、batch 128、noise 0.1。",
+        "CIFAR 固定 U-Net 128 base channels、400k steps、Adam 2e-4、warmup 5k、batch 128、EMA 0.9999；分别报告 Euler 100/1000 与 DOPRI5 NFE/FID。",
+        "本站 PDF SHA-256：eb07aef93669e8974eb9ab6d131f0863d3998db2970b7b0f669a1870abb0b55d。",
+        "Evidence status: full-text verified; no independent reproduction performed."
+      ]
+    },
+    {
+      "title": "阅读指南",
+      "bullets": [
+        "先读 Figure 1、Theorem 2.1 与 harmonic examples，确认 Lagrangian 同时改变 cost/path，但 isotropic harmonic 并不改变 mini-batch coupling。",
+        "再读 Tables 1–3，把 2D、单细胞、CIFAR 的互相冲突排名视为 inductive-bias 证据，而不是挑最好数字。",
+        "最后读 Appendix H 与 Limitations；尤其核对五 seed 只覆盖哪些指标、CIFAR 预算差异、A 的欠定拟合和 deterministic/stochastic 边界。"
+      ]
+    }
+  ],
+  "evidence_refs": [
+    "paper.pdf pp. 1-3: motivation, flow-matching setup and least-action framing",
+    "paper.pdf pp. 3-7: Lagrangian OT, static-dynamic equivalence, harmonic and conditional objectives",
+    "paper.pdf pp. 7-10: mini-batch objective and experimental Tables 1-3",
+    "paper.pdf pp. 19-21: anisotropic construction and path-energy diagnostic",
+    "paper.pdf pp. 21-25: shared protocols, five seeds, metrics and CIFAR training details",
+    "paper.pdf pp. 25-27: explicit limitations on Lagrangians, prescribed potentials, empirical scale and deterministic dynamics",
+    "Evidence status: full-text verified; no independent reproduction performed."
+  ],
+  "card_standard_version": "2.3",
+  "paper_profile": "ai_empirical",
+  "style_reference": "physicist_daily_arxiv",
+  "provenance": {
+    "program": "Collection",
+    "catalog": "Paper Collection",
+    "catalog_record_id": "5fb9a96f5da74281",
+    "catalog_record_ids": [
+      "5fb9a96f5da74281"
+    ],
+    "catalog_topic": "Flow Matching",
+    "collection_date": "2026-08-08",
+    "sampled_at": "2026-08-26",
+    "selected_by": "full_collection_backfill",
+    "sampling_seed": "not_applicable_full_collection",
+    "candidate_count": 452,
+    "legacy_full_text_card": "2605.15419.json"
+  },
+  "equation_refs": [],
+  "figure_refs": [],
+  "cover": {
+    "mode": "title_abstract",
+    "abstract_text": "Flow matching trains a neural velocity field by regression against a target velocity associated with a prescribed probability path connecting a simple initial distribution to the data distribution. A central design choice is the path itself. Existing constructions, including rectified and optimal-transport-based paths, transport samples along straight lines between coupled endpoints and thus cover only a narrow class of dynamics. We observe that this corresponds to the simplest case of the least-action principle in classical mechanics, in which the kinetic Lagrangian yields free-particle straight-line trajectories. Building on this observation, we propose Lagrangian flow matching, a physics-based framework in which the probability path and velocity field are determined by minimizing the action of a general Lagrangian subject to the continuity equation and the prescribed endpoints. We sho",
+    "selection_rationale": "该旧版全文证据包没有经过 v2.3 的逐图导出与图号核验；为避免错配图片，封面使用论文题目和经全文核对的摘要，关键论证保留在卡片正文中。"
+  }
+}

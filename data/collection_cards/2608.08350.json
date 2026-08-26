@@ -1,0 +1,104 @@
+{
+  "arxiv_id": "2608.08350",
+  "source_version": "v1",
+  "source_pdf": "https://arxiv.org/pdf/2608.08350",
+  "title_en": "Correlation flow governs learning at criticality",
+  "title_zh": "临界点处的相关流支配学习",
+  "curation_status": "full_text_verified",
+  "sections": [
+    {
+      "title": "作者信息",
+      "bullets": [
+        "作者：Andrea Combette、Nelly Pustelnik、Antoine Venaille。",
+        "机构：CNRS、ENS de Lyon、Laboratoire de Physique UMR5672。",
+        "版本：arXiv:2608.08350v1，2026-08-08；分类 cs.LG。"
+      ]
+    },
+    {
+      "title": "研究问题",
+      "paragraphs": [
+        "深网临界初始化被认为能避免信号相关在深度方向快速坍缩或爆炸，但“前向相关能传播”与“梯度下降真正按什么核学习”之间缺少直接桥梁。本文在先无限宽、再无限深的 sequential limit 中，把相关递推、端到端 Jacobian 与 NTK 联结起来，并比较 Gaussian 和 orthogonal 权重在有限宽深下的偏差。"
+      ]
+    },
+    {
+      "title": "模型与方法",
+      "bullets": [
+        "研究全连接网络的 NTK 参数化，权重方差 $\\sigma_w^2$、偏置方差 $\\sigma_b^2$ 构成相图；激活类包含 tanh 与正弦等满足光滑/矩条件的函数。",
+        "无限宽平均场给出方差、协方差和输入相关 $\\rho_\\ell^{\\alpha\\beta}$ 的确定递推；只有权重–偏置平面上的单一临界点可使方差和相关都以代数而非指数速率趋于固定点。",
+        "作者用随机矩阵自由概率计算逐层与端到端 overlapped Jacobian 的谱矩，分别处理 Gaussian 矩阵和满足 $WW^\\top=\\sigma_w^2I$ 的 orthogonal ensemble。",
+        "NTK block 被重写成各层 correlation 与部分 Jacobian transport 的加权和；在 least-squares frozen-NTK 动力学中，NTK 特征值控制每个残差模的衰减率。",
+        "理论用有限宽/有限深正弦网络检验，包含 proportional output $n_{out}=O(N)$ 与 fixed-output 两种标度，以及深度到 $L=N=1024$ 的谱实验。"
+      ]
+    },
+    {
+      "title": "核心结果与证据",
+      "bullets": [
+        "临界点且满足 $\\phi_2=0$ 时，输出相关在无限深仍显式依赖输入相关；端到端 Jacobian 的第一谱矩却按代数律约 $1/L$ 消失，因此 dynamical isometry 失败并不妨碍可预测 NTK。",
+        "核心式 (92) 表明 orthogonal 初始化下，适当的宽度–深度–输出维标度中，NTK block 在 Frobenius 范数意义收敛到输出相关乘单位阵，比例常数仅由激活函数决定。",
+        "Gaussian 初始化的 leading finite-size fluctuations 随深度累积，维持谱集中要求宽度随深度增长；orthogonal 权重消除该主导项，NTK block 谱标准差随深度约 $L^{-1/2}$ 缩小。",
+        "图 6 显示 Gaussian 端到端 Jacobian 谱随深度扩展并病态化，orthogonal 谱则受控地整体代数下降；理论在 $L\\lesssim N$ 前两者均吻合，超过后 Gaussian 偏离而 orthogonal 保持。",
+        "图 7–8 的 $N=L=1024$ 实验显示 orthogonal NTK 谱与 correlation kernel 清晰对齐，Gaussian 出现强谱噪声，且 proportional output $n_{out}=64$ 时更严重。"
+      ]
+    },
+    {
+      "title": "有效性与局限",
+      "bullets": [
+        "结论依赖先无限宽再无限深的 sequential limit 及 NTK/frozen-kernel 参数化，不描述有限宽 feature learning 主导的训练。",
+        "相关能传播并不自动意味着任务好学；NTK 只是保留相似结构，若输入表示与标签不对齐，相关谱仍可能妨碍分类。",
+        "严格的相关–NTK 等价需要临界点、激活矩条件和特定宽深/输出标度；离临界初始化会恢复指数特征深度。",
+        "orthogonal 初始化改善有限尺寸谱控制，但不是 dynamical isometry；端到端 Jacobian 均值仍消失。",
+        "深度很大时数值可能因 floating-point precision 过早坍缩，论文中的机器精度现象不能与理论渐近律混为一谈。"
+      ]
+    },
+    {
+      "title": "复现与资源",
+      "bullets": [
+        "原文 PDF：https://arxiv.org/pdf/2608.08350。",
+        "本次全文核查未发现作者代码仓库；复现需要生成 Gaussian/orthogonal 权重、计算 correlation/Jacobian/NTK 谱并扫描 $L/N$ 与 $n_{out}/N$。",
+        "建议先复现图 2 临界点，再复现图 6 的 $1/L$ Jacobian，最后核对图 7–8 的 NTK–correlation 对齐。"
+      ]
+    },
+    {
+      "title": "阅读指南",
+      "bullets": [
+        "先读第 III 节相图，明确 edge of chaos 与唯一完整 critical point 的差别。",
+        "第 IV 节看 correlation flow 与 Gaussian/orthogonal 有限尺寸误差。",
+        "第 V 节接受 Jacobian 代数消失后，再读第 VI 节为何 rescaled partial Jacobian 仍使 NTK 受控。",
+        "最后读式 (92)、图 7–8 和 Discussion，把渐近定理与有限网络建议分开。"
+      ]
+    }
+  ],
+  "evidence_refs": [
+    "paper.pdf pp. 1-3: authors, abstract, scope, and sequential-limit framing",
+    "paper.pdf pp. 7-16: mean-field fixed points, critical correlation flow, and finite-size effects",
+    "paper.pdf pp. 17-23: algebraic end-to-end Jacobian and Figure 6",
+    "paper.pdf pp. 23-31: NTK derivation, equation (92), Figures 7-8",
+    "paper.pdf pp. 31-33: discussion, practical meaning, and limitations",
+    "Evidence status: full-text verified; no independent reproduction performed."
+  ],
+  "card_standard_version": "2.3",
+  "paper_profile": "ai_empirical",
+  "style_reference": "physicist_daily_arxiv",
+  "provenance": {
+    "program": "Collection",
+    "catalog": "Paper Collection",
+    "catalog_record_id": "c1cbc0e0f313a2d2",
+    "catalog_record_ids": [
+      "c1cbc0e0f313a2d2"
+    ],
+    "catalog_topic": "Statistical Physics",
+    "collection_date": "2026-08-23",
+    "sampled_at": "2026-08-26",
+    "selected_by": "full_collection_backfill",
+    "sampling_seed": "not_applicable_full_collection",
+    "candidate_count": 452,
+    "legacy_full_text_card": "2608.08350.json"
+  },
+  "equation_refs": [],
+  "figure_refs": [],
+  "cover": {
+    "mode": "title_abstract",
+    "abstract_text": "深网临界初始化被认为能避免信号相关在深度方向快速坍缩或爆炸，但“前向相关能传播”与“梯度下降真正按什么核学习”之间缺少直接桥梁。本文在先无限宽、再无限深的 sequential limit 中，把相关递推、端到端 Jacobian 与 NTK 联结起来，并比较 Gaussian 和 orthogonal 权重在有限宽深下的偏差。",
+    "selection_rationale": "该旧版全文证据包没有经过 v2.3 的逐图导出与图号核验；为避免错配图片，封面使用论文题目和经全文核对的摘要，关键论证保留在卡片正文中。"
+  }
+}
