@@ -1,0 +1,153 @@
+{
+  "arxiv_id": "2409.17858",
+  "source_version": "v2",
+  "source_pdf": "https://arxiv.org/pdf/2409.17858",
+  "title_en": "How Feature Learning Can Improve Neural Scaling Laws",
+  "title_zh": "特征学习何时能改善神经网络缩放律",
+  "curation_status": "full_text_verified",
+  "card_standard_version": "2.3",
+  "paper_profile": "theory_numerics",
+  "style_reference": "physicist_daily_arxiv",
+  "provenance": {
+    "program": "Collection",
+    "catalog": "Paper Collection",
+    "catalog_record_id": "de7541eb8ecbcd8f",
+    "catalog_record_ids": [
+      "de7541eb8ecbcd8f"
+    ],
+    "catalog_topic": "Scaling Laws",
+    "collection_date": "2026-08-23",
+    "sampled_at": "2026-08-28",
+    "selected_by": "full_collection_backfill",
+    "sampling_seed": "not_applicable_full_collection",
+    "candidate_count": 452
+  },
+  "verified_metadata": {
+    "arxiv_id": "2409.17858",
+    "version": "v2",
+    "title": "How Feature Learning Can Improve Neural Scaling Laws",
+    "authors": [
+      "Blake Bordelon",
+      "Alexander Atanasov",
+      "Cengiz Pehlevan"
+    ],
+    "categories": [
+      "stat.ML",
+      "cs.LG"
+    ],
+    "primary_category": "stat.ML",
+    "published": "2024-09-26T18:02:31Z",
+    "abstract": "A solvable feature-learning model predicts when source difficulty changes training-time and compute-optimal scaling exponents beyond the lazy kernel limit.",
+    "comment": ""
+  },
+  "sections": [
+    {
+      "title": "作者信息",
+      "paragraphs": [
+        "作者：Blake Bordelon、Alexander Atanasov、Cengiz Pehlevan；arXiv:2409.17858v2，ICLR 2025。全文 32 页，以 two-layer linear network 的 dynamical mean-field theory 为主，并用 nonlinear MLP/CNN 和 transformer observations 做外部检验。"
+      ]
+    },
+    {
+      "title": "研究问题",
+      "paragraphs": [
+        "kernel/lazy theory 把 features 冻结，常能推出 loss 对时间、width 与 data 的 power laws，却无法解释 rich feature learning 是否改变指数。论文问：相对于初始 NTK 的 source exponent β 在什么范围内，feature evolution 会改变 asymptotic learning exponent 和 fixed-compute 的最优 width/time 配比？"
+      ]
+    },
+    {
+      "title": "背景",
+      "paragraphs": [
+        "data/architecture 由 kernel spectrum exponent α 与 target source exponent β 描述。易任务 β>1 位于初始 infinite-width NTK 的 RKHS 内；hard tasks β<1 在其外。参数 γ 控制 feature-learning strength，γ→0 给出 lazy limit。",
+        "Figure 1 直接画出 χ(β) 以及 lazy/rich 两张 ((\\alpha,\\beta)) phase diagrams，标明时间、模型 bottleneck 与 SGD-noise terms 的主导区域；这是全文最重要的理论地图。"
+      ]
+    },
+    {
+      "title": "模型与方法",
+      "paragraphs": [
+        "作者研究 projected gradient descent 下的 two-layer linear network，并在 width (N)、batch (B)、time (t) 的极限中导出 DMFT equations。loss scaling 由 spectrum/source tail、finite-width cutoff 与 SGD variance 竞争决定。",
+        "fixed compute 取 (C=Nt)，在各 phase 内平衡 time-limited 与 width-limited terms 得到 compute-optimal (N^*(C),t^*(C))。numerics 对 32 个 random-matrix instances 比较 DMFT；随后训练 circle 上 power-law Fourier targets 的 ReLU MLP、vision CNN，并检查 C4 transformer scaling。"
+      ]
+    },
+    {
+      "title": "核心结果与证据",
+      "paragraphs": [
+        "Figure 1 的核心结论是分段的：hard regime β<1 中，lazy learning 为 (L\\sim t^{-\\beta})，rich feature learning 变为 (L\\sim t^{-2\\beta/(1+\\beta)})，因此指数提高但不超过 1；β>1 的 easy regimes 不改变主 exponent。",
+        "在 hard regime 把 (t^{-\\chi}) 与 (N^{-\\alpha\\beta}) 于 (C=Nt) 下平衡，得到 compute-optimal loss (L^*(C)\\sim C^{-\\alpha\\beta\\chi/(\\alpha\\beta+\\chi)})，其中 rich χ 为 (2\\beta/(1+\\beta))。这改变资源分配，不是简单常数倍 speedup。",
+        "Figure 2 的 DMFT 与 random experiments 显示 finite-γ crossover；ReLU MLP 的 Fourier tasks 和 CNN vision results 支持 hard/easy 分区。作者还估计 CNN kernel spectrum α≈2、target source β≈0.075，并在 C4 transformer cross-entropy 中观察到更符合 feature-learning exponent 的趋势，但这些是有限规模经验支持。"
+      ]
+    },
+    {
+      "title": "有效性与局限",
+      "paragraphs": [
+        "严格可解对象是 two-layer linear network 与特定 projected dynamics；把 α、β 从 finite neural kernels/data spectra 估计后外推到深 nonlinear nets，并不是定理。asymptotic crossover time 可随小 γ 很大，实际训练可能仍停在 lazy-like transient。",
+        "hard/easy 是相对于初始 kernel RKHS 的谱定义，不等于人类对任务难度的直觉。compute (C=Nt) 忽略 depth、activation memory、communication、data reuse 和 inference cost；SGD-noise phases 还依赖 batch scaling。CNN/transformer evidence 支持趋势，未唯一识别同一 DMFT mechanism。"
+      ]
+    },
+    {
+      "title": "复现与资源",
+      "paragraphs": [
+        "原文：https://arxiv.org/abs/2409.17858；代码：https://github.com/Pehlevan-Group/FeatureLearningScalings。全文 32 页，PDF SHA-256：dea4d29f6615724b67bb45ecd30780bd75cc304e3076e8981014cadb577639e8。",
+        "复现需固定 spectral construction、α/β convention、γ parameterization、width/batch/time ranges、DMFT solver tolerance、random seeds、Fourier target normalization、kernel eigenspectrum estimator 与 regression window。",
+        "Evidence status: full-text verified; no independent reproduction performed."
+      ]
+    },
+    {
+      "title": "阅读指南",
+      "paragraphs": [
+        "先读 Figure 1，把 β<1、(1<\\beta<2-1/\\alpha) 与 super-easy 区分；再看 Eq. (10) 的 χ(β) 和 Table 1 的 compute exponents。随后读 Figures 2–4 验证 transient/finite-width balance，最后把 MLP/CNN/transformer sections 当作 toy theory 的 stress tests，而非普适证明。"
+      ]
+    }
+  ],
+  "cover": {
+    "mode": "source_figure",
+    "asset_path": "assets/collection-figures/2409.17858/figure-1-scaling-phases.webp",
+    "label": "Figure 1",
+    "visual_type": "phase_diagram",
+    "evidence": "paper.pdf p. 2, Figure 1",
+    "alt_text": "learning exponent χ(β) 曲线以及 lazy 与 rich regimes 的 α–β phase maps。",
+    "caption": "Feature learning 只在初始 kernel RKHS 外的 hard tasks（β<1）改变主缩放指数，并重排 fixed-compute phase boundary。",
+    "selection_rationale": "Figure 1 是理论主结果的 phase diagram，优先于后续单数据集拟合图。"
+  },
+  "figure_refs": [
+    {
+      "label": "Figure 1",
+      "asset_path": "assets/collection-figures/2409.17858/figure-1-scaling-phases.webp",
+      "section": "核心结果与证据",
+      "role": "map the source exponent to lazy and rich scaling regimes",
+      "evidence": "paper.pdf p. 2, Figure 1",
+      "alt_text": "χ(β) 曲线及 lazy/rich α–β phase maps。",
+      "caption": "The exponent changes only for targets outside the initial-kernel RKHS.",
+      "interpretation": "The phase diagram is exact for the solvable model; application to deep networks is empirical."
+    }
+  ],
+  "equation_refs": [
+    {
+      "label": "Feature-learning exponent",
+      "latex": "\\chi(\\beta)=\\beta\\max\\!\\left(1,\\frac{2}{1+\\beta}\\right),\\qquad L(t)\\sim t^{-\\chi(\\beta)}",
+      "role": "state the asymptotic time-scaling transition",
+      "symbols": {
+        "beta": "target source exponent",
+        "chi": "learning exponent"
+      },
+      "evidence": "paper.pdf p. 7, Eq. (10)",
+      "interpretation": "For beta below one, chi=2 beta/(1+beta) exceeds the lazy exponent beta; above one the exponent is unchanged."
+    },
+    {
+      "label": "Hard-task compute optimum",
+      "latex": "L^*(C)\\sim C^{-\\frac{\\alpha\\beta\\chi}{\\alpha\\beta+\\chi}},\\qquad C=Nt,\\quad \\chi=\\frac{2\\beta}{1+\\beta}",
+      "role": "balance training time against the finite-width bottleneck",
+      "symbols": {
+        "alpha": "kernel spectral exponent",
+        "N": "model width",
+        "t": "training steps"
+      },
+      "evidence": "paper.pdf pp. 8–9, Table 1 and Figure 4",
+      "interpretation": "Feature learning changes the optimal allocation because it changes the time exponent, not the width cutoff."
+    }
+  ],
+  "evidence_refs": [
+    "paper.pdf pp. 2–7: source regimes, solvable model and exponent derivation",
+    "paper.pdf pp. 8–12: compute optimum and nonlinear-network tests",
+    "source PDF SHA-256 dea4d29f6615724b67bb45ecd30780bd75cc304e3076e8981014cadb577639e8",
+    "Evidence status: full-text verified; no independent reproduction performed."
+  ]
+}

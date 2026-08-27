@@ -1,0 +1,156 @@
+{
+  "arxiv_id": "2408.10205",
+  "source_version": "v1",
+  "source_pdf": "https://arxiv.org/pdf/2408.10205",
+  "title_en": "KAN 2.0: Kolmogorov-Arnold Networks Meet Science",
+  "title_zh": "KAN 2.0：Kolmogorov–Arnold 网络与科学发现的双向接口",
+  "curation_status": "full_text_verified",
+  "card_standard_version": "2.3",
+  "paper_profile": "ai_empirical",
+  "style_reference": "physicist_daily_arxiv",
+  "provenance": {
+    "program": "Collection",
+    "catalog": "Paper Collection",
+    "catalog_record_id": "4031a860f6cbc640",
+    "catalog_record_ids": [
+      "4031a860f6cbc640"
+    ],
+    "catalog_topic": "AI for Science",
+    "collection_date": "2026-08-23",
+    "sampled_at": "2026-08-28",
+    "selected_by": "full_collection_backfill",
+    "sampling_seed": "not_applicable_full_collection",
+    "candidate_count": 452
+  },
+  "verified_metadata": {
+    "arxiv_id": "2408.10205",
+    "version": "v1",
+    "title": "KAN 2.0: Kolmogorov-Arnold Networks Meet Science",
+    "authors": [
+      "Ziming Liu",
+      "Pingchuan Ma",
+      "Yixuan Wang",
+      "Wojciech Matusik",
+      "Max Tegmark"
+    ],
+    "categories": [
+      "cs.LG",
+      "cs.AI",
+      "physics.comp-ph",
+      "physics.data-an"
+    ],
+    "primary_category": "cs.LG",
+    "published": "2024-08-19T17:59:04Z",
+    "abstract": "A bidirectional framework combines scientific priors with interpretable KANs and adds multiplication nodes, symbolic compilation, attribution, and structure extraction.",
+    "comment": ""
+  },
+  "sections": [
+    {
+      "title": "作者信息",
+      "paragraphs": [
+        "作者：Ziming Liu、Pingchuan Ma、Yixuan Wang、Wojciech Matusik、Max Tegmark；arXiv:2408.10205v1。全文 28 页，是 pykan 的方法扩展和多组科学发现案例，不是单一 benchmark 论文。"
+      ]
+    },
+    {
+      "title": "研究问题",
+      "paragraphs": [
+        "普通神经网络适合连续函数逼近，却不天然暴露变量、模块和符号结构；物理推理则依赖乘法、守恒量、对称性与解析表达式。论文问：能否把科学先验编译进 KAN，再从训练后的 KAN 反向抽取可解释的科学结构？"
+      ]
+    },
+    {
+      "title": "背景",
+      "paragraphs": [
+        "KAN 把可学习的一元函数放在边上，以节点求和组合它们。原始加法 KAN 虽有可视化优势，却会把简单乘积 (xy) 绕写成多个加法/平方节点；这使网络图的结构不再等同于物理表达式的结构。",
+        "Figure 1 给出双向循环：Science→KAN 包括加入辅助变量、模块结构和符号公式；KAN→Science 包括 feature attribution、module discovery 与 symbolic regression。它比单列功能更直接地表达全文主张。"
+      ]
+    },
+    {
+      "title": "模型与方法",
+      "paragraphs": [
+        "MultKAN 在普通 KANLayer 后插入 multiplication layer，使若干子节点显式相乘；当所有乘法节点数为零时退化为原 KAN。kanpiler 把 SymPy expression 编译成固定/可微调 KAN，从而把已知物理公式作为结构先验而非训练后拟合。",
+        "作者还定义从输出向输入反传的 node/edge attribution，用于剪枝输入；tree converter 把网络转为计算树，module attribution 寻找可复用子结构。工作流再用于 conserved quantities、Lagrangians、Schwarzschild hidden symmetry 与 constitutive laws。"
+      ]
+    },
+    {
+      "title": "核心结果与证据",
+      "paragraphs": [
+        "Figure 1 是框架图：上行把科学知识嵌入 KAN，下行把训练后的图转回科学假设；中央 MultKAN 的显式乘法节点正是连接 symbolism 与 connectionism 的关键接口。",
+        "在 (f(x,y)=xy) 上，普通 KAN 需要两个加法节点，MultKAN 用一个乘法节点表达同一结构。kanpiler 对解析函数的 spline approximation 报告 loss 随 grid intervals (N) 约按 (N^{-8}) 缩放。",
+        "案例也展示失败边界：Schwarzschild hidden-symmetry 任务中 KAN 单独停在约 (10^{-3}) loss，MLP 可到 (10^{-8})；用 MLP 跨过 domain-wall optimization 后再由 KAN fine-tune，才达到约 (10^{-15})。constitutive-law 例子则把含先验的初始约 (10^{-2}) loss 经展开、扰动、剪枝和符号化降到 (3\\times10^{-11})。"
+      ]
+    },
+    {
+      "title": "有效性与局限",
+      "paragraphs": [
+        "这些结果主要是设计良好的 synthetic/physics case studies，并未证明 KAN 在噪声大、维度高或数据有限的真实科学任务中普遍优于 MLP、symbolic regression 或 sparse identification。图结构可读不等于因果机制正确；attribution 也依赖训练解与参数化。",
+        "许多流程需要人工加入辅助变量、选择先验、剪枝阈值和 symbolification library。Schwarzschild 案例显示 KAN 仍可能有严重 optimization barrier；极低训练 loss 只验证给定数据/方程残差，不是新物理定律的独立实验确认。"
+      ]
+    },
+    {
+      "title": "复现与资源",
+      "paragraphs": [
+        "原文：https://arxiv.org/abs/2408.10205；代码：https://github.com/KindXiaoming/pykan。全文 28 页，PDF SHA-256：f7c1070cd3be933f8690e9b7a903441ed10f7d7e35fb2d574b645ae66059dace。",
+        "复现需固定 pykan version、KAN widths/grids/spline order、multiplication arities、training schedule、regularization、attribution normalization、pruning/symbolification thresholds、辅助变量和每个案例的采样域。",
+        "Evidence status: full-text verified; no independent reproduction performed."
+      ]
+    },
+    {
+      "title": "阅读指南",
+      "paragraphs": [
+        "先看 Figure 1 和 Figure 2，理解 Science↔KAN 循环以及为何显式乘法改变可解释性；再读 Sections 3.1–3.4 的 auxiliary variables、kanpiler、attribution 与 modules。最后挑 Figures 10–13 的一个物理案例逐步检查，并把“发现结构”“拟合残差”和“实验验证”分开。"
+      ]
+    }
+  ],
+  "cover": {
+    "mode": "source_figure",
+    "asset_path": "assets/collection-figures/2408.10205/figure-1-science-kan.webp",
+    "label": "Figure 1",
+    "visual_type": "schematic",
+    "evidence": "paper.pdf p. 1, Figure 1",
+    "alt_text": "Science 与 KAN 之间的双向箭头，展示先验注入和特征、模块、符号公式抽取。",
+    "caption": "科学知识可编译进 KAN；训练后的 KAN 又可反向提供特征、模块和符号假设。",
+    "selection_rationale": "Figure 1 是全文最重要的概念图，优先于 loss 曲线和单个案例数据图。"
+  },
+  "figure_refs": [
+    {
+      "label": "Figure 1",
+      "asset_path": "assets/collection-figures/2408.10205/figure-1-science-kan.webp",
+      "section": "核心结果与证据",
+      "role": "summarize the bidirectional science–KAN workflow",
+      "evidence": "paper.pdf p. 1, Figure 1",
+      "alt_text": "Science 与 KAN 双向连接的框架图。",
+      "caption": "显式乘法、先验编译和结构抽取共同构成作者所说的 symbolic–connectionist bridge。",
+      "interpretation": "The diagram is a research program; each claimed discovery still requires case-specific validation."
+    }
+  ],
+  "equation_refs": [
+    {
+      "label": "MultKAN composition",
+      "latex": "\\operatorname{MultKAN}(x)=(\\Psi_L\\circ\\Psi_{L-1}\\circ\\cdots\\circ\\Psi_0)x,\\qquad \\Psi_l=M_l\\circ\\Phi_l",
+      "role": "insert explicit multiplication after each KAN layer",
+      "symbols": {
+        "Phi_l": "ordinary KAN layer",
+        "M_l": "multiplication layer"
+      },
+      "evidence": "paper.pdf p. 4, Eq. (5)",
+      "interpretation": "The computation graph can represent multiplicative physical structure directly instead of synthesizing it through sums."
+    },
+    {
+      "label": "Scientific residual objective",
+      "latex": "\\mathcal L_H=\\frac1N\\sum_{i=1}^{N}\\left|f(z^{(i)})\\cdot\\nabla H(z^{(i)})\\right|^2",
+      "role": "learn a conserved quantity along a vector field",
+      "symbols": {
+        "f": "dynamical vector field",
+        "H": "candidate invariant"
+      },
+      "evidence": "paper.pdf pp. 11–12, conserved-quantity section",
+      "interpretation": "Vanishing directional derivative is a physics constraint, but finite-sample residual minimization alone does not establish a universal invariant."
+    }
+  ],
+  "evidence_refs": [
+    "paper.pdf pp. 1–7: framework, MultKAN, auxiliary variables and kanpiler",
+    "paper.pdf pp. 8–17: attribution, modules and physics case studies",
+    "source PDF SHA-256 f7c1070cd3be933f8690e9b7a903441ed10f7d7e35fb2d574b645ae66059dace",
+    "Evidence status: full-text verified; no independent reproduction performed."
+  ]
+}

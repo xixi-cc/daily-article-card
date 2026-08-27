@@ -1,0 +1,153 @@
+{
+  "arxiv_id": "2410.02667",
+  "source_version": "v1",
+  "source_pdf": "https://arxiv.org/pdf/2410.02667",
+  "title_en": "GUD: Generation with Unified Diffusion",
+  "title_zh": "GUD：用统一扩散连接扩散式与自回归式生成",
+  "curation_status": "full_text_verified",
+  "card_standard_version": "2.3",
+  "paper_profile": "theory_numerics",
+  "style_reference": "physicist_daily_arxiv",
+  "provenance": {
+    "program": "Collection",
+    "catalog": "Paper Collection",
+    "catalog_record_id": "5907a6891e0aea7f",
+    "catalog_record_ids": [
+      "5907a6891e0aea7f",
+      "f23761c03fd9497a"
+    ],
+    "catalog_topic": "Renormalization Group",
+    "collection_date": "2026-08-23",
+    "sampled_at": "2026-08-28",
+    "selected_by": "full_collection_backfill",
+    "sampling_seed": "not_applicable_full_collection",
+    "candidate_count": 452
+  },
+  "verified_metadata": {
+    "arxiv_id": "2410.02667",
+    "version": "v1",
+    "title": "GUD: Generation with Unified Diffusion",
+    "authors": [
+      "Mathis Gerdes",
+      "Max Welling",
+      "Miranda C. N. Cheng"
+    ],
+    "categories": [
+      "cs.LG",
+      "hep-th",
+      "stat.ML"
+    ],
+    "primary_category": "cs.LG",
+    "published": "2024-10-03T17:58:49Z",
+    "abstract": "Component-dependent diffusion bases, priors, and schedules continuously interpolate simultaneous diffusion with sequential autoregressive generation.",
+    "comment": ""
+  },
+  "sections": [
+    {
+      "title": "作者信息",
+      "paragraphs": [
+        "作者：Mathis Gerdes、Max Welling、Miranda C. N. Cheng；arXiv:2410.02667v1。全文 16 页，在 CIFAR-10 与 PCAM 32×32 上做 proof-of-concept；同一论文在 Collection 有两个 catalog records，共用此卡片。"
+      ]
+    },
+    {
+      "title": "研究问题",
+      "paragraphs": [
+        "标准 diffusion 在 pixel basis 中同时抹去所有 components，自回归模型则按顺序生成 token。RG 又提示应在 frequency/multiscale basis 中先消去高频。论文问：把 basis、endpoint prior 和每个 component 的 noising schedule 都开放后，diffusion 与 autoregression 是否只是同一连续设计空间的两个极限？"
+      ]
+    },
+    {
+      "title": "背景",
+      "paragraphs": [
+        "普通 scalar schedule γ(t) 对所有维度相同，改变它通常只是在同一 diagonal path 上重参数化时间。GUD 允许 γi(t) 不同，因此在 component-wise SNR space 中选择真正不同的 paths。若各 component 的 active noising intervals 完全不重叠，reverse process 就逐 component 条件生成，达到 autoregressive limit。"
+      ]
+    },
+    {
+      "title": "模型与方法",
+      "paragraphs": [
+        "先以可逆线性变换 (M=S^{-1}U) 选择 diffusion-diagonal basis；(U) 可取 PCA、FFT 或 Haar，(S) 决定 whitening/data-matched prior。随后为每一 component 指定 Ornstein–Uhlenbeck noising rate βi(t) 与 integrated schedule γi(t)。",
+        "linear schedules 用 ordering variable (l_i) 和 inverse-softness (a) 错开 onset；(a) 越大，active intervals overlap 越少、越接近 autoregressive。另一个 (b) 构造 left-to-right column schedule；Haar variant 在尺度层级 (a) 与层内列顺序 (b) 上双重 soft-condition。"
+      ]
+    },
+    {
+      "title": "核心结果与证据",
+      "paragraphs": [
+        "Figure 4 以同一 CIFAR-10 图像展示四种 forward corruption：标准同时扩散、variance-matched noise、column-sequential 以及 Haar+column sequential。信息被抹去的顺序在像素空间中直接可见，是 GUD 设计自由度最清楚的图像证据。",
+        "CIFAR-10 PCA experiment 显示 quality 随 softness 改变，standard diffusion 附近接近最优但不同 prior 在 NLL/FID 上排序不同；作者明确说明 FID 在计算资源耗尽时仍显著下降，不能把该曲线视为收敛 benchmark。",
+        "PCAM column-wise models 在 (b=0.3,0.5) 的 NLL 为 3.90、3.94 bits/dim，并可重复向右 extension。三层 Haar+CIFAR-10、300k steps 的 schedule family 最低 NLL 为 3.17 bits/dim；这些结果证明统一参数化可训练，不证明超过最佳 diffusion/autoregressive model。"
+      ]
+    },
+    {
+      "title": "有效性与局限",
+      "paragraphs": [
+        "RG connection 主要是信息逐尺度消除的结构类比；论文没有证明 learned score flow 等价于特定 field-theory RG transformation，也未导出 universality class。PCA/FFT/Haar basis 都由人为选择，最优 component ordering 和 softness 尚未解决。",
+        "实验分辨率仅 32×32，训练 300k steps，部分 FID 未收敛；多数结论是 schedule ablation 和可视化。NLL、FID、sequential extension 各衡量不同性质；连续插值存在不等于中间 schedule 在 latency、likelihood 或 sample quality 上优于两个端点。"
+      ]
+    },
+    {
+      "title": "复现与资源",
+      "paragraphs": [
+        "原文：https://arxiv.org/abs/2410.02667。全文 16 页，PDF SHA-256：ce2b8e1870b17c819f74f859e4b8e64c5c68d52d21ac0b24692db27db4e0cbde。",
+        "复现需固定 PCA covariance/data split、whitening convention、γ endpoints、a/b/r sampling ranges、OU parameterization、score-network conditioning、prior covariance、Haar levels、300k-step optimizer 与 NLL/FID checkpoint。",
+        "Evidence status: full-text verified; no independent reproduction performed."
+      ]
+    },
+    {
+      "title": "阅读指南",
+      "paragraphs": [
+        "先看 Figure 1 的 component-SNR paths 与 Figure 4 的实际 corruption；再读 Eqs. (13)–(18)，确认 basis/prior/schedule 三类自由度。随后用 Eq. (20) 和 Figure 6 理解 softness→autoregressive limit，最后读 Figures 3、5、7，并把“统一框架可表达”与“生成质量最优”分开。"
+      ]
+    }
+  ],
+  "cover": {
+    "mode": "source_figure",
+    "asset_path": "assets/collection-figures/2410.02667/figure-4-diffusion-paths.webp",
+    "label": "Figure 4",
+    "visual_type": "comparison",
+    "evidence": "paper.pdf p. 9, Figure 4",
+    "alt_text": "一张 CIFAR-10 图像在标准、variance-matched、逐列和 Haar 逐列 schedules 下的 forward corruption sequences。",
+    "caption": "Component-dependent schedules 让信息同时、逐列或按 Haar 尺度顺序消失，从而连续连接 diffusion 与 autoregressive generation。",
+    "selection_rationale": "Figure 4 是文章中最具可视性的机制图，优先于 NLL/FID 数据曲线。"
+  },
+  "figure_refs": [
+    {
+      "label": "Figure 4",
+      "asset_path": "assets/collection-figures/2410.02667/figure-4-diffusion-paths.webp",
+      "section": "核心结果与证据",
+      "role": "visualize how different schedules erase information",
+      "evidence": "paper.pdf p. 9, Figure 4",
+      "alt_text": "四行 CIFAR-10 forward-process snapshots。",
+      "caption": "Basis and component schedule determine which spatial or multiscale information disappears first.",
+      "interpretation": "The visualization demonstrates controllability, not superior sample quality."
+    }
+  ],
+  "equation_refs": [
+    {
+      "label": "Component-wise linear schedule",
+      "latex": "\\gamma_i(t)=\\gamma_{\\min,i}+(\\gamma_{\\max,i}-\\gamma_{\\min,i})t",
+      "role": "assign each diffusion component its own noising path",
+      "symbols": {
+        "gamma_i": "integrated noising schedule",
+        "i": "basis component"
+      },
+      "evidence": "paper.pdf p. 8, Eq. (20)",
+      "interpretation": "Offsets derived from ordering variables separate the active intervals; decreasing their overlap makes generation more autoregressive."
+    },
+    {
+      "label": "Component signal-to-noise ratio",
+      "latex": "\\operatorname{SNR}_i(t)=\\Sigma^{(\\chi)}_{ii}(0)e^{-\\gamma_i(t)}",
+      "role": "measure which components have already been erased",
+      "symbols": {
+        "Sigma": "data covariance in the chosen basis",
+        "chi": "transformed coordinates"
+      },
+      "evidence": "paper.pdf pp. 5–6, Eq. (18)",
+      "interpretation": "Whitening removes variance-induced hierarchy so schedule choice alone controls soft conditioning."
+    }
+  ],
+  "evidence_refs": [
+    "paper.pdf pp. 2–6: GUD construction, basis/prior freedom and soft-conditioning limit",
+    "paper.pdf pp. 8–10: PCA, column-wise and Haar experiments",
+    "source PDF SHA-256 ce2b8e1870b17c819f74f859e4b8e64c5c68d52d21ac0b24692db27db4e0cbde",
+    "Evidence status: full-text verified; no independent reproduction performed."
+  ]
+}

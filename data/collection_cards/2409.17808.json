@@ -1,0 +1,154 @@
+{
+  "arxiv_id": "2409.17808",
+  "source_version": "v1",
+  "source_pdf": "https://arxiv.org/pdf/2409.17808",
+  "title_en": "Generative Modeling of Molecular Dynamics Trajectories",
+  "title_zh": "分子动力学轨迹的生成建模",
+  "curation_status": "full_text_verified",
+  "card_standard_version": "2.3",
+  "paper_profile": "ai_empirical",
+  "style_reference": "physicist_daily_arxiv",
+  "provenance": {
+    "program": "Collection",
+    "catalog": "Paper Collection",
+    "catalog_record_id": "bb22eac7e125b74a",
+    "catalog_record_ids": [
+      "bb22eac7e125b74a"
+    ],
+    "catalog_topic": "Generative Models",
+    "collection_date": "2026-08-23",
+    "sampled_at": "2026-08-28",
+    "selected_by": "full_collection_backfill",
+    "sampling_seed": "not_applicable_full_collection",
+    "candidate_count": 452
+  },
+  "verified_metadata": {
+    "arxiv_id": "2409.17808",
+    "version": "v1",
+    "title": "Generative Modeling of Molecular Dynamics Trajectories",
+    "authors": [
+      "Bowen Jing",
+      "Hannes Stärk",
+      "Tommi Jaakkola",
+      "Bonnie Berger"
+    ],
+    "categories": [
+      "cs.LG",
+      "q-bio.BM"
+    ],
+    "primary_category": "cs.LG",
+    "published": "2024-09-26T17:56:27Z",
+    "abstract": "MDGen generates entire molecular trajectories with stochastic interpolants and conditioning masks for simulation, transition paths, upsampling, and design tasks.",
+    "comment": ""
+  },
+  "sections": [
+    {
+      "title": "作者信息",
+      "paragraphs": [
+        "作者：Bowen Jing、Hannes Stärk、Tommi Jaakkola、Bonnie Berger；arXiv:2409.17808v1。全文 23 页，模型名 MDGen，主要数据是 3,309 个 tetrapeptides 的 explicit-solvent trajectories，并含 protein/long-trajectory proof of concept。"
+      ]
+    },
+    {
+      "title": "研究问题",
+      "paragraphs": [
+        "现有 ML surrogate 多学习单步 transition kernel 或 equilibrium ensemble，难以在同一模型中做 forward rollout、固定两端点的 transition-path sampling 与时间上采样。论文问：能否把整条 (T\\times L) trajectory 当作一个生成对象，通过不同 conditioning masks 统一这些任务？"
+      ]
+    },
+    {
+      "title": "背景",
+      "paragraphs": [
+        "分子状态同时有 rigid-frame (SE(3)) 几何、周期 torsions、residue identities 与跨时间相关。逐 Cartesian coordinate 扩散会浪费全局平移/旋转对称性；逐步自回归又把误差沿长轨迹累积。",
+        "Figure 1 左侧用同一个 grid 展示 interpolation、upsampling、inpainting 等 mask；右侧把 (T\\times L) invariant tokens 送入跨 frame/residue 的 transformer。它替代了对多任务条件机制的冗长描述。"
+      ]
+    },
+    {
+      "title": "模型与方法",
+      "paragraphs": [
+        "每个 residue/frame 以相对 key frames 的 roto-translation offsets 和 7 个 torsion angles 表示；这些 tokens 对整体 (SE(3)) 变换不变。连续几何由 stochastic interpolants 从 Gaussian noise 生成，amino-acid identities 用 Dirichlet flow matching；同一 architecture 通过 mask 指定已知端点、稀疏 frames 或 residues。",
+        "forward model 每次生成 10 ns，推理时串联为 100 ns；interpolation 在首尾结构条件下生成 1 ns path；upsampling 从每 10 ps 保存一帧恢复到 100 fs，即 100× finer temporal grid。"
+      ]
+    },
+    {
+      "title": "核心结果与证据",
+      "paragraphs": [
+        "Figure 1 说明 MDGen 的统一性不是口号：任务差异只在 trajectory grid 的 observed/masked cells，而生成器始终处理同一种 (T\\times L) 几何 token array。",
+        "100 ns-equivalent forward rollouts 的 torsion-all JSD 为 0.109；100 ns replicate-MD baseline 为 0.076，10 ns/1 ns/100 ps baselines 分别 0.125/0.240/0.364。MSM transition-flux entries 与 reference 的 mean Spearman ρ 为 (0.67\\pm0.01)。",
+        "模型平均约 60 GPU-s 生成 100 ns-equivalent trajectory，而 MD 约 3 GPU-h；按最慢 TICA mode 的 decorrelation wall time，100 个 peptides 中 78 个报告 10–1000× speedup。upsampling 从 10 ps 到 100 fs 能恢复部分 fast torsional autocorrelation；transition-path task 对每对 metastable states 采样 1,000 条 1 ns paths。"
+      ]
+    },
+    {
+      "title": "有效性与局限",
+      "paragraphs": [
+        "生成的 frame index 与训练数据时间间隔对应，但模型不积分物理力方程，也不保证 detailed balance、energy conservation、正确 path action 或绝对 kinetic rates。串联 10 ns blocks 可能积累 distribution shift；JSD/MSM correlation 不能证明 rare events 的速率无偏。",
+        "speedup 对比依赖 GPU、MD implementation、batching 和 “equivalent trajectory” 定义。训练以小 peptides 为主；100k-frame Hyena、protein ensembles 与 design 都是 proof of concept。upsampling 由 coarse frames 条件生成 plausible fast motion，不是从信息论上恢复唯一被丢失的 microscopic path。"
+      ]
+    },
+    {
+      "title": "复现与资源",
+      "paragraphs": [
+        "原文：https://arxiv.org/abs/2409.17808；代码：https://github.com/bjing2016/mdgen。全文 23 页，PDF SHA-256：6f76aea6f743803fcc0a24019a56a0fcd334244e597d96b16af71d5bec54d654。",
+        "复现需固定 MD force field/solvent/thermostat、train/validation/test peptide split、frame interval、key-frame convention、torsion wrapping、conditioning masks、stochastic-interpolant schedule、rollout chaining、TICA/MSM lag/clustering 与 wall-clock hardware。",
+        "Evidence status: full-text verified; no independent reproduction performed."
+      ]
+    },
+    {
+      "title": "阅读指南",
+      "paragraphs": [
+        "先看 Figure 1 和 Table 1，把所有任务写成同一 mask algebra；再读 Eqs. (3)–(6) 的 invariant representation 与 stochastic interpolant。然后逐项核对 Figure 2/Table 2 的 equilibrium、kinetic 和 runtime diagnostics，最后看 Figures 3–5，并把 conditional path plausibility 与真实动力学速率分开。"
+      ]
+    }
+  ],
+  "cover": {
+    "mode": "source_figure",
+    "asset_path": "assets/collection-figures/2409.17808/figure-1-mdgen-overview.webp",
+    "label": "Figure 1",
+    "visual_type": "schematic",
+    "evidence": "paper.pdf p. 2, Figure 1",
+    "alt_text": "trajectory grid 上的 interpolation、upsampling、inpainting masks，以及跨 frame 和 residue 的 transformer。",
+    "caption": "不同 MD 任务只改变 \\(T\\times L\\) trajectory grid 上哪些 cells 被条件化；MDGen 统一生成其余 cells。",
+    "selection_rationale": "Figure 1 是全文最重要的任务/架构示意图，优先于单个 peptide 的数据曲线。"
+  },
+  "figure_refs": [
+    {
+      "label": "Figure 1",
+      "asset_path": "assets/collection-figures/2409.17808/figure-1-mdgen-overview.webp",
+      "section": "核心结果与证据",
+      "role": "show the unified masked-trajectory formulation",
+      "evidence": "paper.pdf p. 2, Figure 1",
+      "alt_text": "多种 trajectory-conditioning masks 与时空 transformer 示意。",
+      "caption": "Forward simulation, endpoint interpolation, upsampling and inpainting share one generative object.",
+      "interpretation": "A shared representation does not make every generated trajectory physically calibrated."
+    }
+  ],
+  "equation_refs": [
+    {
+      "label": "Invariant molecular token",
+      "latex": "\\chi_t^l=\\big((R,t),(\\psi,\\phi,\\omega,\\chi_1,\\ldots,\\chi_4)\\big)\\in SE(3)\\times\\mathbb T^7",
+      "role": "encode one residue at one trajectory frame",
+      "symbols": {
+        "SE(3)": "rigid roto-translation",
+        "T7": "seven periodic torsions"
+      },
+      "evidence": "paper.pdf p. 4, Eq. (3)",
+      "interpretation": "Relative key-frame transforms remove arbitrary global roto-translation while preserving internal motion."
+    },
+    {
+      "label": "Stochastic interpolant",
+      "latex": "x_s=\\alpha_s x_0+\\beta_s x_1+\\sigma_s\\epsilon,\\qquad \\epsilon\\sim\\mathcal N(0,I)",
+      "role": "connect Gaussian noise and trajectory-token data",
+      "symbols": {
+        "s": "generative time",
+        "x1": "data trajectory",
+        "x0": "base sample"
+      },
+      "evidence": "paper.pdf p. 3, stochastic-interpolants section",
+      "interpretation": "The learned velocity generates a joint trajectory array rather than integrating atomistic forces frame by frame."
+    }
+  ],
+  "evidence_refs": [
+    "paper.pdf pp. 2–5: task masks, invariant tokens and stochastic interpolants",
+    "paper.pdf pp. 5–10: forward, transition-path and upsampling evaluations",
+    "source PDF SHA-256 6f76aea6f743803fcc0a24019a56a0fcd334244e597d96b16af71d5bec54d654",
+    "Evidence status: full-text verified; no independent reproduction performed."
+  ]
+}
