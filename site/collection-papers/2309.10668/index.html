@@ -1,0 +1,203 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Language Modeling Is Compression - physics+AI Collection 随机精选</title>
+    <meta name="description" content="作者：Grégoire Delétang 等十二人；arXiv:2309.10668v2，ICLR 2024。全文 18 页。" />
+    <script>
+      (function() {
+        try {
+          var themePreference = window.localStorage.getItem('color-theme') || 'system';
+          var systemUsesDarkTheme = window.matchMedia('(prefers-color-scheme: dark)').matches;
+          var resolvedTheme = themePreference === 'system'
+            ? (systemUsesDarkTheme ? 'dark' : 'light')
+            : themePreference;
+          document.documentElement.dataset.theme = resolvedTheme;
+          document.documentElement.dataset.themePreference = themePreference;
+          document.documentElement.style.colorScheme = resolvedTheme;
+        } catch (error) {
+          document.documentElement.dataset.theme = 'light';
+          document.documentElement.dataset.themePreference = 'system';
+        }
+      })();
+    </script>
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='18' fill='%23111827'/%3E%3Ctext x='50%25' y='55%25' text-anchor='middle' dominant-baseline='middle' font-size='30' font-family='Arial, sans-serif' fill='white'%3EV%3C/text%3E%3C/svg%3E" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700;800&family=Noto+Sans+SC:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <script>document.documentElement.classList.add('math-pending');</script>
+    <script>
+      window.MathJax = {
+        tex: {
+          inlineMath: [['$', '$'], ['\\(', '\\)']],
+          displayMath: [['$$', '$$'], ['\\[', '\\]']],
+          processEscapes: true
+        },
+        options: {
+          skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+        },
+        chtml: {
+          scale: 1,
+          displayAlign: 'center'
+        },
+        startup: {
+          ready: function() {
+            MathJax.startup.defaultReady();
+            MathJax.startup.promise.then(function() {
+              document.documentElement.classList.remove('math-pending');
+              document.documentElement.dataset.mathReady = 'true';
+            });
+          }
+        }
+      };
+    </script>
+    <script defer src="../../assets/vendor/mathjax/tex-chtml.js"></script>
+    <link rel="stylesheet" href="../../assets/style.css" />
+  </head>
+  <body class="detail-page" data-paper-id="2309.10668">
+    <div class="page-noise"></div>
+    <div class="page-blur page-blur-a"></div>
+    <div class="page-blur page-blur-b"></div>
+
+    <header class="header detail-page-header">
+      <div class="container">
+        <div class="detail-page-topbar">
+          <a class="back-link" href="../../collection.html">返回列表</a>
+          <div class="detail-topbar-actions">
+            <span class="detail-site-name">physics+AI Collection 随机精选</span>
+            <button class="theme-toggle" type="button" data-theme-toggle aria-label="当前主题：设备，点击切换主题" title="当前主题：设备">
+  <span class="theme-toggle-icons" aria-hidden="true">
+    <svg class="theme-toggle-icon theme-toggle-icon-light" viewBox="0 0 24 24" fill="none">
+      <circle cx="12" cy="12" r="3.5" stroke="currentColor" stroke-width="1.8"/>
+      <path d="M12 2.5v2M12 19.5v2M2.5 12h2M19.5 12h2M5.3 5.3l1.4 1.4M17.3 17.3l1.4 1.4M18.7 5.3l-1.4 1.4M6.7 17.3l-1.4 1.4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+    </svg>
+    <svg class="theme-toggle-icon theme-toggle-icon-dark" viewBox="0 0 24 24" fill="none">
+      <path d="M20 15.2A8.1 8.1 0 0 1 8.8 4a8.2 8.2 0 1 0 11.2 11.2z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>
+    </svg>
+    <svg class="theme-toggle-icon theme-toggle-icon-system" viewBox="0 0 24 24" fill="none">
+      <rect x="3" y="4" width="18" height="13" rx="2.5" stroke="currentColor" stroke-width="1.8"/>
+      <path d="M8 21h8M12 17v4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+    </svg>
+  </span>
+  <span class="theme-toggle-label" data-theme-toggle-label>设备</span>
+</button>
+          </div>
+        </div>
+
+        <div class="detail-hero-grid">
+          <div class="detail-hero-cover"><figure class="paper-figure-card paper-figure-card-detail">
+  <img class="paper-figure-image" src="../../assets/collection-figures/2309.10668/figure-1-arithmetic-coding.webp" alt="AIXI 四个字符在算术编码中逐次细分概率区间并输出二进制码。" loading="lazy" onclick="window.openPaperFigureImage && window.openPaperFigureImage(this)" />
+  <figcaption class="paper-figure-caption">语言模型的条件概率直接决定 arithmetic code 的区间宽度；cross-entropy 因而就是期望 bit length。</figcaption>
+</figure></div>
+          <div class="detail-hero-copy">
+            <p class="eyebrow">Collection 全文卡</p>
+            <h1 class="detail-page-title">Language Modeling Is Compression</h1>
+            <p class="detail-page-title-zh">语言建模就是压缩</p>
+            <div class="detail-meta">Paper Collection · Transformer Theory · <a href="https://arxiv.org/abs/2309.10668" target="_blank" rel="noopener noreferrer">原文</a></div>
+            <p class="detail-summary">作者：Grégoire Delétang 等十二人；arXiv:2309.10668v2，ICLR 2024。全文 18 页。</p>
+            <div class="detail-micro-meta">
+              <span class="meta-pill">8 分钟读完</span>
+              <span class="meta-pill">8 张阅读卡</span>
+              <span class="meta-pill">作者：Grégoire Delétang 等十二人；arXiv:2309.10668v2，ICLR 2…</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <main class="container detail-layout">
+      <div class="detail-shell">
+        <article id="detail-body" class="reading-flow"><section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 01</span>
+    <span class="reading-step-note">作者信息</span>
+  </div>
+  <h2>作者信息</h2>
+  <div class="reading-card-content"><ul><li>作者：Grégoire Delétang 等十二人；arXiv:2309.10668v2，ICLR 2024。全文 18 页。</li></ul></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 02</span>
+    <span class="reading-step-note">研究问题</span>
+  </div>
+  <h2>研究问题</h2>
+  <div class="reading-card-content"><ul><li>语言模型以 cross-entropy 训练，而 lossless compressor 以 bit length 评价；两者由 Shannon coding theorem 等价。论文问：把 foundation model 真正接到 arithmetic coder 后，能否用压缩率作为跨文本、图像、音频的统一预测指标，并在把模型参数本身计入 code length 后重新解释 scaling law？</li></ul></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 03</span>
+    <span class="reading-step-note">背景</span>
+  </div>
+  <h2>背景</h2>
+  <div class="reading-card-content"><ul><li>一个 predictor 给出条件概率 \(\hat\rho(x_i\mid x_{<i})\)。Arithmetic coding 按这些概率递归细分 \([0,1)\)，序列占据的区间宽度决定 bit 数，理想长度接近 \(-\log_2\hat\rho(x_{1:n})\)。反向地，compressor 的长度差可构造下一符号概率。</li><li>因此 log loss 不是压缩的比喻，而是忽略有限精度常数后的实际 expected codelength。真正的 description length 还应包含模型程序/参数；这使“更大模型总更好”的结论依赖被压数据量。</li></ul></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 04</span>
+    <span class="reading-step-note">模型与方法</span>
+  </div>
+  <h2>模型与方法</h2>
+  <div class="reading-card-content"><ul><li>Figure 1 用字符串 AIXI 展示 arithmetic encoder：每读一个字符，模型概率把区间再次切分；最终从 4 bytes 得到 7-bit code。实验将 Transformer、Llama 2 与 Chinchilla 的 token probabilities 转成 bytes 上的算术码，与 gzip、LZMA2、PNG、FLAC 比较。</li><li>数据为各 1GB 的 enwik9、ImageNet patches、LibriSpeech 和随机 bytes。作者同时报告 raw compression rate 与 adjusted rate；后者把 float16 参数按每参数 2 bytes 加入 compressed size。</li></ul></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 05</span>
+    <span class="reading-step-note">核心结果与证据</span>
+  </div>
+  <h2>核心结果与证据</h2>
+  <div class="reading-card-content"><ul><li>Figure 1 把概率预测和可逆编码一一对应：高概率字符选中较宽子区间，需要较少新增 bits；解码器用相同 \(\hat\rho\) 从最终区间恢复原序列。</li><li>忽略模型大小时，Chinchilla 70B 将 ImageNet patches 压到原始大小的 43.4%，优于 PNG 58.5%；LibriSpeech 压到 16.4%，优于 FLAC 30.3%。但 1GB 数据上计入参数后，70B 的 adjusted rate 约 14000%，远差于经典 compressor。</li><li>小 Transformer 的 adjusted curves 都有最优模型尺寸：测试集越大，最优参数量越大；越过该点，新增参数 bytes 超过 prediction gain。ASCII tokenization 在 38M 模型上 raw rate 6.4%，优于 BPE-20K 的 9.0%，说明短序列与大 alphabet 的代价需共同计算。</li></ul><figure class="evidence-figure">
+  <button class="evidence-figure-image-button" type="button" aria-label="放大查看 Figure 1" onclick="window.openPaperFigureImage && window.openPaperFigureImage(this.querySelector('img'))">
+    <img class="paper-figure-image evidence-figure-image" src="../../assets/collection-figures/2309.10668/figure-1-arithmetic-coding.webp" alt="A、I、X、I 的条件概率递归切分单位区间。" loading="lazy" />
+  </button>
+  <figcaption>
+    <strong>Figure 1</strong> · 更准确的 predictor 为真实符号分配更宽区间，从而输出更短 code。
+    <span class="evidence-figure-reading">物理解读：The mapping is lossless only when encoder and decoder share the same predictive distribution.</span>
+    <span class="evidence-figure-source">来源：paper.pdf p. 2, Figure 1</span>
+  </figcaption>
+</figure></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 06</span>
+    <span class="reading-step-note">有效性与局限</span>
+  </div>
+  <h2>有效性与局限</h2>
+  <div class="reading-card-content"><ul><li>跨模态 raw rate 的惊艳数字不含数十到数百 GB 参数，不能直接表示可部署 compressor。作者估计 foundation model 需 TB 级数据才能摊薄模型；编码还需逐 token 运行巨大网络，速度与能耗没有和 PNG/FLAC 公平比较。</li><li>压缩率给出平均 log probability，不保证 autoregressive sample 的感知质量；Figure 3 中 gzip 与 Chinchilla 的图像续写都不连贯，误差会累积。ImageNet 被逐行独立编码，输入转换和 tokenizer 也改变序列结构；训练语料中仍不能绝对排除编码后的图像/音频泄漏。</li></ul></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 07</span>
+    <span class="reading-step-note">复现与资源</span>
+  </div>
+  <h2>复现与资源</h2>
+  <div class="reading-card-content"><ul><li>原文：https://arxiv.org/abs/2309.10668；代码：https://github.com/google-deepmind/language_modeling_is_compression。全文 18 页，PDF SHA-256：78c4e944f08a21d111b2818abce424a2355972b48c07e0b2d67008893ee71bf0。</li><li>复现需固定 byte conversion、tokenizer、context length、arithmetic-coder precision、model checkpoint、参数存储位宽、数据切片和 raw/adjusted 分母，并同时报告吞吐与内存。</li><li>Evidence status: full-text verified; no independent reproduction performed.</li></ul></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 08</span>
+    <span class="reading-step-note">阅读指南</span>
+  </div>
+  <h2>阅读指南</h2>
+  <div class="reading-card-content"><ul><li>先看 Figure 1 并手算区间宽度，确认 log loss 如何变成 bits；再读 Eq. (2) 的 cross-entropy 恒等式。随后对照 Table 1 的 raw 与 adjusted 两半，再看 Figure 2 的 U-shaped size tradeoff；不要只引用 43.4%/16.4% 而忽略 70B 参数成本。</li></ul></div>
+</section></article>
+        <aside id="detail-toc" class="detail-toc hidden" aria-label="内容目录">
+          <p class="detail-toc-title">阅读目录</p>
+          <nav id="detail-toc-nav" class="detail-toc-nav"></nav>
+        </aside>
+      </div>
+      <nav class="paper-nav"><a class="paper-nav-link paper-nav-prev" href="../../collection-papers/2309.04522/"><span class="paper-nav-label">← 上一篇</span><span class="paper-nav-title">Connecting NTK and NNGP: A Unified Theoretical Framework for Wide Neural Network Learning Dynamics</span></a>
+      <a class="paper-nav-link paper-nav-next" href="../../collection-papers/2309.12991/"><span class="paper-nav-label">下一篇 →</span><span class="paper-nav-title">Deep learning probability flows and entropy production rates in active matter</span></a></nav>
+    </main>
+
+    <footer class="footer">
+      <div class="container">
+        <p>内容来自 <a href="https://arxiv.org" target="_blank" rel="noopener noreferrer">arXiv.org</a>，阅读卡片由静态站点生成器构建。</p>
+      </div>
+    </footer>
+
+    <script src="../../assets/theme.js"></script>
+    <script src="../../assets/media.js"></script>
+    <script src="../../assets/paper.js"></script>
+  </body>
+</html>

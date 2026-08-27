@@ -1,0 +1,203 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Renormalizing Diffusion Models - physics+AI Collection 随机精选</title>
+    <meta name="description" content="作者：Jordan Cotler、Semon Rezchikov；arXiv:2308.12355v2。全文 85 页，是一篇连接 exact RG、diffusion、lattice sampling 和量子变分方法的长篇理论工作。" />
+    <script>
+      (function() {
+        try {
+          var themePreference = window.localStorage.getItem('color-theme') || 'system';
+          var systemUsesDarkTheme = window.matchMedia('(prefers-color-scheme: dark)').matches;
+          var resolvedTheme = themePreference === 'system'
+            ? (systemUsesDarkTheme ? 'dark' : 'light')
+            : themePreference;
+          document.documentElement.dataset.theme = resolvedTheme;
+          document.documentElement.dataset.themePreference = themePreference;
+          document.documentElement.style.colorScheme = resolvedTheme;
+        } catch (error) {
+          document.documentElement.dataset.theme = 'light';
+          document.documentElement.dataset.themePreference = 'system';
+        }
+      })();
+    </script>
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='18' fill='%23111827'/%3E%3Ctext x='50%25' y='55%25' text-anchor='middle' dominant-baseline='middle' font-size='30' font-family='Arial, sans-serif' fill='white'%3EV%3C/text%3E%3C/svg%3E" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700;800&family=Noto+Sans+SC:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <script>document.documentElement.classList.add('math-pending');</script>
+    <script>
+      window.MathJax = {
+        tex: {
+          inlineMath: [['$', '$'], ['\\(', '\\)']],
+          displayMath: [['$$', '$$'], ['\\[', '\\]']],
+          processEscapes: true
+        },
+        options: {
+          skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+        },
+        chtml: {
+          scale: 1,
+          displayAlign: 'center'
+        },
+        startup: {
+          ready: function() {
+            MathJax.startup.defaultReady();
+            MathJax.startup.promise.then(function() {
+              document.documentElement.classList.remove('math-pending');
+              document.documentElement.dataset.mathReady = 'true';
+            });
+          }
+        }
+      };
+    </script>
+    <script defer src="../../assets/vendor/mathjax/tex-chtml.js"></script>
+    <link rel="stylesheet" href="../../assets/style.css" />
+  </head>
+  <body class="detail-page" data-paper-id="2308.12355">
+    <div class="page-noise"></div>
+    <div class="page-blur page-blur-a"></div>
+    <div class="page-blur page-blur-b"></div>
+
+    <header class="header detail-page-header">
+      <div class="container">
+        <div class="detail-page-topbar">
+          <a class="back-link" href="../../collection.html">返回列表</a>
+          <div class="detail-topbar-actions">
+            <span class="detail-site-name">physics+AI Collection 随机精选</span>
+            <button class="theme-toggle" type="button" data-theme-toggle aria-label="当前主题：设备，点击切换主题" title="当前主题：设备">
+  <span class="theme-toggle-icons" aria-hidden="true">
+    <svg class="theme-toggle-icon theme-toggle-icon-light" viewBox="0 0 24 24" fill="none">
+      <circle cx="12" cy="12" r="3.5" stroke="currentColor" stroke-width="1.8"/>
+      <path d="M12 2.5v2M12 19.5v2M2.5 12h2M19.5 12h2M5.3 5.3l1.4 1.4M17.3 17.3l1.4 1.4M18.7 5.3l-1.4 1.4M6.7 17.3l-1.4 1.4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+    </svg>
+    <svg class="theme-toggle-icon theme-toggle-icon-dark" viewBox="0 0 24 24" fill="none">
+      <path d="M20 15.2A8.1 8.1 0 0 1 8.8 4a8.2 8.2 0 1 0 11.2 11.2z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>
+    </svg>
+    <svg class="theme-toggle-icon theme-toggle-icon-system" viewBox="0 0 24 24" fill="none">
+      <rect x="3" y="4" width="18" height="13" rx="2.5" stroke="currentColor" stroke-width="1.8"/>
+      <path d="M8 21h8M12 17v4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+    </svg>
+  </span>
+  <span class="theme-toggle-label" data-theme-toggle-label>设备</span>
+</button>
+          </div>
+        </div>
+
+        <div class="detail-hero-grid">
+          <div class="detail-hero-cover"><figure class="paper-figure-card paper-figure-card-detail">
+  <img class="paper-figure-image" src="../../assets/collection-figures/2308.12355/figure-3-rg-inverse.webp" alt="微观场正向粗粒化和从粗粒化先验反向生成微观场的双向流程。" loading="lazy" onclick="window.openPaperFigureImage && window.openPaperFigureImage(this)" />
+  <figcaption class="paper-figure-caption">正向 exact RG 逐尺度滤去 UV 模式；反向 diffusion 学习 physically interpretable inverse flow，而非任意 latent interpolation。</figcaption>
+</figure></div>
+          <div class="detail-hero-copy">
+            <p class="eyebrow">Collection 全文卡</p>
+            <h1 class="detail-page-title">Renormalizing Diffusion Models</h1>
+            <p class="detail-page-title-zh">重整化扩散模型</p>
+            <div class="detail-meta">Paper Collection · Renormalization Group · <a href="https://arxiv.org/abs/2308.12355" target="_blank" rel="noopener noreferrer">原文</a></div>
+            <p class="detail-summary">作者：Jordan Cotler、Semon Rezchikov；arXiv:2308.12355v2。全文 85 页，是一篇连接 exact RG、diffusion、lattice sampling 和量子变分方法的长篇理论工作。</p>
+            <div class="detail-micro-meta">
+              <span class="meta-pill">10 分钟读完</span>
+              <span class="meta-pill">8 张阅读卡</span>
+              <span class="meta-pill">作者：Jordan Cotler、Semon Rezchikov；arXiv:2308.12355v2…</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <main class="container detail-layout">
+      <div class="detail-shell">
+        <article id="detail-body" class="reading-flow"><section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 01</span>
+    <span class="reading-step-note">作者信息</span>
+  </div>
+  <h2>作者信息</h2>
+  <div class="reading-card-content"><ul><li>作者：Jordan Cotler、Semon Rezchikov；arXiv:2308.12355v2。全文 85 页，是一篇连接 exact RG、diffusion、lattice sampling 和量子变分方法的长篇理论工作。</li></ul></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 02</span>
+    <span class="reading-step-note">研究问题</span>
+  </div>
+  <h2>研究问题</h2>
+  <div class="reading-card-content"><ul><li>普通 normalizing flow 或 diffusion sampler 可拟合 lattice field distribution，却没有可解释的中间尺度；终点样本正确也不保证 learned path 是物理 RG flow。论文问：能否把正向 noising 明确选成一个 exact renormalization-group scheme，使反向 score model 学到受控的 inverse RG，并以沿程物理 observable 诊断采样器？</li></ul></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 03</span>
+    <span class="reading-step-note">背景</span>
+  </div>
+  <h2>背景</h2>
+  <div class="reading-card-content"><ul><li>RG 把 UV microscopic theory 连续粗粒化为 IR effective theory；diffusion 把复杂数据分布推向简单 prior。两者的数学核心都是概率测度的 Markov semigroup。若正向 SDE 就是 Carosso 或 Polchinski ERG，反向 SDE 的 score 便是 effective action 对场的梯度。</li><li>这还给出 adaptive bridge/parallel tempering：IR 分布易采样，learned inverse maps 提议 UV 配置，Metropolis 或 auxiliary MCMC 可校正。中间尺度不再是任意 latent，而对应 cutoff 与 renormalized couplings。</li></ul></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 04</span>
+    <span class="reading-step-note">模型与方法</span>
+  </div>
+  <h2>模型与方法</h2>
+  <div class="reading-card-content"><ul><li>Carosso lattice flow 为 stochastic heat equation：\(\partial_t\phi_t=\Delta\phi_t+\eta_t\)。高动量模按 \(e^{-|\hat p|^2t}\) 衰减并注入 Gaussian noise，长时先验可解析采样。反向过程加入 \(\sigma^2s_t[\phi]\)，score network 逼近 \(\nabla_\phi\log p_t\)。</li><li>作者提出 path-aware objective：端点用 \(\mathrm{KL}(p_{\theta0}\|p_0)\)，沿 RG 时间用 forward KL \(\int\lambda(t)\mathrm{KL}(p_t\|p_{\theta t})dt\)。另给 score-matching 版本，避免重复求解 neural ODE。实验在二维 lattice \(\phi^4\)、\(N=20\) 上比较该目标与只拟合 UV 的 reverse KL。</li></ul></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 05</span>
+    <span class="reading-step-note">核心结果与证据</span>
+  </div>
+  <h2>核心结果与证据</h2>
+  <div class="reading-card-content"><ul><li>Figure 3 把任务画成两条相反箭头：正向 RG 从 microscopic field 逐步滤去短波；learned inverse 从可采样的 very coarse distribution 恢复细尺度。它说明模型要匹配的是整条尺度轨迹，而不只是两端分布。</li><li>Carosso 与 Polchinski schemes 的 field snapshots 视觉上很不同，但 renormalized mass 与 quartic coupling 的流速只差小因子；Polchinski 过快切掉高频而更难训练。RG scheme 因此类似 diffusion noise schedule：物理等价不代表数值等价。</li><li>相同 1000 gradient steps 下，Figure 7/8 显示 Eq. (5.22) learned flows 对 \(m_R,Z,\lambda_R\) 等 observables 一贯比 reverse-KL flow 更接近 true Carosso flow。作者强调只看 field images 无法发现差异，必须测量物理估计量；负质量案例的 quartic coupling 对所有模型都难估。</li></ul><figure class="evidence-figure">
+  <button class="evidence-figure-image-button" type="button" aria-label="放大查看 Figure 3" onclick="window.openPaperFigureImage && window.openPaperFigureImage(this.querySelector('img'))">
+    <img class="paper-figure-image evidence-figure-image" src="../../assets/collection-figures/2308.12355/figure-3-rg-inverse.webp" alt="场配置沿正向粗粒化变平滑，并沿学习到的反向动力学恢复细尺度。" loading="lazy" />
+  </button>
+  <figcaption>
+    <strong>Figure 3</strong> · 模型的中间状态对应明确 cutoff，而非无物理标签的噪声层级。
+    <span class="evidence-figure-reading">物理解读：A physically meaningful path enables diagnostics with renormalized observables.</span>
+    <span class="evidence-figure-source">来源：paper.pdf p. 9, Figure 3</span>
+  </figcaption>
+</figure></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 06</span>
+    <span class="reading-step-note">有效性与局限</span>
+  </div>
+  <h2>有效性与局限</h2>
+  <div class="reading-card-content"><ul><li>数值示范限于小型二维 scalar \(\phi^4\) lattice；尚未证明在大体积、临界 slowing、gauge fields、fermions 或拓扑扇区上优于 HMC、multigrid、cluster 或 worm algorithms。沿程 forward-KL 需要 true RG samples，训练成本依赖昂贵 UV sampler。</li><li>Carosso 长时固定为 Gaussian 的表象需配合 field renormalization 才描述非平凡 fixed point。observable agreement 是比视觉更强的诊断，但仍不等同于全分布、autocorrelation time 或独立 effective-sample-rate 改进。文章提出多个算法方向，只有其中一部分做了数值测试。</li></ul></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 07</span>
+    <span class="reading-step-note">复现与资源</span>
+  </div>
+  <h2>复现与资源</h2>
+  <div class="reading-card-content"><ul><li>原文：https://arxiv.org/abs/2308.12355。全文 85 页，PDF SHA-256：c89d33445df2dd4b866b54bb46663dd8afaf92ef04b22decd0c5f8dcdb3b7a29。</li><li>复现需固定 lattice convention、\(L,N,m^2,\lambda\)、Carosso/Polchinski kernel、field rescaling、RG-time grid、NUTS warmup、observable estimators、prior 与 1000-step optimizer budget。</li><li>Evidence status: full-text verified; no independent reproduction performed.</li></ul></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 08</span>
+    <span class="reading-step-note">阅读指南</span>
+  </div>
+  <h2>阅读指南</h2>
+  <div class="reading-card-content"><ul><li>先看 Figure 3 建立正/逆 RG 的尺度方向；再读 Eqs. (4.32)、(5.22)–(5.25)，把 exact RG SDE、path objective 与 reverse score 对齐。最后看 Figure 6–8，重点比较 renormalized observables 而非样本外观，并区分“学到 RG flow”与“最终采样效率更高”。</li></ul></div>
+</section></article>
+        <aside id="detail-toc" class="detail-toc hidden" aria-label="内容目录">
+          <p class="detail-toc-title">阅读目录</p>
+          <nav id="detail-toc-nav" class="detail-toc-nav"></nav>
+        </aside>
+      </div>
+      <nav class="paper-nav"><a class="paper-nav-link paper-nav-prev" href="../../collection-papers/2308.06927/"><span class="paper-nav-label">← 上一篇</span><span class="paper-nav-title">Foundations of algorithmic thermodynamics</span></a>
+      <a class="paper-nav-link paper-nav-next" href="../../collection-papers/2309.03350/"><span class="paper-nav-label">下一篇 →</span><span class="paper-nav-title">Relay Diffusion: Unifying diffusion process across resolutions for image synthesis</span></a></nav>
+    </main>
+
+    <footer class="footer">
+      <div class="container">
+        <p>内容来自 <a href="https://arxiv.org" target="_blank" rel="noopener noreferrer">arXiv.org</a>，阅读卡片由静态站点生成器构建。</p>
+      </div>
+    </footer>
+
+    <script src="../../assets/theme.js"></script>
+    <script src="../../assets/media.js"></script>
+    <script src="../../assets/paper.js"></script>
+  </body>
+</html>
