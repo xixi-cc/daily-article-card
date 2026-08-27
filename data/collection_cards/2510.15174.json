@@ -1,0 +1,153 @@
+{
+  "arxiv_id": "2510.15174",
+  "source_version": "v1",
+  "source_pdf": "https://arxiv.org/pdf/2510.15174",
+  "title_en": "A Simple Mean Field Model of Feature Learning",
+  "title_zh": "特征学习的一个简单均场模型",
+  "curation_status": "full_text_verified",
+  "card_standard_version": "2.3",
+  "paper_profile": "theory_numerics",
+  "style_reference": "physicist_daily_arxiv",
+  "provenance": {
+    "program": "Collection",
+    "catalog": "Paper Collection",
+    "catalog_record_id": "53f45db2a0ac7222",
+    "catalog_record_ids": [
+      "53f45db2a0ac7222"
+    ],
+    "catalog_topic": "Training Dynamics",
+    "collection_date": "2026-08-23",
+    "sampled_at": "2026-08-28",
+    "selected_by": "full_collection_backfill",
+    "sampling_seed": "not_applicable_full_collection",
+    "candidate_count": 452
+  },
+  "verified_metadata": {
+    "arxiv_id": "2510.15174",
+    "version": "v1",
+    "title": "A Simple Mean Field Model of Feature Learning",
+    "authors": [
+      "Niclas Göring",
+      "Chris Mingard",
+      "Yoonsoo Nam",
+      "Ard Louis"
+    ],
+    "categories": [
+      "cs.LG"
+    ],
+    "primary_category": "cs.LG",
+    "published": "2025-10-16T22:28:44Z",
+    "abstract": "A self-consistent mean-field posterior predicts a finite-width feature-learning transition, and an ARD extension captures self-reinforcing selection of task-relevant input coordinates.",
+    "comment": ""
+  },
+  "sections": [
+    {
+      "title": "作者信息",
+      "paragraphs": [
+        "作者：Niclas Göring、Chris Mingard、Yoonsoo Nam、Ard Louis；arXiv:2510.15174v1。全文 39 页，稿件标注为 ICLR 2026 conference paper。研究二层 ReLU 网络在 SGLD posterior 下的有限宽 feature learning，并用 sparse parity 与 single-index tasks 验证。"
+      ]
+    },
+    {
+      "title": "研究问题",
+      "paragraphs": [
+        "无限宽 NNGP/kernel theory 的表示在训练中不动，无法描述网络突然对齐 task-relevant directions 的 feature learning。完整有限宽 Bayesian posterior 又含所有 neuron-neuron interactions，难以计算。论文问：能否用统计物理均场闭合得到可解的 symmetry-breaking transition，并解释普通 MF 为何低估 transition 后的泛化增益？"
+      ]
+    },
+    {
+      "title": "背景",
+      "paragraphs": [
+        "网络写为 \\(f(x)=N^{-\\gamma}\\sum_i a_i\\phi(w_i^\\top x)\\)。SGLD 对应带 data-induced interaction kernel \\(G(w_i,w_{i'})\\) 的 Gibbs posterior；infinite width 退化为固定 NNGP。finite width 下，相关输入坐标的 weight marginals 可自发破缺旋转/置换对称，产生非零 feature order parameters。",
+        "Figure 2 把近似层级画成 many-body problem：SGLD posterior 保留全耦合，MF 用 self-consistent effective field 替代其他 neurons，NNGP 则完全删除 data-dependent coupling。"
+      ]
+    },
+    {
+      "title": "模型与方法",
+      "paragraphs": [
+        "plain MF 假设 \\(p(W\\mid D)\\approx\\prod_i p_{\\rm MF}(w_i,a_i)\\)，并要求单 neuron 分布产生的 feature coefficients \\(m_A\\) 反过来重建同一 mean field。该闭合把 \\(N\\times d\\) 高维 posterior 化为单个 \\(d\\)-维积分/固定点问题。",
+        "plain MF 捕捉 feature-alignment onset，却低估 transition 后 anisotropy。作者引入 MF-ARD：给每个 input coordinate 一个由 posterior second moment 自洽更新的 variance/precision，使被选坐标获得更大波动和更强信号，形成 self-reinforcing input feature selection。"
+      ]
+    },
+    {
+      "title": "核心结果与证据",
+      "paragraphs": [
+        "Figure 2 清楚显示三种理论的物理差别：MF 仍保留平均相互作用，因此可发生 symmetry breaking；NNGP 没有耦合，只能平滑 kernel learning。它也说明 MF-ARD 的修正不是再加深网络，而是让 effective prior 对坐标产生自洽各向异性。",
+        "在 \\(d=35\\)、4-sparse parity、\\(N=512\\) ReLU 上，SGLD 的 order parameter 随样本 \\(P\\) 在 \\(P_c\\) 附近突增；plain MF 半定量预测 onset，但 generalization error 降得太弱。MF-ARD 恢复相关坐标的强非 Gaussian marginals，并在 Figure 1/5 中定量贴近 SGLD learning curves 与 \\(P\\)–noise phase boundary。",
+        "Theorem 4.1 表明 ARD 机制可消除 plain MF 中 input dimension \\(d\\) 带来的 \\(O(d)\\) 样本惩罚；single-index Gaussian teacher 的补充实验也复现相变。结论支持“feature selection 的正反馈”而非单纯 symmetry breaking 决定 transition 后增益。"
+      ]
+    },
+    {
+      "title": "有效性与局限",
+      "paragraphs": [
+        "均场 factorization 忽略 neuron-neuron correlations；MF-ARD 以坐标独立 precisions 表示选择，对旋转后的稠密特征、组合结构或 feature correlations 可能不充分。实验以二层网络、SGLD/Bayesian posterior 和合成教师为主，不直接等价于 SGD 训练深网。",
+        "Figure 5 的吻合依赖超参数和数值固定点求解；相变位置只有 semi-quantitative precision。理论解释的是 equilibrium/posterior structure，有限训练时间、metastability 与 optimizer implicit bias 尚未统一。"
+      ]
+    },
+    {
+      "title": "复现与资源",
+      "paragraphs": [
+        "原文：https://arxiv.org/abs/2510.15174。全文 39 页，PDF SHA-256：e3f4c8e1a9f9d9793c6de5a7e968e5ed6862ab3af758f0d8fe98ae91f33ee364。",
+        "复现需固定 \\(N,d,k,P,\\kappa,\\gamma\\)、ReLU normalization、SGLD step/temperature/burn-in、parity support、MF quadrature/Monte Carlo、fixed-point damping 与 ARD precision update。应保存 \\(m_S\\)、coordinate marginals、specialization 和 test MSE。",
+        "Evidence status: full-text verified; no independent reproduction performed."
+      ]
+    },
+    {
+      "title": "阅读指南",
+      "paragraphs": [
+        "先看 Figures 1–2，区分 SGLD、MF、MF-ARD 与 NNGP；再读 Eqs. (5)–(7) 的 self-consistency。随后看 Figures 3–5 的 order parameter、marginals 与 phase diagram，最后读 Theorem 4.1，注意其样本优势来自特定 ARD feature-selection mechanism。"
+      ]
+    }
+  ],
+  "cover": {
+    "mode": "source_figure",
+    "asset_path": "assets/collection-figures/2510.15174/figure-2-mean-field-hierarchy.webp",
+    "label": "Figure 2",
+    "visual_type": "schematic",
+    "evidence": "paper.pdf p. 4, Figure 2",
+    "alt_text": "从全耦合 SGLD posterior 到均场有效场、再到无耦合 NNGP 的近似层级。",
+    "caption": "均场保留 data-dependent 平均相互作用，因此能发生 feature-learning 对称破缺；NNGP 不能。",
+    "selection_rationale": "Figure 2 是全文最重要的物理机制图，优先于单一误差曲线。"
+  },
+  "figure_refs": [
+    {
+      "label": "Figure 2",
+      "asset_path": "assets/collection-figures/2510.15174/figure-2-mean-field-hierarchy.webp",
+      "section": "核心结果与证据",
+      "role": "visualize the many-body to mean-field reduction",
+      "evidence": "paper.pdf p. 4, Figure 2",
+      "alt_text": "The fully interacting neuron posterior is replaced by a self-consistent one-neuron effective field.",
+      "caption": "Retaining the mean interaction permits a symmetry-breaking feature-learning transition absent in NNGP.",
+      "interpretation": "Mean-field factorization suppresses inter-neuron correlations and requires the ARD correction for strong coordinate selection."
+    }
+  ],
+  "equation_refs": [
+    {
+      "label": "Two-layer network",
+      "latex": "f(x)=N^{-\\gamma}\\sum_{i=1}^{N}a_i\\phi(w_i^\\top x)",
+      "role": "define the finite-width feature-learning model",
+      "symbols": {
+        "N": "hidden width",
+        "gamma": "width scaling exponent",
+        "phi": "activation"
+      },
+      "evidence": "paper.pdf p. 3, Eq. (1)",
+      "interpretation": "Finite width leaves an interacting posterior over neuron directions rather than a fixed kernel."
+    },
+    {
+      "label": "Mean-field factorization",
+      "latex": "p(W,a\\mid D)\\approx\\prod_{i=1}^{N}p_{\\rm MF}(w_i,a_i),\\qquad m_A=N^{1-\\gamma}\\langle aJ_A(w)\\rangle_{p_{\\rm MF}}",
+      "role": "close the neuron ensemble through feature order parameters",
+      "symbols": {
+        "m_A": "feature coefficient",
+        "J_A": "activation overlap with basis feature A"
+      },
+      "evidence": "paper.pdf p. 4, Eqs. (6)–(7)",
+      "interpretation": "Each neuron is independent conditional on an effective field that it helps generate self-consistently."
+    }
+  ],
+  "evidence_refs": [
+    "paper.pdf pp. 2–5: posterior, MF closure and theory hierarchy",
+    "paper.pdf pp. 7–10: parity experiments, ARD and phase diagrams",
+    "source PDF SHA-256 e3f4c8e1a9f9d9793c6de5a7e968e5ed6862ab3af758f0d8fe98ae91f33ee364",
+    "Evidence status: full-text verified; no independent reproduction performed."
+  ]
+}

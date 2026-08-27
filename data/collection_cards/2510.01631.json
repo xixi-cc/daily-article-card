@@ -1,0 +1,160 @@
+{
+  "arxiv_id": "2510.01631",
+  "source_version": "v1",
+  "source_pdf": "https://arxiv.org/pdf/2510.01631",
+  "title_en": "Demystifying Synthetic Data in LLM Pre-training: A Systematic Study of Scaling Laws, Benefits, and Pitfalls",
+  "title_zh": "解密大模型预训练中的合成数据：标度律、收益与陷阱的系统研究",
+  "curation_status": "full_text_verified",
+  "card_standard_version": "2.3",
+  "paper_profile": "ai_empirical",
+  "style_reference": "physicist_daily_arxiv",
+  "provenance": {
+    "program": "Collection",
+    "catalog": "Paper Collection",
+    "catalog_record_id": "8e2b6b945b541727",
+    "catalog_record_ids": [
+      "8e2b6b945b541727"
+    ],
+    "catalog_topic": "Scaling Laws",
+    "collection_date": "2026-08-23",
+    "sampled_at": "2026-08-28",
+    "selected_by": "full_collection_backfill",
+    "sampling_seed": "not_applicable_full_collection",
+    "candidate_count": 452
+  },
+  "verified_metadata": {
+    "arxiv_id": "2510.01631",
+    "version": "v1",
+    "title": "Demystifying Synthetic Data in LLM Pre-training: A Systematic Study of Scaling Laws, Benefits, and Pitfalls",
+    "authors": [
+      "Feiyang Kang",
+      "Newsha Ardalani",
+      "Michael Kuchnik",
+      "Youssef Emad",
+      "Mostafa Elhoushi",
+      "Shubhabrata Sengupta",
+      "Shang-Wen Li",
+      "Ramya Raghavendra",
+      "Ruoxi Jia",
+      "Carole-Jean Wu"
+    ],
+    "categories": [
+      "cs.LG",
+      "cs.AI",
+      "cs.CL"
+    ],
+    "primary_category": "cs.LG",
+    "published": "2025-10-02T03:24:42Z",
+    "abstract": "More than one thousand controlled pretraining runs show that synthetic data helps conditionally: rephrased-natural mixtures scale well, while pure textbook-style data can degrade.",
+    "comment": ""
+  },
+  "sections": [
+    {
+      "title": "作者信息",
+      "paragraphs": [
+        "作者：Feiyang Kang、Newsha Ardalani、Michael Kuchnik、Youssef Emad、Mostafa Elhoushi 等 10 位；arXiv:2510.01631v1。全文 25 页。作者报告超过 1,000 个 LLM variants、最高 3B 参数、最高 200B tokens，并消耗超过 \\(10^5\\) GPU-hours；正文实验细节另给出约 70k A100-hours 的主 sweep。"
+      ]
+    },
+    {
+      "title": "研究问题",
+      "paragraphs": [
+        "高质量自然文本有限，合成数据被视为替代来源，但“更干净”与“更少多样性”同时存在。论文问：纯 rephrased、QA-rephrased、textbook-generated 数据和它们与 CommonCrawl 的混合，分别如何改变 data/model scaling；最佳 synthetic ratio 是否随模型和预算变化；单轮 synthetic training 是否出现 model-collapse 型标度恶化？"
+      ]
+    },
+    {
+      "title": "背景",
+      "paragraphs": [
+        "作者统一使用 Llama-3 风格 decoder-only 架构、相同 tokenizer/optimization protocol，并把验证损失拟合为 \\(\\widehat L(D)=B D^{-\\beta}+E\\) 或 \\(\\widehat L(N)=A N^{-\\alpha}+E\\)。其中 \\(E\\) 是数据混合的拟合 irreducible loss，不应解释为真实熵率的无偏测量。",
+        "Figure 4 不再只比较两条 loss 曲线，而是在 HQ、QA、TXBK 三类合成数据上直接画出不同 \\(N,D\\) 下的最优混合比例，揭示“合成数据是否有用”不是二元问题。"
+      ]
+    },
+    {
+      "title": "模型与方法",
+      "paragraphs": [
+        "自然基线为 unfiltered CommonCrawl；HQ/QA 数据通过模型重写自然文档，TXBK 为模型生成的教材式文本。主 scaling sweep 使用 0%、33%、67%、100% 比例，并在固定 1B 模型扫描 \\(D=1\\)–200B tokens、固定 50B tokens 扫描 \\(N=100\\)M–3B；每条件通常有 3–5 个 variants。",
+        "额外 grid search 在模型规模和 data budget 上寻找最佳比例；generator ablation 比较 Llama-3 3B/8B/70B 生成的数据。data law 用不超过 100B 的点预测 200B，model law 用不超过 2B 的模型预测 3B，避免把更远的 400B 外推当作观测。"
+      ]
+    },
+    {
+      "title": "核心结果与证据",
+      "paragraphs": [
+        "Figure 4 显示 HQ rephrased 的最佳比例在所测尺度约 30%，QA 从小规模约 50% 向大规模约 30% 收敛；TXBK 在小预算通常低于 5%，随规模上升但仍显著更低。这比“固定 50% synthetic”规则更接近一个带 data-type 依赖的相图。",
+        "data-scaling holdout 的 RMABE 为 0.41%，model-scaling holdout 为 0.30%。在较大数据预算下，约 1/3 rephrased synthetic + 2/3 natural 达到同 validation loss 可快 5–10 倍；纯 rephrased 并不比自然文本更快，纯 TXBK 在多域尤其小预算下损失更高。",
+        "33% HQ + 67% CC 给出最低拟合 \\(E\\)；8B generator 明显优于 3B，但 70B 不再改善 downstream validation loss。作者因此只得到 mixed evidence：单轮 rephrased mixtures 未见预期退化，TXBK mixtures 则出现 model-collapse 理论所预言的坏趋势。"
+      ]
+    },
+    {
+      "title": "有效性与局限",
+      "paragraphs": [
+        "实验上限是 3B/200B，远低于现代 frontier pretraining；400B 模型曲线只是参数外推。主要指标为 perplexity/loss，缺少深入 human evaluation；数据领域以网页与英文任务为主，generator family 和 prompts 也有限。",
+        "研究只做单轮 \\(n=1\\) synthetic generation，不检验递归多代 model collapse。CommonCrawl 本身并非无偏自然分布，训练/评估泄漏与语料质量难以完全排除。5–10× 是达到同 loss 的 token efficiency，不是 wall-clock 或总生成成本加速。"
+      ]
+    },
+    {
+      "title": "复现与资源",
+      "paragraphs": [
+        "原文：https://arxiv.org/abs/2510.01631。全文 25 页，PDF SHA-256：a7e3ac5091b434b390013576c19664e9e30ff9dfe235d496b144cc64076f4703。",
+        "复现需固定 CommonCrawl snapshot、HQ/QA/TXBK prompts、generator checkpoint、dedup/contamination filters、mixture sampler、tokenizer、\\(N,D\\) grid、seeds、fit window 与 RMABE definition。应同时核算 synthetic generation FLOPs，而非只计 downstream pretraining tokens。",
+        "Evidence status: full-text verified; no independent reproduction performed."
+      ]
+    },
+    {
+      "title": "阅读指南",
+      "paragraphs": [
+        "先看 Figure 4，建立 data type–model size–budget 三维依赖；再读 Figures 1–3 的 holdout scaling fits，区分实测范围和外推。随后看 generator ablation 与 model-collapse discussion，最后核对 Limitations，避免把“约 30%”当作跨语料、跨模型的普适常数。"
+      ]
+    }
+  ],
+  "cover": {
+    "mode": "source_figure",
+    "asset_path": "assets/collection-figures/2510.01631/figure-4-mixture-ratios.webp",
+    "label": "Figure 4",
+    "visual_type": "data_plot",
+    "evidence": "paper.pdf p. 8, Figure 4",
+    "alt_text": "HQ、QA 与 textbook 合成数据在不同模型规模和数据预算下的最佳混合比例。",
+    "caption": "最佳合成比例取决于数据类型与尺度；rephrased 数据趋近约 30%，textbook 数据需要更低比例。",
+    "selection_rationale": "Figure 4 是论文最重要的操作性结果，优先于单一 scaling curve。"
+  },
+  "figure_refs": [
+    {
+      "label": "Figure 4",
+      "asset_path": "assets/collection-figures/2510.01631/figure-4-mixture-ratios.webp",
+      "section": "核心结果与证据",
+      "role": "show scale- and type-dependent synthetic-data ratios",
+      "evidence": "paper.pdf p. 8, Figure 4",
+      "alt_text": "Three panels report best grid-searched mixture ratios for HQ, QA and textbook data.",
+      "caption": "Rephrased data approaches a roughly 30 percent optimum while textbook data remains much lower.",
+      "interpretation": "The optimum is empirical and limited to the tested corpora, models and budgets."
+    }
+  ],
+  "equation_refs": [
+    {
+      "label": "Data scaling law",
+      "latex": "\\widehat L(D)=B D^{-\\beta}+E",
+      "role": "fit validation loss across token budgets",
+      "symbols": {
+        "D": "training tokens",
+        "E": "fitted irreducible loss"
+      },
+      "evidence": "paper.pdf p. 5, Section 4.1.3",
+      "interpretation": "Different mixtures change both the convergence exponent and the fitted loss floor."
+    },
+    {
+      "label": "Model scaling law",
+      "latex": "\\widehat L(N)=A N^{-\\alpha}+E",
+      "role": "compare mixtures across model sizes",
+      "symbols": {
+        "N": "non-embedding model parameters",
+        "alpha": "model-scaling exponent"
+      },
+      "evidence": "paper.pdf p. 6, Section 4.1.4",
+      "interpretation": "Synthetic mixtures that help with more data need not retain the same advantage as model size grows."
+    }
+  ],
+  "evidence_refs": [
+    "paper.pdf pp. 4–8: controlled protocol, scaling fits and mixture ratios",
+    "paper.pdf pp. 8–11: generator ablation, collapse discussion and limitations",
+    "source PDF SHA-256 a7e3ac5091b434b390013576c19664e9e30ff9dfe235d496b144cc64076f4703",
+    "Evidence status: full-text verified; no independent reproduction performed."
+  ]
+}

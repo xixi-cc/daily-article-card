@@ -1,0 +1,152 @@
+{
+  "arxiv_id": "2512.01868",
+  "source_version": "v4",
+  "source_pdf": "https://arxiv.org/pdf/2512.01868",
+  "title_en": "The Mean-Field Dynamics of Transformers",
+  "title_zh": "Transformer 的均场动力学",
+  "curation_status": "full_text_verified",
+  "card_standard_version": "2.3",
+  "paper_profile": "theory_numerics",
+  "style_reference": "physicist_daily_arxiv",
+  "provenance": {
+    "program": "Collection",
+    "catalog": "Paper Collection",
+    "catalog_record_id": "bc1bcd4f795ee4f1",
+    "catalog_record_ids": [
+      "bc1bcd4f795ee4f1"
+    ],
+    "catalog_topic": "Transformer Theory",
+    "collection_date": "2026-08-23",
+    "sampled_at": "2026-08-28",
+    "selected_by": "full_collection_backfill",
+    "sampling_seed": "not_applicable_full_collection",
+    "candidate_count": 452
+  },
+  "verified_metadata": {
+    "arxiv_id": "2512.01868",
+    "version": "v4",
+    "title": "The Mean-Field Dynamics of Transformers",
+    "authors": [
+      "Philippe Rigollet"
+    ],
+    "categories": [
+      "cs.LG",
+      "math-ph",
+      "math.DS",
+      "math.PR"
+    ],
+    "primary_category": "cs.LG",
+    "published": "2025-12-01T16:51:00Z",
+    "abstract": "Self-attention is modeled as an interacting particle flow on the sphere, yielding global clustering, metastable multi-cluster states, normalization-dependent contraction and a logarithmic long-context transition.",
+    "comment": ""
+  },
+  "sections": [
+    {
+      "title": "作者信息",
+      "paragraphs": [
+        "作者：Philippe Rigollet；arXiv:2512.01868v4。全文 21 页。文章建立 pure self-attention 的 interacting-particle/mean-field 框架，综合 Wasserstein gradient flows、Kuramoto synchronization、mean-shift clustering 与近期聚类定理；它主要解释 attention dynamics，不是完整训练 Transformer 的端到端理论。"
+      ]
+    },
+    {
+      "title": "研究问题",
+      "paragraphs": [
+        "深层 attention 常出现 token similarity 增大、rank/representation collapse，但有限层实验也保留多个语义 clusters。论文问：softmax attention 的连续深度极限为何产生聚类；多 cluster 为什么能长时间 metastable 后才合并；normalization 和 context length \\(n\\) 如何改变 contraction rate 与 collapse threshold？"
+      ]
+    },
+    {
+      "title": "背景",
+      "paragraphs": [
+        "把每个 token \\(x_i\\in\\mathbb S^{d-1}\\) 看作球面粒子，attention weight 是 \\(e^{\\beta\\langle x_i,x_j\\rangle}\\) 的归一化相互作用。Post-LN 被理想化为切空间投影，得到 Self-Attention（SA）flow；去掉归一化得到 USA。粒子数 \\(n\\to\\infty\\) 时经验测度满足 continuity equation。",
+        "ALBERT 的层间 pairwise-inner-product histogram 向 1 聚集，提供真实模型中的现象锚点；理论则研究理想化 attention-only flow 的长期极限。"
+      ]
+    },
+    {
+      "title": "模型与方法",
+      "paragraphs": [
+        "SA velocity 将 weighted mean token 投影到 \\(x_i\\) 的切空间，保持单位球；对应一个 interaction energy 的 Wasserstein gradient ascent。\\(d=2,\\beta=0\\) 退化到 Kuramoto synchronization，有限 \\(\\beta\\) 与 mean-shift mode seeking 建立联系。",
+        "作者回顾 finite-particle 与 mean-field global clustering theorem，再分析 well-separated groups 的 metastability：组内先快速塌缩，cluster centers 在 \\(T_2\\) 前缓慢移动，且 \\(\\log T_2\\sim\\beta\\)。equiangular ansatz 将多体流降成单一 cosine similarity \\(\\rho(t)\\)，可得精确指数速率和 long-context threshold。"
+      ]
+    },
+    {
+      "title": "核心结果与证据",
+      "paragraphs": [
+        "Figure 3 在 \\(n=32\\) 上给出 \\((t,\\beta)\\) 聚类概率相图：从 \\(d=8\\) 到 128、1024，红蓝边界变尖并逼近 equiangular prediction。它说明高维 concentration 使随机 tokens 近乎等角，从而让一维降维具有预测力。",
+        "全局定理表明对 \\(d\\ge3\\) 的一般初态，SA/USA 几乎必然最终集中到单 cluster；局部 hemisphere 条件下以显式指数速率收敛。低温大 \\(\\beta\\) 下并不立即 collapse，而是能量 staircase：多 cluster plateaus 持续指数长时间后逐次合并。",
+        "normalization 改变速率而不简单消除聚类：equiangular model 中 USA rate \\(\\lambda_\\beta=2e^\\beta\\) 随 \\(\\beta\\) 爆增，SA rate 保持受控。long context 中若 \\(\\beta\\) 固定，softmax 趋向 uniform mixing 并加速 collapse；临界 scaling \\(\\beta_n=\\Theta(\\log n)\\) 才能维持 content-adaptive sparsity。"
+      ]
+    },
+    {
+      "title": "有效性与局限",
+      "paragraphs": [
+        "模型省略 MLP、residual mixing、multi-head、learned Q/K/V、causal masks、positional encoding、训练和 finite-depth effects；因此 theorem 证明的是理想化 attention flow，不是任意实际 Transformer 必然 collapse。ALBERT histogram 是相关现象，不是对具体 ODE 的参数识别。",
+        "\\(d=2\\) 的部分 theorem 需要单独 Kuramoto 结果；noisy/an\\-isotropic dynamics 与 uniform-in-time mean-field convergence 仍开放。多 cluster 在有限深网络中可能是有用表示，而 asymptotic single-cluster 结论不直接决定有限层性能。"
+      ]
+    },
+    {
+      "title": "复现与资源",
+      "paragraphs": [
+        "原文：https://arxiv.org/abs/2512.01868。全文 21 页，PDF SHA-256：8597f94eb8fb1b4655d255934276bb1f0bf1ca78053c78eed921c6975bb56df0。",
+        "复现 Figure 3 需固定 SA/USA convention、\\(n=32\\)、\\(d=8,128,1024\\)、\\(\\beta,t\\) grid、random sphere initialization、ODE tolerance、cluster criterion \\(\\langle x_i,x_j\\rangle\\ge0.999\\) 与 seed count。还应保存 energy staircase 和 \\(\\rho(t)\\)，比较不同 normalization。",
+        "Evidence status: full-text verified; no independent reproduction performed."
+      ]
+    },
+    {
+      "title": "阅读指南",
+      "paragraphs": [
+        "先读 Sections 3–4，把 attention 写成球面粒子 flow，并看 ALBERT histogram；再读 global/local clustering theorems。随后看 Figure 2 的 metastable staircase 与 Figure 3 相图，最后读 normalization 和 \\(\\beta_n\\sim\\log n\\) 的 long-context transition，并对照模型省略项。"
+      ]
+    }
+  ],
+  "cover": {
+    "mode": "source_figure",
+    "asset_path": "assets/collection-figures/2512.01868/figure-3-clustering-transition.webp",
+    "label": "Figure 3",
+    "visual_type": "phase_diagram",
+    "evidence": "paper.pdf p. 13, Figure 3",
+    "alt_text": "不同维数下随机球面 tokens 的聚类概率随深度和 inverse temperature 的相图。",
+    "caption": "高维时聚类边界变尖并逼近等角模型预测，揭示 context、temperature 与 representation collapse 的相变结构。",
+    "selection_rationale": "Figure 3 是全文最重要的可视化相图，优先于单条能量曲线。"
+  },
+  "figure_refs": [
+    {
+      "label": "Figure 3",
+      "asset_path": "assets/collection-figures/2512.01868/figure-3-clustering-transition.webp",
+      "section": "核心结果与证据",
+      "role": "show the high-dimensional clustering transition",
+      "evidence": "paper.pdf p. 13, Figure 3",
+      "alt_text": "Heat maps display complete-clustering probability over depth and inverse temperature for increasing dimension.",
+      "caption": "Concentration of measure sharpens the transition toward the equiangular mean-field prediction.",
+      "interpretation": "The simulations use idealized attention-only dynamics with random spherical tokens."
+    }
+  ],
+  "equation_refs": [
+    {
+      "label": "Spherical self-attention flow",
+      "latex": "\\dot x_i=P_{x_i}^{\\perp}\\!\\left(\\frac{\\sum_j e^{\\beta\\langle x_i,x_j\\rangle}x_j}{\\sum_k e^{\\beta\\langle x_i,x_k\\rangle}}\\right)",
+      "role": "model normalized attention as interacting particles",
+      "symbols": {
+        "P_x_perp": "projection onto the sphere tangent space",
+        "beta": "inverse attention temperature"
+      },
+      "evidence": "paper.pdf pp. 3–4, Eq. (SA)",
+      "interpretation": "Each token moves toward its softmax-weighted neighbours while normalization keeps it on the sphere."
+    },
+    {
+      "label": "Long-context critical scaling",
+      "latex": "\\beta_n=\\Theta(\\log n)",
+      "role": "separate uniform mixing from content-adaptive attention",
+      "symbols": {
+        "n": "context length"
+      },
+      "evidence": "paper.pdf pp. 14–15, Theorem 7",
+      "interpretation": "A fixed temperature becomes effectively too hot as context grows; logarithmic scaling preserves selective interactions."
+    }
+  ],
+  "evidence_refs": [
+    "paper.pdf pp. 3–7: attention particle flows and clustering theorems",
+    "paper.pdf pp. 8–13: metastability, equiangular rates and phase diagram",
+    "paper.pdf pp. 13–17: normalization and long-context transition",
+    "source PDF SHA-256 8597f94eb8fb1b4655d255934276bb1f0bf1ca78053c78eed921c6975bb56df0",
+    "Evidence status: full-text verified; no independent reproduction performed."
+  ]
+}
