@@ -1,0 +1,200 @@
+{
+  "arxiv_id": "2412.03603",
+  "source_version": "v6",
+  "source_pdf": "https://arxiv.org/pdf/2412.03603",
+  "title_en": "HunyuanVideo: A Systematic Framework For Large Video Generative Models",
+  "title_zh": "HunyuanVideo：大型视频生成模型的系统化框架",
+  "curation_status": "full_text_verified",
+  "card_standard_version": "2.3",
+  "paper_profile": "ai_empirical",
+  "style_reference": "physicist_daily_arxiv",
+  "provenance": {
+    "program": "Collection",
+    "catalog": "Paper Collection",
+    "catalog_record_id": "d907caff0751c3dd",
+    "catalog_record_ids": [
+      "d907caff0751c3dd"
+    ],
+    "catalog_topic": "Video Generation",
+    "collection_date": "2026-08-23",
+    "sampled_at": "2026-08-28",
+    "selected_by": "full_collection_backfill",
+    "sampling_seed": "not_applicable_full_collection",
+    "candidate_count": 452
+  },
+  "verified_metadata": {
+    "arxiv_id": "2412.03603",
+    "version": "v6",
+    "title": "HunyuanVideo: A Systematic Framework For Large Video Generative Models",
+    "authors": [
+      "Weijie Kong",
+      "Qi Tian",
+      "Zijian Zhang",
+      "Rox Min",
+      "Zuozhuo Dai",
+      "Jin Zhou",
+      "Jiangfeng Xiong",
+      "Xin Li",
+      "Bo Wu",
+      "Jianwei Zhang",
+      "Kathrina Wu",
+      "Qin Lin",
+      "Junkun Yuan",
+      "Yanxin Long",
+      "Aladdin Wang",
+      "Andong Wang",
+      "Changlin Li",
+      "Duojun Huang",
+      "Fang Yang",
+      "Hao Tan",
+      "Hongmei Wang",
+      "Jacob Song",
+      "Jiawang Bai",
+      "Jianbing Wu",
+      "Jinbao Xue",
+      "Joey Wang",
+      "Kai Wang",
+      "Mengyang Liu",
+      "Pengyu Li",
+      "Shuai Li",
+      "Weiyan Wang",
+      "Wenqing Yu",
+      "Xinchi Deng",
+      "Yang Li",
+      "Yi Chen",
+      "Yutao Cui",
+      "Yuanbo Peng",
+      "Zhentao Yu",
+      "Zhiyu He",
+      "Zhiyong Xu",
+      "Zixiang Zhou",
+      "Zunnan Xu",
+      "Yangyu Tao",
+      "Qinglin Lu",
+      "Songtao Liu",
+      "Dax Zhou",
+      "Hongfa Wang",
+      "Yong Yang",
+      "Di Wang",
+      "Yuhong Liu",
+      "Jie Jiang",
+      "Caesar Zhong"
+    ],
+    "categories": [
+      "cs.CV"
+    ],
+    "primary_category": "cs.CV",
+    "published": "2024-12-03T23:52:37Z",
+    "abstract": "A 13B open video foundation model combines curated data, a 3D causal VAE, dual/single-stream DiT, progressive scaling and distributed training.",
+    "comment": ""
+  },
+  "sections": [
+    {
+      "title": "作者信息",
+      "paragraphs": [
+        "HunyuanVideo Team（Weijie Kong 等 52 人）；arXiv:2412.03603v6。全文 36 页；foundation model 超过 13B parameters，公开代码与权重。"
+      ]
+    },
+    {
+      "title": "研究问题",
+      "paragraphs": [
+        "开放视频生成与闭源系统之间的差距不仅来自 backbone，还来自数据清洗/描述、video compression、progressive scaling、并行训练与 post-training 的联合工程。论文问：能否给出一套从数据到 720p×129-frame 输出、可公开复用的大模型系统？"
+      ]
+    },
+    {
+      "title": "背景",
+      "paragraphs": [
+        "视频 latent 同时承受高空间分辨率与长时间维。HunyuanVideo 用 3D causal VAE 压缩时空 token，再以 text-conditioned diffusion Transformer 生成；训练从低分辨率短视频逐步过渡到高分辨率长视频。",
+        "Figure 1 是原文未精选的多比例生成样例。它优先作为封面，因为直接展示人物、复杂场景、运动和宽高比，而不是只给训练系统框图。"
+      ]
+    },
+    {
+      "title": "模型与方法",
+      "paragraphs": [
+        "3D causal VAE 采用 temporal causal convolution/attention 和 tiling；DiT 先用 dual-stream blocks 分别处理 text/video，再用 single-stream blocks 做联合建模，并结合 3D RoPE。文本条件由 MLLM encoder 提供，比传统 CLIP/T5 更长、更具指令语义。",
+        "模型通过 256px image、multi-resolution image、低分辨率短/长视频、高分辨率长视频和 SFT 逐级训练；数据 pipeline 包括去重、质量/美学/运动/文本过滤和结构化 caption。最大训练样本到 (720\\times1280\\times129) frames。"
+      ]
+    },
+    {
+      "title": "核心结果与证据",
+      "paragraphs": [
+        "Figure 1 的 non-curated samples 展示竖屏/横屏构图、写实人物与高运动水体，提供比 aggregate score 更直观的能力边界；它是视觉证据，不替代 benchmark。",
+        "60 名专业评估者在 1,533 prompts 上比较多个系统；论文 Table 3 报告 HunyuanVideo overall satisfaction 最高，且 motion quality 优势最明显。作者还用内部 scaling experiments 在固定数据/256px 条件下选择 13B，而非无条件继续放大。",
+        "“开源”具体指 foundation model code/checkpoints 可获取；训练数据与完整大规模训练资源并未随之开放，exact reproduction 仍远超普通实验室资源。"
+      ]
+    },
+    {
+      "title": "有效性与局限",
+      "paragraphs": [
+        "专业人评来自作者设计的 prompt、匿名展示和评分流程，闭源基线版本会漂移；satisfaction rate 不是物理一致性或长时因果正确性的直接测量。Figure 1 仍是有限样例，即使标为 non-curated。",
+        "系统依赖大规模私有数据清洗和训练基础设施；数据许可、人物/风格模仿和视频误用风险不能由开源权重消除。论文也把从低到高分辨率的 scaling property 留作 future work，13B choice 不是普适最优律。"
+      ]
+    },
+    {
+      "title": "复现与资源",
+      "paragraphs": [
+        "原文：https://arxiv.org/abs/2412.03603；代码/权重：https://github.com/Tencent-Hunyuan/HunyuanVideo。全文 36 页，PDF SHA-256：422e33cf9e96f692abadf2113ce253ba20a070f7ca883b39f0c1c79e3d157faf。",
+        "复现需固定 checkpoint、VAE/tile settings、MLLM text encoder、prompt template、resolution/frame count、sampler/steps/guidance、seed、SFT version、human-eval prompts 与 baseline snapshots。完整 pretraining 还需要未公开等价数据和大规模集群。",
+        "Evidence status: full-text verified; no independent reproduction performed."
+      ]
+    },
+    {
+      "title": "阅读指南",
+      "paragraphs": [
+        "先看 Figure 1 建立输出直觉，再按 Figures 2–5 追踪 data–VAE–DiT–training system；随后读 scaling 与 progressive training sections。最后审查 Table 3 的人评协议，并把模型开放、训练可复现和社会使用边界分开。"
+      ]
+    }
+  ],
+  "cover": {
+    "mode": "source_figure",
+    "asset_path": "assets/collection-figures/2412.03603/figure-1-hunyuan-samples.webp",
+    "label": "Figure 1",
+    "visual_type": "simulation_snapshot",
+    "evidence": "paper.pdf p. 1, Figure 1",
+    "alt_text": "HunyuanVideo 生成的多比例样例，包括城市人物、数字艺术、长颈鹿与巨浪场景。",
+    "caption": "原文 non-curated samples 直接展示 13B 模型在多宽高比、人物和高运动场景上的输出。",
+    "selection_rationale": "按 v2.3 标准优先选最重要的可视化输出，而非数据表或系统框图。"
+  },
+  "figure_refs": [
+    {
+      "label": "Figure 1",
+      "asset_path": "assets/collection-figures/2412.03603/figure-1-hunyuan-samples.webp",
+      "section": "核心结果与证据",
+      "role": "show representative visual capabilities",
+      "evidence": "paper.pdf p. 1, Figure 1",
+      "alt_text": "Multi-aspect-ratio generated video frames.",
+      "caption": "The samples expose composition, identity and motion-rich scene generation more directly than a scalar score.",
+      "interpretation": "They are illustrative outputs and do not establish benchmark superiority by themselves."
+    }
+  ],
+  "equation_refs": [
+    {
+      "label": "Diffusion velocity objective",
+      "latex": "\\mathcal L=\\mathbb E_{x_0,\\epsilon,t}\\left\\|v_\\theta(x_t,t,c)-v_t\\right\\|_2^2",
+      "role": "train the text-conditioned video latent denoiser",
+      "symbols": {
+        "x_t": "noised video latent",
+        "c": "MLLM text condition"
+      },
+      "evidence": "paper.pdf pp. 8–10",
+      "interpretation": "The 13B Transformer learns a conditional velocity in the compressed spatiotemporal latent space."
+    },
+    {
+      "label": "Latent token count",
+      "latex": "L=k_T T_t\\,k_H H_h\\,k_W W_w",
+      "role": "count patchified spatiotemporal tokens",
+      "symbols": {
+        "k_T,k_H,k_W": "patch-grid factors",
+        "T_t,H_h,W_w": "latent dimensions"
+      },
+      "evidence": "paper.pdf p. 8",
+      "interpretation": "Video cost grows multiplicatively across time and space, motivating VAE compression and progressive resolution training."
+    }
+  ],
+  "evidence_refs": [
+    "paper.pdf pp. 1–12: samples, data pipeline, VAE, DiT and scaling",
+    "paper.pdf pp. 17–21: human evaluation and inference system",
+    "source PDF SHA-256 422e33cf9e96f692abadf2113ce253ba20a070f7ca883b39f0c1c79e3d157faf",
+    "Evidence status: full-text verified; no independent reproduction performed."
+  ]
+}

@@ -1,0 +1,162 @@
+{
+  "arxiv_id": "2411.17470",
+  "source_version": "v2",
+  "source_pdf": "https://arxiv.org/pdf/2411.17470",
+  "title_en": "Towards Precise Scaling Laws for Video Diffusion Transformers",
+  "title_zh": "迈向视频扩散 Transformer 的精确缩放律",
+  "curation_status": "full_text_verified",
+  "card_standard_version": "2.3",
+  "paper_profile": "ai_empirical",
+  "style_reference": "physicist_daily_arxiv",
+  "provenance": {
+    "program": "Collection",
+    "catalog": "Paper Collection",
+    "catalog_record_id": "5d02ca111b30d307",
+    "catalog_record_ids": [
+      "5d02ca111b30d307"
+    ],
+    "catalog_topic": "Video Generation",
+    "collection_date": "2026-08-23",
+    "sampled_at": "2026-08-28",
+    "selected_by": "full_collection_backfill",
+    "sampling_seed": "not_applicable_full_collection",
+    "candidate_count": 452
+  },
+  "verified_metadata": {
+    "arxiv_id": "2411.17470",
+    "version": "v2",
+    "title": "Towards Precise Scaling Laws for Video Diffusion Transformers",
+    "authors": [
+      "Yuanyang Yin",
+      "Yaqi Zhao",
+      "Mingwu Zheng",
+      "Ke Lin",
+      "Jiarong Ou",
+      "Rui Chen",
+      "Victor Shea-Jay Huang",
+      "Jiahao Wang",
+      "Xin Tao",
+      "Pengfei Wan",
+      "Di Zhang",
+      "Baoqun Yin",
+      "Wentao Zhang",
+      "Kun Gai"
+    ],
+    "categories": [
+      "cs.CV",
+      "cs.AI",
+      "cs.LG"
+    ],
+    "primary_category": "cs.CV",
+    "published": "2024-11-25T18:59:04Z",
+    "abstract": "Scaling laws for video DiTs jointly predict model size, batch size, learning rate and validation loss under finite compute.",
+    "comment": ""
+  },
+  "sections": [
+    {
+      "title": "作者信息",
+      "paragraphs": [
+        "作者：Yuanyang Yin、Yaqi Zhao、Mingwu Zheng、Ke Lin 等 14 人；arXiv:2411.17470v2。全文 17 页，拟合模型规模约 0.017B–0.26B，并外推/验证到 0.72B 与 1.07B。"
+      ]
+    },
+    {
+      "title": "研究问题",
+      "paragraphs": [
+        "传统 compute-optimal scaling law 多把 optimizer hyperparameters 当作固定 nuisance variables；视频 DiT 却对 learning rate 与 batch size 非常敏感。论文问：在给定训练 tokens (T)、参数量 (N) 与 compute (C) 时，能否同时预测最优 (B,\\eta,N) 和非最优模型的 loss？"
+      ]
+    },
+    {
+      "title": "背景",
+      "paragraphs": [
+        "若不同规模模型都用固定 batch size/learning rate，测得的 validation-loss envelope 会混入 optimization error，从而错误偏向更大模型。Figure 1 的灰点是次优超参数，红点是每个规模的最优点；同一 (N) 下两者差距随训练继续显著扩大。"
+      ]
+    },
+    {
+      "title": "模型与方法",
+      "paragraphs": [
+        "作者先在四个小模型与不同 token budgets 上网格搜索 (B,\\eta)，拟合 (B_{\\rm opt}=\\alpha_B T^{\\beta_B}N^{\\gamma_B}) 和对应的 learning-rate power law；再将优化后的 loss 拟合为 (L(T,N))，并以 FLOPs constraint 求 compute-optimal (N)。",
+        "为处理实际 inference 约束，论文进一步拟合任意 (N,T) 的 generalized loss surface，而不只给最优 envelope。训练采用 constant learning rate；理论动机来自 mini-batch SGD 的 curvature–gradient-noise trade-off。"
+      ]
+    },
+    {
+      "title": "核心结果与证据",
+      "paragraphs": [
+        "Figure 1 是关键诊断：0.02B、0.06B、0.13B、0.26B 四组曲线中，固定次优超参数的灰点系统性高于最佳红点，说明不优化 (B,\\eta) 会污染 scaling fit。",
+        "在 (10^{10}) TFlops budget 下，作者用约 0.64B 模型而非 conventional law 给出的更大模型，报告相近生成性能并减少 40.1% inference cost；另一表述是约节省 39.9% parameters。0.72B/1.07B validation experiments 用于检查外推。",
+        "generalized law 对非最优模型也给出 loss prediction，适合部署时显式交换训练预算和推理尺寸；但它仍是同一模型族、数据与训练 recipe 内的经验标度。"
+      ]
+    },
+    {
+      "title": "有效性与局限",
+      "paragraphs": [
+        "论文使用 constant learning rate，作者明确指出加入 decay schedule 可能改变缩放关系。规模跨度与一次 1.07B 外推有限，不能直接外推到十亿级以上不同架构、不同 VAE/tokenizer、数据质量或更长视频。",
+        "40.1% 是作者定义的 inference-cost proxy 下、给定 compute budget 的模型尺寸差异，不等于端到端延迟/显存必然同比下降。validation loss 与感知质量、人类偏好、运动物理一致性之间也非一一对应。"
+      ]
+    },
+    {
+      "title": "复现与资源",
+      "paragraphs": [
+        "原文：https://arxiv.org/abs/2411.17470。全文 17 页，PDF SHA-256：b412e87304d7ab17a9aa4cec816fbf2d8ac4c220fc728c73590282a7c2f8a1fd。",
+        "复现需固定 video tokenizer/VAE、DiT family、token definition、FLOPs accounting、constant-LR schedule、batch/LR grid、near-optimal tolerance、fit weighting、0.72B/1.07B validation runs 与 generation evaluator。",
+        "Evidence status: full-text verified; no independent reproduction performed."
+      ]
+    },
+    {
+      "title": "阅读指南",
+      "paragraphs": [
+        "先看 Figure 1，确认 optimization confound；再读 Eqs. (10)–(14) 的 (B_{opt},\\eta_{opt},N_{opt}) 拟合。随后检查 0.72B/1.07B validation 和 40.1% cost claim，最后读 limitations，尤其是 constant learning rate 与 model-family boundary。"
+      ]
+    }
+  ],
+  "cover": {
+    "mode": "source_figure",
+    "asset_path": "assets/collection-figures/2411.17470/figure-1-video-scaling.webp",
+    "label": "Figure 1",
+    "visual_type": "data_plot",
+    "evidence": "paper.pdf p. 2, Figure 1",
+    "alt_text": "四个视频 DiT 参数规模的 validation loss 对 training tokens 曲线，灰色为固定次优超参数，红色为最优点。",
+    "caption": "不先优化 batch size 与 learning rate，视频 DiT 的 scaling curve 会被系统性抬高。",
+    "selection_rationale": "论文没有机制示意图；Figure 1 最直接揭示新缩放律要解决的优化混杂。"
+  },
+  "figure_refs": [
+    {
+      "label": "Figure 1",
+      "asset_path": "assets/collection-figures/2411.17470/figure-1-video-scaling.webp",
+      "section": "核心结果与证据",
+      "role": "show hyperparameter-induced bias in scaling curves",
+      "evidence": "paper.pdf p. 2, Figure 1",
+      "alt_text": "Validation-loss curves for four DiT sizes with optimal and suboptimal settings.",
+      "caption": "Optimization error can masquerade as a model-size scaling effect.",
+      "interpretation": "The plot covers one architecture and training recipe; it is not a universal video law."
+    }
+  ],
+  "equation_refs": [
+    {
+      "label": "Optimal batch-size law",
+      "latex": "B_{\\rm opt}=\\alpha_B T^{\\beta_B}N^{\\gamma_B}",
+      "role": "predict batch size from tokens and model size",
+      "symbols": {
+        "T": "training tokens",
+        "N": "parameters"
+      },
+      "evidence": "paper.pdf p. 4, Eq. (10)",
+      "interpretation": "Batch size is promoted from a fixed implementation choice to a fitted scaling variable."
+    },
+    {
+      "label": "Compute-optimal size",
+      "latex": "N_{\\rm opt}=1.5787\\,C^{0.4146}",
+      "role": "select model size under compute budget",
+      "symbols": {
+        "C": "training compute under the paper's convention"
+      },
+      "evidence": "paper.pdf p. 5, Eq. (14)",
+      "interpretation": "The coefficient and exponent are empirical for this video-DiT family and FLOPs definition."
+    }
+  ],
+  "evidence_refs": [
+    "paper.pdf pp. 2–6: scaling setup, hyperparameter laws and generalized loss",
+    "paper.pdf pp. 6–7 and appendices: extrapolation checks and limitations",
+    "source PDF SHA-256 b412e87304d7ab17a9aa4cec816fbf2d8ac4c220fc728c73590282a7c2f8a1fd",
+    "Evidence status: full-text verified; no independent reproduction performed."
+  ]
+}

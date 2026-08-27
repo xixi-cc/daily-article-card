@@ -1,0 +1,158 @@
+{
+  "arxiv_id": "2410.20587",
+  "source_version": "v3",
+  "source_pdf": "https://arxiv.org/pdf/2410.20587",
+  "title_en": "Generator Matching: Generative modeling with arbitrary Markov processes",
+  "title_zh": "生成器匹配：用任意马尔可夫过程进行生成建模",
+  "curation_status": "full_text_verified",
+  "card_standard_version": "2.3",
+  "paper_profile": "theory_numerics",
+  "style_reference": "physicist_daily_arxiv",
+  "provenance": {
+    "program": "Collection",
+    "catalog": "Paper Collection",
+    "catalog_record_id": "5e379f3baa4eff3f",
+    "catalog_record_ids": [
+      "5e379f3baa4eff3f"
+    ],
+    "catalog_topic": "Generative Models",
+    "collection_date": "2026-08-23",
+    "sampled_at": "2026-08-28",
+    "selected_by": "full_collection_backfill",
+    "sampling_seed": "not_applicable_full_collection",
+    "candidate_count": 452
+  },
+  "verified_metadata": {
+    "arxiv_id": "2410.20587",
+    "version": "v3",
+    "title": "Generator Matching: Generative modeling with arbitrary Markov processes",
+    "authors": [
+      "Peter Holderrieth",
+      "Marton Havasi",
+      "Jason Yim",
+      "Neta Shaul",
+      "Itai Gat",
+      "Tommi Jaakkola",
+      "Brian Karrer",
+      "Ricky T. Q. Chen",
+      "Yaron Lipman"
+    ],
+    "categories": [
+      "cs.LG",
+      "cs.AI"
+    ],
+    "primary_category": "cs.LG",
+    "published": "2024-10-27T20:47:29Z",
+    "abstract": "A modality-agnostic framework learns infinitesimal generators of arbitrary Markov processes and supports jump, superposed, and multimodal generative models.",
+    "comment": ""
+  },
+  "sections": [
+    {
+      "title": "作者信息",
+      "paragraphs": [
+        "作者：Peter Holderrieth、Marton Havasi、Jason Yim、Neta Shaul、Itai Gat、Tommi Jaakkola、Brian Karrer、Ricky T. Q. Chen、Yaron Lipman；arXiv:2410.20587v3，ICLR 2025。全文 68 页。"
+      ]
+    },
+    {
+      "title": "研究问题",
+      "paragraphs": [
+        "diffusion、flow matching 与 discrete diffusion 看似使用不同状态空间和动力学。论文问：能否把它们统一为“学习概率路径的无穷小生成器”，并在同一框架中构造 jump process、不同过程的叠加以及连续–离散多模态生成？"
+      ]
+    },
+    {
+      "title": "背景",
+      "paragraphs": [
+        "马尔可夫过程由转移核决定；在短时间步 (h) 下，其一阶变化由 generator (L_t) 描述。给定从简单分布到数据分布的 conditional probability path，作者先构造生成单个数据点的 conditional generator，再用 posterior averaging 得到生成总体边缘分布的 marginal generator。",
+        "Figure 1 将状态空间、概率路径、generator matching objective 与 sampling algorithm 串成闭环，并明确框架不要求状态具有欧氏密度。"
+      ]
+    },
+    {
+      "title": "模型与方法",
+      "paragraphs": [
+        "训练的核心恒等式是 marginal generator 对 conditional generators 的后验平均：(L_t f(x)=\\mathbb E[L_t^Z f(x)\\mid X_t=x])。因此可用 regression、Bregman divergence 或 cross-entropy 拟合 generator 参数，而无需求数据密度。",
+        "连续 flow、diffusion、jump process 与 finite-state CTMC 只对应不同的 (L_t)。若 (L_t=L_t^{(1)}+L_t^{(2)})，则可把两种合法动力学 superpose；乘积状态空间上的分量 generators 则给出严格的多模态构造。"
+      ]
+    },
+    {
+      "title": "核心结果与证据",
+      "paragraphs": [
+        "Figure 1 是全文的操作图：从 conditional path 出发，构造 conditional generator，回归 marginal generator，再逐步采样；它解释了“统一”发生在无穷小动力学层，而不是把所有数据强行连续化。",
+        "CIFAR-10/ImageNet32 上，单独 jump model 的 FID 为 4.23/7.66；Euler flow 为 2.94/4.58；jump+flow superposition 改善到 2.49/3.47，mixed second-order-flow + Euler-jump 为 2.36/3.33。作者还在 joint protein sequence–structure generation 上展示多模态 generator composition。",
+        "这些数字支持 superposition 可互补，但 jump 单模型仍落后成熟 diffusion/flow；当前优势是设计空间与组合规律，而不是新过程已经全面胜出。"
+      ]
+    },
+    {
+      "title": "有效性与局限",
+      "paragraphs": [
+        "generator matching 的边缘一致性依赖 conditional path、posterior parameterization 与正则条件；有限步数值积分仍带来离散误差。不同 generators 共享相同 marginal path 不表示其 sample paths、计算成本或归纳偏置相同。",
+        "图像实验只到 CIFAR-10/ImageNet32，且 jump sampler 目前主要用 Euler、缺少成熟的 classifier-free guidance 和高阶 solver。蛋白质评估是有限 benchmark，不能证明结构可折叠性或实验功能。"
+      ]
+    },
+    {
+      "title": "复现与资源",
+      "paragraphs": [
+        "原文：https://arxiv.org/abs/2410.20587；项目：https://generatormatching.github.io/。全文 68 页，PDF SHA-256：58211310b930bedfe81d8ccaf1ee53f815d88e535de550857881bfd3fcc3b086。",
+        "复现需固定 probability path、generator class、posterior network、Bregman objective、jump bins/intensity、superposition weights、ODE/jump integrator、steps、image preprocessing 与 protein benchmark protocol。",
+        "Evidence status: full-text verified; no independent reproduction performed."
+      ]
+    },
+    {
+      "title": "阅读指南",
+      "paragraphs": [
+        "先看 Figure 1 与 Eqs. (1)–(6)，建立 path–generator–kernel 三层关系；再读 marginalization theorem 和 Table 1，逐一把 flow、diffusion、jump、CTMC 代回。最后检查 Table 2 和蛋白实验，把统一性定理与有限规模经验优势分开。"
+      ]
+    }
+  ],
+  "cover": {
+    "mode": "source_figure",
+    "asset_path": "assets/collection-figures/2410.20587/figure-1-generator-matching.webp",
+    "label": "Figure 1",
+    "visual_type": "schematic",
+    "evidence": "paper.pdf p. 2, Figure 1",
+    "alt_text": "Generator Matching 从数据与概率路径到 conditional generator、训练目标、marginal generator 和采样器的流程图。",
+    "caption": "Generator Matching 在 generator 层统一连续、离散与多模态马尔可夫生成过程。",
+    "selection_rationale": "Figure 1 是全文最重要的方法机制图，优先于单一数据集的 FID 表。"
+  },
+  "figure_refs": [
+    {
+      "label": "Figure 1",
+      "asset_path": "assets/collection-figures/2410.20587/figure-1-generator-matching.webp",
+      "section": "核心结果与证据",
+      "role": "explain the complete generator-matching construction",
+      "evidence": "paper.pdf p. 2, Figure 1",
+      "alt_text": "Probability-path, generator-learning and sampling pipeline.",
+      "caption": "The shared object is the infinitesimal generator, while state space and sample paths may differ.",
+      "interpretation": "The diagram states a construction; numerical accuracy still depends on model and solver."
+    }
+  ],
+  "equation_refs": [
+    {
+      "label": "Generator action",
+      "latex": "L_t f(x)=\\lim_{h\\downarrow0}\\frac{\\mathbb E[f(X_{t+h})\\mid X_t=x]-f(x)}{h}",
+      "role": "encode infinitesimal Markov dynamics",
+      "symbols": {
+        "f": "test function",
+        "L_t": "time-dependent generator"
+      },
+      "evidence": "paper.pdf pp. 3–4",
+      "interpretation": "Flows, diffusions and jumps differ through the operator acting on test functions."
+    },
+    {
+      "label": "Marginal generator",
+      "latex": "L_t f(x)=\\mathbb E\\!\\left[L_t^{Z}f(x)\\mid X_t=x\\right]",
+      "role": "turn point-conditioned dynamics into data-marginal dynamics",
+      "symbols": {
+        "Z": "data endpoint",
+        "X_t": "state on the probability path"
+      },
+      "evidence": "paper.pdf pp. 5–6",
+      "interpretation": "Posterior averaging is the generator analogue of the conditional-to-marginal identity used in flow matching."
+    }
+  ],
+  "evidence_refs": [
+    "paper.pdf pp. 2–10: probability paths, generators, objectives and experiments",
+    "paper.pdf appendices: generator characterizations and multimodal construction",
+    "source PDF SHA-256 58211310b930bedfe81d8ccaf1ee53f815d88e535de550857881bfd3fcc3b086",
+    "Evidence status: full-text verified; no independent reproduction performed."
+  ]
+}

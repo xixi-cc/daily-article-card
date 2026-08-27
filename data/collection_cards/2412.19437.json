@@ -1,0 +1,150 @@
+{
+  "arxiv_id": "2412.19437",
+  "source_version": "v2",
+  "source_pdf": "https://arxiv.org/pdf/2412.19437",
+  "title_en": "DeepSeek-V3 Technical Report",
+  "title_zh": "DeepSeek-V3 技术报告",
+  "curation_status": "full_text_verified",
+  "card_standard_version": "2.3",
+  "paper_profile": "ai_empirical",
+  "style_reference": "physicist_daily_arxiv",
+  "provenance": {
+    "program": "Collection",
+    "catalog": "Paper Collection",
+    "catalog_record_id": "8355e49ff30a5fbe",
+    "catalog_record_ids": [
+      "8355e49ff30a5fbe"
+    ],
+    "catalog_topic": "Scaling Laws",
+    "collection_date": "2026-08-23",
+    "sampled_at": "2026-08-28",
+    "selected_by": "full_collection_backfill",
+    "sampling_seed": "not_applicable_full_collection",
+    "candidate_count": 452
+  },
+  "verified_metadata": {
+    "arxiv_id": "2412.19437",
+    "version": "v2",
+    "title": "DeepSeek-V3 Technical Report",
+    "authors": [
+      "DeepSeek-AI"
+    ],
+    "categories": [
+      "cs.CL",
+      "cs.AI"
+    ],
+    "primary_category": "cs.CL",
+    "published": "2024-12-27T04:03:16Z",
+    "abstract": "A 671B-total, 37B-active MoE model uses MLA, DeepSeekMoE, auxiliary-loss-free balancing, MTP and FP8 training on 14.8T tokens.",
+    "comment": ""
+  },
+  "sections": [
+    {
+      "title": "作者信息",
+      "paragraphs": [
+        "DeepSeek-AI；arXiv:2412.19437v2。全文 54 页。模型含 671B total parameters，每 token 激活 37B；预训练 14.8T tokens，随后 SFT 与 RL。作者列表以团队署名为主，完整成员见原文。"
+      ]
+    },
+    {
+      "title": "研究问题",
+      "paragraphs": [
+        "稀疏 MoE 可增加总容量而不同比增加 token compute，但会遇到 KV-cache、expert imbalance、跨节点通信与低精度训练稳定性。论文问：如何在 671B 总规模上把 active compute 控制到 37B/token，并以可承受的 H800 训练预算维持性能？"
+      ]
+    },
+    {
+      "title": "背景",
+      "paragraphs": [
+        "DeepSeek-V3 延续 MLA 与 DeepSeekMoE：前者把 attention 的 key/value 压到共享 latent，后者组合 shared experts 与 routed experts。Figure 2 把这两个结构放在同一 Transformer block 中，优先于 benchmark 雷达图，因为它解释效率来自哪里。"
+      ]
+    },
+    {
+      "title": "模型与方法",
+      "paragraphs": [
+        "MLA 对 KV 做 low-rank joint compression，推理缓存压缩 latent 而非完整 multi-head keys/values。DeepSeekMoE 用细粒度 routed experts 与 shared experts；router 的动态 bias 做 auxiliary-loss-free load balancing，避免较大的 balance loss 干扰主目标。",
+        "Multi-Token Prediction 在主 next-token head 之外预测后续 token，训练后可丢弃或用于 speculative decoding。系统侧采用 FP8 mixed precision、DualPipe pipeline parallelism、跨节点受限 routing 与通信/计算重叠。"
+      ]
+    },
+    {
+      "title": "核心结果与证据",
+      "paragraphs": [
+        "Figure 2 展示单个 block 的两个压缩：MLA 把 attention state 投到 latent KV，DeepSeekMoE 每 token 只路由少数 experts；671B/37B 的稀疏比正由此实现。",
+        "作者报告 pretraining 2.664M H800 GPU-hours、context extension 119K、post-training 5K，总计 2.788M；按每 GPU-hour 2 美元估算 5.576M 美元，但明确不含前期研究、消融、数据和基础设施成本。",
+        "报告的 chat 模型分数包括 MMLU 88.5、MMLU-Pro 75.9、GPQA 59.1；这些是指定 prompts/evaluation harness 下的自报结果。MTP 与 load-balancing strategy 另有较小模型消融，不能把完整模型所有收益单独归因于某一模块。"
+      ]
+    },
+    {
+      "title": "有效性与局限",
+      "paragraphs": [
+        "训练成本口径只含官方最终 run，不能作为从零复现实验的总预算。大量 benchmark 可能受数据污染、prompt/scoring 选择和 post-training 影响；“comparable to closed-source” 会随服务版本变化。",
+        "MoE 的总参数、激活参数、内存占用、通信量和实际推理吞吐是不同尺度；37B active 不等于 37B dense 的相同延迟。技术报告公开 checkpoints，但训练数据只做类别性描述，无法 exact data-level reproduction。"
+      ]
+    },
+    {
+      "title": "复现与资源",
+      "paragraphs": [
+        "原文：https://arxiv.org/abs/2412.19437；代码/模型：https://github.com/deepseek-ai/DeepSeek-V3。全文 54 页，PDF SHA-256：812a3fd645c80725354de9d831a6785503007a60681461407f64e97305fa9330。",
+        "复现/评估需固定 checkpoint variant、tokenizer、precision、expert parallel topology、MLA cache convention、router bias update、MTP depth、prompt templates、sampling parameters 与 benchmark commits。完整 pretraining 数据不可获得。",
+        "Evidence status: full-text verified; no independent reproduction performed."
+      ]
+    },
+    {
+      "title": "阅读指南",
+      "paragraphs": [
+        "先看 Figure 2，分清 MLA 与 DeepSeekMoE；再读 Sections 2.1–2.2 的 routing、load balance 与 MTP。随后读 training infrastructure/FP8 和 Table 1 成本口径，最后审查 benchmark 表与 limitations，避免把 active parameters、总参数和实际服务成本混为一谈。"
+      ]
+    }
+  ],
+  "cover": {
+    "mode": "source_figure",
+    "asset_path": "assets/collection-figures/2412.19437/figure-2-deepseek-architecture.webp",
+    "label": "Figure 2",
+    "visual_type": "schematic",
+    "evidence": "paper.pdf p. 7, Figure 2",
+    "alt_text": "DeepSeek-V3 Transformer block 中的 Multi-Head Latent Attention 与 DeepSeekMoE routed/shared expert 结构。",
+    "caption": "MLA 压缩 KV state，DeepSeekMoE 稀疏激活 experts；二者共同决定 671B 总参数、37B 每 token 激活的效率结构。",
+    "selection_rationale": "Figure 2 是最重要的架构机制图，优先于 benchmark 数据图。"
+  },
+  "figure_refs": [
+    {
+      "label": "Figure 2",
+      "asset_path": "assets/collection-figures/2412.19437/figure-2-deepseek-architecture.webp",
+      "section": "核心结果与证据",
+      "role": "explain the model's sparse and latent-attention architecture",
+      "evidence": "paper.pdf p. 7, Figure 2",
+      "alt_text": "MLA and DeepSeekMoE blocks in DeepSeek-V3.",
+      "caption": "Inference efficiency comes from compressed KV state and sparse expert activation rather than total parameter count alone.",
+      "interpretation": "The schematic omits communication topology and end-to-end serving overhead."
+    }
+  ],
+  "equation_refs": [
+    {
+      "label": "MoE routed output",
+      "latex": "h'_t=u_t+\\sum_{i=1}^{N_s}\\operatorname{FFN}^{(s)}_i(u_t)+\\sum_{i=1}^{N_r}g_{i,t}\\operatorname{FFN}^{(r)}_i(u_t)",
+      "role": "combine shared and sparsely routed experts",
+      "symbols": {
+        "N_s": "shared experts",
+        "N_r": "routed experts",
+        "g_i,t": "routing weight"
+      },
+      "evidence": "paper.pdf p. 8",
+      "interpretation": "Only selected routed experts execute for a token while shared experts provide common capacity."
+    },
+    {
+      "label": "Auxiliary-loss-free routing bias",
+      "latex": "g_{i,t}=s_{i,t}\\,\\mathbf 1\\!\\left(i\\in\\operatorname{TopK}\\{s_{j,t}+b_j\\}\\right)",
+      "role": "balance expert load without adding a large training loss",
+      "symbols": {
+        "s_i,t": "affinity score",
+        "b_j": "dynamically updated routing bias"
+      },
+      "evidence": "paper.pdf pp. 8–9",
+      "interpretation": "Bias affects expert selection while the unshifted affinity controls the expert weight, reducing interference with the language objective."
+    }
+  ],
+  "evidence_refs": [
+    "paper.pdf pp. 7–16: MLA, DeepSeekMoE, MTP, parallelism and FP8",
+    "paper.pdf pp. 24–35: benchmark protocol, ablations and limitations",
+    "source PDF SHA-256 812a3fd645c80725354de9d831a6785503007a60681461407f64e97305fa9330",
+    "Evidence status: full-text verified; no independent reproduction performed."
+  ]
+}
