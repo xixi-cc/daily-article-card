@@ -1,0 +1,166 @@
+{
+  "arxiv_id": "2308.12355",
+  "source_version": "v2",
+  "source_pdf": "https://arxiv.org/pdf/2308.12355",
+  "title_en": "Renormalizing Diffusion Models",
+  "title_zh": "重整化扩散模型",
+  "curation_status": "full_text_verified",
+  "card_standard_version": "2.3",
+  "paper_profile": "theory_numerics",
+  "style_reference": "physicist_daily_arxiv",
+  "provenance": {
+    "program": "Collection",
+    "catalog": "Paper Collection",
+    "catalog_record_id": "e224d89f844755a5",
+    "catalog_record_ids": [
+      "e224d89f844755a5"
+    ],
+    "catalog_topic": "Renormalization Group",
+    "collection_date": "2026-08-23",
+    "sampled_at": "2026-08-28",
+    "selected_by": "full_collection_backfill",
+    "sampling_seed": "not_applicable_full_collection",
+    "candidate_count": 452
+  },
+  "verified_metadata": {
+    "arxiv_id": "2308.12355",
+    "version": "v2",
+    "title": "Renormalizing Diffusion Models",
+    "authors": [
+      "Jordan Cotler",
+      "Semon Rezchikov"
+    ],
+    "categories": [
+      "hep-th",
+      "cs.LG",
+      "hep-lat"
+    ],
+    "primary_category": "hep-th",
+    "published": "2023-08-23T18:02:31Z",
+    "abstract": "Exact renormalization-group diffusion processes define physically interpretable score models and adaptive bridge samplers for lattice field theories.",
+    "comment": ""
+  },
+  "sections": [
+    {
+      "title": "作者信息",
+      "paragraphs": [
+        "作者：Jordan Cotler、Semon Rezchikov；arXiv:2308.12355v2。全文 85 页，是一篇连接 exact RG、diffusion、lattice sampling 和量子变分方法的长篇理论工作。"
+      ]
+    },
+    {
+      "title": "研究问题",
+      "paragraphs": [
+        "普通 normalizing flow 或 diffusion sampler 可拟合 lattice field distribution，却没有可解释的中间尺度；终点样本正确也不保证 learned path 是物理 RG flow。论文问：能否把正向 noising 明确选成一个 exact renormalization-group scheme，使反向 score model 学到受控的 inverse RG，并以沿程物理 observable 诊断采样器？"
+      ]
+    },
+    {
+      "title": "背景",
+      "paragraphs": [
+        "RG 把 UV microscopic theory 连续粗粒化为 IR effective theory；diffusion 把复杂数据分布推向简单 prior。两者的数学核心都是概率测度的 Markov semigroup。若正向 SDE 就是 Carosso 或 Polchinski ERG，反向 SDE 的 score 便是 effective action 对场的梯度。",
+        "这还给出 adaptive bridge/parallel tempering：IR 分布易采样，learned inverse maps 提议 UV 配置，Metropolis 或 auxiliary MCMC 可校正。中间尺度不再是任意 latent，而对应 cutoff 与 renormalized couplings。"
+      ]
+    },
+    {
+      "title": "模型与方法",
+      "paragraphs": [
+        "Carosso lattice flow 为 stochastic heat equation：\\(\\partial_t\\phi_t=\\Delta\\phi_t+\\eta_t\\)。高动量模按 \\(e^{-|\\hat p|^2t}\\) 衰减并注入 Gaussian noise，长时先验可解析采样。反向过程加入 \\(\\sigma^2s_t[\\phi]\\)，score network 逼近 \\(\\nabla_\\phi\\log p_t\\)。",
+        "作者提出 path-aware objective：端点用 \\(\\mathrm{KL}(p_{\\theta0}\\|p_0)\\)，沿 RG 时间用 forward KL \\(\\int\\lambda(t)\\mathrm{KL}(p_t\\|p_{\\theta t})dt\\)。另给 score-matching 版本，避免重复求解 neural ODE。实验在二维 lattice \\(\\phi^4\\)、\\(N=20\\) 上比较该目标与只拟合 UV 的 reverse KL。"
+      ]
+    },
+    {
+      "title": "核心结果与证据",
+      "paragraphs": [
+        "Figure 3 把任务画成两条相反箭头：正向 RG 从 microscopic field 逐步滤去短波；learned inverse 从可采样的 very coarse distribution 恢复细尺度。它说明模型要匹配的是整条尺度轨迹，而不只是两端分布。",
+        "Carosso 与 Polchinski schemes 的 field snapshots 视觉上很不同，但 renormalized mass 与 quartic coupling 的流速只差小因子；Polchinski 过快切掉高频而更难训练。RG scheme 因此类似 diffusion noise schedule：物理等价不代表数值等价。",
+        "相同 1000 gradient steps 下，Figure 7/8 显示 Eq. (5.22) learned flows 对 \\(m_R,Z,\\lambda_R\\) 等 observables 一贯比 reverse-KL flow 更接近 true Carosso flow。作者强调只看 field images 无法发现差异，必须测量物理估计量；负质量案例的 quartic coupling 对所有模型都难估。"
+      ]
+    },
+    {
+      "title": "有效性与局限",
+      "paragraphs": [
+        "数值示范限于小型二维 scalar \\(\\phi^4\\) lattice；尚未证明在大体积、临界 slowing、gauge fields、fermions 或拓扑扇区上优于 HMC、multigrid、cluster 或 worm algorithms。沿程 forward-KL 需要 true RG samples，训练成本依赖昂贵 UV sampler。",
+        "Carosso 长时固定为 Gaussian 的表象需配合 field renormalization 才描述非平凡 fixed point。observable agreement 是比视觉更强的诊断，但仍不等同于全分布、autocorrelation time 或独立 effective-sample-rate 改进。文章提出多个算法方向，只有其中一部分做了数值测试。"
+      ]
+    },
+    {
+      "title": "复现与资源",
+      "paragraphs": [
+        "原文：https://arxiv.org/abs/2308.12355。全文 85 页，PDF SHA-256：c89d33445df2dd4b866b54bb46663dd8afaf92ef04b22decd0c5f8dcdb3b7a29。",
+        "复现需固定 lattice convention、\\(L,N,m^2,\\lambda\\)、Carosso/Polchinski kernel、field rescaling、RG-time grid、NUTS warmup、observable estimators、prior 与 1000-step optimizer budget。",
+        "Evidence status: full-text verified; no independent reproduction performed."
+      ]
+    },
+    {
+      "title": "阅读指南",
+      "paragraphs": [
+        "先看 Figure 3 建立正/逆 RG 的尺度方向；再读 Eqs. (4.32)、(5.22)–(5.25)，把 exact RG SDE、path objective 与 reverse score 对齐。最后看 Figure 6–8，重点比较 renormalized observables 而非样本外观，并区分“学到 RG flow”与“最终采样效率更高”。"
+      ]
+    }
+  ],
+  "cover": {
+    "mode": "source_figure",
+    "asset_path": "assets/collection-figures/2308.12355/figure-3-rg-inverse.webp",
+    "label": "Figure 3",
+    "visual_type": "schematic",
+    "evidence": "paper.pdf p. 9, Figure 3",
+    "alt_text": "微观场正向粗粒化和从粗粒化先验反向生成微观场的双向流程。",
+    "caption": "正向 exact RG 逐尺度滤去 UV 模式；反向 diffusion 学习 physically interpretable inverse flow，而非任意 latent interpolation。",
+    "selection_rationale": "该图是 85 页文章最清晰的概念总览，直接连接 RG、扩散和多尺度采样。"
+  },
+  "figure_refs": [
+    {
+      "label": "Figure 3",
+      "asset_path": "assets/collection-figures/2308.12355/figure-3-rg-inverse.webp",
+      "section": "核心结果与证据",
+      "role": "visualize forward coarse-graining and learned inverse RG",
+      "evidence": "paper.pdf p. 9, Figure 3",
+      "alt_text": "场配置沿正向粗粒化变平滑，并沿学习到的反向动力学恢复细尺度。",
+      "caption": "模型的中间状态对应明确 cutoff，而非无物理标签的噪声层级。",
+      "interpretation": "A physically meaningful path enables diagnostics with renormalized observables."
+    }
+  ],
+  "equation_refs": [
+    {
+      "label": "Carosso RG diffusion",
+      "latex": "\\partial_t\\phi_t(n)=\\Delta\\phi_t(n)+\\eta_t(n),\\qquad \\phi_0(n)=\\phi(n)",
+      "role": "instantiate exact coarse-graining as a stochastic diffusion",
+      "symbols": {
+        "phi_t": "lattice field at RG time t",
+        "Delta": "discrete Laplacian",
+        "eta": "Gaussian noise"
+      },
+      "evidence": "paper.pdf p. 33, Eq. (4.32)",
+      "interpretation": "High-frequency field modes are smoothed while stochastic noise preserves a nontrivial probability flow."
+    },
+    {
+      "label": "RG-path variational objective",
+      "latex": "\\mathcal J(\\theta)=\\mathrm{KL}(p_{\\theta0}\\|p_0)+\\int_0^T\\lambda(t)\\,\\mathrm{KL}(p_t\\|p_{\\theta t})\\,dt",
+      "role": "fit the entire physical RG trajectory instead of only the UV endpoint",
+      "symbols": {
+        "p_t": "true RG-flowed law",
+        "p_theta_t": "learned intermediate law",
+        "lambda(t)": "scale weighting"
+      },
+      "evidence": "paper.pdf p. 42, Eq. (5.22)",
+      "interpretation": "Intermediate-scale observables constrain the learned sampler beyond endpoint likelihood."
+    },
+    {
+      "label": "Reverse RG SDE",
+      "latex": "d\\phi_t=\\left[-\\Delta\\phi_t+\\sigma^2s_t(\\phi_t)\\right]dt+\\sigma\\,dB_t",
+      "role": "generate fine fields by reversing the chosen RG diffusion",
+      "symbols": {
+        "s_t": "field score",
+        "B_t": "Brownian field",
+        "sigma": "noise strength"
+      },
+      "evidence": "paper.pdf p. 44, Eq. (5.25)",
+      "interpretation": "The learned score is the force that restores UV structure along a physically specified scale flow."
+    }
+  ],
+  "evidence_refs": [
+    "paper.pdf pp. 31–44: exact RG diffusion and learning objectives",
+    "paper.pdf pp. 63–68: scheme comparison and lattice phi-four experiments",
+    "source PDF SHA-256 c89d33445df2dd4b866b54bb46663dd8afaf92ef04b22decd0c5f8dcdb3b7a29",
+    "Evidence status: full-text verified; no independent reproduction performed."
+  ]
+}

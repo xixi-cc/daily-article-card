@@ -1,0 +1,156 @@
+{
+  "arxiv_id": "2310.02244",
+  "source_version": "v5",
+  "source_pdf": "https://arxiv.org/pdf/2310.02244",
+  "title_en": "Tensor Programs VI: Feature Learning in Infinite-Depth Neural Networks",
+  "title_zh": "Tensor Programs VI：无限深神经网络中的特征学习",
+  "curation_status": "full_text_verified",
+  "card_standard_version": "2.3",
+  "paper_profile": "theory_numerics",
+  "style_reference": "physicist_daily_arxiv",
+  "provenance": {
+    "program": "Collection",
+    "catalog": "Paper Collection",
+    "catalog_record_id": "e09961a5caff848f",
+    "catalog_record_ids": [
+      "e09961a5caff848f"
+    ],
+    "catalog_topic": "Training Dynamics",
+    "collection_date": "2026-08-23",
+    "sampled_at": "2026-08-28",
+    "selected_by": "full_collection_backfill",
+    "sampling_seed": "not_applicable_full_collection",
+    "candidate_count": 452
+  },
+  "verified_metadata": {
+    "arxiv_id": "2310.02244",
+    "version": "v5",
+    "title": "Tensor Programs VI: Feature Learning in Infinite-Depth Neural Networks",
+    "authors": [
+      "Greg Yang",
+      "Dingli Yu",
+      "Chen Zhu",
+      "Soufiane Hayou"
+    ],
+    "categories": [
+      "cs.NE",
+      "cond-mat.dis-nn",
+      "math.PR"
+    ],
+    "primary_category": "cs.NE",
+    "published": "2023-10-03T17:50:40Z",
+    "abstract": "Depth-muP classifies residual-network depth scalings, identifies a feature-learning/diversity optimum for one-layer blocks, and proves limits for deeper blocks.",
+    "comment": ""
+  },
+  "sections": [
+    {
+      "title": "作者信息",
+      "paragraphs": [
+        "作者：Greg Yang、Dingli Yu、Chen Zhu、Soufiane Hayou；arXiv:2310.02244v5。全文 57 页。"
+      ]
+    },
+    {
+      "title": "研究问题",
+      "paragraphs": [
+        "\\(\\mu\\)P 允许从窄网络把最优超参数迁移到宽网络。论文问：对 residual depth \\(L\\)，branch multiplier 与 learning rate 应怎样共同缩放，才能在 \\(L\\to\\infty\\) 时既保持 \\(O(1)\\) feature change，又避免相邻层变成冗余的 neural ODE，并由浅网预测深网超参数？"
+      ]
+    },
+    {
+      "title": "背景",
+      "paragraphs": [
+        "初始化稳定只要求独立 residual increments 的方差不爆炸；训练时各层 updates 高度相关，累积律不同。因此 branch scaling 与 optimizer-specific learning-rate scaling 必须一起分类。",
+        "作者把最优性分成 feature learning 和 feature diversity：前者要求训练引起有限非零表示变化，后者要求深度方向仍保留独立结构，而不是所有相邻层输出平滑同质化。"
+      ]
+    },
+    {
+      "title": "模型与方法",
+      "paragraphs": [
+        "对 block depth 1，Depth-\\(\\mu\\)P 取 \\(x^l=x^{l-1}+aL^{-1/2}g^l(x^{l-1};W^l)\\)。SGD 的参数更新本身已有 \\(L^{-1/2}\\) 梯度因子，因此 base learning rate 保持 \\(O(1)\\)；Adam 对梯度尺度不敏感，learning rate 取 \\(\\eta L^{-1/2}\\)。",
+        "作者分类 branch exponent \\(\\alpha\\) 与 update exponent \\(\\gamma\\)：\\(\\alpha+\\gamma<1\\) 更新爆炸，\\(>1\\) feature learning 消失；\\(\\alpha+\\gamma=1\\) 且 \\(\\alpha>1/2\\) 形成冗余 smooth limit，唯一同时 maximal learning/diversity 的点是 \\(\\alpha=\\gamma=1/2\\)。"
+      ]
+    },
+    {
+      "title": "核心结果与证据",
+      "paragraphs": [
+        "Figure 3 比较 homogeneous nonlinearities：在同一 CIFAR-10/Adam 设置下，absolute value 的最小 log loss 随深度下降得比 ReLU 更快；作者解释 \\(\\phi'(h)=\\operatorname{sign}(h)\\) 最大化跨层 decorrelation，从而提高 feature diversity。",
+        "Depth-\\(\\mu\\)P 在单层 residual blocks 上实现 depthwise hyperparameter transfer，并可训练上千 blocks；但 pre-nonlinearity ResNet 虽然 transfer，8 层后几乎无性能增益，说明 transfer 不是架构质量的充分条件。",
+        "block depth \\(\\ge2\\) 出现不可能性：为保 diversity，block 内多层 weights 在极限中被迫加性而非乘性耦合，最优超参数随深度漂移。Megatron/Common Crawl 中更深模型早期更差、中期最优 learning rate 近 \\(O(1)\\)、训练末期才近 \\(L^{-1/2}\\)，没有单一全程 transfer law。"
+      ]
+    },
+    {
+      "title": "有效性与局限",
+      "paragraphs": [
+        "正面定理针对 infinite width 后 infinite depth、residual block depth 1 和特定 homogeneous nonlinearities；finite width/depth、normalization、attention 与训练时长可改变最优 scaling。absolute value 在本文设置中改善 loss，不代表对所有数据与架构优于 ReLU，也可能改变表达偏置。",
+        "作者对现代 Transformer 给出的是限制性结论而非现成 recipe：\\(L^{-1/2}\\) 可能迁移 maximum viable learning rate，却不能同时对齐训练全过程的 optimum。理论的“唯一最优”依赖选定的参数化空间和 feature-diversity 定义。"
+      ]
+    },
+    {
+      "title": "复现与资源",
+      "paragraphs": [
+        "原文：https://arxiv.org/abs/2310.02244。全文 57 页，PDF SHA-256：e1777ad3d3a77e870a3c3ef8daa7bd05ad186a94cd3bf0f68e552c11b7e746e8。",
+        "复现需固定 widthwise \\(\\mu\\)P、block depth、pre/post-nonlinearity、normalization、optimizer、\\(a,\\eta\\)、训练 steps/epochs 与数据；迁移图应展示完整二维超参数 surface，而非只报最佳点。",
+        "Evidence status: full-text verified; no independent reproduction performed."
+      ]
+    },
+    {
+      "title": "阅读指南",
+      "paragraphs": [
+        "先读 Table 1 与 Eq. (1)，分别跟踪初始化 increments 和训练 updates 的 \\(L\\) 标度；再看 \\((\\alpha,\\gamma)\\) 分类和 feature-diversity 定义。随后用 Figure 3 检验 nonlinearity 机制，最后读 block-depth-2 与 Megatron 反例，明确 Depth-\\(\\mu\\)P 的适用边界。"
+      ]
+    }
+  ],
+  "cover": {
+    "mode": "source_figure",
+    "asset_path": "assets/collection-figures/2310.02244/figure-3-feature-diversity.webp",
+    "label": "Figure 3",
+    "visual_type": "data_plot",
+    "evidence": "paper.pdf p. 18, Figure 3",
+    "alt_text": "absolute-value 与 ReLU 残差网络在不同深度和学习率下的训练损失比较。",
+    "caption": "absolute-value nonlinearity 提高跨层 feature diversity；在该 CIFAR-10 设置中，深度增加带来更低的最优训练损失。",
+    "selection_rationale": "论文缺少更合适的可视化示意图；该图直接展示其最重要且反直觉的经验机制，优先于纯公式页。"
+  },
+  "figure_refs": [
+    {
+      "label": "Figure 3",
+      "asset_path": "assets/collection-figures/2310.02244/figure-3-feature-diversity.webp",
+      "section": "核心结果与证据",
+      "role": "compare nonlinearities through depthwise feature diversity",
+      "evidence": "paper.pdf p. 18, Figure 3",
+      "alt_text": "不同深度的 loss surface 以及 abs 与 ReLU 的最优损失曲线。",
+      "caption": "absolute value 的 derivative 更强地 decorrelate 层间 updates，并在此实验中改善深度收益。",
+      "interpretation": "The plot is empirical support within one setup, not a universal activation ranking."
+    }
+  ],
+  "equation_refs": [
+    {
+      "label": "Depth-muP residual scaling",
+      "latex": "x^l=x^{l-1}+\\frac{a}{\\sqrt L}\\,g^l(x^{l-1};W^l)",
+      "role": "balance independent initialization increments and correlated training updates",
+      "symbols": {
+        "L": "number of residual blocks",
+        "a": "depth-transferable branch constant",
+        "g_l": "one-layer residual block"
+      },
+      "evidence": "paper.pdf p. 2, Eq. (1)",
+      "interpretation": "Each initialized branch is order L^{-1/2}, while correlated update contributions accumulate to order one."
+    },
+    {
+      "label": "Optimal depth exponents",
+      "latex": "\\alpha+\\gamma=1,\\qquad \\alpha=\\gamma=\\frac12",
+      "role": "identify the unique block-depth-one limit with maximal feature learning and diversity",
+      "symbols": {
+        "alpha": "branch-multiplier exponent",
+        "gamma": "effective-update exponent"
+      },
+      "evidence": "paper.pdf p. 3, optimality classification",
+      "interpretation": "Other stable feature-learning limits become layerwise redundant or unfaithful under the paper's classification."
+    }
+  ],
+  "evidence_refs": [
+    "paper.pdf pp. 2–6: Depth-muP recipe and scaling intuition",
+    "paper.pdf pp. 18–23: feature diversity, activation and block-depth experiments",
+    "paper.pdf pp. 45–51: classification and impossibility results",
+    "source PDF SHA-256 e1777ad3d3a77e870a3c3ef8daa7bd05ad186a94cd3bf0f68e552c11b7e746e8",
+    "Evidence status: full-text verified; no independent reproduction performed."
+  ]
+}

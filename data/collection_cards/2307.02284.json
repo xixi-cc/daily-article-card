@@ -1,0 +1,158 @@
+{
+  "arxiv_id": "2307.02284",
+  "source_version": "v3",
+  "source_pdf": "https://arxiv.org/pdf/2307.02284",
+  "title_en": "Universal Scaling Laws of Absorbing Phase Transitions in Artificial Deep Neural Networks",
+  "title_zh": "人工深度神经网络中吸收相变的普适缩放律",
+  "curation_status": "full_text_verified",
+  "card_standard_version": "2.3",
+  "paper_profile": "theory_numerics",
+  "style_reference": "physicist_daily_arxiv",
+  "provenance": {
+    "program": "Collection",
+    "catalog": "Paper Collection",
+    "catalog_record_id": "7419ddc22aa2fd0a",
+    "catalog_record_ids": [
+      "7419ddc22aa2fd0a"
+    ],
+    "catalog_topic": "Scaling Laws",
+    "collection_date": "2026-08-23",
+    "sampled_at": "2026-08-28",
+    "selected_by": "full_collection_backfill",
+    "sampling_seed": "not_applicable_full_collection",
+    "candidate_count": 452
+  },
+  "verified_metadata": {
+    "arxiv_id": "2307.02284",
+    "version": "v3",
+    "title": "Universal Scaling Laws of Absorbing Phase Transitions in Artificial Deep Neural Networks",
+    "authors": [
+      "Keiichi Tamai",
+      "Tsuyoshi Okubo",
+      "Truong Vinh Truong Duy",
+      "Naotake Natori",
+      "Synge Todo"
+    ],
+    "categories": [
+      "stat.ML",
+      "cond-mat.dis-nn",
+      "cond-mat.stat-mech",
+      "cs.LG"
+    ],
+    "primary_category": "stat.ML",
+    "published": "2023-07-05T13:39:02Z",
+    "abstract": "Deterministic signal collapse near the edge of chaos is analyzed as an absorbing transition, with mean-field and directed-percolation scaling in MLPs and CNNs.",
+    "comment": ""
+  },
+  "sections": [
+    {
+      "title": "作者信息",
+      "paragraphs": [
+        "作者：Keiichi Tamai、Tsuyoshi Okubo、Truong Vinh Truong Duy、Naotake Natori、Synge Todo；arXiv:2307.02284v3。全文 16 页。"
+      ]
+    },
+    {
+      "title": "研究问题",
+      "paragraphs": [
+        "深网在 edge of chaos 附近出现发散的相关深度，但“临界初始化有利”并没有说明有限宽度、网络深度与泛化怎样共同缩放。论文问：两个输入信号在逐层传播时合并成同一状态，能否严格类比非平衡统计物理中的吸收相变，并由 universality class 给出超越具体激活函数的定量规律？"
+      ]
+    },
+    {
+      "title": "背景",
+      "paragraphs": [
+        "网络初始化后前向动力学是确定的：若两个 preactivations 在某层完全相同，之后永远不能分离，因此 \\(\\rho=0\\) 是吸收态。权重方差 \\(\\sigma_w\\) 和偏置方差 \\(\\sigma_b\\) 控制 ordered 与 chaotic 两相；最大 Lyapunov 指数的变号给出稳定性边界。",
+        "把层号 \\(l\\) 当作时间，输入或通道的空间坐标当作真实空间，order parameter \\(\\rho\\) 描述两信号的去相关程度。全连接网络是 mean-field 极限；卷积局域性和有限通道涨落则允许 directed-percolation 型传播。"
+      ]
+    },
+    {
+      "title": "模型与方法",
+      "paragraphs": [
+        "对无限宽 MLP，作者用 covariance mean-field recursion 推导 fixed point 与 correlation depth。取 \\(\\rho^{(l)}=1-c^{(l)}\\)，在临界点附近得到吸收相变缩放：\\(\\beta=1\\)、\\(\\nu_\\parallel=1\\)，而激活函数差异进入非普适 metric factors \\(\\kappa,\\gamma\\)。",
+        "有限宽时 leading non-Gaussian correction 为 \\(O(n^{-1})\\)，作者提出 \\(\\rho(l;n)\\simeq n^{-1}f(l/n)\\)。CNN 中局部耦合加入扩散项与 multiplicative noise，数值检验一维和二维 directed percolation 的已知临界指数。"
+      ]
+    },
+    {
+      "title": "核心结果与证据",
+      "paragraphs": [
+        "Figure 1 把四层证据放在一张图：\\((\\sigma_w,\\sigma_b)\\) 相图、有限宽最大 Lyapunov 指数、order parameter 随深度衰减，以及 tanh/erf/sin 经 metric factors 重标度后的 data collapse。以 \\(\\sigma_b=0.3\\) 为例，tanh 临界点约 \\(\\sigma_{w,c}=1.39558\\)。",
+        "MLP 的临界衰减为 \\(\\rho(l)\\sim(\\kappa l)^{-1}\\)。有限宽拟合表明要接近无限宽流，需要 \\(n\\gtrsim\\mu L\\)；增大 \\(\\kappa\\) 可用较浅网络获得临界记忆，却通常伴随更大的宽度成本 \\(\\mu\\)。",
+        "有限通道 CNN 的 collapse 与 directed percolation 相符：一维使用 \\(\\beta\\approx0.27649,\\nu_\\parallel\\approx1.73385\\)，二维使用 \\(\\beta\\approx0.58,\\nu_\\parallel\\approx1.29\\)。这支持 universality 的结构解释，但仍是特定随机网络上的数值证据。"
+      ]
+    },
+    {
+      "title": "有效性与局限",
+      "paragraphs": [
+        "临界边界只是必要而非充分条件。作者的 NTK 分析表明 \\(\\kappa L\\) 太小会使 kernel 近 rank-1，太大则使 test kernel 近似与输入无关；两者都损害训练或泛化。合适窗口还依赖数据的 cosine-distance 分布，不能由一个普适常数确定。",
+        "理论以随机初始化、特定参数化和简化 MLP/CNN 为主；finite-width correction 的 metric factor \\(\\mu\\) 由拟合得到，尚无闭式推导。训练后的 feature learning、残差连接、normalization 与现代大模型可能改变或破坏吸收态结构。"
+      ]
+    },
+    {
+      "title": "复现与资源",
+      "paragraphs": [
+        "原文：https://arxiv.org/abs/2307.02284。全文 16 页，PDF SHA-256：7419ddc22aa2fd0a4c710d64274d5d0a84f9abf49a0e89a474a0ea9c7ed7c223。",
+        "复现应固定激活函数、\\(\\sigma_w,\\sigma_b\\)、宽度/通道、深度、卷积维数与 kernel、输入 cosine distance、独立初始化次数和临界点拟合区间；data collapse 必须同时报告未重标度曲线。",
+        "Evidence status: full-text verified; no independent reproduction performed."
+      ]
+    },
+    {
+      "title": "阅读指南",
+      "paragraphs": [
+        "先看 Figure 1，把 phase boundary、Lyapunov 稳定性和 order-parameter collapse 对齐；再读 Eqs. (17)、(20)–(23) 分清普适指数与非普适 metric factor。最后看 Figure 3/4 的有限宽和 CNN 检验，再读 NTK 的 \\(\\kappa L\\) 两端极限，避免把 edge of chaos 简化成单点调参处方。"
+      ]
+    }
+  ],
+  "cover": {
+    "mode": "source_figure",
+    "asset_path": "assets/collection-figures/2307.02284/figure-1-absorbing-transition.webp",
+    "label": "Figure 1",
+    "visual_type": "phase_diagram",
+    "evidence": "paper.pdf p. 2, Figure 1",
+    "alt_text": "有序—混沌相图、Lyapunov 指数、序参量演化和缩放坍缩的四联图。",
+    "caption": "信号传播的有序—混沌边界被重写为吸收相变；临界指数普适，而 \\(\\kappa\\) 等 metric factors 决定具体网络的深度记忆。",
+    "selection_rationale": "该图同时显示相图、稳定性和 data collapse，是论文核心论证的完整视觉摘要。"
+  },
+  "figure_refs": [
+    {
+      "label": "Figure 1",
+      "asset_path": "assets/collection-figures/2307.02284/figure-1-absorbing-transition.webp",
+      "section": "核心结果与证据",
+      "role": "connect edge-of-chaos dynamics to absorbing-transition scaling",
+      "evidence": "paper.pdf p. 2, Figure 1",
+      "alt_text": "相边界、Lyapunov 指数、序参量与重标度结果。",
+      "caption": "不同激活函数经非普适尺度因子重标度后落到同一临界曲线。",
+      "interpretation": "The collapse supports a universality class, while the metric factors remain architecture-specific."
+    }
+  ],
+  "equation_refs": [
+    {
+      "label": "Absorbing-state order parameter",
+      "latex": "\\rho^{(l)}=1-c^{(l)}",
+      "role": "measure separation of two propagated signals",
+      "symbols": {
+        "rho": "order parameter",
+        "c": "mean-field correlation coefficient",
+        "l": "hidden-layer index"
+      },
+      "evidence": "paper.pdf p. 4, Eq. (20)",
+      "interpretation": "Once rho reaches zero, deterministic forward propagation cannot regenerate signal differences."
+    },
+    {
+      "label": "Mean-field critical exponents",
+      "latex": "\\rho^*\\propto\\tau^\\beta,\\qquad \\xi_\\parallel\\propto|\\tau|^{-\\nu_\\parallel},\\qquad \\beta=\\nu_\\parallel=1",
+      "role": "state the absorbing-transition scaling near the MLP critical point",
+      "symbols": {
+        "tau": "distance from criticality",
+        "xi_parallel": "correlation depth",
+        "beta": "order-parameter exponent"
+      },
+      "evidence": "paper.pdf p. 4, Eqs. (17)–(21)",
+      "interpretation": "Activation choices change metric factors but not these mean-field exponents."
+    }
+  ],
+  "evidence_refs": [
+    "paper.pdf pp. 2–5: phase diagram and universal MLP scaling",
+    "paper.pdf pp. 6–9: NTK, finite-width and directed-percolation tests",
+    "source PDF SHA-256 7419ddc22aa2fd0a4c710d64274d5d0a84f9abf49a0e89a474a0ea9c7ed7c223",
+    "Evidence status: full-text verified; no independent reproduction performed."
+  ]
+}

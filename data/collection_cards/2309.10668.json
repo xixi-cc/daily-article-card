@@ -1,0 +1,164 @@
+{
+  "arxiv_id": "2309.10668",
+  "source_version": "v2",
+  "source_pdf": "https://arxiv.org/pdf/2309.10668",
+  "title_en": "Language Modeling Is Compression",
+  "title_zh": "语言建模就是压缩",
+  "curation_status": "full_text_verified",
+  "card_standard_version": "2.3",
+  "paper_profile": "ai_empirical",
+  "style_reference": "physicist_daily_arxiv",
+  "provenance": {
+    "program": "Collection",
+    "catalog": "Paper Collection",
+    "catalog_record_id": "4d38daadaeb5b4d6",
+    "catalog_record_ids": [
+      "4d38daadaeb5b4d6"
+    ],
+    "catalog_topic": "Transformer Theory",
+    "collection_date": "2026-08-23",
+    "sampled_at": "2026-08-28",
+    "selected_by": "full_collection_backfill",
+    "sampling_seed": "not_applicable_full_collection",
+    "candidate_count": 452
+  },
+  "verified_metadata": {
+    "arxiv_id": "2309.10668",
+    "version": "v2",
+    "title": "Language Modeling Is Compression",
+    "authors": [
+      "Grégoire Delétang",
+      "Anian Ruoss",
+      "Paul-Ambroise Duquenne",
+      "Elliot Catt",
+      "Tim Genewein",
+      "Christopher Mattern",
+      "Jordi Grau-Moya",
+      "Li Kevin Wenliang",
+      "Matthew Aitchison",
+      "Laurent Orseau",
+      "Marcus Hutter",
+      "Joel Veness"
+    ],
+    "categories": [
+      "cs.LG",
+      "cs.AI",
+      "cs.CL",
+      "cs.IT"
+    ],
+    "primary_category": "cs.LG",
+    "published": "2023-09-19T14:50:38Z",
+    "abstract": "Arithmetic coding turns predictive models into lossless compressors, enabling cross-modal evaluation and a model-size-adjusted view of scaling.",
+    "comment": ""
+  },
+  "sections": [
+    {
+      "title": "作者信息",
+      "paragraphs": [
+        "作者：Grégoire Delétang 等十二人；arXiv:2309.10668v2，ICLR 2024。全文 18 页。"
+      ]
+    },
+    {
+      "title": "研究问题",
+      "paragraphs": [
+        "语言模型以 cross-entropy 训练，而 lossless compressor 以 bit length 评价；两者由 Shannon coding theorem 等价。论文问：把 foundation model 真正接到 arithmetic coder 后，能否用压缩率作为跨文本、图像、音频的统一预测指标，并在把模型参数本身计入 code length 后重新解释 scaling law？"
+      ]
+    },
+    {
+      "title": "背景",
+      "paragraphs": [
+        "一个 predictor 给出条件概率 \\(\\hat\\rho(x_i\\mid x_{<i})\\)。Arithmetic coding 按这些概率递归细分 \\([0,1)\\)，序列占据的区间宽度决定 bit 数，理想长度接近 \\(-\\log_2\\hat\\rho(x_{1:n})\\)。反向地，compressor 的长度差可构造下一符号概率。",
+        "因此 log loss 不是压缩的比喻，而是忽略有限精度常数后的实际 expected codelength。真正的 description length 还应包含模型程序/参数；这使“更大模型总更好”的结论依赖被压数据量。"
+      ]
+    },
+    {
+      "title": "模型与方法",
+      "paragraphs": [
+        "Figure 1 用字符串 AIXI 展示 arithmetic encoder：每读一个字符，模型概率把区间再次切分；最终从 4 bytes 得到 7-bit code。实验将 Transformer、Llama 2 与 Chinchilla 的 token probabilities 转成 bytes 上的算术码，与 gzip、LZMA2、PNG、FLAC 比较。",
+        "数据为各 1GB 的 enwik9、ImageNet patches、LibriSpeech 和随机 bytes。作者同时报告 raw compression rate 与 adjusted rate；后者把 float16 参数按每参数 2 bytes 加入 compressed size。"
+      ]
+    },
+    {
+      "title": "核心结果与证据",
+      "paragraphs": [
+        "Figure 1 把概率预测和可逆编码一一对应：高概率字符选中较宽子区间，需要较少新增 bits；解码器用相同 \\(\\hat\\rho\\) 从最终区间恢复原序列。",
+        "忽略模型大小时，Chinchilla 70B 将 ImageNet patches 压到原始大小的 43.4%，优于 PNG 58.5%；LibriSpeech 压到 16.4%，优于 FLAC 30.3%。但 1GB 数据上计入参数后，70B 的 adjusted rate 约 14000%，远差于经典 compressor。",
+        "小 Transformer 的 adjusted curves 都有最优模型尺寸：测试集越大，最优参数量越大；越过该点，新增参数 bytes 超过 prediction gain。ASCII tokenization 在 38M 模型上 raw rate 6.4%，优于 BPE-20K 的 9.0%，说明短序列与大 alphabet 的代价需共同计算。"
+      ]
+    },
+    {
+      "title": "有效性与局限",
+      "paragraphs": [
+        "跨模态 raw rate 的惊艳数字不含数十到数百 GB 参数，不能直接表示可部署 compressor。作者估计 foundation model 需 TB 级数据才能摊薄模型；编码还需逐 token 运行巨大网络，速度与能耗没有和 PNG/FLAC 公平比较。",
+        "压缩率给出平均 log probability，不保证 autoregressive sample 的感知质量；Figure 3 中 gzip 与 Chinchilla 的图像续写都不连贯，误差会累积。ImageNet 被逐行独立编码，输入转换和 tokenizer 也改变序列结构；训练语料中仍不能绝对排除编码后的图像/音频泄漏。"
+      ]
+    },
+    {
+      "title": "复现与资源",
+      "paragraphs": [
+        "原文：https://arxiv.org/abs/2309.10668；代码：https://github.com/google-deepmind/language_modeling_is_compression。全文 18 页，PDF SHA-256：78c4e944f08a21d111b2818abce424a2355972b48c07e0b2d67008893ee71bf0。",
+        "复现需固定 byte conversion、tokenizer、context length、arithmetic-coder precision、model checkpoint、参数存储位宽、数据切片和 raw/adjusted 分母，并同时报告吞吐与内存。",
+        "Evidence status: full-text verified; no independent reproduction performed."
+      ]
+    },
+    {
+      "title": "阅读指南",
+      "paragraphs": [
+        "先看 Figure 1 并手算区间宽度，确认 log loss 如何变成 bits；再读 Eq. (2) 的 cross-entropy 恒等式。随后对照 Table 1 的 raw 与 adjusted 两半，再看 Figure 2 的 U-shaped size tradeoff；不要只引用 43.4%/16.4% 而忽略 70B 参数成本。"
+      ]
+    }
+  ],
+  "cover": {
+    "mode": "source_figure",
+    "asset_path": "assets/collection-figures/2309.10668/figure-1-arithmetic-coding.webp",
+    "label": "Figure 1",
+    "visual_type": "schematic",
+    "evidence": "paper.pdf p. 2, Figure 1",
+    "alt_text": "AIXI 四个字符在算术编码中逐次细分概率区间并输出二进制码。",
+    "caption": "语言模型的条件概率直接决定 arithmetic code 的区间宽度；cross-entropy 因而就是期望 bit length。",
+    "selection_rationale": "该图可视化了全文的核心等价关系，比压缩率表更能解释为什么语言建模就是压缩。"
+  },
+  "figure_refs": [
+    {
+      "label": "Figure 1",
+      "asset_path": "assets/collection-figures/2309.10668/figure-1-arithmetic-coding.webp",
+      "section": "核心结果与证据",
+      "role": "visualize probability-to-bitstream conversion",
+      "evidence": "paper.pdf p. 2, Figure 1",
+      "alt_text": "A、I、X、I 的条件概率递归切分单位区间。",
+      "caption": "更准确的 predictor 为真实符号分配更宽区间，从而输出更短 code。",
+      "interpretation": "The mapping is lossless only when encoder and decoder share the same predictive distribution."
+    }
+  ],
+  "equation_refs": [
+    {
+      "label": "Expected predictive codelength",
+      "latex": "H(\\rho,\\hat\\rho)=\\mathbb E_{x\\sim\\rho}\\!\\left[-\\sum_{i=1}^{n}\\log_2\\hat\\rho(x_i\\mid x_{<i})\\right]",
+      "role": "identify cross-entropy with expected lossless code length",
+      "symbols": {
+        "rho": "data source",
+        "rho_hat": "predictive model",
+        "x_i": "next symbol"
+      },
+      "evidence": "paper.pdf p. 4, Eq. (2)",
+      "interpretation": "Maximum likelihood minimizes the number of arithmetic-coded bits up to coding overhead."
+    },
+    {
+      "label": "Prediction from a compressor",
+      "latex": "\\hat\\rho(b\\mid x_{<i})=2^{\\ell_c(x_{<i})-\\ell_c(x_{<i}b)}",
+      "role": "turn code-length increments into next-symbol probabilities",
+      "symbols": {
+        "ell_c": "compressed length under compressor c",
+        "b": "candidate next symbol"
+      },
+      "evidence": "paper.pdf p. 4, compression-based sequence prediction",
+      "interpretation": "A compressor defines an energy over continuations, although finite code lengths may require normalization and can be biased."
+    }
+  ],
+  "evidence_refs": [
+    "paper.pdf pp. 2–4: arithmetic coding and prediction-compression equivalence",
+    "paper.pdf pp. 5–9: cross-modal rates, adjusted scaling and limitations",
+    "source PDF SHA-256 78c4e944f08a21d111b2818abce424a2355972b48c07e0b2d67008893ee71bf0",
+    "Evidence status: full-text verified; no independent reproduction performed."
+  ]
+}

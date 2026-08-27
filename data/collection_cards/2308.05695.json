@@ -1,0 +1,153 @@
+{
+  "arxiv_id": "2308.05695",
+  "source_version": "v4",
+  "source_pdf": "https://arxiv.org/pdf/2308.05695",
+  "title_en": "Masked Diffusion as Self-supervised Representation Learner",
+  "title_zh": "Masked Diffusion：作为自监督表征学习器的掩码扩散",
+  "curation_status": "full_text_verified",
+  "card_standard_version": "2.3",
+  "paper_profile": "ai_empirical",
+  "style_reference": "physicist_daily_arxiv",
+  "provenance": {
+    "program": "Collection",
+    "catalog": "Paper Collection",
+    "catalog_record_id": "5b9a89dd6954b815",
+    "catalog_record_ids": [
+      "5b9a89dd6954b815"
+    ],
+    "catalog_topic": "Field Theory",
+    "collection_date": "2026-08-23",
+    "sampled_at": "2026-08-28",
+    "selected_by": "full_collection_backfill",
+    "sampling_seed": "not_applicable_full_collection",
+    "candidate_count": 452
+  },
+  "verified_metadata": {
+    "arxiv_id": "2308.05695",
+    "version": "v4",
+    "title": "Masked Diffusion as Self-supervised Representation Learner",
+    "authors": [
+      "Zixuan Pan",
+      "Jianxu Chen",
+      "Yiyu Shi"
+    ],
+    "categories": [
+      "cs.CV"
+    ],
+    "primary_category": "cs.CV",
+    "published": "2023-08-10T16:57:14Z",
+    "abstract": "A time-dependent patch-masking process replaces Gaussian noising in diffusion-style pretraining and is evaluated for few-shot semantic segmentation.",
+    "comment": ""
+  },
+  "sections": [
+    {
+      "title": "作者信息",
+      "paragraphs": [
+        "作者：Zixuan Pan、Jianxu Chen、Yiyu Shi；arXiv:2308.05695v4。全文 19 页。Paper Collection 将其归入 Field Theory 主题，但论文本身属于计算机视觉与自监督分割。"
+      ]
+    },
+    {
+      "title": "研究问题",
+      "paragraphs": [
+        "DDPM 的 U-Net 中间特征可用于像素级语义任务，但生成能力、Gaussian denoising 与表征质量纠缠在一起。论文问：若保留“连续腐蚀强度 + time-aware reconstruction”结构，却把加性噪声替换成 patch masking，能否获得更适合少标签分割的表示？"
+      ]
+    },
+    {
+      "title": "背景",
+      "paragraphs": [
+        "扩散预训练对一系列 noise levels 做去噪，可被视为许多腐蚀强度共享参数的 denoising autoencoder。MAE 则遮住 patches 并重构像素，但通常只在单一 masking regime 下训练。MDM 将两者的有效自由度拆开：腐蚀类型取 masking，扩散时间 \\(t\\) 仍控制强度。",
+        "作者用 SSIM 而非纯 MSE，使重构损失偏向局部结构与对比度；这更接近 dense segmentation 需要的几何信息，但也使结论与 loss choice 不可分离。"
+      ]
+    },
+    {
+      "title": "模型与方法",
+      "paragraphs": [
+        "给定 \\(H\\times W\\times C\\) 图像，划分为 \\(N=HW/P^2\\) 个 patches；均匀采样 \\(t\\in[1,T]\\)，令 masking ratio \\(R_m=t/(T+1)\\)，随机置零 \\(\\lfloor R_mN\\rfloor\\) 个 patches。time-aware U-Net 接收 \\(x_t,t\\) 并重构完整 \\(x_0\\)。",
+        "预训练后冻结 U-Net，从多个尺度和 timesteps 抽取特征，拼接并训练轻量 segmentation network。Figure 2 明确分离 reconstruction pretraining 与 label-limited downstream training。"
+      ]
+    },
+    {
+      "title": "核心结果与证据",
+      "paragraphs": [
+        "Figure 2 显示同一 encoder–decoder 先从不同遮挡率恢复图像，再把多尺度 representations 交给 segmentation net；它说明 MDM 的“diffusion”主要是腐蚀强度轴，而非学习反向 Gaussian SDE。",
+        "GlaS 仅 8 个标注样本时，MDM Dice/IoU 为 \\(91.60\\pm0.69/84.51\\pm1.15\\)，DDPM 为 \\(90.30\\pm0.47/82.32\\pm0.77\\)。MoNuSeg 仅 3 个标注样本时，MDM Dice/AJI 为 \\(79.71\\pm0.75/66.43\\pm1.02\\)，DDPM 为 \\(74.37\\pm3.08/60.03\\pm3.48\\)。",
+        "FFHQ-34/CelebA-19 mIoU 为 \\(60.34\\pm0.15/59.57\\pm0.13\\)，略高于 DDPM 的 \\(59.36\\pm0.17/58.86\\pm0.12\\)。消融中 fixed-\\(t\\) MDM 退化为 86.82 Dice，而多 \\(t\\)+SSIM 达到 91.60，支持多级腐蚀和结构损失共同起作用。"
+      ]
+    },
+    {
+      "title": "有效性与局限",
+      "paragraphs": [
+        "作者明确限制：实现只测试 U-Net、两个医学和两个人脸分割数据集；没有大规模通用 segmentation、分类、检测或跨架构迁移。MDM 与比较方法的预训练迭代、checkpoint 来源和结构不同，不能把表中差异完全归因于 masking。",
+        "MDM 并非标准概率扩散模型，也没有 likelihood 或无条件生成检验；“denoising 不是必需”只针对表征学习。SSIM 的收益依赖下游结构偏置，MAE 上反而变差，因此不是普适 reconstruction objective。医学数据的样本数与独立划分也较小。"
+      ]
+    },
+    {
+      "title": "复现与资源",
+      "paragraphs": [
+        "原文：https://arxiv.org/abs/2308.05695；代码：https://github.com/zx-pan/mdm/。全文 19 页，PDF SHA-256：e1f8afc04383576873de25cc51ddce929b36622bcb411c254ce55d57012fa37a。",
+        "复现需固定 patch size、\\(T\\)、timestep sampling、SSIM 常数、U-Net 层级、抽取 timesteps、feature interpolation、标注子集、pretraining iterations 和多次划分随机种子。",
+        "Evidence status: full-text verified; no independent reproduction performed."
+      ]
+    },
+    {
+      "title": "阅读指南",
+      "paragraphs": [
+        "先看 Figure 2，确认生成训练与分割训练的参数冻结关系；再读 masking ratio 和 Eq. (4) 的 SSIM objective。最后按 Table 1–4 分开看 full-label、few-shot、fixed-\\(t\\) 与 loss ablation，避免用单一 SOTA 结论掩盖训练协议差异。"
+      ]
+    }
+  ],
+  "cover": {
+    "mode": "source_figure",
+    "asset_path": "assets/collection-figures/2308.05695/figure-2-mdm-overview.webp",
+    "label": "Figure 2",
+    "visual_type": "schematic",
+    "evidence": "paper.pdf p. 4, Figure 2",
+    "alt_text": "Masked diffusion 重构预训练与下游分割训练的两阶段框图。",
+    "caption": "时间 \\(t\\) 控制 patch 遮挡率；冻结的 U-Net 表示被多尺度抽取后用于少标签分割。",
+    "selection_rationale": "该图完整显示论文的两阶段方法与表征流向，比单独分割样例或数据表更能解释机制。"
+  },
+  "figure_refs": [
+    {
+      "label": "Figure 2",
+      "asset_path": "assets/collection-figures/2308.05695/figure-2-mdm-overview.webp",
+      "section": "核心结果与证据",
+      "role": "show the corruption-reconstruction and downstream representation pipeline",
+      "evidence": "paper.pdf p. 4, Figure 2",
+      "alt_text": "原图、遮挡、U-Net 重构和分割网络的两阶段流程。",
+      "caption": "MDM 保留 time conditioning，却用结构遮挡替代 Gaussian noise。",
+      "interpretation": "The diagram separates representation learning from generative diffusion claims."
+    }
+  ],
+  "equation_refs": [
+    {
+      "label": "Time-dependent masking ratio",
+      "latex": "R_m(t)=\\frac{t}{T+1},\\qquad N_{\\mathrm{mask}}=\\left\\lfloor R_m(t)N\\right\\rfloor",
+      "role": "turn diffusion time into a hierarchy of patch-corruption strengths",
+      "symbols": {
+        "t": "sampled timestep",
+        "T": "number of corruption levels",
+        "N": "number of image patches"
+      },
+      "evidence": "paper.pdf p. 5, masking procedure",
+      "interpretation": "A single U-Net learns reconstruction across a continuum of missing-information fractions."
+    },
+    {
+      "label": "MDM reconstruction objective",
+      "latex": "\\mathcal L_{\\mathrm{MDM}}=\\mathbb E_{t,x_0}\\!\\left[\\frac{1-\\operatorname{SSIM}\\!\\left(x_0,U_\\theta(x_t,t)\\right)}{2}\\right]",
+      "role": "align masked reconstruction with structural information needed for segmentation",
+      "symbols": {
+        "U_theta": "time-aware U-Net",
+        "x_t": "masked image",
+        "x_0": "clean target"
+      },
+      "evidence": "paper.pdf p. 5, Eq. (4)",
+      "interpretation": "The downstream gain reflects both multilevel masking and a structure-sensitive loss."
+    }
+  ],
+  "evidence_refs": [
+    "paper.pdf pp. 4–6: masking process, SSIM loss and feature extraction",
+    "paper.pdf pp. 7–10: segmentation comparisons, ablations and limitations",
+    "source PDF SHA-256 e1f8afc04383576873de25cc51ddce929b36622bcb411c254ce55d57012fa37a",
+    "Evidence status: full-text verified; no independent reproduction performed."
+  ]
+}
