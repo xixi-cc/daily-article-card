@@ -1,0 +1,151 @@
+{
+  "arxiv_id": "2509.21519",
+  "source_version": "v5",
+  "source_pdf": "https://arxiv.org/pdf/2509.21519",
+  "title_en": "Provable Scaling Laws of Feature Emergence from Learning Dynamics of Grokking",
+  "title_zh": "从顿悟学习动力学推导特征涌现的可证明标度律",
+  "curation_status": "full_text_verified",
+  "card_standard_version": "2.3",
+  "paper_profile": "theory_numerics",
+  "style_reference": "physicist_daily_arxiv",
+  "provenance": {
+    "program": "Collection",
+    "catalog": "Paper Collection",
+    "catalog_record_id": "785b72b087f4ceeb",
+    "catalog_record_ids": [
+      "785b72b087f4ceeb"
+    ],
+    "catalog_topic": "Training Dynamics",
+    "collection_date": "2026-08-23",
+    "sampled_at": "2026-08-28",
+    "selected_by": "full_collection_backfill",
+    "sampling_seed": "not_applicable_full_collection",
+    "candidate_count": 452
+  },
+  "verified_metadata": {
+    "arxiv_id": "2509.21519",
+    "version": "v5",
+    "title": "Provable Scaling Laws of Feature Emergence from Learning Dynamics of Grokking",
+    "authors": [
+      "Yuandong Tian"
+    ],
+    "categories": [
+      "cs.LG",
+      "cs.AI"
+    ],
+    "primary_category": "cs.LG",
+    "published": "2025-09-25T20:08:09Z",
+    "abstract": "The Li2 framework separates grokking into lazy, independent-feature and interactive-feature stages and derives sample-size and optimizer-dependent feature-emergence laws.",
+    "comment": ""
+  },
+  "sections": [
+    {
+      "title": "作者信息",
+      "paragraphs": [
+        "作者：Yuandong Tian；arXiv:2509.21519v5。全文 51 页。论文提出 \\(\\mathbf{Li}_2\\) 三阶段框架，围绕二层非线性网络和群运算任务，从梯度动力学解释 grokking、特征局部极值、样本复杂度与 Muon 的作用。代码链接由作者在正文给出。"
+      ]
+    },
+    {
+      "title": "研究问题",
+      "paragraphs": [
+        "grokking 表现为训练集先拟合、测试集很久后突然泛化。已有相变或表示观察不能完整回答：哪些 feature 会从梯度流中出现，何时稳定，样本数、weight decay、learning rate 与节点相互作用如何控制从 memorization 到 generalization 的延迟？"
+      ]
+    },
+    {
+      "title": "背景",
+      "paragraphs": [
+        "模型先用随机 hidden features 做 ridge-regression 式记忆；当 output layer 拟合后，回传梯度 \\(G_F\\) 开始携带标签结构。作者把后续 feature dynamics 写成一个能量函数 \\(\\mathcal E\\) 的 gradient ascent，其 local maxima 对应可学习特征。",
+        "Figure 1 将时间轴分成三段：I lazy learning 对应 sharp-optimum memorization；II 各 hidden node 沿 \\(\\mathcal E\\) 独立学习；III 节点相互作用后补足缺失 features，并进入较平坦的 generalizing solution。"
+      ]
+    },
+    {
+      "title": "模型与方法",
+      "paragraphs": [
+        "研究对象是二层网络 \\(f(x)=W_2\\sigma(W_1x)\\)，以 centered feature matrix \\(F\\) 与 backpropagated signal \\(G_F\\) 描述表示动力学。Stage II 中每个节点近似独立，方向更新等价于最大化 nonlinear CCA 型能量 \\(\\mathcal E(w)\\)；群算术与平方激活允许解析分类 local maxima。",
+        "作者进一步证明：若训练样本足够，population-energy 的 local maxima 在 empirical energy 中保持；Stage III 的 feature correlations 产生 repulsion，top-down modulation 将梯度集中到尚未学习的 Fourier/group features，Muon 的极分解更新可重新平衡不同奇异方向。"
+      ]
+    },
+    {
+      "title": "核心结果与证据",
+      "paragraphs": [
+        "Figure 1 的价值在于给 grokking 一个可检验的因果顺序：先由随机特征记忆并形成标签相关 \\(G_F\\)，再出现独立 feature learning，最后才有交互式 feature completion；它不是单一 loss curve 的事后分段。",
+        "对阶为 \\(M\\) 的群运算，Theorem 4 给出保持一个 feature local optimum 所需样本量 \\(n\\gtrsim d_k^2M\\log(M/\\delta)\\)。因此训练比例 \\(p=n/M^2\\sim M^{-1}\\log M\\)，Figure 5 的 modular-addition 相变在 20 seeds 上与该边界吻合。",
+        "Figure 3 在 \\(M=71,K=2048,n=2016\\) 下显示 \\(\\eta=2\\times10^{-4}\\) 时约 epoch 100 后 \\(G_F\\) 增强并发生 grokking，而 \\(\\eta=0\\) 不发生；Figure 6 的 15-seed 实验还显示临界区较小 learning rate 更易落入 generalizable solution。"
+      ]
+    },
+    {
+      "title": "有效性与局限",
+      "paragraphs": [
+        "严格局部极值与样本标度主要在群算术、特定激活和二层网络中证明；\\(\\mathcal E\\) 的一般定义可扩展，但一般数据上的 local maxima 结构未被分类。多层扩展、真实语言模型与 finite-width stochastic optimization 仍主要是解释性外推。",
+        "作者明确指出当前理论没有统一覆盖所有 hyperparameter regimes；实验集中在 modular/group tasks，部分结论依赖近似独立节点、centering 与特定初始化。weight decay 是足够条件而非必要条件，Figure 3 的单一配置不能证明普遍因果。"
+      ]
+    },
+    {
+      "title": "复现与资源",
+      "paragraphs": [
+        "原文：https://arxiv.org/abs/2509.21519；代码：https://github.com/yuandong-tian/understanding/tree/main/ssl/real-dataset/cogo。全文 51 页，PDF SHA-256：9d4a6582703ee56209b08df5a3438a38586268b24b5d999b58de391b7c3ff88c。",
+        "复现需固定群 \\(H\\)、\\(M,K,n\\)、训练比例、activation、initialization scales、weight decay \\(\\eta\\)、learning rate、optimizer、feature matching criterion、seed count 与 generalization threshold；应保存 \\(G_F\\)、权重差、特征相关矩阵和 train/test accuracy 全轨迹。",
+        "Evidence status: full-text verified; no independent reproduction performed."
+      ]
+    },
+    {
+      "title": "阅读指南",
+      "paragraphs": [
+        "先看 Figure 1，建立三阶段动力学图；再读 Proposition 1/Lemma 1，理解 \\(G_F\\) 何时获得标签信号。随后读 Theorems 1–4 与 Figures 4–5，最后检查 Stage III 的 repulsion/top-down modulation 与 Muon theorem。不要把群算术中的可证 feature 直接等同于大模型语义特征。"
+      ]
+    }
+  ],
+  "cover": {
+    "mode": "source_figure",
+    "asset_path": "assets/collection-figures/2509.21519/figure-1-three-stage-grokking.webp",
+    "label": "Figure 1",
+    "visual_type": "schematic",
+    "evidence": "paper.pdf p. 2, Figure 1",
+    "alt_text": "从随机初始化，经懒惰学习、独立特征学习到交互特征学习的三阶段时间轴。",
+    "caption": "grokking 被解释为从 sharp memorization 到独立、再到交互式特征涌现的动力学序列。",
+    "selection_rationale": "Figure 1 是全文最清楚的机制总览，优先于多面板 loss 曲线。"
+  },
+  "figure_refs": [
+    {
+      "label": "Figure 1",
+      "asset_path": "assets/collection-figures/2509.21519/figure-1-three-stage-grokking.webp",
+      "section": "核心结果与证据",
+      "role": "summarize the causal stages of grokking",
+      "evidence": "paper.pdf p. 2, Figure 1",
+      "alt_text": "Training proceeds from random-feature memorization to independent and interactive feature learning.",
+      "caption": "The framework assigns distinct gradient mechanisms to delayed generalization.",
+      "interpretation": "The staged picture is rigorously specialized to the analyzed shallow-network settings."
+    }
+  ],
+  "equation_refs": [
+    {
+      "label": "Feature-energy dynamics",
+      "latex": "\\dot w_j\\propto\\nabla_{w_j}\\mathcal E(w_j)",
+      "role": "describe independent feature emergence in Stage II",
+      "symbols": {
+        "w_j": "hidden-node direction",
+        "mathcal_E": "nonlinear CCA-like energy"
+      },
+      "evidence": "paper.pdf pp. 5–7, Eq. (6) and Theorem 1",
+      "interpretation": "Stable local maxima of the energy landscape identify the features learned by individual hidden nodes."
+    },
+    {
+      "label": "Feature-stability sample complexity",
+      "latex": "n\\gtrsim d_k^2M\\log(M/\\delta),\\qquad p=\\frac{n}{M^2}\\sim M^{-1}\\log M",
+      "role": "predict the generalization-memorization boundary",
+      "symbols": {
+        "M": "group order",
+        "d_k": "representation dimension",
+        "delta": "failure probability"
+      },
+      "evidence": "paper.pdf p. 8, Theorem 4 and Figure 5",
+      "interpretation": "The fraction of the full multiplication table needed for stable features decreases with group size."
+    }
+  ],
+  "evidence_refs": [
+    "paper.pdf pp. 2–8: Li2 stages, energy landscape and sample law",
+    "paper.pdf pp. 8–12: phase transitions, interaction dynamics and limitations",
+    "source PDF SHA-256 9d4a6582703ee56209b08df5a3438a38586268b24b5d999b58de391b7c3ff88c",
+    "Evidence status: full-text verified; no independent reproduction performed."
+  ]
+}

@@ -1,0 +1,169 @@
+{
+  "arxiv_id": "2509.25300",
+  "source_version": "v4",
+  "source_pdf": "https://arxiv.org/pdf/2509.25300",
+  "title_en": "Scaling Behaviors of LLM Reinforcement Learning Post-Training: An Empirical Study in Mathematical Reasoning",
+  "title_zh": "大语言模型强化学习后训练的标度行为：数学推理实证研究",
+  "curation_status": "full_text_verified",
+  "card_standard_version": "2.3",
+  "paper_profile": "ai_empirical",
+  "style_reference": "physicist_daily_arxiv",
+  "provenance": {
+    "program": "Collection",
+    "catalog": "Paper Collection",
+    "catalog_record_id": "c6dc2d738541a81f",
+    "catalog_record_ids": [
+      "c6dc2d738541a81f"
+    ],
+    "catalog_topic": "Control & Reinforcement Learning",
+    "collection_date": "2026-08-23",
+    "sampled_at": "2026-08-28",
+    "selected_by": "full_collection_backfill",
+    "sampling_seed": "not_applicable_full_collection",
+    "candidate_count": 452
+  },
+  "verified_metadata": {
+    "arxiv_id": "2509.25300",
+    "version": "v4",
+    "title": "Scaling Behaviors of LLM Reinforcement Learning Post-Training: An Empirical Study in Mathematical Reasoning",
+    "authors": [
+      "Zelin Tan",
+      "Hejia Geng",
+      "Xiaohang Yu",
+      "Mulei Zhang",
+      "Guancheng Wan",
+      "Yifan Zhou",
+      "Qiang He",
+      "Xiangyuan Xue",
+      "Heng Zhou",
+      "Yutao Fan",
+      "Zhongzhi Li",
+      "Zaibin Zhang",
+      "Guibin Zhang",
+      "Chen Zhang",
+      "Zhenfei Yin",
+      "Philip Torr",
+      "Lei Bai"
+    ],
+    "categories": [
+      "cs.LG",
+      "cs.AI"
+    ],
+    "primary_category": "cs.LG",
+    "published": "2025-09-29T17:10:35Z",
+    "abstract": "GRPO experiments across Qwen2.5 and Llama 3 families fit predictive resource-loss laws, reveal diminishing efficiency gains and quantify when data reuse remains effective.",
+    "comment": ""
+  },
+  "sections": [
+    {
+      "title": "作者信息",
+      "paragraphs": [
+        "作者：Zelin Tan、Hejia Geng、Xiaohang Yu、Mulei Zhang、Guancheng Wan 等 17 位；arXiv:2509.25300v4。全文 21 页。研究以 GRPO 对 Qwen2.5 0.5B–72B dense models 做数学推理 post-training，并用 Llama 3 1B–70B 做跨架构检验。"
+      ]
+    },
+    {
+      "title": "研究问题",
+      "paragraphs": [
+        "预训练 scaling laws 已较成熟，但 RL post-training 中模型大小 \\(N\\)、训练 FLOPs \\(C\\)、数据量 \\(D\\) 与重复使用如何共同控制 reasoning loss 尚不清楚。论文问：早期训练曲线能否预测后期和更大模型，larger model 的学习效率是否无限增长，以及数据稀缺时重复高质量样本何时有益或过拟合？"
+      ]
+    },
+    {
+      "title": "背景",
+      "paragraphs": [
+        "主要指标定义为 test loss \\(L=1-\\mathrm{PassRate}\\)，在固定 holdout math benchmark 上比较。作者将 compute-constrained、data-constrained 和 fixed-total-data reuse 三种 ensemble 分开，并对 base/instruct families 分别拟合。",
+        "Figure 1 汇总 inter-model 与 intra-model extrapolation：用 0.5B–32B 拟合的直线外推 held-out 72B，用早期 steps 外推同一模型后期；颜色随参数规模变化，展示大模型具有更陡 loss–resource slope。"
+      ]
+    },
+    {
+      "title": "模型与方法",
+      "paragraphs": [
+        "经验式为 \\(\\log L(N,X)=-k(N)\\log X+E(N)\\)，其中 \\(X=C\\) 或 \\(D\\)。学习效率 \\(k(N)\\) 再拟合饱和式 \\(K_{\\max}/(1+N_0/N)\\)，把随模型增大的边际收益限制在 \\(K_{\\max}\\)。训练共覆盖 Qwen2.5 0.5B、1.5B、3B、7B、14B、32B、72B，正文称共 fine-tune 63 个 LLM runs。",
+        "data reuse 保持 \\(D_{\\rm unique}\\tau=D_{\\rm total}\\)，通过不同子集大小与 repetition factor \\(\\tau\\) 比较同总步数。课程难度分布保持一致；域迁移同时测 math、HumanEval、SuperGPQA 与 zebra puzzle。"
+      ]
+    },
+    {
+      "title": "核心结果与证据",
+      "paragraphs": [
+        "Figure 1 的 held-out 72B 虚线与实测轨迹接近，intra-model 早期拟合也能外推快速提升阶段；Qwen 的 compute/data inter-与 intra-model fits 均报告 \\(R^2>0.99\\)。Llama 3 1B–70B 重复实验同样 \\(R^2>0.99\\)，但绝对性能不同：Llama-70B holdout accuracy 约 50%，Qwen-72B 约 59%。",
+        "\\(k_C(N)\\) 与 \\(k_D(N)\\) 随规模增加，但 32B 后增益开始减弱；这是有限范围内对饱和函数的支持，不是对 \\(N\\to\\infty\\) 的观测。Figure 7 显示固定 \\(D_{\\rm total}\\) 时 \\(\\tau\\le25\\) 的 final loss 无显著退化，\\(\\tau=100\\) 出现过拟合。",
+        "RL 改善主要迁移到未见过的数学任务；HumanEval 与 SuperGPQA 增益很小，较大模型的 zebra-puzzle 甚至退化。因此“总优化步数主导”仅在所测数学域和中等复用区成立，不能理解为样本唯一性普遍不重要。"
+      ]
+    },
+    {
+      "title": "有效性与局限",
+      "paragraphs": [
+        "论文是单一主算法 GRPO、数学奖励、dense Qwen/Llama families 的经验研究；\\(R^2\\) 高只说明所采样资源窗口内 log-linear fit 好，不能证明机制或远尺度外推。test loss 强依赖题集难度与 PassRate estimator，\\(K_{\\max},N_0,E\\) 不能跨环境直接解释。",
+        "作者明确指出未覆盖多域 RL、72B 以上规模和 MoE；饱和趋势因此尚未在更大尺度验证。63 runs 的超参、数据筛选和 rollout cost 会影响拟合；moderate reuse 的结论也受 curriculum 与 high-quality math data 条件限制。"
+      ]
+    },
+    {
+      "title": "复现与资源",
+      "paragraphs": [
+        "原文：https://arxiv.org/abs/2509.25300。全文 21 页，PDF SHA-256：cab7b0093cb2a4a87d8f6541324d2bb7bd82acc270fe448e3516750fa5dac2f0。",
+        "复现需固定 Qwen/Llama checkpoints、GRPO group size/reward normalization、50k+ math problem pool、difficulty strata、rollout length、FLOP accounting、holdout PassRate sampling、fit windows、reuse \\(\\tau\\) 和 domain-transfer prompts。拟合应报告 bootstrap intervals 与 held-out residuals。",
+        "Evidence status: full-text verified; no independent reproduction performed."
+      ]
+    },
+    {
+      "title": "阅读指南",
+      "paragraphs": [
+        "先看 Figure 1，区分跨模型和单模型外推；再读 Eqs. (1)–(8)，检查 \\(k(N)\\) 的饱和参数化。随后看 Figures 4–5 的跨架构结果，再读 Figures 6–9 的 reuse/domain-transfer 边界，最后核对 Limitations，避免把有限尺度拟合提升为普适 RL scaling law。"
+      ]
+    }
+  ],
+  "cover": {
+    "mode": "source_figure",
+    "asset_path": "assets/collection-figures/2509.25300/figure-1-rl-scaling.webp",
+    "label": "Figure 1",
+    "visual_type": "data_plot",
+    "evidence": "paper.pdf p. 2, Figure 1",
+    "alt_text": "Qwen2.5 不同模型规模的 test loss 随 post-training FLOPs 变化，以及跨模型和单模型外推。",
+    "caption": "小模型与早期轨迹拟合可外推 72B 和后期快速提升区；有效范围仍受模型族与数学域限制。",
+    "selection_rationale": "论文没有比数据图更强的任务可视化；Figure 1 是核心结论的最重要原文图，故作为封面。"
+  },
+  "figure_refs": [
+    {
+      "label": "Figure 1",
+      "asset_path": "assets/collection-figures/2509.25300/figure-1-rl-scaling.webp",
+      "section": "核心结果与证据",
+      "role": "show inter-model and intra-model scaling predictions",
+      "evidence": "paper.pdf p. 2, Figure 1",
+      "alt_text": "Four panels compare base and instruct models under held-out-size and early-trajectory extrapolation.",
+      "caption": "Learning efficiency increases with model scale over the tested compute window.",
+      "interpretation": "The fit is empirical, family-specific and does not validate asymptotic extrapolation beyond 72B."
+    }
+  ],
+  "equation_refs": [
+    {
+      "label": "Post-training resource law",
+      "latex": "\\log L(N,X)=-k(N)\\log X+E(N),\\qquad X\\in\\{C,D\\}",
+      "role": "predict loss from model size and compute or data",
+      "symbols": {
+        "L": "one minus pass rate",
+        "N": "model parameters",
+        "C": "training FLOPs",
+        "D": "training data volume"
+      },
+      "evidence": "paper.pdf p. 2, Eq. (1)",
+      "interpretation": "At fixed model size, the rapid-improvement regime is approximately linear on log resource axes."
+    },
+    {
+      "label": "Efficiency saturation ansatz",
+      "latex": "k(N)=\\frac{K_{\\max}}{1+N_0/N}",
+      "role": "model diminishing marginal efficiency gains",
+      "symbols": {
+        "K_max": "asymptotic fitted efficiency",
+        "N_0": "saturation scale"
+      },
+      "evidence": "paper.pdf p. 2, Eq. (2)",
+      "interpretation": "The fitted slope rises with scale but approaches a finite ceiling within the proposed parametric model."
+    }
+  ],
+  "evidence_refs": [
+    "paper.pdf pp. 2–6: resource law, fits and cross-architecture validation",
+    "paper.pdf pp. 7–9: data reuse and domain transfer",
+    "paper.pdf pp. 9–10: discussion, conclusion and limitations",
+    "source PDF SHA-256 cab7b0093cb2a4a87d8f6541324d2bb7bd82acc270fe448e3516750fa5dac2f0",
+    "Evidence status: full-text verified; no independent reproduction performed."
+  ]
+}

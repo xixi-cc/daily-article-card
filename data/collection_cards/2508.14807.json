@@ -1,0 +1,155 @@
+{
+  "arxiv_id": "2508.14807",
+  "source_version": "v2",
+  "source_pdf": "https://arxiv.org/pdf/2508.14807",
+  "title_en": "Source-Guided Flow Matching",
+  "title_zh": "源分布引导的流匹配",
+  "curation_status": "full_text_verified",
+  "card_standard_version": "2.3",
+  "paper_profile": "theory_numerics",
+  "style_reference": "physicist_daily_arxiv",
+  "provenance": {
+    "program": "Collection",
+    "catalog": "Paper Collection",
+    "catalog_record_id": "c1198d82f39f1679",
+    "catalog_record_ids": [
+      "c1198d82f39f1679"
+    ],
+    "catalog_topic": "Flow Matching",
+    "collection_date": "2026-08-23",
+    "sampled_at": "2026-08-28",
+    "selected_by": "full_collection_backfill",
+    "sampling_seed": "not_applicable_full_collection",
+    "candidate_count": 452
+  },
+  "verified_metadata": {
+    "arxiv_id": "2508.14807",
+    "version": "v2",
+    "title": "Source-Guided Flow Matching",
+    "authors": [
+      "Zifan Wang",
+      "Alice Harting",
+      "Matthieu Barreau",
+      "Michael M. Zavlanos",
+      "Karl H. Johansson"
+    ],
+    "categories": [
+      "cs.LG"
+    ],
+    "primary_category": "cs.LG",
+    "published": "2025-08-20T15:56:25Z",
+    "abstract": "Guidance is moved from the learned vector field to a reweighted source distribution, preserving the pretrained transport map and enabling sampler-specific tradeoffs.",
+    "comment": ""
+  },
+  "sections": [
+    {
+      "title": "作者信息",
+      "paragraphs": [
+        "作者：Zifan Wang、Alice Harting、Matthieu Barreau、Michael M. Zavlanos、Karl H. Johansson；arXiv:2508.14807v2。全文 30 页。论文含精确输运定理、Wasserstein 误差界，以及二维分布、Darcy PDE inverse problem、CelebA imaging inverse problems 的数值验证。"
+      ]
+    },
+    {
+      "title": "研究问题",
+      "paragraphs": [
+        "传统 guidance 在每个 flow time \\(t\\) 上给预训练 vector field 加一个条件漂移，既改变原有 transport geometry，也可能要求多次 Monte Carlo/梯度评估。论文问：能否保持 \\(v_t\\) 完全不变，只重新采样 source distribution，使同一 flow map 精确到达能量重加权后的 target distribution？"
+      ]
+    },
+    {
+      "title": "背景",
+      "paragraphs": [
+        "无引导流把 \\(q_0\\) 经 \\(T=\\phi_1\\) 推到 \\(q_1\\)。若目标希望偏向低能 \\(J(x_1)\\) 的样本，则 \\(q'_1(x_1)\\propto q_1(x_1)e^{-J(x_1)}\\)。SGFM 把同一权重拉回 source：\\(q'_0(x_0)\\propto q_0(x_0)e^{-J(T(x_0))}\\)，把 guidance 变成单一时刻的 sampling problem。",
+        "Figure 1/2 将区别画清：修改 vector field 会弯曲 trajectories；修改 source weights 则保留 optimal map 的直线配对，只改变哪些 source points 被频繁采样。"
+      ]
+    },
+    {
+      "title": "模型与方法",
+      "paragraphs": [
+        "Theorem 1 用 pushforward 直接证明 \\((\\phi_1)_\\#q'_0=q'_1\\)。实际算法先训练普通 flow-matching \\(v_t^\\theta\\)，再用 importance sampling、ULA/HMC 或 optimization 从近似 \\(q'_0\\) 取样，最后沿不改动的 ODE 积分。若采用 optimal flow matching，直线 transport 可减少 NFE。",
+        "Theorem 2 同时传播两类误差：若 vector-field uniform error 为 \\(\\epsilon\\)、学习流为 \\(L_v\\)-Lipschitz，而 sampler 输出 \\(\\tilde q_0\\)，则最终 \\(W_2\\) 偏差受 source mismatch 与 drift error 的指数放大共同控制。"
+      ]
+    },
+    {
+      "title": "核心结果与证据",
+      "paragraphs": [
+        "Figure 1/2 显示 SGFM 的物理含义是改变初始 ensemble，而不是在路径中持续施力；对 optimal map，这保留 Wasserstein-geodesic 式直线轨迹。该图也提示失败条件：source reweighting 若高度集中，会把 sampling 难题前移而非消除。",
+        "二维实验中，importance-sampling 样本数增大时 Wasserstein error 持续下降，并且减少 NFE 对直线流影响较小。Darcy inverse problem 的 25-sample 中位数显示 SGFM-OPT-\\(\\chi^2\\) validity 0.474，优于 SGFM-HMC 0.591、SGFM-OPT 0.907、\\(g^{\\rm cov-A}\\) 0.993；但它不是所有 physical-consistency 指标都唯一最好。",
+        "CelebA 五类 inverse tasks 中，各 SGFM-OPT variant 均优于表中的 \\(g\\)-cov baselines；例如 super-resolution PSNR 最高约 33.33，而 PnP 为 31.33。PnP 在 deblurring 达 38.74，高于 SGFM 约 35.27，说明通用框架并非每个专用任务最优。"
+      ]
+    },
+    {
+      "title": "有效性与局限",
+      "paragraphs": [
+        "精确性依赖 exact map \\(T\\) 与 exact \\(q'_0\\) sampler；在高维中二者都不可得。误差界含 \\(e^{L_v}\\)，高敏感流可显著放大 source 和 drift 偏差。optimization sampler 可能 mode collapse，少量逆问题样本也不足以证明覆盖全部后验解。",
+        "作者明确指出反向传播 through ODE 导致长 runtime；optimal vector field 需要 OT coupling，而 minibatch/entropic OT 近似会引入 bias 且难扩展。不同 sampler 的 cost、accuracy 与 diversity tradeoff 需按问题重做，实验没有给出一般最优选择。"
+      ]
+    },
+    {
+      "title": "复现与资源",
+      "paragraphs": [
+        "原文：https://arxiv.org/abs/2508.14807。全文 30 页，PDF SHA-256：b5a1a5a62f7964719cf2d5354ca17edb38b9304b12586dbe33871c23ca07a170。",
+        "复现需固定 source/target pairing、flow architecture、OT approximation、ODE solver/NFE、\\(J\\) 与 normalization、IS/HMC/ULA/optimization sampler、Darcy 64×64 finite-difference data、CelebA degradation operators 和 metric sample counts。",
+        "Evidence status: full-text verified; no independent reproduction performed."
+      ]
+    },
+    {
+      "title": "阅读指南",
+      "paragraphs": [
+        "先看 Figures 1–2，把“改路径”与“改初态 ensemble”区分开；再读 Theorems 1–2，检查 pushforward 与误差放大项。随后比较 Darcy Table 1 和 CelebA Table 2，最后读 Appendix D 的 runtime/OT-coupling limitations，避免把 exact theorem 外推到近似高维采样。"
+      ]
+    }
+  ],
+  "cover": {
+    "mode": "source_figure",
+    "asset_path": "assets/collection-figures/2508.14807/figure-1-source-guidance.webp",
+    "label": "Figures 1–2",
+    "visual_type": "schematic",
+    "evidence": "paper.pdf p. 5, Figures 1–2",
+    "alt_text": "SGFM 通过重加权源分布保留直线最优输运，而对照方法修改向量场并形成弯曲轨迹。",
+    "caption": "引导被移到初始 ensemble：保持预训练 flow map，不在中途改变向量场。",
+    "selection_rationale": "Figures 1–2 是全文最重要的机制可视化，优先于逆问题数值表。"
+  },
+  "figure_refs": [
+    {
+      "label": "Figures 1–2",
+      "asset_path": "assets/collection-figures/2508.14807/figure-1-source-guidance.webp",
+      "section": "核心结果与证据",
+      "role": "contrast source reweighting with vector-field guidance",
+      "evidence": "paper.pdf p. 5, Figures 1–2",
+      "alt_text": "Source weights change while the optimal transport trajectories remain straight.",
+      "caption": "SGFM converts guidance into sampling from a modified initial ensemble.",
+      "interpretation": "The schematic assumes an accurate transport map and does not show high-dimensional sampling cost."
+    }
+  ],
+  "equation_refs": [
+    {
+      "label": "Exact source reweighting",
+      "latex": "q'_1(x_1)=Z_1^{-1}q_1(x_1)e^{-J(x_1)},\\qquad q'_0(x_0)=Z_0^{-1}q_0(x_0)e^{-J(T(x_0))}",
+      "role": "pull target guidance back through the transport map",
+      "symbols": {
+        "T": "time-one flow map",
+        "J": "guidance energy"
+      },
+      "evidence": "paper.pdf p. 4, Theorem 1",
+      "interpretation": "The unchanged flow transports the reweighted source exactly to the reweighted target."
+    },
+    {
+      "label": "Approximate-guidance error bound",
+      "latex": "W_2\\!\\left(q'_1,[\\phi^\\theta_1]_\\#\\tilde q_0\\right)\\le e^{L_v}W_2(q'_0,\\tilde q_0)+\\epsilon e^{L_v}",
+      "role": "separate sampler and vector-field errors",
+      "symbols": {
+        "epsilon": "uniform vector-field error",
+        "L_v": "Lipschitz constant",
+        "tilde_q0": "sampler output distribution"
+      },
+      "evidence": "paper.pdf p. 4, Theorem 2",
+      "interpretation": "Both initial-distribution mismatch and drift error can be amplified by a sensitive flow."
+    }
+  ],
+  "evidence_refs": [
+    "paper.pdf pp. 3–5: exact source guidance and Wasserstein bound",
+    "paper.pdf pp. 8–10: 2D, Darcy and CelebA results",
+    "paper.pdf pp. 28–29: limitations",
+    "source PDF SHA-256 b5a1a5a62f7964719cf2d5354ca17edb38b9304b12586dbe33871c23ca07a170",
+    "Evidence status: full-text verified; no independent reproduction performed."
+  ]
+}
