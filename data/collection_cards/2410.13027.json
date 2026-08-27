@@ -1,0 +1,154 @@
+{
+  "arxiv_id": "2410.13027",
+  "source_version": "v1",
+  "source_pdf": "https://arxiv.org/pdf/2410.13027",
+  "title_en": "Geometric Trajectory Diffusion Models",
+  "title_zh": "几何轨迹扩散模型",
+  "curation_status": "full_text_verified",
+  "card_standard_version": "2.3",
+  "paper_profile": "theory_numerics",
+  "style_reference": "physicist_daily_arxiv",
+  "provenance": {
+    "program": "Collection",
+    "catalog": "Paper Collection",
+    "catalog_record_id": "9b4652cee4d4eb75",
+    "catalog_record_ids": [
+      "9b4652cee4d4eb75"
+    ],
+    "catalog_topic": "Generative Models",
+    "collection_date": "2026-08-23",
+    "sampled_at": "2026-08-28",
+    "selected_by": "full_collection_backfill",
+    "sampling_seed": "not_applicable_full_collection",
+    "candidate_count": 452
+  },
+  "verified_metadata": {
+    "arxiv_id": "2410.13027",
+    "version": "v1",
+    "title": "Geometric Trajectory Diffusion Models",
+    "authors": [
+      "Jiaqi Han",
+      "Minkai Xu",
+      "Aaron Lou",
+      "Haotian Ye",
+      "Stefano Ermon"
+    ],
+    "categories": [
+      "cs.CV",
+      "cs.LG"
+    ],
+    "primary_category": "cs.CV",
+    "published": "2024-10-16T20:36:41Z",
+    "abstract": "GeoTDM generates joint spatiotemporal geometric trajectories using SE(3)-equivariant denoising kernels and a learnable equivariant conditional prior.",
+    "comment": ""
+  },
+  "sections": [
+    {
+      "title": "作者信息",
+      "paragraphs": [
+        "作者：Jiaqi Han、Minkai Xu、Aaron Lou、Haotian Ye、Stefano Ermon；arXiv:2410.13027v1。全文 30 页，实验含 N-body、MD17、ETH-UCY，模型称 GeoTDM，backbone 称 EGTN。"
+      ]
+    },
+    {
+      "title": "研究问题",
+      "paragraphs": [
+        "静态 3D generative models 保证 \\(SE(3)\\) symmetry，却没有建模同一粒子跨时间的 correspondence；frame-to-frame rollout 又积累误差。论文问：能否直接生成整条 \\(T\\times N\\times3\\) trajectory，并让 unconditional density invariant、conditional law equivariant？"
+      ]
+    },
+    {
+      "title": "背景",
+      "paragraphs": [
+        "对物理等价的整体旋转/平移，unconditional probability 应不变；若 condition trajectory 同样变换，预测轨迹应协变。单纯 isotropic Gaussian prior 对 unconditional case 合适，但 conditional forecasting 还需 prior 随 observed geometry 一起变换。",
+        "Figure 1 展示 trajectory-level forward diffusion、EGTN reverse denoising 与由 condition 构造的 equivariant prior。"
+      ]
+    },
+    {
+      "title": "模型与方法",
+      "paragraphs": [
+        "EGTN 交替使用 \\(SE(3)\\)-equivariant graph convolution 表示同一 frame 的 interactions，以及 temporal attention 表示同一 node 跨 frames 的相关；relative temporal embeddings 给出 time-shift invariance。",
+        "conditional prior 由 lightweight EGTN 学习，可包含 center-of-mass 和 point-wise priors。理论说明：invariant prior 加 equivariant Markov kernels 保持 invariant marginal；conditional prior/kernel 同时 equivariant 时保持 conditional equivariance。"
+      ]
+    },
+    {
+      "title": "核心结果与证据",
+      "paragraphs": [
+        "Figure 1 是模型的物理结构图：噪声作用于整条轨迹而非逐帧 rollout，condition 同时进入 prior 与 reverse kernel；因此 temporal joint distribution 与 geometry symmetry 在同一生成过程中处理。",
+        "MD17 conditional forecasting 相对 EqMotion 的平均 ADE/FDE 改善 23.1%/15.3%，八个 molecules 均最低；N-body Particle/Spring/Gravity 的 ADE 为 0.110/0.0030/0.256。",
+        "unconditional Charged Particle 的 marginal/classification/prediction scores 为 0.0055/0.556/0.00978。ablation 中去 equivariance 把 Charged ADE/FDE 从 0.110/0.258 恶化至 0.251/0.542；100-step GeoTDM sampling 约比 EGVAE 慢 10×。"
+      ]
+    },
+    {
+      "title": "有效性与局限",
+      "paragraphs": [
+        "MD17 是短小分子的有限 DFT trajectories；模型学习数据分布，不积分 force field，也不保证 energy conservation、symplecticity、detailed balance 或绝对 kinetics。ADE/FDE 与 discriminative scores 不能证明 rare-event rates 正确。",
+        "diffusion cost 随 steps 与 trajectory length 增长；论文建议分段 composition，但这会重新引入跨段 drift。symmetry theorem 保证群变换一致性，不保证 learned dynamics 满足真实方程。"
+      ]
+    },
+    {
+      "title": "复现与资源",
+      "paragraphs": [
+        "原文：https://arxiv.org/abs/2410.13027；代码：https://github.com/hanjq17/GeoTDM。全文 30 页，PDF SHA-256：cd17681726d0a392dffdd7a2dbe29e4a93b67f1744197308faea976dcca43b58。",
+        "复现需固定 trajectory splits/frames、graph edges/features、CoM removal、diffusion steps/schedule、EGTN depth/attention、prior parameterization、five-run seeds、ADE/FDE sampling \\(K\\) 与 generation-score classifiers。",
+        "Evidence status: full-text verified; no independent reproduction performed."
+      ]
+    },
+    {
+      "title": "阅读指南",
+      "paragraphs": [
+        "先看 Figure 1 与 symmetry definitions；再读 Section 4 的 invariant/equivariant kernel propositions和 prior construction。随后对照 Tables 1–4 与 Table 6 ablations，最后读 runtime Table 9，把 distribution quality 与 physical simulator fidelity 分开。"
+      ]
+    }
+  ],
+  "cover": {
+    "mode": "source_figure",
+    "asset_path": "assets/collection-figures/2410.13027/figure-1-geotdm-overview.webp",
+    "label": "Figure 1",
+    "visual_type": "schematic",
+    "evidence": "paper.pdf p. 2, Figure 1",
+    "alt_text": "多帧几何轨迹的 forward diffusion、equivariant prior 与 EGTN reverse process。",
+    "caption": "GeoTDM 对整条几何轨迹扩散，并让 condition-dependent prior 与 reverse kernel 同时满足 \\(SE(3)\\) equivariance。",
+    "selection_rationale": "Figure 1 是全文时空扩散与几何对称性的核心机制图，优先于单数据集误差表。"
+  },
+  "figure_refs": [
+    {
+      "label": "Figure 1",
+      "asset_path": "assets/collection-figures/2410.13027/figure-1-geotdm-overview.webp",
+      "section": "核心结果与证据",
+      "role": "show trajectory-level equivariant diffusion",
+      "evidence": "paper.pdf p. 2, Figure 1",
+      "alt_text": "Forward corruption and EGTN reverse denoising across frames.",
+      "caption": "The model generates the joint trajectory instead of recursively predicting one frame.",
+      "interpretation": "Equivariance constrains symmetry but does not enforce conservation laws."
+    }
+  ],
+  "equation_refs": [
+    {
+      "label": "SE(3)-equivariant trajectory map",
+      "latex": "f(h,Rx+r)=(h',Rx'+r)\\quad\\text{when}\\quad f(h,x)=(h',x')",
+      "role": "state the geometric symmetry constraint",
+      "symbols": {
+        "R": "3D rotation",
+        "r": "translation"
+      },
+      "evidence": "paper.pdf p. 4, equivariance section",
+      "interpretation": "Rotating or translating every frame rotates or translates the generated trajectory consistently."
+    },
+    {
+      "label": "Trajectory diffusion objective",
+      "latex": "\\mathcal L_{\\rm simple}=\\mathbb E_{x_0,\\epsilon,\\tau}\\lambda(\\tau)\\|\\epsilon-\\epsilon_\\theta(x_\\tau,\\tau)\\|^2",
+      "role": "train reverse denoising on the entire trajectory tensor",
+      "symbols": {
+        "x_tau": "noised geometric trajectory",
+        "epsilon": "Gaussian noise"
+      },
+      "evidence": "paper.pdf p. 4, Eq. (1)",
+      "interpretation": "Equivariant EGTN parameterization makes the standard noise-prediction loss respect trajectory geometry."
+    }
+  ],
+  "evidence_refs": [
+    "paper.pdf pp. 2–6: geometric trajectory diffusion and symmetry construction",
+    "paper.pdf pp. 7–10: N-body, MD17, pedestrian and ablation results",
+    "source PDF SHA-256 cd17681726d0a392dffdd7a2dbe29e4a93b67f1744197308faea976dcca43b58",
+    "Evidence status: full-text verified; no independent reproduction performed."
+  ]
+}

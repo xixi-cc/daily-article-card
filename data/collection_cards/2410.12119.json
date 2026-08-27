@@ -1,0 +1,155 @@
+{
+  "arxiv_id": "2410.12119",
+  "source_version": "v3",
+  "source_pdf": "https://arxiv.org/pdf/2410.12119",
+  "title_en": "Scaling Laws for Post Training Quantized Large Language Models",
+  "title_zh": "后训练量化大语言模型的缩放律",
+  "curation_status": "full_text_verified",
+  "card_standard_version": "2.3",
+  "paper_profile": "ai_empirical",
+  "style_reference": "physicist_daily_arxiv",
+  "provenance": {
+    "program": "Collection",
+    "catalog": "Paper Collection",
+    "catalog_record_id": "effa8dc9d83b5b5f",
+    "catalog_record_ids": [
+      "effa8dc9d83b5b5f"
+    ],
+    "catalog_topic": "Scaling Laws",
+    "collection_date": "2026-08-23",
+    "sampled_at": "2026-08-28",
+    "selected_by": "full_collection_backfill",
+    "sampling_seed": "not_applicable_full_collection",
+    "candidate_count": 452
+  },
+  "verified_metadata": {
+    "arxiv_id": "2410.12119",
+    "version": "v3",
+    "title": "Scaling Laws for Post Training Quantized Large Language Models",
+    "authors": [
+      "Zifei Xu",
+      "Alexander Lan",
+      "Wanzin Yazar",
+      "Tristan Webb",
+      "Sayeh Sharify",
+      "Xin Wang"
+    ],
+    "categories": [
+      "cs.LG",
+      "cs.CL"
+    ],
+    "primary_category": "cs.LG",
+    "published": "2024-10-15T23:34:22Z",
+    "abstract": "Post-training quantization loss is predicted from pretrained loss, local radial flatness, tensor format, SQNR and the PTQ algorithm.",
+    "comment": ""
+  },
+  "sections": [
+    {
+      "title": "作者信息",
+      "paragraphs": [
+        "作者：Zifei Xu、Alexander Lan、Wanzin Yazar、Tristan Webb、Sayeh Sharify、Xin Wang；arXiv:2410.12119v3。全文 19 页，研究 5 个 LLM families、36 种 MX tensor formats，并以 Pythia-1B 和 MPT-7B 做 held-out family tests。"
+      ]
+    },
+    {
+      "title": "研究问题",
+      "paragraphs": [
+        "pretraining NLL 随参数量近似可预测，但量化后 loss 可能在相邻 bit-width 间突变，单靠 model size/bit count 无法选择部署点。论文问：能否把 PTQ 看作 weight-space perturbation，并用局部 loss landscape、SQNR、format geometry 与 GPTQ effect 恢复可预测性？"
+      ]
+    },
+    {
+      "title": "背景",
+      "paragraphs": [
+        "量化写作 (w\\to Q(w)=w+\\Delta w)。若 minima 近似二次，Hessian 已足够；实际 radial NLL profile 却先平坦、随后快于 quadratic 上升、最后 plateau，因此 20 dB 以下的简单 Taylor fit 常失败。",
+        "Figure 1 左侧复现 float NLL 对 weight count 的 family scaling，右侧把随机方向 radial landscape 与 Taylor approximations 放在一起，直接显示 PTQ 可预测性为何需要 landscape shape。"
+      ]
+    },
+    {
+      "title": "模型与方法",
+      "paragraphs": [
+        "作者以 (\\mathrm{SQNR}=20\\log_{10}(\\|w\\|/\\|Q(w)-w\\|)) 统一比较不同维数；对每个 family/size/format 测 RTN 与 enhanced GPTQ 前后 loss，并提取 RTN 点的 radial slope。",
+        "random-forest inputs 包括 parameter count、float NLL、RTN SQNR/NLL、landscape slope、precision/exponent bits/block size；训练来自 GPT-2、OPT、BLOOM、Llama-2/3，测试留出 Pythia-1B、MPT-7B。"
+      ]
+    },
+    {
+      "title": "核心结果与证据",
+      "paragraphs": [
+        "Figure 1 把两条尺度关系并置：更大模型通常 float loss 更低，同 family 内也通常有更宽 flat basin；因此同一 SQNR perturbation 对不同 model size 的 NLL 代价不同。",
+        "36 种 MX formats 覆盖 block size 16–128、element precision 2–6 bits。GPTQ 可同时降低 SQNR（离原 weight 更远）和 NLL，且 mxint3 可能显著改善而 2/4/6 bit 仅小幅改变；这排除了“更小 perturbation 必然更好”的单变量解释。",
+        "held-out Pythia/MPT prediction 与 observation 接近对角线，支持 landscape features 跨 family 有信息；Figure 6 给出 memory–NLL Pareto frontier。但论文没有把一个封闭解析 power law 拟合为普适定律，最终 predictor 是有限数据 random forest。"
+      ]
+    },
+    {
+      "title": "有效性与局限",
+      "paragraphs": [
+        "最大模型 13B，远小于当前最大 LLM；主要指标是 WikiText-2 validation NLL，不能直接外推到 instruction following、reasoning 或 downstream accuracy。held-out models 只有两个，且均仍属于 decoder-only transformer。",
+        "128 calibration sequences、enhanced GPTQ、MX formats 和 family-specific tokenizers 都会改变结果。随机径向 landscape 不是 quantization direction 的完整 Hessian geometry；random forest 可预测不等于揭示因果缩放机制。"
+      ]
+    },
+    {
+      "title": "复现与资源",
+      "paragraphs": [
+        "原文：https://arxiv.org/abs/2410.12119。全文 19 页，PDF SHA-256：7bb63fd9519596f3deca175ad21a10c6109f6376eb02d9925d4547a701e7b8d3。",
+        "复现需固定 exact checkpoints/tokenizers、WikiText-2 split、128 calibration sequences、MX block/element formats、RTN/GPTQ damping grid、half/single precision、radial directions/repeats 与 random-forest split/hyperparameters。",
+        "Evidence status: full-text verified; no independent reproduction performed."
+      ]
+    },
+    {
+      "title": "阅读指南",
+      "paragraphs": [
+        "先看 Figures 1–2，把 model-size scaling 与 radial flatness 分开；再读 SQNR 定义和 Figure 3，理解 GPTQ 为何可能降低 SQNR 却改善 NLL。最后审查 Figure 5 的 held-out design 与 Figure 6 Pareto frontier，并保留 13B/WikiText-2 边界。"
+      ]
+    }
+  ],
+  "cover": {
+    "mode": "source_figure",
+    "asset_path": "assets/collection-figures/2410.12119/figure-1-loss-landscape.webp",
+    "label": "Figure 1",
+    "visual_type": "data_plot",
+    "evidence": "paper.pdf p. 2, Figure 1",
+    "alt_text": "float NLL scaling curve 与 weight-space radial loss landscape。",
+    "caption": "量化损失同时取决于 float scaling 与局部 basin 形状；bit count 本身不足以预测 PTQ 后 NLL。",
+    "selection_rationale": "文章没有机制示意图；Figure 1 是最重要的物理景观可视化，优先于最终 Pareto 表。"
+  },
+  "figure_refs": [
+    {
+      "label": "Figure 1",
+      "asset_path": "assets/collection-figures/2410.12119/figure-1-loss-landscape.webp",
+      "section": "核心结果与证据",
+      "role": "connect model scaling to local loss geometry",
+      "evidence": "paper.pdf p. 2, Figure 1",
+      "alt_text": "Float-loss scaling and radial landscape plots.",
+      "caption": "A quantization perturbation of fixed relative norm can cross different basin shoulders as model scale changes.",
+      "interpretation": "Random radial profiles summarize typical local geometry, not all structured quantization directions."
+    }
+  ],
+  "equation_refs": [
+    {
+      "label": "Signal-to-quantization-noise ratio",
+      "latex": "\\operatorname{SQNR}(w)=20\\log_{10}\\frac{\\|w\\|_2}{\\|Q(w)-w\\|_2}",
+      "role": "normalize quantization displacement across model sizes",
+      "symbols": {
+        "Q": "tensor quantizer",
+        "w": "flattened quantized weights"
+      },
+      "evidence": "paper.pdf p. 4",
+      "interpretation": "SQNR measures displacement magnitude but cannot by itself predict loss without local landscape geometry."
+    },
+    {
+      "label": "Local loss expansion",
+      "latex": "\\operatorname{NLL}(w+\\Delta w)=\\operatorname{NLL}(w)+g^T\\Delta w+\\frac12\\Delta w^T H\\Delta w+O(\\|\\Delta w\\|^3)",
+      "role": "motivate landscape-aware PTQ scaling",
+      "symbols": {
+        "g": "gradient",
+        "H": "Hessian"
+      },
+      "evidence": "paper.pdf p. 3",
+      "interpretation": "Measured landscapes become step-like beyond the local basin, so low-order expansions fail for aggressive quantization."
+    }
+  ],
+  "evidence_refs": [
+    "paper.pdf pp. 2–6: landscape, SQNR, GPTQ and predictor",
+    "paper.pdf pp. 7–8: experiment protocol, Pareto frontier and limitations",
+    "source PDF SHA-256 7bb63fd9519596f3deca175ad21a10c6109f6376eb02d9925d4547a701e7b8d3",
+    "Evidence status: full-text verified; no independent reproduction performed."
+  ]
+}

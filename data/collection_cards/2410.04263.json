@@ -1,0 +1,152 @@
+{
+  "arxiv_id": "2410.04263",
+  "source_version": "v3",
+  "source_pdf": "https://arxiv.org/pdf/2410.04263",
+  "title_en": "DeFoG: Discrete Flow Matching for Graph Generation",
+  "title_zh": "DeFoG：用于图生成的离散流匹配",
+  "curation_status": "full_text_verified",
+  "card_standard_version": "2.3",
+  "paper_profile": "theory_numerics",
+  "style_reference": "physicist_daily_arxiv",
+  "provenance": {
+    "program": "Collection",
+    "catalog": "Paper Collection",
+    "catalog_record_id": "af0b5a5bd95c883c",
+    "catalog_record_ids": [
+      "af0b5a5bd95c883c"
+    ],
+    "catalog_topic": "Flow Matching",
+    "collection_date": "2026-08-23",
+    "sampled_at": "2026-08-28",
+    "selected_by": "full_collection_backfill",
+    "sampling_seed": "not_applicable_full_collection",
+    "candidate_count": 452
+  },
+  "verified_metadata": {
+    "arxiv_id": "2410.04263",
+    "version": "v3",
+    "title": "DeFoG: Discrete Flow Matching for Graph Generation",
+    "authors": [
+      "Yiming Qin",
+      "Manuel Madeira",
+      "Dorina Thanou",
+      "Pascal Frossard"
+    ],
+    "categories": [
+      "cs.LG"
+    ],
+    "primary_category": "cs.LG",
+    "published": "2024-10-05T18:52:54Z",
+    "abstract": "Discrete flow matching decouples graph noising from CTMC sampling and exposes time distortion, rate-matrix and guidance choices at inference.",
+    "comment": ""
+  },
+  "sections": [
+    {
+      "title": "作者信息",
+      "paragraphs": [
+        "作者：Yiming Qin、Manuel Madeira、Dorina Thanou、Pascal Frossard；arXiv:2410.04263v3，ICML 2025。全文 59 页，覆盖 synthetic graphs、QM9/GuacaMol/MOSES molecules 与 digital pathology conditional generation。"
+      ]
+    },
+    {
+      "title": "研究问题",
+      "paragraphs": [
+        "离散 graph diffusion 往往把训练 noise schedule 与推理 rate matrix 绑定，任何采样改动都可能要求重训。论文问：能否只学习 clean-graph posterior，再在推理时独立选择 time distortion、CTMC stochasticity 与 target guidance，同时保持 node-permutation symmetry 和可控的分布误差？"
+      ]
+    },
+    {
+      "title": "背景",
+      "paragraphs": [
+        "图被写成 node labels 与 edge labels 的 categorical variables。forward path 直接规定 (p_{t|1}(z_t|z_1))，reverse CTMC 的 marginal rate 则对 learned posterior (p_{1|t}^\\theta(z_1|z_t)) 做平均；网络用逐变量 cross-entropy 学 clean endpoint。",
+        "Figure 1 左侧对比 diffusion 的耦合训练/采样与 DeFoG 的解耦；右侧展示从 initial noise graph 经离散跳变逐步去噪到目标 graph。"
+      ]
+    },
+    {
+      "title": "模型与方法",
+      "paragraphs": [
+        "基础 path 是 data 与 noise categorical laws 的线性插值；sampling 通过 Euler-discretized CTMC 更新。训练/推理均可用 monotone distortion (t'=f(t)) 重分配时间区域；推理还可加入满足 detailed balance 的额外 rate (R_t^{DB}) 或 target-guidance rate (R_t^\\omega)。",
+        "graph transformer 对 node permutation equivariant，并用 RRWP positional features 提升超越基本 message passing 的表达力。Theorem 1 把 CE loss 连接到 rate-matrix estimation error upper bound；Theorem 2 再把 total-variation deviation 分解为有限步 discretization 与 rate estimation 两部分。"
+      ]
+    },
+    {
+      "title": "核心结果与证据",
+      "paragraphs": [
+        "Figure 1 是机制图：训练只学习 endpoint posterior，推理侧的 distortion、rate design 和 guidance 成为可替换模块；这正是效率改进的来源，而不是把连续坐标硬套到图上。",
+        "synthetic Planar 数据的 valid-unique-novel（V.U.N.）达到 99.5%。作者报告 DeFoG 常用 diffusion baselines 仅 5–10% 的 sampling steps；在 GuacaMol 用 25 steps 已超过 500-step DiGress。",
+        "target guidance 可显著提高 validity，但过强会降低 novelty 和 graph-statistics ratio；最佳 training/sampling distortion 又随 dataset 改变。因而论文展示的是可调设计空间，不是一个跨数据集统一最优 schedule。"
+      ]
+    },
+    {
+      "title": "有效性与局限",
+      "paragraphs": [
+        "理论界限依赖 posterior/rate estimation assumptions，并显式包含有限 (K) 的 discretization error；它不保证一个有限网络用 25 steps 精确复制真实 graph law。V.U.N. 接近 1 只检查指定 validity、uniqueness、novelty，不等同于科学用途或 chemical quality。",
+        "rate-matrix/guidance 搜索使用验证数据和 dataset-specific choices；不同 baselines 的 steps、architectures 和 metrics protocol 不完全等价。fully connected edge variables 与 transformer attention 对大图仍有二次尺度压力。"
+      ]
+    },
+    {
+      "title": "复现与资源",
+      "paragraphs": [
+        "原文：https://arxiv.org/abs/2410.04263；代码：https://github.com/manuelmlmadeira/DeFoG。全文 59 页，PDF SHA-256：8baeebbfc76eea8808aa67c7b37460ce46d506595de1a3dbb4c5177a507f6aba。",
+        "复现需固定 categorical encoding、noise distribution、training/sampling distortions、Euler steps、(R_t^{DB})、guidance magnitude、RRWP features、five-run sampling seeds 与各数据集 validity/FCD/MMD 实现。",
+        "Evidence status: full-text verified; no independent reproduction performed."
+      ]
+    },
+    {
+      "title": "阅读指南",
+      "paragraphs": [
+        "先看 Figure 1 与 Eqs. (2)–(6)，分清 learned posterior、conditional rate 与 marginal CTMC；再读 Theorems 1–2 的误差链。随后用 Figure 2/Appendix ablations 检查 distortion、guidance、stochasticity 的 trade-off，最后才比较 Tables 1–2。"
+      ]
+    }
+  ],
+  "cover": {
+    "mode": "source_figure",
+    "asset_path": "assets/collection-figures/2410.04263/figure-1-defog-overview.webp",
+    "label": "Figure 1",
+    "visual_type": "schematic",
+    "evidence": "paper.pdf p. 2, Figure 1",
+    "alt_text": "耦合 diffusion 与解耦 DeFoG 训练流程，以及离散 graph denoising trajectory。",
+    "caption": "DeFoG 只在训练中学习 clean endpoint posterior，把时间扭曲、rate matrix 与 guidance 留给推理阶段。",
+    "selection_rationale": "Figure 1 是全文核心训练-采样解耦机制图，优先于 V.U.N. 表格。"
+  },
+  "figure_refs": [
+    {
+      "label": "Figure 1",
+      "asset_path": "assets/collection-figures/2410.04263/figure-1-defog-overview.webp",
+      "section": "核心结果与证据",
+      "role": "show training-sampling decoupling and graph denoising",
+      "evidence": "paper.pdf p. 2, Figure 1",
+      "alt_text": "DeFoG workflow and discrete graph trajectory.",
+      "caption": "Posterior learning is shared while the sampler design remains adjustable.",
+      "interpretation": "Decoupling enlarges the design space; finite-step fidelity remains bounded rather than exact."
+    }
+  ],
+  "equation_refs": [
+    {
+      "label": "Endpoint-posterior training",
+      "latex": "\\mathcal L_{\\rm CE}(\\theta)=-\\mathbb E_{t,z_1,z_t}\\log p_{1|t}^{\\theta}(z_1\\mid z_t)",
+      "role": "learn the clean categorical graph endpoint",
+      "symbols": {
+        "z_t": "noised node or edge state",
+        "z_1": "clean endpoint"
+      },
+      "evidence": "paper.pdf pp. 3–5 and Appendix D",
+      "interpretation": "The learned posterior can be inserted into multiple CTMC rate designs without retraining."
+    },
+    {
+      "label": "Time distortion",
+      "latex": "t'=f(t),\\qquad \\phi_{t'}(t')=\\phi_t(f^{-1}(t'))\\left|\\frac{d f^{-1}}{dt'}\\right|",
+      "role": "reallocate training samples or sampling steps in time",
+      "symbols": {
+        "f": "monotone distortion",
+        "phi": "time density"
+      },
+      "evidence": "paper.pdf p. 17, Appendix B.1",
+      "interpretation": "The same mathematical transformation has different roles during training and sampling, and its optimum is dataset dependent."
+    }
+  ],
+  "evidence_refs": [
+    "paper.pdf pp. 2–8: formulation, architecture and main experiments",
+    "paper.pdf pp. 33–44: rate and generated-distribution error bounds",
+    "source PDF SHA-256 8baeebbfc76eea8808aa67c7b37460ce46d506595de1a3dbb4c5177a507f6aba",
+    "Evidence status: full-text verified; no independent reproduction performed."
+  ]
+}
