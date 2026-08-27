@@ -1,0 +1,167 @@
+{
+  "arxiv_id": "2401.08740",
+  "source_version": "v2",
+  "source_pdf": "https://arxiv.org/pdf/2401.08740",
+  "title_en": "SiT: Exploring Flow and Diffusion-based Generative Models with Scalable Interpolant Transformers",
+  "title_zh": "SiT：用可扩展插值 Transformer 探索流与扩散生成模型",
+  "curation_status": "full_text_verified",
+  "card_standard_version": "2.3",
+  "paper_profile": "ai_empirical",
+  "style_reference": "physicist_daily_arxiv",
+  "provenance": {
+    "program": "Collection",
+    "catalog": "Paper Collection",
+    "catalog_record_id": "d3593ea6cb44205b",
+    "catalog_record_ids": [
+      "d3593ea6cb44205b"
+    ],
+    "catalog_topic": "Transformer Theory",
+    "collection_date": "2026-08-23",
+    "sampled_at": "2026-08-28",
+    "selected_by": "full_collection_backfill",
+    "sampling_seed": "not_applicable_full_collection",
+    "candidate_count": 452
+  },
+  "verified_metadata": {
+    "arxiv_id": "2401.08740",
+    "version": "v2",
+    "title": "SiT: Exploring Flow and Diffusion-based Generative Models with Scalable Interpolant Transformers",
+    "authors": [
+      "Nanye Ma",
+      "Mark Goldstein",
+      "Michael S. Albergo",
+      "Nicholas M. Boffi",
+      "Eric Vanden-Eijnden",
+      "Saining Xie"
+    ],
+    "categories": [
+      "cs.CV",
+      "cs.LG"
+    ],
+    "primary_category": "cs.CV",
+    "published": "2024-01-16T18:55:25Z",
+    "abstract": "Scalable Interpolant Transformers separate path, prediction target and sampler design while holding the DiT backbone fixed, improving class-conditional ImageNet FID.",
+    "comment": ""
+  },
+  "sections": [
+    {
+      "title": "作者信息",
+      "paragraphs": [
+        "作者：Nanye Ma、Mark Goldstein、Michael S. Albergo、Nicholas M. Boffi、Eric Vanden-Eijnden、Saining Xie；arXiv:2401.08740v2。全文 36 页。"
+      ]
+    },
+    {
+      "title": "研究问题",
+      "paragraphs": [
+        "DiT 的表现混合了 architecture、forward noise path、prediction target、time discretization 与 sampler。论文问：在参数量、GFLOPs 和 transformer backbone 完全不变时，哪些 dynamical-transport design choices 真正带来增益；flow ODE 与 reverse SDE 能否在同一 stochastic-interpolant 框架下模块化比较？"
+      ]
+    },
+    {
+      "title": "背景",
+      "paragraphs": [
+        "取数据 \\(x_*\\sim p\\) 与 Gaussian noise \\(\\epsilon\\)，用 \\(x_t=\\alpha_tx_*+\\sigma_t\\epsilon\\) 连接两端。给定同一 marginal path，既可用 probability-flow ODE 的 velocity \\(v\\) 生成，也可在任意 \\(w_t\\ge0\\) 下用含 score \\(s=\\nabla\\log p_t\\) 的 reverse SDE 生成。",
+        "标准 score diffusion 通常把 \\(\\alpha_t,\\sigma_t,w_t\\) 绑定到 forward SDE。stochastic interpolant 则把 path、learned field 与 inference diffusion coefficient 分开；后者甚至可在训练后调节。"
+      ]
+    },
+    {
+      "title": "模型与方法",
+      "paragraphs": [
+        "SiT 严格复用 DiT-{S,B,L,XL} latent transformer、VAE、patch size 2 与 AdaLN-Zero，只依次改变：discrete→continuous time、score/noise→velocity target、VP→Linear/GVP interpolant、ODE→SDE sampler 与 \\(w_t\\) choice。transition ablation 使用 ImageNet \\(256^2\\)、SiT-B、400k steps、250 NFE。",
+        "Linear path 取 \\(\\alpha_t=1-t,\\sigma_t=t\\)，GVP 取 \\(\\cos(\\pi t/2),\\sin(\\pi t/2)\\)。训练通常拟合 velocity；score 可由 velocity 解析恢复。SDE diffusion coefficient 比较 \\(\\sigma_t\\)、\\(\\sin^2\\pi t\\)、KL-optimal \\(w_t^{KL}\\) 与 cost-regularized \\(w_t^{KL,\\eta}\\)。"
+      ]
+    },
+    {
+      "title": "核心结果与证据",
+      "paragraphs": [
+        "Figure 1 是论文最重要的视觉证据：\\(512^2\\) 与 \\(256^2\\) SiT-XL 的 class-conditional samples 显示跨类别细节与多尺度一致性；它应与后面的 FID curves 一起读，而不能单独当作总体质量证明。",
+        "逐项 ablation 中，continuous-time 只把 FID 44.2 改到 43.6；velocity/weighted score 约 39，Linear/GVP path 进一步到 34.8/34.6。相同 trained model 下 SDE 又优于 ODE：GVP 为 32.9 vs 34.6，Linear 为 33.6 vs 34.8。最优 \\(w_t\\) 依赖 path 与 parameterization，并非单一 schedule。",
+        "最终 SiT-XL 在 ImageNet \\(256^2\\) 取得 FID-50K 2.06（DiT-XL 2.27），在 \\(512^2\\) 取得 2.62（DiT-XL 3.04），架构、参数量和训练超参数保持一致。SDE 在大 NFE 时可达更低 FID，但 ODE 在低 NFE 区更快收敛。"
+      ]
+    },
+    {
+      "title": "有效性与局限",
+      "paragraphs": [
+        "实验集中于 class-conditional ImageNet 与 DiT latent backbone；结论尚未覆盖 text-to-image、视频、likelihood、mode coverage 或真实 human preference。FID 的小幅差异不能自动解释为所有感知维度都更好。",
+        "sampler 优劣与 NFE budget 强相关；论文固定 Heun ODE 与 Euler–Maruyama SDE，不能把差异完全归因于 stochasticity。最佳 diffusion coefficient 是 model/path dependent，\\(w_t^{KL}\\) 在 Linear/GVP 端点会发散，需要 cost regularization。"
+      ]
+    },
+    {
+      "title": "复现与资源",
+      "paragraphs": [
+        "原文：https://arxiv.org/abs/2401.08740；代码：https://github.com/willisma/SiT。全文 36 页，PDF SHA-256：9207ad5e0793761417ea4bb02bee888a5ac565bd7877c4652ed8dc93784a5c46。",
+        "复现需固定 DiT checkpoint convention、VAE、ImageNet preprocessing、\\(\\alpha_t,\\sigma_t\\)、prediction loss weighting、ODE/SDE integrator、NFE、\\(w_t\\)、CFG、训练 steps、FID evaluator 与 50k sample seed。",
+        "Evidence status: full-text verified; no independent reproduction performed."
+      ]
+    },
+    {
+      "title": "阅读指南",
+      "paragraphs": [
+        "先看 Figure 1/2 建立 sample 与 scaling impression；再读 Eqs. (1)–(9)，确认同一路径为何既有 ODE 又有 SDE。随后按 Tables 2–6 逐步追踪每个 design choice，最后读 Table 7；不要把 2.06 归因于 transformer 结构变化，因为架构被刻意固定。"
+      ]
+    }
+  ],
+  "cover": {
+    "mode": "source_figure",
+    "asset_path": "assets/collection-figures/2401.08740/figure-1-sit-samples.webp",
+    "label": "Figure 1",
+    "visual_type": "comparison",
+    "evidence": "paper.pdf p. 3, Figure 1",
+    "alt_text": "狮子、面包圈、金毛犬及多个 ImageNet 类别的 SiT 生成样例网格。",
+    "caption": "SiT-XL 在固定 DiT backbone 下通过改变 interpolant、prediction target 与 sampler 获得这些 class-conditional samples。",
+    "selection_rationale": "该图是文章最重要的可视化原图，比 FID 表更适合作为封面，同时仍在正文中明确样例选择偏差。"
+  },
+  "figure_refs": [
+    {
+      "label": "Figure 1",
+      "asset_path": "assets/collection-figures/2401.08740/figure-1-sit-samples.webp",
+      "section": "核心结果与证据",
+      "role": "show representative outputs of the final scalable interpolant transformer",
+      "evidence": "paper.pdf p. 3, Figure 1",
+      "alt_text": "多个 ImageNet 类别的 512 与 256 分辨率生成样例。",
+      "caption": "样例展示最终生成能力，但设计归因必须依赖 controlled ablations。",
+      "interpretation": "Qualitative samples do not replace FID curves, recall or independent perceptual evaluation."
+    }
+  ],
+  "equation_refs": [
+    {
+      "label": "Stochastic interpolant path",
+      "latex": "x_t=\\alpha_t x_*+\\sigma_t\\epsilon",
+      "role": "separate the probability path from model architecture and sampler",
+      "symbols": {
+        "x_*": "data sample",
+        "epsilon": "standard Gaussian noise",
+        "alpha_t,sigma_t": "interpolant schedules"
+      },
+      "evidence": "paper.pdf p. 4, Eq. (1)",
+      "interpretation": "Changing the path alters transport geometry without changing the transformer backbone."
+    },
+    {
+      "label": "Reverse stochastic sampler",
+      "latex": "dX_t=\\left[v(X_t,t)-\\frac12w_t s(X_t,t)\\right]dt+\\sqrt{w_t}\\,d\\bar W_t",
+      "role": "sample the same marginal path with a tunable diffusion coefficient",
+      "symbols": {
+        "v": "probability-flow velocity",
+        "s": "score",
+        "w_t": "inference-time diffusion coefficient"
+      },
+      "evidence": "paper.pdf p. 5, Eq. (4)",
+      "interpretation": "w_t may be selected after training, but its best value depends on the path and learned parameterization."
+    },
+    {
+      "label": "Linear and GVP paths",
+      "latex": "\\text{Linear}:\\ (\\alpha_t,\\sigma_t)=(1-t,t),\\qquad \\text{GVP}:\\ (\\alpha_t,\\sigma_t)=\\left(\\cos\\frac{\\pi t}{2},\\sin\\frac{\\pi t}{2}\\right)",
+      "role": "define exact finite-time data-to-noise connections",
+      "symbols": {
+        "t": "interpolation time"
+      },
+      "evidence": "paper.pdf p. 7, Eq. (12)",
+      "interpretation": "These paths reduce numerical singularities and transport curvature relative to the VP baseline in the reported experiments."
+    }
+  ],
+  "evidence_refs": [
+    "paper.pdf pp. 3–8: interpolant, velocity-score relation and tunable SDE",
+    "paper.pdf pp. 9–13: controlled design ablations and ImageNet benchmarks",
+    "source PDF SHA-256 9207ad5e0793761417ea4bb02bee888a5ac565bd7877c4652ed8dc93784a5c46",
+    "Evidence status: full-text verified; no independent reproduction performed."
+  ]
+}

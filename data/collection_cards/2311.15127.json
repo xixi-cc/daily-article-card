@@ -1,0 +1,162 @@
+{
+  "arxiv_id": "2311.15127",
+  "source_version": "v1",
+  "source_pdf": "https://arxiv.org/pdf/2311.15127",
+  "title_en": "Stable Video Diffusion: Scaling Latent Video Diffusion Models to Large Datasets",
+  "title_zh": "Stable Video Diffusion：将潜视频扩散模型扩展到大型数据集",
+  "curation_status": "full_text_verified",
+  "card_standard_version": "2.3",
+  "paper_profile": "ai_empirical",
+  "style_reference": "physicist_daily_arxiv",
+  "provenance": {
+    "program": "Collection",
+    "catalog": "Paper Collection",
+    "catalog_record_id": "914b139b3661cddc",
+    "catalog_record_ids": [
+      "914b139b3661cddc"
+    ],
+    "catalog_topic": "Video Generation",
+    "collection_date": "2026-08-23",
+    "sampled_at": "2026-08-28",
+    "selected_by": "full_collection_backfill",
+    "sampling_seed": "not_applicable_full_collection",
+    "candidate_count": 452
+  },
+  "verified_metadata": {
+    "arxiv_id": "2311.15127",
+    "version": "v1",
+    "title": "Stable Video Diffusion: Scaling Latent Video Diffusion Models to Large Datasets",
+    "authors": [
+      "Andreas Blattmann",
+      "Tim Dockhorn",
+      "Sumith Kulal",
+      "Daniel Mendelevitch",
+      "Maciej Kilian",
+      "Dominik Lorenz",
+      "Yam Levi",
+      "Zion English",
+      "Vikram Voleti",
+      "Adam Letts",
+      "Varun Jampani",
+      "Robin Rombach"
+    ],
+    "categories": [
+      "cs.CV"
+    ],
+    "primary_category": "cs.CV",
+    "published": "2023-11-25T22:28:38Z",
+    "abstract": "A three-stage latent video diffusion pipeline studies large-scale video curation and transfers the learned motion prior to image-to-video and multi-view generation.",
+    "comment": ""
+  },
+  "sections": [
+    {
+      "title": "作者信息",
+      "paragraphs": [
+        "作者：Andreas Blattmann 等十二人（Stability AI）；arXiv:2311.15127v1。全文 31 页，公开代码与模型位于 Stability AI generative-models 仓库。"
+      ]
+    },
+    {
+      "title": "研究问题",
+      "paragraphs": [
+        "把 2D latent diffusion 加入 temporal layers 可以生成视频，但训练协议与数据清洗差异很大。论文问：image pretraining、large-scale video pretraining 和 high-quality finetuning 三阶段各自贡献什么；哪些 motion、caption、cut 与 aesthetics filters 真正改善模型；学到的 motion prior 能否迁移到 image-to-video、camera control 与 multi-view synthesis？"
+      ]
+    },
+    {
+      "title": "背景",
+      "paragraphs": [
+        "SVD 沿用 Stable Diffusion 2.1 的空间 U-Net，在每个 spatial convolution/attention 后加入 temporal convolution/attention，并 finetune 全模型。训练在 latent space 中进行，以降低多帧高分辨率生成的成本。",
+        "原始 web video 含大量镜头切换、渐变、静止片段、文字覆盖与弱 caption。对于生成模型，这些不是无害噪声：它们会直接成为模型学习的运动统计。论文因此把 dataset construction 当作动力学建模的一部分。"
+      ]
+    },
+    {
+      "title": "模型与方法",
+      "paragraphs": [
+        "训练分三阶段：Stage I 从 SD2.1 初始化 image representation；Stage II 在处理后的 LVD-F 上预训练 14 帧、\\(256\\times384\\) base model；Stage III 在约 1M 个高质量样本上以 \\(576\\times1024\\) finetune 50k steps。",
+        "LVD 从约 577M clips 出发，经三级 cut detector、2 fps optical flow、OCR、CLIP/aesthetic scores 与 CoCa/VideoBLIP/LLM captions 构成过滤信号；human-preference ablation 选择阈值，得到 152M clips 的 LVD-F。高分辨率训练采用 EDM preconditioning 并把 noise schedule 向更高噪声移动。"
+      ]
+    },
+    {
+      "title": "核心结果与证据",
+      "paragraphs": [
+        "Figure 1 用连续帧展示三种能力：text-to-video 的动作一致性、image-to-video 的时序延展，以及把 video prior finetune 成多视角环绕。它比单帧指标更直接地显示模型到底学习了什么运动结构。",
+        "同规模实验中，image-pretrained spatial weights 在 quality 与 prompt alignment 上均优于随机初始化；LVD-10M 过滤成约四分之一大小的 LVD-10M-F 后，human preference 反而提升。完整 LVD 为 577M clips/212.09 years，LVD-F 为 152M/50.64 years。",
+        "UCF-101 zero-shot FVD 为 242.02，优于表中公开 baselines。SVD-MV 在 GSO 上得到 LPIPS 0.14、PSNR 16.83、CLIP-S 0.89；image-prior SD2.1-MV 为 0.18/15.06/0.83。该 multi-view finetuning 只训练 12k steps（约 16 小时、8×80GB A100）。"
+      ]
+    },
+    {
+      "title": "有效性与局限",
+      "paragraphs": [
+        "作者明确指出模型擅长短视频而非 long-form generation：一次生成多 keyframes 仍昂贵，输出有时运动不足；diffusion sampling 慢且 VRAM 需求高。真实部署还需独立评估偏差、滥用、合成内容标识与数据来源。",
+        "核心质量证据大量依赖 human preference、FVD/LPIPS/CLIP-S 与特定数据流程；私有原始 LVD 和过滤标注使完全复现困难。Figure 1 是精选样例，不代表 failure-rate distribution；与 closed-source Gen-2/Pika 的比较也无法控制训练数据与推理预算。"
+      ]
+    },
+    {
+      "title": "复现与资源",
+      "paragraphs": [
+        "原文：https://arxiv.org/abs/2311.15127；代码与权重：https://github.com/Stability-AI/generative-models。全文 31 页，PDF SHA-256：654ef597e183c0544cd753494cb442125bc42b17dd2477481b6799114482a92e。",
+        "复现需固定 cut-detector cascade、optical-flow/OCR/aesthetic thresholds、caption source、frame rate、resolution、noise distribution、temporal-layer initialization、CFG across frames、training clips 与 human-evaluation protocol。",
+        "Evidence status: full-text verified; no independent reproduction performed."
+      ]
+    },
+    {
+      "title": "阅读指南",
+      "paragraphs": [
+        "先看 Figure 1 确认三类 downstream motion prior；再读 Section 3 与 Figure 2–4，把数据量、过滤和 initialization 的贡献拆开。随后读 Section 4 的 I2V/MV experiments，最后读 Appendix A 的 limitations；不要用精选视频帧替代总体失败率。"
+      ]
+    }
+  ],
+  "cover": {
+    "mode": "source_figure",
+    "asset_path": "assets/collection-figures/2311.15127/figure-1-video-samples.webp",
+    "label": "Figure 1",
+    "visual_type": "comparison",
+    "evidence": "paper.pdf p. 1, Figure 1",
+    "alt_text": "机器人 DJ、爆炸奶酪屋、紫袍兔子与多视角玩具的连续生成帧。",
+    "caption": "同一 latent video prior 支撑 text-to-video、image-to-video 与 multi-view synthesis；连续帧可直接检查运动和视角一致性。",
+    "selection_rationale": "这是论文最重要的可视化原图，优先于数据表，能同时概括三种模型用途。"
+  },
+  "figure_refs": [
+    {
+      "label": "Figure 1",
+      "asset_path": "assets/collection-figures/2311.15127/figure-1-video-samples.webp",
+      "section": "核心结果与证据",
+      "role": "show temporal consistency and transfer of the learned motion prior",
+      "evidence": "paper.pdf p. 1, Figure 1",
+      "alt_text": "四组连续视频帧，覆盖文本生成、图像条件生成和多视角生成。",
+      "caption": "连续帧使运动一致性与跨任务迁移可见，但仍是作者精选样例。",
+      "interpretation": "Qualitative samples must be read together with aggregate human and benchmark evaluations."
+    }
+  ],
+  "equation_refs": [
+    {
+      "label": "Probability-flow dynamics",
+      "latex": "d x=-\\dot\\sigma(t)\\sigma(t)\\nabla_x\\log p(x;\\sigma(t))\\,dt",
+      "role": "describe iterative latent denoising across noise scales",
+      "symbols": {
+        "sigma(t)": "noise schedule",
+        "nabla log p": "score field"
+      },
+      "evidence": "paper.pdf p. 18, Eq. (1)",
+      "interpretation": "High-resolution finetuning changes the noise schedule because the relevant signal-to-noise regime shifts with resolution."
+    },
+    {
+      "label": "Denoising score-matching loss",
+      "latex": "\\mathbb E\\!\\left[\\lambda_\\sigma\\left\\|D_\\theta(x_0+n;\\sigma,c)-x_0\\right\\|_2^2\\right],\\qquad n\\sim\\mathcal N(0,\\sigma^2I)",
+      "role": "train the conditional latent denoiser",
+      "symbols": {
+        "D_theta": "conditional denoiser",
+        "c": "text, image or other condition",
+        "lambda_sigma": "noise-dependent weight"
+      },
+      "evidence": "paper.pdf p. 18, Eq. (2)",
+      "interpretation": "The same denoising backbone can be adapted by changing conditioning and temporal layers."
+    }
+  ],
+  "evidence_refs": [
+    "paper.pdf pp. 1 and 3–6: architecture, three-stage training and curation ablations",
+    "paper.pdf pp. 7–8: image-to-video and multi-view transfer",
+    "paper.pdf p. 15: broader impact and limitations",
+    "source PDF SHA-256 654ef597e183c0544cd753494cb442125bc42b17dd2477481b6799114482a92e",
+    "Evidence status: full-text verified; no independent reproduction performed."
+  ]
+}
