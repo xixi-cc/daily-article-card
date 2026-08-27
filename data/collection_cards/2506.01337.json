@@ -1,0 +1,156 @@
+{
+  "arxiv_id": "2506.01337",
+  "source_version": "v1",
+  "source_pdf": "https://arxiv.org/pdf/2506.01337",
+  "title_en": "NoiseAR: AutoRegressing Initial Noise Prior for Diffusion Models",
+  "title_zh": "NoiseAR：为扩散模型自回归生成初始噪声先验",
+  "curation_status": "full_text_verified",
+  "card_standard_version": "2.3",
+  "paper_profile": "ai_empirical",
+  "style_reference": "physicist_daily_arxiv",
+  "provenance": {
+    "program": "Collection",
+    "catalog": "Paper Collection",
+    "catalog_record_id": "a619bd5c2964e92c",
+    "catalog_record_ids": [
+      "a619bd5c2964e92c"
+    ],
+    "catalog_topic": "Generative Models",
+    "collection_date": "2026-08-23",
+    "sampled_at": "2026-08-28",
+    "selected_by": "full_collection_backfill",
+    "sampling_seed": "not_applicable_full_collection",
+    "candidate_count": 452
+  },
+  "verified_metadata": {
+    "arxiv_id": "2506.01337",
+    "version": "v1",
+    "title": "NoiseAR: AutoRegressing Initial Noise Prior for Diffusion Models",
+    "authors": [
+      "Zeming Li",
+      "Xiangyue Liu",
+      "Xiangyu Zhang",
+      "Ping Tan",
+      "Heung-Yeung Shum"
+    ],
+    "categories": [
+      "cs.LG",
+      "cs.AI"
+    ],
+    "primary_category": "cs.LG",
+    "published": "2025-06-02T06:58:46Z",
+    "abstract": "NoiseAR replaces the fixed Gaussian start of a text-to-image diffusion model with a prompt-conditioned autoregressive distribution over latent-noise patches.",
+    "comment": ""
+  },
+  "sections": [
+    {
+      "title": "作者信息",
+      "paragraphs": [
+        "作者：Zeming Li、Xiangyue Liu、Xiangyu Zhang、Ping Tan、Heung-Yeung Shum；arXiv:2506.01337v1。全文 21 页。NoiseAR 是可插接既有 text-to-image diffusion models 的条件 prior learner，并用 DPO 做小规模 preference fine-tuning。"
+      ]
+    },
+    {
+      "title": "研究问题",
+      "paragraphs": [
+        "扩散模型通常从与 prompt 无关的各向同性 Gaussian \\(z_T\\) 出发，条件信息只在 denoising 途中注入。论文问：若直接学习 \\(p(z_T\\mid c)\\)，让初始噪声已经携带与文本有关的空间结构，是否能在不改 downstream diffusion model 的情况下提高 alignment 与感知质量？"
+      ]
+    },
+    {
+      "title": "背景",
+      "paragraphs": [
+        "反演真实图像可得到与该图/文本匹配的“golden noise”，说明固定 Gaussian 中不同点并非同等适合某一 prompt。但直接回归单个 noise 会丢失多样性。NoiseAR 将 latent noise 切成 patches，并把条件 prior 写成自回归联合分布，从而同时保留概率采样和 prompt dependence。",
+        "Figure 2 将同一 prompt 下的 Origin Noise、Golden Noise、NoiseAR 与 NoiseAR+DPO 结果并列。它能展示构图/语义差异，但仍是少量可视化；跨数据集的多指标表才支持平均改善。"
+      ]
+    },
+    {
+      "title": "模型与方法",
+      "paragraphs": [
+        "先用预训练 diffusion model 对图文对执行 inversion，收集 \\((z_T,c)\\) cold-start pairs。Transformer 按空间 patch 顺序建模 \\(p_\\theta(z_T\\mid c)=\\prod_jp_\\theta(z_{T,j}\\mid z_{T,<j},c)\\)，每个位置输出连续 noise patch 的条件分布；推断时逐 patch 采样，再交给冻结的 SDXL、DreamShaper 或 Hunyuan-DiT 去噪。",
+        "因为 prior 显式给出 log probability，作者把 patch sequence 看作 policy trajectory，用 2,000 个 Pick-a-Pic prompts、每 prompt 20 rollouts 构造 preferred/rejected pairs，并做 DPO。该阶段优化的是自动指标合成的 preference，而非直接人类 pairwise labels。"
+      ]
+    },
+    {
+      "title": "核心结果与证据",
+      "paragraphs": [
+        "Figure 2 中 NoiseAR 相比原始 Gaussian 往往给出更完整的主体与更匹配的布局；DPO 后若干例子进一步改善语义对齐。图像只是代表性案例，不能单独证明总体优势。",
+        "Table 1 在 DrawBench、Pick-a-Pic 与 GenEval 上比较三种 downstream models。以 DrawBench+SDXL 为例，NoiseAR 的 HPSv2 27.86、PickScore 58.06、ImageReward 75.99、CLIPScore 84.27，高于标准 Gaussian 对应的 26.78、46.31、52.74、83.34，也总体超过 Golden Noise。其他模型/数据集多数指标同样提高，但幅度随 metric 改变。",
+        "DPO 是 proof of concept：它把 SDXL+DrawBench 的 ImageReward 从约 76.00 进一步推高，但训练偏好来自 HPS/PickScore/ImageReward/MPS 的组合。改进因此是对这些 proxy 的优化，是否等价于人类长期偏好仍需独立评测。"
+      ]
+    },
+    {
+      "title": "有效性与局限",
+      "paragraphs": [
+        "初始 noise pairs 来自特定 inversion 和 downstream diffusion models，可能把生成器偏差写进 prior。patch factorization 引入顺序与分辨率选择；更强 prior 也可能降低 diversity 或复制训练图结构，文中指标不足以完整审计 memorization 和 mode coverage。",
+        "作者明确未研究 model/data scaling law，DPO 仅初步验证，也未系统组合 advanced samplers 或后期 noise search。实验局限于 text-to-image，没有覆盖 audio、video 或 3D。Figure 2 的成功样例不能代替随机 prompt、失败样例与人类盲评。"
+      ]
+    },
+    {
+      "title": "复现与资源",
+      "paragraphs": [
+        "原文：https://arxiv.org/abs/2506.01337。全文 21 页，PDF SHA-256：13b1bcbb9df4afb2dcd018ccb73467c41b1836fdb4f52b3308e7510c5995aa74。",
+        "复现需固定 inversion method、cold-start dataset、latent VAE、patch size/order、distribution parameterization、Transformer depth、sampling temperature、downstream checkpoint、seed、prompt sets 与指标版本。DPO 还需保存 2,000 prompts、20 rollouts、proxy merge rule 和 pair selection。",
+        "Evidence status: full-text verified; no independent reproduction performed."
+      ]
+    },
+    {
+      "title": "阅读指南",
+      "paragraphs": [
+        "先看 Figure 1 的数据构造与 AR prior，再看 Figure 2 形成直觉；随后逐列核对 Table 1，避免只挑一个 metric。最后读 patch/depth ablations、DPO 数据生成和 limitations，把“更好的初始条件”“更强的最终生成器”与“对 proxy reward 的适配”分开。"
+      ]
+    }
+  ],
+  "cover": {
+    "mode": "source_figure",
+    "asset_path": "assets/collection-figures/2506.01337/figure-2-noisear-comparison.webp",
+    "label": "Figure 2",
+    "visual_type": "comparison",
+    "evidence": "paper.pdf p. 9, Figure 2",
+    "alt_text": "标准噪声、Golden Noise、NoiseAR 和 NoiseAR+DPO 在相同文本提示下的生成图比较。",
+    "caption": "Prompt-conditioned initial noise 能在去噪前重排空间结构；可视化趋势需与跨 prompt 指标和多样性审计一起解读。",
+    "selection_rationale": "Figure 2 是最直观的原文结果图，能用图像替代冗长的样例描述。"
+  },
+  "figure_refs": [
+    {
+      "label": "Figure 2",
+      "asset_path": "assets/collection-figures/2506.01337/figure-2-noisear-comparison.webp",
+      "section": "核心结果与证据",
+      "role": "compare initial-noise strategies visually",
+      "evidence": "paper.pdf p. 9, Figure 2",
+      "alt_text": "Rows compare Origin Noise, Golden Noise, NoiseAR and NoiseAR with DPO.",
+      "caption": "A learned prompt-conditioned prior changes composition before the frozen diffusion denoiser acts.",
+      "interpretation": "Selected examples do not quantify diversity, memorization or average human preference."
+    }
+  ],
+  "equation_refs": [
+    {
+      "label": "Autoregressive noise prior",
+      "latex": "p_\\theta(z_T\\mid c)=\\prod_{j=1}^{J}p_\\theta(z_{T,j}\\mid z_{T,<j},c)",
+      "role": "model prompt-conditioned initial noise patch by patch",
+      "symbols": {
+        "z_T,j": "latent-noise patch j",
+        "c": "text condition",
+        "J": "number of patches"
+      },
+      "evidence": "paper.pdf pp. 4–5",
+      "interpretation": "The Gaussian starting measure is replaced by a structured conditional distribution while retaining stochastic sampling."
+    },
+    {
+      "label": "DPO prior objective",
+      "latex": "\\mathcal L_{\\rm DPO}=-\\mathbb E\\log\\sigma\\!\\left(\\beta\\log\\frac{\\pi_\\theta(z^+\\mid c)}{\\pi_{\\rm ref}(z^+\\mid c)}-\\beta\\log\\frac{\\pi_\\theta(z^-\\mid c)}{\\pi_{\\rm ref}(z^-\\mid c)}\\right)",
+      "role": "prefer initial noises that yield higher-scoring images",
+      "symbols": {
+        "z+": "preferred noise rollout",
+        "z-": "rejected rollout",
+        "beta": "preference strength"
+      },
+      "evidence": "paper.pdf pp. 7–8",
+      "interpretation": "Optimization acts on the prior likelihood ratio; its semantics are inherited from the proxy used to form preference pairs."
+    }
+  ],
+  "evidence_refs": [
+    "paper.pdf pp. 3–6: inversion pairs and autoregressive prior",
+    "paper.pdf pp. 7–10: multi-model evaluation, DPO and visual comparison",
+    "source PDF SHA-256 13b1bcbb9df4afb2dcd018ccb73467c41b1836fdb4f52b3308e7510c5995aa74",
+    "Evidence status: full-text verified; no independent reproduction performed."
+  ]
+}

@@ -1,0 +1,151 @@
+{
+  "arxiv_id": "2505.18825",
+  "source_version": "v2",
+  "source_pdf": "https://arxiv.org/pdf/2505.18825",
+  "title_en": "How to build a consistency model: Learning flow maps via self-distillation",
+  "title_zh": "如何构建一致性模型：用自蒸馏学习流映射",
+  "curation_status": "full_text_verified",
+  "card_standard_version": "2.3",
+  "paper_profile": "theory_numerics",
+  "style_reference": "physicist_daily_arxiv",
+  "provenance": {
+    "program": "Collection",
+    "catalog": "Paper Collection",
+    "catalog_record_id": "ae6b8a193d3649c7",
+    "catalog_record_ids": [
+      "ae6b8a193d3649c7"
+    ],
+    "catalog_topic": "Flow Matching",
+    "collection_date": "2026-08-23",
+    "sampled_at": "2026-08-28",
+    "selected_by": "full_collection_backfill",
+    "sampling_seed": "not_applicable_full_collection",
+    "candidate_count": 452
+  },
+  "verified_metadata": {
+    "arxiv_id": "2505.18825",
+    "version": "v2",
+    "title": "How to build a consistency model: Learning flow maps via self-distillation",
+    "authors": [
+      "Nicholas M. Boffi",
+      "Michael S. Albergo",
+      "Eric Vanden-Eijnden"
+    ],
+    "categories": [
+      "cs.LG",
+      "cs.CV"
+    ],
+    "primary_category": "cs.LG",
+    "published": "2025-05-24T16:56:10Z",
+    "abstract": "A two-time flow-map framework derives and compares Eulerian, Lagrangian and progressive self-distillation methods for consistency models.",
+    "comment": ""
+  },
+  "sections": [
+    {
+      "title": "作者信息",
+      "paragraphs": [
+        "作者：Nicholas M. Boffi、Michael S. Albergo、Eric Vanden-Eijnden；arXiv:2505.18825v2。全文 31 页。论文把多种 consistency/self-distillation 方法统一为学习双时间 flow map 的数值问题，并给出低维与 64×64 图像实验。"
+      ]
+    },
+    {
+      "title": "研究问题",
+      "paragraphs": [
+        "Flow/score model 学的是瞬时速度，采样仍需积分；consistency model 试图直接学习有限时间映射，却有多套看似不同的 teacher、EMA 与 bootstrapping 规则。论文问：这些算法能否从 flow map 的半群性质和 tangent condition 统一推导，并明确不同离散化的稳定性—偏差权衡？"
+      ]
+    },
+    {
+      "title": "背景",
+      "paragraphs": [
+        "确定性 ODE 的两时间 flow map \\(X_{s,t}(x)\\) 把时刻 \\(t\\) 的状态送到 \\(s\\)。它满足 identity、composition 和切向条件。Figure 1 先画两时间曲面及 tangent constraint，再用 Gaussian handshake 展示如何把不同 self-distillation families 放进同一实验坐标系。"
+      ]
+    },
+    {
+      "title": "模型与方法",
+      "paragraphs": [
+        "作者从 flow-map evolution equations 构造四类离散训练：Eulerian self-distillation 在固定空间点比较相邻时间映射；Lagrangian self-distillation 沿估计轨迹搬运输入；progressive self-distillation 则逐级压缩 solver steps，并区分 uniform 与 midpoint variants。",
+        "teacher 由 velocity model 或当前 flow-map network 的停止梯度/EMA 副本给出。训练不只要求端点一致，还要求 map composition 与局部 tangent 相容。统一 notation 暴露了误差来源：teacher solver truncation、student regression、off-manifold evaluation 和递归 bootstrapping。"
+      ]
+    },
+    {
+      "title": "核心结果与证据",
+      "paragraphs": [
+        "Figure 1 的价值是把 consistency model 还原为数值流映射：同一 \\(X_{s,t}\\) 可沿 Eulerian 或 Lagrangian 路径约束；Gaussian handshake 提供匹配 training budgets 的比较协议，而非把算法名字当作机制。",
+        "在 CelebA-64 上，Lagrangian self-distillation 在所有测试步数中取得表内最佳 FID，1-step FID 为 12.22；在 AFHQ-64 上 LSD 从 1-step FID 11.19 改善到 16-step 的 5.61。checkerboard toy problem 中 LSD 除 16-step 外也给出最低 KL。",
+        "这些结果支持 Lagrangian evaluation 减少 distribution mismatch，但论文明确不以 SOTA 为目标。数据规模、网络与训练预算有限，因此更可靠的结论是设计空间与优化行为，而不是某个缩写对所有生成任务普遍最优。"
+      ]
+    },
+    {
+      "title": "有效性与局限",
+      "paragraphs": [
+        "自蒸馏 target 依赖 teacher trajectory；若初始 velocity/flow map 有系统误差，composition 可把误差固化。有限步 solver、EMA lag、stop-gradient 和 time-pair sampling 都影响稳定性，理论 identity 本身不保证 neural optimization 收敛。",
+        "实验主要是 checkerboard、CelebA-64 与 AFHQ-64，分辨率和规模不足以确定现代高分辨率生成的排序。FID 随 step count 改善说明模型仍非完美一致；one-step quality、multi-step correctability 与真实 ODE fidelity 是不同指标。"
+      ]
+    },
+    {
+      "title": "复现与资源",
+      "paragraphs": [
+        "原文：https://arxiv.org/abs/2505.18825。全文 31 页，PDF SHA-256：523ae498a8c5db38db2975091ae474d4b8f858a0ffcd194d9b57e46393899d92。",
+        "复现需固定 base velocity model、\\((s,t)\\) sampling、teacher solver 与步长、EMA、stop-gradient location、self-distillation family、training evaluations、FID sample count 和 checkerboard KL estimator。应保存每个 NFE 的 checkpoint，而非只报最佳点。",
+        "Evidence status: full-text verified; no independent reproduction performed."
+      ]
+    },
+    {
+      "title": "阅读指南",
+      "paragraphs": [
+        "先看 Figure 1 和 flow-map 三条代数性质；再按 Eulerian、Lagrangian、progressive 三组算法逐行比较 target 的 evaluation point。随后读 Table 1 的同预算结果与优化曲线，最后检查 appendix 的实现细节，区分解析恒等式、离散算法和经验排序。"
+      ]
+    }
+  ],
+  "cover": {
+    "mode": "source_figure",
+    "asset_path": "assets/collection-figures/2505.18825/figure-1-flowmap-overview.webp",
+    "label": "Figure 1",
+    "visual_type": "schematic",
+    "evidence": "paper.pdf p. 2, Figure 1",
+    "alt_text": "双时间 flow map、tangent condition 与 Gaussian handshake 的统一示意图。",
+    "caption": "Consistency training 可视为直接逼近满足切向与复合关系的有限时间 flow map。",
+    "selection_rationale": "Figure 1 是全文统一理论与比较协议的核心机制图，优先于单一 FID 表。"
+  },
+  "figure_refs": [
+    {
+      "label": "Figure 1",
+      "asset_path": "assets/collection-figures/2505.18825/figure-1-flowmap-overview.webp",
+      "section": "核心结果与证据",
+      "role": "unify consistency models as flow-map learning",
+      "evidence": "paper.pdf p. 2, Figure 1",
+      "alt_text": "Two-time flow-map surface, tangent relation and Gaussian comparison handshake.",
+      "caption": "Eulerian, Lagrangian and progressive targets discretize constraints on the same flow map.",
+      "interpretation": "Exact flow-map identities do not guarantee stable finite-network self-distillation."
+    }
+  ],
+  "equation_refs": [
+    {
+      "label": "Flow-map composition",
+      "latex": "X_{s,t}=X_{s,r}\\circ X_{r,t},\\qquad X_{t,t}=\\operatorname{Id}",
+      "role": "state the semigroup consistency constraint",
+      "symbols": {
+        "X_s,t": "map from time t to time s",
+        "r": "intermediate time"
+      },
+      "evidence": "paper.pdf pp. 2–3",
+      "interpretation": "A learned finite-time map should agree whether transport is performed directly or through an intermediate time."
+    },
+    {
+      "label": "Tangent condition",
+      "latex": "\\left.\\partial_sX_{s,t}(x)\\right|_{s=t}=v_t(x)",
+      "role": "connect the finite flow map to the instantaneous velocity",
+      "symbols": {
+        "v_t": "probability-flow vector field",
+        "x": "state at time t"
+      },
+      "evidence": "paper.pdf p. 3, Lemma 2.1",
+      "interpretation": "Local agreement with the vector field anchors self-distillation to the underlying continuous dynamics."
+    }
+  ],
+  "evidence_refs": [
+    "paper.pdf pp. 2–9: flow-map identities and self-distillation families",
+    "paper.pdf pp. 12–20: checkerboard, CelebA and AFHQ comparisons",
+    "source PDF SHA-256 523ae498a8c5db38db2975091ae474d4b8f858a0ffcd194d9b57e46393899d92",
+    "Evidence status: full-text verified; no independent reproduction performed."
+  ]
+}

@@ -1,0 +1,155 @@
+{
+  "arxiv_id": "2505.13447",
+  "source_version": "v1",
+  "source_pdf": "https://arxiv.org/pdf/2505.13447",
+  "title_en": "Mean Flows for One-step Generative Modeling",
+  "title_zh": "MeanFlow：用平均速度场实现一步生成",
+  "curation_status": "full_text_verified",
+  "card_standard_version": "2.3",
+  "paper_profile": "theory_numerics",
+  "style_reference": "physicist_daily_arxiv",
+  "provenance": {
+    "program": "Collection",
+    "catalog": "Paper Collection",
+    "catalog_record_id": "e1b182ad373c34ce",
+    "catalog_record_ids": [
+      "e1b182ad373c34ce"
+    ],
+    "catalog_topic": "Flow Matching",
+    "collection_date": "2026-08-23",
+    "sampled_at": "2026-08-28",
+    "selected_by": "full_collection_backfill",
+    "sampling_seed": "not_applicable_full_collection",
+    "candidate_count": 452
+  },
+  "verified_metadata": {
+    "arxiv_id": "2505.13447",
+    "version": "v1",
+    "title": "Mean Flows for One-step Generative Modeling",
+    "authors": [
+      "Zhengyang Geng",
+      "Mingyang Deng",
+      "Xingjian Bai",
+      "J. Zico Kolter",
+      "Kaiming He"
+    ],
+    "categories": [
+      "cs.LG",
+      "cs.CV"
+    ],
+    "primary_category": "cs.LG",
+    "published": "2025-05-19T17:59:59Z",
+    "abstract": "MeanFlow learns an average velocity field whose finite-time displacement directly maps noise to data in one or a few evaluations.",
+    "comment": ""
+  },
+  "sections": [
+    {
+      "title": "作者信息",
+      "paragraphs": [
+        "作者：Zhengyang Geng、Mingyang Deng、Xingjian Bai、J. Zico Kolter、Kaiming He；arXiv:2505.13447v1。全文 16 页。论文研究无需教师蒸馏的一步生成，其核心对象不是瞬时 probability-flow velocity，而是跨有限时间区间的平均速度。"
+      ]
+    },
+    {
+      "title": "研究问题",
+      "paragraphs": [
+        "Flow matching 学到瞬时速度场后通常仍要数值积分许多步；把采样压到一次网络调用时，Euler 近似误差会成为主导。论文问：能否直接学习从时刻 \\(t\\) 到 \\(r\\) 的有限位移，使一步映射本身成为训练目标，同时仍与原始连续流严格相容？"
+      ]
+    },
+    {
+      "title": "背景",
+      "paragraphs": [
+        "对连续轨迹 \\(z_t\\)，瞬时速度 \\(v(z_t,t)=\\mathrm d z_t/\\mathrm dt\\) 只描述局部切向量；一步生成需要的是端点差 \\(z_r-z_t\\)。MeanFlow 定义双时间平均速度 \\(u(z_t,r,t)\\)，满足 \\(z_r=z_t+(r-t)u\\)。这类似从微分方程的局部生成元转向有限时间 propagator。",
+        "Figure 5 展示 ImageNet-256 的 class-conditional curated samples。它直观说明一次函数求值可以产生结构清晰的图像，但该图经过挑选，只能作为感知质量示例；FID 与消融表才是总体分布的量化证据。"
+      ]
+    },
+    {
+      "title": "模型与方法",
+      "paragraphs": [
+        "作者从平均速度的定义出发，对终止时间求导，得到连接 \\(u\\)、瞬时速度 \\(v\\) 与 Jacobian-vector product 的 MeanFlow identity。训练时网络预测 \\(u_\\theta(z,r,t)\\)，target 由已知插值速度和对网络输出的方向导数组成；JVP 可用自动微分在一次联合计算中获得。",
+        "采样时若取 \\(t=1,r=0\\)，单次更新 \\(z_0=z_1-u_\\theta(z_1,0,1)\\) 即完成 1-NFE 生成。多步采样则把时间区间分段，每段仍用平均速度更新。论文在 ImageNet-256 上使用 class conditioning、classifier-free guidance，并系统检查 time sampling、loss weighting、network size 与 NFE。"
+      ]
+    },
+    {
+      "title": "核心结果与证据",
+      "paragraphs": [
+        "Figure 5 的可视化覆盖多种 ImageNet 类别；局部纹理和物体轮廓说明 1-NFE 输出没有出现普遍坍缩。必须同时读其 caption：这些是 curated examples，不能代替随机样本统计。",
+        "MeanFlow-XL/2 在 ImageNet 256×256、1 NFE 下报告 FID 3.43；对照的一步 Shortcut Models 为 10.60，iMM 为 7.77。使用两次函数求值的 MeanFlow-XL/2+ 报告 FID 2.20，与多步 DiT/SiT 结果处于相近量级。CIFAR-10 的 1-NFE FID 为 2.92。",
+        "JVP 并非免费：TPU v4-8 上训练迭代从普通 flow matching 的 0.045 s 增至 0.052 s，约 16% wall-clock overhead。论文的贡献因此是把采样积分成本转移为较小的训练微分成本，而不是消除计算。"
+      ]
+    },
+    {
+      "title": "有效性与局限",
+      "paragraphs": [
+        "结果集中在 class-conditional ImageNet-256 与 CIFAR-10，并依赖特定 backbone、CFG、240-epoch training 和评估协议；不能直接外推到高分辨率、文本条件或科学场生成。FID 对 feature extractor 与 sample count 敏感，也不保证每类忠实度或 rare-mode coverage。",
+        "MeanFlow identity 在精确场上成立，但有限网络、有限数据和 JVP 估计会引入误差；一步端点拟合可能隐藏中间轨迹的不正确。Figure 5 是人工筛选图，不证明 1-NFE 在所有 prompts/classes 上优于多步 solver。本文未给出独立复现，训练成本、超参数与 accelerator 仍需对齐。"
+      ]
+    },
+    {
+      "title": "复现与资源",
+      "paragraphs": [
+        "原文：https://arxiv.org/abs/2505.13447；项目页：https://meanflows.com。全文 16 页，PDF SHA-256：322ba9244ad2c72382038e421fe0ffa92510c51d4f9c740bd7282b36bfc25206。",
+        "复现需固定 interpolation path、\\((r,t)\\) sampling、loss weighting、JVP implementation、network/EMA、CFG scale、training epochs、NFE grid、50k-sample FID protocol 与随机种子。应分别报告训练吞吐、1-NFE latency、FID 和随机未筛选样本。",
+        "Evidence status: full-text verified; no independent reproduction performed."
+      ]
+    },
+    {
+      "title": "阅读指南",
+      "paragraphs": [
+        "先读 Figure 2 的几何定义和 MeanFlow identity，再看算法框中的 JVP target；随后核对 ImageNet Table 1、ablation 与训练开销。最后查看 Figure 5，但把 curated visualization 与 FID 的总体统计证据分开，并检查一步映射是否保留所关心的中间动力学。"
+      ]
+    }
+  ],
+  "cover": {
+    "mode": "source_figure",
+    "asset_path": "assets/collection-figures/2505.13447/figure-5-meanflow-samples.webp",
+    "label": "Figure 5",
+    "visual_type": "comparison",
+    "evidence": "paper.pdf p. 16, Figure 5",
+    "alt_text": "MeanFlow-XL/2 一步生成的多类别 ImageNet-256 curated samples。",
+    "caption": "一次网络求值可产生结构清晰的 ImageNet 样本；这是作者筛选的可视化，定量结论应结合 FID。",
+    "selection_rationale": "Figure 5 是全文最重要且最直观的生成结果，优先于纯数据表；caption 明确保留 curated 边界。"
+  },
+  "figure_refs": [
+    {
+      "label": "Figure 5",
+      "asset_path": "assets/collection-figures/2505.13447/figure-5-meanflow-samples.webp",
+      "section": "核心结果与证据",
+      "role": "show representative one-step generations",
+      "evidence": "paper.pdf p. 16, Figure 5",
+      "alt_text": "MeanFlow-XL/2 在 ImageNet-256 上的一步生成样本。",
+      "caption": "The samples show that a finite-time average-velocity map can generate coherent images in one evaluation.",
+      "interpretation": "The examples are curated and do not establish distribution-wide quality without FID and random-sample audits."
+    }
+  ],
+  "equation_refs": [
+    {
+      "label": "Finite-time average velocity",
+      "latex": "u(z_t,r,t)=\\frac{z_r-z_t}{r-t},\\qquad z_r=z_t+(r-t)u(z_t,r,t)",
+      "role": "replace numerical integration by a finite-time displacement",
+      "symbols": {
+        "z_t": "state at source time",
+        "r,t": "endpoint and source times",
+        "u": "average velocity"
+      },
+      "evidence": "paper.pdf pp. 3–4",
+      "interpretation": "At r=0 and t=1, a learned average velocity directly maps a noise sample to the data endpoint."
+    },
+    {
+      "label": "MeanFlow identity",
+      "latex": "u=v-(t-r)\\frac{\\mathrm d u}{\\mathrm d t},\\qquad \\frac{\\mathrm d u}{\\mathrm d t}=\\partial_tu+v\\cdot\\nabla_zu",
+      "role": "construct a self-consistent training target",
+      "symbols": {
+        "v": "instantaneous flow velocity",
+        "du/dt": "total derivative along the flow"
+      },
+      "evidence": "paper.pdf pp. 4–5",
+      "interpretation": "The JVP term connects the finite-time field to the local flow without teacher distillation."
+    }
+  ],
+  "evidence_refs": [
+    "paper.pdf pp. 3–6: average-velocity definition, identity and training algorithm",
+    "paper.pdf pp. 8–16: ImageNet/CIFAR results, ablations and curated samples",
+    "source PDF SHA-256 322ba9244ad2c72382038e421fe0ffa92510c51d4f9c740bd7282b36bfc25206",
+    "Evidence status: full-text verified; no independent reproduction performed."
+  ]
+}

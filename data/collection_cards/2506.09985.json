@@ -1,0 +1,180 @@
+{
+  "arxiv_id": "2506.09985",
+  "source_version": "v1",
+  "source_pdf": "https://arxiv.org/pdf/2506.09985",
+  "title_en": "V-JEPA 2: Self-Supervised Video Models Enable Understanding, Prediction and Planning",
+  "title_zh": "V-JEPA 2：自监督视频模型连接理解、预测与规划",
+  "curation_status": "full_text_verified",
+  "card_standard_version": "2.3",
+  "paper_profile": "ai_empirical",
+  "style_reference": "physicist_daily_arxiv",
+  "provenance": {
+    "program": "Collection",
+    "catalog": "Paper Collection",
+    "catalog_record_id": "002e259088de9677",
+    "catalog_record_ids": [
+      "002e259088de9677"
+    ],
+    "catalog_topic": "World Models",
+    "collection_date": "2026-08-23",
+    "sampled_at": "2026-08-28",
+    "selected_by": "full_collection_backfill",
+    "sampling_seed": "not_applicable_full_collection",
+    "candidate_count": 452
+  },
+  "verified_metadata": {
+    "arxiv_id": "2506.09985",
+    "version": "v1",
+    "title": "V-JEPA 2: Self-Supervised Video Models Enable Understanding, Prediction and Planning",
+    "authors": [
+      "Mahmoud Assran",
+      "Adrien Bardes",
+      "David Fan",
+      "Quentin Garrido",
+      "Russell Howes",
+      "Mojtaba Komeili",
+      "Matthew Muckley",
+      "Ammar Rizvi",
+      "Claire Roberts",
+      "Koustuv Sinha",
+      "Artem Zholus",
+      "Sergio Arnaud",
+      "Abha Gejji",
+      "Ada Martin",
+      "Francois Robert Hogan",
+      "Daniel Dugas",
+      "Piotr Bojanowski",
+      "Vasil Khalidov",
+      "Patrick Labatut",
+      "Francisco Massa",
+      "Marc Szafraniec",
+      "Kapil Krishnakumar",
+      "Yong Li",
+      "Xiaodong Ma",
+      "Sarath Chandar",
+      "Franziska Meier",
+      "Yann LeCun",
+      "Michael Rabbat",
+      "Nicolas Ballas"
+    ],
+    "categories": [
+      "cs.AI",
+      "cs.CV",
+      "cs.LG",
+      "cs.RO"
+    ],
+    "primary_category": "cs.AI",
+    "published": "2025-06-11T17:59:56Z",
+    "abstract": "Internet-scale joint-embedding video pretraining supports video understanding and an action-conditioned latent predictor for model-predictive robot control.",
+    "comment": ""
+  },
+  "sections": [
+    {
+      "title": "作者信息",
+      "paragraphs": [
+        "作者：Mahmoud Assran、Adrien Bardes、David Fan 等 29 位作者；arXiv:2506.09985v1，FAIR at Meta 与 Mila/Polytechnique Montréal。全文 49 页。工作包含 action-free video pretraining、LLM alignment、action-conditioned post-training 和 Franka 机器人部署。"
+      ]
+    },
+    {
+      "title": "研究问题",
+      "paragraphs": [
+        "世界模型若完全依赖机器人交互数据，规模受真实采集限制；像素级视频生成又把容量消耗在不可预测细节。论文问：能否先从海量无动作标签视频学到 latent predictive representation，再用少量 state-action videos 训练 action-conditioned predictor，并在新实验室中以目标图像规划？"
+      ]
+    },
+    {
+      "title": "背景",
+      "paragraphs": [
+        "JEPA 不重建像素，而在 embedding space 预测被 mask 的未来/缺失区域，倾向保留可预测的物体与运动结构。Figure 1 把整个层级画出：1M 小时网络视频和 1M 图像产生 V-JEPA 2；language alignment/attentive probes 服务理解任务；少量 robot data 只训练 action-conditioned predictor，用于闭环规划。"
+      ]
+    },
+    {
+      "title": "模型与方法",
+      "paragraphs": [
+        "第一阶段冻结式 target encoder 与 context encoder/predictor 进行 masked feature prediction，得到 action-free V-JEPA 2。理解任务用 attentive probe 或与 8B LLM 对齐，不重新定义底层视觉目标。",
+        "机器人阶段冻结 video encoder，在少于 62 h、约 23k 条 DROID trajectories 上训练自回归 V-JEPA 2-AC：给定当前 latent state、proprioception 与 candidate actions，预测未来 latent observations。控制时用 cross-entropy method 搜索 action sequence，使预测终态 embedding 接近人工提供的 goal image；执行首段动作后重新观测，构成 receding-horizon MPC。"
+      ]
+    },
+    {
+      "title": "核心结果与证据",
+      "paragraphs": [
+        "Figure 1 显示 action-free observation learning 与 action-conditioned control 的明确分工：大规模 web data 提供视觉动力学表示，机器人数据只把 action 接到 frozen latent space 上。它是架构/数据流证据，不是所有能力由同一目标自动涌现的证明。",
+        "V-JEPA 2 在 Something-Something v2 报告 77.3 top-1，在 Epic-Kitchens-100 action anticipation 报告 39.7 recall-at-5；与 8B LLM 对齐后，PerceptionTest 为 84.0、TempCompass 为 76.9。各数字来自不同 probe/对齐协议，不能直接当作单一零样本能力。",
+        "V-JEPA 2-AC 在两个训练数据未覆盖的实验室、Franka arms 与低分辨率单目 RGB 上执行 reach、pick-and-place。reaching 的三项任务最终误差进入 4 cm 内且随 MPC rollout 下降；操作表按每项 10 trials 报告成功率。对照 Octo 使用超过 1M trajectories，Cosmos 使用约 20M 小时视频，而 V-JEPA 2-AC 的交互 post-training 约 23k trajectories，但预训练视频规模仍达 1M 小时。"
+      ]
+    },
+    {
+      "title": "有效性与局限",
+      "paragraphs": [
+        "“zero-shot”指目标实验室未收集训练数据，并非没有机器人数据：模型仍用 DROID 的 Franka trajectories 做 action-conditioned post-training，且部署是同一机器人类型。pick-and-place 依赖人工给定中间 goal images，任务集合和每项 10 次 trials 都较小。",
+        "latent 距离是规划能量，不保证与物理可达性、安全、接触稳定或任务 reward 单调一致。CEM/MPC 计算成本、相机视角、遮挡和失败恢复限制实时性。benchmark 提升同时含数据规模、架构和训练 recipe，未由 matched ablation 唯一归因；这些结果也不足以证明通用物理世界模型。"
+      ]
+    },
+    {
+      "title": "复现与资源",
+      "paragraphs": [
+        "原文：https://arxiv.org/abs/2506.09985；代码：https://github.com/facebookresearch/vjepa2。全文 49 页，PDF SHA-256：9cfcfde5fb0d9730637da5b9e7317825c3f3d09e91f3553e22eeba42c74d2226。",
+        "复现需记录 video/image corpus、clip sampling、mask schedule、encoder size、probe/LLM alignment protocol、DROID subset、camera/proprio normalization、action horizon、predictor rollout、CEM population/elites/iterations、goal-image construction 与成功判据。",
+        "Evidence status: full-text verified; no independent reproduction performed."
+      ]
+    },
+    {
+      "title": "阅读指南",
+      "paragraphs": [
+        "先看 Figure 1，把 representation pretraining、language/probe evaluation 与 robot post-training 分开；再读 JEPA objective 和 V-JEPA 2-AC predictor。随后核对视频 benchmarks 的协议，再看 robot Tables 2–3、Figure 7 的误差轨迹和 appendix deployment details，重点审计 zero-shot 的精确定义与 10-trial uncertainty。"
+      ]
+    }
+  ],
+  "cover": {
+    "mode": "source_figure",
+    "asset_path": "assets/collection-figures/2506.09985/figure-1-vjepa2-overview.webp",
+    "label": "Figure 1",
+    "visual_type": "schematic",
+    "evidence": "paper.pdf p. 2, Figure 1",
+    "alt_text": "互联网视频和图像预训练 V-JEPA 2，再经语言对齐、probe 或机器人 action-conditioned post-training 分流到理解、预测与规划。",
+    "caption": "大规模 action-free 表征与小规模 action-conditioned post-training 被清楚分层；机器人规划不是单靠网络视频直接获得。",
+    "selection_rationale": "Figure 1 是全文最重要且可视化最清晰的数据流/能力图，优先于单项 benchmark 曲线。"
+  },
+  "figure_refs": [
+    {
+      "label": "Figure 1",
+      "asset_path": "assets/collection-figures/2506.09985/figure-1-vjepa2-overview.webp",
+      "section": "核心结果与证据",
+      "role": "show the staged data and capability pipeline",
+      "evidence": "paper.pdf p. 2, Figure 1",
+      "alt_text": "Internet video pretraining branches into understanding tasks and robot action-conditioned post-training.",
+      "caption": "Large-scale observation learning supplies a frozen latent space; robot trajectories attach actions for MPC planning.",
+      "interpretation": "The diagram does not imply that action semantics or manipulation emerge without robot interaction data."
+    }
+  ],
+  "equation_refs": [
+    {
+      "label": "Latent action prediction",
+      "latex": "\\hat z_{k+1:k+T}=P_\\theta(a_{1:T};s_k,z_k)",
+      "role": "predict future visual representations under candidate actions",
+      "symbols": {
+        "z_k": "current visual embedding",
+        "s_k": "robot state",
+        "a_1:T": "candidate action sequence"
+      },
+      "evidence": "paper.pdf Section 4",
+      "interpretation": "The predictor rolls dynamics forward in representation space rather than generating future RGB frames."
+    },
+    {
+      "label": "Goal-conditioned planning energy",
+      "latex": "E(a_{1:T};z_k,s_k,z_g)=\\|P_\\theta(a_{1:T};s_k,z_k)-z_g\\|_1",
+      "role": "rank action sequences for model-predictive control",
+      "symbols": {
+        "z_g": "goal-image embedding",
+        "E": "terminal latent distance"
+      },
+      "evidence": "paper.pdf Section 4.2",
+      "interpretation": "CEM searches for actions whose predicted terminal representation approaches the supplied visual goal."
+    }
+  ],
+  "evidence_refs": [
+    "paper.pdf pp. 2–12: architecture, pretraining and video understanding",
+    "paper.pdf pp. 20–31: action-conditioned predictor, MPC and robot experiments",
+    "source PDF SHA-256 9cfcfde5fb0d9730637da5b9e7317825c3f3d09e91f3553e22eeba42c74d2226",
+    "Evidence status: full-text verified; no independent reproduction performed."
+  ]
+}

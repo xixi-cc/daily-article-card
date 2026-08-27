@@ -1,0 +1,152 @@
+{
+  "arxiv_id": "2505.18647",
+  "source_version": "v3",
+  "source_pdf": "https://arxiv.org/pdf/2505.18647",
+  "title_en": "STFlow: Data-Coupled Flow Matching for Geometric Trajectory Simulation",
+  "title_zh": "STFlow：面向几何轨迹模拟的数据耦合流匹配",
+  "curation_status": "full_text_verified",
+  "card_standard_version": "2.3",
+  "paper_profile": "ai_empirical",
+  "style_reference": "physicist_daily_arxiv",
+  "provenance": {
+    "program": "Collection",
+    "catalog": "Paper Collection",
+    "catalog_record_id": "1fc69cf0b30d65c8",
+    "catalog_record_ids": [
+      "1fc69cf0b30d65c8"
+    ],
+    "catalog_topic": "Flow Matching",
+    "collection_date": "2026-08-23",
+    "sampled_at": "2026-08-28",
+    "selected_by": "full_collection_backfill",
+    "sampling_seed": "not_applicable_full_collection",
+    "candidate_count": 452
+  },
+  "verified_metadata": {
+    "arxiv_id": "2505.18647",
+    "version": "v3",
+    "title": "STFlow: Data-Coupled Flow Matching for Geometric Trajectory Simulation",
+    "authors": [
+      "Kiet Bennema ten Brinke",
+      "Koen Minartz",
+      "Vlado Menkovski"
+    ],
+    "categories": [
+      "cs.LG",
+      "cs.AI"
+    ],
+    "primary_category": "cs.LG",
+    "published": "2025-05-24T09:46:55Z",
+    "abstract": "A data-coupled flow-matching model combines a conditional prior with spatial message passing and temporal convolutions for geometric trajectory forecasting.",
+    "comment": ""
+  },
+  "sections": [
+    {
+      "title": "作者信息",
+      "paragraphs": [
+        "作者：Kiet Bennema ten Brinke、Koen Minartz、Vlado Menkovski；arXiv:2505.18647v3。全文 23 页。STFlow 面向带粒子置换与欧氏几何结构的时空轨迹，实验覆盖 N-body、MD17 分子动力学和 NBA 球员轨迹。"
+      ]
+    },
+    {
+      "title": "研究问题",
+      "paragraphs": [
+        "标准 conditional flow matching 常从与观测轨迹无关的 Gaussian prior 出发，生成器必须同时学习全局位移、几何约束和时间关联。论文问：若把条件初态直接耦合进 prior，并在网络中分开建模空间相互作用与时间传播，能否用很少的 NFE 生成更准确的未来轨迹？"
+      ]
+    },
+    {
+      "title": "背景",
+      "paragraphs": [
+        "轨迹张量可视为 \\(T\\times N\\times d\\) 的时空场：时间轴承载动力学关联，粒子轴需要 permutation equivariance，坐标轴还受平移/旋转结构约束。Figure 1 将三部分放在一起：由 observed prefix 构造 data-coupled noise、沿 flow 插值、再用 spatial message passing 与 temporal convolution 预测速度。"
+      ]
+    },
+    {
+      "title": "模型与方法",
+      "paragraphs": [
+        "先从条件轨迹 \\(x_{0:c}\\) 计算均值延拓 \\(m(x_{0:c})\\)，构造 \\(x_0=m(x_{0:c})+\\zeta\\) 的条件 prior；因此 flow 不必从空间原点附近搬运整条 future。训练使用 conditional flow matching，在随机时间拟合连接 prior sample 与真实未来 \\(x_1\\) 的 vector field。",
+        "网络在每个时刻用几何 message passing 处理粒子相互作用，再用 temporal convolutions 交换相邻帧信息。设计保持粒子重标号下的 equivariance，并支持不同 conditioning horizon。推断用固定步 ODE solver；N-body 主要结果仅用 5 NFEs。"
+      ]
+    },
+    {
+      "title": "核心结果与证据",
+      "paragraphs": [
+        "Figure 1 解释了增益来源：conditioned prior 已包含观测末态的平移与粗趋势，flow 主要修正交互诱导的弯曲和多模态残差；时空网络则把对称性约束施加在正确轴上。",
+        "在 N-body benchmark 上，论文相对此前最佳平均降低 48.1% ADE 与 56.9% FDE；同时相对 LaM-SLidE 使用约一半 NFE，相对 GeoTDM 少约 200 倍 NFE。MD17 使用 8 种分子、30 帧轨迹和 10 帧 conditioning，并报告多分子上的竞争性位移误差。",
+        "NBA 结果并非全面占优：在一种 protocol 下 STFlow 的 mean20 指标有优势，但 min20 指标和另一设置中存在被 baseline 超过的项目。这个混合结果说明 data coupling 更直接改善平均预测，不自动保证多样本 oracle-best trajectory。"
+      ]
+    },
+    {
+      "title": "有效性与局限",
+      "paragraphs": [
+        "ADE/FDE 是坐标误差，不检查能量守恒、symplectic structure、碰撞稳定性或正确的长期不变测度。N-body 与短 MD17 windows 距离真实长时分子动力学仍很远；NBA 的观测噪声、战术多模态与数据切分也会改变结果。",
+        "data-coupled prior 使用观测状态，提升来自更好的 conditional initialization、架构与训练目标的组合，当前消融不能对所有数据集唯一分离三者。5-NFE 效率依赖 solver、batch 与硬件；混合 NBA 结果限制了“普遍优于”的表述。"
+      ]
+    },
+    {
+      "title": "复现与资源",
+      "paragraphs": [
+        "原文：https://arxiv.org/abs/2505.18647。全文 23 页，PDF SHA-256：9b75706f09235a08e0e8b489d58db20fa540a6f2a89b23d91925b6d8a7578539。",
+        "复现需固定 trajectory split、conditioning/prediction lengths、coordinate normalization、prior mean construction、noise scale、message-passing graph、temporal kernel、ODE solver/NFE、五样本或二十样本聚合规则以及 ADE/FDE 单位。",
+        "Evidence status: full-text verified; no independent reproduction performed."
+      ]
+    },
+    {
+      "title": "阅读指南",
+      "paragraphs": [
+        "先看 Figure 1，逐块确认 data coupling、spatial equivariance 与 temporal mixing；再读 conditional prior 和 vector-field parameterization。随后按 N-body、MD17、NBA 三组表分别检查 horizon、NFE 和 mean/min 指标，最后把短时几何预测与物理守恒的长期模拟分开。"
+      ]
+    }
+  ],
+  "cover": {
+    "mode": "source_figure",
+    "asset_path": "assets/collection-figures/2505.18647/figure-1-stflow-overview.webp",
+    "label": "Figure 1",
+    "visual_type": "schematic",
+    "evidence": "paper.pdf p. 3, Figure 1",
+    "alt_text": "STFlow 从观测轨迹构造耦合 prior，再以空间消息传递和时间卷积生成未来轨迹。",
+    "caption": "把 observed prefix 写入 prior 后，flow 主要学习相互作用引起的条件残差，而非从无结构噪声重建整条轨迹。",
+    "selection_rationale": "Figure 1 同时展示 prior、flow 与时空网络，是全文最重要的机制图。"
+  },
+  "figure_refs": [
+    {
+      "label": "Figure 1",
+      "asset_path": "assets/collection-figures/2505.18647/figure-1-stflow-overview.webp",
+      "section": "核心结果与证据",
+      "role": "explain the data-coupled spatiotemporal generator",
+      "evidence": "paper.pdf p. 3, Figure 1",
+      "alt_text": "Observed trajectory, coupled prior, flow path and spatiotemporal network blocks.",
+      "caption": "Conditioning is injected both through the prior and through the equivariant vector field.",
+      "interpretation": "The schematic does not by itself demonstrate physical conservation or long-horizon stability."
+    }
+  ],
+  "equation_refs": [
+    {
+      "label": "Data-coupled prior",
+      "latex": "x_0=m(x_{0:c})+\\zeta,\\qquad \\zeta\\sim\\mathcal N(0,\\sigma^2I)",
+      "role": "center the generative source on the observed trajectory",
+      "symbols": {
+        "m": "conditional trajectory extrapolator",
+        "c": "conditioning endpoint",
+        "zeta": "residual noise"
+      },
+      "evidence": "paper.pdf pp. 4–5",
+      "interpretation": "The flow transports a conditional residual rather than an unconditional Gaussian trajectory."
+    },
+    {
+      "label": "Average displacement error",
+      "latex": "\\operatorname{ADE}=\\frac{1}{N(T-c)}\\sum_{t=c+1}^{T}\\sum_{i=1}^{N}\\|\\hat x_i^t-x_i^t\\|_2",
+      "role": "measure mean future-coordinate error",
+      "symbols": {
+        "N": "particles or agents",
+        "T-c": "prediction horizon"
+      },
+      "evidence": "paper.pdf p. 7",
+      "interpretation": "ADE averages geometric error but does not test conservation laws or calibrated trajectory probabilities."
+    }
+  ],
+  "evidence_refs": [
+    "paper.pdf pp. 3–7: coupled prior, spatiotemporal architecture and metrics",
+    "paper.pdf pp. 7–14: N-body, MD17 and NBA comparisons",
+    "source PDF SHA-256 9b75706f09235a08e0e8b489d58db20fa540a6f2a89b23d91925b6d8a7578539",
+    "Evidence status: full-text verified; no independent reproduction performed."
+  ]
+}
