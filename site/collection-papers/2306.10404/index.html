@@ -1,0 +1,203 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>The RL Perceptron: Generalisation Dynamics of Policy Learning in High Dimensions - physics+AI Collection 随机精选</title>
+    <meta name="description" content="作者：Nishil Patel、Sebastian Lee、Stefano Sarao Mannelli、Sebastian Goldt、Andrew Saxe；arXiv:2306.10404v6。全文 22 页。" />
+    <script>
+      (function() {
+        try {
+          var themePreference = window.localStorage.getItem('color-theme') || 'system';
+          var systemUsesDarkTheme = window.matchMedia('(prefers-color-scheme: dark)').matches;
+          var resolvedTheme = themePreference === 'system'
+            ? (systemUsesDarkTheme ? 'dark' : 'light')
+            : themePreference;
+          document.documentElement.dataset.theme = resolvedTheme;
+          document.documentElement.dataset.themePreference = themePreference;
+          document.documentElement.style.colorScheme = resolvedTheme;
+        } catch (error) {
+          document.documentElement.dataset.theme = 'light';
+          document.documentElement.dataset.themePreference = 'system';
+        }
+      })();
+    </script>
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='18' fill='%23111827'/%3E%3Ctext x='50%25' y='55%25' text-anchor='middle' dominant-baseline='middle' font-size='30' font-family='Arial, sans-serif' fill='white'%3EV%3C/text%3E%3C/svg%3E" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700;800&family=Noto+Sans+SC:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <script>document.documentElement.classList.add('math-pending');</script>
+    <script>
+      window.MathJax = {
+        tex: {
+          inlineMath: [['$', '$'], ['\\(', '\\)']],
+          displayMath: [['$$', '$$'], ['\\[', '\\]']],
+          processEscapes: true
+        },
+        options: {
+          skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+        },
+        chtml: {
+          scale: 1,
+          displayAlign: 'center'
+        },
+        startup: {
+          ready: function() {
+            MathJax.startup.defaultReady();
+            MathJax.startup.promise.then(function() {
+              document.documentElement.classList.remove('math-pending');
+              document.documentElement.dataset.mathReady = 'true';
+            });
+          }
+        }
+      };
+    </script>
+    <script defer src="../../assets/vendor/mathjax/tex-chtml.js"></script>
+    <link rel="stylesheet" href="../../assets/style.css" />
+  </head>
+  <body class="detail-page" data-paper-id="2306.10404">
+    <div class="page-noise"></div>
+    <div class="page-blur page-blur-a"></div>
+    <div class="page-blur page-blur-b"></div>
+
+    <header class="header detail-page-header">
+      <div class="container">
+        <div class="detail-page-topbar">
+          <a class="back-link" href="../../collection.html">返回列表</a>
+          <div class="detail-topbar-actions">
+            <span class="detail-site-name">physics+AI Collection 随机精选</span>
+            <button class="theme-toggle" type="button" data-theme-toggle aria-label="当前主题：设备，点击切换主题" title="当前主题：设备">
+  <span class="theme-toggle-icons" aria-hidden="true">
+    <svg class="theme-toggle-icon theme-toggle-icon-light" viewBox="0 0 24 24" fill="none">
+      <circle cx="12" cy="12" r="3.5" stroke="currentColor" stroke-width="1.8"/>
+      <path d="M12 2.5v2M12 19.5v2M2.5 12h2M19.5 12h2M5.3 5.3l1.4 1.4M17.3 17.3l1.4 1.4M18.7 5.3l-1.4 1.4M6.7 17.3l-1.4 1.4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+    </svg>
+    <svg class="theme-toggle-icon theme-toggle-icon-dark" viewBox="0 0 24 24" fill="none">
+      <path d="M20 15.2A8.1 8.1 0 0 1 8.8 4a8.2 8.2 0 1 0 11.2 11.2z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>
+    </svg>
+    <svg class="theme-toggle-icon theme-toggle-icon-system" viewBox="0 0 24 24" fill="none">
+      <rect x="3" y="4" width="18" height="13" rx="2.5" stroke="currentColor" stroke-width="1.8"/>
+      <path d="M8 21h8M12 17v4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+    </svg>
+  </span>
+  <span class="theme-toggle-label" data-theme-toggle-label>设备</span>
+</button>
+          </div>
+        </div>
+
+        <div class="detail-hero-grid">
+          <div class="detail-hero-cover"><figure class="paper-figure-card paper-figure-card-detail">
+  <img class="paper-figure-image" src="../../assets/collection-figures/2306.10404/figure-1-rl-perceptron.webp" alt="teacher-student 感知机、序列 RL episode 和 ODE 与仿真曲线的总览。" loading="lazy" onclick="window.openPaperFigureImage && window.openPaperFigureImage(this)" />
+  <figcaption class="paper-figure-caption">高维 policy learning 被压缩为少数重叠序参量的 ODE；episode reward 决定宏观流场与可学习相。</figcaption>
+</figure></div>
+          <div class="detail-hero-copy">
+            <p class="eyebrow">Collection 全文卡</p>
+            <h1 class="detail-page-title">The RL Perceptron: Generalisation Dynamics of Policy Learning in High Dimensions</h1>
+            <p class="detail-page-title-zh">RL 感知机：高维策略学习的泛化动力学</p>
+            <div class="detail-meta">Paper Collection · Control &amp; Reinforcement Learning · <a href="https://arxiv.org/abs/2306.10404" target="_blank" rel="noopener noreferrer">原文</a></div>
+            <p class="detail-summary">作者：Nishil Patel、Sebastian Lee、Stefano Sarao Mannelli、Sebastian Goldt、Andrew Saxe；arXiv:2306.10404v6。全文 22 页。</p>
+            <div class="detail-micro-meta">
+              <span class="meta-pill">8 分钟读完</span>
+              <span class="meta-pill">8 张阅读卡</span>
+              <span class="meta-pill">作者：Nishil Patel、Sebastian Lee、Stefano Sarao Mannell…</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <main class="container detail-layout">
+      <div class="detail-shell">
+        <article id="detail-body" class="reading-flow"><section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 01</span>
+    <span class="reading-step-note">作者信息</span>
+  </div>
+  <h2>作者信息</h2>
+  <div class="reading-card-content"><ul><li>作者：Nishil Patel、Sebastian Lee、Stefano Sarao Mannelli、Sebastian Goldt、Andrew Saxe；arXiv:2306.10404v6。全文 22 页。</li></ul></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 02</span>
+    <span class="reading-step-note">研究问题</span>
+  </div>
+  <h2>研究问题</h2>
+  <div class="reading-card-content"><ul><li>高维 policy gradient 的理论通常给 worst-case bounds，却很少描述完整学习轨迹。论文问：对延迟稀疏奖励的序列决策，能否像统计物理中的 teacher–student perceptron 一样，把 \(D\) 维随机更新压缩成少数序参量的确定性动力学？</li></ul></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 03</span>
+    <span class="reading-step-note">背景</span>
+  </div>
+  <h2>背景</h2>
+  <div class="reading-card-content"><ul><li>teacher 权重 \(w^*\) 规定每个随机输入上的正确二元动作，student 权重 \(w\) 通过一段 \(T\) 步 episode 后的 reward 更新。热力学极限 \(D\to\infty\) 下，局部场变成联合 Gaussian，宏观状态由 \(Q=w\cdot w/D\)、\(R=w\cdot w^*/D\) 与固定 \(S=w^*\cdot w^*/D=1\) 封闭。</li><li>归一化重叠 \(\rho=R/\sqrt Q\) 相当于磁化方向的一致度；泛化误差为两个感知机在新输入上符号不一致的概率。</li></ul></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 04</span>
+    <span class="reading-step-note">模型与方法</span>
+  </div>
+  <h2>模型与方法</h2>
+  <div class="reading-card-content"><ul><li>作者对在线 REINFORCE 更新做典型平均，得到 \(R,Q\) 的闭合 ODE；reward functional \(G_t\) 可表示存活奖励、失败惩罚、中间奖励与不同 episode length。Figure 2 显示 \(D=900\) 的 simulation 与 ODE 在多种协议下吻合。</li><li>低维方程随后用于解析/数值优化学习率与任务长度 curriculum，并追踪 fixed points、first-order learnability transition 和 critical slowing。</li></ul></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 05</span>
+    <span class="reading-step-note">核心结果与证据</span>
+  </div>
+  <h2>核心结果与证据</h2>
+  <div class="reading-card-content"><ul><li>Figure 1 串联 teacher–student 几何、长度 \(T\) 的 RL episode 和 ODE/simulation 对比：微观权重更新最终只需跟踪 \(Q,R\)，图中 \(D=900,T=12\) 已显示有限维曲线逼近理论。</li><li>一般化误差精确写成 \(\epsilon_g=\pi^{-1}\arccos(R/\sqrt Q)\)。改变 reward/penalty 会产生 easy 与 hybrid-hard 区域；靠近临界奖励强度时出现长平台和临界变慢，有限 \(D\) 涨落偶尔可越过亚稳 fixed point。</li><li>Figure 5 显示 speed–accuracy tradeoff：放宽一局中正确动作数阈值可加快早期学习，却降低渐近重叠。Bossfight 的 6720 维像素实验在 10 次重复中复现该趋势；Pong 用 20 agents、\(T=30,50,70,90\)，但作者明确说明 \(T=90\) 在预算内尚未训练到反超。</li></ul><figure class="evidence-figure">
+  <button class="evidence-figure-image-button" type="button" aria-label="放大查看 Figure 1" onclick="window.openPaperFigureImage && window.openPaperFigureImage(this.querySelector('img'))">
+    <img class="paper-figure-image evidence-figure-image" src="../../assets/collection-figures/2306.10404/figure-1-rl-perceptron.webp" alt="teacher-student 模型、RL episode 和 ODE/仿真的组合图。" loading="lazy" />
+  </button>
+  <figcaption>
+    <strong>Figure 1</strong> · 统计平均把高维随机学习轨迹约化为低维确定性流。
+    <span class="evidence-figure-reading">物理解读：Agreement at finite D supports the asymptotic closure within this idealized model.</span>
+    <span class="evidence-figure-source">来源：paper.pdf p. 2, Figure 1</span>
+  </figcaption>
+</figure></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 06</span>
+    <span class="reading-step-note">有效性与局限</span>
+  </div>
+  <h2>有效性与局限</h2>
+  <div class="reading-card-content"><ul><li>可解性依赖二元动作、随机 Gaussian 输入、线性 perceptron teacher/student 与特定 policy-gradient 更新；真实环境的状态转移、深层表征和非平稳数据会增加序参量并破坏闭合。</li><li>ODE 在 \(D\to\infty\) 渐近精确，有限维 escape 与噪声可能改变亚稳寿命。Bossfight/Pong 是修改后的经验探针，不能证明解析最优 curriculum 直接适用于通用深度 RL；Pong 最难设置还没有达到渐近区。</li></ul></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 07</span>
+    <span class="reading-step-note">复现与资源</span>
+  </div>
+  <h2>复现与资源</h2>
+  <div class="reading-card-content"><ul><li>原文：https://arxiv.org/abs/2306.10404；代码：https://github.com/SaxeLab/RL_perceptron。全文 22 页，PDF SHA-256：0d8eb8cbe3e9a17d7c08b00419b3c67a151284f21056aa5ac280628e6f36a101。</li><li>复现理论应固定 \(D,T,\eta_1,\eta_2\)、学习率缩放、初始 \(Q,R\) 与时间变量 \(\alpha\)；经验实验还需记录环境修改、网络、并行 agents、训练预算和 repetitions。</li><li>Evidence status: full-text verified; no independent reproduction performed.</li></ul></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 08</span>
+    <span class="reading-step-note">阅读指南</span>
+  </div>
+  <h2>阅读指南</h2>
+  <div class="reading-card-content"><ul><li>先看 Figure 1 和 Eqs. (8)–(9)，把高维权重映射到 \(Q,R,\rho\) 与泛化误差；再比较 Figure 2 的 ODE/finite-\(D\) 曲线。最后读 learnability phase diagram 与 Figure 5，并用 Bossfight/Pong 只检验定性机制，不把它们当成一般深度 RL 定理。</li></ul></div>
+</section></article>
+        <aside id="detail-toc" class="detail-toc hidden" aria-label="内容目录">
+          <p class="detail-toc-title">阅读目录</p>
+          <nav id="detail-toc-nav" class="detail-toc-nav"></nav>
+        </aside>
+      </div>
+      <nav class="paper-nav"><a class="paper-nav-link paper-nav-prev" href="../../collection-papers/2305.13266/"><span class="paper-nav-label">← 上一篇</span><span class="paper-nav-title">Coarse-to-Fine: a Hierarchical Diffusion Model for Molecule Generation in 3D</span></a>
+      <a class="paper-nav-link paper-nav-next" href="../../collection-papers/2306.10574/"><span class="paper-nav-label">下一篇 →</span><span class="paper-nav-title">Score-based Data Assimilation</span></a></nav>
+    </main>
+
+    <footer class="footer">
+      <div class="container">
+        <p>内容来自 <a href="https://arxiv.org" target="_blank" rel="noopener noreferrer">arXiv.org</a>，阅读卡片由静态站点生成器构建。</p>
+      </div>
+    </footer>
+
+    <script src="../../assets/theme.js"></script>
+    <script src="../../assets/media.js"></script>
+    <script src="../../assets/paper.js"></script>
+  </body>
+</html>
