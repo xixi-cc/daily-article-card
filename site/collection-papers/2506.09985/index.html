@@ -1,0 +1,203 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>V-JEPA 2: Self-Supervised Video Models Enable Understanding, Prediction and Planning - physics+AI Collection 随机精选</title>
+    <meta name="description" content="作者：Mahmoud Assran、Adrien Bardes、David Fan 等 29 位作者；arXiv:2506.09985v1，FAIR at Meta 与 Mila/Polytechnique Montréal。全文 49 页。工作包含 action-free video pretraining、LLM alignment、action-conditioned post-training 和 Franka 机器人部署。" />
+    <script>
+      (function() {
+        try {
+          var themePreference = window.localStorage.getItem('color-theme') || 'system';
+          var systemUsesDarkTheme = window.matchMedia('(prefers-color-scheme: dark)').matches;
+          var resolvedTheme = themePreference === 'system'
+            ? (systemUsesDarkTheme ? 'dark' : 'light')
+            : themePreference;
+          document.documentElement.dataset.theme = resolvedTheme;
+          document.documentElement.dataset.themePreference = themePreference;
+          document.documentElement.style.colorScheme = resolvedTheme;
+        } catch (error) {
+          document.documentElement.dataset.theme = 'light';
+          document.documentElement.dataset.themePreference = 'system';
+        }
+      })();
+    </script>
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='18' fill='%23111827'/%3E%3Ctext x='50%25' y='55%25' text-anchor='middle' dominant-baseline='middle' font-size='30' font-family='Arial, sans-serif' fill='white'%3EV%3C/text%3E%3C/svg%3E" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700;800&family=Noto+Sans+SC:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <script>document.documentElement.classList.add('math-pending');</script>
+    <script>
+      window.MathJax = {
+        tex: {
+          inlineMath: [['$', '$'], ['\\(', '\\)']],
+          displayMath: [['$$', '$$'], ['\\[', '\\]']],
+          processEscapes: true
+        },
+        options: {
+          skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+        },
+        chtml: {
+          scale: 1,
+          displayAlign: 'center'
+        },
+        startup: {
+          ready: function() {
+            MathJax.startup.defaultReady();
+            MathJax.startup.promise.then(function() {
+              document.documentElement.classList.remove('math-pending');
+              document.documentElement.dataset.mathReady = 'true';
+            });
+          }
+        }
+      };
+    </script>
+    <script defer src="../../assets/vendor/mathjax/tex-chtml.js"></script>
+    <link rel="stylesheet" href="../../assets/style.css" />
+  </head>
+  <body class="detail-page" data-paper-id="2506.09985">
+    <div class="page-noise"></div>
+    <div class="page-blur page-blur-a"></div>
+    <div class="page-blur page-blur-b"></div>
+
+    <header class="header detail-page-header">
+      <div class="container">
+        <div class="detail-page-topbar">
+          <a class="back-link" href="../../collection.html">返回列表</a>
+          <div class="detail-topbar-actions">
+            <span class="detail-site-name">physics+AI Collection 随机精选</span>
+            <button class="theme-toggle" type="button" data-theme-toggle aria-label="当前主题：设备，点击切换主题" title="当前主题：设备">
+  <span class="theme-toggle-icons" aria-hidden="true">
+    <svg class="theme-toggle-icon theme-toggle-icon-light" viewBox="0 0 24 24" fill="none">
+      <circle cx="12" cy="12" r="3.5" stroke="currentColor" stroke-width="1.8"/>
+      <path d="M12 2.5v2M12 19.5v2M2.5 12h2M19.5 12h2M5.3 5.3l1.4 1.4M17.3 17.3l1.4 1.4M18.7 5.3l-1.4 1.4M6.7 17.3l-1.4 1.4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+    </svg>
+    <svg class="theme-toggle-icon theme-toggle-icon-dark" viewBox="0 0 24 24" fill="none">
+      <path d="M20 15.2A8.1 8.1 0 0 1 8.8 4a8.2 8.2 0 1 0 11.2 11.2z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>
+    </svg>
+    <svg class="theme-toggle-icon theme-toggle-icon-system" viewBox="0 0 24 24" fill="none">
+      <rect x="3" y="4" width="18" height="13" rx="2.5" stroke="currentColor" stroke-width="1.8"/>
+      <path d="M8 21h8M12 17v4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+    </svg>
+  </span>
+  <span class="theme-toggle-label" data-theme-toggle-label>设备</span>
+</button>
+          </div>
+        </div>
+
+        <div class="detail-hero-grid">
+          <div class="detail-hero-cover"><figure class="paper-figure-card paper-figure-card-detail">
+  <img class="paper-figure-image" src="../../assets/collection-figures/2506.09985/figure-1-vjepa2-overview.webp" alt="互联网视频和图像预训练 V-JEPA 2，再经语言对齐、probe 或机器人 action-conditioned post-training 分流到理解、预测与规划。" loading="lazy" onclick="window.openPaperFigureImage && window.openPaperFigureImage(this)" />
+  <figcaption class="paper-figure-caption">大规模 action-free 表征与小规模 action-conditioned post-training 被清楚分层；机器人规划不是单靠网络视频直接获得。</figcaption>
+</figure></div>
+          <div class="detail-hero-copy">
+            <p class="eyebrow">Collection 全文卡</p>
+            <h1 class="detail-page-title">V-JEPA 2: Self-Supervised Video Models Enable Understanding, Prediction and Planning</h1>
+            <p class="detail-page-title-zh">V-JEPA 2：自监督视频模型连接理解、预测与规划</p>
+            <div class="detail-meta">Paper Collection · World Models · <a href="https://arxiv.org/abs/2506.09985" target="_blank" rel="noopener noreferrer">原文</a></div>
+            <p class="detail-summary">作者：Mahmoud Assran、Adrien Bardes、David Fan 等 29 位作者；arXiv:2506.09985v1，FAIR at Meta 与 Mila/Polytechnique Montréal。全文 49 页。工作包含 action-free video pretraining、LLM alignment、action-conditioned post-training 和 Franka 机器人部署。</p>
+            <div class="detail-micro-meta">
+              <span class="meta-pill">10 分钟读完</span>
+              <span class="meta-pill">8 张阅读卡</span>
+              <span class="meta-pill">作者：Mahmoud Assran、Adrien Bardes、David Fan 等 29 位作者…</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <main class="container detail-layout">
+      <div class="detail-shell">
+        <article id="detail-body" class="reading-flow"><section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 01</span>
+    <span class="reading-step-note">作者信息</span>
+  </div>
+  <h2>作者信息</h2>
+  <div class="reading-card-content"><ul><li>作者：Mahmoud Assran、Adrien Bardes、David Fan 等 29 位作者；arXiv:2506.09985v1，FAIR at Meta 与 Mila/Polytechnique Montréal。全文 49 页。工作包含 action-free video pretraining、LLM alignment、action-conditioned post-training 和 Franka 机器人部署。</li></ul></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 02</span>
+    <span class="reading-step-note">研究问题</span>
+  </div>
+  <h2>研究问题</h2>
+  <div class="reading-card-content"><ul><li>世界模型若完全依赖机器人交互数据，规模受真实采集限制；像素级视频生成又把容量消耗在不可预测细节。论文问：能否先从海量无动作标签视频学到 latent predictive representation，再用少量 state-action videos 训练 action-conditioned predictor，并在新实验室中以目标图像规划？</li></ul></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 03</span>
+    <span class="reading-step-note">背景</span>
+  </div>
+  <h2>背景</h2>
+  <div class="reading-card-content"><ul><li>JEPA 不重建像素，而在 embedding space 预测被 mask 的未来/缺失区域，倾向保留可预测的物体与运动结构。Figure 1 把整个层级画出：1M 小时网络视频和 1M 图像产生 V-JEPA 2；language alignment/attentive probes 服务理解任务；少量 robot data 只训练 action-conditioned predictor，用于闭环规划。</li></ul></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 04</span>
+    <span class="reading-step-note">模型与方法</span>
+  </div>
+  <h2>模型与方法</h2>
+  <div class="reading-card-content"><ul><li>第一阶段冻结式 target encoder 与 context encoder/predictor 进行 masked feature prediction，得到 action-free V-JEPA 2。理解任务用 attentive probe 或与 8B LLM 对齐，不重新定义底层视觉目标。</li><li>机器人阶段冻结 video encoder，在少于 62 \(h\)、约 23k 条 DROID trajectories 上训练自回归 V-JEPA 2-AC：给定当前 latent state、proprioception 与 candidate actions，预测未来 latent observations。控制时用 cross-entropy method 搜索 action sequence，使预测终态 embedding 接近人工提供的 goal image；执行首段动作后重新观测，构成 receding-horizon MPC。</li></ul></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 05</span>
+    <span class="reading-step-note">核心结果与证据</span>
+  </div>
+  <h2>核心结果与证据</h2>
+  <div class="reading-card-content"><ul><li>Figure 1 显示 action-free observation learning 与 action-conditioned control 的明确分工：大规模 web data 提供视觉动力学表示，机器人数据只把 action 接到 frozen latent space 上。它是架构/数据流证据，不是所有能力由同一目标自动涌现的证明。</li><li>V-JEPA 2 在 Something-Something \(v_{2}\) 报告 77.3 top-1，在 Epic-Kitchens-100 action anticipation 报告 39.7 recall-at-5；与 8B LLM 对齐后，PerceptionTest 为 84.0、TempCompass 为 76.9。各数字来自不同 probe/对齐协议，不能直接当作单一零样本能力。</li><li>V-JEPA 2-AC 在两个训练数据未覆盖的实验室、Franka arms 与低分辨率单目 RGB 上执行 reach、pick-and-place。reaching 的三项任务最终误差进入 4 cm 内且随 MPC rollout 下降；操作表按每项 10 trials 报告成功率。对照 Octo 使用超过 1M trajectories，Cosmos 使用约 20M 小时视频，而 V-JEPA 2-AC 的交互 post-training 约 23k trajectories，但预训练视频规模仍达 1M 小时。</li></ul><figure class="evidence-figure">
+  <button class="evidence-figure-image-button" type="button" aria-label="放大查看 Figure 1" onclick="window.openPaperFigureImage && window.openPaperFigureImage(this.querySelector('img'))">
+    <img class="paper-figure-image evidence-figure-image" src="../../assets/collection-figures/2506.09985/figure-1-vjepa2-overview.webp" alt="Internet video pretraining branches into understanding tasks and robot action-conditioned post-training." loading="lazy" />
+  </button>
+  <figcaption>
+    <strong>Figure 1</strong> · Large-scale observation learning supplies a frozen latent space; robot trajectories attach actions for MPC planning.
+    <span class="evidence-figure-reading">物理解读：The diagram does not imply that action semantics or manipulation emerge without robot interaction data.</span>
+    <span class="evidence-figure-source">来源：paper.pdf p. 2, Figure 1</span>
+  </figcaption>
+</figure></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 06</span>
+    <span class="reading-step-note">有效性与局限</span>
+  </div>
+  <h2>有效性与局限</h2>
+  <div class="reading-card-content"><ul><li>“zero-shot”指目标实验室未收集训练数据，并非没有机器人数据：模型仍用 DROID 的 Franka trajectories 做 action-conditioned post-training，且部署是同一机器人类型。pick-and-place 依赖人工给定中间 goal images，任务集合和每项 10 次 trials 都较小。</li><li>latent 距离是规划能量，不保证与物理可达性、安全、接触稳定或任务 reward 单调一致。CEM/MPC 计算成本、相机视角、遮挡和失败恢复限制实时性。benchmark 提升同时含数据规模、架构和训练 recipe，未由 matched ablation 唯一归因；这些结果也不足以证明通用物理世界模型。</li></ul></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 07</span>
+    <span class="reading-step-note">复现与资源</span>
+  </div>
+  <h2>复现与资源</h2>
+  <div class="reading-card-content"><ul><li>原文：https://arxiv.org/abs/2506.09985；代码：https://github.com/facebookresearch/vjepa2。全文 49 页，PDF SHA-256：9cfcfde5fb0d9730637da5b9e7317825c3f3d09e91f3553e22eeba42c74d2226。</li><li>复现需记录 video/image corpus、clip sampling、mask schedule、encoder size、probe/LLM alignment protocol、DROID subset、camera/proprio normalization、action horizon、predictor rollout、CEM population/elites/iterations、goal-image construction 与成功判据。</li><li>Evidence status: full-text verified; no independent reproduction performed.</li></ul></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 08</span>
+    <span class="reading-step-note">阅读指南</span>
+  </div>
+  <h2>阅读指南</h2>
+  <div class="reading-card-content"><ul><li>先看 Figure 1，把 representation pretraining、language/probe evaluation 与 robot post-training 分开；再读 JEPA objective 和 V-JEPA 2-AC predictor。随后核对视频 benchmarks 的协议，再看 robot Tables 2–3、Figure 7 的误差轨迹和 appendix deployment details，重点审计 zero-shot 的精确定义与 10-trial uncertainty。</li></ul></div>
+</section></article>
+        <aside id="detail-toc" class="detail-toc hidden" aria-label="内容目录">
+          <p class="detail-toc-title">阅读目录</p>
+          <nav id="detail-toc-nav" class="detail-toc-nav"></nav>
+        </aside>
+      </div>
+      <nav class="paper-nav"><a class="paper-nav-link paper-nav-prev" href="../../collection-papers/2506.02070/"><span class="paper-nav-label">← 上一篇</span><span class="paper-nav-title">An Introduction to Flow Matching and Diffusion Models</span></a>
+      <a class="paper-nav-link paper-nav-next" href="../../collection-papers/2506.15864/"><span class="paper-nav-label">下一篇 →</span><span class="paper-nav-title">Improving Rectified Flow with Boundary Conditions</span></a></nav>
+    </main>
+
+    <footer class="footer">
+      <div class="container">
+        <p>内容来自 <a href="https://arxiv.org" target="_blank" rel="noopener noreferrer">arXiv.org</a>，阅读卡片由静态站点生成器构建。</p>
+      </div>
+    </footer>
+
+    <script src="../../assets/theme.js"></script>
+    <script src="../../assets/media.js"></script>
+    <script src="../../assets/paper.js"></script>
+  </body>
+</html>
