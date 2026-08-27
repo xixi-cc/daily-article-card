@@ -1,0 +1,203 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Kling-Foley: Multimodal Diffusion Transformer for High-Quality Video-to-Audio Generation - physics+AI Collection 随机精选</title>
+    <meta name="description" content="作者：Jun Wang、Xijuan Zeng、Chunyu Qiang 等 23 位作者，来自 Kuaishou Technology；arXiv:2506.19774v1。全文 24 页。工作包含生成模型、latent audio codec、20,935 条人工标注的 Kling-Audio-Eval，以及产品安全讨论。" />
+    <script>
+      (function() {
+        try {
+          var themePreference = window.localStorage.getItem('color-theme') || 'system';
+          var systemUsesDarkTheme = window.matchMedia('(prefers-color-scheme: dark)').matches;
+          var resolvedTheme = themePreference === 'system'
+            ? (systemUsesDarkTheme ? 'dark' : 'light')
+            : themePreference;
+          document.documentElement.dataset.theme = resolvedTheme;
+          document.documentElement.dataset.themePreference = themePreference;
+          document.documentElement.style.colorScheme = resolvedTheme;
+        } catch (error) {
+          document.documentElement.dataset.theme = 'light';
+          document.documentElement.dataset.themePreference = 'system';
+        }
+      })();
+    </script>
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='18' fill='%23111827'/%3E%3Ctext x='50%25' y='55%25' text-anchor='middle' dominant-baseline='middle' font-size='30' font-family='Arial, sans-serif' fill='white'%3EV%3C/text%3E%3C/svg%3E" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700;800&family=Noto+Sans+SC:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <script>document.documentElement.classList.add('math-pending');</script>
+    <script>
+      window.MathJax = {
+        tex: {
+          inlineMath: [['$', '$'], ['\\(', '\\)']],
+          displayMath: [['$$', '$$'], ['\\[', '\\]']],
+          processEscapes: true
+        },
+        options: {
+          skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+        },
+        chtml: {
+          scale: 1,
+          displayAlign: 'center'
+        },
+        startup: {
+          ready: function() {
+            MathJax.startup.defaultReady();
+            MathJax.startup.promise.then(function() {
+              document.documentElement.classList.remove('math-pending');
+              document.documentElement.dataset.mathReady = 'true';
+            });
+          }
+        }
+      };
+    </script>
+    <script defer src="../../assets/vendor/mathjax/tex-chtml.js"></script>
+    <link rel="stylesheet" href="../../assets/style.css" />
+  </head>
+  <body class="detail-page" data-paper-id="2506.19774">
+    <div class="page-noise"></div>
+    <div class="page-blur page-blur-a"></div>
+    <div class="page-blur page-blur-b"></div>
+
+    <header class="header detail-page-header">
+      <div class="container">
+        <div class="detail-page-topbar">
+          <a class="back-link" href="../../collection.html">返回列表</a>
+          <div class="detail-topbar-actions">
+            <span class="detail-site-name">physics+AI Collection 随机精选</span>
+            <button class="theme-toggle" type="button" data-theme-toggle aria-label="当前主题：设备，点击切换主题" title="当前主题：设备">
+  <span class="theme-toggle-icons" aria-hidden="true">
+    <svg class="theme-toggle-icon theme-toggle-icon-light" viewBox="0 0 24 24" fill="none">
+      <circle cx="12" cy="12" r="3.5" stroke="currentColor" stroke-width="1.8"/>
+      <path d="M12 2.5v2M12 19.5v2M2.5 12h2M19.5 12h2M5.3 5.3l1.4 1.4M17.3 17.3l1.4 1.4M18.7 5.3l-1.4 1.4M6.7 17.3l-1.4 1.4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+    </svg>
+    <svg class="theme-toggle-icon theme-toggle-icon-dark" viewBox="0 0 24 24" fill="none">
+      <path d="M20 15.2A8.1 8.1 0 0 1 8.8 4a8.2 8.2 0 1 0 11.2 11.2z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>
+    </svg>
+    <svg class="theme-toggle-icon theme-toggle-icon-system" viewBox="0 0 24 24" fill="none">
+      <rect x="3" y="4" width="18" height="13" rx="2.5" stroke="currentColor" stroke-width="1.8"/>
+      <path d="M8 21h8M12 17v4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+    </svg>
+  </span>
+  <span class="theme-toggle-label" data-theme-toggle-label>设备</span>
+</button>
+          </div>
+        </div>
+
+        <div class="detail-hero-grid">
+          <div class="detail-hero-cover"><figure class="paper-figure-card paper-figure-card-detail">
+  <img class="paper-figure-image" src="../../assets/collection-figures/2506.19774/figure-1-kling-foley-overview.webp" alt="视频和可选文本输入 Kling-Foley，输出与视频等长的多声道音频波形。" loading="lazy" onclick="window.openPaperFigureImage && window.openPaperFigureImage(this)" />
+  <figcaption class="paper-figure-caption">系统把视觉事件与可选文本映射为同步声轨；流程图定义任务，但音质仍需实际试听与指标验证。</figcaption>
+</figure></div>
+          <div class="detail-hero-copy">
+            <p class="eyebrow">Collection 全文卡</p>
+            <h1 class="detail-page-title">Kling-Foley: Multimodal Diffusion Transformer for High-Quality Video-to-Audio Generation</h1>
+            <p class="detail-page-title-zh">Kling-Foley：用于高质量视频到音频生成的多模态扩散 Transformer</p>
+            <div class="detail-meta">Paper Collection · Transformer Theory · <a href="https://arxiv.org/abs/2506.19774" target="_blank" rel="noopener noreferrer">原文</a></div>
+            <p class="detail-summary">作者：Jun Wang、Xijuan Zeng、Chunyu Qiang 等 23 位作者，来自 Kuaishou Technology；arXiv:2506.19774v1。全文 24 页。工作包含生成模型、latent audio codec、20,935 条人工标注的 Kling-Audio-Eval，以及产品安全讨论。</p>
+            <div class="detail-micro-meta">
+              <span class="meta-pill">10 分钟读完</span>
+              <span class="meta-pill">8 张阅读卡</span>
+              <span class="meta-pill">作者：Jun Wang、Xijuan Zeng、Chunyu Qiang 等 23 位作者，来自 Ku…</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <main class="container detail-layout">
+      <div class="detail-shell">
+        <article id="detail-body" class="reading-flow"><section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 01</span>
+    <span class="reading-step-note">作者信息</span>
+  </div>
+  <h2>作者信息</h2>
+  <div class="reading-card-content"><ul><li>作者：Jun Wang、Xijuan Zeng、Chunyu Qiang 等 23 位作者，来自 Kuaishou Technology；arXiv:2506.19774v1。全文 24 页。工作包含生成模型、latent audio codec、20,935 条人工标注的 Kling-Audio-Eval，以及产品安全讨论。</li></ul></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 02</span>
+    <span class="reading-step-note">研究问题</span>
+  </div>
+  <h2>研究问题</h2>
+  <div class="reading-card-content"><ul><li>video-to-audio 不只要求声学自然，还要同时满足事件语义、帧级时间同步、可变时长和多声源空间感。论文问：如何在同一 latent flow 中联合 text/video/audio conditions，并避免不同帧率 token 的位置编码失配，使声音事件与视觉动作同步？</li></ul></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 03</span>
+    <span class="reading-step-note">背景</span>
+  </div>
+  <h2>背景</h2>
+  <div class="reading-card-content"><ul><li>输入视频可含可选 text prompt；目标是输出与画面语义一致、时间对齐的声效/背景音乐。Figure 1 用锻铁视频示意输入—生成过程和随视频延伸的 waveform，是系统任务定义而非单纯架构图。</li><li>模型在 Mel-VAE latent 中生成，再由 mel decoder、Mono2Stereo 与 vocoder 重建 waveform。视频、文本、抽帧对齐特征分别编码；缺失模态由 learnable placeholders 支持 flexible pairwise training。</li></ul></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 04</span>
+    <span class="reading-step-note">模型与方法</span>
+  </div>
+  <h2>模型与方法</h2>
+  <div class="reading-card-content"><ul><li>MM-DiT 将 text、vision、audio 的 queries/keys/values 拼到共享 scaled dot-product attention，再按模态拆分；audio-only blocks 增深声学建模。aligned RoPE 按 audio/video 的实际 temporal rates 缩放频率，局部 1D convolutions/MLPs 与 synchronization module 进一步约束短时同步。</li><li>conditional flow matching 在 \(x_t=tx_1+(1-t)x_0\) 上拟合目标 velocity；推断以 Euler solver 从 Gaussian audio latent 积分到生成 latent。duration embeddings 编码 clip start 与 total duration，并通过 adaptive LayerNorm 调制各层，实现可变时长。数据 pipeline 还包括单事件过滤、时间增强合成多事件与多模型 captions。</li></ul></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 05</span>
+    <span class="reading-step-note">核心结果与证据</span>
+  </div>
+  <h2>核心结果与证据</h2>
+  <div class="reading-card-content"><ul><li>Figure 1 直接说明输出不是一个 class label，而是与输入视频等长的多声道声轨；caption 还强调可生成任意时长序列，但正文的 limitations 将稳定同步范围限制在较短 clips。</li><li>在 VGGSound 15,220-sample test 上，Kling-Foley 的 IB-score 为 30.75、DeSync 为 0.43、SDR 为 -2.41、MCD 为 2.60；MMAudio 对应 29.26、0.45、-3.09、2.84。分布指标并非全胜：FDPANNs 7.60 与 KLPANNs 1.86 均落后于 MMAudio 的 6.29 与 1.77，说明语义/同步优势不等于每项分布距离最好。</li><li>latent codec 在 2,000 个 out-of-domain samples 上覆盖 sound effect、music、speech、singing；例如 speech PESQ 3.27 对 MMAudio 3.10，singing MCD 0.70 对 1.08。Kling-Audio-Eval 含 20,935 条、九种声音场景，但 benchmark 构建与部分数据仍为工业内部资源。</li></ul><figure class="evidence-figure">
+  <button class="evidence-figure-image-button" type="button" aria-label="放大查看 Figure 1" onclick="window.openPaperFigureImage && window.openPaperFigureImage(this.querySelector('img'))">
+    <img class="paper-figure-image evidence-figure-image" src="../../assets/collection-figures/2506.19774/figure-1-kling-foley-overview.webp" alt="Input video and text are mapped to aligned stereo audio waveforms." loading="lazy" />
+  </button>
+  <figcaption>
+    <strong>Figure 1</strong> · The model generates an audio sequence whose duration follows the video.
+    <span class="evidence-figure-reading">物理解读：A static figure cannot establish perceptual audio quality or long-duration synchronization.</span>
+    <span class="evidence-figure-source">来源：paper.pdf p. 1, Figure 1</span>
+  </figcaption>
+</figure></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 06</span>
+    <span class="reading-step-note">有效性与局限</span>
+  </div>
+  <h2>有效性与局限</h2>
+  <div class="reading-card-content"><ul><li>论文明确指出复杂物理过程和多物体链式碰撞/多人叠声容易产生 acoustic logic errors；超过约 20 s 的视频可能发生 audio-video synchronization drift，稀有文化/医疗场景因训练样本不足而波动。</li><li>多数客观指标依赖 PANNs、ImageBind、Synchformer 等代理模型，未等同于听觉盲评；VGGSound 与训练来源可能重叠分布。Figure 1 不能展示真实音质，必须结合音频试听。数据、模型权重、训练 compute 与商业系统细节未完全开放，exact reproduction 受限。</li></ul></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 07</span>
+    <span class="reading-step-note">复现与资源</span>
+  </div>
+  <h2>复现与资源</h2>
+  <div class="reading-card-content"><ul><li>原文：https://arxiv.org/abs/2506.19774；项目页：https://klingfoley.github.io/Kling-Foley/。全文 24 页，PDF SHA-256：86fb0ba7ff99989a028150f2499a186f5c47bd31250457463cc3ffb1dbe64e46。</li><li>复现需固定 video/audio sampling rates、Mel-VAE/vocoder、RoPE rate scaling、frame extractor、duration embedding、pairwise modality dropout、flow time grid/Euler step、mono-to-stereo rendering、VGGSound split 与各 metric checkpoint。</li><li>Evidence status: full-text verified; no independent reproduction performed.</li></ul></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 08</span>
+    <span class="reading-step-note">阅读指南</span>
+  </div>
+  <h2>阅读指南</h2>
+  <div class="reading-card-content"><ul><li>先看 Figure 1 了解任务输出，再看 Figure 2 的 multimodal joint conditioning；随后读 flow objective、aligned RoPE 与 sync module。评估时同时查看 Table 2 的六个指标，注意 distribution matching 的反例；最后读 20 s drift 与 complex-scene limitations，并通过项目页试听。</li></ul></div>
+</section></article>
+        <aside id="detail-toc" class="detail-toc hidden" aria-label="内容目录">
+          <p class="detail-toc-title">阅读目录</p>
+          <nav id="detail-toc-nav" class="detail-toc-nav"></nav>
+        </aside>
+      </div>
+      <nav class="paper-nav"><a class="paper-nav-link paper-nav-prev" href="../../collection-papers/2506.15864/"><span class="paper-nav-label">← 上一篇</span><span class="paper-nav-title">Improving Rectified Flow with Boundary Conditions</span></a>
+      <a class="paper-nav-link paper-nav-next" href="../../collection-papers/2506.20623/"><span class="paper-nav-label">下一篇 →</span><span class="paper-nav-title">Lost in Retraining: Roaming the Parameter Space of Exponential Families Under Closed-Loop Learning</span></a></nav>
+    </main>
+
+    <footer class="footer">
+      <div class="container">
+        <p>内容来自 <a href="https://arxiv.org" target="_blank" rel="noopener noreferrer">arXiv.org</a>，阅读卡片由静态站点生成器构建。</p>
+      </div>
+    </footer>
+
+    <script src="../../assets/theme.js"></script>
+    <script src="../../assets/media.js"></script>
+    <script src="../../assets/paper.js"></script>
+  </body>
+</html>
