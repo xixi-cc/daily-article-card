@@ -1,0 +1,155 @@
+{
+  "arxiv_id": "2402.00861",
+  "source_version": "v2",
+  "source_pdf": "https://arxiv.org/pdf/2402.00861",
+  "title_en": "Evaluating Large Language Models for Generalization and Robustness via Data Compression",
+  "title_zh": "用数据压缩评估大语言模型的泛化与稳健性",
+  "curation_status": "full_text_verified",
+  "card_standard_version": "2.3",
+  "paper_profile": "ai_empirical",
+  "style_reference": "physicist_daily_arxiv",
+  "provenance": {
+    "program": "Collection",
+    "catalog": "Paper Collection",
+    "catalog_record_id": "3a1c7815e90418b3",
+    "catalog_record_ids": [
+      "3a1c7815e90418b3"
+    ],
+    "catalog_topic": "Transformer Theory",
+    "collection_date": "2026-08-23",
+    "sampled_at": "2026-08-28",
+    "selected_by": "full_collection_backfill",
+    "sampling_seed": "not_applicable_full_collection",
+    "candidate_count": 452
+  },
+  "verified_metadata": {
+    "arxiv_id": "2402.00861",
+    "version": "v2",
+    "title": "Evaluating Large Language Models for Generalization and Robustness via Data Compression",
+    "authors": [
+      "Yucheng Li",
+      "Yunhao Guo",
+      "Frank Guerin",
+      "Chenghua Lin"
+    ],
+    "categories": [
+      "cs.CL",
+      "cs.AI"
+    ],
+    "primary_category": "cs.CL",
+    "published": "2024-02-01T18:56:18Z",
+    "abstract": "Lossless compression on a dated 2017–2023 corpus is used to probe post-cutoff generalization and temporal robustness of fourteen language models across text and byte-stream domains.",
+    "comment": ""
+  },
+  "sections": [
+    {
+      "title": "作者信息",
+      "paragraphs": [
+        "作者：Yucheng Li、Yunhao Guo、Frank Guerin、Chenghua Lin；arXiv:2402.00861v2。全文 13 页，比较 14 个开放权重语言模型以及 Gzip、PNG、FLAC 等传统压缩器。"
+      ]
+    },
+    {
+      "title": "研究问题",
+      "paragraphs": [
+        "常用 benchmark 可能落在模型训练语料内，又会随 prompt 变化。论文把模型视为概率编码器，问两个更接近统计物理外推的问题：给定训练截止时间以前的数据，模型对截止时间以后的同分布演化能否保持低码长；其压缩率随时间漂移的斜率能否量化 robustness，而不是只报告单点 accuracy？"
+      ]
+    },
+    {
+      "title": "背景",
+      "paragraphs": [
+        "Shannon source coding 把预测与压缩联系起来：若模型给序列 \\(X=(x_1,\\ldots,x_n)\\) 的概率为 \\(P(X)\\)，理想无损码长约为 \\(-\\log_2 P(X)\\)。因此低 negative log-likelihood 对应高压缩效率；按月份组织的数据又把 train/test split 从人工题库改成可审计的时间边界。",
+        "数据覆盖 2017 年 1 月到 2023 年 11 月，共 83 个月，包括 Wikipedia、BBC news、GitHub code、arXiv、图片字节流和音频字节流。作者把 2017–2022 作为近似训练期，把 2023 作为测试期，并明确区分 performance \\(R_{23}\\) 与 temporal gap \\(R_{23}-R_{17\\text{--}22}\\)。"
+      ]
+    },
+    {
+      "title": "模型与方法",
+      "paragraphs": [
+        "文本先按模型 context window 切成 token chunks，逐 token 计算条件概率，再用 arithmetic coding 形成无损 bitstream；图片和音频则把每个 byte 映射到保留的 byte token。主指标是压缩率 \\(R=\\text{compressed size}/\\text{raw size}\\)，越低越好。",
+        "比较对象覆盖 6B–70B 参数、2K–32K 原生上下文的 LLaMA、Llama-2、CodeLlama、Mistral、Qwen、Yi、Baichuan2、InternLM 与 ChatGLM3。额外 ablation 比较 2K/4K/8K chunks、2K sliding window 以及 BPT/BPC，避免把 tokenizer 或 context 实现差异误判为模型知识。"
+      ]
+    },
+    {
+      "title": "核心结果与证据",
+      "paragraphs": [
+        "Figure 2a 显示 Wikipedia 压缩率随月份普遍上升；Figure 2b 将 2023 压缩率与 train-test gap 分开后，模型不再沿单一“越大越好”轴排列。作者报告 7B 以内 Mistral-7B 的 performance–robustness balance 最好，较大模型中 Llama-2-70B 最好；这只是该数据与该二维定义下的结果。",
+        "截止时间效应可见：LLaMA-65B 在 2023 Wikipedia 上相对 2017–2022 的压缩率恶化约 20%。CodeLlama 在 code 上压缩更好，却比基础 Llama-2 显示更大的时间漂移。2023 news、Wikipedia 与 code 普遍更难，arXiv 压缩率却常保持或改善，作者将其归因于学术写作风格较稳定。",
+        "增大静态 context 从 2K 到 4K、8K 通常继续改善压缩，但收益递减；2K sliding window 在所有列出的模型上又优于较大的非重叠 chunks，代价约为 4 倍计算。所有语言模型在原始 image/audio byte streams 上都远差于专用压缩器，说明文本 tokenizer 的 byte fallback 不是多模态建模。"
+      ]
+    },
+    {
+      "title": "有效性与局限",
+      "paragraphs": [
+        "时间切分减少了显式 benchmark contamination，却不能证明 2023 数据完全未被训练：模型真实语料与 cutoff 往往不公开，release date 只提供上界。Wikipedia 条目具有自相关，arXiv 的写作模板稳定也可能让压缩率改善而不代表新知识理解。",
+        "压缩率混合了模型概率质量、tokenizer、context policy、arithmetic-coder overhead 与算力预算；它不是 reasoning、factuality 或 safety 的充分统计量。Figure 2 的二维象限还依赖作者选定的 2017–2022/2023 分割，不能把图上的相对位置泛化为模型的全局能力排序。"
+      ]
+    },
+    {
+      "title": "复现与资源",
+      "paragraphs": [
+        "原文：https://arxiv.org/abs/2402.00861。全文 13 页，PDF SHA-256：29ceff618138b065480e471172016bf757818bae3506d6b76c0cd90300395ae6。",
+        "复现需保存每月原始文件哈希、模型与 tokenizer revision、byte-token mapping、chunk size/stride、算术编码精度、compressed/raw byte counts、cutoff assumption 与 GPU 时间。应同时报告 \\(R_{23}\\)、\\(R_{17\\text{--}22}\\) 与逐月曲线，而不是只保留二维排名。",
+        "Evidence status: full-text verified; no independent reproduction performed."
+      ]
+    },
+    {
+      "title": "阅读指南",
+      "paragraphs": [
+        "先读 Section 2.2 与 Eqs. (1)–(3)，确认“预测即压缩”的精确定义；再看 Figure 1 的 cutoff divergence 与 Figure 2 的 performance–robustness plane。随后查 Tables 3、5、6 分别隔离 domain、context 与 tokenizer 效应，最后用 limitations 检查真实训练语料未知这一识别边界。"
+      ]
+    }
+  ],
+  "cover": {
+    "mode": "source_figure",
+    "asset_path": "assets/collection-figures/2402.00861/figure-2-performance-robustness.webp",
+    "label": "Figure 2",
+    "visual_type": "data_plot",
+    "evidence": "paper.pdf p. 7, Figure 2",
+    "alt_text": "Wikipedia 月度压缩率曲线以及 2023 表现与训练测试差距的二维散点图。",
+    "caption": "左图显示压缩率随时间漂移；右图把 2023 performance 与 \\(R_{23}-R_{17\\text{--}22}\\) robustness gap 分成两条轴。",
+    "selection_rationale": "文章没有机制示意图；Figure 2 是最直接承载核心评价定义和主要比较结论的数据图。"
+  },
+  "figure_refs": [
+    {
+      "label": "Figure 2",
+      "asset_path": "assets/collection-figures/2402.00861/figure-2-performance-robustness.webp",
+      "section": "核心结果与证据",
+      "role": "separate post-cutoff compression performance from temporal robustness",
+      "evidence": "paper.pdf p. 7, Figure 2",
+      "alt_text": "多模型的逐月 Wikipedia 压缩率与 performance-robustness 二维散点。",
+      "caption": "同一模型可以有较低测试压缩率却有较大时间漂移，两者不是同一统计量。",
+      "interpretation": "The relative positions depend on the chosen corpus, time split, tokenizer and context policy."
+    }
+  ],
+  "equation_refs": [
+    {
+      "label": "Ideal predictive code length",
+      "latex": "\\ell(X)\\simeq-\\log_2 P(X)=-\\sum_{i=1}^{n}\\log_2P(x_i\\mid x_{<i})",
+      "role": "connect autoregressive likelihood to lossless compression",
+      "symbols": {
+        "X": "input sequence",
+        "P": "language-model probability",
+        "ell": "ideal code length in bits"
+      },
+      "evidence": "paper.pdf pp. 2–3, Eqs. (1)–(2)",
+      "interpretation": "A better calibrated predictive distribution assigns a shorter ideal code to unseen data."
+    },
+    {
+      "label": "Performance and robustness observables",
+      "latex": "R_{23}=\\frac{B_{23}^{\\mathrm{compressed}}}{B_{23}^{\\mathrm{raw}}},\\qquad \\Delta R=R_{23}-R_{17\\text{--}22}",
+      "role": "separate post-cutoff performance from temporal drift",
+      "symbols": {
+        "R23": "compression rate on 2023 data",
+        "R17-22": "compression rate on the earlier period",
+        "Delta R": "robustness gap; smaller is better"
+      },
+      "evidence": "paper.pdf pp. 5–7, Section 5.2 and Figure 2",
+      "interpretation": "A model may compress the test year well but still degrade sharply relative to its earlier-period baseline."
+    }
+  ],
+  "evidence_refs": [
+    "paper.pdf pp. 2–4: source-coding argument, arithmetic coding and dated corpus",
+    "paper.pdf pp. 5–8: cutoff, model comparison, context and tokenizer ablations",
+    "source PDF SHA-256 29ceff618138b065480e471172016bf757818bae3506d6b76c0cd90300395ae6",
+    "Evidence status: full-text verified; no independent reproduction performed."
+  ]
+}

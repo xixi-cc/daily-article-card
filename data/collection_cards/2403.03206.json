@@ -1,0 +1,181 @@
+{
+  "arxiv_id": "2403.03206",
+  "source_version": "v1",
+  "source_pdf": "https://arxiv.org/pdf/2403.03206",
+  "title_en": "Scaling Rectified Flow Transformers for High-Resolution Image Synthesis",
+  "title_zh": "扩展整流流 Transformer 用于高分辨率图像合成",
+  "curation_status": "full_text_verified",
+  "card_standard_version": "2.3",
+  "paper_profile": "ai_empirical",
+  "style_reference": "physicist_daily_arxiv",
+  "provenance": {
+    "program": "Collection",
+    "catalog": "Paper Collection",
+    "catalog_record_id": "7b0c3330f1be25c0",
+    "catalog_record_ids": [
+      "7b0c3330f1be25c0"
+    ],
+    "catalog_topic": "Flow Matching",
+    "collection_date": "2026-08-23",
+    "sampled_at": "2026-08-28",
+    "selected_by": "full_collection_backfill",
+    "sampling_seed": "not_applicable_full_collection",
+    "candidate_count": 452
+  },
+  "verified_metadata": {
+    "arxiv_id": "2403.03206",
+    "version": "v1",
+    "title": "Scaling Rectified Flow Transformers for High-Resolution Image Synthesis",
+    "authors": [
+      "Patrick Esser",
+      "Sumith Kulal",
+      "Andreas Blattmann",
+      "Rahim Entezari",
+      "Jonas Müller",
+      "Harry Saini",
+      "Yam Levi",
+      "Dominik Lorenz",
+      "Axel Sauer",
+      "Frederic Boesel",
+      "Dustin Podell",
+      "Tim Dockhorn",
+      "Zion English",
+      "Kyle Lacey",
+      "Alex Goodwin",
+      "Yannik Marek",
+      "Robin Rombach"
+    ],
+    "categories": [
+      "cs.CV",
+      "cs.AI",
+      "cs.LG"
+    ],
+    "primary_category": "cs.CV",
+    "published": "2024-03-05T18:45:39Z",
+    "abstract": "Large-scale experiments combine biased timestep sampling for rectified flow with an MM-DiT that uses separate text and image weights, scaling text-to-image synthesis to eight billion parameters.",
+    "comment": ""
+  },
+  "sections": [
+    {
+      "title": "作者信息",
+      "paragraphs": [
+        "作者：Patrick Esser、Sumith Kulal、Andreas Blattmann 等 17 人；arXiv:2403.03206v1。全文 28 页，后来成为 Stable Diffusion 3 技术路线的核心报告，最大 MM-DiT 模型约 8B parameters。"
+      ]
+    },
+    {
+      "title": "研究问题",
+      "paragraphs": [
+        "rectified flow 以 data–noise 直线路径简化 transport geometry，却常在 \\(t\\in[0,1]\\) 上均匀训练。论文问：不同时间的回归难度并不均匀时，怎样把训练质量集中到 perceptually relevant SNR；同时，text tokens 与 image tokens 是否应共享全部 Transformer weights，还是保留 modality-specific processing 再双向交换信息？"
+      ]
+    },
+    {
+      "title": "背景",
+      "paragraphs": [
+        "生成过程把 data \\(x_0\\sim p_0\\) 与 Gaussian noise \\(\\epsilon\\sim\\mathcal N(0,I)\\) 连接为 \\(z_t=a_t x_0+b_t\\epsilon\\)，再学习产生同一 marginal path 的 velocity field。rectified flow 取 \\(a_t=1-t,b_t=t\\)，理想轨迹更直，因而在有限 sampling steps 下可能更高效。",
+        "但中间 \\(t\\) 的 source/target 混合最强，velocity target 往往比端点难。改变 timestep density \\(\\pi(t)\\) 等价于改变 loss weighting；论文比较 logit-normal、heavy-tailed mode sampler、CosMap 与 diffusion/EDM baselines，先在受控规模筛选，再进入大模型 scaling。"
+      ]
+    },
+    {
+      "title": "模型与方法",
+      "paragraphs": [
+        "logit-normal sampler 先取 \\(u\\sim\\mathcal N(m,s^2)\\)，再令 \\(t=\\operatorname{sigmoid}u\\)，可把训练集中在中间 SNR；主配置 \\(m=0,s=1\\)。高分辨率阶段还按像素数把 timestep 映射到相同 uncertainty，1024² 训练/采样采用 shift \\(\\alpha=3\\)，并在最终 checkpoint 上做 DPO alignment。",
+        "MM-DiT 将 VAE image patches 与 CLIP-L/14、CLIP-G/14、T5-XXL text representations 投到共同 token dimension。每个 block 对 text 与 image 使用独立 modulation、linear/MLP weights，但把两种 token 拼接做 joint attention，所以信息双向流动而 modality-specific representation 不被强行共享。QK RMS normalization 用于抑制 attention-logit growth 与 entropy collapse。"
+      ]
+    },
+    {
+      "title": "核心结果与证据",
+      "paragraphs": [
+        "Figure 1 优先展示最大 8B 模型的高分辨率输出：字体、多个对象的空间关系、长 prompt 与不同视觉风格都能在同一网格中直接检查。它证明模型可产生这些类型的样例，但精选图不能代替 aggregate benchmark 和 failure distribution。",
+        "24 种 sampler/EMA/dataset 组合的排序中，rf/lognorm(0,1) 总体 rank 1.54，优于 uniform rectified flow，并在少步采样保持优势。MM-DiT 对 DiT、CrossDiT、UViT 的 controlled comparison 中验证 loss、CLIP 与 FID 更好；QK normalization 避免 attention logits 持续增长。",
+        "scaling study 显示 image 与 video validation loss 随参数量、训练 FLOPs 平滑下降，并与 GenEval、T2I-CompBench 和 human preference 相关。GenEval overall 从 depth-18 的 0.58 增至 depth-38 1024²+DPO 的 0.74；表中 DALL-E 3 为 0.67。较大模型还更少依赖采样步数：相对 50 steps，5-step CLIP decrease 从 depth-15 的 4.30% 降到 depth-38 的 2.71%。"
+      ]
+    },
+    {
+      "title": "有效性与局限",
+      "paragraphs": [
+        "8B 结果同时叠加 architecture、data curation、synthetic recaptioning、resolution shift、多个 text encoders 与 DPO，不能从最终样例单独归因到 rectified flow。闭源/开放 baselines 的数据、参数量、prompt filtering 和 inference budget 不同，human-preference win rate 也依赖 rater protocol。",
+        "论文报告 scaling 范围内未见饱和，不等于更大规模必然继续同一幂律；depth-38 在 \\(3\\times10^5\\) steps 还需调 learning rate 避免 divergence。T5 对长文字 prompt 有明显作用但占用大量 memory；移除 T5 的总体 aesthetic 变化小，却会降低 typography 与复杂 prompt adherence。"
+      ]
+    },
+    {
+      "title": "复现与资源",
+      "paragraphs": [
+        "原文：https://arxiv.org/abs/2403.03206。全文 28 页，PDF SHA-256：7ba352b6ded12859cda4d47df203d5fe38ee884c45f3b67ff227549d82db1487。",
+        "复现需固定 VAE、text encoder revisions、dataset/recaption filters、\\(\\pi(t)\\) parameters、loss parameterization、MM-DiT depth/width、QK normalization、EMA、resolution buckets、timestep shift、sampler steps、CFG、DPO data 与 GenEval/human-evaluation protocol。",
+        "Evidence status: full-text verified; no independent reproduction performed."
+      ]
+    },
+    {
+      "title": "阅读指南",
+      "paragraphs": [
+        "先看 Figure 1 建立可视化能力边界，再读 Sections 2–3 推导 flow objective 与 logit-normal sampler。随后看 Figure 2 理解 MM-DiT 的 modality separation，按 Tables 1–2 检查 formulation ablation；最后读 Figures 7–9 与 Tables 5–6，把 scaling、DPO、T5 和少步采样贡献拆开。"
+      ]
+    }
+  ],
+  "cover": {
+    "mode": "source_figure",
+    "asset_path": "assets/collection-figures/2403.03206/figure-1-high-resolution-samples.webp",
+    "label": "Figure 1",
+    "visual_type": "comparison",
+    "evidence": "paper.pdf p. 1, Figure 1",
+    "alt_text": "8B rectified-flow text-to-image model 生成的多风格高分辨率样例网格，含文字与复杂空间关系。",
+    "caption": "8B MM-DiT 的精选样例覆盖 typography、prompt following、spatial reasoning 与多种风格；总体能力仍需结合后文 benchmark。",
+    "selection_rationale": "Figure 1 是全文最重要且最具可视性的原图，直接展示目标生成能力，优先于 loss 与 benchmark 数据图。"
+  },
+  "figure_refs": [
+    {
+      "label": "Figure 1",
+      "asset_path": "assets/collection-figures/2403.03206/figure-1-high-resolution-samples.webp",
+      "section": "核心结果与证据",
+      "role": "show representative high-resolution outputs of the final eight-billion-parameter model",
+      "evidence": "paper.pdf p. 1, Figure 1",
+      "alt_text": "包含文字、多个对象、空间关系与多种艺术风格的生成图像网格。",
+      "caption": "样例显示最终系统的 qualitative envelope，但不隔离 rectified-flow、architecture、data 与 DPO 的贡献。",
+      "interpretation": "Curated samples must be interpreted together with aggregate GenEval, scaling and human-preference evidence."
+    }
+  ],
+  "equation_refs": [
+    {
+      "label": "Rectified data-noise path",
+      "latex": "z_t=(1-t)x_0+t\\epsilon,\\qquad \\epsilon\\sim\\mathcal N(0,I)",
+      "role": "define the straight probability path used by rectified flow",
+      "symbols": {
+        "x0": "data sample",
+        "epsilon": "Gaussian endpoint",
+        "t": "flow time"
+      },
+      "evidence": "paper.pdf p. 3, Eq. (13)",
+      "interpretation": "A straighter learned transport can reduce integration error in the few-step regime if the velocity field is fitted accurately."
+    },
+    {
+      "label": "Logit-normal timestep density",
+      "latex": "\\pi_{\\mathrm{ln}}(t;m,s)=\\frac{1}{s\\sqrt{2\\pi}\\,t(1-t)}\\exp\\!\\left[-\\frac{(\\operatorname{logit}t-m)^2}{2s^2}\\right]",
+      "role": "bias training toward intermediate signal-to-noise scales",
+      "symbols": {
+        "m": "location in logit time",
+        "s": "scale",
+        "t": "sampled training timestep"
+      },
+      "evidence": "paper.pdf p. 4, Eq. (19)",
+      "interpretation": "The main m=0, s=1 setting spends less training probability near the easy endpoints than uniform sampling."
+    },
+    {
+      "label": "Resolution-dependent timestep shift",
+      "latex": "t_m=\\frac{\\alpha t_n}{1+(\\alpha-1)t_n},\\qquad \\alpha=\\sqrt{m/n}",
+      "role": "match uncertainty when changing the number of image pixels",
+      "symbols": {
+        "n,m": "source and target pixel counts",
+        "t_n,t_m": "corresponding timesteps",
+        "alpha": "resolution shift factor"
+      },
+      "evidence": "paper.pdf p. 10, Eq. (23)",
+      "interpretation": "Higher resolutions require a shift toward stronger noise to destroy comparable image information."
+    }
+  ],
+  "evidence_refs": [
+    "paper.pdf pp. 2–5: flow objective, timestep densities and MM-DiT architecture",
+    "paper.pdf pp. 6–12: controlled variants, high-resolution shift and scaling",
+    "source PDF SHA-256 7ba352b6ded12859cda4d47df203d5fe38ee884c45f3b67ff227549d82db1487",
+    "Evidence status: full-text verified; no independent reproduction performed."
+  ]
+}

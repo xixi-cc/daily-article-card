@@ -1,0 +1,159 @@
+{
+  "arxiv_id": "2403.00504",
+  "source_version": "v1",
+  "source_pdf": "https://arxiv.org/pdf/2403.00504",
+  "title_en": "Learning and Leveraging World Models in Visual Representation Learning",
+  "title_zh": "在视觉表征学习中学习并利用世界模型",
+  "curation_status": "full_text_verified",
+  "card_standard_version": "2.3",
+  "paper_profile": "ai_empirical",
+  "style_reference": "physicist_daily_arxiv",
+  "provenance": {
+    "program": "Collection",
+    "catalog": "Paper Collection",
+    "catalog_record_id": "5958e2ecc77fb0d7",
+    "catalog_record_ids": [
+      "5958e2ecc77fb0d7"
+    ],
+    "catalog_topic": "World Models",
+    "collection_date": "2026-08-23",
+    "sampled_at": "2026-08-28",
+    "selected_by": "full_collection_backfill",
+    "sampling_seed": "not_applicable_full_collection",
+    "candidate_count": 452
+  },
+  "verified_metadata": {
+    "arxiv_id": "2403.00504",
+    "version": "v1",
+    "title": "Learning and Leveraging World Models in Visual Representation Learning",
+    "authors": [
+      "Quentin Garrido",
+      "Mahmoud Assran",
+      "Nicolas Ballas",
+      "Adrien Bardes",
+      "Laurent Najman",
+      "Yann LeCun"
+    ],
+    "categories": [
+      "cs.CV",
+      "cs.AI",
+      "cs.LG"
+    ],
+    "primary_category": "cs.CV",
+    "published": "2024-03-01T13:05:38Z",
+    "abstract": "Image World Models extend JEPA pretraining from masked prediction to conditioned latent prediction of photometric transformations and reuse the learned predictor for efficient downstream adaptation.",
+    "comment": ""
+  },
+  "sections": [
+    {
+      "title": "作者信息",
+      "paragraphs": [
+        "作者：Quentin Garrido、Mahmoud Assran、Nicolas Ballas、Adrien Bardes、Laurent Najman、Yann LeCun；arXiv:2403.00504v1。全文 23 页，提出 Image World Models（IWM）并在 ImageNet 与下游分类/分割上评估。"
+      ]
+    },
+    {
+      "title": "研究问题",
+      "paragraphs": [
+        "JEPA 通常只预测被遮挡的 latent patches，predictor 训练后常被丢弃。论文问：若把 color jitter、grayscale、blur、solarization 等全局变换视为 action，并显式告诉 predictor 发生了什么，它能否在 latent space 中学会变换的后果；这个 world model 是否可以作为可复用的下游 head，而不只是 pretraining 辅助项？"
+      ]
+    },
+    {
+      "title": "背景",
+      "paragraphs": [
+        "representation invariance 与 world-model capacity 存在张力。若 predictor 不知道 action，最容易的解是让 encoder 抹去颜色等变化，得到 invariant representation；若 predictor 被 action 条件化且有足够容量，encoder 可以保留变化信息，predictor 再把 source latent 推到 target latent，即 equivariant behavior。",
+        "作者把 MRR 用作 world-model observable：对一个 source latent 施加 action prediction，再在 256 个 augmented target representations 中做 nearest-neighbor retrieval。真实 target 排名越靠前，mean reciprocal rank 越接近 1，说明 latent dynamics 更能恢复该变换。"
+      ]
+    },
+    {
+      "title": "模型与方法",
+      "paragraphs": [
+        "source \\(x\\) 与 target \\(y\\) 来自同一图像。target 含 crop、flip、color jitter；source 在 target 上再加 jitter、grayscale、blur、solarization 与四块 mask。online ViT-B/16 encoder \\(f_\\theta\\) 编码 source，EMA teacher \\(f_{\\theta}^{EMA}\\) 编码 target；predictor \\(p_\\phi\\) 同时接收 source patches、target mask positions 与 action parameters \\(a_{x\\to y}\\)。",
+        "训练用 target-mask positions 上的 squared latent loss。ablation 改变 conditioning（none/sequence/feature）、transformation difficulty 与 predictor depth/width。之后冻结 encoder，finetune 已预训练 predictor 做 classification/segmentation，并与 encoder finetuning、joint finetuning、random predictor 和多任务 predictor 比较。"
+      ]
+    },
+    {
+      "title": "核心结果与证据",
+      "paragraphs": [
+        "Figure 1 是可视化的闭环检验：对 source brain diagram 指定 brightness、contrast、saturation、hue action 后，预测 latent 的 nearest neighbor 与 target 的颜色/清晰度变化一致；grayscale inversion 仍有误差，因为信息已被不可逆删除。图比单个 MRR 更直观地显示 predictor 学到的是 transformation response 而非类别标签。",
+        "没有 conditioning 时 MRR 为 0.00；sequence 与 feature conditioning 分别为 0.82 与 0.79。对 18-layer predictor，jitter-only MRR 0.25，加入 destructive transforms 后 0.79，strong jitter 后 0.85；12-layer predictor 在 strong jitter 下为 0.81，但稳定达到 equivariance 的训练比例更低，表明 task difficulty 与 capacity 必须匹配。",
+        "predictor finetuning 中，default ImageNet top-1 为 82.9%，使用 teacher 与 null latents 后为 83.3%。论文报告 equivariant IWM 的 predictor finetuning 可匹配 invariant model 的 encoder finetuning，并在少量 finetuned parameters 下更高效；同一 predictor 联合适配 ImageNet、iNaturalist18、SUN397 与 Places205，平均表现接近四个独立 heads。"
+      ]
+    },
+    {
+      "title": "有效性与局限",
+      "paragraphs": [
+        "所谓 world model 只预测人为定义的 image transformations，并不包含 action-conditioned temporal dynamics、3D geometry 或 agent-environment transition。Figure 1 使用 256-image bank 的 nearest neighbor，因此“看起来正确”受 bank composition 与 retrieval metric 限制。",
+        "MRR、equivariance 与 downstream quality 相关但不等价：论文自己的 Figure 4 显示 linear probing 与 MRR 负相关、predictor finetuning 与 MRR 正相关、attentive probing 相关较弱。结论依赖 ViT-B/16、ImageNet augmentations 与特定 finetuning protocols，尚不能推到一般 world-model learning。"
+      ]
+    },
+    {
+      "title": "复现与资源",
+      "paragraphs": [
+        "原文：https://arxiv.org/abs/2403.00504。全文 23 页，PDF SHA-256：fa435ab0b2219bdaaca9693b7dccf6ab285300a970b6001fe5476ac89ae80972。",
+        "复现需固定 ImageNet split、crop/flip/jitter/destructive augmentation parameters、mask geometry、action encoding、EMA decay、ViT-B/16 revision、predictor depth/width、MRR bank size 256、nearest-neighbor metric 与 finetuning parameter counts。",
+        "Evidence status: full-text verified; no independent reproduction performed."
+      ]
+    },
+    {
+      "title": "阅读指南",
+      "paragraphs": [
+        "先看 Figure 1，把 action-conditioned latent prediction 与 ordinary invariance 区分开；再读 Section 3 的 source/target/action construction 和 Tables 1–2 的三因素 ablation。随后读 Tables 3–7 的 predictor reuse，最后看 Figures 4–5：不同 abstraction level 要用不同 evaluation head，不能只靠 linear probe 排名。"
+      ]
+    }
+  ],
+  "cover": {
+    "mode": "source_figure",
+    "asset_path": "assets/collection-figures/2403.00504/figure-1-latent-transformations.webp",
+    "label": "Figure 1",
+    "visual_type": "comparison",
+    "evidence": "paper.pdf p. 1, Figure 1",
+    "alt_text": "source brain image、四组 photometric actions、IWM nearest-neighbor predictions 与 target images。",
+    "caption": "给定 photometric action 后，IWM 在 latent space 预测变换结果；nearest-neighbor 图像可直接对照 prediction 与 target。",
+    "selection_rationale": "Figure 1 是文章最重要的可视化证据，直接展示 latent world model 的作用，优先于 MRR 和下游 accuracy 表。"
+  },
+  "figure_refs": [
+    {
+      "label": "Figure 1",
+      "asset_path": "assets/collection-figures/2403.00504/figure-1-latent-transformations.webp",
+      "section": "核心结果与证据",
+      "role": "visualize action-conditioned predictions in latent space",
+      "evidence": "paper.pdf p. 1, Figure 1",
+      "alt_text": "四种 photometric action 下的 source、nearest-neighbor prediction 与 target 图像。",
+      "caption": "prediction 跟随 brightness、contrast、saturation 与 hue，但不可逆 grayscale 仍暴露信息损失。",
+      "interpretation": "Nearest-neighbor visualization depends on the finite 256-image retrieval bank and is not pixel reconstruction."
+    }
+  ],
+  "equation_refs": [
+    {
+      "label": "Action-conditioned latent prediction",
+      "latex": "\\hat z_y=p_\\phi\\!\\left(f_\\theta(x),a_{x\\to y},m_a\\right),\\qquad z_y=f_{\\theta}^{EMA}(y)",
+      "role": "define the predictor as a latent world model conditioned on the transformation",
+      "symbols": {
+        "x,y": "source and target views",
+        "a_x_to_y": "transformation parameters",
+        "m_a": "target mask tokens",
+        "p_phi": "world-model predictor"
+      },
+      "evidence": "paper.pdf p. 4, Section 3",
+      "interpretation": "Explicit action information prevents the predictor from being forced into a purely invariant solution."
+    },
+    {
+      "label": "IWM pretraining loss",
+      "latex": "\\mathcal L(x,y)=\\sum_{i\\in M_x^C}\\left\\|p_\\phi\\!\\left(f_\\theta(x),a_{x\\to y},m_a\\right)_i-f_{\\theta}^{EMA}(y)_i\\right\\|_2^2",
+      "role": "match predicted and teacher target latents at selected positions",
+      "symbols": {
+        "M_x^C": "target positions complementary to the source mask",
+        "theta": "online encoder parameters",
+        "phi": "predictor parameters"
+      },
+      "evidence": "paper.pdf p. 4, Loss",
+      "interpretation": "The objective trains transformation-aware latent prediction without reconstructing pixels."
+    }
+  ],
+  "evidence_refs": [
+    "paper.pdf pp. 3–5: IWM construction, conditioning, MRR and capacity ablations",
+    "paper.pdf pp. 6–9: predictor finetuning, multitask reuse and abstraction spectrum",
+    "source PDF SHA-256 fa435ab0b2219bdaaca9693b7dccf6ab285300a970b6001fe5476ac89ae80972",
+    "Evidence status: full-text verified; no independent reproduction performed."
+  ]
+}

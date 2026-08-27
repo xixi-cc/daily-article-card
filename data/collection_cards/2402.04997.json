@@ -1,0 +1,170 @@
+{
+  "arxiv_id": "2402.04997",
+  "source_version": "v2",
+  "source_pdf": "https://arxiv.org/pdf/2402.04997",
+  "title_en": "Generative Flows on Discrete State-Spaces: Enabling Multimodal Flows with Applications to Protein Co-Design",
+  "title_zh": "离散状态空间上的生成流：面向蛋白质协同设计的多模态流",
+  "curation_status": "full_text_verified",
+  "card_standard_version": "2.3",
+  "paper_profile": "theory_numerics",
+  "style_reference": "physicist_daily_arxiv",
+  "provenance": {
+    "program": "Collection",
+    "catalog": "Paper Collection",
+    "catalog_record_id": "0860001a6e00e36b",
+    "catalog_record_ids": [
+      "0860001a6e00e36b"
+    ],
+    "catalog_topic": "Flow Matching",
+    "collection_date": "2026-08-23",
+    "sampled_at": "2026-08-28",
+    "selected_by": "full_collection_backfill",
+    "sampling_seed": "not_applicable_full_collection",
+    "candidate_count": 452
+  },
+  "verified_metadata": {
+    "arxiv_id": "2402.04997",
+    "version": "v2",
+    "title": "Generative Flows on Discrete State-Spaces: Enabling Multimodal Flows with Applications to Protein Co-Design",
+    "authors": [
+      "Andrew Campbell",
+      "Jason Yim",
+      "Regina Barzilay",
+      "Tom Rainforth",
+      "Tommi Jaakkola"
+    ],
+    "categories": [
+      "cs.LG",
+      "cs.AI",
+      "q-bio.BM"
+    ],
+    "primary_category": "cs.LG",
+    "published": "2024-02-07T16:15:36Z",
+    "abstract": "Discrete Flow Models realize flow matching with continuous-time Markov chains and combine it with continuous SE(3) flows in Multiflow for joint protein sequence and backbone generation.",
+    "comment": ""
+  },
+  "sections": [
+    {
+      "title": "作者信息",
+      "paragraphs": [
+        "作者：Andrew Campbell、Jason Yim、Regina Barzilay、Tom Rainforth、Tommi Jaakkola；arXiv:2402.04997v2。全文 60 页，正文提出 Discrete Flow Models（DFM）并以 Multiflow 做蛋白质 backbone–sequence co-generation。"
+      ]
+    },
+    {
+      "title": "研究问题",
+      "paragraphs": [
+        "连续 flow matching 依赖速度场，离散序列却不能沿欧氏向量场平滑移动。论文问：能否在有限状态空间中定义一个精确的 probability flow，使训练保持 simulation-free、采样时仍可控制随机性；并把这一离散过程与 \\(\\mathbb R^3\\times SO(3)\\) 的连续蛋白结构流组合成单一多模态生成器？"
+      ]
+    },
+    {
+      "title": "背景",
+      "paragraphs": [
+        "有限状态连续时间 Markov chain（CTMC）由初始分布 \\(p_0\\) 与 rate matrix \\(R_t\\) 决定。Kolmogorov forward equation \\(\\partial_t p_t=R_t^{\\mathsf T}p_t\\) 扮演连续空间 continuity/Fokker–Planck equation 的角色：它只规定概率质量怎样在类别之间流动，不要求类别本身有欧氏距离。",
+        "作者先选一个可显式采样的 conditional path \\(p_{t|1}(x_t|x_1)\\)，从 uniform 或 mask noise 线性插值到 data。神经网络只学习 denoising posterior \\(p_{1|t}(x_1|x_t)\\)；生成时再把 conditional rates 对这个 posterior 取期望，得到 marginal rate matrix。"
+      ]
+    },
+    {
+      "title": "模型与方法",
+      "paragraphs": [
+        "DFM 以 cross-entropy 训练 clean-state predictor，训练目标与具体 rate matrix 解耦。满足同一 probability path 的 rates 不唯一：在最小跳跃的 \\(R_t^*\\) 上加入对 \\(p_{t|1}\\) 满足 detailed balance 的 \\(\\eta R_t^{DB}\\)，不会改变边缘分布，却会改变 CTMC trajectory 的跳跃频率和 autocorrelation。于是 \\(\\eta\\) 成为 inference-time stochasticity knob。",
+        "Multiflow 把每个 residue 表为 \\(T^d=(x^d,r^d,a^d)\\in\\mathbb R^3\\times SO(3)\\times\\{1,\\ldots,20,M\\}\\)。translation、rotation 和 amino-acid sequence 的 conditional flows 在 residue 维和 modality 维上因子化，但同一个网络以完整 noisy protein 为条件同时预测三种终态；从 noise、给定 structure 或给定 sequence 出发分别实现 co-design、inverse folding 和 forward folding。"
+      ]
+    },
+    {
+      "title": "核心结果与证据",
+      "paragraphs": [
+        "Figure 1 将方法浓缩成三幅机制图：A 是 mask-to-sequence probability flow，B 显示增大 \\(\\eta\\) 会在保持同一 \\(p_t\\) 时增加 CTMC jumps，C 显示同一 Multiflow 权重可从纯噪声、已知 backbone 或已知 sequence 三个边界条件采样。图直接说明“同一边缘流、不同路径随机性”和多模态条件化。",
+        "text8 上，作者可在采样时联合调 \\(\\eta\\) 与 temperature；\\(\\eta=15\\) 改善 entropy–NLL Pareto frontier，而 \\(\\eta=0\\) 接近 D3PM，支持 DFM 是离散 diffusion 的连续时间推广。该改进是 sampler flexibility 的结果，不是重新训练不同模型。",
+        "蛋白 co-design benchmark 中，Multiflow 的 Co-design-1 designability 为 0.86、diversity 143、novelty 0.61；PMPNN-8 structure designability 为 0.99。去掉 distillation 后 Co-design-1 designability 降到 0.42。相同权重做 inverse folding 得到 scRMSD \\(2.2\\pm2.6\\) Å，接近 ProteinMPNN 的 \\(1.9\\pm2.7\\) Å；forward folding RMSD 为 \\(15.3\\pm4.5\\) Å，明显弱于 ESMFold 的 \\(2.7\\pm3.9\\) Å。"
+      ]
+    },
+    {
+      "title": "有效性与局限",
+      "paragraphs": [
+        "DFM 的 marginal correctness 由 Kolmogorov equation 与 conditional-rate construction 保证，但有限 Euler step、learned posterior error 与 temperature 会造成离散化和模型误差。详细平衡项只保持目标 marginal flow，并不意味着生成动力学具有物理 detailed balance。",
+        "蛋白实验只生成 backbone 与 sequence，不包含 side chains；PDB 训练集有 18,684 proteins，distillation 又使用 PMPNN 与自生成的 4,179 个样本，因此性能不等于纯粹从原始数据学得。Multiflow 是 general-purpose proof of concept，却没有同时达到专用 forward-folding 模型的精度。"
+      ]
+    },
+    {
+      "title": "复现与资源",
+      "paragraphs": [
+        "原文：https://arxiv.org/abs/2402.04997；DFM 代码：https://github.com/andrew-cr/discrete_flow_models；Multiflow 代码：https://github.com/jasonkyuyim/multiflow。全文 60 页，PDF SHA-256：182ddfb2871ce2d07e40b83f507b6ae356634af1961e049cc6d2fa67f5bed374。",
+        "复现需固定 conditional path、mask/uniform prior、Euler step、\\(\\eta\\)、temperature、network revision、PDB split、distillation recipe、PMPNN samples、ESMFold/AF2 version，以及 designability 的 \\(\\mathrm{scRMSD}<2\\) Å 阈值。",
+        "Evidence status: full-text verified; no independent reproduction performed."
+      ]
+    },
+    {
+      "title": "阅读指南",
+      "paragraphs": [
+        "先看 Figure 1，再读 Section 2.2 的 Kolmogorov equation 与 Propositions 3.1–3.4，确认 \\(p_t\\)、trajectory 与 rate matrix 是三个不同对象。随后用 Table 1 对照连续/离散 flow matching，最后读 Tables 3–4；尤其要把 co-design 的强结果与 forward folding 的明显短板一起保留。"
+      ]
+    }
+  ],
+  "cover": {
+    "mode": "source_figure",
+    "asset_path": "assets/collection-figures/2402.04997/figure-1-dfm-overview.webp",
+    "label": "Figure 1",
+    "visual_type": "schematic",
+    "evidence": "paper.pdf p. 2, Figure 1",
+    "alt_text": "离散 mask flow、CTMC 高低随机性轨迹以及蛋白结构与序列三种条件生成路径。",
+    "caption": "同一 \\(p_t\\) 可由不同随机性的 CTMC 轨迹实现；离散 sequence flow 再与连续 structure flow 组合为 Multiflow。",
+    "selection_rationale": "Figure 1 是论文最重要的机制示意图，同时解释离散流、采样随机性和蛋白多模态条件生成，优先于性能表。"
+  },
+  "figure_refs": [
+    {
+      "label": "Figure 1",
+      "asset_path": "assets/collection-figures/2402.04997/figure-1-dfm-overview.webp",
+      "section": "核心结果与证据",
+      "role": "show the discrete probability path, CTMC stochasticity, and multimodal conditioning modes",
+      "evidence": "paper.pdf p. 2, Figure 1",
+      "alt_text": "三联图展示 mask 序列的概率流、不同跳跃频率与蛋白 sequence/structure 联合生成。",
+      "caption": "改变 CTMC 轨迹随机性不必改变目标边缘流；一个联合模型可切换多种条件边界。",
+      "interpretation": "The schematic explains the construction, not the finite-step sampling error or protein benchmark distribution."
+    }
+  ],
+  "equation_refs": [
+    {
+      "label": "Discrete probability-flow equation",
+      "latex": "\\partial_t p_t(x)=\\sum_{j\\ne x}R_t(j,x)p_t(j)-\\sum_{j\\ne x}R_t(x,j)p_t(x)=\\bigl(R_t^{\\mathsf T}p_t\\bigr)(x)",
+      "role": "define probability transport on a finite state space",
+      "symbols": {
+        "p_t": "time-dependent categorical marginal",
+        "R_t": "CTMC rate matrix",
+        "x,j": "discrete states"
+      },
+      "evidence": "paper.pdf p. 3, Eq. (4)",
+      "interpretation": "Incoming minus outgoing probability mass replaces the divergence of a continuous velocity field."
+    },
+    {
+      "label": "Posterior-averaged generative rate",
+      "latex": "R_t(x,j)=\\mathbb E_{p_{1|t}(x_1|x)}\\!\\left[R_t(x,j\\mid x_1)\\right]",
+      "role": "turn an explicit data-conditional process into the learned marginal generator",
+      "symbols": {
+        "x1": "clean endpoint",
+        "p_1|t": "denoising posterior",
+        "R_t(x,j|x1)": "conditional rate"
+      },
+      "evidence": "paper.pdf p. 3, Eq. (7)",
+      "interpretation": "The neural network predicts endpoints; analytic conditional rates then determine how probability jumps between current states."
+    },
+    {
+      "label": "Inference-time stochasticity family",
+      "latex": "R_t^{\\eta}=R_t^*+\\eta R_t^{DB},\\qquad \\eta\\ge0",
+      "role": "change CTMC trajectory stochasticity without changing the marginal flow",
+      "symbols": {
+        "R_t^*": "base rate with minimal expected jumps for the chosen paths",
+        "R_t^DB": "rate satisfying detailed balance for the conditional path",
+        "eta": "sampling stochasticity"
+      },
+      "evidence": "paper.pdf pp. 4–5, Proposition 3.3",
+      "interpretation": "Detailed-balance exchanges cancel in the marginal equation but alter the number and timing of jumps."
+    }
+  ],
+  "evidence_refs": [
+    "paper.pdf pp. 2–6: CTMC flow construction, training and rate-matrix family",
+    "paper.pdf pp. 7–9: text8 and protein experiments",
+    "paper.pdf Appendix: proofs and finite-step sampling details",
+    "source PDF SHA-256 182ddfb2871ce2d07e40b83f507b6ae356634af1961e049cc6d2fa67f5bed374",
+    "Evidence status: full-text verified; no independent reproduction performed."
+  ]
+}
