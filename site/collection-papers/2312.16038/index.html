@@ -1,0 +1,203 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Physics-informed neural networks for solving functional renormalization group on a lattice - physics+AI Collection 随机精选</title>
+    <meta name="description" content="作者：Takeru Yokota（RIKEN iTHEMS）；arXiv:2312.16038v3。全文 12 页，提出 PINN-LFRG，并在 zero-dimensional \(O(N)\) model 上验证到 \(N=100\)。" />
+    <script>
+      (function() {
+        try {
+          var themePreference = window.localStorage.getItem('color-theme') || 'system';
+          var systemUsesDarkTheme = window.matchMedia('(prefers-color-scheme: dark)').matches;
+          var resolvedTheme = themePreference === 'system'
+            ? (systemUsesDarkTheme ? 'dark' : 'light')
+            : themePreference;
+          document.documentElement.dataset.theme = resolvedTheme;
+          document.documentElement.dataset.themePreference = themePreference;
+          document.documentElement.style.colorScheme = resolvedTheme;
+        } catch (error) {
+          document.documentElement.dataset.theme = 'light';
+          document.documentElement.dataset.themePreference = 'system';
+        }
+      })();
+    </script>
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='18' fill='%23111827'/%3E%3Ctext x='50%25' y='55%25' text-anchor='middle' dominant-baseline='middle' font-size='30' font-family='Arial, sans-serif' fill='white'%3EV%3C/text%3E%3C/svg%3E" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700;800&family=Noto+Sans+SC:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <script>document.documentElement.classList.add('math-pending');</script>
+    <script>
+      window.MathJax = {
+        tex: {
+          inlineMath: [['$', '$'], ['\\(', '\\)']],
+          displayMath: [['$$', '$$'], ['\\[', '\\]']],
+          processEscapes: true
+        },
+        options: {
+          skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+        },
+        chtml: {
+          scale: 1,
+          displayAlign: 'center'
+        },
+        startup: {
+          ready: function() {
+            MathJax.startup.defaultReady();
+            MathJax.startup.promise.then(function() {
+              document.documentElement.classList.remove('math-pending');
+              document.documentElement.dataset.mathReady = 'true';
+            });
+          }
+        }
+      };
+    </script>
+    <script defer src="../../assets/vendor/mathjax/tex-chtml.js"></script>
+    <link rel="stylesheet" href="../../assets/style.css" />
+  </head>
+  <body class="detail-page" data-paper-id="2312.16038">
+    <div class="page-noise"></div>
+    <div class="page-blur page-blur-a"></div>
+    <div class="page-blur page-blur-b"></div>
+
+    <header class="header detail-page-header">
+      <div class="container">
+        <div class="detail-page-topbar">
+          <a class="back-link" href="../../collection.html">返回列表</a>
+          <div class="detail-topbar-actions">
+            <span class="detail-site-name">physics+AI Collection 随机精选</span>
+            <button class="theme-toggle" type="button" data-theme-toggle aria-label="当前主题：设备，点击切换主题" title="当前主题：设备">
+  <span class="theme-toggle-icons" aria-hidden="true">
+    <svg class="theme-toggle-icon theme-toggle-icon-light" viewBox="0 0 24 24" fill="none">
+      <circle cx="12" cy="12" r="3.5" stroke="currentColor" stroke-width="1.8"/>
+      <path d="M12 2.5v2M12 19.5v2M2.5 12h2M19.5 12h2M5.3 5.3l1.4 1.4M17.3 17.3l1.4 1.4M18.7 5.3l-1.4 1.4M6.7 17.3l-1.4 1.4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+    </svg>
+    <svg class="theme-toggle-icon theme-toggle-icon-dark" viewBox="0 0 24 24" fill="none">
+      <path d="M20 15.2A8.1 8.1 0 0 1 8.8 4a8.2 8.2 0 1 0 11.2 11.2z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>
+    </svg>
+    <svg class="theme-toggle-icon theme-toggle-icon-system" viewBox="0 0 24 24" fill="none">
+      <rect x="3" y="4" width="18" height="13" rx="2.5" stroke="currentColor" stroke-width="1.8"/>
+      <path d="M8 21h8M12 17v4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+    </svg>
+  </span>
+  <span class="theme-toggle-label" data-theme-toggle-label>设备</span>
+</button>
+          </div>
+        </div>
+
+        <div class="detail-hero-grid">
+          <div class="detail-hero-cover"><figure class="paper-figure-card paper-figure-card-detail">
+  <img class="paper-figure-image" src="../../assets/collection-figures/2312.16038/figure-1-pinn-lfrg-architecture.webp" alt="RG scale、N 分量场与 l=0 参考场进入共享神经网络并相减输出有效作用量。" loading="lazy" onclick="window.openPaperFigureImage && window.openPaperFigureImage(this)" />
+  <figcaption class="paper-figure-caption">共享网络分别评估 \((l,\phi)\) 与 \((0,\phi)\)；相减结构把 FRG 初值条件直接编码进 \(\gamma(l,\phi)\)。</figcaption>
+</figure></div>
+          <div class="detail-hero-copy">
+            <p class="eyebrow">Collection 全文卡</p>
+            <h1 class="detail-page-title">Physics-informed neural networks for solving functional renormalization group on a lattice</h1>
+            <p class="detail-page-title-zh">用物理信息神经网络求解格点泛函重整化群</p>
+            <div class="detail-meta">Paper Collection · Renormalization Group · <a href="https://arxiv.org/abs/2312.16038" target="_blank" rel="noopener noreferrer">原文</a></div>
+            <p class="detail-summary">作者：Takeru Yokota（RIKEN iTHEMS）；arXiv:2312.16038v3。全文 12 页，提出 PINN-LFRG，并在 zero-dimensional \(O(N)\) model 上验证到 \(N=100\)。</p>
+            <div class="detail-micro-meta">
+              <span class="meta-pill">10 分钟读完</span>
+              <span class="meta-pill">8 张阅读卡</span>
+              <span class="meta-pill">作者：Takeru Yokota（RIKEN iTHEMS）；arXiv:2312.16038v3。全…</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <main class="container detail-layout">
+      <div class="detail-shell">
+        <article id="detail-body" class="reading-flow"><section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 01</span>
+    <span class="reading-step-note">作者信息</span>
+  </div>
+  <h2>作者信息</h2>
+  <div class="reading-card-content"><ul><li>作者：Takeru Yokota（RIKEN iTHEMS）；arXiv:2312.16038v3。全文 12 页，提出 PINN-LFRG，并在 zero-dimensional \(O(N)\) model 上验证到 \(N=100\)。</li></ul></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 02</span>
+    <span class="reading-step-note">研究问题</span>
+  </div>
+  <h2>研究问题</h2>
+  <div class="reading-card-content"><ul><li>有限格点上的 Wetterich equation 是 \((N_{\mathrm{DOF}}+1)\)-维 PDE；给每个 field component 建网格会产生指数级维数灾难，vertex/derivative expansions 又只在特定场配置附近有效。论文问：能否用 differentiable neural network 直接表示一整片 field configuration space 上的 effective action，并以 FRG 方程残差训练？</li></ul></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 03</span>
+    <span class="reading-step-note">背景</span>
+  </div>
+  <h2>背景</h2>
+  <div class="reading-card-content"><ul><li>effective average action \(\Gamma_k(\phi)\) 在 UV 端接近 bare action，在 IR 端给出完整 effective action。Wetterich 方程含 \((\Gamma_k^{(2)}+R_k)^{-1}\) 的 trace，因此既要求对场做二阶导数，也要求高维 matrix inverse。</li><li>PINN 不离散输入空间，而用自动微分计算 PDE residual。潜在收益不是“用黑箱拟合几个 observables”，而是一次获得 \(\gamma(l,\phi)\) 与 self-energy 在多种、包括非均匀 field configurations 上的函数。</li></ul></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 04</span>
+    <span class="reading-step-note">模型与方法</span>
+  </div>
+  <h2>模型与方法</h2>
+  <div class="reading-card-content"><ul><li>作者分解 \(\Gamma_k(\phi)=S(\phi)+\Gamma_{RG}(l,\phi)\)，再让共享参数的两个网络实现 \(\gamma(l,\phi)\simeq NN_\theta(l,\phi)-NN_\theta(0,\phi)\)，从结构上满足 \(l=0\) boundary condition。网络有 3 hidden layers、每层 256 units、Softplus activation。</li><li>loss 是在 collocation points 上的 Wetterich residual；为改善非微扰区收敛，先用 one-point/vertex-like approximation pretrain，再训练完整 PDE。实验遍历 \(N=1,10,100\) 与 \(\tilde g=0.1,1,10\)，并与 exact path integral、leading perturbation、large-\(N\) expansion 比较。</li></ul></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 05</span>
+    <span class="reading-step-note">核心结果与证据</span>
+  </div>
+  <h2>核心结果与证据</h2>
+  <div class="reading-card-content"><ul><li>Figure 1 清楚显示 \(l\)、\(N\)-component field 与 \(l=0\) reference 同时进入共享网络，输出相减后自动满足初值；这比只看 loss curve 更能解释 PINN-LFRG 的 boundary-condition engineering。</li><li>所有 \(N,\tilde g\) 组合中，\(\gamma(l_{end},0)\) 相对误差在 3% 内，\(\sigma(l_{end},0)\) 在 1% 内；在小 \(N\)、强耦合 \(\tilde g=10\) 时，PINN 仍可超过失效的 perturbative 与 large-\(N\) approximations。</li><li>对 \(N=100\)，不同 field directions 的输出几乎重合，训练过程自行恢复 \(O(N)\) symmetry。\(A_{100}\) 40GB 上 pretraining 为 4–6 分钟，完整 Wetterich training 从 \(N=1\) 的 6 小时增至 \(N=100\) 的 11 小时；训练使用 \(10^5\) 与 \(10^6\) iterations。</li></ul><figure class="evidence-figure">
+  <button class="evidence-figure-image-button" type="button" aria-label="放大查看 Figure 1" onclick="window.openPaperFigureImage && window.openPaperFigureImage(this.querySelector('img'))">
+    <img class="paper-figure-image evidence-figure-image" src="../../assets/collection-figures/2312.16038/figure-1-pinn-lfrg-architecture.webp" alt="RG scale 与 field vector 两次进入共享参数网络并作差。" loading="lazy" />
+  </button>
+  <figcaption>
+    <strong>Figure 1</strong> · 网络结构而非 penalty weight 强制相互作用有效作用量在 l=0 为零。
+    <span class="evidence-figure-reading">物理解读：The architecture removes one boundary-loss tuning problem but does not remove the matrix-inverse cost.</span>
+    <span class="evidence-figure-source">来源：paper.pdf p. 3, Figure 1</span>
+  </figcaption>
+</figure></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 06</span>
+    <span class="reading-step-note">有效性与局限</span>
+  </div>
+  <h2>有效性与局限</h2>
+  <div class="reading-card-content"><ul><li>最强数值证据来自 zero-dimensional \(O(N)\) toy model，它有 exact benchmark，却没有真实格点的空间结构；论文尚未展示 inhomogeneous phase、critical lattice scaling 或大体积 many-body observable。</li><li>trace/matrix inverse 仍为 \(O(N_{\mathrm{DOF}}^3)\) 的实现瓶颈；作者只讨论可用 Hutchinson estimator 降到约二次，未实测端到端误差与方差。fermionic Grassmann variables 没有直接 NN 表示；pretraining ansatz 也引入 problem-specific prior。</li></ul></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 07</span>
+    <span class="reading-step-note">复现与资源</span>
+  </div>
+  <h2>复现与资源</h2>
+  <div class="reading-card-content"><ul><li>原文：https://arxiv.org/abs/2312.16038；代码：https://github.com/TakeruYokota/PINN-LFRG。全文 12 页，PDF SHA-256：d194ec1e4048a53953e6701af3dd124513c765f07f0c1f20a18e0d77579954d1。</li><li>复现需固定 regulator、\(m^2,\tilde g,N\)、field/RG-time sampling distributions、collocation count、pretraining target、network depth/width、matrix inverse precision、optimizer schedule 与 exact quadrature。</li><li>Evidence status: full-text verified; no independent reproduction performed.</li></ul></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 08</span>
+    <span class="reading-step-note">阅读指南</span>
+  </div>
+  <h2>阅读指南</h2>
+  <div class="reading-card-content"><ul><li>先看 Figure 1，理解为什么相减结构自动施加 \(l=0\) boundary condition；再读 Eqs. (5)、(8)–(12) 对齐 Wetterich residual 与 pretraining。随后看 Figure 2–4 的 exact comparisons，最后读 Appendix A 的 complexity，避免把 101-dimensional toy PDE 等同于已解决真实格点 FRG。</li></ul></div>
+</section></article>
+        <aside id="detail-toc" class="detail-toc hidden" aria-label="内容目录">
+          <p class="detail-toc-title">阅读目录</p>
+          <nav id="detail-toc-nav" class="detail-toc-nav"></nav>
+        </aside>
+      </div>
+      <nav class="paper-nav"><a class="paper-nav-link paper-nav-prev" href="../../collection-papers/2312.11181/"><span class="paper-nav-label">← 上一篇</span><span class="paper-nav-title">Anomalous relaxation and hyperuniform fluctuations in center-of-mass conserving systems with broken time-reversal symmetry</span></a>
+      <a class="paper-nav-link paper-nav-next" href="../../collection-papers/2401.00448/"><span class="paper-nav-label">下一篇 →</span><span class="paper-nav-title">Beyond Chinchilla-Optimal: Accounting for Inference in Language Model Scaling Laws</span></a></nav>
+    </main>
+
+    <footer class="footer">
+      <div class="container">
+        <p>内容来自 <a href="https://arxiv.org" target="_blank" rel="noopener noreferrer">arXiv.org</a>，阅读卡片由静态站点生成器构建。</p>
+      </div>
+    </footer>
+
+    <script src="../../assets/theme.js"></script>
+    <script src="../../assets/media.js"></script>
+    <script src="../../assets/paper.js"></script>
+  </body>
+</html>
