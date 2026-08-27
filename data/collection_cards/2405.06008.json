@@ -1,0 +1,157 @@
+{
+  "arxiv_id": "2405.06008",
+  "source_version": "v3",
+  "source_pdf": "https://arxiv.org/pdf/2405.06008",
+  "title_en": "Wilsonian Renormalization of Neural Network Gaussian Processes",
+  "title_zh": "神经网络高斯过程的 Wilson 型重整化",
+  "curation_status": "full_text_verified",
+  "card_standard_version": "2.3",
+  "paper_profile": "theory_numerics",
+  "style_reference": "physicist_daily_arxiv",
+  "provenance": {
+    "program": "Collection",
+    "catalog": "Paper Collection",
+    "catalog_record_id": "a88b9bb69dd7ec7c",
+    "catalog_record_ids": [
+      "a88b9bb69dd7ec7c"
+    ],
+    "catalog_topic": "Renormalization Group",
+    "collection_date": "2026-08-23",
+    "sampled_at": "2026-08-28",
+    "selected_by": "full_collection_backfill",
+    "sampling_seed": "not_applicable_full_collection",
+    "candidate_count": 452
+  },
+  "verified_metadata": {
+    "arxiv_id": "2405.06008",
+    "version": "v3",
+    "title": "Wilsonian Renormalization of Neural Network Gaussian Processes",
+    "authors": [
+      "Jessica N. Howard",
+      "Ro Jefferson",
+      "Anindita Maiti",
+      "Zohar Ringel"
+    ],
+    "categories": [
+      "cs.LG",
+      "cond-mat.dis-nn",
+      "hep-th",
+      "stat.ML"
+    ],
+    "primary_category": "cs.LG",
+    "published": "2024-05-09T18:00:00Z",
+    "abstract": "Integrating out unlearnable Gaussian-process kernel modes produces a Wilsonian flow whose infrared scale is set by dataset size.",
+    "comment": ""
+  },
+  "sections": [
+    {
+      "title": "作者信息",
+      "paragraphs": [
+        "作者：Jessica N. Howard、Ro Jefferson、Anindita Maiti、Zohar Ringel；arXiv:2405.06008v3。全文 45 页，把 GP regression 的 kernel eigenmodes 当作 Wilsonian degrees of freedom。"
+      ]
+    },
+    {
+      "title": "研究问题",
+      "paragraphs": [
+        "深度网络 scaling law 常被类比为 RG，但“scale”与“integrate out”往往没有精确定义。论文问：在可解析的 Gaussian-process limit 中，能否按 kernel learnability 排序，显式积分掉数据无法约束的 modes，并写出对剩余 predictor 有相同低模统计的 effective action？"
+      ]
+    },
+    {
+      "title": "背景",
+      "paragraphs": [
+        "kernel eigenfunctions \\(\\phi_k(x)\\) 与 eigenvalues \\(\\lambda_k\\) 提供 feature-space momentum basis。对平均样本数 \\(\\eta\\) 和 ridge/noise \\(\\sigma^2\\)，mode predictor 为 \\(\\bar f_k=\\lambda_k y_k/(\\lambda_k+\\sigma^2/\\eta)\\)；当 \\(\\lambda_k\\ll\\sigma^2/\\eta\\) 时，该 mode 几乎不从数据学习。",
+        "因此 dataset size 设定 infrared resolution：增大 \\(\\eta\\) 会使更多小-\\(\\lambda_k\\) modes 跨过 learnability threshold。Wilsonian cutoff \\(\\kappa\\) 不按空间波长，而按 kernel spectrum 把 \\(k>\\kappa\\) 的高序号、低 eigenvalue modes 积掉。"
+      ]
+    },
+    {
+      "title": "模型与方法",
+      "paragraphs": [
+        "作者用 replica formulation 对 Poisson-distributed training sets 做 dataset average，将 GP action 分成 \\(f_<\\) 与 \\(f_>\\)。若 feature distribution \\(P[\\phi]\\) 为 Gaussian，逐 shell 积分只 renormalize ridge：\\(\\sigma_c^2=\\sigma^2+c\\)，其中 \\(c\\) 是已积分 eigenvalues 的累计 variance。",
+        "若 \\(P[\\phi]\\) 有小的 non-Gaussian cumulants，RG 会生成 input-dependent ridge/noise，等价于对 data measure 做空间重加权。MNIST/CIFAR10 用 NNGP kernels 验证 feature-mode joint distributions 在可学习区近似 Gaussian，并用 threshold \\(\\mathcal L_k\\approx T\\) 确定 cutoff。"
+      ]
+    },
+    {
+      "title": "核心结果与证据",
+      "paragraphs": [
+        "Figure 2 展示 MNIST 与 CIFAR10 不同分类任务的两对 feature modes：二维散点与两个 marginals 均接近 Gaussian。它解释了为何最简 RG flow 在真实数据的低阶 modes 上可用，而不是只把 Gaussianity 当作形式假设。",
+        "Gaussian flow 的 universal result 是 \\(\\sigma_c^2=\\sigma^2+c\\)：被积掉的 unlearnable modes 不消失为零，而是作为额外 ridge/noise 反馈到剩余 modes。停止点由 \\(\\lambda_\\kappa\\sim\\sigma_c^2/\\eta\\) 或 learnability factor \\(\\mathcal L_\\kappa=T\\) 确定。",
+        "若 spectrum \\(\\lambda_k\\propto k^{-(1+\\alpha)}\\) 且 target 与 GP matched，论文恢复 data scaling exponent \\(\\alpha_D=\\alpha/(1+\\alpha)\\)，并在 MNIST/CIFAR10 的 MSE-vs-\\(\\eta\\) 上得到与 empirical curves 相符的趋势；高-\\(k\\) non-Gaussianity 则造成纯 Gaussian prediction 漏掉的定性修正。"
+      ]
+    },
+    {
+      "title": "有效性与局限",
+      "paragraphs": [
+        "严格可解部分属于 GP/NNGP 与 replica/dataset-average framework，不包含有限宽网络的 feature learning。Gaussian feature assumption 对低 modes 较好，但 Appendix 显示高 \\(k\\) 可出现 heavy-tailed/Cauchy-like deviations，恰是 cutoff 接近数据分辨率时最敏感的区域。",
+        "cutoff 依赖人为 threshold \\(T\\)，有限 \\(\\eta\\) 下 Taylor/replica approximations 和 kernel eigensystem 的数值估计都有误差。MNIST/CIFAR10 是回归化分类任务；由此得到的 universality class 尚不能直接推广到现代训练中的 optimizer、representation drift 与 nonstationarity。"
+      ]
+    },
+    {
+      "title": "复现与资源",
+      "paragraphs": [
+        "原文：https://arxiv.org/abs/2405.06008。全文 45 页，PDF SHA-256：1e4f23fd1d5212cfc7aada9b0e548279f70ec49acc8f82bf9614001c7fd67a04。",
+        "复现需固定 NNGP architecture/kernel、dataset preprocessing、task pair、kernel eigensolver、sample-size grid、ridge \\(\\sigma^2\\)、threshold \\(T\\)、replica truncation 与 feature-mode normality test，并分别报告 Gaussian 与 non-Gaussian flow。",
+        "Evidence status: full-text verified; no independent reproduction performed."
+      ]
+    },
+    {
+      "title": "阅读指南",
+      "paragraphs": [
+        "先读 Eqs. (10)–(12) 看 mode learnability，再读 Sections III–IV 的 shell integration 与 scaling exponent。Figure 2 用来检验 Gaussian premise；最后读 Section V 和 Appendix F，理解 high-mode non-Gaussianity 如何把常数 ridge 变成 input-dependent coupling。"
+      ]
+    }
+  ],
+  "cover": {
+    "mode": "source_figure",
+    "asset_path": "assets/collection-figures/2405.06008/figure-2-gaussian-feature-modes.webp",
+    "label": "Figure 2",
+    "visual_type": "distribution",
+    "evidence": "paper.pdf p. 19, Figure 2",
+    "alt_text": "MNIST 与 CIFAR10 四组 kernel feature-mode 联合分布及 Gaussian marginal fits。",
+    "caption": "真实数据的低阶 feature modes 近似联合 Gaussian，使只 renormalize ridge 的最简 Wilsonian flow 有经验依据。",
+    "selection_rationale": "文章没有机制示意图；Figure 2 最直观地展示核心近似的经验基础，优先于单一 loss scaling 曲线。"
+  },
+  "figure_refs": [
+    {
+      "label": "Figure 2",
+      "asset_path": "assets/collection-figures/2405.06008/figure-2-gaussian-feature-modes.webp",
+      "section": "核心结果与证据",
+      "role": "test the Gaussian feature premise on real datasets",
+      "evidence": "paper.pdf p. 19, Figure 2",
+      "alt_text": "MNIST/CIFAR10 feature-mode scatter plots and marginal Gaussian fits。",
+      "caption": "低阶 modes 的近 Gaussianity 支持 universal ridge flow；高阶 modes 的偏离限制其适用域。",
+      "interpretation": "Visual Gaussianity is illustrative and does not prove all modes or datasets are Gaussian."
+    }
+  ],
+  "equation_refs": [
+    {
+      "label": "Mode learnability",
+      "latex": "\\bar f_k=\\frac{\\lambda_k}{\\lambda_k+\\sigma^2/\\eta}y_k,\\qquad \\mathcal L_k=\\frac{\\eta\\lambda_k}{\\sigma^2+\\eta\\lambda_k}",
+      "role": "separate learnable and unlearnable kernel modes",
+      "symbols": {
+        "lambda_k": "kernel eigenvalue",
+        "eta": "mean dataset size",
+        "sigma2": "ridge/noise parameter"
+      },
+      "evidence": "paper.pdf p. 7, Eq. (11), and p. 17, Eq. (37)",
+      "interpretation": "Modes below the data-dependent spectral resolution contribute mostly as uncertainty."
+    },
+    {
+      "label": "Gaussian Wilsonian flow",
+      "latex": "\\sigma_c^2=\\sigma^2+c,\\qquad c=\\sum_{k>\\kappa}\\lambda_k",
+      "role": "encode integrated unlearnable modes as a renormalized ridge",
+      "symbols": {
+        "kappa": "spectral cutoff",
+        "c": "cumulative variance of eliminated modes",
+        "sigma_c2": "effective ridge"
+      },
+      "evidence": "paper.pdf p. 14, Eqs. (33)–(34)",
+      "interpretation": "Eliminated modes feed back universally as additional effective noise in the Gaussian case."
+    }
+  ],
+  "evidence_refs": [
+    "paper.pdf pp. 6–14: feature-space action and Gaussian shell RG",
+    "paper.pdf pp. 15–24: scaling laws, real-data modes and non-Gaussian corrections",
+    "source PDF SHA-256 1e4f23fd1d5212cfc7aada9b0e548279f70ec49acc8f82bf9614001c7fd67a04",
+    "Evidence status: full-text verified; no independent reproduction performed."
+  ]
+}

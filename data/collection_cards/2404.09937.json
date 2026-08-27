@@ -1,0 +1,157 @@
+{
+  "arxiv_id": "2404.09937",
+  "source_version": "v2",
+  "source_pdf": "https://arxiv.org/pdf/2404.09937",
+  "title_en": "Compression Represents Intelligence Linearly",
+  "title_zh": "压缩能力与语言模型基准表现近似线性相关",
+  "curation_status": "full_text_verified",
+  "card_standard_version": "2.3",
+  "paper_profile": "ai_empirical",
+  "style_reference": "physicist_daily_arxiv",
+  "provenance": {
+    "program": "Collection",
+    "catalog": "Paper Collection",
+    "catalog_record_id": "fad8258cd8949414",
+    "catalog_record_ids": [
+      "fad8258cd8949414"
+    ],
+    "catalog_topic": "World Models",
+    "collection_date": "2026-08-23",
+    "sampled_at": "2026-08-28",
+    "selected_by": "full_collection_backfill",
+    "sampling_seed": "not_applicable_full_collection",
+    "candidate_count": 452
+  },
+  "verified_metadata": {
+    "arxiv_id": "2404.09937",
+    "version": "v2",
+    "title": "Compression Represents Intelligence Linearly",
+    "authors": [
+      "Yuzhen Huang",
+      "Jinghan Zhang",
+      "Zifei Shan",
+      "Junxian He"
+    ],
+    "categories": [
+      "cs.CL",
+      "cs.AI",
+      "cs.IT",
+      "cs.LG"
+    ],
+    "primary_category": "cs.CL",
+    "published": "2024-04-15T17:03:41Z",
+    "abstract": "Across 31 public LLMs and 12 benchmarks, bits per character on recent external corpora is strongly linearly anticorrelated with average benchmark performance.",
+    "comment": ""
+  },
+  "sections": [
+    {
+      "title": "作者信息",
+      "paragraphs": [
+        "作者：Yuzhen Huang、Jinghan Zhang、Zifei Shan、Junxian He；arXiv:2404.09937v2。全文 22 页，实验覆盖 31 个公开 base LLM、12 个 benchmark 与 knowledge/code/math 三类外部语料。"
+      ]
+    },
+    {
+      "title": "研究问题",
+      "paragraphs": [
+        "语言模型的 next-token likelihood 同时定义预测误差与理想码长。论文问：不构造标注题库，只测模型对最新原始文本的压缩效率，能否预测其 knowledge、coding 与 mathematical reasoning benchmark 平均分？这里的“intelligence”严格只是这些平均分的代理量，不是一般智能的操作定义。"
+      ]
+    },
+    {
+      "title": "背景",
+      "paragraphs": [
+        "对语料 \\(X=(x_1,\\ldots,x_N)\\)，理想码长是 \\(-\\log_2p_{\\rm model}(X)\\)。不同 tokenizer 的 bits per token 不可直接比，故作者除以字符数 \\(T\\) 得到 BPC。为避免长 context 额外占优，所有模型统一在 1900-token context 下评估。",
+        "压缩语料取实验时最新的 Common Crawl、GitHub Python code 与 arXiv math papers，分别匹配 knowledge/common sense、coding 与 math benchmarks；另用 MIN-K% PROB 检查 benchmark contamination，主实验取 \\(k=20\\%\\)。"
+      ]
+    },
+    {
+      "title": "模型与方法",
+      "paragraphs": [
+        "作者对 9 个 general-purpose model series 以及 specialized code/math models统一运行 benchmark 与 sliding-window likelihood。每个模型是散点，用 Pearson \\(\\rho\\) 衡量 benchmark score 与 BPC 的相关性，并做线性回归，以 RMSE \\(e\\) 表示偏离直线的典型幅度。",
+        "总体分数是三个领域平均 benchmark score，总体 BPC 是三类 corpus BPC 的平均。该设计让 compression 成为无监督观测量，但 model family、训练语料、参数量和 tokenizer 仍是共同变化的隐变量。"
+      ]
+    },
+    {
+      "title": "核心结果与证据",
+      "paragraphs": [
+        "Figure 1 给出核心结果：31 个模型的总体分数与平均 BPC 近似线性反相关，\\(\\rho=-0.931\\)，线性拟合 RMSE \\(e=0.031\\)。三个分领域面板也分别得到 \\(-0.935\\)、\\(-0.937\\) 和 \\(-0.953\\) 的 Pearson correlation。",
+        "图的物理读法是：BPC 越小，模型给外部文本的 cross entropy 越低；在该模型集合内，这一单一无监督量沿着与 benchmark 能力相近的一维方向变化。作者还显示若 corpus 与任务领域错配，相关性变弱；不同抽样大小的 BPC 会收敛，但小 corpus 噪声更大。",
+        "MIN-K% 检查没有给出普遍污染信号，但对个别数学模型出现异常分布；论文因此把这些点解释为可能的 overfitting/contamination，而不是压缩—能力关系的反例。"
+      ]
+    },
+    {
+      "title": "有效性与局限",
+      "paragraphs": [
+        "这是跨模型相关性，不是因果实验：更大训练量、更强 architecture 或更好 data 同时改善 BPC 与 benchmark，不能据此断言“训练压缩必然产生智能”。样本由 31 个公开 base models 构成，许多点属于同一 model family，独立性弱于 31 个完全独立系统。",
+        "结论只覆盖 1900-token 短/中 context、三类英文语料与 12 个 benchmarks。benchmark average、corpus recency、tokenizer normalization 和 MIN-K% 本身都有识别误差；BPC 不能替代 reasoning reliability、factuality、safety 或长上下文能力。"
+      ]
+    },
+    {
+      "title": "复现与资源",
+      "paragraphs": [
+        "原文：https://arxiv.org/abs/2404.09937；代码与数据：https://github.com/hkust-nlp/llm-compression-intelligence。全文 22 页，PDF SHA-256：bce3546c70d58f704ea52bc42ae1cc5cbc8c4b37c59ee68c83b37d62037d62df。",
+        "复现需固定 model/tokenizer revision、1900-token window、sliding stride、corpus snapshot 与字符计数规则，并同时保存每模型的 raw BPC、benchmark scores、family label、linear-fit residual 和 MIN-K% distributions。",
+        "Evidence status: full-text verified; no independent reproduction performed."
+      ]
+    },
+    {
+      "title": "阅读指南",
+      "paragraphs": [
+        "先读 Eq. (2) 与 Section 3.2，确认 BPC 的 tokenizer-normalized 定义；再看 Figure 1 的总体与三领域斜率。随后读 Section 3.3 和 Figure 5 检查 contamination，最后读 Appendix D–E，判断 corpus choice、sample size 和 instruction tuning 会怎样破坏这条经验直线。"
+      ]
+    }
+  ],
+  "cover": {
+    "mode": "source_figure",
+    "asset_path": "assets/collection-figures/2404.09937/figure-1-compression-intelligence.webp",
+    "label": "Figure 1",
+    "visual_type": "data_plot",
+    "evidence": "paper.pdf p. 1, Figure 1",
+    "alt_text": "31 个公开语言模型的平均 benchmark 分数与 bits per character 的总体及分领域散点和线性拟合。",
+    "caption": "模型在外部语料上的 BPC 越低，12 项 benchmark 的平均分越高；总体相关系数为 \\(\\rho=-0.931\\)。",
+    "selection_rationale": "文章没有机制示意图；Figure 1 集中呈现主假设、全体模型和三个分领域的定量证据。"
+  },
+  "figure_refs": [
+    {
+      "label": "Figure 1",
+      "asset_path": "assets/collection-figures/2404.09937/figure-1-compression-intelligence.webp",
+      "section": "核心结果与证据",
+      "role": "show the empirical compression–benchmark relation",
+      "evidence": "paper.pdf p. 1, Figure 1",
+      "alt_text": "总体与三个领域的 BPC–score 散点及线性拟合。",
+      "caption": "总体 \\(\\rho=-0.931\\)，三个分领域均约为 \\(-0.94\\) 到 \\(-0.95\\)。",
+      "interpretation": "Correlation across related model families does not identify compression as the causal source of capability."
+    }
+  ],
+  "equation_refs": [
+    {
+      "label": "Bits per character",
+      "latex": "\\mathrm{BPC}=-\\frac{\\log_2p_{\\rm model}(X)}{T}=\\frac{1}{T}\\sum_{i=1}^{N}-\\log_2p_{\\rm model}(x_i\\mid x_{<i})",
+      "role": "compare compression across tokenizers",
+      "symbols": {
+        "X": "external corpus",
+        "N": "number of model tokens",
+        "T": "number of characters"
+      },
+      "evidence": "paper.pdf p. 4, Eq. (2)",
+      "interpretation": "Character normalization removes the most direct tokenizer-length confound."
+    },
+    {
+      "label": "Linear empirical relation",
+      "latex": "\\bar s \\simeq a+b\\,\\overline{\\mathrm{BPC}},\\qquad \\rho(\\bar s,\\overline{\\mathrm{BPC}})=-0.931",
+      "role": "summarize the fitted cross-model relation",
+      "symbols": {
+        "s_bar": "average benchmark score",
+        "BPC_bar": "average over the three corpora",
+        "rho": "Pearson correlation"
+      },
+      "evidence": "paper.pdf p. 1 and pp. 6–7, Figure 1",
+      "interpretation": "The fit is predictive within the sampled model population, not a mechanistic law."
+    }
+  ],
+  "evidence_refs": [
+    "paper.pdf pp. 3–7: BPC protocol and main correlations",
+    "paper.pdf pp. 7–11: domain results, contamination and ablations",
+    "source PDF SHA-256 bce3546c70d58f704ea52bc42ae1cc5cbc8c4b37c59ee68c83b37d62037d62df",
+    "Evidence status: full-text verified; no independent reproduction performed."
+  ]
+}

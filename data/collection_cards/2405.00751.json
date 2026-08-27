@@ -1,0 +1,159 @@
+{
+  "arxiv_id": "2405.00751",
+  "source_version": "v1",
+  "source_pdf": "https://arxiv.org/pdf/2405.00751",
+  "title_en": "F³low: Frame-to-Frame Coarse-grained Molecular Dynamics with SE(3) Guided Flow Matching",
+  "title_zh": "F³low：以 SE(3) 引导流匹配实现逐帧粗粒化分子动力学",
+  "curation_status": "full_text_verified",
+  "card_standard_version": "2.3",
+  "paper_profile": "ai_empirical",
+  "style_reference": "physicist_daily_arxiv",
+  "provenance": {
+    "program": "Collection",
+    "catalog": "Paper Collection",
+    "catalog_record_id": "d45bc2d69a4c687d",
+    "catalog_record_ids": [
+      "d45bc2d69a4c687d"
+    ],
+    "catalog_topic": "Flow Matching",
+    "collection_date": "2026-08-23",
+    "sampled_at": "2026-08-28",
+    "selected_by": "full_collection_backfill",
+    "sampling_seed": "not_applicable_full_collection",
+    "candidate_count": 452
+  },
+  "verified_metadata": {
+    "arxiv_id": "2405.00751",
+    "version": "v1",
+    "title": "F³low: Frame-to-Frame Coarse-grained Molecular Dynamics with SE(3) Guided Flow Matching",
+    "authors": [
+      "Shaoning Li",
+      "Yusong Wang",
+      "Mingyu Li",
+      "Jian Zhang",
+      "Bin Shao",
+      "Nanning Zheng",
+      "Jian Tang"
+    ],
+    "categories": [
+      "q-bio.QM",
+      "cs.AI",
+      "cs.LG"
+    ],
+    "primary_category": "q-bio.QM",
+    "published": "2024-05-01T04:53:14Z",
+    "abstract": "A force-free autoregressive SE(3) flow model samples the next coarse-grained protein backbone frame conditioned on the previous frame.",
+    "comment": ""
+  },
+  "sections": [
+    {
+      "title": "作者信息",
+      "paragraphs": [
+        "作者：Shaoning Li、Yusong Wang、Mingyu Li、Jian Zhang、Bin Shao、Nanning Zheng、Jian Tang；arXiv:2405.00751v1。全文 12 页，GEM workshop at ICLR 2024。"
+      ]
+    },
+    {
+      "title": "研究问题",
+      "paragraphs": [
+        "传统 coarse-grained MD 学习 energy 或 force，再逐时间步积分；误差会沿长轨迹累积，而且只保留 \\(C_\\alpha\\) 时须重建 backbone。论文问：能否直接学习条件转移 \\(C_s\\mapsto C_{s+1}\\)，在 \\(SE(3)^N\\) 上逐帧生成四原子 backbone，从而绕开显式 force calculation 并扩大构象空间探索？"
+      ]
+    },
+    {
+      "title": "背景",
+      "paragraphs": [
+        "每个 residue 由 rigid frame \\(T_i\\in SE(3)\\) 表示，蛋白构象 \\(C=[T_1,\\ldots,T_N]\\in SE(3)^N\\)。平移限制在 zero-center-of-mass subspace，旋转 prior 取 isotropic Gaussian on \\(SO(3)\\)，使输入分布保持 \\(SE(3)\\)-invariant、vector field 保持 equivariant。",
+        "相邻 MD 帧来自同一 Boltzmann distribution，不能简单当作两个独立端点分布做普通 flow matching。F³low 改为从 normal prior 采样下一帧，并用前一帧 \\(C_s\\) 作为 guidance。"
+      ]
+    },
+    {
+      "title": "模型与方法",
+      "paragraphs": [
+        "模型学习 \\(C_{s+1}\\sim P_\\theta(C_{s+1};z,C_s)\\)，再自回归重复 \\(S\\) 次形成 trajectory。前帧通过 initial-guess interpolation 注入：translation 用 \\((1-\\gamma)\\mathrm{OT}(z^x,x_1)+\\gamma x_0\\)，rotation 用 exponential/log maps；实验取 \\(\\gamma=0.5\\)、guidance weight 1。",
+        "网络采用 FramePred 与 invariant point attention，输入是四个 backbone heavy atoms \\(C-C_\\alpha-N-O\\)。三种 fast-folding proteins 分别为 Chignolin 10AA、Trpcage 20AA、Homeodomain 54AA；每篇训练单卡 RTX 4090，采样 8 条并行轨迹、每条 150,000 frames，去掉前 10%。"
+      ]
+    },
+    {
+      "title": "核心结果与证据",
+      "paragraphs": [
+        "Figure 1 对比两种动力学：传统 CGMD 先由 energy gradient 得到 bead forces 再积分；F³low 则以前一 frame 为条件，从 prior 直接采下一 frame。图同时显示模型把表示从 \\(C_\\alpha\\) beads 提升到完整 backbone frames。",
+        "在 TICA/MSM reweighted free-energy surfaces 上，F³low 覆盖 Chignolin 与 Trpcage 的主要 basin；对 Homeodomain，CG-MLFF 快速困在 native region，而 F³low 用 8 个起点比对方 32 个起点探索更广的 unfolded regions。",
+        "Table 1 的最低 RMSD（Å）显示 F³low 相对 CG-MLFF 更接近 crystal：Chignolin backbone 0.36 vs 0.89，Trpcage 0.62 vs 2.41，Homeodomain 0.53 vs 2.11；其数值也接近 reference MD 的 0.27、0.58、0.54。"
+      ]
+    },
+    {
+      "title": "有效性与局限",
+      "paragraphs": [
+        "模型生成的是学习到的 transition kernel，不是由已知 Hamiltonian 积分得到的物理时间演化；论文没有证明 detailed balance、正确动力学时间尺度或 equilibrium stationary distribution。free-energy surfaces 又由 reference-derived TICA coordinates 与 MSM reweighting 构造。",
+        "只评估 3 个 fast-folding proteins，训练与采样都依赖同一大型 MD dataset；最低 RMSD 是极值统计，会随 1.2 million samples 增加而改善。作者也明确指出 \\(SO(3)\\) guided-flow 理论证明尚留作未来工作。"
+      ]
+    },
+    {
+      "title": "复现与资源",
+      "paragraphs": [
+        "原文：https://arxiv.org/abs/2405.00751。全文 12 页，PDF SHA-256：1e80410c57931a3281a7d5dc90c2e3f3f03e06faa7011cd9a847335e500a66e6。",
+        "复现需固定 MD trajectory split、4-atom frame construction、OT matching、\\(\\gamma=0.5\\)、network checkpoint、sampling integrator、8×150k frames、TICA lag/components、MSM/PCCA parameters 与 RMSD atom selection。",
+        "Evidence status: full-text verified; no independent reproduction performed."
+      ]
+    },
+    {
+      "title": "阅读指南",
+      "paragraphs": [
+        "先看 Figure 1 分清 force integration 与 learned transition sampling；再读 Section 2.1 的 \\(SE(3)\\) flow 与 Eqs. (6)–(7) 的前帧 guidance。随后看 Figure 2 和 Table 1，但把 free-energy coverage、minimum RMSD 与真实 kinetics 三种论断严格分开。"
+      ]
+    }
+  ],
+  "cover": {
+    "mode": "source_figure",
+    "asset_path": "assets/collection-figures/2405.00751/figure-1-frame-to-frame-flow.webp",
+    "label": "Figure 1",
+    "visual_type": "schematic",
+    "evidence": "paper.pdf p. 2, Figure 1",
+    "alt_text": "传统 CGMD 的 force integration 与 F³low 在 SE(3) backbone frames 间逐帧生成的对比示意图。",
+    "caption": "F³low 不显式计算力，而是在 \\(SE(3)^N\\) 上以前一构象为 guidance 直接采样下一 frame。",
+    "selection_rationale": "Figure 1 是全文最重要的机制图，清楚替代了对 force-free、backbone-level 和 autoregressive 三点的长篇文字描述。"
+  },
+  "figure_refs": [
+    {
+      "label": "Figure 1",
+      "asset_path": "assets/collection-figures/2405.00751/figure-1-frame-to-frame-flow.webp",
+      "section": "核心结果与证据",
+      "role": "contrast force-based CGMD with frame-to-frame generative sampling",
+      "evidence": "paper.pdf p. 2, Figure 1",
+      "alt_text": "从 unfolded 到 folded 的传统 force pipeline 和 F³low backbone-frame transition。",
+      "caption": "该方法把显式力积分换成 learned conditional transition kernel。",
+      "interpretation": "The generated frame index is not automatically a calibrated physical time coordinate."
+    }
+  ],
+  "equation_refs": [
+    {
+      "label": "Frame-to-frame transition",
+      "latex": "C_{s+1}\\sim P_\\theta(C_{s+1};z,C_s),\\qquad C_s\\in SE(3)^N",
+      "role": "define autoregressive coarse-grained simulation",
+      "symbols": {
+        "C_s": "previous backbone conformation",
+        "z": "normal prior",
+        "N": "number of residues"
+      },
+      "evidence": "paper.pdf p. 2, Eq. (1)",
+      "interpretation": "Repeated conditional sampling generates a trajectory without explicit forces."
+    },
+    {
+      "label": "Previous-frame guidance",
+      "latex": "\\tilde x_0=(1-\\gamma)\\operatorname{OT}(z^x,x_1)+\\gamma x_0,\\qquad \\gamma=0.5",
+      "role": "inject the former conformation into the flow source",
+      "symbols": {
+        "x0": "previous-frame translations",
+        "x1": "target-frame translations",
+        "gamma": "initial-guess weight"
+      },
+      "evidence": "paper.pdf p. 4, Eqs. (6)–(7)",
+      "interpretation": "The source remains stochastic while retaining geometric memory of the previous frame."
+    }
+  ],
+  "evidence_refs": [
+    "paper.pdf pp. 2–4: SE(3) frame-to-frame flow and guidance",
+    "paper.pdf pp. 4–7: free-energy surfaces, RMSD and trajectories",
+    "source PDF SHA-256 1e80410c57931a3281a7d5dc90c2e3f3f03e06faa7011cd9a847335e500a66e6",
+    "Evidence status: full-text verified; no independent reproduction performed."
+  ]
+}
