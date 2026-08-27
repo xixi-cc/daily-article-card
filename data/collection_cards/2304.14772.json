@@ -1,0 +1,156 @@
+{
+  "arxiv_id": "2304.14772",
+  "source_version": "v2",
+  "source_pdf": "https://arxiv.org/pdf/2304.14772",
+  "title_en": "Multisample Flow Matching: Straightening Flows with Minibatch Couplings",
+  "title_zh": "多样本流匹配：用小批量耦合拉直生成流",
+  "curation_status": "full_text_verified",
+  "card_standard_version": "2.3",
+  "paper_profile": "theory_numerics",
+  "style_reference": "physicist_daily_arxiv",
+  "provenance": {
+    "program": "Collection",
+    "catalog": "Paper Collection",
+    "catalog_record_id": "00472db0f830a014",
+    "catalog_record_ids": [
+      "00472db0f830a014"
+    ],
+    "catalog_topic": "Flow Matching",
+    "collection_date": "2026-08-23",
+    "sampled_at": "2026-08-27",
+    "selected_by": "full_collection_backfill",
+    "sampling_seed": "not_applicable_full_collection",
+    "candidate_count": 452
+  },
+  "verified_metadata": {
+    "arxiv_id": "2304.14772",
+    "version": "v2",
+    "title": "Multisample Flow Matching: Straightening Flows with Minibatch Couplings",
+    "authors": [
+      "Aram-Alexandre Pooladian",
+      "Heli Ben-Hamu",
+      "Carles Domingo-Enrich",
+      "Brandon Amos",
+      "Yaron Lipman",
+      "Ricky T. Q. Chen"
+    ],
+    "categories": [
+      "cs.LG"
+    ],
+    "primary_category": "cs.LG",
+    "published": "2023-04-28T11:33:08Z",
+    "abstract": "Minibatch couplings replace independent endpoint pairing in flow matching to reduce conditional-target variance and straighten probability paths.",
+    "comment": ""
+  },
+  "sections": [
+    {
+      "title": "作者信息",
+      "paragraphs": [
+        "作者：Aram-Alexandre Pooladian、Heli Ben-Hamu、Carles Domingo-Enrich、Brandon Amos、Yaron Lipman、Ricky T. Q. Chen；arXiv:2304.14772v2。全文 30 页。"
+      ]
+    },
+    {
+      "title": "研究问题",
+      "paragraphs": [
+        "Flow Matching 常把噪声样本 \\(x_0\\) 与数据样本 \\(x_1\\) 独立配对。宏观边缘分布正确，但单条条件路径可能交叉、弯曲，导致同一 \\((x,t)\\) 处的 velocity targets 方差大，并需要更多 ODE function evaluations。论文问：能否只改变 minibatch 内的端点耦合，把流拉直而不破坏两端边缘？"
+      ]
+    },
+    {
+      "title": "背景",
+      "paragraphs": [
+        "连续 normalizing flow 由 \\(\\dot x_t=v_t(x_t)\\) 输运密度。Conditional Flow Matching 用易计算的条件速度监督全局 velocity field；训练噪声来自不同 endpoint pairs 在相同区域给出冲突方向。",
+        "最优传输耦合倾向于把近邻质量配对，减少路径交叉。关键约束是耦合 \\(q(x_0,x_1)\\) 的两个 marginals 必须仍为 \\(q_0,q_1\\)，否则训练目标会偷偷改变 prior 或 data distribution。"
+      ]
+    },
+    {
+      "title": "模型与方法",
+      "paragraphs": [
+        "作者将 joint CFM 从独立 \\(q_0q_1\\) 推广到任意合法 coupling。每步抽取 \\(k\\) 个噪声和 \\(k\\) 个数据点，以 doubly stochastic 矩阵 \\(\\pi_{ij}\\) 组成经验耦合；Lemma 4.1 保证对 minibatch 随机性平均后 marginals 不变。",
+        "BatchOT 用 Hungarian/network-simplex 求精确 batch assignment，成本约 \\(O(k^3)\\)；BatchEOT 用 Sinkhorn 熵正则，Stable 与 Heuristic couplings 更便宜。模型结构与 ODE 不变，只替换训练 pair sampler。"
+      ]
+    },
+    {
+      "title": "核心结果与证据",
+      "paragraphs": [
+        "Figure 1 在相同模型的不同 NFE 下比较样本：标准 Flow Matching 从 400 步降到 12/8/6 步时身份和构图明显漂移，Multisample Flow Matching 在低 NFE 下仍保持更一致的样本，直观显示轨迹被拉直。",
+        "二维 toy example 的 conditional-objective/variance proxy 从 CondOT 的 10.72 降到 Stable 1.60、Heuristic 1.56、BatchEOT 0.57、BatchOT 0.24。极限定理在假设下给出 \\(k\\to\\infty\\) 时 BatchOT objective 与 straightness 趋零、transport cost 趋于 \\(W_2^2\\)。",
+        "ImageNet 64×64 中 CondOT/BatchOT 的 FID 为 13.93/12.37，NFE 为 131/135，variance proxy 为 1880/1733；Stable coupling 的 FID 11.82。改进真实但不统一支配所有指标，也不是理论极限的直接验证。"
+      ]
+    },
+    {
+      "title": "有效性与局限",
+      "paragraphs": [
+        "BatchOT 的 \\(O(k^3)\\) pairing 增加训练开销，且 minibatch OT 只是 population coupling 的有限样本近似；Sinkhorn 正则与 batch size 会改变路径。",
+        "渐近直线化定理需要理想假设并取 \\(k\\to\\infty\\)，不能推出有限网络、有限 batch 的 FID 单调改善。NFE 还依赖数值求解器与误差容限，视觉一致性不等价于 likelihood 或分布覆盖。"
+      ]
+    },
+    {
+      "title": "复现与资源",
+      "paragraphs": [
+        "原文：https://arxiv.org/abs/2304.14772；代码：https://github.com/atong01/conditional-flow-matching。全文 30 页，PDF SHA-256：dd7b47857205b6e5f26ac9650ba1647e2152e34d450534249ede3258ffb220a3。",
+        "复现需固定 batch size、coupling solver、cost metric、Sinkhorn 正则、ODE solver/tolerance、NFE 统计口径与图像随机种子。",
+        "Evidence status: full-text verified; no independent reproduction performed."
+      ]
+    },
+    {
+      "title": "阅读指南",
+      "paragraphs": [
+        "先看 Figure 1 理解“直”意味着低步数下轨迹一致；再读 Eq. (13) 的 marginal 条件、Eq. (15) 的 joint objective 与 Lemma 4.1。最后对照 Table 6，把训练 target variance、求解 NFE 和 FID 当成三个不同观测量。"
+      ]
+    }
+  ],
+  "cover": {
+    "mode": "source_figure",
+    "asset_path": "assets/collection-figures/2304.14772/figure-1-nfe-consistency.webp",
+    "label": "Figure 1",
+    "visual_type": "comparison",
+    "evidence": "paper.pdf p. 1, Figure 1",
+    "alt_text": "Flow Matching 与 Multisample Flow Matching 在不同 ODE 步数下的样本比较。",
+    "caption": "minibatch coupling 减少相互冲突的端点配对，使少量 ODE evaluations 仍沿近似相同的生成轨迹。",
+    "selection_rationale": "该图直接可视化论文的核心物理几何——流线弯曲度与低 NFE 一致性——优先于单独数据表。"
+  },
+  "figure_refs": [
+    {
+      "label": "Figure 1",
+      "asset_path": "assets/collection-figures/2304.14772/figure-1-nfe-consistency.webp",
+      "section": "核心结果与证据",
+      "role": "show low-NFE consistency from straighter flows",
+      "evidence": "paper.pdf p. 1, Figure 1",
+      "alt_text": "两种 flow-matching 训练在 400、12、8、6 个函数求值下的样本。",
+      "caption": "MSFM 的样本随积分步数减少变化较小，符合更直轨迹的解释。",
+      "interpretation": "The visual demonstrates solver robustness, not by itself exact optimal transport."
+    }
+  ],
+  "equation_refs": [
+    {
+      "label": "Valid endpoint coupling",
+      "latex": "\\int q(x_0,x_1)\\,dx_1=q_0(x_0),\\qquad \\int q(x_0,x_1)\\,dx_0=q_1(x_1)",
+      "role": "preserve prior and data marginals while changing pair geometry",
+      "symbols": {
+        "q": "endpoint coupling",
+        "q_0": "source marginal",
+        "q_1": "data marginal"
+      },
+      "evidence": "paper.pdf p. 5, Eq. (13)",
+      "interpretation": "Coupling changes conditional paths without changing either endpoint distribution."
+    },
+    {
+      "label": "Joint conditional flow-matching objective",
+      "latex": "\\mathcal L_{\\mathrm{JCFM}}=\\mathbb E_{t,\\,q(x_0,x_1)}\\!\\left[\\left\\|v_t(x_t;\\theta)-u_t(x_t\\mid x_1)\\right\\|_2^2\\right]",
+      "role": "train the global velocity field under a chosen endpoint coupling",
+      "symbols": {
+        "v_t": "learned velocity",
+        "u_t": "conditional target velocity",
+        "q": "endpoint coupling"
+      },
+      "evidence": "paper.pdf p. 5, Eq. (15)",
+      "interpretation": "Better-aligned endpoint pairs reduce conflicting velocity targets at fixed model capacity."
+    }
+  ],
+  "evidence_refs": [
+    "paper.pdf pp. 4–7: generalized coupling and multisample construction",
+    "paper.pdf pp. 8–12 and appendices: theory and image experiments",
+    "source PDF SHA-256 dd7b47857205b6e5f26ac9650ba1647e2152e34d450534249ede3258ffb220a3",
+    "Evidence status: full-text verified; no independent reproduction performed."
+  ]
+}

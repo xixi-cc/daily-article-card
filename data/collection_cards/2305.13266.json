@@ -1,0 +1,149 @@
+{
+  "arxiv_id": "2305.13266",
+  "source_version": "v2",
+  "source_pdf": "https://arxiv.org/pdf/2305.13266",
+  "title_en": "Coarse-to-Fine: a Hierarchical Diffusion Model for Molecule Generation in 3D",
+  "title_zh": "从粗到细：用于三维分子生成的层级扩散模型",
+  "curation_status": "full_text_verified",
+  "card_standard_version": "2.3",
+  "paper_profile": "theory_numerics",
+  "style_reference": "physicist_daily_arxiv",
+  "provenance": {
+    "program": "Collection",
+    "catalog": "Paper Collection",
+    "catalog_record_id": "500a6d5ef3a90190",
+    "catalog_record_ids": [
+      "500a6d5ef3a90190"
+    ],
+    "catalog_topic": "Generative Models",
+    "collection_date": "2026-08-23",
+    "sampled_at": "2026-08-27",
+    "selected_by": "full_collection_backfill",
+    "sampling_seed": "not_applicable_full_collection",
+    "candidate_count": 452
+  },
+  "verified_metadata": {
+    "arxiv_id": "2305.13266",
+    "version": "v2",
+    "title": "Coarse-to-Fine: a Hierarchical Diffusion Model for Molecule Generation in 3D",
+    "authors": [
+      "Bo Qiang",
+      "Yuxuan Song",
+      "Minkai Xu",
+      "Jingjing Gong",
+      "Bowen Gao",
+      "Hao Zhou",
+      "Weiying Ma",
+      "Yanyan Lan"
+    ],
+    "categories": [
+      "q-bio.BM",
+      "cs.AI",
+      "cs.LG"
+    ],
+    "primary_category": "q-bio.BM",
+    "published": "2023-05-05T13:08:38Z",
+    "abstract": "A fragment-level equivariant diffusion model generates coarse molecular geometry before iterative fine-grained atom and bond assembly.",
+    "comment": ""
+  },
+  "sections": [
+    {
+      "title": "作者信息",
+      "paragraphs": [
+        "作者：Bo Qiang、Yuxuan Song、Minkai Xu、Jingjing Gong、Bowen Gao、Hao Zhou、Weiying Ma、Yanyan Lan；arXiv:2305.13266v2。全文 24 页。"
+      ]
+    },
+    {
+      "title": "研究问题",
+      "paragraphs": [
+        "原子级三维扩散必须同时学全局骨架、局部键合和环结构，微小几何误差会产生断环或不合理价态。论文问：能否先在化学 fragment 的粗自由度上生成全局构象，再以受约束的细化过程组装原子和键？"
+      ]
+    },
+    {
+      "title": "背景",
+      "paragraphs": [
+        "这类似物理中的 coarse graining：粗变量保留 fragment 类型与质心位置，积分掉的内部自由度在条件 fine model 中恢复。层级分解降低全局搜索维数，但如果 coarse map 丢失关键信息，细模型不能唯一重建微观结构。",
+        "fragment graph 的边表示共享原子或键；价态冲突具有组合约束，仅靠一次独立预测容易选中局部容易拼接、全局却不合法的片段。"
+      ]
+    },
+    {
+      "title": "模型与方法",
+      "paragraphs": [
+        "粗状态 \\(H=[H_f,H_p]\\) 包含旋转/平移不变的化学特征与等变的 fragment-center 坐标。E(3)-equivariant diffusion 在去质心空间生成 \\(H\\)；随后 iterative message passing 在邻接候选之间反复更新，恢复原子、键与局部构象。",
+        "生成分解为 \\(P_{\\theta,\\phi}(V,E)=P_\\theta(H)P_\\phi(V,E\\mid H)\\)。训练下界把 coarse diffusion loss、fine reconstruction/message-passing loss 与固定分解项分开。"
+      ]
+    },
+    {
+      "title": "核心结果与证据",
+      "paragraphs": [
+        "Figure 7 将 HierDiff 与 atom-based EDM 的生成分子并列：HierDiff 的环与骨架更连贯，EDM 中明显扭曲或断裂的 substructures 用红框和红线标出。它比单个 validity 数字更直接显示层级表示修复的几何模式。",
+        "GEOMDRUG conformation 评估中，EDM 的 atom-level COV/MAT 为 0.489/1.349，HierDiff-E 为 0.546/1.121；fragment-level COV/MAT 从 0.097/3.234 改善到 0.153/2.583。HierDiff-P 的 fragment COV 0.202、MAT 2.431 更好，但 atom COV 0.490，说明不同层级指标并非一致支配。",
+        "drug-likeness Table 1 中 HierDiff-E/P 的 QED 为 0.632/0.639，高于 EDM 0.608；RA 为 0.548/0.639，高于 0.441。训练数据 GEOMDRUG 的 QED/RA 仍为 0.658/0.915，表明生成分布尚未达到数据统计。"
+      ]
+    },
+    {
+      "title": "有效性与局限",
+      "paragraphs": [
+        "fragment vocabulary 与 decomposition 决定 coarse variables；罕见基团、宏环或超出词表的化学空间可能被截断。消融显示没有 iterative refinement 时模型偏向容易组装的 fragments，说明粗粒化本身不够。",
+        "实验集中在 GEOMDRUG、CrossDocked2020 与 QM9 尺度；MD/force-field conformation metric、QED 和结构 validity 不证明可合成性、稳定性或真实 binding affinity。层级模型还引入词表构建和多阶段误差传播。"
+      ]
+    },
+    {
+      "title": "复现与资源",
+      "paragraphs": [
+        "原文：https://arxiv.org/abs/2305.13266；代码：https://github.com/qiangbo1222/HierDiff。全文 24 页，PDF SHA-256：de07508e421b3968d4fdda0d5e59961c2894a36a9a252df9a9fbe68e5c7c77be。",
+        "复现需固定 fragment vocabulary/decomposition、E(3) coordinate convention、diffusion schedule、refinement 轮数、RDKit/MD 与 force-field 版本，以及 COV/MAT 阈值。",
+        "Evidence status: full-text verified; no independent reproduction performed."
+      ]
+    },
+    {
+      "title": "阅读指南",
+      "paragraphs": [
+        "先看 Figure 7 识别 atom-level baseline 的具体失效模式；再读 Eq. (5) 的层级概率分解和 fine refinement。最后对照 Table 1/2，分别判断化学统计、原子构象和 fragment 构象，避免用单一 validity 概括模型。"
+      ]
+    }
+  ],
+  "cover": {
+    "mode": "source_figure",
+    "asset_path": "assets/collection-figures/2305.13266/figure-7-molecule-comparison.webp",
+    "label": "Figure 7",
+    "visual_type": "comparison",
+    "evidence": "paper.pdf p. 8, Figure 7",
+    "alt_text": "HierDiff 与 EDM 生成的二维分子图和三维构象，EDM 破损结构以红色标记。",
+    "caption": "先生成 fragment 骨架再细化原子，使环和连接关系更连贯；红色标记展示 atom-level EDM 的典型几何与拓扑失效。",
+    "selection_rationale": "这是论文最重要且最具可视性的分子图，直接解释层级模型为何改善结构，而不是只展示汇总数据。"
+  },
+  "figure_refs": [
+    {
+      "label": "Figure 7",
+      "asset_path": "assets/collection-figures/2305.13266/figure-7-molecule-comparison.webp",
+      "section": "核心结果与证据",
+      "role": "compare molecular topology and geometry failure modes",
+      "evidence": "paper.pdf p. 8, Figure 7",
+      "alt_text": "两种方法的分子图和三维构象对比。",
+      "caption": "HierDiff 的 fragment-first 生成减少断环和扭曲连接。",
+      "interpretation": "Visual coherence supports the hierarchical mechanism but does not establish synthesizability."
+    }
+  ],
+  "equation_refs": [
+    {
+      "label": "Coarse-to-fine factorization",
+      "latex": "P_{\\theta,\\phi}(V,E)=P_\\theta(H)\\,P_\\phi(V,E\\mid H)",
+      "role": "separate global fragment generation from atom-and-bond refinement",
+      "symbols": {
+        "H": "coarse fragment graph and coordinates",
+        "V": "atoms",
+        "E": "bonds",
+        "theta,phi": "coarse and fine model parameters"
+      },
+      "evidence": "paper.pdf p. 5, Eq. (5)",
+      "interpretation": "The coarse latent fixes global organization while the conditional fine model restores microscopic chemistry."
+    }
+  ],
+  "evidence_refs": [
+    "paper.pdf pp. 3–6: hierarchical representation and objective",
+    "paper.pdf pp. 7–8, Tables 1–2 and Figure 7: molecule and conformation results",
+    "source PDF SHA-256 de07508e421b3968d4fdda0d5e59961c2894a36a9a252df9a9fbe68e5c7c77be",
+    "Evidence status: full-text verified; no independent reproduction performed."
+  ]
+}

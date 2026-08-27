@@ -1,0 +1,153 @@
+{
+  "arxiv_id": "2304.09355",
+  "source_version": "v5",
+  "source_pdf": "https://arxiv.org/pdf/2304.09355",
+  "title_en": "To Compress or Not to Compress- Self-Supervised Learning and Information Theory: A Review",
+  "title_zh": "压缩还是不压缩：自监督学习与信息论综述",
+  "curation_status": "full_text_verified",
+  "card_standard_version": "2.3",
+  "paper_profile": "theory_numerics",
+  "style_reference": "physicist_daily_arxiv",
+  "provenance": {
+    "program": "Collection",
+    "catalog": "Paper Collection",
+    "catalog_record_id": "dcd7f7faced75f74",
+    "catalog_record_ids": [
+      "dcd7f7faced75f74"
+    ],
+    "catalog_topic": "Information Theory",
+    "collection_date": "2026-08-23",
+    "sampled_at": "2026-08-27",
+    "selected_by": "full_collection_backfill",
+    "sampling_seed": "not_applicable_full_collection",
+    "candidate_count": 452
+  },
+  "verified_metadata": {
+    "arxiv_id": "2304.09355",
+    "version": "v5",
+    "title": "To Compress or Not to Compress- Self-Supervised Learning and Information Theory: A Review",
+    "authors": [
+      "Ravid Shwartz-Ziv",
+      "Yann LeCun"
+    ],
+    "categories": [
+      "cs.LG",
+      "cs.IT"
+    ],
+    "primary_category": "cs.LG",
+    "published": "2023-04-19T00:33:59Z",
+    "abstract": "A review unifies information-bottleneck, multiview, contrastive, and noncontrastive views of self-supervised representation learning.",
+    "comment": ""
+  },
+  "sections": [
+    {
+      "title": "作者信息",
+      "paragraphs": [
+        "作者：Ravid Shwartz-Ziv、Yann LeCun；arXiv:2304.09355v5。全文 39 页；这是综述与统一框架，不是一项新算法 benchmark。"
+      ]
+    },
+    {
+      "title": "研究问题",
+      "paragraphs": [
+        "监督学习里，标签 \\(Y\\) 定义了“相关信息”；自监督学习训练时没有 \\(Y\\)。论文问：表征 \\(Z\\) 应压缩输入 \\(X\\) 的多少信息，才能既避免记住 nuisance，又不丢失未知下游任务需要的自由度？"
+      ]
+    },
+    {
+      "title": "背景",
+      "paragraphs": [
+        "监督 information bottleneck 在预测信息与输入压缩之间取舍。分解 \\(I(X;Z)=I(X;Z\\mid Y)+I(Z;Y)\\) 后，第一项可视为对该任务多余的信息，第二项是预测相关信息。",
+        "SSL 以两个 views \\(X_1,X_2\\) 替代标签：若共享信息足以预测下游任务，压掉每个 view 的独有部分可能有益；若 multiview assumption 失效，同一操作会删除真实信号。"
+      ]
+    },
+    {
+      "title": "模型与方法",
+      "paragraphs": [
+        "Figure 1 用统一图表示监督、无监督和自监督：两个 encoder 产生 \\(Z_1,Z_2\\)，监督路径解码 \\(Y\\)，无监督路径重构输入，SSL 路径则让一个 view 的表示预测另一个。",
+        "综述比较 contrastive InfoNCE、variational bottleneck 与 noncontrastive joint-embedding architectures。InfoNCE 用 negatives 避免坍缩但依赖大 batch；BYOL/SimSiam/VICReg 一类用 stop-gradient、predictor 或协方差正则抑制坍缩。"
+      ]
+    },
+    {
+      "title": "核心结果与证据",
+      "paragraphs": [
+        "Figure 1 最重要的结论不是某条 loss，而是相关性的来源发生了变化：标签定义、重构定义和跨 view 预测定义对应不同 sufficient statistic，因此不存在脱离任务假设的“最佳压缩量”。",
+        "监督 IB 目标 \\(I(X;Z)-\\beta I(Z;Y)\\) 把 \\(\\beta\\) 作为压缩—预测权衡；但深度线性网络等研究表明 compression 并非一般化的必要条件，文献证据并不支持单一普适机制。",
+        "连续输入和 deterministic encoder 下 \\(I(X;Z)\\) 可为无穷或对离散化尺度敏感；高维 MI estimator 的样本复杂度与偏差又很差。因此许多“information plane”结论同时依赖噪声模型、binning 或 variational bound。"
+      ]
+    },
+    {
+      "title": "有效性与局限",
+      "paragraphs": [
+        "这是广泛文献的组织性综述，不能把不同数据、网络和 estimator 下的结果当成同一受控实验。多视图框架的结论依赖 views 共享任务相关信息并把 nuisance 分开；基础模型服务多任务时，这一假设更容易失效。",
+        "MI 在 deterministic continuous networks 中的定义与估计是核心技术限制。添加噪声、离散化或改用 surrogate 可令量有限，却也改变了被测对象；因此数值 MI 不应被当成不依赖 estimator 的观测量。"
+      ]
+    },
+    {
+      "title": "复现与资源",
+      "paragraphs": [
+        "原文：https://arxiv.org/abs/2304.09355。全文 39 页，PDF SHA-256：a8d77a13588d4ecfe0bc4671b11619931c8112d1f5f06c27b68277bef8a3283b。",
+        "复核具体 SSL 信息论论断时，应记录 view construction、encoder 是否随机、MI estimator/bound、negative 数、batch、下游任务和 collapse 指标。",
+        "Evidence status: full-text verified review; no independent reproduction performed."
+      ]
+    },
+    {
+      "title": "阅读指南",
+      "paragraphs": [
+        "先用 Figure 1 区分三种 relevance 定义，再读 Eq. (3)–(4) 的 IB 分解。随后跳到第 5 节，先处理 deterministic network 与高维估计的病态性，再回看具体 SSL objective；否则很容易把 estimator 的几何效应误读成网络中的真实信息流。"
+      ]
+    }
+  ],
+  "cover": {
+    "mode": "source_figure",
+    "asset_path": "assets/collection-figures/2304.09355/figure-1-multiview-ib.webp",
+    "label": "Figure 1",
+    "visual_type": "schematic",
+    "evidence": "paper.pdf p. 12, Figure 1",
+    "alt_text": "监督、无监督和自监督多视图信息瓶颈的统一框图。",
+    "caption": "是否压缩取决于什么变量定义“相关”：标签、输入重构与跨 view 预测对应三种不同的信息约束。",
+    "selection_rationale": "该图是综述的统一坐标系，能替代对大量 SSL 方法逐项罗列的冗长文字。"
+  },
+  "figure_refs": [
+    {
+      "label": "Figure 1",
+      "asset_path": "assets/collection-figures/2304.09355/figure-1-multiview-ib.webp",
+      "section": "核心结果与证据",
+      "role": "unify relevance definitions across learning paradigms",
+      "evidence": "paper.pdf p. 12, Figure 1",
+      "alt_text": "两个输入视图、编码表示与不同解码路径组成的统一框架。",
+      "caption": "SSL 用跨视图可预测性替代训练标签来定义相关信息。",
+      "interpretation": "Compression is beneficial only relative to the assumed downstream-relevance structure."
+    }
+  ],
+  "equation_refs": [
+    {
+      "label": "Supervised information bottleneck",
+      "latex": "\\mathcal L_{\\mathrm{IB}}=I(X;Z)-\\beta I(Z;Y)",
+      "role": "trade input compression against task-predictive information",
+      "symbols": {
+        "X": "input",
+        "Z": "representation",
+        "Y": "target",
+        "beta": "relevance weight"
+      },
+      "evidence": "paper.pdf p. 8, Eq. (3)",
+      "interpretation": "The meaning of compression is task-relative because relevance is supplied by Y."
+    },
+    {
+      "label": "Representation-information decomposition",
+      "latex": "I(X;Z)=I(X;Z\\mid Y)+I(Z;Y)",
+      "role": "separate task-superfluous and predictive information",
+      "symbols": {
+        "I(X;Z|Y)": "information not needed once Y is known",
+        "I(Z;Y)": "predictive information"
+      },
+      "evidence": "paper.pdf p. 8, Eq. (4)",
+      "interpretation": "Without labels, this decomposition requires an assumption about which cross-view information stands in for Y."
+    }
+  ],
+  "evidence_refs": [
+    "paper.pdf pp. 7–12: IB and unified multiview framework",
+    "paper.pdf pp. 20–22: deterministic-network and high-dimensional MI limitations",
+    "source PDF SHA-256 a8d77a13588d4ecfe0bc4671b11619931c8112d1f5f06c27b68277bef8a3283b",
+    "Evidence status: full-text verified review; no independent reproduction performed."
+  ]
+}

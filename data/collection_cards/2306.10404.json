@@ -1,0 +1,159 @@
+{
+  "arxiv_id": "2306.10404",
+  "source_version": "v6",
+  "source_pdf": "https://arxiv.org/pdf/2306.10404",
+  "title_en": "The RL Perceptron: Generalisation Dynamics of Policy Learning in High Dimensions",
+  "title_zh": "RL 感知机：高维策略学习的泛化动力学",
+  "curation_status": "full_text_verified",
+  "card_standard_version": "2.3",
+  "paper_profile": "theory_numerics",
+  "style_reference": "physicist_daily_arxiv",
+  "provenance": {
+    "program": "Collection",
+    "catalog": "Paper Collection",
+    "catalog_record_id": "718dc1ac444b3183",
+    "catalog_record_ids": [
+      "718dc1ac444b3183"
+    ],
+    "catalog_topic": "Control & Reinforcement Learning",
+    "collection_date": "2026-08-23",
+    "sampled_at": "2026-08-27",
+    "selected_by": "full_collection_backfill",
+    "sampling_seed": "not_applicable_full_collection",
+    "candidate_count": 452
+  },
+  "verified_metadata": {
+    "arxiv_id": "2306.10404",
+    "version": "v6",
+    "title": "The RL Perceptron: Generalisation Dynamics of Policy Learning in High Dimensions",
+    "authors": [
+      "Nishil Patel",
+      "Sebastian Lee",
+      "Stefano Sarao Mannelli",
+      "Sebastian Goldt",
+      "Andrew Saxe"
+    ],
+    "categories": [
+      "cs.LG",
+      "cond-mat.dis-nn"
+    ],
+    "primary_category": "cs.LG",
+    "published": "2023-06-17T18:16:51Z",
+    "abstract": "A teacher-student RL perceptron yields closed order-parameter ODEs for policy-gradient learning and exposes learnability phases and speed-accuracy tradeoffs.",
+    "comment": ""
+  },
+  "sections": [
+    {
+      "title": "作者信息",
+      "paragraphs": [
+        "作者：Nishil Patel、Sebastian Lee、Stefano Sarao Mannelli、Sebastian Goldt、Andrew Saxe；arXiv:2306.10404v6。全文 22 页。"
+      ]
+    },
+    {
+      "title": "研究问题",
+      "paragraphs": [
+        "高维 policy gradient 的理论通常给 worst-case bounds，却很少描述完整学习轨迹。论文问：对延迟稀疏奖励的序列决策，能否像统计物理中的 teacher–student perceptron 一样，把 \\(D\\) 维随机更新压缩成少数序参量的确定性动力学？"
+      ]
+    },
+    {
+      "title": "背景",
+      "paragraphs": [
+        "teacher 权重 \\(w^*\\) 规定每个随机输入上的正确二元动作，student 权重 \\(w\\) 通过一段 \\(T\\) 步 episode 后的 reward 更新。热力学极限 \\(D\\to\\infty\\) 下，局部场变成联合 Gaussian，宏观状态由 \\(Q=w\\cdot w/D\\)、\\(R=w\\cdot w^*/D\\) 与固定 \\(S=w^*\\cdot w^*/D=1\\) 封闭。",
+        "归一化重叠 \\(\\rho=R/\\sqrt Q\\) 相当于磁化方向的一致度；泛化误差为两个感知机在新输入上符号不一致的概率。"
+      ]
+    },
+    {
+      "title": "模型与方法",
+      "paragraphs": [
+        "作者对在线 REINFORCE 更新做典型平均，得到 \\(R,Q\\) 的闭合 ODE；reward functional \\(G_t\\) 可表示存活奖励、失败惩罚、中间奖励与不同 episode length。Figure 2 显示 \\(D=900\\) 的 simulation 与 ODE 在多种协议下吻合。",
+        "低维方程随后用于解析/数值优化学习率与任务长度 curriculum，并追踪 fixed points、first-order learnability transition 和 critical slowing。"
+      ]
+    },
+    {
+      "title": "核心结果与证据",
+      "paragraphs": [
+        "Figure 1 串联 teacher–student 几何、长度 \\(T\\) 的 RL episode 和 ODE/simulation 对比：微观权重更新最终只需跟踪 \\(Q,R\\)，图中 \\(D=900,T=12\\) 已显示有限维曲线逼近理论。",
+        "一般化误差精确写成 \\(\\epsilon_g=\\pi^{-1}\\arccos(R/\\sqrt Q)\\)。改变 reward/penalty 会产生 easy 与 hybrid-hard 区域；靠近临界奖励强度时出现长平台和临界变慢，有限 \\(D\\) 涨落偶尔可越过亚稳 fixed point。",
+        "Figure 5 显示 speed–accuracy tradeoff：放宽一局中正确动作数阈值可加快早期学习，却降低渐近重叠。Bossfight 的 6720 维像素实验在 10 次重复中复现该趋势；Pong 用 20 agents、\\(T=30,50,70,90\\)，但作者明确说明 \\(T=90\\) 在预算内尚未训练到反超。"
+      ]
+    },
+    {
+      "title": "有效性与局限",
+      "paragraphs": [
+        "可解性依赖二元动作、随机 Gaussian 输入、线性 perceptron teacher/student 与特定 policy-gradient 更新；真实环境的状态转移、深层表征和非平稳数据会增加序参量并破坏闭合。",
+        "ODE 在 \\(D\\to\\infty\\) 渐近精确，有限维 escape 与噪声可能改变亚稳寿命。Bossfight/Pong 是修改后的经验探针，不能证明解析最优 curriculum 直接适用于通用深度 RL；Pong 最难设置还没有达到渐近区。"
+      ]
+    },
+    {
+      "title": "复现与资源",
+      "paragraphs": [
+        "原文：https://arxiv.org/abs/2306.10404；代码：https://github.com/SaxeLab/RL_perceptron。全文 22 页，PDF SHA-256：0d8eb8cbe3e9a17d7c08b00419b3c67a151284f21056aa5ac280628e6f36a101。",
+        "复现理论应固定 \\(D,T,\\eta_1,\\eta_2\\)、学习率缩放、初始 \\(Q,R\\) 与时间变量 \\(\\alpha\\)；经验实验还需记录环境修改、网络、并行 agents、训练预算和 repetitions。",
+        "Evidence status: full-text verified; no independent reproduction performed."
+      ]
+    },
+    {
+      "title": "阅读指南",
+      "paragraphs": [
+        "先看 Figure 1 和 Eqs. (8)–(9)，把高维权重映射到 \\(Q,R,\\rho\\) 与泛化误差；再比较 Figure 2 的 ODE/finite-\\(D\\) 曲线。最后读 learnability phase diagram 与 Figure 5，并用 Bossfight/Pong 只检验定性机制，不把它们当成一般深度 RL 定理。"
+      ]
+    }
+  ],
+  "cover": {
+    "mode": "source_figure",
+    "asset_path": "assets/collection-figures/2306.10404/figure-1-rl-perceptron.webp",
+    "label": "Figure 1",
+    "visual_type": "schematic",
+    "evidence": "paper.pdf p. 2, Figure 1",
+    "alt_text": "teacher-student 感知机、序列 RL episode 和 ODE 与仿真曲线的总览。",
+    "caption": "高维 policy learning 被压缩为少数重叠序参量的 ODE；episode reward 决定宏观流场与可学习相。",
+    "selection_rationale": "该图同时展示微观模型、决策序列和宏观动力学，是全文最完整且最直观的理论可视化。"
+  },
+  "figure_refs": [
+    {
+      "label": "Figure 1",
+      "asset_path": "assets/collection-figures/2306.10404/figure-1-rl-perceptron.webp",
+      "section": "核心结果与证据",
+      "role": "connect microscopic RL updates to macroscopic order parameters",
+      "evidence": "paper.pdf p. 2, Figure 1",
+      "alt_text": "teacher-student 模型、RL episode 和 ODE/仿真的组合图。",
+      "caption": "统计平均把高维随机学习轨迹约化为低维确定性流。",
+      "interpretation": "Agreement at finite D supports the asymptotic closure within this idealized model."
+    }
+  ],
+  "equation_refs": [
+    {
+      "label": "Order parameters",
+      "latex": "Q=\\frac{w\\cdot w}{D},\\qquad R=\\frac{w\\cdot w^*}{D},\\qquad S=\\frac{w^*\\cdot w^*}{D}=1",
+      "role": "close the high-dimensional learning dynamics on macroscopic overlaps",
+      "symbols": {
+        "w": "student weights",
+        "w*": "teacher weights",
+        "D": "input dimension",
+        "Q,R,S": "norm and overlap order parameters"
+      },
+      "evidence": "paper.pdf p. 5, Eq. (8)",
+      "interpretation": "In the thermodynamic limit, these overlaps determine the Gaussian local fields and average learning trajectory."
+    },
+    {
+      "label": "Generalisation error",
+      "latex": "\\epsilon_g=\\frac{1}{\\pi}\\arccos\\!\\left(\\frac{R}{\\sqrt Q}\\right)=\\frac{1}{\\pi}\\arccos\\rho",
+      "role": "translate student-teacher alignment into policy disagreement",
+      "symbols": {
+        "epsilon_g": "generalisation error",
+        "rho": "normalized overlap",
+        "R": "alignment",
+        "Q": "student norm"
+      },
+      "evidence": "paper.pdf p. 5, Eq. (9)",
+      "interpretation": "Policy accuracy is a geometric angle between teacher and student weight vectors."
+    }
+  ],
+  "evidence_refs": [
+    "paper.pdf pp. 3–6: model, order parameters and ODE closure",
+    "paper.pdf pp. 6–10: curricula, learnability phases and speed–accuracy tradeoff",
+    "paper.pdf pp. 10–12: Bossfight and Pong probes",
+    "source PDF SHA-256 0d8eb8cbe3e9a17d7c08b00419b3c67a151284f21056aa5ac280628e6f36a101",
+    "Evidence status: full-text verified; no independent reproduction performed."
+  ]
+}
