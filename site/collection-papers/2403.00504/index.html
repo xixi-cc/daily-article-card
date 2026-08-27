@@ -1,0 +1,203 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Learning and Leveraging World Models in Visual Representation Learning - physics+AI Collection 随机精选</title>
+    <meta name="description" content="作者：Quentin Garrido、Mahmoud Assran、Nicolas Ballas、Adrien Bardes、Laurent Najman、Yann LeCun；arXiv:2403.00504v1。全文 23 页，提出 Image World Models（IWM）并在 ImageNet 与下游分类/分割上评估。" />
+    <script>
+      (function() {
+        try {
+          var themePreference = window.localStorage.getItem('color-theme') || 'system';
+          var systemUsesDarkTheme = window.matchMedia('(prefers-color-scheme: dark)').matches;
+          var resolvedTheme = themePreference === 'system'
+            ? (systemUsesDarkTheme ? 'dark' : 'light')
+            : themePreference;
+          document.documentElement.dataset.theme = resolvedTheme;
+          document.documentElement.dataset.themePreference = themePreference;
+          document.documentElement.style.colorScheme = resolvedTheme;
+        } catch (error) {
+          document.documentElement.dataset.theme = 'light';
+          document.documentElement.dataset.themePreference = 'system';
+        }
+      })();
+    </script>
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='18' fill='%23111827'/%3E%3Ctext x='50%25' y='55%25' text-anchor='middle' dominant-baseline='middle' font-size='30' font-family='Arial, sans-serif' fill='white'%3EV%3C/text%3E%3C/svg%3E" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700;800&family=Noto+Sans+SC:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <script>document.documentElement.classList.add('math-pending');</script>
+    <script>
+      window.MathJax = {
+        tex: {
+          inlineMath: [['$', '$'], ['\\(', '\\)']],
+          displayMath: [['$$', '$$'], ['\\[', '\\]']],
+          processEscapes: true
+        },
+        options: {
+          skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+        },
+        chtml: {
+          scale: 1,
+          displayAlign: 'center'
+        },
+        startup: {
+          ready: function() {
+            MathJax.startup.defaultReady();
+            MathJax.startup.promise.then(function() {
+              document.documentElement.classList.remove('math-pending');
+              document.documentElement.dataset.mathReady = 'true';
+            });
+          }
+        }
+      };
+    </script>
+    <script defer src="../../assets/vendor/mathjax/tex-chtml.js"></script>
+    <link rel="stylesheet" href="../../assets/style.css" />
+  </head>
+  <body class="detail-page" data-paper-id="2403.00504">
+    <div class="page-noise"></div>
+    <div class="page-blur page-blur-a"></div>
+    <div class="page-blur page-blur-b"></div>
+
+    <header class="header detail-page-header">
+      <div class="container">
+        <div class="detail-page-topbar">
+          <a class="back-link" href="../../collection.html">返回列表</a>
+          <div class="detail-topbar-actions">
+            <span class="detail-site-name">physics+AI Collection 随机精选</span>
+            <button class="theme-toggle" type="button" data-theme-toggle aria-label="当前主题：设备，点击切换主题" title="当前主题：设备">
+  <span class="theme-toggle-icons" aria-hidden="true">
+    <svg class="theme-toggle-icon theme-toggle-icon-light" viewBox="0 0 24 24" fill="none">
+      <circle cx="12" cy="12" r="3.5" stroke="currentColor" stroke-width="1.8"/>
+      <path d="M12 2.5v2M12 19.5v2M2.5 12h2M19.5 12h2M5.3 5.3l1.4 1.4M17.3 17.3l1.4 1.4M18.7 5.3l-1.4 1.4M6.7 17.3l-1.4 1.4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+    </svg>
+    <svg class="theme-toggle-icon theme-toggle-icon-dark" viewBox="0 0 24 24" fill="none">
+      <path d="M20 15.2A8.1 8.1 0 0 1 8.8 4a8.2 8.2 0 1 0 11.2 11.2z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>
+    </svg>
+    <svg class="theme-toggle-icon theme-toggle-icon-system" viewBox="0 0 24 24" fill="none">
+      <rect x="3" y="4" width="18" height="13" rx="2.5" stroke="currentColor" stroke-width="1.8"/>
+      <path d="M8 21h8M12 17v4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+    </svg>
+  </span>
+  <span class="theme-toggle-label" data-theme-toggle-label>设备</span>
+</button>
+          </div>
+        </div>
+
+        <div class="detail-hero-grid">
+          <div class="detail-hero-cover"><figure class="paper-figure-card paper-figure-card-detail">
+  <img class="paper-figure-image" src="../../assets/collection-figures/2403.00504/figure-1-latent-transformations.webp" alt="source brain image、四组 photometric actions、IWM nearest-neighbor predictions 与 target images。" loading="lazy" onclick="window.openPaperFigureImage && window.openPaperFigureImage(this)" />
+  <figcaption class="paper-figure-caption">给定 photometric action 后，IWM 在 latent space 预测变换结果；nearest-neighbor 图像可直接对照 prediction 与 target。</figcaption>
+</figure></div>
+          <div class="detail-hero-copy">
+            <p class="eyebrow">Collection 全文卡</p>
+            <h1 class="detail-page-title">Learning and Leveraging World Models in Visual Representation Learning</h1>
+            <p class="detail-page-title-zh">在视觉表征学习中学习并利用世界模型</p>
+            <div class="detail-meta">Paper Collection · World Models · <a href="https://arxiv.org/abs/2403.00504" target="_blank" rel="noopener noreferrer">原文</a></div>
+            <p class="detail-summary">作者：Quentin Garrido、Mahmoud Assran、Nicolas Ballas、Adrien Bardes、Laurent Najman、Yann LeCun；arXiv:2403.00504v1。全文 23 页，提出 Image World Models（IWM）并在 ImageNet 与下游分类/分割上评估。</p>
+            <div class="detail-micro-meta">
+              <span class="meta-pill">13 分钟读完</span>
+              <span class="meta-pill">8 张阅读卡</span>
+              <span class="meta-pill">作者：Quentin Garrido、Mahmoud Assran、Nicolas Ballas、Ad…</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <main class="container detail-layout">
+      <div class="detail-shell">
+        <article id="detail-body" class="reading-flow"><section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 01</span>
+    <span class="reading-step-note">作者信息</span>
+  </div>
+  <h2>作者信息</h2>
+  <div class="reading-card-content"><ul><li>作者：Quentin Garrido、Mahmoud Assran、Nicolas Ballas、Adrien Bardes、Laurent Najman、Yann LeCun；arXiv:2403.00504v1。全文 23 页，提出 Image World Models（IWM）并在 ImageNet 与下游分类/分割上评估。</li></ul></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 02</span>
+    <span class="reading-step-note">研究问题</span>
+  </div>
+  <h2>研究问题</h2>
+  <div class="reading-card-content"><ul><li>JEPA 通常只预测被遮挡的 latent patches，predictor 训练后常被丢弃。论文问：若把 color jitter、grayscale、blur、solarization 等全局变换视为 action，并显式告诉 predictor 发生了什么，它能否在 latent space 中学会变换的后果；这个 world model 是否可以作为可复用的下游 head，而不只是 pretraining 辅助项？</li></ul></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 03</span>
+    <span class="reading-step-note">背景</span>
+  </div>
+  <h2>背景</h2>
+  <div class="reading-card-content"><ul><li>representation invariance 与 world-model capacity 存在张力。若 predictor 不知道 action，最容易的解是让 encoder 抹去颜色等变化，得到 invariant representation；若 predictor 被 action 条件化且有足够容量，encoder 可以保留变化信息，predictor 再把 source latent 推到 target latent，即 equivariant behavior。</li><li>作者把 MRR 用作 world-model observable：对一个 source latent 施加 action prediction，再在 256 个 augmented target representations 中做 nearest-neighbor retrieval。真实 target 排名越靠前，mean reciprocal rank 越接近 1，说明 latent dynamics 更能恢复该变换。</li></ul></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 04</span>
+    <span class="reading-step-note">模型与方法</span>
+  </div>
+  <h2>模型与方法</h2>
+  <div class="reading-card-content"><ul><li>source \(x\) 与 target \(y\) 来自同一图像。target 含 crop、flip、color jitter；source 在 target 上再加 jitter、grayscale、blur、solarization 与四块 mask。online ViT-B/16 encoder \(f_\theta\) 编码 source，EMA teacher \(f_{\theta}^{EMA}\) 编码 target；predictor \(p_\phi\) 同时接收 source patches、target mask positions 与 action parameters \(a_{x\to y}\)。</li><li>训练用 target-mask positions 上的 squared latent loss。ablation 改变 conditioning（none/sequence/feature）、transformation difficulty 与 predictor depth/width。之后冻结 encoder，finetune 已预训练 predictor 做 classification/segmentation，并与 encoder finetuning、joint finetuning、random predictor 和多任务 predictor 比较。</li></ul></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 05</span>
+    <span class="reading-step-note">核心结果与证据</span>
+  </div>
+  <h2>核心结果与证据</h2>
+  <div class="reading-card-content"><ul><li>Figure 1 是可视化的闭环检验：对 source brain diagram 指定 brightness、contrast、saturation、hue action 后，预测 latent 的 nearest neighbor 与 target 的颜色/清晰度变化一致；grayscale inversion 仍有误差，因为信息已被不可逆删除。图比单个 MRR 更直观地显示 predictor 学到的是 transformation response 而非类别标签。</li><li>没有 conditioning 时 MRR 为 0.00；sequence 与 feature conditioning 分别为 0.82 与 0.79。对 18-layer predictor，jitter-only MRR 0.25，加入 destructive transforms 后 0.79，strong jitter 后 0.85；12-layer predictor 在 strong jitter 下为 0.81，但稳定达到 equivariance 的训练比例更低，表明 task difficulty 与 capacity 必须匹配。</li><li>predictor finetuning 中，default ImageNet top-1 为 82.9%，使用 teacher 与 null latents 后为 83.3%。论文报告 equivariant IWM 的 predictor finetuning 可匹配 invariant model 的 encoder finetuning，并在少量 finetuned parameters 下更高效；同一 predictor 联合适配 ImageNet、iNaturalist18、SUN397 与 Places205，平均表现接近四个独立 heads。</li></ul><figure class="evidence-figure">
+  <button class="evidence-figure-image-button" type="button" aria-label="放大查看 Figure 1" onclick="window.openPaperFigureImage && window.openPaperFigureImage(this.querySelector('img'))">
+    <img class="paper-figure-image evidence-figure-image" src="../../assets/collection-figures/2403.00504/figure-1-latent-transformations.webp" alt="四种 photometric action 下的 source、nearest-neighbor prediction 与 target 图像。" loading="lazy" />
+  </button>
+  <figcaption>
+    <strong>Figure 1</strong> · prediction 跟随 brightness、contrast、saturation 与 hue，但不可逆 grayscale 仍暴露信息损失。
+    <span class="evidence-figure-reading">物理解读：Nearest-neighbor visualization depends on the finite 256-image retrieval bank and is not pixel reconstruction.</span>
+    <span class="evidence-figure-source">来源：paper.pdf p. 1, Figure 1</span>
+  </figcaption>
+</figure></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 06</span>
+    <span class="reading-step-note">有效性与局限</span>
+  </div>
+  <h2>有效性与局限</h2>
+  <div class="reading-card-content"><ul><li>所谓 world model 只预测人为定义的 image transformations，并不包含 action-conditioned temporal dynamics、3D geometry 或 agent-environment transition。Figure 1 使用 256-image bank 的 nearest neighbor，因此“看起来正确”受 bank composition 与 retrieval metric 限制。</li><li>MRR、equivariance 与 downstream quality 相关但不等价：论文自己的 Figure 4 显示 linear probing 与 MRR 负相关、predictor finetuning 与 MRR 正相关、attentive probing 相关较弱。结论依赖 ViT-B/16、ImageNet augmentations 与特定 finetuning protocols，尚不能推到一般 world-model learning。</li></ul></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 07</span>
+    <span class="reading-step-note">复现与资源</span>
+  </div>
+  <h2>复现与资源</h2>
+  <div class="reading-card-content"><ul><li>原文：https://arxiv.org/abs/2403.00504。全文 23 页，PDF SHA-256：fa435ab0b2219bdaaca9693b7dccf6ab285300a970b6001fe5476ac89ae80972。</li><li>复现需固定 ImageNet split、crop/flip/jitter/destructive augmentation parameters、mask geometry、action encoding、EMA decay、ViT-B/16 revision、predictor depth/width、MRR bank size 256、nearest-neighbor metric 与 finetuning parameter counts。</li><li>Evidence status: full-text verified; no independent reproduction performed.</li></ul></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 08</span>
+    <span class="reading-step-note">阅读指南</span>
+  </div>
+  <h2>阅读指南</h2>
+  <div class="reading-card-content"><ul><li>先看 Figure 1，把 action-conditioned latent prediction 与 ordinary invariance 区分开；再读 Section 3 的 source/target/action construction 和 Tables 1–2 的三因素 ablation。随后读 Tables 3–7 的 predictor reuse，最后看 Figures 4–5：不同 abstraction level 要用不同 evaluation head，不能只靠 linear probe 排名。</li></ul></div>
+</section></article>
+        <aside id="detail-toc" class="detail-toc hidden" aria-label="内容目录">
+          <p class="detail-toc-title">阅读目录</p>
+          <nav id="detail-toc-nav" class="detail-toc-nav"></nav>
+        </aside>
+      </div>
+      <nav class="paper-nav"><a class="paper-nav-link paper-nav-prev" href="../../collection-papers/2402.19451/"><span class="paper-nav-label">← 上一篇</span><span class="paper-nav-title">Reduced density fluctuations via anti-aligning in active matter</span></a>
+      <a class="paper-nav-link paper-nav-next" href="../../collection-papers/2403.02579/"><span class="paper-nav-label">下一篇 →</span><span class="paper-nav-title">Geometric Dynamics of Signal Propagation Predict Trainability of Transformers</span></a></nav>
+    </main>
+
+    <footer class="footer">
+      <div class="container">
+        <p>内容来自 <a href="https://arxiv.org" target="_blank" rel="noopener noreferrer">arXiv.org</a>，阅读卡片由静态站点生成器构建。</p>
+      </div>
+    </footer>
+
+    <script src="../../assets/theme.js"></script>
+    <script src="../../assets/media.js"></script>
+    <script src="../../assets/paper.js"></script>
+  </body>
+</html>

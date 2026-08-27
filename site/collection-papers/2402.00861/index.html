@@ -1,0 +1,203 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Evaluating Large Language Models for Generalization and Robustness via Data Compression - physics+AI Collection 随机精选</title>
+    <meta name="description" content="作者：Yucheng Li、Yunhao Guo、Frank Guerin、Chenghua Lin；arXiv:2402.00861v2。全文 13 页，比较 14 个开放权重语言模型以及 Gzip、PNG、FLAC 等传统压缩器。" />
+    <script>
+      (function() {
+        try {
+          var themePreference = window.localStorage.getItem('color-theme') || 'system';
+          var systemUsesDarkTheme = window.matchMedia('(prefers-color-scheme: dark)').matches;
+          var resolvedTheme = themePreference === 'system'
+            ? (systemUsesDarkTheme ? 'dark' : 'light')
+            : themePreference;
+          document.documentElement.dataset.theme = resolvedTheme;
+          document.documentElement.dataset.themePreference = themePreference;
+          document.documentElement.style.colorScheme = resolvedTheme;
+        } catch (error) {
+          document.documentElement.dataset.theme = 'light';
+          document.documentElement.dataset.themePreference = 'system';
+        }
+      })();
+    </script>
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='18' fill='%23111827'/%3E%3Ctext x='50%25' y='55%25' text-anchor='middle' dominant-baseline='middle' font-size='30' font-family='Arial, sans-serif' fill='white'%3EV%3C/text%3E%3C/svg%3E" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700;800&family=Noto+Sans+SC:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <script>document.documentElement.classList.add('math-pending');</script>
+    <script>
+      window.MathJax = {
+        tex: {
+          inlineMath: [['$', '$'], ['\\(', '\\)']],
+          displayMath: [['$$', '$$'], ['\\[', '\\]']],
+          processEscapes: true
+        },
+        options: {
+          skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+        },
+        chtml: {
+          scale: 1,
+          displayAlign: 'center'
+        },
+        startup: {
+          ready: function() {
+            MathJax.startup.defaultReady();
+            MathJax.startup.promise.then(function() {
+              document.documentElement.classList.remove('math-pending');
+              document.documentElement.dataset.mathReady = 'true';
+            });
+          }
+        }
+      };
+    </script>
+    <script defer src="../../assets/vendor/mathjax/tex-chtml.js"></script>
+    <link rel="stylesheet" href="../../assets/style.css" />
+  </head>
+  <body class="detail-page" data-paper-id="2402.00861">
+    <div class="page-noise"></div>
+    <div class="page-blur page-blur-a"></div>
+    <div class="page-blur page-blur-b"></div>
+
+    <header class="header detail-page-header">
+      <div class="container">
+        <div class="detail-page-topbar">
+          <a class="back-link" href="../../collection.html">返回列表</a>
+          <div class="detail-topbar-actions">
+            <span class="detail-site-name">physics+AI Collection 随机精选</span>
+            <button class="theme-toggle" type="button" data-theme-toggle aria-label="当前主题：设备，点击切换主题" title="当前主题：设备">
+  <span class="theme-toggle-icons" aria-hidden="true">
+    <svg class="theme-toggle-icon theme-toggle-icon-light" viewBox="0 0 24 24" fill="none">
+      <circle cx="12" cy="12" r="3.5" stroke="currentColor" stroke-width="1.8"/>
+      <path d="M12 2.5v2M12 19.5v2M2.5 12h2M19.5 12h2M5.3 5.3l1.4 1.4M17.3 17.3l1.4 1.4M18.7 5.3l-1.4 1.4M6.7 17.3l-1.4 1.4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+    </svg>
+    <svg class="theme-toggle-icon theme-toggle-icon-dark" viewBox="0 0 24 24" fill="none">
+      <path d="M20 15.2A8.1 8.1 0 0 1 8.8 4a8.2 8.2 0 1 0 11.2 11.2z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>
+    </svg>
+    <svg class="theme-toggle-icon theme-toggle-icon-system" viewBox="0 0 24 24" fill="none">
+      <rect x="3" y="4" width="18" height="13" rx="2.5" stroke="currentColor" stroke-width="1.8"/>
+      <path d="M8 21h8M12 17v4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+    </svg>
+  </span>
+  <span class="theme-toggle-label" data-theme-toggle-label>设备</span>
+</button>
+          </div>
+        </div>
+
+        <div class="detail-hero-grid">
+          <div class="detail-hero-cover"><figure class="paper-figure-card paper-figure-card-detail">
+  <img class="paper-figure-image" src="../../assets/collection-figures/2402.00861/figure-2-performance-robustness.webp" alt="Wikipedia 月度压缩率曲线以及 2023 表现与训练测试差距的二维散点图。" loading="lazy" onclick="window.openPaperFigureImage && window.openPaperFigureImage(this)" />
+  <figcaption class="paper-figure-caption">左图显示压缩率随时间漂移；右图把 2023 performance 与 \(R_{23}-R_{17\text{--}22}\) robustness gap 分成两条轴。</figcaption>
+</figure></div>
+          <div class="detail-hero-copy">
+            <p class="eyebrow">Collection 全文卡</p>
+            <h1 class="detail-page-title">Evaluating Large Language Models for Generalization and Robustness via Data Compression</h1>
+            <p class="detail-page-title-zh">用数据压缩评估大语言模型的泛化与稳健性</p>
+            <div class="detail-meta">Paper Collection · Transformer Theory · <a href="https://arxiv.org/abs/2402.00861" target="_blank" rel="noopener noreferrer">原文</a></div>
+            <p class="detail-summary">作者：Yucheng Li、Yunhao Guo、Frank Guerin、Chenghua Lin；arXiv:2402.00861v2。全文 13 页，比较 14 个开放权重语言模型以及 Gzip、PNG、FLAC 等传统压缩器。</p>
+            <div class="detail-micro-meta">
+              <span class="meta-pill">10 分钟读完</span>
+              <span class="meta-pill">8 张阅读卡</span>
+              <span class="meta-pill">作者：Yucheng Li、Yunhao Guo、Frank Guerin、Chenghua Lin…</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <main class="container detail-layout">
+      <div class="detail-shell">
+        <article id="detail-body" class="reading-flow"><section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 01</span>
+    <span class="reading-step-note">作者信息</span>
+  </div>
+  <h2>作者信息</h2>
+  <div class="reading-card-content"><ul><li>作者：Yucheng Li、Yunhao Guo、Frank Guerin、Chenghua Lin；arXiv:2402.00861v2。全文 13 页，比较 14 个开放权重语言模型以及 Gzip、PNG、FLAC 等传统压缩器。</li></ul></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 02</span>
+    <span class="reading-step-note">研究问题</span>
+  </div>
+  <h2>研究问题</h2>
+  <div class="reading-card-content"><ul><li>常用 benchmark 可能落在模型训练语料内，又会随 prompt 变化。论文把模型视为概率编码器，问两个更接近统计物理外推的问题：给定训练截止时间以前的数据，模型对截止时间以后的同分布演化能否保持低码长；其压缩率随时间漂移的斜率能否量化 robustness，而不是只报告单点 accuracy？</li></ul></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 03</span>
+    <span class="reading-step-note">背景</span>
+  </div>
+  <h2>背景</h2>
+  <div class="reading-card-content"><ul><li>Shannon source coding 把预测与压缩联系起来：若模型给序列 \(X=(x_1,\ldots,x_n)\) 的概率为 \(P(X)\)，理想无损码长约为 \(-\log_2 P(X)\)。因此低 negative log-likelihood 对应高压缩效率；按月份组织的数据又把 train/test split 从人工题库改成可审计的时间边界。</li><li>数据覆盖 2017 年 1 月到 2023 年 11 月，共 83 个月，包括 Wikipedia、BBC news、GitHub code、arXiv、图片字节流和音频字节流。作者把 2017–2022 作为近似训练期，把 2023 作为测试期，并明确区分 performance \(R_{23}\) 与 temporal gap \(R_{23}-R_{17\text{--}22}\)。</li></ul></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 04</span>
+    <span class="reading-step-note">模型与方法</span>
+  </div>
+  <h2>模型与方法</h2>
+  <div class="reading-card-content"><ul><li>文本先按模型 context window 切成 token chunks，逐 token 计算条件概率，再用 arithmetic coding 形成无损 bitstream；图片和音频则把每个 byte 映射到保留的 byte token。主指标是压缩率 \(R=\text{compressed size}/\text{raw size}\)，越低越好。</li><li>比较对象覆盖 6B–70B 参数、2K–32K 原生上下文的 LLaMA、Llama-2、CodeLlama、Mistral、Qwen、Yi、Baichuan2、InternLM 与 ChatGLM3。额外 ablation 比较 2K/4K/8K chunks、2K sliding window 以及 BPT/BPC，避免把 tokenizer 或 context 实现差异误判为模型知识。</li></ul></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 05</span>
+    <span class="reading-step-note">核心结果与证据</span>
+  </div>
+  <h2>核心结果与证据</h2>
+  <div class="reading-card-content"><ul><li>Figure 2a 显示 Wikipedia 压缩率随月份普遍上升；Figure 2b 将 2023 压缩率与 train-test gap 分开后，模型不再沿单一“越大越好”轴排列。作者报告 7B 以内 Mistral-7B 的 performance–robustness balance 最好，较大模型中 Llama-2-70B 最好；这只是该数据与该二维定义下的结果。</li><li>截止时间效应可见：LLaMA-65B 在 2023 Wikipedia 上相对 2017–2022 的压缩率恶化约 20%。CodeLlama 在 code 上压缩更好，却比基础 Llama-2 显示更大的时间漂移。2023 news、Wikipedia 与 code 普遍更难，arXiv 压缩率却常保持或改善，作者将其归因于学术写作风格较稳定。</li><li>增大静态 context 从 2K 到 4K、8K 通常继续改善压缩，但收益递减；2K sliding window 在所有列出的模型上又优于较大的非重叠 chunks，代价约为 4 倍计算。所有语言模型在原始 image/audio byte streams 上都远差于专用压缩器，说明文本 tokenizer 的 byte fallback 不是多模态建模。</li></ul><figure class="evidence-figure">
+  <button class="evidence-figure-image-button" type="button" aria-label="放大查看 Figure 2" onclick="window.openPaperFigureImage && window.openPaperFigureImage(this.querySelector('img'))">
+    <img class="paper-figure-image evidence-figure-image" src="../../assets/collection-figures/2402.00861/figure-2-performance-robustness.webp" alt="多模型的逐月 Wikipedia 压缩率与 performance-robustness 二维散点。" loading="lazy" />
+  </button>
+  <figcaption>
+    <strong>Figure 2</strong> · 同一模型可以有较低测试压缩率却有较大时间漂移，两者不是同一统计量。
+    <span class="evidence-figure-reading">物理解读：The relative positions depend on the chosen corpus, time split, tokenizer and context policy.</span>
+    <span class="evidence-figure-source">来源：paper.pdf p. 7, Figure 2</span>
+  </figcaption>
+</figure></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 06</span>
+    <span class="reading-step-note">有效性与局限</span>
+  </div>
+  <h2>有效性与局限</h2>
+  <div class="reading-card-content"><ul><li>时间切分减少了显式 benchmark contamination，却不能证明 2023 数据完全未被训练：模型真实语料与 cutoff 往往不公开，release date 只提供上界。Wikipedia 条目具有自相关，arXiv 的写作模板稳定也可能让压缩率改善而不代表新知识理解。</li><li>压缩率混合了模型概率质量、tokenizer、context policy、arithmetic-coder overhead 与算力预算；它不是 reasoning、factuality 或 safety 的充分统计量。Figure 2 的二维象限还依赖作者选定的 2017–2022/2023 分割，不能把图上的相对位置泛化为模型的全局能力排序。</li></ul></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 07</span>
+    <span class="reading-step-note">复现与资源</span>
+  </div>
+  <h2>复现与资源</h2>
+  <div class="reading-card-content"><ul><li>原文：https://arxiv.org/abs/2402.00861。全文 13 页，PDF SHA-256：29ceff618138b065480e471172016bf757818bae3506d6b76c0cd90300395ae6。</li><li>复现需保存每月原始文件哈希、模型与 tokenizer revision、byte-token mapping、chunk size/stride、算术编码精度、compressed/raw byte counts、cutoff assumption 与 GPU 时间。应同时报告 \(R_{23}\)、\(R_{17\text{--}22}\) 与逐月曲线，而不是只保留二维排名。</li><li>Evidence status: full-text verified; no independent reproduction performed.</li></ul></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 08</span>
+    <span class="reading-step-note">阅读指南</span>
+  </div>
+  <h2>阅读指南</h2>
+  <div class="reading-card-content"><ul><li>先读 Section 2.2 与 Eqs. (1)–(3)，确认“预测即压缩”的精确定义；再看 Figure 1 的 cutoff divergence 与 Figure 2 的 performance–robustness plane。随后查 Tables 3、5、6 分别隔离 domain、context 与 tokenizer 效应，最后用 limitations 检查真实训练语料未知这一识别边界。</li></ul></div>
+</section></article>
+        <aside id="detail-toc" class="detail-toc hidden" aria-label="内容目录">
+          <p class="detail-toc-title">阅读目录</p>
+          <nav id="detail-toc-nav" class="detail-toc-nav"></nav>
+        </aside>
+      </div>
+      <nav class="paper-nav"><a class="paper-nav-link paper-nav-prev" href="../../collection-papers/2401.08740/"><span class="paper-nav-label">← 上一篇</span><span class="paper-nav-title">SiT: Exploring Flow and Diffusion-based Generative Models with Scalable Interpolant Transformers</span></a>
+      <a class="paper-nav-link paper-nav-next" href="../../collection-papers/2402.04997/"><span class="paper-nav-label">下一篇 →</span><span class="paper-nav-title">Generative Flows on Discrete State-Spaces: Enabling Multimodal Flows with Applications to Protein Co-Design</span></a></nav>
+    </main>
+
+    <footer class="footer">
+      <div class="container">
+        <p>内容来自 <a href="https://arxiv.org" target="_blank" rel="noopener noreferrer">arXiv.org</a>，阅读卡片由静态站点生成器构建。</p>
+      </div>
+    </footer>
+
+    <script src="../../assets/theme.js"></script>
+    <script src="../../assets/media.js"></script>
+    <script src="../../assets/paper.js"></script>
+  </body>
+</html>

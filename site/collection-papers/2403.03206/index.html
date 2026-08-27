@@ -1,0 +1,203 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Scaling Rectified Flow Transformers for High-Resolution Image Synthesis - physics+AI Collection 随机精选</title>
+    <meta name="description" content="作者：Patrick Esser、Sumith Kulal、Andreas Blattmann 等 17 人；arXiv:2403.03206v1。全文 28 页，后来成为 Stable Diffusion 3 技术路线的核心报告，最大 MM-DiT 模型约 8B parameters。" />
+    <script>
+      (function() {
+        try {
+          var themePreference = window.localStorage.getItem('color-theme') || 'system';
+          var systemUsesDarkTheme = window.matchMedia('(prefers-color-scheme: dark)').matches;
+          var resolvedTheme = themePreference === 'system'
+            ? (systemUsesDarkTheme ? 'dark' : 'light')
+            : themePreference;
+          document.documentElement.dataset.theme = resolvedTheme;
+          document.documentElement.dataset.themePreference = themePreference;
+          document.documentElement.style.colorScheme = resolvedTheme;
+        } catch (error) {
+          document.documentElement.dataset.theme = 'light';
+          document.documentElement.dataset.themePreference = 'system';
+        }
+      })();
+    </script>
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='18' fill='%23111827'/%3E%3Ctext x='50%25' y='55%25' text-anchor='middle' dominant-baseline='middle' font-size='30' font-family='Arial, sans-serif' fill='white'%3EV%3C/text%3E%3C/svg%3E" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700;800&family=Noto+Sans+SC:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <script>document.documentElement.classList.add('math-pending');</script>
+    <script>
+      window.MathJax = {
+        tex: {
+          inlineMath: [['$', '$'], ['\\(', '\\)']],
+          displayMath: [['$$', '$$'], ['\\[', '\\]']],
+          processEscapes: true
+        },
+        options: {
+          skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+        },
+        chtml: {
+          scale: 1,
+          displayAlign: 'center'
+        },
+        startup: {
+          ready: function() {
+            MathJax.startup.defaultReady();
+            MathJax.startup.promise.then(function() {
+              document.documentElement.classList.remove('math-pending');
+              document.documentElement.dataset.mathReady = 'true';
+            });
+          }
+        }
+      };
+    </script>
+    <script defer src="../../assets/vendor/mathjax/tex-chtml.js"></script>
+    <link rel="stylesheet" href="../../assets/style.css" />
+  </head>
+  <body class="detail-page" data-paper-id="2403.03206">
+    <div class="page-noise"></div>
+    <div class="page-blur page-blur-a"></div>
+    <div class="page-blur page-blur-b"></div>
+
+    <header class="header detail-page-header">
+      <div class="container">
+        <div class="detail-page-topbar">
+          <a class="back-link" href="../../collection.html">返回列表</a>
+          <div class="detail-topbar-actions">
+            <span class="detail-site-name">physics+AI Collection 随机精选</span>
+            <button class="theme-toggle" type="button" data-theme-toggle aria-label="当前主题：设备，点击切换主题" title="当前主题：设备">
+  <span class="theme-toggle-icons" aria-hidden="true">
+    <svg class="theme-toggle-icon theme-toggle-icon-light" viewBox="0 0 24 24" fill="none">
+      <circle cx="12" cy="12" r="3.5" stroke="currentColor" stroke-width="1.8"/>
+      <path d="M12 2.5v2M12 19.5v2M2.5 12h2M19.5 12h2M5.3 5.3l1.4 1.4M17.3 17.3l1.4 1.4M18.7 5.3l-1.4 1.4M6.7 17.3l-1.4 1.4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+    </svg>
+    <svg class="theme-toggle-icon theme-toggle-icon-dark" viewBox="0 0 24 24" fill="none">
+      <path d="M20 15.2A8.1 8.1 0 0 1 8.8 4a8.2 8.2 0 1 0 11.2 11.2z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>
+    </svg>
+    <svg class="theme-toggle-icon theme-toggle-icon-system" viewBox="0 0 24 24" fill="none">
+      <rect x="3" y="4" width="18" height="13" rx="2.5" stroke="currentColor" stroke-width="1.8"/>
+      <path d="M8 21h8M12 17v4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+    </svg>
+  </span>
+  <span class="theme-toggle-label" data-theme-toggle-label>设备</span>
+</button>
+          </div>
+        </div>
+
+        <div class="detail-hero-grid">
+          <div class="detail-hero-cover"><figure class="paper-figure-card paper-figure-card-detail">
+  <img class="paper-figure-image" src="../../assets/collection-figures/2403.03206/figure-1-high-resolution-samples.webp" alt="8B rectified-flow text-to-image model 生成的多风格高分辨率样例网格，含文字与复杂空间关系。" loading="lazy" onclick="window.openPaperFigureImage && window.openPaperFigureImage(this)" />
+  <figcaption class="paper-figure-caption">8B MM-DiT 的精选样例覆盖 typography、prompt following、spatial reasoning 与多种风格；总体能力仍需结合后文 benchmark。</figcaption>
+</figure></div>
+          <div class="detail-hero-copy">
+            <p class="eyebrow">Collection 全文卡</p>
+            <h1 class="detail-page-title">Scaling Rectified Flow Transformers for High-Resolution Image Synthesis</h1>
+            <p class="detail-page-title-zh">扩展整流流 Transformer 用于高分辨率图像合成</p>
+            <div class="detail-meta">Paper Collection · Flow Matching · <a href="https://arxiv.org/abs/2403.03206" target="_blank" rel="noopener noreferrer">原文</a></div>
+            <p class="detail-summary">作者：Patrick Esser、Sumith Kulal、Andreas Blattmann 等 17 人；arXiv:2403.03206v1。全文 28 页，后来成为 Stable Diffusion 3 技术路线的核心报告，最大 MM-DiT 模型约 8B parameters。</p>
+            <div class="detail-micro-meta">
+              <span class="meta-pill">12 分钟读完</span>
+              <span class="meta-pill">8 张阅读卡</span>
+              <span class="meta-pill">作者：Patrick Esser、Sumith Kulal、Andreas Blattmann 等 1…</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <main class="container detail-layout">
+      <div class="detail-shell">
+        <article id="detail-body" class="reading-flow"><section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 01</span>
+    <span class="reading-step-note">作者信息</span>
+  </div>
+  <h2>作者信息</h2>
+  <div class="reading-card-content"><ul><li>作者：Patrick Esser、Sumith Kulal、Andreas Blattmann 等 17 人；arXiv:2403.03206v1。全文 28 页，后来成为 Stable Diffusion 3 技术路线的核心报告，最大 MM-DiT 模型约 8B parameters。</li></ul></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 02</span>
+    <span class="reading-step-note">研究问题</span>
+  </div>
+  <h2>研究问题</h2>
+  <div class="reading-card-content"><ul><li>rectified flow 以 data–noise 直线路径简化 transport geometry，却常在 \(t\in[0,1]\) 上均匀训练。论文问：不同时间的回归难度并不均匀时，怎样把训练质量集中到 perceptually relevant SNR；同时，text tokens 与 image tokens 是否应共享全部 Transformer weights，还是保留 modality-specific processing 再双向交换信息？</li></ul></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 03</span>
+    <span class="reading-step-note">背景</span>
+  </div>
+  <h2>背景</h2>
+  <div class="reading-card-content"><ul><li>生成过程把 data \(x_0\sim p_0\) 与 Gaussian noise \(\epsilon\sim\mathcal N(0,I)\) 连接为 \(z_t=a_t x_0+b_t\epsilon\)，再学习产生同一 marginal path 的 velocity field。rectified flow 取 \(a_t=1-t,b_t=t\)，理想轨迹更直，因而在有限 sampling steps 下可能更高效。</li><li>但中间 \(t\) 的 source/target 混合最强，velocity target 往往比端点难。改变 timestep density \(\pi(t)\) 等价于改变 loss weighting；论文比较 logit-normal、heavy-tailed mode sampler、CosMap 与 diffusion/EDM baselines，先在受控规模筛选，再进入大模型 scaling。</li></ul></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 04</span>
+    <span class="reading-step-note">模型与方法</span>
+  </div>
+  <h2>模型与方法</h2>
+  <div class="reading-card-content"><ul><li>logit-normal sampler 先取 \(u\sim\mathcal N(m,s^2)\)，再令 \(t=\operatorname{sigmoid}u\)，可把训练集中在中间 SNR；主配置 \(m=0,s=1\)。高分辨率阶段还按像素数把 timestep 映射到相同 uncertainty，1024² 训练/采样采用 shift \(\alpha=3\)，并在最终 checkpoint 上做 DPO alignment。</li><li>MM-DiT 将 VAE image patches 与 CLIP-\(L\)/14、CLIP-G/14、\(T_{5}\)-XXL text representations 投到共同 token dimension。每个 block 对 text 与 image 使用独立 modulation、linear/MLP weights，但把两种 token 拼接做 joint attention，所以信息双向流动而 modality-specific representation 不被强行共享。QK RMS normalization 用于抑制 attention-logit growth 与 entropy collapse。</li></ul></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 05</span>
+    <span class="reading-step-note">核心结果与证据</span>
+  </div>
+  <h2>核心结果与证据</h2>
+  <div class="reading-card-content"><ul><li>Figure 1 优先展示最大 8B 模型的高分辨率输出：字体、多个对象的空间关系、长 prompt 与不同视觉风格都能在同一网格中直接检查。它证明模型可产生这些类型的样例，但精选图不能代替 aggregate benchmark 和 failure distribution。</li><li>24 种 sampler/EMA/dataset 组合的排序中，rf/lognorm(0,1) 总体 rank 1.54，优于 uniform rectified flow，并在少步采样保持优势。MM-DiT 对 DiT、CrossDiT、UViT 的 controlled comparison 中验证 loss、CLIP 与 FID 更好；QK normalization 避免 attention logits 持续增长。</li><li>scaling study 显示 image 与 video validation loss 随参数量、训练 FLOPs 平滑下降，并与 GenEval、T2I-CompBench 和 human preference 相关。GenEval overall 从 depth-18 的 0.58 增至 depth-38 1024²+DPO 的 0.74；表中 DALL-E 3 为 0.67。较大模型还更少依赖采样步数：相对 50 steps，5-step CLIP decrease 从 depth-15 的 4.30% 降到 depth-38 的 2.71%。</li></ul><figure class="evidence-figure">
+  <button class="evidence-figure-image-button" type="button" aria-label="放大查看 Figure 1" onclick="window.openPaperFigureImage && window.openPaperFigureImage(this.querySelector('img'))">
+    <img class="paper-figure-image evidence-figure-image" src="../../assets/collection-figures/2403.03206/figure-1-high-resolution-samples.webp" alt="包含文字、多个对象、空间关系与多种艺术风格的生成图像网格。" loading="lazy" />
+  </button>
+  <figcaption>
+    <strong>Figure 1</strong> · 样例显示最终系统的 qualitative envelope，但不隔离 rectified-flow、architecture、data 与 DPO 的贡献。
+    <span class="evidence-figure-reading">物理解读：Curated samples must be interpreted together with aggregate GenEval, scaling and human-preference evidence.</span>
+    <span class="evidence-figure-source">来源：paper.pdf p. 1, Figure 1</span>
+  </figcaption>
+</figure></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 06</span>
+    <span class="reading-step-note">有效性与局限</span>
+  </div>
+  <h2>有效性与局限</h2>
+  <div class="reading-card-content"><ul><li>8B 结果同时叠加 architecture、data curation、synthetic recaptioning、resolution shift、多个 text encoders 与 DPO，不能从最终样例单独归因到 rectified flow。闭源/开放 baselines 的数据、参数量、prompt filtering 和 inference budget 不同，human-preference win rate 也依赖 rater protocol。</li><li>论文报告 scaling 范围内未见饱和，不等于更大规模必然继续同一幂律；depth-38 在 \(3\times10^5\) steps 还需调 learning rate 避免 divergence。\(T_{5}\) 对长文字 prompt 有明显作用但占用大量 memory；移除 \(T_{5}\) 的总体 aesthetic 变化小，却会降低 typography 与复杂 prompt adherence。</li></ul></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 07</span>
+    <span class="reading-step-note">复现与资源</span>
+  </div>
+  <h2>复现与资源</h2>
+  <div class="reading-card-content"><ul><li>原文：https://arxiv.org/abs/2403.03206。全文 28 页，PDF SHA-256：7ba352b6ded12859cda4d47df203d5fe38ee884c45f3b67ff227549d82db1487。</li><li>复现需固定 VAE、text encoder revisions、dataset/recaption filters、\(\pi(t)\) parameters、loss parameterization、MM-DiT depth/width、QK normalization、EMA、resolution buckets、timestep shift、sampler steps、CFG、DPO data 与 GenEval/human-evaluation protocol。</li><li>Evidence status: full-text verified; no independent reproduction performed.</li></ul></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 08</span>
+    <span class="reading-step-note">阅读指南</span>
+  </div>
+  <h2>阅读指南</h2>
+  <div class="reading-card-content"><ul><li>先看 Figure 1 建立可视化能力边界，再读 Sections 2–3 推导 flow objective 与 logit-normal sampler。随后看 Figure 2 理解 MM-DiT 的 modality separation，按 Tables 1–2 检查 formulation ablation；最后读 Figures 7–9 与 Tables 5–6，把 scaling、DPO、\(T_{5}\) 和少步采样贡献拆开。</li></ul></div>
+</section></article>
+        <aside id="detail-toc" class="detail-toc hidden" aria-label="内容目录">
+          <p class="detail-toc-title">阅读目录</p>
+          <nav id="detail-toc-nav" class="detail-toc-nav"></nav>
+        </aside>
+      </div>
+      <nav class="paper-nav"><a class="paper-nav-link paper-nav-prev" href="../../collection-papers/2403.02579/"><span class="paper-nav-label">← 上一篇</span><span class="paper-nav-title">Geometric Dynamics of Signal Propagation Predict Trainability of Transformers</span></a>
+      <a class="paper-nav-link paper-nav-next" href="../../collection-papers/2404.01413/"><span class="paper-nav-label">下一篇 →</span><span class="paper-nav-title">Is Model Collapse Inevitable? Breaking the Curse of Recursion by Accumulating Real and Synthetic Data</span></a></nav>
+    </main>
+
+    <footer class="footer">
+      <div class="container">
+        <p>内容来自 <a href="https://arxiv.org" target="_blank" rel="noopener noreferrer">arXiv.org</a>，阅读卡片由静态站点生成器构建。</p>
+      </div>
+    </footer>
+
+    <script src="../../assets/theme.js"></script>
+    <script src="../../assets/media.js"></script>
+    <script src="../../assets/paper.js"></script>
+  </body>
+</html>
