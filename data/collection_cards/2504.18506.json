@@ -1,0 +1,157 @@
+{
+  "arxiv_id": "2504.18506",
+  "source_version": "v3",
+  "source_pdf": "https://arxiv.org/pdf/2504.18506",
+  "title_en": "Action-Minimization Meets Generative Modeling: Efficient Transition Path Sampling with the Onsager-Machlup Functional",
+  "title_zh": "作用量最小化遇见生成建模：以 Onsager–Machlup 泛函高效采样跃迁路径",
+  "curation_status": "full_text_verified",
+  "card_standard_version": "2.3",
+  "paper_profile": "theory_numerics",
+  "style_reference": "physicist_daily_arxiv",
+  "provenance": {
+    "program": "Collection",
+    "catalog": "Paper Collection",
+    "catalog_record_id": "16deea2a8042b097",
+    "catalog_record_ids": [
+      "16deea2a8042b097"
+    ],
+    "catalog_topic": "Generative Models",
+    "collection_date": "2026-08-23",
+    "sampled_at": "2026-08-28",
+    "selected_by": "full_collection_backfill",
+    "sampling_seed": "not_applicable_full_collection",
+    "candidate_count": 452
+  },
+  "verified_metadata": {
+    "arxiv_id": "2504.18506",
+    "version": "v3",
+    "title": "Action-Minimization Meets Generative Modeling: Efficient Transition Path Sampling with the Onsager-Machlup Functional",
+    "authors": [
+      "Sanjeev Raja",
+      "Martin Šípka",
+      "Michael Psenka",
+      "Tobias Kreiman",
+      "Michal Pavelka",
+      "Aditi S. Krishnapriyan"
+    ],
+    "categories": [
+      "cs.LG",
+      "cond-mat.mtrl-sci",
+      "physics.chem-ph",
+      "q-bio.BM"
+    ],
+    "primary_category": "cs.LG",
+    "published": "2025-04-25T17:17:17Z",
+    "abstract": "Scores extracted from atomistic generative models define Onsager–Machlup actions whose optimized paths approximate molecular transition pathways.",
+    "comment": ""
+  },
+  "sections": [
+    {
+      "title": "作者信息",
+      "paragraphs": [
+        "作者：Sanjeev Raja、Martin Šípka、Michael Psenka、Tobias Kreiman、Michal Pavelka、Aditi S. Krishnapriyan；arXiv:2504.18506v3。全文 38 页，覆盖 Müller–Brown、alanine dipeptide、fast-folding proteins 与未见 tetrapeptides。"
+      ]
+    },
+    {
+      "title": "研究问题",
+      "paragraphs": [
+        "生成模型擅长独立 equilibrium samples，却不直接给出带动力学意义的 rare transition paths。论文问：能否把 diffusion/flow model 的 learned score 解释为随机动力学 drift，用 Onsager–Machlup action 在给定端点间优化高概率路径，而不为 TPS 另训模型？"
+      ]
+    },
+    {
+      "title": "背景",
+      "paragraphs": [
+        "过阻尼 Langevin path 的概率权重由 OM functional 决定，包含 drift mismatch 与 divergence/Laplacian correction。若 \\(p_{\\rm data}\\propto e^{-\\beta U}\\)，score 与 force 成比例；生成模型提供可微的近似 score。",
+        "Figure 1 将 atomistic generative model、learned vector field/score、OM action landscape 与 transition paths 连成一条物理解释链。"
+      ]
+    },
+    {
+      "title": "模型与方法",
+      "paragraphs": [
+        "路径由离散 beads 参数化，固定反应物/产物端点，以 gradient optimizer 最小化 full 或 truncated OM action。diffusion model 在选择的 noise time 提供 score；flow matching 通过 stochastic encoding/decoding 与 velocity-score relation 提取等效 drift。",
+        "Hutchinson trace estimator 近似 score divergence；优化得到的路径还用于训练 committor network，并通过 backward Kolmogorov relation估计 transition rate。"
+      ]
+    },
+    {
+      "title": "核心结果与证据",
+      "paragraphs": [
+        "Figure 1 展示核心转换：原本只生成 i.i.d. equilibrium conformations 的模型，经 score-as-force 解释后成为 transition-path action。",
+        "在 alanine dipeptide 上，作者报告 OM optimization 每 1000-step path 所需 force evaluations 少于 metadynamics 与 shooting baselines；Müller–Brown 上由优化路径得到的 rate 为 \\(1.3\\times10^{-5}\\)，接近文中 reference。",
+        "在 BBA、Trp-cage 等 coarse-grained proteins 上，路径穿过经验 committor \\(q\\approx0.5\\) 的 transition-state region；未见 tetrapeptides 的 MSM metrics 与 50–100 ns MD 相当。"
+      ]
+    },
+    {
+      "title": "有效性与局限",
+      "paragraphs": [
+        "作者明确指出方法不保证从正确 transition-path ensemble 无偏采样；action minimization 更接近最可能路径搜索，可能漏掉多通道熵贡献。learned score 的 force interpretation 依赖 equilibrium、temperature 与 coarse-graining assumptions。",
+        "端点、路径长度、diffusivity、noise-time 与 optimizer initialization 都会选择不同局部极小。committor/rate 结果需要额外 dynamics validation；低 force-evaluation count 也不等于相同硬件 wall time。"
+      ]
+    },
+    {
+      "title": "复现与资源",
+      "paragraphs": [
+        "原文：https://arxiv.org/abs/2504.18506；代码：https://github.com/ASK-Berkeley/Action-Minimization-Generative-Modeling。全文 38 页，PDF SHA-256：c5d7b59e338facfa30a108eb41db324b43165072e92077d8fe9351f97fe50663。",
+        "复现需固定 generative checkpoint、score extraction time、temperature/friction/diffusivity、beads/horizon、full/truncated action、trace samples、optimizer/seeds、endpoint definitions、force-field与 committor/MSM protocol。",
+        "Evidence status: full-text verified; no independent reproduction performed."
+      ]
+    },
+    {
+      "title": "阅读指南",
+      "paragraphs": [
+        "先看 Figure 1 与 OM functional，核对 score–force 假设；再读 diffusion/flow score extraction 和 discretized action。随后审查 alanine/protein figures 与 force-evaluation table，最后读 limitations，把最可能路径、transition-path ensemble、committor 和 rate 四个对象分开。"
+      ]
+    }
+  ],
+  "cover": {
+    "mode": "source_figure",
+    "asset_path": "assets/collection-figures/2504.18506/figure-1-om-schematic.webp",
+    "label": "Figure 1",
+    "visual_type": "schematic",
+    "evidence": "paper.pdf p. 2, Figure 1",
+    "alt_text": "从原子生成模型的 learned score 到 Onsager–Machlup action optimization 与分子跃迁路径的流程。",
+    "caption": "把 learned score 解释为 drift 后，可在 OM action 上直接优化稀有跃迁路径。",
+    "selection_rationale": "Figure 1 同时呈现生成模型、作用量和物理路径，是全文最重要的机制可视化。"
+  },
+  "figure_refs": [
+    {
+      "label": "Figure 1",
+      "asset_path": "assets/collection-figures/2504.18506/figure-1-om-schematic.webp",
+      "section": "核心结果与证据",
+      "role": "connect generative scores to transition paths",
+      "evidence": "paper.pdf p. 2, Figure 1",
+      "alt_text": "Learned atomistic score, OM action and optimized molecular paths.",
+      "caption": "The generative vector field supplies an effective drift for path-space optimization.",
+      "interpretation": "Action minima are not guaranteed unbiased samples from the full transition ensemble."
+    }
+  ],
+  "equation_refs": [
+    {
+      "label": "Onsager–Machlup action",
+      "latex": "S[x]=\\int_0^T\\left[\\frac{1}{4D}\\|\\dot x-b(x)\\|^2+\\frac12\\nabla\\!\\cdot b(x)\\right]dt",
+      "role": "score the probability of a stochastic transition path",
+      "symbols": {
+        "b": "drift inferred from score or force",
+        "D": "diffusivity"
+      },
+      "evidence": "paper.pdf pp. 2–4",
+      "interpretation": "Minimizing the discretized action seeks high-probability paths under the assumed Langevin dynamics."
+    },
+    {
+      "label": "Equilibrium score-force relation",
+      "latex": "\\nabla\\log p_{\\rm data}(x)=-\\beta\\nabla U(x)=\\beta F(x)",
+      "role": "interpret the learned score as a physical force",
+      "symbols": {
+        "beta": "inverse temperature",
+        "U": "potential energy"
+      },
+      "evidence": "paper.pdf pp. 3–4",
+      "interpretation": "The identification is exact only for the stated equilibrium density and coordinates."
+    }
+  ],
+  "evidence_refs": [
+    "paper.pdf pp. 2–9: OM construction and molecular experiments",
+    "paper.pdf appendices: score extraction, committor/rate estimation and ablations",
+    "source PDF SHA-256 c5d7b59e338facfa30a108eb41db324b43165072e92077d8fe9351f97fe50663",
+    "Evidence status: full-text verified; no independent reproduction performed."
+  ]
+}

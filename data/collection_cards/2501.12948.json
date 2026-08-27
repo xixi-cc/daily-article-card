@@ -1,0 +1,151 @@
+{
+  "arxiv_id": "2501.12948",
+  "source_version": "v2",
+  "source_pdf": "https://arxiv.org/pdf/2501.12948",
+  "title_en": "DeepSeek-R1: Incentivizing Reasoning Capability in LLMs via Reinforcement Learning",
+  "title_zh": "DeepSeek-R1：用强化学习激发大语言模型的推理能力",
+  "curation_status": "full_text_verified",
+  "card_standard_version": "2.3",
+  "paper_profile": "ai_empirical",
+  "style_reference": "physicist_daily_arxiv",
+  "provenance": {
+    "program": "Collection",
+    "catalog": "Paper Collection",
+    "catalog_record_id": "f7332aacefe6a6a2",
+    "catalog_record_ids": [
+      "f7332aacefe6a6a2"
+    ],
+    "catalog_topic": "Control & Reinforcement Learning",
+    "collection_date": "2026-08-23",
+    "sampled_at": "2026-08-28",
+    "selected_by": "full_collection_backfill",
+    "sampling_seed": "not_applicable_full_collection",
+    "candidate_count": 452
+  },
+  "verified_metadata": {
+    "arxiv_id": "2501.12948",
+    "version": "v2",
+    "title": "DeepSeek-R1: Incentivizing Reasoning Capability in LLMs via Reinforcement Learning",
+    "authors": [
+      "DeepSeek-AI"
+    ],
+    "categories": [
+      "cs.CL",
+      "cs.AI",
+      "cs.LG"
+    ],
+    "primary_category": "cs.CL",
+    "published": "2025-01-22T15:19:35Z",
+    "abstract": "Rule-based reinforcement learning, cold-start data, rejection sampling and distillation are combined to train and transfer long-form reasoning.",
+    "comment": ""
+  },
+  "sections": [
+    {
+      "title": "作者信息",
+      "paragraphs": [
+        "DeepSeek-AI；arXiv:2501.12948v2。全文 87 页。论文区分 DeepSeek-R1-Zero、三阶段开发 checkpoint、最终 DeepSeek-R1，以及从 R1 蒸馏到 Qwen/Llama 的 1.5B–70B dense models。"
+      ]
+    },
+    {
+      "title": "研究问题",
+      "paragraphs": [
+        "监督式 chain-of-thought 依赖昂贵人工轨迹，也可能把推理限制在示范分布内。论文问：只用可验证 reward 与 GRPO，base model 是否会自发延长推理、反思和改写策略；又如何修复纯 RL 输出的可读性、语言混杂和通用任务退化？"
+      ]
+    },
+    {
+      "title": "背景",
+      "paragraphs": [
+        "GRPO 不训练单独的 value model，而在同一问题的一组 sampled responses 内用 reward 的相对位置估计 advantage。对数学/代码任务，答案可由规则 verifier 判定；format reward 约束思考标签，但不直接教授具体推理步骤。",
+        "Figure 2 显示最终系统不是一次 RL：cold-start SFT、reasoning RL、rejection-sampling SFT、all-scenario RL 依次作用，并以不同 checkpoint 产生训练数据。"
+      ]
+    },
+    {
+      "title": "模型与方法",
+      "paragraphs": [
+        "R1-Zero 从 DeepSeek-V3-Base 直接做 GRPO；每个 prompt 采样一组输出，以组内标准化 reward 更新 clipped policy objective，并加 KL regularization。最终 R1 先用数千条 cold-start traces 建立可读格式，再做 reasoning RL。",
+        "随后从 checkpoint rejection-sample 约 600k reasoning 与 200k non-reasoning examples 做 SFT，再以 helpfulness/safety reward 做第二阶段 RL。蒸馏模型只做 SFT，不复现大模型的 RL dynamics。"
+      ]
+    },
+    {
+      "title": "核心结果与证据",
+      "paragraphs": [
+        "Figure 2 把关键因果链画清：纯 RL 负责探索，cold start 固定表达协议，rejection sampling 把探索结果转成监督数据，第二次 RL 才覆盖通用偏好。",
+        "R1-Zero 的 AIME 2024 pass@1 从 15.6% 升至 77.9%，self-consistency 到 86.7%；同时平均 response length 持续增长。最终 R1 在 AIME 2024 报告 79.8，蒸馏的 32B model 报告 72.6。",
+        "增长与 reward-correlated behavior 同时出现，但不证明“aha moment”是人类式理解；benchmark、采样预算与 verifier 都是训练系统的一部分。"
+      ]
+    },
+    {
+      "title": "有效性与局限",
+      "paragraphs": [
+        "论文明确列出 function calling、多轮交互、复杂 role-playing、JSON 输出和非中英文语言的不足；长回答也可能 overthink 简单问题。纯规则 reward 只覆盖可判分域，开放式任务仍依赖 reward model 与人工偏好。",
+        "训练数据、完整 RL infrastructure 和所有 intermediate checkpoints 未完全开放，不能 exact reproduce。AIME contamination、自一致采样成本与 test-time token budget 都应与 pass@1 分开；蒸馏成功不证明小模型能独立通过同样 RL 获得能力。"
+      ]
+    },
+    {
+      "title": "复现与资源",
+      "paragraphs": [
+        "原文：https://arxiv.org/abs/2501.12948；模型/代码：https://github.com/deepseek-ai/DeepSeek-R1。全文 87 页，PDF SHA-256：b191b0a365a64b4ab2791d117069ed17a2933d03554a662ced58b37df52018f4。",
+        "评估需固定 checkpoint、prompt template、thinking budget、temperature、samples/self-consistency、answer extractor、benchmark commit 与 contamination policy；训练复现还需 GRPO group size、clip/KL、reward/verifier 和各阶段数据。",
+        "Evidence status: full-text verified; no independent reproduction performed."
+      ]
+    },
+    {
+      "title": "阅读指南",
+      "paragraphs": [
+        "先看 Figures 1–2，区分 R1-Zero 的 emergence 与 R1 的工程化 pipeline；再读 GRPO objective 和 reward construction。随后逐行核对 Table 3 与 distillation tables，最后读 Section 6 limitations，不把长 CoT、可验证答案和一般智能混为一谈。"
+      ]
+    }
+  ],
+  "cover": {
+    "mode": "source_figure",
+    "asset_path": "assets/collection-figures/2501.12948/figure-2-r1-pipeline.webp",
+    "label": "Figure 2",
+    "visual_type": "schematic",
+    "evidence": "paper.pdf p. 6, Figure 2",
+    "alt_text": "DeepSeek-R1 从 V3-Base 经 cold-start、两轮 RL、SFT 与 rejection sampling 的多阶段流程。",
+    "caption": "R1 的最终能力来自探索、数据回收与偏好对齐的多阶段闭环，而非单次纯 RL。",
+    "selection_rationale": "Figure 2 是全文最重要的机制图，优先于 AIME 单指标曲线。"
+  },
+  "figure_refs": [
+    {
+      "label": "Figure 2",
+      "asset_path": "assets/collection-figures/2501.12948/figure-2-r1-pipeline.webp",
+      "section": "核心结果与证据",
+      "role": "explain the multi-stage R1 training pipeline",
+      "evidence": "paper.pdf p. 6, Figure 2",
+      "alt_text": "Cold-start, RL, rejection-sampling SFT and all-scenario RL pipeline.",
+      "caption": "Reasoning exploration and readable aligned behavior are introduced at different stages.",
+      "interpretation": "The diagram does not isolate each stage's causal contribution without matched ablations."
+    }
+  ],
+  "equation_refs": [
+    {
+      "label": "Group-relative advantage",
+      "latex": "\\hat A_i=\\frac{r_i-\\operatorname{mean}(r_1,\\ldots,r_G)}{\\operatorname{std}(r_1,\\ldots,r_G)}",
+      "role": "estimate advantage without a learned value model",
+      "symbols": {
+        "r_i": "reward for response i",
+        "G": "responses sampled for one prompt"
+      },
+      "evidence": "paper.pdf pp. 2–3",
+      "interpretation": "The comparison baseline is the sampled group for the same question."
+    },
+    {
+      "label": "Clipped GRPO objective",
+      "latex": "\\mathcal J=\\mathbb E\\!\\left[\\min(\\rho_i\\hat A_i,\\operatorname{clip}(\\rho_i,1-\\epsilon,1+\\epsilon)\\hat A_i)-\\beta D_{\\rm KL}\\right]",
+      "role": "update the policy with bounded importance ratios",
+      "symbols": {
+        "rho_i": "new-to-old policy ratio",
+        "beta": "KL coefficient"
+      },
+      "evidence": "paper.pdf p. 3",
+      "interpretation": "Rule rewards define what is optimized; the objective alone does not guarantee faithful reasoning."
+    }
+  ],
+  "evidence_refs": [
+    "paper.pdf pp. 2–9: GRPO, emergence and multi-stage R1 pipeline",
+    "paper.pdf pp. 10–17 and supplements: benchmarks, PPO comparison and limitations",
+    "source PDF SHA-256 b191b0a365a64b4ab2791d117069ed17a2933d03554a662ced58b37df52018f4",
+    "Evidence status: full-text verified; no independent reproduction performed."
+  ]
+}
