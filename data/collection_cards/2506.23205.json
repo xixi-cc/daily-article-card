@@ -1,0 +1,153 @@
+{
+  "arxiv_id": "2506.23205",
+  "source_version": "v2",
+  "source_pdf": "https://arxiv.org/pdf/2506.23205",
+  "title_en": "BridgeShape: Latent Diffusion Schrödinger Bridge for 3D Shape Completion",
+  "title_zh": "BridgeShape：用于三维形状补全的潜空间扩散 Schrödinger 桥",
+  "curation_status": "full_text_verified",
+  "card_standard_version": "2.3",
+  "paper_profile": "ai_empirical",
+  "style_reference": "physicist_daily_arxiv",
+  "provenance": {
+    "program": "Collection",
+    "catalog": "Paper Collection",
+    "catalog_record_id": "ac099926b4ddd8a6",
+    "catalog_record_ids": [
+      "ac099926b4ddd8a6"
+    ],
+    "catalog_topic": "Field Theory",
+    "collection_date": "2026-08-23",
+    "sampled_at": "2026-08-28",
+    "selected_by": "full_collection_backfill",
+    "sampling_seed": "not_applicable_full_collection",
+    "candidate_count": 452
+  },
+  "verified_metadata": {
+    "arxiv_id": "2506.23205",
+    "version": "v2",
+    "title": "BridgeShape: Latent Diffusion Schrödinger Bridge for 3D Shape Completion",
+    "authors": [
+      "Dequan Kong",
+      "Honghua Chen",
+      "Zhe Zhu",
+      "Mingqiang Wei"
+    ],
+    "categories": [
+      "cs.CV"
+    ],
+    "primary_category": "cs.CV",
+    "published": "2025-06-29T12:21:21Z",
+    "abstract": "A latent diffusion Schrödinger bridge transports incomplete-shape latents toward complete-shape latents using a depth-enhanced VQ-VAE.",
+    "comment": ""
+  },
+  "sections": [
+    {
+      "title": "作者信息",
+      "paragraphs": [
+        "作者：Dequan Kong、Honghua Chen、Zhe Zhu、Mingqiang Wei；arXiv:2506.23205v2。全文 18 页。论文将 paired-data Schrödinger bridge 与 depth-enhanced VQ-VAE 用于 voxel/TSDF 形式的 3D shape completion。"
+      ]
+    },
+    {
+      "title": "研究问题",
+      "paragraphs": [
+        "传统 diffusion completion 从无结构 Gaussian noise 出发，再靠额外分支反复注入 incomplete-shape features；这既浪费计算，也没有显式建模 partial→complete distribution transport。论文问：能否把 incomplete latent 直接作为 bridge endpoint，学习一条受 paired shapes 约束的随机最优输运路径？"
+      ]
+    },
+    {
+      "title": "背景",
+      "paragraphs": [
+        "partial scan 表示为 TSDF，complete shape 为 TUDF。Stage I 用完整形状训练 VQ-VAE，并把多个渲染 depth views 的 DINOv2 features 平均后以 cross-attention 融入 encoder；Stage II 用单独 encoder 将 partial shape 映射到同一 latent space，再构造 Schrödinger bridge。",
+        "Figure 3 对比 Input、ShapeFormer、DiffComplete、BridgeShape 与 GT。它直观显示 BridgeShape 对柜体孔洞、桌腿、灯罩与沙发轮廓的补全更接近 GT，但仍是选取样例，不能替代全测试集误差。"
+      ]
+    },
+    {
+      "title": "模型与方法",
+      "paragraphs": [
+        "给定 complete latent \\(z_0\\sim p_A\\) 与 incomplete latent \\(z_T\\sim p_B\\)，目标是在参考 path measure 下最小化 path-space KL 且满足两端 marginals。paired training 允许直接采样 Gaussian bridge posterior \\(q(z_t\\mid z_0,z_T)\\)，其均值按累计方差在两个 endpoints 间插值。",
+        "极稀疏 partial shapes 会使 transport path 不稳，因此作者先向 incomplete latent 注入 Gaussian stochasticity。denoising U-Net 预测 bridge noise，reverse DDPM 从 \\(z_T\\) 迭代到 \\(\\hat z_0\\)，再由 VQ-VAE decoder 还原完整体素形状。"
+      ]
+    },
+    {
+      "title": "核心结果与证据",
+      "paragraphs": [
+        "Figure 3 中 BridgeShape 相比 ShapeFormer 与 DiffComplete 更好恢复细杆、封闭平面和对称结构；图像也暴露 partial input 的多解性，不能仅凭视觉决定几何正确。",
+        "3D-EPN 八类平均 voxel \\(l_1\\) error 为 0.039；DiffComplete 为 0.053，论文计算约下降 26%。对 unseen synthetic categories，平均 CD×100 为 4.06、IoU×100 为 70.1；real-world ScanNet unseen categories 为 CD 6.99、IoU 53.5，说明 domain shift 下仍有明显精度下降。",
+        "depth features 把 ablation 的 reconstruction error 从 0.0022 降到 0.0021，并将 completion IoU 从 92.36% 提到 94.41%。附录报告每步约 33.6 GFLOPs、总约 100.8 GFLOPs；相较 100-step diffusion 的约 15,950 GFLOPs，效率优势来自 latent bridge 与少步推断的组合。"
+      ]
+    },
+    {
+      "title": "有效性与局限",
+      "paragraphs": [
+        "Schrödinger bridge 的“optimal transport”依赖选定 reference diffusion、paired endpoints 与 latent geometry；VQ-VAE distortion 会改变物理空间的距离含义。CD/IoU 与 voxel \\(l_1\\) 不保证拓扑正确、可制造性或薄结构连通。",
+        "论文 failure cases 指出极端稀疏观测下细节补全不足，latent codebook/representation 也限制高频结构。real-world IoU 明显低于 synthetic；DINOv2 depth views、Scan2CAD labels 与训练类别可能引入先验。与 baselines 的 resolution、steps 和 compute 需逐项对齐。"
+      ]
+    },
+    {
+      "title": "复现与资源",
+      "paragraphs": [
+        "原文：https://arxiv.org/abs/2506.23205；代码：https://github.com/kongdq/BridgeShape。全文 18 页，PDF SHA-256：ca46114d61a42ba9f5d31c71c57fe04404ddf0a8db7254fe36deb31fcac8ca67。",
+        "复现需固定 TSDF/TUDF resolution、VQ codebook、render views、DINOv2 checkpoint、cross-attention stage、partial encoder、bridge variance schedule/stochasticity、reverse steps、surface sampling、CD/IoU threshold 与 five-run aggregation。",
+        "Evidence status: full-text verified; no independent reproduction performed."
+      ]
+    },
+    {
+      "title": "阅读指南",
+      "paragraphs": [
+        "先看 Figures 1–2，理解从 Gaussian denoising 改为 partial→complete bridge；再读 Eqs. (6)–(15) 的 endpoints、posterior 和 reverse kernel。随后用 Figure 3/Table 1 建立直觉，再检查 unseen synthetic/real tables、depth/stochasticity ablations 与 failure cases。"
+      ]
+    }
+  ],
+  "cover": {
+    "mode": "source_figure",
+    "asset_path": "assets/collection-figures/2506.23205/figure-3-shape-completion.webp",
+    "label": "Figure 3",
+    "visual_type": "comparison",
+    "evidence": "paper.pdf p. 5, Figure 3",
+    "alt_text": "八类不完整三维物体经 ShapeFormer、DiffComplete、BridgeShape 补全并与 ground truth 比较。",
+    "caption": "BridgeShape 在选取样例中更好恢复整体几何与细结构；总体优劣仍需结合 voxel、CD 与 IoU。",
+    "selection_rationale": "Figure 3 是最具可视性的结果图，可直接替代对不同补全方法的冗长文字描述。"
+  },
+  "figure_refs": [
+    {
+      "label": "Figure 3",
+      "asset_path": "assets/collection-figures/2506.23205/figure-3-shape-completion.webp",
+      "section": "核心结果与证据",
+      "role": "compare qualitative 3D completion geometry",
+      "evidence": "paper.pdf p. 5, Figure 3",
+      "alt_text": "Rows show partial input, two baselines, BridgeShape and ground truth across object classes.",
+      "caption": "The latent bridge recovers more coherent global shapes and several thin structures in these examples.",
+      "interpretation": "Selected renderings do not establish topology, uncertainty calibration or real-world robustness."
+    }
+  ],
+  "equation_refs": [
+    {
+      "label": "Paired bridge posterior",
+      "latex": "q(z_t\\mid z_0,z_T)=\\mathcal N\\!\\left(z_t;\\frac{\\sigma_{b,t}^2z_0+\\sigma_t^2z_T}{\\sigma_{b,t}^2+\\sigma_t^2},\\frac{\\sigma_t^2\\sigma_{b,t}^2}{\\sigma_t^2+\\sigma_{b,t}^2}I\\right)",
+      "role": "sample intermediate latents between complete and incomplete endpoints",
+      "symbols": {
+        "z0": "complete-shape latent",
+        "zT": "incomplete-shape latent",
+        "sigma": "accumulated bridge variances"
+      },
+      "evidence": "paper.pdf p. 4, Eqs. (11)–(13)",
+      "interpretation": "Paired endpoints make the intermediate bridge Gaussian and tractable in the chosen latent coordinates."
+    },
+    {
+      "label": "Bridge noise-prediction loss",
+      "latex": "\\mathcal L=\\left\\|\\epsilon_\\theta(z_t,t)-\\frac{z_t-z_0}{\\sigma_t}\\right\\|_2^2",
+      "role": "learn reverse transport toward the complete latent",
+      "symbols": {
+        "epsilon_theta": "denoising network",
+        "zt": "intermediate bridge state"
+      },
+      "evidence": "paper.pdf p. 5, Eq. (14)",
+      "interpretation": "The incomplete endpoint supplies the starting structure, so the network predicts a conditional correction rather than denoising from an unrelated prior."
+    }
+  ],
+  "evidence_refs": [
+    "paper.pdf pp. 2–5: depth-enhanced VQ-VAE and latent Schrödinger bridge",
+    "paper.pdf pp. 5–12: known/unseen completion results, efficiency and failures",
+    "source PDF SHA-256 ca46114d61a42ba9f5d31c71c57fe04404ddf0a8db7254fe36deb31fcac8ca67",
+    "Evidence status: full-text verified; no independent reproduction performed."
+  ]
+}

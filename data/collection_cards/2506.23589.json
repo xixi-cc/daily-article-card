@@ -1,0 +1,153 @@
+{
+  "arxiv_id": "2506.23589",
+  "source_version": "v1",
+  "source_pdf": "https://arxiv.org/pdf/2506.23589",
+  "title_en": "Transition Matching: Scalable and Flexible Generative Modeling",
+  "title_zh": "Transition Matching：可扩展且灵活的生成建模",
+  "curation_status": "full_text_verified",
+  "card_standard_version": "2.3",
+  "paper_profile": "theory_numerics",
+  "style_reference": "physicist_daily_arxiv",
+  "provenance": {
+    "program": "Collection",
+    "catalog": "Paper Collection",
+    "catalog_record_id": "579444607faedf8b",
+    "catalog_record_ids": [
+      "579444607faedf8b"
+    ],
+    "catalog_topic": "Generative Models",
+    "collection_date": "2026-08-23",
+    "sampled_at": "2026-08-28",
+    "selected_by": "full_collection_backfill",
+    "sampling_seed": "not_applicable_full_collection",
+    "candidate_count": 452
+  },
+  "verified_metadata": {
+    "arxiv_id": "2506.23589",
+    "version": "v1",
+    "title": "Transition Matching: Scalable and Flexible Generative Modeling",
+    "authors": [
+      "Neta Shaul",
+      "Uriel Singer",
+      "Itai Gat",
+      "Yaron Lipman"
+    ],
+    "categories": [
+      "cs.LG",
+      "cs.AI"
+    ],
+    "primary_category": "cs.LG",
+    "published": "2025-06-30T07:51:58Z",
+    "abstract": "Transition Matching learns finite stochastic Markov kernels and connects diffusion, flow matching and continuous autoregressive generation.",
+    "comment": ""
+  },
+  "sections": [
+    {
+      "title": "作者信息",
+      "paragraphs": [
+        "作者：Neta Shaul、Uriel Singer、Itai Gat、Yaron Lipman；arXiv:2506.23589v1。全文 41 页。论文提出 Transition Matching（TM）总框架，并在统一 1.7B DiT、350M licensed image-caption pairs 下比较 DTM、ARTM、FHTM、flow matching 与 autoregressive baselines。"
+      ]
+    },
+    {
+      "title": "研究问题",
+      "paragraphs": [
+        "diffusion/flow 通常以连续时间局部速度描述生成，自回归模型则顺序预测 tokens。论文问：能否直接学习离散时间 Markov transition kernel \\(p_\\theta(x_{t+1}\\mid x_t)\\)，允许随机、非连续 supervision，并通过 kernel factorization 在并行 flow 与 causal AR 之间选择？"
+      ]
+    },
+    {
+      "title": "背景",
+      "paragraphs": [
+        "给定 supervising process \\(q(x_{0:T})\\)，TM 不必重建其微分生成元，而是匹配相邻状态的 conditional transition。一个 auxiliary variable \\(Y\\) 参数化 \\(q(x_{t+1}\\mid x_t,Y)\\)，网络学习 posterior \\(p_\\theta(Y\\mid x_t)\\)；这把设计自由度分成 process、parameterization 与 probabilistic model。",
+        "Figure 7 在同一类 DiT 训练设置下并列 FM、MAR、FHTM 与 DTM 的文本图像样本。DTM/FHTM 在复杂属性和文字上常更符合 prompt，但这些仍是筛选样例，必须结合 Tables 1–3。"
+      ]
+    },
+    {
+      "title": "模型与方法",
+      "paragraphs": [
+        "DTM 采用线性 path \\(X_t=(1-t/T)X_0+(t/T)X_T\\)，令 \\(Y=X_T-X_0\\)，每一步由 \\(X_{t+1}=X_t+Y/T\\) 更新。大 backbone 每个 transition 计算一次 features，小 flow head（约 backbone 参数的 2%）并行生成各 patch 的 stochastic difference。",
+        "ARTM/FHTM 使用 independent linear process，每个 \\(t\\) 重新采样 base noise，并以 causal factorization 逐 token 生成 \\(X_{t+1}\\)。FHTM 的 attention 完全 causal，可放进标准 LLM；代价是每个 transition 的 backbone forwards 随 image token 数增长。理论上 \\(\\mathbb E[Y\\mid X_t=x]\\) 等于 flow-matching marginal velocity，且 \\(T\\to\\infty\\) 时 DTM 收敛到 Euler FM。"
+      ]
+    },
+    {
+      "title": "核心结果与证据",
+      "paragraphs": [
+        "Figure 7 显示 DTM/FHTM 在獾、机器人标牌、自由女神像、飞机与文字牌等 prompts 上能同时处理对象、风格和文字；但图中失败/随机 seed 未完整展示。",
+        "PartiPrompts 上 DTM 用 32 backbone NFEs 报告 CLIPScore 26.8、PickScore 21.2、ImageReward 0.53、UnifiedReward 5.12；FM 用 256 NFEs 对应 26.0、21.0、0.23、4.78。GenEval overall 为 DTM 0.54、MAR 0.52、FM 0.47。DTM 并非 CLIPScore 唯一最佳，MAR/三步 causal variants 可到 27.0。",
+        "优化 sampling 时，DTM 以 16 backbone forwards 的 kernel time 1.6 s 达到 CLIPScore 26.8、PickScore 21.1；FM 128 forwards 为 10.8 s、26.0、21.0，约 7× speedup。ARTM/FHTM 没有该速度优势，三 transition 的 NFE 约为 \\(3\\times256\\)，论文明确把 causal integration 与高 sampling cost 作为 tradeoff。"
+      ]
+    },
+    {
+      "title": "有效性与局限",
+      "paragraphs": [
+        "比较虽固定数据、backbone 与 optimizer，但所有 baselines 是作者重实现；350M licensed dataset 不公开，无法外部 exact reproduce。自动 preference metrics 与 GenEval 不等于人类盲评或 memorization audit；Figure 7 是 cherry-picked samples。",
+        "DTM 的小 head 在每步独立生成 patches，限制 kernel expressiveness；加大 patch kernel 主要帮助极少 transition steps。ARTM/FHTM 成本高且尚未在真正多模态 LLM 中展示 reasoning。\\(T\\to\\infty\\) 收敛只说明连续极限，不能保证有限 \\(T\\)、有限网络的误差单调。"
+      ]
+    },
+    {
+      "title": "复现与资源",
+      "paragraphs": [
+        "原文：https://arxiv.org/abs/2506.23589。全文 41 页，PDF SHA-256：313020feeb16473e8aaef1b2aec285e1b3e47cb5c8a202caeae667b4f6159e1d。",
+        "复现需固定 350M data snapshot、SDXL-VAE/Chameleon tokenizer、1.7B DiT、40M head、Flan-UL2 encoder、500k iterations、batch 2048、transition count、head ODE steps、activation caching、metric checkpoints 与 inference hardware。",
+        "Evidence status: full-text verified; no independent reproduction performed."
+      ]
+    },
+    {
+      "title": "阅读指南",
+      "paragraphs": [
+        "先读 Section 2.1，把 TM 写成 supervising process、\\(Y\\) parameterization 与 \\(B\\mid A\\) model 三元组；再看 DTM Eqs. (10)–(14) 和连续极限定理。随后比较 Figure 7 与 Tables 1–3，最后读 kernel expressiveness、independent process 和 causal-cost ablations。"
+      ]
+    }
+  ],
+  "cover": {
+    "mode": "source_figure",
+    "asset_path": "assets/collection-figures/2506.23589/figure-7-transition-samples.webp",
+    "label": "Figure 7",
+    "visual_type": "comparison",
+    "evidence": "paper.pdf p. 8, Figure 7",
+    "alt_text": "FM、MAR、FHTM、DTM 在多组文本提示下的生成图像并列比较。",
+    "caption": "有限随机 transition kernels 在若干复杂提示上改善属性与文字匹配；图像样例需结合统一设置下的指标。",
+    "selection_rationale": "Figure 7 是最具可视性的主结果，优先于抽象架构图和数据表。"
+  },
+  "figure_refs": [
+    {
+      "label": "Figure 7",
+      "asset_path": "assets/collection-figures/2506.23589/figure-7-transition-samples.webp",
+      "section": "核心结果与证据",
+      "role": "compare finite-transition and baseline samples",
+      "evidence": "paper.pdf p. 8, Figure 7",
+      "alt_text": "Four columns compare FM, MAR, FHTM and DTM across object, style and text prompts.",
+      "caption": "Expressive stochastic transitions can improve finite-step text adherence and image quality.",
+      "interpretation": "The examples are selected; aggregate metrics and compute costs provide the quantitative evidence."
+    }
+  ],
+  "equation_refs": [
+    {
+      "label": "Difference transition",
+      "latex": "X_t=\\left(1-\\frac{t}{T}\\right)X_0+\\frac{t}{T}X_T,\\qquad Y=X_T-X_0,\\qquad X_{t+1}=X_t+\\frac{Y}{T}",
+      "role": "define DTM's finite stochastic step",
+      "symbols": {
+        "T": "number of transitions",
+        "Y": "endpoint difference latent"
+      },
+      "evidence": "paper.pdf p. 5, Eqs. (10)–(12)",
+      "interpretation": "The network samples a conditional endpoint difference rather than evaluating only its mean velocity."
+    },
+    {
+      "label": "Flow-matching limit",
+      "latex": "\\mathbb E[Y\\mid X_t=x]=\\mathbb E[X_T-X_0\\mid X_t=x]=u_t(x)",
+      "role": "connect DTM to the marginal flow velocity",
+      "symbols": {
+        "u_t": "flow-matching velocity",
+        "Y": "DTM difference latent"
+      },
+      "evidence": "paper.pdf p. 6, Eq. (14)",
+      "interpretation": "As transitions become infinitesimal, stochastic DTM steps concentrate around the Euler flow-matching update."
+    }
+  ],
+  "evidence_refs": [
+    "paper.pdf pp. 3–7: TM framework, DTM/ARTM/FHTM and FM limit",
+    "paper.pdf pp. 8–10: controlled text-to-image results, efficiency and limitations",
+    "source PDF SHA-256 313020feeb16473e8aaef1b2aec285e1b3e47cb5c8a202caeae667b4f6159e1d",
+    "Evidence status: full-text verified; no independent reproduction performed."
+  ]
+}

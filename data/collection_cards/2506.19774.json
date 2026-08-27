@@ -1,0 +1,175 @@
+{
+  "arxiv_id": "2506.19774",
+  "source_version": "v1",
+  "source_pdf": "https://arxiv.org/pdf/2506.19774",
+  "title_en": "Kling-Foley: Multimodal Diffusion Transformer for High-Quality Video-to-Audio Generation",
+  "title_zh": "Kling-Foley：用于高质量视频到音频生成的多模态扩散 Transformer",
+  "curation_status": "full_text_verified",
+  "card_standard_version": "2.3",
+  "paper_profile": "ai_empirical",
+  "style_reference": "physicist_daily_arxiv",
+  "provenance": {
+    "program": "Collection",
+    "catalog": "Paper Collection",
+    "catalog_record_id": "1f9c1585090b9ff6",
+    "catalog_record_ids": [
+      "1f9c1585090b9ff6"
+    ],
+    "catalog_topic": "Transformer Theory",
+    "collection_date": "2026-08-23",
+    "sampled_at": "2026-08-28",
+    "selected_by": "full_collection_backfill",
+    "sampling_seed": "not_applicable_full_collection",
+    "candidate_count": 452
+  },
+  "verified_metadata": {
+    "arxiv_id": "2506.19774",
+    "version": "v1",
+    "title": "Kling-Foley: Multimodal Diffusion Transformer for High-Quality Video-to-Audio Generation",
+    "authors": [
+      "Jun Wang",
+      "Xijuan Zeng",
+      "Chunyu Qiang",
+      "Ruilong Chen",
+      "Shiyao Wang",
+      "Le Wang",
+      "Wangjing Zhou",
+      "Pengfei Cai",
+      "Jiahui Zhao",
+      "Nan Li",
+      "Zihan Li",
+      "Yuzhe Liang",
+      "Xiaopeng Wang",
+      "Haorui Zheng",
+      "Ming Wen",
+      "Kang Yin",
+      "Yiran Wang",
+      "Nan Li",
+      "Feng Deng",
+      "Liang Dong",
+      "Chen Zhang",
+      "Di Zhang",
+      "Kun Gai"
+    ],
+    "categories": [
+      "eess.AS",
+      "cs.AI",
+      "cs.CL",
+      "cs.SD"
+    ],
+    "primary_category": "eess.AS",
+    "published": "2025-06-24T16:39:39Z",
+    "abstract": "A multimodal flow-matching transformer aligns video, text and audio tokens to synthesize variable-duration, temporally synchronized soundtracks.",
+    "comment": ""
+  },
+  "sections": [
+    {
+      "title": "作者信息",
+      "paragraphs": [
+        "作者：Jun Wang、Xijuan Zeng、Chunyu Qiang 等 23 位作者，来自 Kuaishou Technology；arXiv:2506.19774v1。全文 24 页。工作包含生成模型、latent audio codec、20,935 条人工标注的 Kling-Audio-Eval，以及产品安全讨论。"
+      ]
+    },
+    {
+      "title": "研究问题",
+      "paragraphs": [
+        "video-to-audio 不只要求声学自然，还要同时满足事件语义、帧级时间同步、可变时长和多声源空间感。论文问：如何在同一 latent flow 中联合 text/video/audio conditions，并避免不同帧率 token 的位置编码失配，使声音事件与视觉动作同步？"
+      ]
+    },
+    {
+      "title": "背景",
+      "paragraphs": [
+        "输入视频可含可选 text prompt；目标是输出与画面语义一致、时间对齐的声效/背景音乐。Figure 1 用锻铁视频示意输入—生成过程和随视频延伸的 waveform，是系统任务定义而非单纯架构图。",
+        "模型在 Mel-VAE latent 中生成，再由 mel decoder、Mono2Stereo 与 vocoder 重建 waveform。视频、文本、抽帧对齐特征分别编码；缺失模态由 learnable placeholders 支持 flexible pairwise training。"
+      ]
+    },
+    {
+      "title": "模型与方法",
+      "paragraphs": [
+        "MM-DiT 将 text、vision、audio 的 queries/keys/values 拼到共享 scaled dot-product attention，再按模态拆分；audio-only blocks 增深声学建模。aligned RoPE 按 audio/video 的实际 temporal rates 缩放频率，局部 1D convolutions/MLPs 与 synchronization module 进一步约束短时同步。",
+        "conditional flow matching 在 \\(x_t=tx_1+(1-t)x_0\\) 上拟合目标 velocity；推断以 Euler solver 从 Gaussian audio latent 积分到生成 latent。duration embeddings 编码 clip start 与 total duration，并通过 adaptive LayerNorm 调制各层，实现可变时长。数据 pipeline 还包括单事件过滤、时间增强合成多事件与多模型 captions。"
+      ]
+    },
+    {
+      "title": "核心结果与证据",
+      "paragraphs": [
+        "Figure 1 直接说明输出不是一个 class label，而是与输入视频等长的多声道声轨；caption 还强调可生成任意时长序列，但正文的 limitations 将稳定同步范围限制在较短 clips。",
+        "在 VGGSound 15,220-sample test 上，Kling-Foley 的 IB-score 为 30.75、DeSync 为 0.43、SDR 为 -2.41、MCD 为 2.60；MMAudio 对应 29.26、0.45、-3.09、2.84。分布指标并非全胜：FDPANNs 7.60 与 KLPANNs 1.86 均落后于 MMAudio 的 6.29 与 1.77，说明语义/同步优势不等于每项分布距离最好。",
+        "latent codec 在 2,000 个 out-of-domain samples 上覆盖 sound effect、music、speech、singing；例如 speech PESQ 3.27 对 MMAudio 3.10，singing MCD 0.70 对 1.08。Kling-Audio-Eval 含 20,935 条、九种声音场景，但 benchmark 构建与部分数据仍为工业内部资源。"
+      ]
+    },
+    {
+      "title": "有效性与局限",
+      "paragraphs": [
+        "论文明确指出复杂物理过程和多物体链式碰撞/多人叠声容易产生 acoustic logic errors；超过约 20 s 的视频可能发生 audio-video synchronization drift，稀有文化/医疗场景因训练样本不足而波动。",
+        "多数客观指标依赖 PANNs、ImageBind、Synchformer 等代理模型，未等同于听觉盲评；VGGSound 与训练来源可能重叠分布。Figure 1 不能展示真实音质，必须结合音频试听。数据、模型权重、训练 compute 与商业系统细节未完全开放，exact reproduction 受限。"
+      ]
+    },
+    {
+      "title": "复现与资源",
+      "paragraphs": [
+        "原文：https://arxiv.org/abs/2506.19774；项目页：https://klingfoley.github.io/Kling-Foley/。全文 24 页，PDF SHA-256：86fb0ba7ff99989a028150f2499a186f5c47bd31250457463cc3ffb1dbe64e46。",
+        "复现需固定 video/audio sampling rates、Mel-VAE/vocoder、RoPE rate scaling、frame extractor、duration embedding、pairwise modality dropout、flow time grid/Euler step、mono-to-stereo rendering、VGGSound split 与各 metric checkpoint。",
+        "Evidence status: full-text verified; no independent reproduction performed."
+      ]
+    },
+    {
+      "title": "阅读指南",
+      "paragraphs": [
+        "先看 Figure 1 了解任务输出，再看 Figure 2 的 multimodal joint conditioning；随后读 flow objective、aligned RoPE 与 sync module。评估时同时查看 Table 2 的六个指标，注意 distribution matching 的反例；最后读 20 s drift 与 complex-scene limitations，并通过项目页试听。"
+      ]
+    }
+  ],
+  "cover": {
+    "mode": "source_figure",
+    "asset_path": "assets/collection-figures/2506.19774/figure-1-kling-foley-overview.webp",
+    "label": "Figure 1",
+    "visual_type": "schematic",
+    "evidence": "paper.pdf p. 1, Figure 1",
+    "alt_text": "视频和可选文本输入 Kling-Foley，输出与视频等长的多声道音频波形。",
+    "caption": "系统把视觉事件与可选文本映射为同步声轨；流程图定义任务，但音质仍需实际试听与指标验证。",
+    "selection_rationale": "Figure 1 最直观地呈现视频到音频的输入输出，优先于无声的指标表。"
+  },
+  "figure_refs": [
+    {
+      "label": "Figure 1",
+      "asset_path": "assets/collection-figures/2506.19774/figure-1-kling-foley-overview.webp",
+      "section": "核心结果与证据",
+      "role": "show the video-to-audio task and variable-duration output",
+      "evidence": "paper.pdf p. 1, Figure 1",
+      "alt_text": "Input video and text are mapped to aligned stereo audio waveforms.",
+      "caption": "The model generates an audio sequence whose duration follows the video.",
+      "interpretation": "A static figure cannot establish perceptual audio quality or long-duration synchronization."
+    }
+  ],
+  "equation_refs": [
+    {
+      "label": "Conditional flow-matching loss",
+      "latex": "\\mathcal L_{\\rm CFM}=\\mathbb E\\left\\|v_\\theta(t,C,tx_1+(1-t)x_0)-u(t,tx_1+(1-t)x_0)\\right\\|_2^2",
+      "role": "learn audio-latent transport conditioned on video and text",
+      "symbols": {
+        "x0": "Gaussian audio latent",
+        "x1": "target audio latent",
+        "C": "multimodal condition"
+      },
+      "evidence": "paper.pdf p. 5, Eq. (1)",
+      "interpretation": "The ODE transports noise to audio while joint attention supplies visual and textual constraints."
+    },
+    {
+      "label": "Joint multimodal attention",
+      "latex": "\\operatorname{Attn}(Q,K,V)=\\operatorname{softmax}\\!\\left(\\frac{[Q_a;Q_v;Q_t][K_a;K_v;K_t]^\\top}{\\sqrt d}\\right)[V_a;V_v;V_t]",
+      "role": "exchange information across audio, video and text tokens",
+      "symbols": {
+        "a,v,t": "audio, video and text modalities",
+        "d": "attention width"
+      },
+      "evidence": "paper.pdf pp. 6–7, joint-attention section",
+      "interpretation": "Shared attention supplies semantic coupling; aligned RoPE and the synchronization module carry explicit temporal structure."
+    }
+  ],
+  "evidence_refs": [
+    "paper.pdf pp. 4–10: multimodal flow, aligned RoPE, codec and data pipeline",
+    "paper.pdf pp. 14–18: VGGSound metrics, codec results and limitations",
+    "source PDF SHA-256 86fb0ba7ff99989a028150f2499a186f5c47bd31250457463cc3ffb1dbe64e46",
+    "Evidence status: full-text verified; no independent reproduction performed."
+  ]
+}

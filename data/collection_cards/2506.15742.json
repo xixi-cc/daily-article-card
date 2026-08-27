@@ -1,0 +1,171 @@
+{
+  "arxiv_id": "2506.15742",
+  "source_version": "v2",
+  "source_pdf": "https://arxiv.org/pdf/2506.15742",
+  "title_en": "FLUX.1 Kontext: Flow Matching for In-Context Image Generation and Editing in Latent Space",
+  "title_zh": "FLUX.1 Kontext：潜空间中的上下文图像生成与编辑流匹配",
+  "curation_status": "full_text_verified",
+  "card_standard_version": "2.3",
+  "paper_profile": "ai_empirical",
+  "style_reference": "physicist_daily_arxiv",
+  "provenance": {
+    "program": "Collection",
+    "catalog": "Paper Collection",
+    "catalog_record_id": "b4d7d95594eedfb6",
+    "catalog_record_ids": [
+      "b4d7d95594eedfb6"
+    ],
+    "catalog_topic": "Flow Matching",
+    "collection_date": "2026-08-23",
+    "sampled_at": "2026-08-28",
+    "selected_by": "full_collection_backfill",
+    "sampling_seed": "not_applicable_full_collection",
+    "candidate_count": 452
+  },
+  "verified_metadata": {
+    "arxiv_id": "2506.15742",
+    "version": "v2",
+    "title": "FLUX.1 Kontext: Flow Matching for In-Context Image Generation and Editing in Latent Space",
+    "authors": [
+      "Black Forest Labs",
+      "Stephen Batifol",
+      "Andreas Blattmann",
+      "Frederic Boesel",
+      "Saksham Consul",
+      "Cyril Diagne",
+      "Tim Dockhorn",
+      "Jack English",
+      "Zion English",
+      "Patrick Esser",
+      "Sumith Kulal",
+      "Kyle Lacey",
+      "Yam Levi",
+      "Cheng Li",
+      "Dominik Lorenz",
+      "Jonas Müller",
+      "Dustin Podell",
+      "Robin Rombach",
+      "Harry Saini",
+      "Axel Sauer",
+      "Luke Smith"
+    ],
+    "categories": [
+      "cs.GR"
+    ],
+    "primary_category": "cs.GR",
+    "published": "2025-06-17T20:18:23Z",
+    "abstract": "A rectified-flow transformer concatenates context and target image tokens to unify text-to-image generation, instruction editing and iterative visual workflows.",
+    "comment": ""
+  },
+  "sections": [
+    {
+      "title": "作者信息",
+      "paragraphs": [
+        "作者单位为 Black Forest Labs；arXiv:2506.15742v2，共 21 位署名作者。全文 20 页。论文公开 FLUX.1 Kontext 的模型设计、KontextBench 与应用/失败案例，但训练图文对、完整数据配方和 [pro]/[max] 权重并未全部开放。"
+      ]
+    },
+    {
+      "title": "研究问题",
+      "paragraphs": [
+        "现有图像编辑器常需任务专用 fine-tuning，或在连续多轮编辑中发生 identity/style drift；多模态自回归系统又可能延迟高。论文问：能否让一个 latent flow model 同时处理纯文本生成与以参考图、自然语言指令为条件的 in-context editing，并在多轮操作中维持对象一致性？"
+      ]
+    },
+    {
+      "title": "背景",
+      "paragraphs": [
+        "目标条件分布写为 \\(p(x\\mid y,c)\\)：\\(x\\) 是输出图，\\(y\\) 是可选 context image，\\(c\\) 是指令。与通道拼接不同，Kontext 把 context latent tokens 直接追加到 target tokens，在 Transformer attention 中建立图—图关系；纯文本任务令 \\(y=\\varnothing\\)。",
+        "Figure 2 以连续四步编辑说明关键能力：去除遮挡、迁移到 Freiburg、再改变天气，同时尽量保留人物、衣着与摄影风格。这张图展示“可迭代条件映射”，但只是作者选取的成功轨迹，不能替代随机任务统计。"
+      ]
+    },
+    {
+      "title": "模型与方法",
+      "paragraphs": [
+        "基座是 latent-space rectified-flow Transformer，混合 double-stream 与 38 个 single-stream blocks；3D RoPE 为 token 编码虚拟时间和空间位置。target tokens 使用 \\(u_x=(0,h,w)\\)，第 \\(i\\) 张 context image 使用 \\(u_{y_i}=(i,h,w)\\)，从而以 time offset 区分多图而保留内部二维结构。",
+        "训练从 FLUX.1 text-to-image checkpoint 出发，在数百万 relational pairs \\((x\\mid y,c)\\) 上做 velocity matching；linearly interpolated latent 为 \\(z_t=(1-t)x+t\\epsilon\\)。[pro] 随后使用 latent adversarial diffusion distillation，[dev] 使用 guidance distillation，并针对 editing 继续优化。"
+      ]
+    },
+    {
+      "title": "核心结果与证据",
+      "paragraphs": [
+        "Figure 2 中三次指令改变遮挡、地点和天气，而人物身份与服装仍可辨认；这是把多轮编辑中的 invariant 与 controlled variables 直接可视化，比文字列举更有效。",
+        "KontextBench 含 1,026 个 crowd-sourced image–prompt pairs，覆盖 text/local/global editing、character/style reference 等类别。human evaluation 中 [pro]/[max] 在 local editing、text editing 与一般 character reference 排名前列；global edit 与 style reference 并非所有比较都第一。",
+        "作者报告 1024×1024 的 text-to-image 和 image-to-image latency 约 3–5 s，并称相对部分系统快至一个数量级；该数字依赖未完全统一的 API、硬件与服务条件。Flux-VAE 在 4,096 张 ImageNet 图上的 reconstruction 为 PDist 0.332、SSIM 0.896、PSNR 31.1，明显优于表中 SD3/SDXL VAEs。"
+      ]
+    },
+    {
+      "title": "有效性与局限",
+      "paragraphs": [
+        "Figure 2 与后续应用图是筛选样例；benchmarks 同时混合 proprietary APIs、不同 sampling budgets 与 human preferences，不能唯一把差异归因于 flow matching。内部 T2I benchmark 的 1,000 prompts 与训练数据细节不完全公开，限制独立复核。",
+        "作者明确指出过多轮编辑会积累 artifacts、偶尔忽略指令，distillation 也会损伤 fidelity；目前重点是单 context image，multi-image 与 video editing 仍属未来工作。[dev] 的 I2I-only optimization 也意味着不同 variant 的能力边界不可互换。"
+      ]
+    },
+    {
+      "title": "复现与资源",
+      "paragraphs": [
+        "原文：https://arxiv.org/abs/2506.15742；模型页：https://huggingface.co/black-forest-labs/FLUX.1-Kontext-dev。全文 20 页，PDF SHA-256：86c8acc1ca714fa463f02315d849a81b5d746c4da4ecb50743b9d672311f916b。",
+        "复现需固定 autoencoder、relational-pair generation/curation、context token order、RoPE offsets、\\(p(t)\\) logit-normal shift、T2I/I2I mixing、LADD/guidance distillation、sampling steps、API latency environment 与 human-evaluation randomization。",
+        "Evidence status: full-text verified; no independent reproduction performed."
+      ]
+    },
+    {
+      "title": "阅读指南",
+      "paragraphs": [
+        "先看 Figures 2 与 4，理解成功编辑链和 token concatenation；再读 Eq. (3) 的 rectified-flow objective 与 distillation recipe。随后核对 KontextBench 六类结果、latency 条件和 Figure 12/15 的 drift failures，避免把少量演示当作无界的多轮一致性。"
+      ]
+    }
+  ],
+  "cover": {
+    "mode": "source_figure",
+    "asset_path": "assets/collection-figures/2506.15742/figure-2-iterative-editing.webp",
+    "label": "Figure 2",
+    "visual_type": "comparison",
+    "evidence": "paper.pdf p. 3, Figure 2",
+    "alt_text": "同一人物经过去遮挡、迁移城市与雪景变换的连续四步编辑。",
+    "caption": "每一步改变受控因素，同时尝试保持人物、衣着与摄影风格；这是成功样例，不代表所有多轮轨迹。",
+    "selection_rationale": "Figure 2 是论文最直观的核心能力图，优先于架构框图和 benchmark 柱状图。"
+  },
+  "figure_refs": [
+    {
+      "label": "Figure 2",
+      "asset_path": "assets/collection-figures/2506.15742/figure-2-iterative-editing.webp",
+      "section": "核心结果与证据",
+      "role": "visualize iterative instruction-conditioned editing",
+      "evidence": "paper.pdf p. 3, Figure 2",
+      "alt_text": "A reference portrait followed by occlusion removal, relocation and weather editing.",
+      "caption": "The sequence separates edited variables from identity and style invariants.",
+      "interpretation": "It is a selected success case; aggregate drift and instruction failures require benchmark and failure-case review."
+    }
+  ],
+  "equation_refs": [
+    {
+      "label": "Conditional image distribution",
+      "latex": "p_\\theta(x\\mid y,c),\\qquad y\\in\\mathcal X\\cup\\{\\varnothing\\}",
+      "role": "unify editing and text-to-image generation",
+      "symbols": {
+        "x": "target image",
+        "y": "optional context image",
+        "c": "natural-language instruction"
+      },
+      "evidence": "paper.pdf pp. 4–5, Eq. (1)",
+      "interpretation": "Removing context tokens recovers text-to-image generation; retaining them defines an image-conditioned map."
+    },
+    {
+      "label": "Rectified-flow loss",
+      "latex": "\\mathcal L_\\theta=\\mathbb E\\left\\|v_\\theta(z_t,t,y,c)-(\\epsilon-x)\\right\\|_2^2,\\qquad z_t=(1-t)x+t\\epsilon",
+      "role": "train one velocity field for T2I and I2I tasks",
+      "symbols": {
+        "epsilon": "Gaussian latent noise",
+        "t": "flow time",
+        "v_theta": "conditional velocity network"
+      },
+      "evidence": "paper.pdf p. 5, Eq. (3)",
+      "interpretation": "Context and instruction enter the velocity field while the target follows the same linear latent interpolation."
+    }
+  ],
+  "evidence_refs": [
+    "paper.pdf pp. 3–6: context-token construction and flow objective",
+    "paper.pdf pp. 7–12: KontextBench, latency, applications and limitations",
+    "source PDF SHA-256 86c8acc1ca714fa463f02315d849a81b5d746c4da4ecb50743b9d672311f916b",
+    "Evidence status: full-text verified; no independent reproduction performed."
+  ]
+}
