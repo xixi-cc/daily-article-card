@@ -1,0 +1,203 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Improving the Training of Rectified Flows - physics+AI Collection 随机精选</title>
+    <meta name="description" content="作者：Sangyun Lee、Zinan Lin、Giulia Fanti；arXiv:2405.20320v2。全文 29 页，方法称 2-rectified flow++，在 CIFAR-10、AFHQ、FFHQ 与 ImageNet 64×64 上评估 1–2 NFE 生成。" />
+    <script>
+      (function() {
+        try {
+          var themePreference = window.localStorage.getItem('color-theme') || 'system';
+          var systemUsesDarkTheme = window.matchMedia('(prefers-color-scheme: dark)').matches;
+          var resolvedTheme = themePreference === 'system'
+            ? (systemUsesDarkTheme ? 'dark' : 'light')
+            : themePreference;
+          document.documentElement.dataset.theme = resolvedTheme;
+          document.documentElement.dataset.themePreference = themePreference;
+          document.documentElement.style.colorScheme = resolvedTheme;
+        } catch (error) {
+          document.documentElement.dataset.theme = 'light';
+          document.documentElement.dataset.themePreference = 'system';
+        }
+      })();
+    </script>
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='18' fill='%23111827'/%3E%3Ctext x='50%25' y='55%25' text-anchor='middle' dominant-baseline='middle' font-size='30' font-family='Arial, sans-serif' fill='white'%3EV%3C/text%3E%3C/svg%3E" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700;800&family=Noto+Sans+SC:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <script>document.documentElement.classList.add('math-pending');</script>
+    <script>
+      window.MathJax = {
+        tex: {
+          inlineMath: [['$', '$'], ['\\(', '\\)']],
+          displayMath: [['$$', '$$'], ['\\[', '\\]']],
+          processEscapes: true
+        },
+        options: {
+          skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+        },
+        chtml: {
+          scale: 1,
+          displayAlign: 'center'
+        },
+        startup: {
+          ready: function() {
+            MathJax.startup.defaultReady();
+            MathJax.startup.promise.then(function() {
+              document.documentElement.classList.remove('math-pending');
+              document.documentElement.dataset.mathReady = 'true';
+            });
+          }
+        }
+      };
+    </script>
+    <script defer src="../../assets/vendor/mathjax/tex-chtml.js"></script>
+    <link rel="stylesheet" href="../../assets/style.css" />
+  </head>
+  <body class="detail-page" data-paper-id="2405.20320">
+    <div class="page-noise"></div>
+    <div class="page-blur page-blur-a"></div>
+    <div class="page-blur page-blur-b"></div>
+
+    <header class="header detail-page-header">
+      <div class="container">
+        <div class="detail-page-topbar">
+          <a class="back-link" href="../../collection.html">返回列表</a>
+          <div class="detail-topbar-actions">
+            <span class="detail-site-name">physics+AI Collection 随机精选</span>
+            <button class="theme-toggle" type="button" data-theme-toggle aria-label="当前主题：设备，点击切换主题" title="当前主题：设备">
+  <span class="theme-toggle-icons" aria-hidden="true">
+    <svg class="theme-toggle-icon theme-toggle-icon-light" viewBox="0 0 24 24" fill="none">
+      <circle cx="12" cy="12" r="3.5" stroke="currentColor" stroke-width="1.8"/>
+      <path d="M12 2.5v2M12 19.5v2M2.5 12h2M19.5 12h2M5.3 5.3l1.4 1.4M17.3 17.3l1.4 1.4M18.7 5.3l-1.4 1.4M6.7 17.3l-1.4 1.4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+    </svg>
+    <svg class="theme-toggle-icon theme-toggle-icon-dark" viewBox="0 0 24 24" fill="none">
+      <path d="M20 15.2A8.1 8.1 0 0 1 8.8 4a8.2 8.2 0 1 0 11.2 11.2z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>
+    </svg>
+    <svg class="theme-toggle-icon theme-toggle-icon-system" viewBox="0 0 24 24" fill="none">
+      <rect x="3" y="4" width="18" height="13" rx="2.5" stroke="currentColor" stroke-width="1.8"/>
+      <path d="M8 21h8M12 17v4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+    </svg>
+  </span>
+  <span class="theme-toggle-label" data-theme-toggle-label>设备</span>
+</button>
+          </div>
+        </div>
+
+        <div class="detail-hero-grid">
+          <div class="detail-hero-cover"><figure class="paper-figure-card paper-figure-card-detail">
+  <img class="paper-figure-image" src="../../assets/collection-figures/2405.20320/figure-1-rectified-reflow.webp" alt="四阶段示意图展示交叉线性 coupling、无交叉 rectified trajectories、重新线性插值和重复 Reflow。" loading="lazy" onclick="window.openPaperFigureImage && window.openPaperFigureImage(this)" />
+  <figcaption class="paper-figure-caption">第一轮 Reflow 先重连交叉轨迹，再对生成配对做线性插值；论文认为此时已近直，无需继续递归。</figcaption>
+</figure></div>
+          <div class="detail-hero-copy">
+            <p class="eyebrow">Collection 全文卡</p>
+            <h1 class="detail-page-title">Improving the Training of Rectified Flows</h1>
+            <p class="detail-page-title-zh">改进整流流训练：一次 Reflow 已足够接近直线</p>
+            <div class="detail-meta">Paper Collection · Flow Matching · <a href="https://arxiv.org/abs/2405.20320" target="_blank" rel="noopener noreferrer">原文</a></div>
+            <p class="detail-summary">作者：Sangyun Lee、Zinan Lin、Giulia Fanti；arXiv:2405.20320v2。全文 29 页，方法称 2-rectified flow++，在 CIFAR-10、AFHQ、FFHQ 与 ImageNet 64×64 上评估 1–2 NFE 生成。</p>
+            <div class="detail-micro-meta">
+              <span class="meta-pill">9 分钟读完</span>
+              <span class="meta-pill">8 张阅读卡</span>
+              <span class="meta-pill">作者：Sangyun Lee、Zinan Lin、Giulia Fanti；arXiv:2405.20…</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <main class="container detail-layout">
+      <div class="detail-shell">
+        <article id="detail-body" class="reading-flow"><section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 01</span>
+    <span class="reading-step-note">作者信息</span>
+  </div>
+  <h2>作者信息</h2>
+  <div class="reading-card-content"><ul><li>作者：Sangyun Lee、Zinan Lin、Giulia Fanti；arXiv:2405.20320v2。全文 29 页，方法称 2-rectified flow++，在 CIFAR-10、AFHQ、FFHQ 与 ImageNet 64×64 上评估 1–2 NFE 生成。</li></ul></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 02</span>
+    <span class="reading-step-note">研究问题</span>
+  </div>
+  <h2>研究问题</h2>
+  <div class="reading-card-content"><ul><li>Reflow 通过反复用上一轮 flow 产生的 noise–data coupling 重新训练，使 ODE trajectories 变直；但多轮训练昂贵且会累积模型误差。论文问：第一轮 rewiring 后轨迹是否已经近乎无交叉，使第二次以后 Reflow 没有几何收益；若是，低 NFE 质量差是否主要是优化问题？</li></ul></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 03</span>
+    <span class="reading-step-note">背景</span>
+  </div>
+  <h2>背景</h2>
+  <div class="reading-card-content"><ul><li>rectified flow 沿 \(x_t=(1-t)x+t z\) 训练 velocity field。第一轮将独立 noise/data coupling 重连成生成器诱导 coupling；若两条插值线要相交，所需 noise 往往离开高维 Gaussian typical annulus 或具有异常 autocorrelation，因此在实际高维数据上交叉稀少。</li><li>Figure 1 展示从交叉直线到 1-rectified flow 的无交叉轨迹，再把生成配对线性化得到 2-rectified flow；论文的核心判断是步骤 (c) 已几乎直，继续到 (\(d\)) 收益有限。</li></ul></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 04</span>
+    <span class="reading-step-note">模型与方法</span>
+  </div>
+  <h2>模型与方法</h2>
+  <div class="reading-card-content"><ul><li>作者把 2-rectified flow loss 分成不可约 conditional variance 与可优化误差；由于 induced coupling 近确定性，前者接近零。实测 loss 在 \(t=0,1\) 两端高，于是用 \(p_t(u)\propto e^{4u}+e^{-4u}\) 的 U-shaped timestep density，而不是把权重集中在中间。</li><li>进一步以 pseudo-Huber 降低 outlier gradient variance，并加入 LPIPS perceptual term；还把预训练 VP/VE diffusion posterior 通过 time/scale conversion 初始化为 Reflow model。CIFAR-10 最后用 50,000 real-data/inverted-noise pairs 微调 5,000 iterations。</li></ul></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 05</span>
+    <span class="reading-step-note">核心结果与证据</span>
+  </div>
+  <h2>核心结果与证据</h2>
+  <div class="reading-card-content"><ul><li>Figure 1 是机制图：第一轮 rewiring 消除 trajectory crossings，第二轮使用生成器配对后线性插值；它解释为何论文把资源投向一次 Reflow 的训练质量，而不是递归增加轮数。</li><li>Table 1 的 CIFAR-10 1-NFE FID 从 vanilla 2-RF 的 12.21 降到 7.14（EDM init+大 batch）、5.17（U-shaped \(p_t\)）、3.42（LPIPS-Huber），加 real-data fine-tuning 后为 3.07；相对 12.21 下降约 75%。AFHQ 1-NFE 从 12.39 降到 4.11，FFHQ 从 8.84 降到 5.21。</li><li>在 ImageNet 64×64，1/2 NFE FID 为 4.31/3.64；在 CIFAR-10 为 3.07/2.40。Heun solver 随 NFE 增加仍继续改善，说明“近直”不等于 learned vector field 无离散化或拟合误差。</li></ul><figure class="evidence-figure">
+  <button class="evidence-figure-image-button" type="button" aria-label="放大查看 Figure 1" onclick="window.openPaperFigureImage && window.openPaperFigureImage(this.querySelector('img'))">
+    <img class="paper-figure-image evidence-figure-image" src="../../assets/collection-figures/2405.20320/figure-1-rectified-reflow.webp" alt="从交叉 coupling 到无交叉 flow，再到近直 2-rectified flow 的四阶段示意。" loading="lazy" />
+  </button>
+  <figcaption>
+    <strong>Figure 1</strong> · 高维 typicality 使第二轮配对的线性轨迹很少相交。
+    <span class="evidence-figure-reading">物理解读：This is a geometric intuition supported empirically, not a universal proof.</span>
+    <span class="evidence-figure-source">来源：paper.pdf p. 3, Figure 1</span>
+  </figcaption>
+</figure></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 06</span>
+    <span class="reading-step-note">有效性与局限</span>
+  </div>
+  <h2>有效性与局限</h2>
+  <div class="reading-card-content"><ul><li>“一次 Reflow 足够”来自高维 typicality 直觉与经验图，不是对任意分布、低维 manifold 或有限网络的定理；作者自己的 edge cases 允许近邻 data 或 \(t\to1\) 时出现例外。不同 improvement 叠加了 initialization、batch、loss、timestep sampling 和 real-data fine-tuning，最终 FID 不能归因于单一因素。</li><li>FID 是样本分布的有限统计量，未衡量 mode-wise failure、训练成本或数据泄漏；ImageNet 只到 64×64。real-data fine-tuning 破坏了纯 data-free Reflow 的设定，且部分 FID 因成本只计算一次。</li></ul></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 07</span>
+    <span class="reading-step-note">复现与资源</span>
+  </div>
+  <h2>复现与资源</h2>
+  <div class="reading-card-content"><ul><li>原文：https://arxiv.org/abs/2405.20320；代码：https://github.com/sangyun884/rfpp。全文 29 页，PDF SHA-256：455b0f2e01add04232883d279f5e2c10942394746e6b2f0b26a8f00c787c5341。</li><li>复现需固定 EDM/DDPM checkpoint、Reflow pairing、\(p_t\) 参数 \(a=4\)、pseudo-Huber constant、LPIPS weighting、batch/iterations、real-data inversion NFE、ODE solver 与 50,000-sample FID protocol。</li><li>Evidence status: full-text verified; no independent reproduction performed.</li></ul></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 08</span>
+    <span class="reading-step-note">阅读指南</span>
+  </div>
+  <h2>阅读指南</h2>
+  <div class="reading-card-content"><ul><li>先看 Figure 1 与 Section 3 的 trajectory-intersection argument；再读 Eq. (4) 的 loss decomposition，理解为何 2-RF 与 1-RF 的最佳 timestep density 相反。随后逐行看 Table 1 的 cumulative ablation，最后用 Tables 3–4 区分 1-NFE、2-NFE 与多步 solver 表现。</li></ul></div>
+</section></article>
+        <aside id="detail-toc" class="detail-toc hidden" aria-label="内容目录">
+          <p class="detail-toc-title">阅读目录</p>
+          <nav id="detail-toc-nav" class="detail-toc-nav"></nav>
+        </aside>
+      </div>
+      <nav class="paper-nav"><a class="paper-nav-link paper-nav-prev" href="../../collection-papers/2405.17538/"><span class="paper-nav-label">← 上一篇</span><span class="paper-nav-title">Bayesian RG Flow in Neural Network Field Theories</span></a>
+      <a class="paper-nav-link paper-nav-next" href="../../collection-papers/2406.02154/"><span class="paper-nav-label">下一篇 →</span><span class="paper-nav-title">Learning Hamiltonian neural Koopman operator and simultaneously sustaining and discovering conservation law</span></a></nav>
+    </main>
+
+    <footer class="footer">
+      <div class="container">
+        <p>内容来自 <a href="https://arxiv.org" target="_blank" rel="noopener noreferrer">arXiv.org</a>，阅读卡片由静态站点生成器构建。</p>
+      </div>
+    </footer>
+
+    <script src="../../assets/theme.js"></script>
+    <script src="../../assets/media.js"></script>
+    <script src="../../assets/paper.js"></script>
+  </body>
+</html>
