@@ -1,0 +1,159 @@
+{
+  "arxiv_id": "2407.15595",
+  "source_version": "v2",
+  "source_pdf": "https://arxiv.org/pdf/2407.15595",
+  "title_en": "Discrete Flow Matching",
+  "title_zh": "离散流匹配",
+  "curation_status": "full_text_verified",
+  "card_standard_version": "2.3",
+  "paper_profile": "theory_numerics",
+  "style_reference": "physicist_daily_arxiv",
+  "provenance": {
+    "program": "Collection",
+    "catalog": "Paper Collection",
+    "catalog_record_id": "a22a128c6c4c47c2",
+    "catalog_record_ids": [
+      "a22a128c6c4c47c2"
+    ],
+    "catalog_topic": "Flow Matching",
+    "collection_date": "2026-08-23",
+    "sampled_at": "2026-08-28",
+    "selected_by": "full_collection_backfill",
+    "sampling_seed": "not_applicable_full_collection",
+    "candidate_count": 452
+  },
+  "verified_metadata": {
+    "arxiv_id": "2407.15595",
+    "version": "v2",
+    "title": "Discrete Flow Matching",
+    "authors": [
+      "Itai Gat",
+      "Tal Remez",
+      "Neta Shaul",
+      "Felix Kreuk",
+      "Ricky T. Q. Chen",
+      "Gabriel Synnaeve",
+      "Yossi Adi",
+      "Yaron Lipman"
+    ],
+    "categories": [
+      "cs.LG",
+      "cs.AI"
+    ],
+    "primary_category": "cs.LG",
+    "published": "2024-07-22T12:33:27Z",
+    "abstract": "A general probability-path and probability-velocity formulation extends flow matching to high-dimensional discrete data.",
+    "comment": ""
+  },
+  "sections": [
+    {
+      "title": "作者信息",
+      "paragraphs": [
+        "作者：Itai Gat、Tal Remez、Neta Shaul、Felix Kreuk、Ricky T. Q. Chen、Gabriel Synnaeve、Yossi Adi、Yaron Lipman；arXiv:2407.15595v2。全文 39 页，最大模型 1.7B parameters。"
+      ]
+    },
+    {
+      "title": "研究问题",
+      "paragraphs": [
+        "连续 flow matching 用 continuity equation 与 vector field 输运 density；语言和 code 却位于 \\(D=[d]^N\\) 的有限状态空间。论文问：能否用 CTMC probability flux 定义离散 continuity equation，并从可采样 conditional paths 与 learned denoiser/noise posterior 构造 exact marginal probability velocity？"
+      ]
+    },
+    {
+      "title": "背景",
+      "paragraphs": [
+        "每个 token 独立按 \\(\\delta_{X_t^i}+h u_t^i(\\cdot,X_t)\\) 在小时间 \\(h\\) 内跳变。合法 probability velocity 满足各列和为零且 off-diagonal rates 非负；这正是连续 divergence-free bookkeeping 的离散版本。",
+        "Figure 2 把 \\(\\mathbb R^N\\) 的流线、离散格点上的 probability transfers，以及两种 divergence 并排：连续 divergence 是微分通量，离散 divergence 是所有邻接 state 的 incoming minus outgoing flux。"
+      ]
+    },
+    {
+      "title": "模型与方法",
+      "paragraphs": [
+        "作者用 scheduler \\(\\kappa_t\\) 在 source 与 target categorical distributions 之间构造 general probability paths。Theorem 2 证明 conditional velocities 对 posterior \\(p_t(x_0,x_1|z)\\) 边缘化后生成 marginal path；Theorem 3 给出 closed-form rates。",
+        "对 mask path，denoiser parameterization 为 \\(u_t^i(x_i,z)=\\dot\\kappa_t[p_{1|t}(x_i|z)-\\delta_{z^i}(x_i)]/(1-\\kappa_t)\\)。网络用 cross-entropy 学 posterior；sampling 可加入 corrector 与 adaptive safe step，且能做非自回归 infilling。"
+      ]
+    },
+    {
+      "title": "核心结果与证据",
+      "paragraphs": [
+        "Figure 2 是理论核心：连续空间的 local derivative 被有限状态图上的 flux sum 替代，因而“flow”描述的是概率质量随时间移动，不是 token 在欧氏空间中连续运动。",
+        "1.7B text model 的 unconditional generative perplexity（Llama-3 8B evaluator）为 9.7；论文对照 1.7B autoregressive baseline 22.3 与 Llama-2 7B 的 8.3。该指标由外部模型打分，不等同于 held-out likelihood。",
+        "code 上 HumanEval Pass@1/Pass@10 为 6.7%/13.4%，1-shot MBPP 为 6.7%/20.6%。CIFAR-10 达到 FID 3.63 at 1024 NFE；高 NFE 暴露离散 Euler sampling 的计算代价。"
+      ]
+    },
+    {
+      "title": "有效性与局限",
+      "paragraphs": [
+        "marginal path correctness 是 \\(h\\to0\\) 的一阶 statement；有限 step、posterior approximation、scheduler 与 floating-point precision 都会引入偏差。token-wise simultaneous jumps 是生成算法，不应解释为真实语言动力学。",
+        "generative perplexity 依赖 evaluator、entropy 与 repetition filtering，和 autoregressive likelihood 不完全可比。code pass rates 仍低，image FID 需要 1024 NFE；1.7B scaling 结论不能推出更大模型仍保持同样优势。"
+      ]
+    },
+    {
+      "title": "复现与资源",
+      "paragraphs": [
+        "原文：https://arxiv.org/abs/2407.15595。全文 39 页，PDF SHA-256：5ff582a1ccb3e6584b23450a8f4ff05b3829d4fa29a9d240e5d31d15b0e140bd。",
+        "复现需固定 coupling、mask/noise source、\\(\\kappa_t\\)、posterior parameterization、safe step、corrector temperature、NFE、precision、tokenizer、evaluator checkpoint 与 HumanEval/MBPP execution harness。",
+        "Evidence status: full-text verified; no independent reproduction performed."
+      ]
+    },
+    {
+      "title": "阅读指南",
+      "paragraphs": [
+        "先看 Figure 2 与 Eqs. (12)–(20)，逐项对照连续/离散 divergence；再读 Theorems 2–3 和 Table 1，确认 denoiser/noise-prediction 公式为何同形。最后看 Tables 2–4，并同时记录 evaluator dependence、NFE 与 code execution rate。"
+      ]
+    }
+  ],
+  "cover": {
+    "mode": "source_figure",
+    "asset_path": "assets/collection-figures/2407.15595/figure-2-discrete-continuous-flow.webp",
+    "label": "Figure 2",
+    "visual_type": "schematic",
+    "evidence": "paper.pdf p. 4, Figure 2",
+    "alt_text": "连续二维流、离散二维状态跳转及两种 divergence operator 的并排示意图。",
+    "caption": "离散流用 state-to-state probability flux 的收支替代连续空间的微分 divergence。",
+    "selection_rationale": "Figure 2 是全文最关键的数学概念图，优先于代码样例和 FID 曲线。"
+  },
+  "figure_refs": [
+    {
+      "label": "Figure 2",
+      "asset_path": "assets/collection-figures/2407.15595/figure-2-discrete-continuous-flow.webp",
+      "section": "核心结果与证据",
+      "role": "map continuous flow matching concepts to a finite state space",
+      "evidence": "paper.pdf p. 4, Figure 2",
+      "alt_text": "连续流线、离散格点跳转以及两个 divergence 示意。",
+      "caption": "概率速度是离散状态之间的通量生成元，而非欧氏位移。",
+      "interpretation": "The analogy is exact at the continuity-equation level, not a claim that discrete tokens possess physical trajectories."
+    }
+  ],
+  "equation_refs": [
+    {
+      "label": "Discrete Euler jump",
+      "latex": "X_{t+h}^i\\sim\\delta_{X_t^i}(\\cdot)+h\\,u_t^i(\\cdot,X_t),\\qquad \\sum_{x_i}u_t^i(x_i,z)=0",
+      "role": "define an infinitesimal categorical transition",
+      "symbols": {
+        "u_t": "probability velocity",
+        "h": "time step",
+        "i": "token index"
+      },
+      "evidence": "paper.pdf p. 4, Eqs. (12)–(13)",
+      "interpretation": "Off-diagonal nonnegative rates and zero total mass make the update a valid PMF for small h."
+    },
+    {
+      "label": "Discrete denoiser velocity",
+      "latex": "u_t^i(x_i,z)=\\frac{\\dot\\kappa_t}{1-\\kappa_t}\\left[p_{1|t}(x_i\\mid z)-\\delta_{z^i}(x_i)\\right]",
+      "role": "construct marginal flux from a learned clean-token posterior",
+      "symbols": {
+        "kappa_t": "path scheduler",
+        "p_1|t": "probability denoiser",
+        "z": "current sequence"
+      },
+      "evidence": "paper.pdf p. 6, Eq. (24)",
+      "interpretation": "The formula has the same algebraic form as continuous x-prediction while acting on categorical fluxes."
+    }
+  ],
+  "evidence_refs": [
+    "paper.pdf pp. 3–7: probability velocity and discrete continuity equation",
+    "paper.pdf pp. 8–10: language, code and image experiments",
+    "source PDF SHA-256 5ff582a1ccb3e6584b23450a8f4ff05b3829d4fa29a9d240e5d31d15b0e140bd",
+    "Evidence status: full-text verified; no independent reproduction performed."
+  ]
+}

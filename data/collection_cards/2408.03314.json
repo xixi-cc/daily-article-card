@@ -1,0 +1,156 @@
+{
+  "arxiv_id": "2408.03314",
+  "source_version": "v1",
+  "source_pdf": "https://arxiv.org/pdf/2408.03314",
+  "title_en": "Scaling LLM Test-Time Compute Optimally can be More Effective than Scaling Model Parameters",
+  "title_zh": "按题目自适应扩展测试时计算可优于扩展模型参数",
+  "curation_status": "full_text_verified",
+  "card_standard_version": "2.3",
+  "paper_profile": "ai_empirical",
+  "style_reference": "physicist_daily_arxiv",
+  "provenance": {
+    "program": "Collection",
+    "catalog": "Paper Collection",
+    "catalog_record_id": "d15073157caacd9d",
+    "catalog_record_ids": [
+      "d15073157caacd9d",
+      "f094d310059a6320"
+    ],
+    "catalog_topic": "Scaling Laws",
+    "collection_date": "2026-08-23",
+    "sampled_at": "2026-08-28",
+    "selected_by": "full_collection_backfill",
+    "sampling_seed": "not_applicable_full_collection",
+    "candidate_count": 452
+  },
+  "verified_metadata": {
+    "arxiv_id": "2408.03314",
+    "version": "v1",
+    "title": "Scaling LLM Test-Time Compute Optimally can be More Effective than Scaling Model Parameters",
+    "authors": [
+      "Charlie Snell",
+      "Jaehoon Lee",
+      "Kelvin Xu",
+      "Aviral Kumar"
+    ],
+    "categories": [
+      "cs.LG",
+      "cs.CL"
+    ],
+    "primary_category": "cs.LG",
+    "published": "2024-08-06T17:35:05Z",
+    "abstract": "Prompt-difficulty-conditioned allocation of revisions and verifier-guided search improves the efficiency of test-time compute on MATH.",
+    "comment": ""
+  },
+  "sections": [
+    {
+      "title": "作者信息",
+      "paragraphs": [
+        "作者：Charlie Snell、Jaehoon Lee、Kelvin Xu、Aviral Kumar；arXiv:2408.03314v1。全文 38 页，使用 PaLM 2-S*、MATH 500-test split、process reward model（PRM）与 revision model。该论文在 Collection 中有两个 catalog records，共用同一卡片。"
+      ]
+    },
+    {
+      "title": "研究问题",
+      "paragraphs": [
+        "固定 inference budget 不应对每道题用同一策略：easy questions 可能只需 best-of-\\(N\\)，中等题可受益于 sequential revision 或 verifier search，超出 base model 能力的 hardest questions 则可能怎么搜都无效。论文问：能否以 model-relative difficulty 为近似 sufficient statistic，为每题选择 compute allocation，使 test-time scaling 比统一 best-of-\\(N\\) 更高效？"
+      ]
+    },
+    {
+      "title": "背景",
+      "paragraphs": [
+        "研究分两类机制：改变 proposal distribution 的 sequential self-revision，以及保持 proposal model、用 PRM 在 best-of-\\(N\\)、beam search、lookahead search 中选择。难度按 base model 从 2048 samples 估计的 pass@1 分成五个 quantiles；部署近似则用 verifier predicted score 代替 ground truth。",
+        "compute-optimal policy 不是新网络，而是在给定 budget \\(N\\) 和 difficulty bin 下，经 two-fold cross-validation 选择表现最好的 test-time hyperparameters/strategy。"
+      ]
+    },
+    {
+      "title": "模型与方法",
+      "paragraphs": [
+        "revision model 逐次读取先前答案并生成修订；PRM 为每个 reasoning step 打分。作者比较 parallel samples、sequential revisions 及其混合比例，并比较 best-of-\\(N\\)、beam 与 lookahead search。",
+        "FLOPs exchange 用 pretraining \\(X\\approx6P D_{\\rm pre}\\)、inference \\(Y\\approx2P D_{\\rm inf}\\) 估算。把参数放大 \\(M\\) 倍与给小模型增加 inference tokens 做总 FLOPs matching，并显式考察 \\(R=D_{\\rm inf}/D_{\\rm pre}\\) 的不同负载。"
+      ]
+    },
+    {
+      "title": "核心结果与证据",
+      "paragraphs": [
+        "Figure 1 汇总主结果：按 difficulty 自适应选择 revision/search policy 后，曲线相对 uniform/parallel baselines 上移；revision 设置可用约 4× 更少 test-time compute 超过 best-of-\\(N\\)，PRM search 在低/中 budget 也接近相同量级的节省。",
+        "顺序修订的 pass@1 随 revision steps 持续提高，甚至超过训练时的 4 steps；但高 budget 下纯 sequential 并非总是最优，parallel–sequential 存在随难度与 budget 变化的最佳比例。beam search 低 budget 较好，随后收益饱和，lookahead 的额外展开并未在等 compute 下获益。",
+        "与约 14× 参数模型做 FLOPs matching 时，小模型+test-time compute 只在 easy/intermediate bins 或低 inference load \\(R\\ll1\\) 下常占优；hardest bins 与 \\(R\\gg1\\) 时，更多 pretraining 更有效。标题结论因此是条件性的，不是统一替代参数 scaling。"
+      ]
+    },
+    {
+      "title": "有效性与局限",
+      "paragraphs": [
+        "oracle difficulty 用 2048 samples 和 ground-truth correctness，部署不可直接获得；model-predicted difficulty 仍需额外 inference，论文没有把这一探索成本完整计入主预算。策略又在相同 500-test-question pool 上 two-fold 选择，bin 内样本量有限。",
+        "实验只覆盖 MATH、PaLM 2-S*、特定 PRM/revision checkpoints；FLOPs 采用 \\(6PD\\)/\\(2PD\\) 近似，忽略 memory、latency、parallel hardware 和 serving reuse。对 base model 几乎从不答对的题，test-time compute 增益很小，因此不能把“14×”理解为普遍模型替代率。"
+      ]
+    },
+    {
+      "title": "复现与资源",
+      "paragraphs": [
+        "原文：https://arxiv.org/abs/2408.03314。全文 38 页，PDF SHA-256：ded7b20b51493258c5ce2a1a024cd33dd752de1fa3373d1207620da4cfe24545。",
+        "复现需固定 PaLM 2-S*/PRM/revision checkpoints、MATH split、2048-sample difficulty estimation、five-bin boundaries、two-fold policy selection、generation token accounting、search branching、verifier aggregation 与 \\(R\\) scenarios。",
+        "Evidence status: full-text verified; no independent reproduction performed."
+      ]
+    },
+    {
+      "title": "阅读指南",
+      "paragraphs": [
+        "先看 Figure 1，但把左侧 2–4× efficiency 与右侧 14× FLOPs-matched 条件分开。再读 Eq. (1) 的 per-prompt optimal policy 和 difficulty construction；随后比较 Figures 3、6–8 的 search/revision regimes，最后读 Figure 9，确认 pretraining 与 inference compute 不是一比一可交换。"
+      ]
+    }
+  ],
+  "cover": {
+    "mode": "source_figure",
+    "asset_path": "assets/collection-figures/2408.03314/figure-1-compute-optimal-scaling.webp",
+    "label": "Figure 1",
+    "visual_type": "data_plot",
+    "evidence": "paper.pdf p. 2, Figure 1",
+    "alt_text": "compute-optimal revisions/search 的 scaling curves 与相对 14 倍大模型的 FLOPs-matched 条形图。",
+    "caption": "自适应策略的收益强烈依赖题目难度、budget 和 inference/pretraining load；简单题更能用 test-time compute 换取性能。",
+    "selection_rationale": "Figure 1 是作者的主结果总览；文章没有能同时表达 4× efficiency 与 14× 条件比较的机制示意图。"
+  },
+  "figure_refs": [
+    {
+      "label": "Figure 1",
+      "asset_path": "assets/collection-figures/2408.03314/figure-1-compute-optimal-scaling.webp",
+      "section": "核心结果与证据",
+      "role": "summarize difficulty-conditioned test-time scaling and FLOPs-matched comparison",
+      "evidence": "paper.pdf p. 2, Figure 1",
+      "alt_text": "上下两组 scaling curves 与按难度分箱的 pretraining comparison bars。",
+      "caption": "compute-optimal gains集中在 base model 已有非平凡成功率的 prompts。",
+      "interpretation": "The result is conditional on MATH, the studied models, difficulty estimator, and serving-load ratio."
+    }
+  ],
+  "equation_refs": [
+    {
+      "label": "Per-prompt compute-optimal policy",
+      "latex": "\\theta_q^*(N)=\\arg\\max_\\theta\\;\\mathbb E_{y\\sim\\mathrm{Target}(\\theta,N,q)}\\!\\left[\\mathbf 1\\{y=y^*(q)\\}\\right]",
+      "role": "define optimal allocation for a prompt and compute budget",
+      "symbols": {
+        "theta": "test-time strategy hyperparameters",
+        "N": "generation budget",
+        "q": "prompt"
+      },
+      "evidence": "paper.pdf p. 5, Eq. (1)",
+      "interpretation": "The practical method approximates this inaccessible oracle policy using discrete difficulty bins."
+    },
+    {
+      "label": "Pretraining–inference FLOPs model",
+      "latex": "X\\simeq6P D_{\\rm pre},\\qquad Y\\simeq2P D_{\\rm inf},\\qquad R=\\frac{D_{\\rm inf}}{D_{\\rm pre}}",
+      "role": "compare parameter scaling with extra test-time tokens",
+      "symbols": {
+        "P": "model parameters",
+        "D_pre": "pretraining tokens",
+        "D_inf": "inference tokens"
+      },
+      "evidence": "paper.pdf pp. 14–15, Section 7",
+      "interpretation": "Which allocation wins depends on deployment load R as well as question difficulty."
+    }
+  ],
+  "evidence_refs": [
+    "paper.pdf pp. 2–6: main results, optimal policy and difficulty bins",
+    "paper.pdf pp. 8–15: search, revisions and FLOPs-matched exchange",
+    "source PDF SHA-256 ded7b20b51493258c5ce2a1a024cd33dd752de1fa3373d1207620da4cfe24545",
+    "Evidence status: full-text verified; no independent reproduction performed."
+  ]
+}

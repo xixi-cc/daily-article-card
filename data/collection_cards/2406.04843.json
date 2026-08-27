@@ -1,0 +1,155 @@
+{
+  "arxiv_id": "2406.04843",
+  "source_version": "v2",
+  "source_pdf": "https://arxiv.org/pdf/2406.04843",
+  "title_en": "Variational Flow Matching for Graph Generation",
+  "title_zh": "用于图生成的变分流匹配",
+  "curation_status": "full_text_verified",
+  "card_standard_version": "2.3",
+  "paper_profile": "theory_numerics",
+  "style_reference": "physicist_daily_arxiv",
+  "provenance": {
+    "program": "Collection",
+    "catalog": "Paper Collection",
+    "catalog_record_id": "8ecf7e0a0641b115",
+    "catalog_record_ids": [
+      "8ecf7e0a0641b115"
+    ],
+    "catalog_topic": "Flow Matching",
+    "collection_date": "2026-08-23",
+    "sampled_at": "2026-08-28",
+    "selected_by": "full_collection_backfill",
+    "sampling_seed": "not_applicable_full_collection",
+    "candidate_count": 452
+  },
+  "verified_metadata": {
+    "arxiv_id": "2406.04843",
+    "version": "v2",
+    "title": "Variational Flow Matching for Graph Generation",
+    "authors": [
+      "Floor Eijkelboom",
+      "Grigory Bartosh",
+      "Christian Andersson Naesseth",
+      "Max Welling",
+      "Jan-Willem van de Meent"
+    ],
+    "categories": [
+      "cs.LG",
+      "stat.ML"
+    ],
+    "primary_category": "cs.LG",
+    "published": "2024-06-07T11:16:17Z",
+    "abstract": "Flow matching is recast as variational inference over trajectory endpoints, yielding CatFlow for categorical graph variables.",
+    "comment": ""
+  },
+  "sections": [
+    {
+      "title": "作者信息",
+      "paragraphs": [
+        "作者：Floor Eijkelboom、Grigory Bartosh、Christian Andersson Naesseth、Max Welling、Jan-Willem van de Meent；arXiv:2406.04843v2。全文 31 页，提出 VFM 与 categorical special case CatFlow。"
+      ]
+    },
+    {
+      "title": "研究问题",
+      "paragraphs": [
+        "标准 flow matching 直接回归 marginal velocity，却隐藏了穿过当前点 \\(x\\) 的所有可能终点 \\(x_1\\)。论文问：能否显式学习 posterior endpoint distribution \\(p_t(x_1\\mid x)\\)，并在 conditional velocity 对 \\(x_1\\) 线性时，用低维 mean-field marginals 精确恢复同一 velocity，从而自然处理 categorical graph nodes/edges？"
+      ]
+    },
+    {
+      "title": "背景",
+      "paragraphs": [
+        "marginal field 是 conditional fields 对 endpoint posterior 的平均：\\(u_t(x)=\\mathbb E_{p_t(x_1|x)}u_t(x|x_1)\\)。VFM 用 \\(q_t^\\theta(x_1|x)\\) 近似这一 posterior，并把训练写成 KL/cross-entropy。若 field 对 endpoint 线性，速度只依赖一阶矩，因此不需要学习 endpoint components 的全部相关结构。",
+        "图被表示为 fully connected categorical variables：每个 node 取 \\(K_v\\) 类，每条 edge 取 \\(K_e+1\\) 类（额外一类表示 absent）。这不是带三维坐标的 geometric graph generation。"
+      ]
+    },
+    {
+      "title": "模型与方法",
+      "paragraphs": [
+        "CatFlow 对每个 component 输出 categorical probabilities \\(\\mu_t^d(x)\\)，再定义 \\(v_t^{\\theta,d}(x)=(\\mu_t^d(x)-x^d)/(1-t)\\)。Figure 1 显示当前位置、预测的 simplex point 与速度方向；这种参数化保证 \\(t\\to1\\) 时 trajectory 指向 simplex corner。",
+        "训练目标退化为逐 component cross-entropy，而生成仍是连续 ODE integration，不是逐类别 CTMC sampling。graph network 保持 permutation equivariance；Theorem 2 说明在相应条件下生成分布对 vertex relabeling exchangeable。"
+      ]
+    },
+    {
+      "title": "核心结果与证据",
+      "paragraphs": [
+        "Figure 1 说明 CatFlow 的关键 inductive bias：网络不直接回归任意 vector，而先预测 simplex 上的 endpoint distribution，再沿其 mean 方向流动；这排除了指向不可能 categorical endpoint 的 misaligned paths。",
+        "abstract graphs 上，CatFlow 在 Ego-small 的 degree/clustering/orbit MMD 为 0.013/0.024/0.008，在 Community-small 为 0.018/0.086/0.007，达到或匹配表中最佳。",
+        "10,000 个 molecule samples 上，QM9 validity/uniqueness/FCD 为 99.81%/99.95%/0.441；ZINC250k 为 99.21%/100.00%/13.211。相对普通 flow matching，CatFlow 在小模型和 5%–20% data ablation 下退化更慢，并报告更快 convergence。"
+      ]
+    },
+    {
+      "title": "有效性与局限",
+      "paragraphs": [
+        "mean-field 的“无损”只针对 conditional velocity 对 endpoint 线性的情形；它保证相同 first-moment field，不保证学到真实 endpoint joint correlations。CatFlow 在 simplex embedding 中积分连续 ODE，因此与严格离散 CTMC、chemical reaction dynamics 或物理分子轨迹不同。",
+        "实验仅含 categorical graphs；fully connected edge representation 的计算/内存随 nodes 二次增长，论文明确指出不适合大图。QM9 novelty 不适合作为主指标，ZINC 的接近 100% novelty 也不能证明 drug usefulness；validity/FCD 对 preprocessing 和 valency protocol 敏感。"
+      ]
+    },
+    {
+      "title": "复现与资源",
+      "paragraphs": [
+        "原文：https://arxiv.org/abs/2406.04843。全文 31 页，PDF SHA-256：ef9aada33f5376f38333b63f76a27fbea86cae2f6baca59e2f1cd55f0b298b83。",
+        "复现需固定 graph categorical encoding、permutation-equivariant network、interpolant、ODE solver/tolerances、RDKit kekulization、hydrogen removal、10,000-sample protocol、validity rule、FCD model 与 MMD kernels。",
+        "Evidence status: full-text verified; no independent reproduction performed."
+      ]
+    },
+    {
+      "title": "阅读指南",
+      "paragraphs": [
+        "先读 Eqs. (6)–(12)，抓住 endpoint posterior 与 first-moment sufficiency；再看 Figure 1 和 Eqs. (15)–(20)，区分“预测类别分布”与“连续积分”。最后检查 Tables 1–2 和 Figure 3，并把 graph topology、molecular validity 与 large-graph scalability 分开判断。"
+      ]
+    }
+  ],
+  "cover": {
+    "mode": "source_figure",
+    "asset_path": "assets/collection-figures/2406.04843/figure-1-catflow-simplex.webp",
+    "label": "Figure 1",
+    "visual_type": "schematic",
+    "evidence": "paper.pdf p. 5, Figure 1",
+    "alt_text": "当前位置、categorical endpoint distribution 的 simplex 表示以及指向其均值的 CatFlow velocity。",
+    "caption": "CatFlow 先预测 simplex 上的 endpoint probabilities \\(\\mu_t(x)\\)，再令 velocity 指向该点，保证终态收敛到 categorical simplex。",
+    "selection_rationale": "Figure 1 是全文最重要的参数化示意图，直接取代对 variational mean-field construction 的冗长叙述。"
+  },
+  "figure_refs": [
+    {
+      "label": "Figure 1",
+      "asset_path": "assets/collection-figures/2406.04843/figure-1-catflow-simplex.webp",
+      "section": "核心结果与证据",
+      "role": "show how endpoint probabilities parameterize the vector field",
+      "evidence": "paper.pdf p. 5, Figure 1",
+      "alt_text": "三个 simplex panel 展示 interpolant、预测 mean endpoint 与 CatFlow velocity。",
+      "caption": "线性 conditional field 只需要 endpoint posterior 的一阶矩。",
+      "interpretation": "The continuous trajectory in the simplex is a generative construction, not physical graph dynamics."
+    }
+  ],
+  "equation_refs": [
+    {
+      "label": "Variational flow matching",
+      "latex": "\\mathcal L_{\\mathrm{VFM}}(\\theta)=-\\mathbb E_{t,x,x_1}\\log q_t^\\theta(x_1\\mid x)",
+      "role": "fit the posterior distribution over trajectory endpoints",
+      "symbols": {
+        "q": "variational endpoint posterior",
+        "x": "current interpolated state",
+        "x1": "data endpoint"
+      },
+      "evidence": "paper.pdf p. 3, Eqs. (9)–(10)",
+      "interpretation": "Minimizing this cross-entropy is equivalent to minimizing the endpoint-posterior KL up to a constant."
+    },
+    {
+      "label": "CatFlow vector field",
+      "latex": "v_t^\\theta(x)=\\frac{\\mu_t(x)-x}{1-t},\\qquad \\mu_t(x)=\\mathbb E_{q_t^\\theta(x_1|x)}[x_1]",
+      "role": "turn categorical endpoint probabilities into a continuous flow",
+      "symbols": {
+        "mu_t": "mean point in the probability simplex",
+        "t": "flow time"
+      },
+      "evidence": "paper.pdf p. 5, Eqs. (15)–(20)",
+      "interpretation": "The field points toward a valid simplex endpoint rather than an unconstrained regression target."
+    }
+  ],
+  "evidence_refs": [
+    "paper.pdf pp. 3–6: VFM, mean-field theorem and CatFlow",
+    "paper.pdf pp. 8–10: graph and molecule experiments",
+    "source PDF SHA-256 ef9aada33f5376f38333b63f76a27fbea86cae2f6baca59e2f1cd55f0b298b83",
+    "Evidence status: full-text verified; no independent reproduction performed."
+  ]
+}
