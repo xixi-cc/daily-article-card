@@ -1,0 +1,145 @@
+{
+  "arxiv_id": "doi-10.1126-scirobotics.abd9285",
+  "source_version": "arXiv v2 submitted manuscript (2018)",
+  "source_pdf": "https://arxiv.org/pdf/1803.06425",
+  "title_en": "Reinforcement Learning with Artificial Microswimmers",
+  "title_zh": "人工微泳者的强化学习",
+  "curation_status": "full_text_verified",
+  "card_standard_version": "2.3",
+  "paper_profile": "ai_empirical",
+  "style_reference": "physicist_daily_arxiv",
+  "provenance": {
+    "program": "Collection",
+    "catalog": "Paper Collection",
+    "catalog_record_id": "913f9cbf33039eb7",
+    "catalog_record_ids": [
+      "913f9cbf33039eb7"
+    ],
+    "catalog_topic": "Control & Reinforcement Learning",
+    "collection_date": "2026-08-23",
+    "sampled_at": "2026-08-28",
+    "selected_by": "full_collection_backfill",
+    "sampling_seed": "not_applicable_full_collection",
+    "candidate_count": 452
+  },
+  "verified_metadata": {
+    "doi": "10.1126/scirobotics.abd9285",
+    "arxiv_id": "1803.06425",
+    "version": "arXiv v2 submitted manuscript (2018); final journal metadata cross-check",
+    "title": "Reinforcement learning with artificial microswimmers",
+    "authors": [
+      "Santiago Muiños-Landin",
+      "Alexander Fischer",
+      "Viktor Holubec",
+      "Frank Cichos"
+    ],
+    "journal": "Science Robotics",
+    "volume": "6",
+    "issue": "52",
+    "article": "eabd9285",
+    "published": "2021-03-17",
+    "abstract": "Real-time microscopy, laser steering, and tabular Q-learning enable thermophoretic microswimmers to learn grid-world navigation under Brownian noise and share experience across swimmers.",
+    "comment": "Evidence pages and source figure use arXiv:1803.06425v2 (2018), whose author list predates the four-author 2021 journal version; final metadata was cross-checked separately"
+  },
+  "sections": [
+    {
+      "title": "作者信息",
+      "paragraphs": [
+        "最终期刊元数据作者 Santiago Muiños-Landin、Alexander Fischer、Viktor Holubec、Frank Cichos；Science Robotics 6, eabd9285 (2021)，DOI:10.1126/scirobotics.abd9285。本卡页码证据来自 arXiv:1803.06425v2（2018，8页），该提交稿作者表较早且不等同最终 author list；因此不把提交稿当作逐字期刊版。"
+      ]
+    },
+    {
+      "title": "研究问题",
+      "paragraphs": [
+        "microswimmer 的 propulsion direction 会被 Brownian rotation/translation 扰乱，且粒子本身没有传感、记忆或计算器。论文问：能否用 microscopy feedback 外部感知真实粒子位置，用 laser steering 执行动作并以 Q-learning 存储经验，让物理 microswimmer 在 noisy gridworld 中学会到达目标、绕开障碍和共享策略？"
+      ]
+    },
+    {
+      "title": "背景",
+      "paragraphs": [
+        "实验粒子是约2.19 μm melamine spheres，约30%表面覆 gold nanoparticles；偏置532 nm heating laser 产生 self-thermophoretic propulsion。30×30 μm 视场被划为5×5 states，每个 state 有八个 steering actions。",
+        "这是 hybrid embodied RL：agent body 和流体噪声真实存在，但 camera、image analysis、Q table、reward与laser controller均在外部计算机。它没有证明微粒内部产生 autonomously stored intelligence，也不涉及 deep RL。"
+      ]
+    },
+    {
+      "title": "模型与方法",
+      "paragraphs": [
+        "每次粒子跨 state 后按 Qt+Δt(s,a)=Qt(s,a)+α[R(s)+γmax Q(s′,a′)−Qt(s,a)] 更新。到 goal 给 reward，离开边界或进入 virtual obstacle 给 penalty；policy 为每个 state 的 argmax action。",
+        "Brownian strength用 Peclet number Pe=lv/D 表征；文中 D≈0.23 μm²/s、grid length l=6 μm。作者比较不同 Pe 下 policy transfer、learning speed、best-vs-second action contrast，并让两粒子共享同一 Q matrix，记录实验 trajectories 而非纯模拟。"
+      ]
+    },
+    {
+      "title": "核心结果与证据",
+      "paragraphs": [
+        "Figure 2 在 Pe=80 展示 Q-sum 随约5500 steps/300余 episodes趋稳；从左下出发到 goal 的平均 transitions 从初期约90降至约7。trajectory 从多 loops 变为较直接路径，before/after policy maps 明显改变。",
+        "Figure 3 显示固定 policy 下 Pe 从53增至135时平均 path length约从46 μm降至33 μm、到达时间从18 s降至6 s；Pe=150 的学习约1000 steps接近收敛，而 Pe=87需5000余 steps。低 Pe policy 更避开 boundary，说明 Brownian noise 不只减速，也改变风险策略。",
+        "virtual obstacles 可通过 penalties 学会绕行；两个 swimmers 共享 Q matrix 时比单粒子更快收敛。‘collective learning’在这里是并行 experience sharing，不是粒子间局部通信或自发群体 policy。"
+      ]
+    },
+    {
+      "title": "有效性与局限",
+      "paragraphs": [
+        "state/action/reward 全由人预设，视场小且 target 固定；外部 controller 实时追踪和逐粒子 laser actuation，扩展到大量 swimmers 存在 sensing/assignment bandwidth 限制。实验 episodes 数少于现代 RL benchmarks，没有多 seed confidence intervals或替代算法比较。",
+        "早期 arXiv 证据与2021最终论文在作者与修订状态上不同，本卡只把可页码化的提交稿用于核心实验数字，并以 Crossref/期刊记录给最终 metadata。潜在流动、容器缺陷与粒子差异是现实噪声，也限制精确复现。"
+      ]
+    },
+    {
+      "title": "复现与资源",
+      "paragraphs": [
+        "提交稿全文：https://arxiv.org/abs/1803.06425；最终期刊：https://doi.org/10.1126/scirobotics.abd9285。核验提交稿 PDF SHA-256：afa468a148bf169f609c3296f14edb83b2f72a8d992d2f90a0cead63be2bc113。",
+        "复现需固定 particle coating、cell thickness、laser power/offset、frame exposure 180 ms、tracking、state size、α、γ、reward/penalty、Pe、episode termination 与 Q initialization；应保存 raw video和每步 state/action/Q。Evidence status: page-addressable submitted-manuscript experiment verified with explicit version boundary; no independent reproduction performed."
+      ]
+    },
+    {
+      "title": "阅读指南",
+      "paragraphs": [
+        "先读提交稿 pp.1–2 Figure 1 看装置、state/action和外部控制边界；p.3 Figure 2 是单粒子学习主证据，pp.4–5 Figure 3 看 Brownian noise、障碍和共享经验。最后读 Methods，并把2018提交稿证据与2021最终作者/元数据分开。"
+      ]
+    }
+  ],
+  "cover": {
+    "mode": "source_figure",
+    "asset_path": "assets/collection-figures/doi-10.1126-scirobotics.abd9285/figure-2-microswimmer-learning.webp",
+    "label": "Figure 2",
+    "visual_type": "trajectory",
+    "evidence": "paper.pdf p. 3, Figure 2",
+    "alt_text": "真实热泳微粒的 Q 值收敛、训练阶段轨迹、不同起点路径以及学习前后策略图。",
+    "caption": "随着经验积累，微粒到目标的路径由循环游走转为近定向，并显著减少所需 state transitions。",
+    "selection_rationale": "Figure 2 是提交稿中真实单微粒学习的核心可视证据，同时展示数值收敛、轨迹和 policy 变化。"
+  },
+  "figure_refs": [
+    {
+      "label": "Figure 2",
+      "asset_path": "assets/collection-figures/doi-10.1126-scirobotics.abd9285/figure-2-microswimmer-learning.webp",
+      "section": "核心结果与证据",
+      "role": "support the central result",
+      "evidence": "paper.pdf p. 3, Figure 2",
+      "alt_text": "真实热泳微粒的 Q 值收敛、训练阶段轨迹、不同起点路径以及学习前后策略图。",
+      "caption": "随着经验积累，微粒到目标的路径由循环游走转为近定向，并显著减少所需 state transitions。",
+      "interpretation": "The figure supports the stated protocol-specific claim, not an unrestricted generalization."
+    }
+  ],
+  "equation_refs": [
+    {
+      "label": "Q-learning update",
+      "latex": "Q_{t+\\Delta t}(s,a)=Q_t(s,a)+\\alpha\\left[R(s)+\\gamma\\max_{a'}Q_t(s',a')-Q_t(s,a)\\right]",
+      "role": "store transition experience and update the externally controlled swimmer policy",
+      "symbols": {
+        "alpha": "learning rate",
+        "gamma": "discount factor",
+        "R": "state reward",
+        "s_prime": "next observed state"
+      },
+      "evidence": "submitted manuscript p. 4, Eq. (1)",
+      "interpretation": "Learning and memory reside in the external computer/Q table, while the swimmer supplies real noisy dynamics."
+    }
+  ],
+  "evidence_refs": [
+    "submitted manuscript pp. 1–2, Figure 1: particle, actions and gridworld",
+    "submitted manuscript p. 3, Figure 2: single-swimmer learning trajectories",
+    "submitted manuscript pp. 4–5, Figure 3: Peclet number, obstacles and shared-Q results",
+    "submitted manuscript pp. 6–7: experimental methods",
+    "source PDF SHA-256 afa468a148bf169f609c3296f14edb83b2f72a8d992d2f90a0cead63be2bc113",
+    "Evidence status: page-addressable submitted-manuscript experiment verified with explicit version boundary; no independent reproduction performed."
+  ]
+}

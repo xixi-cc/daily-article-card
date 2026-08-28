@@ -1,0 +1,143 @@
+{
+  "arxiv_id": "doi-10.1103-yfb3-fgf2",
+  "source_version": "arXiv v3 manuscript",
+  "source_pdf": "https://arxiv.org/pdf/2504.17587",
+  "title_en": "Enhancing Gravitational-Wave Detection: A Machine Learning Pipeline Combination Approach with Robust Uncertainty Quantification",
+  "title_zh": "增强引力波探测：带稳健不确定性量化的机器学习管线组合",
+  "curation_status": "full_text_verified",
+  "card_standard_version": "2.3",
+  "paper_profile": "ai_empirical",
+  "style_reference": "physicist_daily_arxiv",
+  "provenance": {
+    "program": "Collection",
+    "catalog": "Paper Collection",
+    "catalog_record_id": "63171e6a4b189239",
+    "catalog_record_ids": [
+      "63171e6a4b189239"
+    ],
+    "catalog_topic": "AI for Science",
+    "collection_date": "2026-08-23",
+    "sampled_at": "2026-08-28",
+    "selected_by": "full_collection_backfill",
+    "sampling_seed": "not_applicable_full_collection",
+    "candidate_count": 452
+  },
+  "verified_metadata": {
+    "doi": "10.1103/yfb3-fgf2",
+    "arxiv_id": "2504.17587",
+    "version": "arXiv v3 full text",
+    "title": "Enhancing Gravitational-Wave Detection: A Machine Learning Pipeline Combination Approach with Robust Uncertainty Quantification",
+    "authors": [
+      "Gregory Ashton",
+      "Ann-Kristin Malz",
+      "Nicolo Colombo"
+    ],
+    "journal": "Physical Review Letters",
+    "volume": "136",
+    "issue": "1",
+    "article": "011402",
+    "published": "2026-01-08",
+    "abstract": "Logistic-regression and multilayer-perceptron meta-classifiers combine four gravitational-wave search pipelines, while conformal prediction supplies label-conditional confidence with finite-sample coverage under exchangeability.",
+    "comment": "ArXiv v3 full text cross-checked with version-of-record metadata; no Crossref correction or retraction relation found"
+  },
+  "sections": [
+    {
+      "title": "作者信息",
+      "paragraphs": [
+        "作者 Gregory Ashton、Ann-Kristin Malz、Nicolo Colombo；Physical Review Letters 136, 011402 (2026)，新式 DOI:10.1103/yfb3-fgf2。核验 arXiv:2504.17587v3 全文11页；未发现关联更正或撤稿。"
+      ]
+    },
+    {
+      "title": "研究问题",
+      "paragraphs": [
+        "LIGO/Virgo/KAGRA 的多个 low-latency search pipelines 对同一 candidate 给出不同 IFAR、SNR 与 source estimates；常用 maximum-IFAR combination 丢掉跨管线一致性信息。论文问：meta-classifier 能否联合这些 features 提高 signal/noise 排序，并用 conformal prediction 给单事件可校准的 confidence？"
+      ]
+    },
+    {
+      "title": "背景",
+      "paragraphs": [
+        "数据来自 O3 mock data challenge（MDC），四条 pipelines 的 candidate features 被对齐；未触发 IFAR>1 hr 的管线用零填充。总计9946 rows，其中5908为 simulated or real signals；signal injection rate 高于真实 astrophysical rate，专为压力测试 low-latency infrastructure。",
+        "作者不用 pipeline pastro 作输入，因为 MDC 的增强 signal fraction 使其不再现实校准。logistic regression 提供可解释线性组合，MLP 捕捉 nonlinear relations；两者输出本身都不是自动 calibrated probability。"
+      ]
+    },
+    {
+      "title": "模型与方法",
+      "paragraphs": [
+        "数据按10% calibration、10% test、其余 training 划分，并对多种 train/test permutations 重复。LR 用 pipeline IFAR/SNR/mass/spin等特征，MLP 用相同表格输入；与候选的 maximum IFAR baseline 比较 ROC/AUC。",
+        "label-conditional conformal prediction 用 LR probability complement 作为 nonconformity score，在 calibration set 上分别构建 signal/noise阈值，输出 candidate 属于 singleton signal、singleton noise、both 或 empty 的 prediction set/confidence。coverage 依赖 exchangeability。"
+      ]
+    },
+    {
+      "title": "核心结果与证据",
+      "paragraphs": [
+        "Figure 1 的 test ROC 报告 MLP AUC 0.967±0.002、LR 0.944±0.005、maximum-IFAR 0.925±0.008；shaded 90% permutation intervals 显示两种 ML combination 在该 MDC 上提高 ranking。MLP 比 LR 更强，但后续主要用 LR 保持可解释和较小性能损失。",
+        "Figure 2 比较 conditional confidence 与 maximum IFAR，显示同一 IFAR 可因多管线 agreement 获得不同 confidence。Figure 3 将公开 O3 candidates 的 pastro 与 ML confidence 并列，四象限可标记值得复查的 disagreement；由于 O3 与 MDC distribution 不同，这不是新 detection catalog。",
+        "Appendix 的 feature-count 和 confidence-vs-SNR 检查表明 LR 少数特征已接近饱和，MLP 从更多特征获益。conformal guarantee 是对未来 exchangeable labeled samples 的 marginal/label-conditional coverage，而不是每个特定 event 的真实 astrophysical probability。"
+      ]
+    },
+    {
+      "title": "有效性与局限",
+      "paragraphs": [
+        "MDC signal prevalence、simulated injections、pipeline versions 与 missing-data pattern 不等同真实 observing run；dataset shift 会破坏 classifier calibration 和 conformal exchangeability。只有四 pipelines，不能保证未来新增搜索器或高质量 glitch family 上仍增益。",
+        "AUC 是总体排序指标，未直接证明在 operational false-alarm tail 的发现率提升；permutation uncertainty 也不包含 waveform population/systematic detector uncertainty。real O3 examples 无 ground truth，论文只展示重新排序信息。"
+      ]
+    },
+    {
+      "title": "复现与资源",
+      "paragraphs": [
+        "全文：https://arxiv.org/abs/2504.17587；期刊：https://doi.org/10.1103/yfb3-fgf2。核验 PDF SHA-256：04f58b3b32dcc6240c94361c819259a4d2c160e25ae366d9618d46527716fcb5。数据来自文中引用的 O3 MDC 与公开 candidate products；应按当前 Data/Code statement 获取版本。",
+        "复现需固定四 pipeline releases、candidate matching、IFAR threshold、zero imputation、feature transforms、split permutations、LR/MLP hyperparameters、calibration fraction 与 conformal α。Evidence status: full-text verified ML/MDC study; no independent reproduction performed."
+      ]
+    },
+    {
+      "title": "阅读指南",
+      "paragraphs": [
+        "先读 pp.1–2 数据构造和 Figure 1 ROC；pp.2–3 Figure 2 理解 confidence 与 IFAR 差别，p.4 Figure 3 看 real-candidate disagreement。再读 Appendix 的 CP、permutation、feature importance，保留 exchangeability 和 prevalence-shift 边界。"
+      ]
+    }
+  ],
+  "cover": {
+    "mode": "source_figure",
+    "asset_path": "assets/collection-figures/doi-10.1103-yfb3-fgf2/figure-1-gw-pipeline-roc.webp",
+    "label": "Figure 1",
+    "visual_type": "comparison",
+    "evidence": "paper.pdf p. 2, Figure 1",
+    "alt_text": "LR、MLP 多管线组合与 maximum-IFAR 基线在 O3 MDC test data 上的 ROC 及置换不确定区间。",
+    "caption": "在该模拟挑战集上，MLP 和 LR 的 AUC 均高于简单 maximum-IFAR 组合。",
+    "selection_rationale": "Figure 1 是组合管线 ranking 增益的主要量化证据，并同时呈现数据划分置换带来的不确定性。"
+  },
+  "figure_refs": [
+    {
+      "label": "Figure 1",
+      "asset_path": "assets/collection-figures/doi-10.1103-yfb3-fgf2/figure-1-gw-pipeline-roc.webp",
+      "section": "核心结果与证据",
+      "role": "support the central result",
+      "evidence": "paper.pdf p. 2, Figure 1",
+      "alt_text": "LR、MLP 多管线组合与 maximum-IFAR 基线在 O3 MDC test data 上的 ROC 及置换不确定区间。",
+      "caption": "在该模拟挑战集上，MLP 和 LR 的 AUC 均高于简单 maximum-IFAR 组合。",
+      "interpretation": "The figure supports the stated protocol-specific claim, not an unrestricted generalization."
+    }
+  ],
+  "equation_refs": [
+    {
+      "label": "Conformal prediction set",
+      "latex": "\\Gamma_\\alpha(x)=\\{y:\\;s(x,y)\\le q_{1-\\alpha}^{(y)}\\}",
+      "role": "turn a meta-classifier score into label-conditional prediction sets",
+      "symbols": {
+        "s": "nonconformity score",
+        "q": "calibration quantile",
+        "alpha": "target miscoverage"
+      },
+      "evidence": "paper.pdf pp. 2–3 and Appendix, conformal-prediction construction",
+      "interpretation": "Coverage requires exchangeability between calibration and future labeled candidates; the set is not a posterior astrophysical probability."
+    }
+  ],
+  "evidence_refs": [
+    "paper.pdf pp. 1–2, Figure 1: MDC dataset and ROC/AUC comparison",
+    "paper.pdf pp. 2–3, Figure 2: label-conditional confidence versus IFAR",
+    "paper.pdf pp. 3–4, Figure 3: O3 candidate disagreement analysis",
+    "paper.pdf pp. 6–10, Figures 4–5: permutation, features and SNR appendix checks",
+    "source PDF SHA-256 04f58b3b32dcc6240c94361c819259a4d2c160e25ae366d9618d46527716fcb5",
+    "Evidence status: full-text verified ML/MDC study; no independent reproduction performed."
+  ]
+}

@@ -1,0 +1,142 @@
+{
+  "arxiv_id": "doi-10.1126-sciadv.aay2631",
+  "source_version": "arXiv v2 manuscript",
+  "source_pdf": "https://arxiv.org/pdf/1905.11481",
+  "title_en": "AI Feynman: A Physics-Inspired Method for Symbolic Regression",
+  "title_zh": "AI Feynman：物理启发的符号回归方法",
+  "curation_status": "full_text_verified",
+  "card_standard_version": "2.3",
+  "paper_profile": "ai_empirical",
+  "style_reference": "physicist_daily_arxiv",
+  "provenance": {
+    "program": "Collection",
+    "catalog": "Paper Collection",
+    "catalog_record_id": "a92d150747fd05c8",
+    "catalog_record_ids": [
+      "a92d150747fd05c8"
+    ],
+    "catalog_topic": "AI for Science",
+    "collection_date": "2026-08-23",
+    "sampled_at": "2026-08-28",
+    "selected_by": "full_collection_backfill",
+    "sampling_seed": "not_applicable_full_collection",
+    "candidate_count": 452
+  },
+  "verified_metadata": {
+    "doi": "10.1126/sciadv.aay2631",
+    "arxiv_id": "1905.11481",
+    "version": "arXiv v2 full text",
+    "title": "AI Feynman: A physics-inspired method for symbolic regression",
+    "authors": [
+      "Silviu-Marian Udrescu",
+      "Max Tegmark"
+    ],
+    "journal": "Science Advances",
+    "volume": "6",
+    "issue": "16",
+    "article": "eaay2631",
+    "published": "2020-04-17",
+    "abstract": "A recursive symbolic-regression system combines neural fitting with dimensional analysis, symmetry, separability, transformations, polynomial fitting, and brute-force search to recover physics equations.",
+    "comment": "ArXiv v2 full text cross-checked with version-of-record metadata; no Crossref correction or retraction relation found"
+  },
+  "sections": [
+    {
+      "title": "作者信息",
+      "paragraphs": [
+        "作者 Silviu-Marian Udrescu、Max Tegmark；Science Advances 6, eaay2631 (2020)，DOI:10.1126/sciadv.aay2631。核验 arXiv:1905.11481v2 全文15页及代码/数据声明；未发现关联更正或撤稿。"
+      ]
+    },
+    {
+      "title": "研究问题",
+      "paragraphs": [
+        "symbolic regression 要从数值表恢复可解释公式，一般 expression search 呈组合爆炸。论文问：科学公式常见的 units、low-order polynomial、compositionality、smoothness、symmetry 与 separability 能否被自动检测，用递归降维把困难高维搜索拆成简单子问题？"
+      ]
+    },
+    {
+      "title": "背景",
+      "paragraphs": [
+        "AI Feynman 不让 neural network 直接输出 token equation；网络先拟合 smooth mystery function，再作为数值 oracle 检测平移/缩放 symmetry 和 additive/multiplicative separability。确认结构后重采样更少变量的新数据集并递归求解，最终由 polynomial fit 或 enumerative brute force 找 closed form。",
+        "dimensional analysis 使用已知变量 units 构造无量纲组合；因此含单位 benchmark 得到额外先验。若 units 未知、数据域太窄或网络近似误导 symmetry test，递归分解可能错误。"
+      ]
+    },
+    {
+      "title": "模型与方法",
+      "paragraphs": [
+        "pipeline 依次尝试 dimensional analysis、polynomial fitting、symbolic brute force、NN symmetry、separability、equating variables 与 x/y transformations；每个成功 simplification 生成低维 mystery。Figure 1 是递归控制流，Figure 2 以九变量 Newton gravity 逐步展示无量纲化、两个 translational symmetries 与 multiplicative factorization。",
+        "测试集含 Feynman Lectures 的100个 equations 和更困难的 physics-inspired bonus set；输入由真实公式采样，使用相对误差/复杂度 criterion 判断 exact recovery。与商用 Eureqa 和公开 methods 比较，并讨论 additive noise robustness。"
+      ]
+    },
+    {
+      "title": "核心结果与证据",
+      "paragraphs": [
+        "论文报告在无噪声 Feynman 100 equations 上恢复全部100个，而此前公开软件恢复71个；在 harder physics-inspired set 上 success rate 从约15%提高到90%。数字来自作者构造 benchmark、采样范围、function grammar 与 timeout，不等于任意科学数据的发现率。",
+        "Figure 1 表明 performance 不是单一 NN 的结果，而是 physics priors、recursive decomposition 和 symbolic search 的组合。gravitational-force example 中 dimensional analysis 从九变量降维，NN 检测差分 symmetry，再把问题乘法分离为两个可由 polynomial/inversion 解的子式。",
+        "noise tests 显示随着 noise 增大 recovery 下降，但 NN interpolation 与结构测试仍能在部分范围找到精确/近似式。没有独立 ablation 能把所有增益唯一归因于某一模块；benchmark formulas 与 algorithm priors 高度匹配是设计优势也是选择偏差。"
+      ]
+    },
+    {
+      "title": "有效性与局限",
+      "paragraphs": [
+        "方法假定 target 可由有限 elementary-function grammar 表达且采样覆盖足以显露 symmetry/separability；变量单位往往需要用户提供。真实实验的 heteroscedastic noise、hidden variables、systematic bias 与非解析响应可能产生漂亮但错误的公式。",
+        "exact fit 与 dimensional consistency 不是因果或物理真实性证明，仍需 held-out regimes、limiting cases 与实验验证。brute-force cost 随剩余复杂度增长；NN hyperparameters和 thresholds 会影响分解，论文 benchmark 也不是盲测真实 discovery。"
+      ]
+    },
+    {
+      "title": "复现与资源",
+      "paragraphs": [
+        "全文：https://arxiv.org/abs/1905.11481；期刊：https://doi.org/10.1126/sciadv.aay2631；代码：https://github.com/SJ001/AI-Feynman。核验 PDF SHA-256：bea0a57b25041b2fab181efdf543279de6f7ac88ab3aca2fff92173c56cd801f。",
+        "复现需固定代码 commit、sampling domains、units table、NN architecture/training、symmetry thresholds、operator grammar、complexity penalty、noise model 与 time limit，并逐 equation 保存 recovered expression。Evidence status: full-text verified algorithm/benchmark study; no independent reproduction performed."
+      ]
+    },
+    {
+      "title": "阅读指南",
+      "paragraphs": [
+        "先读 pp.1–3 Figures 1–2 理解递归 workflow；pp.3–7 逐模块看 dimensional analysis、symmetry 与 separability。pp.8–11 检查 benchmark 和 noise tables，最后读 conclusions 与 code statement；将公式恢复和科学确认分开。"
+      ]
+    }
+  ],
+  "cover": {
+    "mode": "source_figure",
+    "asset_path": "assets/collection-figures/doi-10.1126-sciadv.aay2631/figure-1-ai-feynman-flowchart.webp",
+    "label": "Figure 1",
+    "visual_type": "schematic",
+    "evidence": "paper.pdf p. 2, Figure 1",
+    "alt_text": "AI Feynman 从量纲分析、拟合和暴力搜索到神经网络结构检测与递归降维的流程图。",
+    "caption": "算法反复寻找物理结构并生成更低维子问题，直到得到符号式或明确失败。",
+    "selection_rationale": "Figure 1 清楚定义混合算法各模块与递归关系，避免把结果误归因于单一神经网络。"
+  },
+  "figure_refs": [
+    {
+      "label": "Figure 1",
+      "asset_path": "assets/collection-figures/doi-10.1126-sciadv.aay2631/figure-1-ai-feynman-flowchart.webp",
+      "section": "核心结果与证据",
+      "role": "support the central result",
+      "evidence": "paper.pdf p. 2, Figure 1",
+      "alt_text": "AI Feynman 从量纲分析、拟合和暴力搜索到神经网络结构检测与递归降维的流程图。",
+      "caption": "算法反复寻找物理结构并生成更低维子问题，直到得到符号式或明确失败。",
+      "interpretation": "The figure supports the stated protocol-specific claim, not an unrestricted generalization."
+    }
+  ],
+  "equation_refs": [
+    {
+      "label": "Dimensional reduction",
+      "latex": "x_i'=\\prod_jx_j^{U_{ji}},\\qquad y'=y/y^*,\\qquad MU=0,\\;Mp=b",
+      "role": "replace dimensional variables by invariant dimensionless combinations",
+      "symbols": {
+        "M": "matrix of unit exponents",
+        "U": "null-space basis",
+        "b": "output-unit vector"
+      },
+      "evidence": "paper.pdf p. 3, Eq. (1)",
+      "interpretation": "The reduction requires correct unit metadata and does not discover omitted physical dimensions."
+    }
+  ],
+  "evidence_refs": [
+    "paper.pdf pp. 1–3, Figures 1–2: workflow and gravity example",
+    "paper.pdf pp. 3–7: dimensional, symmetry and separability modules",
+    "paper.pdf pp. 8–11: Feynman and harder-set benchmarks plus noise tests",
+    "paper.pdf pp. 11–13: conclusions and failure modes",
+    "source PDF SHA-256 bea0a57b25041b2fab181efdf543279de6f7ac88ab3aca2fff92173c56cd801f",
+    "Evidence status: full-text verified algorithm/benchmark study; no independent reproduction performed."
+  ]
+}
