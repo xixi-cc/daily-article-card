@@ -1,0 +1,154 @@
+{
+  "arxiv_id": "doi-10.1007-jhep05-2024-060",
+  "source_version": "arXiv v2 / version of record",
+  "source_pdf": "https://arxiv.org/pdf/2309.17082v2",
+  "title_en": "Diffusion Models as Stochastic Quantization in Lattice Field Theory",
+  "title_zh": "作为格点场论随机量子化的扩散模型",
+  "curation_status": "full_text_verified",
+  "card_standard_version": "2.3",
+  "paper_profile": "ai_empirical",
+  "style_reference": "physicist_daily_arxiv",
+  "provenance": {
+    "program": "Collection",
+    "catalog": "Paper Collection",
+    "catalog_record_id": "8d2c96b69f64b78d",
+    "catalog_record_ids": [
+      "8d2c96b69f64b78d"
+    ],
+    "catalog_topic": "Field Theory",
+    "collection_date": "2026-08-23",
+    "sampled_at": "2026-08-28",
+    "selected_by": "full_collection_backfill",
+    "sampling_seed": "not_applicable_full_collection",
+    "candidate_count": 452
+  },
+  "verified_metadata": {
+    "doi": "10.1007/JHEP05(2024)060",
+    "arxiv_id": "2309.17082",
+    "version": "v2 / version of record",
+    "title": "Diffusion Models as Stochastic Quantization in Lattice Field Theory",
+    "authors": [
+      "Lingxiao Wang",
+      "Gert Aarts",
+      "Kai Zhou"
+    ],
+    "categories": [
+      "hep-lat",
+      "cs.LG"
+    ],
+    "primary_category": "hep-lat",
+    "published": "2023-09-29T09:26:59Z",
+    "abstract": "Diffusion denoising is related to stochastic quantization and used as a global proposal for two-dimensional lattice phi-four theory.",
+    "comment": "JHEP 05 (2024) 060; code at github.com/Anguswlx/DMasSQ"
+  },
+  "sections": [
+    {
+      "title": "作者信息",
+      "paragraphs": [
+        "作者：Lingxiao Wang、Gert Aarts、Kai Zhou；JHEP 05 (2024) 060，DOI:10.1007/JHEP05(2024)060；arXiv:2309.17082v2。全文 31 页，含 toy model 与二维 φ4 格点数值实验。"
+      ]
+    },
+    {
+      "title": "研究问题",
+      "paragraphs": [
+        "随机量子化用作用量梯度驱动 fictitious-time Langevin process；diffusion model 则从数据学习 time-dependent score 并反向去噪。论文问两者能否建立直接对应，并让训练后的 DM 成为全局 proposal，降低临界区局域 MCMC 的 autocorrelation。"
+      ]
+    },
+    {
+      "title": "背景",
+      "paragraphs": [
+        "正向 diffusion 将 target configurations 平滑到简单 prior；反向 SDE 使用 learned score 恢复数据分布。与 stochastic quantization 相比，关键差异是 drift 从数据学习且依赖 diffusion time。",
+        "Figure 8 在 κ=0.27、λ=0.022、L=32、1024 configurations 上比较 |M| autocorrelation：DM-MC 曲线约四步降到接近零，HMC 与局域 MC 保持长相关。"
+      ]
+    },
+    {
+      "title": "模型与方法",
+      "paragraphs": [
+        "作者训练 U-Net score model，先用一维 double-well 检查 drift/effective action，再在二维 lattice φ4 的 symmetric 与 broken phases 生成 configurations。通过 probability-flow likelihood 估计 proposal density，并在每条 trajectory 后加入 Metropolis–Hastings accept–reject。",
+        "DM proposal 是全局更新；其训练仍需要参考 configurations。实验将 DM-MC、local Metropolis MC 与 HMC 比较，并以 magnetization distribution、action likelihood、acceptance 与 autocorrelation 做诊断。"
+      ]
+    },
+    {
+      "title": "核心结果与证据",
+      "paragraphs": [
+        "DM 在两相中复现 magnetization distributions；estimated effective action 与 true action 在主要概率区相关。Figure 8 显示临界参数处 DM-MC 的 |M| decorrelation 明显更快。",
+        "作者用 tmax=100 报告 integrated autocorrelation times：local MC 79.984、HMC 41.354、DM-MC 2.360。该数字来自 1024 configurations 的单一设置且未用 automatic-window uncertainty，因此是实验性效率证据，不是普适动态临界指数。",
+        "MH acceptance 在附录扫描中通常约 0.4–0.6，但依赖 lattice size、κ 和训练 epochs。accept–reject 可纠正 proposal density，前提是 likelihood estimate、chain thermalization 与 ergodicity 均成立。"
+      ]
+    },
+    {
+      "title": "有效性与局限",
+      "paragraphs": [
+        "模型只验证二维 scalar φ4；没有 dynamical fermions、non-Abelian gauge symmetry 或 sign problem。训练数据成本、网络训练成本和并行硬件未纳入 τint 数字，因而不能直接换算 wall-clock speedup。",
+        "near-critical 结果基于有限 L=32 与有限样本；effective-action reconstruction、Skilling–Hutchinson trace estimator 和 finite-epoch model error 都会影响 acceptance。作者将扩展到 gauge/fermion theories 明确留作未来工作。"
+      ]
+    },
+    {
+      "title": "复现与资源",
+      "paragraphs": [
+        "原文：https://arxiv.org/abs/2309.17082；代码：https://github.com/Anguswlx/DMasSQ；期刊：https://doi.org/10.1007/JHEP05(2024)060。PDF SHA-256：3c6e52dcbf2a73118d59cb87490bb843ddbebce1e46c73b93f68caa144f242bc。",
+        "复现需固定 φ4 action convention、κ/λ/L、training ensemble、U-Net、noise schedule、likelihood estimator probes、MH kernel、burn-in、tmax/windowing 与三种算法的 cost accounting。",
+        "Evidence status: full-text verified version of record/arXiv v2; no independent reproduction performed."
+      ]
+    },
+    {
+      "title": "阅读指南",
+      "paragraphs": [
+        "先读 pp.3–10 的 SQ 与 diffusion correspondence，再看 pp.13–18 的 φ4 setup、两相 distributions 与 likelihood。核心效率证据是 pp.18–20 的 Figure 8、τint 和 Figure 9；附录 acceptance scans 用来判断参数敏感性。"
+      ]
+    }
+  ],
+  "cover": {
+    "mode": "source_figure",
+    "asset_path": "assets/collection-figures/doi-10.1007-jhep05-2024-060/figure-8-autocorrelation.webp",
+    "label": "Figure 8",
+    "visual_type": "data_plot",
+    "evidence": "paper.pdf p. 19, Figure 8",
+    "alt_text": "局域 MC、HMC 和 DM-MC 的归一化磁化 autocorrelation 曲线。",
+    "caption": "在该临界参数与有限样本设置中，DM 全局 proposals 比 local MC 和 HMC 更快 decorrelate。",
+    "selection_rationale": "Figure 8 是论文性能主张的直接数据证据，并清楚显示比较对象和有限 Monte Carlo time window。"
+  },
+  "figure_refs": [
+    {
+      "label": "Figure 8",
+      "asset_path": "assets/collection-figures/doi-10.1007-jhep05-2024-060/figure-8-autocorrelation.webp",
+      "section": "核心结果与证据",
+      "role": "compare critical-region autocorrelation",
+      "evidence": "paper.pdf p. 19, Figure 8",
+      "alt_text": "三种 sampler 的 |M| normalized autocorrelation。",
+      "caption": "DM-MC 在该测试中几步内 decorrelates。",
+      "interpretation": "The plot uses 1024 samples at one finite lattice and excludes training-cost accounting."
+    }
+  ],
+  "equation_refs": [
+    {
+      "label": "DM proposal acceptance",
+      "latex": "p_{\\rm accept}=\\min\\!\\left(1,\\frac{q(\\phi_{i-1})p(\\phi_{\\rm prop})}{p(\\phi_{i-1})q(\\phi_{\\rm prop})}\\right)",
+      "role": "make the learned global proposal an MH chain",
+      "symbols": {
+        "p": "target Boltzmann density",
+        "q": "DM likelihood"
+      },
+      "evidence": "paper.pdf p. 18, Eq. (4.13)",
+      "interpretation": "Likelihood access lets the learned generator propose global moves while MH corrects its density mismatch."
+    },
+    {
+      "label": "Integrated autocorrelation",
+      "latex": "\\tau_{O,\\mathrm{int}}=\\frac12+\\frac1{C_O(0)}\\sum_{t=1}^{t_{\\max}}C_O(t)",
+      "role": "quantify sampler correlation length",
+      "symbols": {
+        "O": "observable",
+        "t_max": "finite summation window"
+      },
+      "evidence": "paper.pdf p. 19, Eq. (4.14)",
+      "interpretation": "Reported values depend on the finite window and sample, so uncertainty/window diagnostics remain necessary."
+    }
+  ],
+  "evidence_refs": [
+    "paper.pdf pp. 3–10: SQ and diffusion derivation",
+    "paper.pdf pp. 13–18: phi4 setup and distribution tests",
+    "paper.pdf pp. 18–20: Figure 8, integrated autocorrelations and limitations",
+    "source PDF SHA-256 3c6e52dcbf2a73118d59cb87490bb843ddbebce1e46c73b93f68caa144f242bc",
+    "Evidence status: full-text verified; no independent reproduction performed."
+  ]
+}
