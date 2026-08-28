@@ -1,0 +1,142 @@
+{
+  "arxiv_id": "record-36071a0581a1017d",
+  "source_version": "arXiv v1 manuscript",
+  "source_pdf": "https://arxiv.org/pdf/2308.06675",
+  "title_en": "Learning fast, accurate, and stable closures of a kinetic theory of an active fluid",
+  "title_zh": "学习活性流体动力学理论的快速、准确且稳定的闭合",
+  "curation_status": "full_text_verified",
+  "card_standard_version": "2.3",
+  "paper_profile": "theory_numerics",
+  "style_reference": "physicist_daily_arxiv",
+  "provenance": {
+    "program": "Collection",
+    "catalog": "Paper Collection",
+    "catalog_record_id": "36071a0581a1017d",
+    "catalog_record_ids": [
+      "36071a0581a1017d"
+    ],
+    "catalog_topic": "Fluid Dynamics",
+    "collection_date": "2026-08-23",
+    "sampled_at": "2026-08-28",
+    "selected_by": "full_collection_backfill",
+    "sampling_seed": "not_applicable_full_collection",
+    "candidate_count": 452
+  },
+  "verified_metadata": {
+    "doi": "10.1016/j.jcp.2024.112869",
+    "arxiv_id": "2308.06675",
+    "version": "arXiv v1 full text / JCP accepted article",
+    "title": "Learning fast, accurate, and stable closures of a kinetic theory of an active fluid",
+    "authors": [
+      "Suryanarayana Maddu",
+      "Scott Weady",
+      "Michael J. Shelley"
+    ],
+    "journal": "Journal of Computational Physics",
+    "volume": "504",
+    "pages": "112869",
+    "published": "2024",
+    "abstract": "Rotationally invariant neural closures and short-horizon differentiable-solver training yield stable reduced simulations of a two-dimensional active suspension.",
+    "comment": "ArXiv v1 full text cross-checked with Journal of Computational Physics metadata"
+  },
+  "sections": [
+    {
+      "title": "作者信息",
+      "paragraphs": [
+        "作者 Suryanarayana Maddu、Scott Weady、Michael J. Shelley；Journal of Computational Physics 504, 112869 (2024)，DOI:10.1016/j.jcp.2024.112869。核验 arXiv:2308.06675v1 全文22页。"
+      ]
+    },
+    {
+      "title": "研究问题",
+      "paragraphs": [
+        "active suspension的Smoluchowski kinetic theory同时解析位置与orientation，计算昂贵；只演化低阶moments D、u时又需要未知fourth moment S closure。论文问：能否从kinetic simulations学习既尊重rotation invariance、跨activity parameters泛化，又在长时coarse-grained rollout中稳定的快速closure？"
+      ]
+    },
+    {
+      "title": "背景",
+      "paragraphs": [
+        "作者研究二维apolar active rods，将S:D等closure contraction写成由D、strain E等tensor invariants决定的isotropic tensor function。representation theorem/Cayley–Hamilton basis把旋转协变性硬编码进features和output，而不是让网络从component-wise data自行学习。",
+        "a-priori小RMSE不保证a-posteriori PDE稳定：微小closure error经time stepping反馈后可能迅速放大。因此论文把监督拟合与嵌入differentiable pseudo-spectral solver的短窗口优化分开评估。"
+      ]
+    },
+    {
+      "title": "模型与方法",
+      "paragraphs": [
+        "作者比较pointwise MLP、local CNN和global Fourier Neural Operator；每种都预测closure系数或tensor，并与quadratic和Bingham closures对照。kinetic truth用SBDF2、Δt=0.0004生成；active learning在dipole α与alignment ζ参数平面迭代选择高error区域的数据。",
+        "MPC式训练把closure网络放进粗粒化solver，在q=4的短时间窗口内最小化moment trajectory discrepancy，并用多个injection points控制memory。该训练不是在线控制器，而是以time-stepping constraints把稳定性信息反馈到parameters。"
+      ]
+    },
+    {
+      "title": "核心结果与证据",
+      "paragraphs": [
+        "a-priori tests中invariant features较component-wise learning约提升两个数量级accuracy；在相近parameter count下，pointwise MLP优于CNN/FNO，支持该数据范围内closure主要局域。‘nonlocal effects can be ignored’只针对所测二维模型与observables。",
+        "active learning从参数区域边界/高误差处补点，用单一网络覆盖α、ζ范围；Figure 8显示其优于随机或简单grid sampling的测试RMSE。选择策略依赖已有kinetic simulations，并不消除生成ground truth的成本。",
+        "Figure 10在ζ=7与15比较mean velocity statistic和scalar order parameter：普通supervised MLP与quadratic closure在箭头处失稳，而MPC-MLP在所示时间内紧跟kinetic/Bingham曲线。后续power spectra与timing表明MLP每步成本接近传统closures且远低于kinetic solver。"
+      ]
+    },
+    {
+      "title": "有效性与局限",
+      "paragraphs": [
+        "研究限于二维、apolar suspension、指定periodic domain和parameter regime；作者指出3D需要新增tensor bases，并且高分辨3D kinetic truth可能贵到只能以Bingham coarse model代替，这会改变ground-truth层级。",
+        "q=4短窗口带来经验稳定性而非全局numerical-stability theorem；更长时间、不同grid/Δt、超出训练参数域或新initial conditions仍可能失稳。Bingham表现强且保有物理结构，ML closure优势应按accuracy、cost与可靠性共同判断。"
+      ]
+    },
+    {
+      "title": "复现与资源",
+      "paragraphs": [
+        "全文：https://arxiv.org/abs/2308.06675；期刊：https://doi.org/10.1016/j.jcp.2024.112869。PDF SHA-256：14355d0e8fa36c7a6f4ee967615885dca05228e0eec13d26a745bb37745618c8。正文未给公开代码仓库。",
+        "复现需固定kinetic angular/spatial grids、SBDF2 Δt=0.0004、α/ζ ranges、tensor invariants、architectures、active-learning acquisition、MPC horizon q=4、injection points和rollout stability criteria。Evidence status: full-text verified numerical study; no independent reproduction performed."
+      ]
+    },
+    {
+      "title": "阅读指南",
+      "paragraphs": [
+        "先读 pp.1–4 kinetic model与closure任务；pp.5–8看invariant representation和architectures；pp.9–11读a-priori/active-learning结果；pp.12–15看MPC、Figure 10、spectra、cost和parameter inference；pp.15–16核对二维/apolar限制。"
+      ]
+    }
+  ],
+  "cover": {
+    "mode": "source_figure",
+    "asset_path": "assets/collection-figures/record-36071a0581a1017d/figure-10-stable-closures.webp",
+    "label": "Figure 10",
+    "visual_type": "comparison",
+    "evidence": "paper.pdf p. 13, Figure 10",
+    "alt_text": "ζ=7和15下kinetic、Bingham、quadratic、MLP与MPC-MLP的velocity statistic和scalar order parameter。",
+    "caption": "短窗口solver-in-the-loop训练使MPC-MLP保持稳定并跟随kinetic统计，而普通MLP和quadratic closure发生失稳。",
+    "selection_rationale": "Figure 10直接区分低a-priori误差与真正可用的a-posteriori稳定rollout。"
+  },
+  "figure_refs": [
+    {
+      "label": "Figure 10",
+      "asset_path": "assets/collection-figures/record-36071a0581a1017d/figure-10-stable-closures.webp",
+      "section": "核心结果与证据",
+      "role": "support the central result",
+      "evidence": "paper.pdf p. 13, Figure 10",
+      "alt_text": "ζ=7和15下kinetic、Bingham、quadratic、MLP与MPC-MLP的velocity statistic和scalar order parameter。",
+      "caption": "短窗口solver-in-the-loop训练使MPC-MLP保持稳定并跟随kinetic统计，而普通MLP和quadratic closure发生失稳。",
+      "interpretation": "The figure supports the stated protocol-specific claim, not an unrestricted generalization."
+    }
+  ],
+  "equation_refs": [
+    {
+      "label": "Short-horizon solver-in-the-loop loss",
+      "latex": "\\mathcal L_q(\\theta)=\\sum_{l=1}^{q}\\nu_l\\|\\widehat D_{n+l}(\\theta)-D_{n+l}^{\\rm kinetic}\\|_2^2",
+      "role": "train a closure through its effect on several numerical time steps",
+      "symbols": {
+        "q": "training horizon, set to four",
+        "nu_l": "decaying horizon weights",
+        "D": "second orientational moment"
+      },
+      "evidence": "paper.pdf pp. 11–13, MPC formulation and Figure 9",
+      "interpretation": "Observed long-rollout stability is empirical and specific to the tested solver and parameter regimes."
+    }
+  ],
+  "evidence_refs": [
+    "paper.pdf pp. 1–4: kinetic theory and moment closure problem",
+    "paper.pdf pp. 5–9: invariant tensor learning and architecture comparison",
+    "paper.pdf pp. 9–11, Figures 7–8: active parameter sampling",
+    "paper.pdf pp. 11–14, Figures 9–12: MPC stability, spectra and cost",
+    "source PDF SHA-256 14355d0e8fa36c7a6f4ee967615885dca05228e0eec13d26a745bb37745618c8",
+    "Evidence status: full-text verified numerical study; no independent reproduction performed."
+  ]
+}

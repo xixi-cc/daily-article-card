@@ -1,0 +1,143 @@
+{
+  "arxiv_id": "record-2d6699167b3ea0b5",
+  "source_version": "arXiv v3 manuscript",
+  "source_pdf": "https://arxiv.org/pdf/2403.13117",
+  "title_en": "Optimal Flow Matching: Learning Straight Trajectories in Just One Step",
+  "title_zh": "最优流匹配：一步学习直线轨迹",
+  "curation_status": "full_text_verified",
+  "card_standard_version": "2.3",
+  "paper_profile": "theory_numerics",
+  "style_reference": "physicist_daily_arxiv",
+  "provenance": {
+    "program": "Collection",
+    "catalog": "Paper Collection",
+    "catalog_record_id": "2d6699167b3ea0b5",
+    "catalog_record_ids": [
+      "2d6699167b3ea0b5"
+    ],
+    "catalog_topic": "Flow Matching",
+    "collection_date": "2026-08-23",
+    "sampled_at": "2026-08-28",
+    "selected_by": "full_collection_backfill",
+    "sampling_seed": "not_applicable_full_collection",
+    "candidate_count": 452
+  },
+  "verified_metadata": {
+    "doi": null,
+    "arxiv_id": "2403.13117",
+    "version": "arXiv v3 full text / NeurIPS 2024",
+    "title": "Optimal Flow Matching: Learning Straight Trajectories in Just One Step",
+    "authors": [
+      "Nikita Kornilov",
+      "Petr Mokrov",
+      "Alexander Gasnikov",
+      "Alexander Korotin"
+    ],
+    "journal": "Advances in Neural Information Processing Systems",
+    "volume": "37",
+    "pages": null,
+    "published": "2024",
+    "abstract": "Convex-potential vector fields make one flow-matching optimization recover the quadratic optimal-transport displacement independently of the initial coupling.",
+    "comment": "ArXiv v3 is the verified NeurIPS 2024 manuscript"
+  },
+  "sections": [
+    {
+      "title": "作者信息",
+      "paragraphs": [
+        "作者 Nikita Kornilov、Petr Mokrov、Alexander Gasnikov、Alexander Korotin；NeurIPS 2024。核验 arXiv:2403.13117v3 全文26页与公开代码。PDF正文未给DOI，本卡不推测会议DOI。"
+      ]
+    },
+    {
+      "title": "研究问题",
+      "paragraphs": [
+        "普通Flow Matching沿任意coupling的linear interpolants训练，所得marginal velocity可能弯曲，需要许多ODE function evaluations；Rectified Flow要反复reflow，minibatch OT又有bias。论文问：能否只做一次FM objective，就得到quadratic optimal transport的直线displacement interpolation，且结果不依赖初始transport plan？"
+      ]
+    },
+    {
+      "title": "背景",
+      "paragraphs": [
+        "Brenier定理说明绝对连续source到target的quadratic OT map是convex potential梯度。OFM不直接拟合任意time-dependent vector field，而令flow map由strongly convex Ψ_t的梯度参数化；其Eulerian velocity通过inverse map和Hessian关系计算。",
+        "‘one step’指一次flow-matching训练阶段，而不是一个gradient update，也不表示训练零成本。sampling时直线OT map可避免多步ODE integration，但训练内部仍需为每个sample解convex inverse subproblem。"
+      ]
+    },
+    {
+      "title": "模型与方法",
+      "paragraphs": [
+        "时间势Ψ_t由端点convex potential Ψ与quadratic term插值得到，使ϕ_t=∇Ψ_t产生直线轨迹。Theorem 1证明，对任意初始coupling π，OFM loss与dynamic OT kinetic energy之差为常数，因此global minimizer恢复唯一quadratic OT flow。",
+        "实现用Input Convex Neural Network表示Ψ；LBFGS近似求ϕ_t^{-1}，Envelope Theorem给parameter gradient。实验覆盖2D toy distributions、维度2–128的Wasserstein-2 benchmark、unpaired image translation和FFHQ latent translation，并与FM、RF、c-RF、OT-CFM及neural OT baselines比较。"
+      ]
+    },
+    {
+      "title": "核心结果与证据",
+      "paragraphs": [
+        "Figure 6从Gaussian到eight Gaussians，用independent、minibatch和antiminibatch三种初始plans训练；三者都得到视觉上相近的直线transport，而输入couplings明显不同，直接示范Theorem 1的plan independence。它是2D可视证据，不给finite-sample optimization的一致性保证。",
+        "高维benchmark的Table 1报告OFM在所测维度与baselines间取得有竞争力的L2-UVP，同时可直接用终点map采样。image experiments表明单次训练可得到合理翻译和FID，但论文checklist明确说明昂贵实验没有多次运行统计，因此小差值不应当作显著性结论。",
+        "Appendix runtime显示OFM iteration因inverse convex optimization更昂贵；amortized inverse可缩短训练，但又引入额外MLP误差。推理轨迹直不等于训练总wall-clock更快。"
+      ]
+    },
+    {
+      "title": "有效性与局限",
+      "paragraphs": [
+        "定理要求quadratic cost、绝对连续分布、global minimization和足够表达的convex potential。实际ICNN可能欠表达，optimizer只到局部/近似解；高维inverse solve与Hessian operations会成为瓶颈。",
+        "作者列出三项限制：flow-map inversion昂贵、ICNN可能弱于普通网络、gradient需要Hessian inverse。实验缺少多seed variance，图像translation还继承pretrained ALAE latent space与数据偏差；结论不覆盖conditional generation或非quadratic transport costs。"
+      ]
+    },
+    {
+      "title": "复现与资源",
+      "paragraphs": [
+        "全文：https://arxiv.org/abs/2403.13117；代码：https://github.com/Jhomanik/Optimal-Flow-Matching。PDF SHA-256：6603e34cf45e490259addb32b297ab4315b53e9fe1f36705d481e45e4856ab7e。",
+        "复现需固定source/target samples、initial plan、ICNN depth/convexity constraints、LBFGS tolerance、Hessian solve、training iterations、benchmark reference OT与NFE/FID protocol。Evidence status: full-text verified theoretical/numerical study; no independent reproduction performed."
+      ]
+    },
+    {
+      "title": "阅读指南",
+      "paragraphs": [
+        "先读 pp.1–4的FM、dynamic OT与问题动机；pp.5–8看convex flow parameterization、loss和Theorem 1；pp.9–12读Figure 6及benchmarks；pp.23–24看三项限制与amortization，附录检查runtime和hyperparameters。"
+      ]
+    }
+  ],
+  "cover": {
+    "mode": "source_figure",
+    "asset_path": "assets/collection-figures/record-2d6699167b3ea0b5/figure-6-ofm-trajectories.webp",
+    "label": "Figure 6",
+    "visual_type": "comparison",
+    "evidence": "paper.pdf p. 10, Figure 6",
+    "alt_text": "Gaussian到eight-Gaussians任务及三种不同初始coupling训练出的OFM轨迹。",
+    "caption": "尽管初始plan不同，拟合出的OFM均接近同一quadratic-OT直线位移。",
+    "selection_rationale": "Figure 6直接可视化OFM核心的coupling independence与straightness主张。"
+  },
+  "figure_refs": [
+    {
+      "label": "Figure 6",
+      "asset_path": "assets/collection-figures/record-2d6699167b3ea0b5/figure-6-ofm-trajectories.webp",
+      "section": "核心结果与证据",
+      "role": "support the central result",
+      "evidence": "paper.pdf p. 10, Figure 6",
+      "alt_text": "Gaussian到eight-Gaussians任务及三种不同初始coupling训练出的OFM轨迹。",
+      "caption": "尽管初始plan不同，拟合出的OFM均接近同一quadratic-OT直线位移。",
+      "interpretation": "The figure supports the stated protocol-specific claim, not an unrestricted generalization."
+    }
+  ],
+  "equation_refs": [
+    {
+      "label": "Convex-potential flow map",
+      "latex": "\\phi_t(x)=\\nabla\\Psi_t(x),\\qquad \\Psi_t(x)=(1-t)\\frac{\\|x\\|^2}{2}+t\\Psi(x)",
+      "role": "parameterize straight displacement interpolations by a convex endpoint potential",
+      "symbols": {
+        "Psi": "learned convex Brenier potential",
+        "phi_t": "time-t flow map",
+        "t": "interpolation time"
+      },
+      "evidence": "paper.pdf pp. 5–7, OFM parameterization",
+      "interpretation": "Exact OT recovery is a population/global-minimum result; practical ICNN and inversion errors remain."
+    }
+  ],
+  "evidence_refs": [
+    "paper.pdf pp. 1–4: FM and dynamic-OT preliminaries",
+    "paper.pdf pp. 5–8: OFM objective and Theorem 1",
+    "paper.pdf p. 10, Figure 6: initial-plan invariance demonstration",
+    "paper.pdf pp. 10–12 and 21–23: high-dimensional, image and runtime tests",
+    "source PDF SHA-256 6603e34cf45e490259addb32b297ab4315b53e9fe1f36705d481e45e4856ab7e",
+    "Evidence status: full-text verified theoretical/numerical study; no independent reproduction performed."
+  ]
+}

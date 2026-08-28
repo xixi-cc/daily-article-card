@@ -1,0 +1,141 @@
+{
+  "arxiv_id": "record-1c62d958272af773",
+  "source_version": "arXiv v3 manuscript",
+  "source_pdf": "https://arxiv.org/pdf/2007.02848",
+  "title_en": "Weak SINDy for Partial Differential Equations",
+  "title_zh": "用于偏微分方程的弱形式SINDy",
+  "curation_status": "full_text_verified",
+  "card_standard_version": "2.3",
+  "paper_profile": "theory_numerics",
+  "style_reference": "physicist_daily_arxiv",
+  "provenance": {
+    "program": "Collection",
+    "catalog": "Paper Collection",
+    "catalog_record_id": "1c62d958272af773",
+    "catalog_record_ids": [
+      "1c62d958272af773"
+    ],
+    "catalog_topic": "Active Matter",
+    "collection_date": "2026-08-23",
+    "sampled_at": "2026-08-28",
+    "selected_by": "full_collection_backfill",
+    "sampling_seed": "not_applicable_full_collection",
+    "candidate_count": 452
+  },
+  "verified_metadata": {
+    "doi": "10.1016/j.jcp.2021.110525",
+    "arxiv_id": "2007.02848",
+    "version": "arXiv v3 full text",
+    "title": "Weak SINDy for Partial Differential Equations",
+    "authors": [
+      "Daniel A. Messenger",
+      "David M. Bortz"
+    ],
+    "journal": "Journal of Computational Physics",
+    "volume": "443",
+    "pages": "110525",
+    "published": "2021",
+    "abstract": "A convolutional weak-form sparse regression discovers PDE terms without pointwise numerical derivatives and remains robust at high measurement noise.",
+    "comment": "ArXiv v3 accepted manuscript cross-checked with journal metadata"
+  },
+  "sections": [
+    {
+      "title": "作者信息",
+      "paragraphs": [
+        "作者 Daniel A. Messenger、David M. Bortz；Journal of Computational Physics 443, 110525 (2021)，DOI:10.1016/j.jcp.2021.110525。核验 arXiv:2007.02848v3 全文33页及公开Matlab实现。"
+      ]
+    },
+    {
+      "title": "研究问题",
+      "paragraphs": [
+        "从离散且含噪的spatiotemporal field恢复控制PDE时，经典SINDy需要pointwise时间/空间导数，噪声经微分严重放大。论文问：能否把PDE乘compactly supported test functions并分部积分，把导数移到光滑test function上，同时保持稀疏library选择、高精度和近线性计算成本？"
+      ]
+    },
+    {
+      "title": "背景",
+      "paragraphs": [
+        "对候选项D^αf_j(u)，弱形式在局部space-time boxes上积分并通过integration by parts变成数据u与已知test-function derivatives的convolution。这样不需先denoise或逐点估计u_t、u_xx；多个box产生矩阵G与右端b，再用STLS寻找稀疏系数。",
+        "目录分类为Active Matter，但基准是Burgers、KdV、Kuramoto–Sivashinsky、nonlinear Schrödinger、sine-Gordon、reaction–diffusion和Navier–Stokes；算法本身不依赖活性物质专用结构。"
+      ]
+    },
+    {
+      "title": "模型与方法",
+      "paragraphs": [
+        "WSINDy-PDE利用可分离polynomial test functions与FFT计算convolutions，最坏复杂度为O(N^{D+1}logN)，即每data point约O(logN)。作者用Fourier spectra选support和smoothness，使test function在目标frequency范围内抑制noise。",
+        "scale normalization缓解library columns量纲差异；modified STLS在一列候选threshold上最小化data-fit加sparsity penalty，学习λ而非手设。200次独立Gaussian-noise realizations用于每个noise level的average TPR和coefficient error。"
+      ]
+    },
+    {
+      "title": "核心结果与证据",
+      "paragraphs": [
+        "noise-free synthetic data中，识别系数误差可低于数值simulation tolerance，说明weak convolution没有引入主导误差；但这是已知library、规则grid和合成求解器下的结果，不等于实验PDE的机器精度恢复。",
+        "Figure 4汇总七个PDE的200次noise trials：Burgers、KdV、KS和sine-Gordon在σ_NR=1附近仍保持约0.95以上平均TPR；NLS在约0.5之前较稳，reaction–diffusion和Navier–Stokes更早下降。右图显示learned threshold随noise总体上升且不同方程差异明显。",
+        "正文还报告FFT实现随数据规模接近理论复杂度，并通过test-function spectrum解释robustness。成功依赖candidate library包含真项；TPR只衡量support recovery，不能替代coefficient accuracy、forecast stability或模型外推。"
+      ]
+    },
+    {
+      "title": "有效性与局限",
+      "paragraphs": [
+        "所有主测试来自数值生成、已知PDE和加性独立Gaussian measurement noise；现实采样常有correlated noise、missing data、irregular grids和boundary artifacts。弱积分会牺牲局部resolution，并依赖support scale与test-function family。",
+        "高维library的collinearity、unmodeled forcing和近似closure可能产生不可辨识项；scale invariance改善condition但不解决结构等价。Navier–Stokes和reaction–diffusion的高噪TPR下降表明robustness并非跨系统统一。"
+      ]
+    },
+    {
+      "title": "复现与资源",
+      "paragraphs": [
+        "全文：https://arxiv.org/abs/2007.02848；代码：https://github.com/MathBioCU/WSINDy_PDE；期刊：https://doi.org/10.1016/j.jcp.2021.110525。PDF SHA-256：2b86d8de718f797a8951cecb38f569f3bf9970dd8c075538d512680fdfc1c416。",
+        "复现需固定PDE solver/grid、noise normalization σ_NR、candidate library、test-function order/support、query points、FFT padding、STLS threshold grid和200 seeds。Evidence status: full-text verified numerical/methodological study; no independent reproduction performed."
+      ]
+    },
+    {
+      "title": "阅读指南",
+      "paragraphs": [
+        "先读 pp.1–4为何使用weak form；pp.5–10看convolution、FFT与test-function selection；pp.11–14看threshold learning和scale normalization；pp.16–21读七PDE结果，尤其p.19 Figure 4；附录核对数据生成与parameters。"
+      ]
+    }
+  ],
+  "cover": {
+    "mode": "source_figure",
+    "asset_path": "assets/collection-figures/record-1c62d958272af773/figure-4-noise-robustness.webp",
+    "label": "Figure 4",
+    "visual_type": "comparison",
+    "evidence": "paper.pdf p. 19, Figure 4",
+    "alt_text": "七类PDE在不同相对噪声下的平均term-recovery TPR与学习到的STLS threshold。",
+    "caption": "weak formulation对若干PDE可承受接近signal幅度的噪声，但RD与Navier–Stokes更早退化。",
+    "selection_rationale": "Figure 4用200次noise realizations呈现方法的鲁棒范围和清晰失败边界。"
+  },
+  "figure_refs": [
+    {
+      "label": "Figure 4",
+      "asset_path": "assets/collection-figures/record-1c62d958272af773/figure-4-noise-robustness.webp",
+      "section": "核心结果与证据",
+      "role": "support the central result",
+      "evidence": "paper.pdf p. 19, Figure 4",
+      "alt_text": "七类PDE在不同相对噪声下的平均term-recovery TPR与学习到的STLS threshold。",
+      "caption": "weak formulation对若干PDE可承受接近signal幅度的噪声，但RD与Navier–Stokes更早退化。",
+      "interpretation": "The figure supports the stated protocol-specific claim, not an unrestricted generalization."
+    }
+  ],
+  "equation_refs": [
+    {
+      "label": "Convolutional weak form",
+      "latex": "\\int_\\Omega \\phi\\,D^{\\alpha^0}u\\,dxdt=\\sum_j w_j(-1)^{|\\alpha^j|}\\int_\\Omega D^{\\alpha^j}\\phi\\,f_j(u)\\,dxdt",
+      "role": "move derivatives from noisy data onto smooth test functions",
+      "symbols": {
+        "phi": "compactly supported test function",
+        "f_j": "candidate nonlinear term",
+        "w_j": "sparse PDE coefficient"
+      },
+      "evidence": "paper.pdf pp. 5–8, weak discretization",
+      "interpretation": "Recovery still depends on library identifiability, support choice and boundary handling."
+    }
+  ],
+  "evidence_refs": [
+    "paper.pdf pp. 1–4: derivative-noise problem and weak formulation",
+    "paper.pdf pp. 5–10: convolutional discretization and FFT",
+    "paper.pdf pp. 11–14: learned threshold and scale invariance",
+    "paper.pdf pp. 16–21, especially Figure 4: seven-PDE noise tests",
+    "source PDF SHA-256 2b86d8de718f797a8951cecb38f569f3bf9970dd8c075538d512680fdfc1c416",
+    "Evidence status: full-text verified numerical/methodological study; no independent reproduction performed."
+  ]
+}
