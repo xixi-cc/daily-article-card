@@ -1,0 +1,143 @@
+{
+  "arxiv_id": "doi-10.1103-physrevx.13.041032",
+  "source_version": "arXiv v1 manuscript",
+  "source_pdf": "https://arxiv.org/pdf/2201.00098",
+  "title_en": "Optimal Control of Nonequilibrium Systems through Automatic Differentiation",
+  "title_zh": "通过自动微分实现非平衡系统最优控制",
+  "curation_status": "full_text_verified",
+  "card_standard_version": "2.3",
+  "paper_profile": "theory_numerics",
+  "style_reference": "physicist_daily_arxiv",
+  "provenance": {
+    "program": "Collection",
+    "catalog": "Paper Collection",
+    "catalog_record_id": "89a2dae3d48659b5",
+    "catalog_record_ids": [
+      "89a2dae3d48659b5"
+    ],
+    "catalog_topic": "Control & Reinforcement Learning",
+    "collection_date": "2026-08-23",
+    "sampled_at": "2026-08-28",
+    "selected_by": "full_collection_backfill",
+    "sampling_seed": "not_applicable_full_collection",
+    "candidate_count": 452
+  },
+  "verified_metadata": {
+    "doi": "10.1103/PhysRevX.13.041032",
+    "arxiv_id": "2201.00098",
+    "version": "arXiv v1 full text",
+    "title": "Optimal Control of Nonequilibrium Systems through Automatic Differentiation",
+    "authors": [
+      "Megan C. Engel",
+      "Jamie A. Smith",
+      "Michael P. Brenner"
+    ],
+    "journal": "Physical Review X",
+    "volume": "13",
+    "issue": "4",
+    "article": "041032",
+    "published": "2023-11-16",
+    "abstract": "Automatic differentiation through stochastic simulations optimizes nonequilibrium protocols, reproducing analytical near-equilibrium solutions and finding lower-work controls for Ising and barrier-crossing systems far from equilibrium.",
+    "comment": "ArXiv v1 full text cross-checked with version-of-record metadata; no Crossref correction or retraction relation found"
+  },
+  "sections": [
+    {
+      "title": "作者信息",
+      "paragraphs": [
+        "作者 Megan C. Engel、Jamie A. Smith、Michael P. Brenner；Physical Review X 13, 041032 (2023)，DOI:10.1103/PhysRevX.13.041032。核验 arXiv:2201.00098v1 全文26页；未发现关联更正或撤稿。"
+      ]
+    },
+    {
+      "title": "研究问题",
+      "paragraphs": [
+        "有限时间驱动常远离 equilibrium，linear-response thermodynamic geometry 只在慢驱动附近可靠；直接搜索 protocol 又要对 stochastic simulator 求梯度。论文问：能否让 automatic differentiation 穿过 Monte Carlo 或 Langevin trajectory，直接最小化平均 dissipated work/entropy production，并在 far-from-equilibrium 区域发现理论近似遗漏的控制结构？"
+      ]
+    },
+    {
+      "title": "背景",
+      "paragraphs": [
+        "控制 protocol λ(t) 决定能量函数并驱动概率分布。near equilibrium 时最优速度与 thermodynamic metric/friction tensor 有关，但高 barrier、phase transition 和短 duration 会产生强迟滞。AD 可对可微程序做 reverse-mode differentiation；随机采样需重参数化或连续松弛以保留 gradient path。",
+        "作者不是训练 reinforcement-learning policy，而是优化预先参数化、低维、open-loop time schedule。目标由一批模拟 trajectory 的平均 work 或 entropy production 估计。"
+      ]
+    },
+    {
+      "title": "模型与方法",
+      "paragraphs": [
+        "三类验证依次增加复杂性：二维 32×32 Ising model 同时控制 magnetic field B(t) 与 temperature T(t)；Brownian particle in a moving harmonic trap 具有已知精确 optimum；double-well barrier crossing 由 harmonic trap center 驱动。实现基于 JAX，对整段 dynamics unroll 后反向传播。",
+        "Ising Monte Carlo 的离散 spin flips 以 differentiable approximation 处理；连续 Langevin noise 用固定 random draws/reparameterization。每轮用多条 trajectories 估计 stochastic gradient，更新离散 time-control points，并用独立/更多 trajectories 评估 protocol。"
+      ]
+    },
+    {
+      "title": "核心结果与证据",
+      "paragraphs": [
+        "在 harmonic trap 的可解问题中，AD protocol 收敛到理论 optimum，表明 simulator gradient 和 optimizer 能恢复已知答案。Ising reversal 中联合调节 B、T 可在 phase-transition 附近降低 entropy production；Figure 1 的有限样本曲线支持该具体 32×32、固定 duration protocol。",
+        "Figure 3 对 2.5 kBT barrier 的 near-equilibrium case，AD、theory 的 path 与 work distribution 基本重合；在 10 kBT barrier 下，AD path 变得不对称，并在开始/结束出现离散 jumps。其平均 dissipated work 约3.260±0.007 kBT，低于 near-equilibrium theory 的5.37±0.02 kBT 和 linear protocol 的5.172±0.009 kBT。",
+        "高 barrier optimum 先加速接近 barrier、后缓慢离开，使粒子更早获得越障机会；这解释曲线而非单纯黑箱胜出。数值优化找到的是给定参数化和初始化下的低损失解，论文没有证明全局最优。"
+      ]
+    },
+    {
+      "title": "有效性与局限",
+      "paragraphs": [
+        "AD 需要可微或可松弛的 simulator；离散事件、chaotic long trajectories 和 rare transitions 会导致 biased/high-variance gradients。计算和内存随 trajectory length 与 ensemble size 增长，实验硬件还需可微 surrogate 或 system identification。",
+        "示例的控制维度低、duration 固定、模型动力学已知且没有未知 delay/constraints。优化可能依赖 initialization 和 local minima；‘far from equilibrium outperforms theory’仅指文中 near-equilibrium approximation 与 baseline，不是对所有控制算法的比较。"
+      ]
+    },
+    {
+      "title": "复现与资源",
+      "paragraphs": [
+        "全文：https://arxiv.org/abs/2201.00098；期刊：https://doi.org/10.1103/PhysRevX.13.041032。核验 PDF SHA-256：b2cdb300dba35359037ec415c8c696a5f8716f7dad018aee4244c0cd052fcf29。正文说明使用 JAX；代码可用性应以论文当前 Data/Code statement 为准。",
+        "复现需固定 dynamics discretization、random seeds、trajectory count、control knots、optimizer/learning rate、gradient estimator、initial protocol、evaluation ensemble 与 confidence intervals；Ising 松弛还需与真实 discrete dynamics 复核。Evidence status: full-text verified simulation/control study; no independent reproduction performed."
+      ]
+    },
+    {
+      "title": "阅读指南",
+      "paragraphs": [
+        "先读 pp.2–4 的 differentiable simulation workflow，再看 pp.5–6 Figure 1 的 Ising control。p.7 harmonic trap 是 correctness check，p.8 Figure 3 是 far-from-equilibrium 核心证据；最后读 Methods/Appendix 核对 stochastic gradients、松弛和样本数。"
+      ]
+    }
+  ],
+  "cover": {
+    "mode": "source_figure",
+    "asset_path": "assets/collection-figures/doi-10.1103-physrevx.13.041032/figure-3-optimal-protocols.webp",
+    "label": "Figure 3",
+    "visual_type": "comparison",
+    "evidence": "paper.pdf p. 8, Figure 3",
+    "alt_text": "低与高势垒下线性、近稳态理论和自动微分控制协议及其耗散功分布。",
+    "caption": "低势垒时 AD 复现近稳态理论；高势垒时出现非对称路径和边界跳跃，并降低平均耗散功。",
+    "selection_rationale": "Figure 3 同时提供已知极限校验与远离平衡时改进的定量证据。"
+  },
+  "figure_refs": [
+    {
+      "label": "Figure 3",
+      "asset_path": "assets/collection-figures/doi-10.1103-physrevx.13.041032/figure-3-optimal-protocols.webp",
+      "section": "核心结果与证据",
+      "role": "support the central result",
+      "evidence": "paper.pdf p. 8, Figure 3",
+      "alt_text": "低与高势垒下线性、近稳态理论和自动微分控制协议及其耗散功分布。",
+      "caption": "低势垒时 AD 复现近稳态理论；高势垒时出现非对称路径和边界跳跃，并降低平均耗散功。",
+      "interpretation": "The figure supports the stated protocol-specific claim, not an unrestricted generalization."
+    }
+  ],
+  "equation_refs": [
+    {
+      "label": "Protocol objective",
+      "latex": "\\lambda^*=\\arg\\min_\\lambda\\;\\langle W_{\\rm diss}[x_{0:T};\\lambda]\\rangle,\\qquad \\nabla_\\lambda\\langle W_{\\rm diss}\\rangle\\approx\\frac1M\\sum_{m=1}^M\\nabla_\\lambda W_{\\rm diss}^{(m)}",
+      "role": "optimize an open-loop protocol by differentiating through stochastic trajectories",
+      "symbols": {
+        "lambda": "time-discretized control",
+        "W_diss": "dissipated work",
+        "M": "trajectory batch size"
+      },
+      "evidence": "paper.pdf pp. 2–4, optimization framework",
+      "interpretation": "The gradient is estimator- and simulator-dependent and does not guarantee a global optimum."
+    }
+  ],
+  "evidence_refs": [
+    "paper.pdf pp. 2–4: automatic-differentiation control framework",
+    "paper.pdf pp. 5–6, Figure 1: Ising magnetization reversal",
+    "paper.pdf p. 7, Figure 2: harmonic-trap analytical check",
+    "paper.pdf p. 8, Figure 3: low- and high-barrier protocols and work distributions",
+    "source PDF SHA-256 b2cdb300dba35359037ec415c8c696a5f8716f7dad018aee4244c0cd052fcf29",
+    "Evidence status: full-text verified simulation/control study; no independent reproduction performed."
+  ]
+}
