@@ -1,0 +1,142 @@
+{
+  "arxiv_id": "record-71b518265b03b2fb",
+  "source_version": "JMLR 2025 full text",
+  "source_pdf": "https://www.jmlr.org/papers/volume26/23-1605/23-1605.pdf",
+  "title_en": "Stochastic Interpolants: A Unifying Framework for Flows and Diffusions",
+  "title_zh": "随机插值：流与扩散的统一框架",
+  "curation_status": "full_text_verified",
+  "card_standard_version": "2.3",
+  "paper_profile": "theory_numerics",
+  "style_reference": "physicist_daily_arxiv",
+  "provenance": {
+    "program": "Collection",
+    "catalog": "Paper Collection",
+    "catalog_record_id": "71b518265b03b2fb",
+    "catalog_record_ids": [
+      "71b518265b03b2fb"
+    ],
+    "catalog_topic": "Flow Matching",
+    "collection_date": "2026-08-23",
+    "sampled_at": "2026-08-28",
+    "selected_by": "full_collection_backfill",
+    "sampling_seed": "not_applicable_full_collection",
+    "candidate_count": 452
+  },
+  "verified_metadata": {
+    "doi": null,
+    "arxiv_id": "2303.08797",
+    "version": "JMLR 26 (2025) full text / arXiv v4-equivalent revision",
+    "title": "Stochastic Interpolants: A Unifying Framework for Flows and Diffusions",
+    "authors": [
+      "Michael S. Albergo",
+      "Nicholas M. Boffi",
+      "Eric Vanden-Eijnden"
+    ],
+    "journal": "Journal of Machine Learning Research",
+    "volume": "26",
+    "pages": "1–80",
+    "published": "2025",
+    "abstract": "Stochastic interpolants bridge arbitrary endpoint densities and induce shared transport and Fokker–Planck equations, yielding trainable ODE or tunable-noise SDE generative models.",
+    "comment": "Evidence uses the final 80-page JMLR article published September 2025"
+  },
+  "sections": [
+    {
+      "title": "作者信息",
+      "paragraphs": [
+        "作者 Michael S. Albergo、Nicholas M. Boffi、Eric Vanden-Eijnden；Journal of Machine Learning Research 26(209), 1–80 (2025)。核验JMLR最终全文80页；对应 arXiv:2303.08797v4。JMLR页面未列期刊DOI，本卡不把arXiv DataCite DOI误作期刊DOI。"
+      ]
+    },
+    {
+      "title": "研究问题",
+      "paragraphs": [
+        "flow matching与score-based diffusion都用continuous dynamics把base density ρ0变成target ρ1，却常以不同objectives和samplers表述。论文问：能否从一个可设计的random interpolating process同时导出transport equation和一族Fokker–Planck equations，并用可采样的quadratic losses学习velocity、score和denoiser？"
+      ]
+    },
+    {
+      "title": "背景",
+      "paragraphs": [
+        "stochastic interpolant定义xt=I(t,x0,x1)+γ(t)z，其中(x0,x1)来自任意coupling、z为Gaussian且γ在端点为0。由conditional expectations得到density velocity b、score s与denoiser ηz；同一ρ(t)既可由probability-flow ODE采样，也可由含可调diffusion ε的forward/backward SDE采样。",
+        "框架在population且function class充分时精确连接端点densities；实际neural regression、finite samples与numerical ODE/SDE integration都会引入误差。选择interpolant/coupling并非无关紧要，它改变学习难度和path geometry。"
+      ]
+    },
+    {
+      "title": "模型与方法",
+      "paragraphs": [
+        "Theorems 6–8给出ρ(t)的transport/Fokker–Planck equations，b和s分别是quadratic objectives的唯一L2 minimizers。作者推导SDE likelihood/cross-entropy estimators，并说明SDE drift regression可控制likelihood，而deterministic ODE还需控制Fisher divergence。",
+        "后续覆盖one-sided、two-sided、mirror和Gaussian encoding-decoding designs，联系denoising、rectified flow、stochastic localization与Schrödinger bridge；Algorithms 1–4给训练和Heun/dopri5 sampling。实验包括2D checkerboard、128D Gaussian mixtures及128×128 Oxford flowers。"
+      ]
+    },
+    {
+      "title": "核心结果与证据",
+      "paragraphs": [
+        "理论表明在相同learned velocity/score下，ε=0给probability-flow ODE，ε>0给保持相同marginal path的SDE family；diffusion可作为sampling-time控制量，而不需要重新定义target path。exactness仍取决于真实b、s，而非近似网络。",
+        "Figure 8对2D checkerboard扫描四种γ与ε=0,0.5,1,2.5，报告|logρ1−logρ̂(1)|的mean/variance。特定γ在ODE下最好；在较大ε时SDE用同一b̂、ŝ获得更低误差，支持stochastic sampling可缓解估计误差，但只是一组toy density结果。",
+        "128D Gaussian-mixture实验进一步测projected KL；Oxford flowers显示ODE/SDE生成和mirror resampling。论文没有以现代大规模image benchmark做SOTA FID竞争，重点是统一理论和design-space demonstration。"
+      ]
+    },
+    {
+      "title": "有效性与局限",
+      "paragraphs": [
+        "正则性、绝对连续性、端点和有限能量条件支撑PDE/SDE推导；singular data manifold、nonsmooth interpolant或score在端点爆炸需特别处理。likelihood bounds含不可直接观测的approximation errors，有限网络不一定满足。",
+        "实验规模有限，γ、coupling、ε、solver steps和network共同影响结果；大ε需要更多SDE steps，质量提升不等于wall-clock更优。Schrödinger bridge recovery还需优化整个interpolant，而非任意固定path自动最优。"
+      ]
+    },
+    {
+      "title": "复现与资源",
+      "paragraphs": [
+        "全文：https://jmlr.org/papers/v26/23-1605.html；arXiv：https://arxiv.org/abs/2303.08797；代码：https://github.com/malbergo/stochastic-interpolants。JMLR PDF SHA-256：5b9e56d46b89ed4880d94a778b7334508015a0fe6ce020e738768f5907e3478b。",
+        "复现需固定JMLR revision、endpoint coupling、I与γ、b/s/denoiser parameterization、ε、ODE/SDE solver和steps、density estimator及random seeds。Evidence status: full-text verified theory/numerical study; no independent reproduction performed."
+      ]
+    },
+    {
+      "title": "阅读指南",
+      "paragraphs": [
+        "先读 pp.1–6 Figure 1和定义；pp.7–21看velocity/score objectives与ODE/SDE；pp.21–32看likelihood；pp.33–45看interpolant designs和Schrödinger bridge；pp.47–53读Figures 7–15实验，pp.56–80为证明和配置。"
+      ]
+    }
+  ],
+  "cover": {
+    "mode": "source_figure",
+    "asset_path": "assets/collection-figures/record-71b518265b03b2fb/figure-8-sde-sample-quality.webp",
+    "label": "Figure 8",
+    "visual_type": "comparison",
+    "evidence": "paper.pdf p. 48, Figure 8",
+    "alt_text": "不同noise schedule γ与sampling diffusion ε下checkerboard终点log-density误差的mean和variance。",
+    "caption": "同一learned drift/score下，非零ε的SDE sampling在该实验中通常优于确定性ODE，并受γ设计影响。",
+    "selection_rationale": "Figure 8定量展示框架两个独立旋钮——interpolant noise schedule与sampler diffusion——的相互作用。"
+  },
+  "figure_refs": [
+    {
+      "label": "Figure 8",
+      "asset_path": "assets/collection-figures/record-71b518265b03b2fb/figure-8-sde-sample-quality.webp",
+      "section": "核心结果与证据",
+      "role": "support the central result",
+      "evidence": "paper.pdf p. 48, Figure 8",
+      "alt_text": "不同noise schedule γ与sampling diffusion ε下checkerboard终点log-density误差的mean和variance。",
+      "caption": "同一learned drift/score下，非零ε的SDE sampling在该实验中通常优于确定性ODE，并受γ设计影响。",
+      "interpretation": "The figure supports the stated protocol-specific claim, not an unrestricted generalization."
+    }
+  ],
+  "equation_refs": [
+    {
+      "label": "Stochastic interpolant",
+      "latex": "x_t=I(t,x_0,x_1)+\\gamma(t)z,\\qquad z\\sim\\mathcal N(0,I)",
+      "role": "construct a finite-time density bridge whose marginals admit ODE and SDE samplers",
+      "symbols": {
+        "I": "endpoint interpolation map",
+        "gamma": "latent-noise schedule",
+        "x_0,x_1": "coupled endpoint samples"
+      },
+      "evidence": "paper.pdf pp. 6–10, Definition 1 and Figure 2",
+      "interpretation": "Endpoint exactness is a population statement; learned fields and numerical integration determine practical error."
+    }
+  ],
+  "evidence_refs": [
+    "paper.pdf pp. 5–12: stochastic interpolant and density equations",
+    "paper.pdf pp. 12–31: quadratic objectives, samplers and likelihood",
+    "paper.pdf pp. 32–45: design choices and Schrödinger bridges",
+    "paper.pdf pp. 47–53, Figures 7–15: numerical and image examples",
+    "source PDF SHA-256 5b9e56d46b89ed4880d94a778b7334508015a0fe6ce020e738768f5907e3478b",
+    "Evidence status: full-text verified theory/numerical study; no independent reproduction performed."
+  ]
+}

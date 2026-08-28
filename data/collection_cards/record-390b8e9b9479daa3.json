@@ -1,0 +1,143 @@
+{
+  "arxiv_id": "record-390b8e9b9479daa3",
+  "source_version": "arXiv v1 manuscript",
+  "source_pdf": "https://arxiv.org/pdf/1609.06401",
+  "title_en": "Data-driven discovery of partial differential equations",
+  "title_zh": "偏微分方程的数据驱动发现",
+  "curation_status": "full_text_verified",
+  "card_standard_version": "2.3",
+  "paper_profile": "theory_numerics",
+  "style_reference": "physicist_daily_arxiv",
+  "provenance": {
+    "program": "Collection",
+    "catalog": "Paper Collection",
+    "catalog_record_id": "390b8e9b9479daa3",
+    "catalog_record_ids": [
+      "390b8e9b9479daa3"
+    ],
+    "catalog_topic": "Active Matter",
+    "collection_date": "2026-08-23",
+    "sampled_at": "2026-08-28",
+    "selected_by": "full_collection_backfill",
+    "sampling_seed": "not_applicable_full_collection",
+    "candidate_count": 452
+  },
+  "verified_metadata": {
+    "doi": "10.1126/sciadv.1602614",
+    "arxiv_id": "1609.06401",
+    "version": "arXiv v1 full text",
+    "title": "Data-driven discovery of partial differential equations",
+    "authors": [
+      "Samuel H. Rudy",
+      "Steven L. Brunton",
+      "Joshua L. Proctor",
+      "J. Nathan Kutz"
+    ],
+    "journal": "Science Advances",
+    "volume": "3",
+    "pages": "e1602614",
+    "published": "2017",
+    "abstract": "PDE-FIND constructs a library of nonlinear fields and spatial derivatives and uses sequential threshold ridge regression to identify parsimonious governing PDEs.",
+    "comment": "Four-page arXiv main article; code and supplementary material are linked by the authors"
+  },
+  "sections": [
+    {
+      "title": "作者信息",
+      "paragraphs": [
+        "作者 Samuel H. Rudy、Steven L. Brunton、Joshua L. Proctor、J. Nathan Kutz；Science Advances 3, e1602614 (2017)，DOI:10.1126/sciadv.1602614。核验 arXiv:1609.06401v1 主文4页及作者公开PDE-FIND资源。"
+      ]
+    },
+    {
+      "title": "研究问题",
+      "paragraphs": [
+        "给定空间位置与时间上的field measurements，能否自动从大量候选非线性项与偏导数中发现控制PDE，而无需逐个枚举模型？核心难点是数值微分放大measurement noise、library columns高度相关，以及单条特殊解可能同时满足多个不同方程。"
+      ]
+    },
+    {
+      "title": "背景",
+      "paragraphs": [
+        "PDE-FIND把所有u(x,t)样本堆成U，把已知potential或|u|等辅助量堆成Q，再生成Θ(U,Q)，其列包含1、u、u²、空间导数及乘积。目标Ut=Θξ中ξ应稀疏；这把symbolic PDE discovery变为support selection。",
+        "目录将该记录归为Active Matter，但论文是通用PDE discovery方法，示例包括Navier–Stokes、KdV、Burgers、Schrödinger harmonic oscillator与diffusion；本卡不把它表述成活性物质专用算法。"
+      ]
+    },
+    {
+      "title": "模型与方法",
+      "paragraphs": [
+        "作者用polynomial interpolation估计含噪数据导数，必要时先SVD filtering。Sequential Threshold Ridge Regression反复做ridge fit并删除小系数；外层根据residual、nonzero count和condition number选择Pareto折中。Figure 1还给出subsampling与compressed library路径以降低大数据成本。",
+        "实验从数值解抽样，逐步增加noise和减少data；多initial conditions用于区分单soliton上等价的advection表达与真正KdV非线性。另把Brownian trajectory切成短段、用位移histograms恢复diffusion equation，并从Re=100 cylinder wake识别vorticity Navier–Stokes。"
+      ]
+    },
+    {
+      "title": "核心结果与证据",
+      "paragraphs": [
+        "Figure 1以Navier–Stokes为例连接data collection、library/derivatives、sparse regression、identified dynamics以及compressed solve，是PDE-FIND全过程证据。它展示算法结构，不是performance曲线。",
+        "正文报告在多个canonical PDE上可恢复正确term support和接近真值的coefficients；对traveling-wave KdV，单一soliton会被误认为linear advection，而加入另一amplitude solution后恢复6uux+uxxx，清楚暴露identifiability条件。",
+        "cylinder-wake示例从一个边界条件发现vorticity equation，并用该方程预测其他boundary conditions；结果说明发现显式law可能比纯trajectory fit更可迁移，但仍在同一控制方程和数值数据家族内。"
+      ]
+    },
+    {
+      "title": "有效性与局限",
+      "paragraphs": [
+        "成功依赖candidate library包含真项、导数估计足够准、ξ确实稀疏且columns可辨识。threshold和penalty是model-selection choices；复杂噪声、irregular grids、weak solutions/shocks、hidden variables或nonlocal/fractional operators可能破坏流程。",
+        "四页主文只给概要，详细parameter sweeps依赖supplement。合成PDE有ground truth，现实系统通常没有；低residual不能排除结构上不同但观测等价的方程。多trajectory策略缓解但不保证全局identifiability。"
+      ]
+    },
+    {
+      "title": "复现与资源",
+      "paragraphs": [
+        "全文：https://arxiv.org/abs/1609.06401；期刊：https://doi.org/10.1126/sciadv.1602614；代码/补充：https://github.com/snagcliffs/PDE-FIND。PDF SHA-256：f917731f626566618d7b50530a6d42e433620b88b44125796bae7e278ac3721f。",
+        "复现需固定PDE solver、sample grid/trajectories、noise definition、polynomial derivative stencil、library degree、ridge λ、threshold search与Pareto penalty。Evidence status: full-text verified numerical/methodological study; no independent reproduction performed."
+      ]
+    },
+    {
+      "title": "阅读指南",
+      "paragraphs": [
+        "先读 p.1问题和library思想；p.2 Figure 1与Eqs. (1)–(3)看完整算法；p.3看Brownian/KdV identifiability，p.4看Navier–Stokes、Schrödinger结果与资源链接。"
+      ]
+    }
+  ],
+  "cover": {
+    "mode": "source_figure",
+    "asset_path": "assets/collection-figures/record-390b8e9b9479daa3/figure-1-pde-find-workflow.webp",
+    "label": "Figure 1",
+    "visual_type": "schematic",
+    "evidence": "paper.pdf p. 2, Figure 1",
+    "alt_text": "PDE-FIND从field data到library、稀疏回归、identified dynamics及compressed solve的工作流。",
+    "caption": "把PDE发现归约为候选项矩阵中的稀疏系数选择，并可对子样本压缩求解。",
+    "selection_rationale": "Figure 1是方法的端到端结构证据，并明确显示数据、微分与稀疏选择的接口。"
+  },
+  "figure_refs": [
+    {
+      "label": "Figure 1",
+      "asset_path": "assets/collection-figures/record-390b8e9b9479daa3/figure-1-pde-find-workflow.webp",
+      "section": "核心结果与证据",
+      "role": "support the central result",
+      "evidence": "paper.pdf p. 2, Figure 1",
+      "alt_text": "PDE-FIND从field data到library、稀疏回归、identified dynamics及compressed solve的工作流。",
+      "caption": "把PDE发现归约为候选项矩阵中的稀疏系数选择，并可对子样本压缩求解。",
+      "interpretation": "The figure supports the stated protocol-specific claim, not an unrestricted generalization."
+    }
+  ],
+  "equation_refs": [
+    {
+      "label": "Sparse PDE library regression",
+      "latex": "U_t=\\Theta(U,Q)\\xi,\\qquad \\hat\\xi=\\arg\\min_\\xi\\|\\Theta\\xi-U_t\\|_2^2+\\epsilon\\kappa(\\Theta)\\|\\xi\\|_0",
+      "role": "select a parsimonious set of nonlinear and derivative terms",
+      "symbols": {
+        "Theta": "candidate PDE library",
+        "xi": "sparse coefficients",
+        "Q": "known auxiliary fields"
+      },
+      "evidence": "paper.pdf p. 2, Eqs. (2)–(3)",
+      "interpretation": "Correct recovery requires an expressive and identifiable library plus reliable numerical derivatives."
+    }
+  ],
+  "evidence_refs": [
+    "paper.pdf pp. 1–2: problem, library and STRidge",
+    "paper.pdf p. 2, Figure 1: workflow and compression",
+    "paper.pdf p. 3, Figures 2–3: diffusion and KdV identifiability",
+    "paper.pdf p. 4: Navier–Stokes and other case studies",
+    "source PDF SHA-256 f917731f626566618d7b50530a6d42e433620b88b44125796bae7e278ac3721f",
+    "Evidence status: full-text verified numerical/methodological study; no independent reproduction performed."
+  ]
+}

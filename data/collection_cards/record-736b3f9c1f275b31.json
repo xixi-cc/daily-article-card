@@ -1,0 +1,142 @@
+{
+  "arxiv_id": "record-736b3f9c1f275b31",
+  "source_version": "arXiv v1 manuscript",
+  "source_pdf": "https://arxiv.org/pdf/2411.04990",
+  "title_en": "Clustering in Causal Attention Masking",
+  "title_zh": "因果注意力掩码中的聚类",
+  "curation_status": "full_text_verified",
+  "card_standard_version": "2.3",
+  "paper_profile": "theory_numerics",
+  "style_reference": "physicist_daily_arxiv",
+  "provenance": {
+    "program": "Collection",
+    "catalog": "Paper Collection",
+    "catalog_record_id": "736b3f9c1f275b31",
+    "catalog_record_ids": [
+      "736b3f9c1f275b31"
+    ],
+    "catalog_topic": "Transformer Theory",
+    "collection_date": "2026-08-23",
+    "sampled_at": "2026-08-28",
+    "selected_by": "full_collection_backfill",
+    "sampling_seed": "not_applicable_full_collection",
+    "candidate_count": 452
+  },
+  "verified_metadata": {
+    "doi": "10.52202/079017-3673",
+    "arxiv_id": "2411.04990",
+    "version": "arXiv v1 full text / NeurIPS 2024",
+    "title": "Clustering in Causal Attention Masking",
+    "authors": [
+      "Nikita Karagodin",
+      "Yury Polyanskiy",
+      "Philippe Rigollet"
+    ],
+    "journal": "Advances in Neural Information Processing Systems",
+    "volume": "37",
+    "pages": "115652–115681",
+    "published": "2024",
+    "abstract": "A continuous-depth causal self-attention particle system converges asymptotically to one cluster for arbitrary key-query matrices and identity values, while displaying long-lived metastable clusters related to Rényi parking.",
+    "comment": "ArXiv v1 full text cross-checked with NeurIPS proceedings metadata"
+  },
+  "sections": [
+    {
+      "title": "作者信息",
+      "paragraphs": [
+        "作者 Nikita Karagodin、Yury Polyanskiy、Philippe Rigollet；NeurIPS 2024 / Advances in Neural Information Processing Systems 37, 115652–115681，DOI:10.52202/079017-3673。核验 arXiv:2411.04990v1 全文22页。"
+      ]
+    },
+    {
+      "title": "研究问题",
+      "paragraphs": [
+        "以continuous-depth self-attention把tokens视为球面上的interacting particles时，full attention可利用mean-field gradient-flow结构分析；causal mask令第k个token只看1…k，interaction非对称并失去该结构。论文问：tokens是否仍最终聚成一个cluster，数值中长期多cluster又如何解释？"
+      ]
+    },
+    {
+      "title": "背景",
+      "paragraphs": [
+        "模型在sphere上演化，每个token按softmax of key-query similarities朝先前tokens的value-weighted average移动，再投影到tangent space。causal ordering使早期tokens成为单向anchors，不能用exchangeable mean-field limit。",
+        "这是tied weights、continuous layer time、无MLP且常设V=Id的抽象动力系统；token clustering是representation geometry现象，不直接等价于language-model rank collapse、semantic grouping或训练性能。"
+      ]
+    },
+    {
+      "title": "模型与方法",
+      "paragraphs": [
+        "Theorem 4.1证明V=Id且Q、K任意时，除零测initial conditions外所有tokens渐近收敛到单一cluster。证明依靠causal triangular structure逐token归纳和sphere几何，而不是能量下降。作者也讨论V的principal eigenspace扩展。",
+        "为解释metastability，二维K=Q=V=I、large β情形映射到Rényi parking：初始序列中相距约β^{-1/2}的早期tokens成为centers。Lemma 5.1给strong centers的quasi-stationary时间，Theorem 5.2在centers固定假设下证明其余tokens被吸引。"
+      ]
+    },
+    {
+      "title": "核心结果与证据",
+      "paragraphs": [
+        "Theorem 4.1比早先只处理scaled-identity Q/K/V的结果更广：arbitrary key-query matrices仍在V=Id下eventual consensus。它是t→∞结论，不提供实际layer depth内的收敛速率。",
+        "Figure 2用n=200、d=2、β=64从uniform circle出发：t=5–10快速形成多个clusters，到t=150仍约七个，t=500才有一个center合并；这解释为何有限数值观察与single-cluster theorem表面矛盾。",
+        "Rényi-center density预测β^{(d−1)/2}尺度，二维图中red/black centers捕捉部分clusters；作者明确说strong centers不能解释全部clusters。跨attention加入冻结anchors时，Theorem 5.1类结果描述向anchors收敛。"
+      ]
+    },
+    {
+      "title": "有效性与局限",
+      "paragraphs": [
+        "作者的limitations指出两段理论尚未闭合：strong centers可长时近静止，固定centers可吸引其余particles，但未证明在真实共同演化中每个center于O(1)时间捕获Ω(n) tokens；甚至ω(1)捕获仍未证。",
+        "实用模型限制包括跨层tied weights和缺失Transformer核心MLP；LayerNorm、residual、finite depth、trained Q/K/V及data-dependent token distribution会改变动力学。Figure 2是单一低维参数示例，不能作为LLM内部cluster数量预测。"
+      ]
+    },
+    {
+      "title": "复现与资源",
+      "paragraphs": [
+        "全文：https://arxiv.org/abs/2411.04990；会议：https://doi.org/10.52202/079017-3673。PDF SHA-256：9c5f7ea6c418cfdb991af9b499e0c0995a18cfd0943c62f4155ee64ef5fe188e。正文未给公开代码仓库。",
+        "复现Figure 2需固定n=200、d=2、β=64、K=Q=V=I2、uniform initial angles、ODE solver/time grid和Rényi-center definitions δ=4β^{-1/2}。Evidence status: full-text verified theoretical/numerical study; no independent reproduction performed."
+      ]
+    },
+    {
+      "title": "阅读指南",
+      "paragraphs": [
+        "先读 pp.1–3 causal particle system与贡献；pp.4–5看Theorem 4.1，p.6 Figure 2理解metastability；pp.6–9读Rényi parking results和limitations；pp.13–22核对proofs与auxiliary figures。"
+      ]
+    }
+  ],
+  "cover": {
+    "mode": "source_figure",
+    "asset_path": "assets/collection-figures/record-736b3f9c1f275b31/figure-2-metastable-clusters.webp",
+    "label": "Figure 2",
+    "visual_type": "trajectory",
+    "evidence": "paper.pdf p. 6, Figure 2",
+    "alt_text": "200个球面tokens从均匀分布到多个长寿命cluster并缓慢合并的时间序列。",
+    "caption": "有限时间呈现七个左右metastable clusters，而定理只保证无限时间最终单cluster。",
+    "selection_rationale": "Figure 2最清楚地区分asymptotic theorem与实际可观察的长寿命多cluster状态。"
+  },
+  "figure_refs": [
+    {
+      "label": "Figure 2",
+      "asset_path": "assets/collection-figures/record-736b3f9c1f275b31/figure-2-metastable-clusters.webp",
+      "section": "核心结果与证据",
+      "role": "support the central result",
+      "evidence": "paper.pdf p. 6, Figure 2",
+      "alt_text": "200个球面tokens从均匀分布到多个长寿命cluster并缓慢合并的时间序列。",
+      "caption": "有限时间呈现七个左右metastable clusters，而定理只保证无限时间最终单cluster。",
+      "interpretation": "The figure supports the stated protocol-specific claim, not an unrestricted generalization."
+    }
+  ],
+  "equation_refs": [
+    {
+      "label": "Causal self-attention dynamics",
+      "latex": "\\dot x_k=P_{x_k}^{\\perp}\\frac{\\sum_{j\\le k}e^{\\beta\\langle Qx_k,Kx_j\\rangle}Vx_j}{\\sum_{j\\le k}e^{\\beta\\langle Qx_k,Kx_j\\rangle}}",
+      "role": "model continuous-depth masked attention as a triangular interacting-particle system",
+      "symbols": {
+        "x_k": "token on the sphere",
+        "P_perp": "tangent projection",
+        "beta": "attention inverse temperature"
+      },
+      "evidence": "paper.pdf pp. 2–4, causal self-attention system",
+      "interpretation": "The main clustering theorem sets V=Id and does not model MLP or learned finite-depth layers."
+    }
+  ],
+  "evidence_refs": [
+    "paper.pdf pp. 1–4: causal attention particle model",
+    "paper.pdf pp. 4–5: asymptotic clustering Theorem 4.1",
+    "paper.pdf p. 6, Figure 2: metastable cluster trajectory",
+    "paper.pdf pp. 6–9: Rényi parking results and limitations",
+    "source PDF SHA-256 9c5f7ea6c418cfdb991af9b499e0c0995a18cfd0943c62f4155ee64ef5fe188e",
+    "Evidence status: full-text verified theoretical/numerical study; no independent reproduction performed."
+  ]
+}
