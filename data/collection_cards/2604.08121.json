@@ -1,0 +1,159 @@
+{
+  "arxiv_id": "2604.08121",
+  "source_version": "v1",
+  "source_pdf": "https://arxiv.org/pdf/2604.08121",
+  "title_en": "Uni-ViGU: Towards Unified Video Generation and Understanding via A Diffusion-Based Video Generator",
+  "title_zh": "Uni‑ViGU：以扩散视频生成器统一视频生成与理解",
+  "curation_status": "full_text_verified",
+  "card_standard_version": "2.3",
+  "paper_profile": "ai_empirical",
+  "style_reference": "physicist_daily_arxiv",
+  "provenance": {
+    "program": "Collection",
+    "catalog": "Paper Collection",
+    "catalog_record_id": "91c76234d9010370",
+    "catalog_record_ids": [
+      "91c76234d9010370"
+    ],
+    "catalog_topic": "Video Generation",
+    "collection_date": "2026-08-23",
+    "sampled_at": "2026-08-28",
+    "selected_by": "full_collection_backfill",
+    "sampling_seed": "not_applicable_full_collection",
+    "candidate_count": 452
+  },
+  "verified_metadata": {
+    "arxiv_id": "2604.08121",
+    "version": "v1",
+    "title": "Uni-ViGU: Towards Unified Video Generation and Understanding via A Diffusion-Based Video Generator",
+    "authors": [
+      "Luozheng Qin",
+      "Jia Gong",
+      "Qian Qiao",
+      "Tianjiao Li",
+      "Li Xu",
+      "Haoyu Pan",
+      "Chao Qu",
+      "Zhiyu Tan",
+      "Hao Li"
+    ],
+    "categories": [
+      "cs.CV",
+      "cs.AI"
+    ],
+    "primary_category": "cs.CV",
+    "published": "2026-04-09T11:41:58Z",
+    "abstract": "A generation-centric model performs continuous video flow and discrete text flow in one Transformer and reuses text-to-video priors for video understanding.",
+    "comment": ""
+  },
+  "sections": [
+    {
+      "title": "作者信息",
+      "paragraphs": [
+        "作者：Luozheng Qin、Jia Gong、Qian Qiao、Tianjiao Li、Li Xu、Haoyu Pan、Chao Qu、Zhiyu Tan、Hao Li；arXiv:2604.08121v1。全文 14 页，基于 Wan2.1 的统一视频生成/理解原型。"
+      ]
+    },
+    {
+      "title": "研究问题",
+      "paragraphs": [
+        "统一多模态模型通常从 understanding-centric MLLM 加生成模块，但视频扩散的 token 与算力规模远高于理解。论文反问：能否以预训练 video generator 为底座，把 text generation 写成同一 flow，并把 text-to-video correspondence 反向用于理解？"
+      ]
+    },
+    {
+      "title": "背景",
+      "paragraphs": [
+        "视频生成在连续 VAE latent 上做 denoising/flow；文本输出是离散 token。若保持自回归文本头，两个时间方向和训练目标割裂。Uni‑ViGU 把 token embedding 连续化后做 discrete flow matching，使两种模态共享 \\(\\tau\\in[0,1]\\) 的去噪语言。",
+        "Figure 2 是最重要架构图：noisy video 与 noisy text 进入共享 self/cross-attention；video/text FFN 分支保持模态特异性，两个 head 分别输出 clean video manifold 与 token probability。"
+      ]
+    },
+    {
+      "title": "模型与方法",
+      "paragraphs": [
+        "视频 latent 采用线性 interpolant \\(z_{v,\\tau}=(1-\\tau)z_{v,0}+\\tau z_{v,1}\\) 并学习 velocity；文本 token 经 embedding 后采用相同形式，但最终由 text head 产生类别概率。设置 \\((\\tau_v,\\tau_t)=(1,0)\\) 做理解，\\((0,1)\\) 做生成。",
+        "modality-driven MoE 共享 attention、分离 video/text FFN。训练分两阶段：Knowledge Recall 用 10K video-prompt pairs 重构 prompt；Capability Refinement 再用 10K video-prompt-detailed-caption triples，迫使模型从视频恢复更丰富语义。"
+      ]
+    },
+    {
+      "title": "核心结果与证据",
+      "paragraphs": [
+        "Figure 2 表明统一点不是把两个模型拼接，而是共享 attention 中的双向条件交换：video latent 约 30K tokens，text 仅 256 tokens，因此损失权重取 \\(\\lambda_t=|z_v|/|z_t|\\) 平衡梯度。",
+        "训练从 Wan2.1 初始化，Stage 1 为 40K steps、learning rate \\(2\\times10^{-4}\\)；Stage 2 为 60K steps、\\(5\\times10^{-5}\\)，Adam \\((\\beta_1,\\beta_2)=(0.90,0.95)\\)，总成本为 16 张 H800、一周以内。",
+        "论文呈现 Figure 3 的 joint video-text qualitative examples，并声称 generation 与 understanding 均具竞争力；但正文没有给出标准 benchmark 表或可复核的数值比较。因此证据支持“可运行原型与定性联合生成”，不支持量化 SOTA 结论。"
+      ]
+    },
+    {
+      "title": "有效性与局限",
+      "paragraphs": [
+        "两阶段数据由 state-of-the-art video generators 合成，再由 LLM 生成 detailed captions；这能控制 prompt/caption 长度，却可能继承生成器和 LLM 偏差。10K+10K 数据规模小，模型是否泛化到真实长视频、开放问答和细粒度时序推理未被量化。",
+        "Figure 3 文本存在明显不流畅片段；缺少 benchmark table、baseline、seed、variance 和消融，使“competitive”无法独立核验。生成与理解共享 flow 的机制合理，但训练成本和推理 latency 也未与双塔系统做公平比较。"
+      ]
+    },
+    {
+      "title": "复现与资源",
+      "paragraphs": [
+        "原文：https://arxiv.org/abs/2604.08121；项目页与代码：https://fr0zencrane.github.io/uni-vigu-page/。全文 14 页，PDF SHA-256：ca69b148b9f383c1a0e0f2af9bddb5424bf04718c95143c46a4ec551738ad606。",
+        "复现需固定 Wan2.1 checkpoint、VAE/UMT5、video resolution/frames、token lengths、10K+10K construction pipeline、condition dropout、MoE initialization、loss weighting、ODE solver、CFG、seeds 与 evaluation protocol。",
+        "Evidence status: full-text verified; no independent reproduction performed."
+      ]
+    },
+    {
+      "title": "阅读指南",
+      "paragraphs": [
+        "先看 Figure 2，追踪 video/text 两条 flow 在 shared attention 的交换；再读 Sections 3.1–3.3 的 continuous/discrete flow、MoE 与两阶段训练。最后看 Section 4 和 Figure 3，并把 architecture feasibility、qualitative samples 与 benchmark-level evidence 分开。"
+      ]
+    }
+  ],
+  "cover": {
+    "mode": "source_figure",
+    "asset_path": "assets/collection-figures/2604.08121/figure-2-univigu-framework.webp",
+    "label": "Figure 2",
+    "visual_type": "schematic",
+    "evidence": "paper.pdf p. 4, Figure 2",
+    "alt_text": "连续视频 flow 与离散文本 flow 在共享 Transformer 中联合去噪。",
+    "caption": "共享 attention 联结两种模态，分离 FFN 保留视频和文本的生成专长。",
+    "selection_rationale": "Figure 2 同时展示输入输出、共享 attention 与模态分支，是全文最重要的机制图，优先于定性样例。"
+  },
+  "figure_refs": [
+    {
+      "label": "Figure 2",
+      "asset_path": "assets/collection-figures/2604.08121/figure-2-univigu-framework.webp",
+      "section": "核心结果与证据",
+      "role": "unified architecture",
+      "evidence": "paper.pdf p. 4, Figure 2",
+      "alt_text": "视频与文本联合 flow matching 架构。",
+      "caption": "Uni‑ViGU 的共享 attention 与双 head。",
+      "interpretation": "Continuous video transport and token-space text transport share attention but retain modality-specific feed-forward experts."
+    }
+  ],
+  "equation_refs": [
+    {
+      "label": "Continuous video flow",
+      "latex": "z_{v,\\tau}=(1-\\tau)z_{v,0}+\\tau z_{v,1},\\qquad u_v=z_{v,1}-z_{v,0}",
+      "role": "video latent transport",
+      "symbols": {
+        "z_v0": "Gaussian video latent",
+        "z_v1": "clean encoded video"
+      },
+      "evidence": "paper.pdf p. 4, Eq. (6)",
+      "interpretation": "An ODE integrates the learned velocity from noise to the video latent manifold."
+    },
+    {
+      "label": "Token-count loss balance",
+      "latex": "\\mathcal L=\\lambda_v\\mathcal L_v+\\lambda_t\\mathcal L_t,\\qquad \\lambda_v=1,\\quad \\lambda_t=|z_v|/|z_t|",
+      "role": "balance video and text gradients",
+      "symbols": {
+        "z_v": "video token sequence",
+        "z_t": "text token sequence"
+      },
+      "evidence": "paper.pdf pp. 6–7, training setup",
+      "interpretation": "The much shorter text sequence receives a compensating weight."
+    }
+  ],
+  "evidence_refs": [
+    "paper.pdf pp. 4–7: Figure 2, uni-flow, MoE and two-stage training",
+    "paper.pdf pp. 7–8: data, compute and qualitative joint generation",
+    "paper.pdf p. 8, Figure 3: qualitative outputs",
+    "source PDF SHA-256 ca69b148b9f383c1a0e0f2af9bddb5424bf04718c95143c46a4ec551738ad606",
+    "Evidence status: full-text verified; no independent reproduction performed."
+  ]
+}
