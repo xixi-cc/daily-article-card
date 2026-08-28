@@ -13,6 +13,18 @@ from urllib.parse import unquote, urlparse
 ARXIV_PATTERN = re.compile(r"arxiv\.org/(?:abs|pdf)/([^?#]+)", re.IGNORECASE)
 DOI_PATTERN = re.compile(r"10\.\d{4,9}/[^?#\s]+", re.IGNORECASE)
 
+# Catalog URLs can hide a canonical DOI behind an aggregator page. Keep the
+# evidence-backed exceptions explicit so reinitializing the campaign cannot
+# manufacture a second "work" for the same paper.
+CATALOG_SOURCE_ALIASES: dict[str, tuple[str, str, str, str]] = {
+    "56bc183d58cbbde2": (
+        "doi",
+        "10.1140/epje/s10189-023-00364-w",
+        "doi-10.1140-epje-s10189-023-00364-w",
+        "https://doi.org/10.1140/epje/s10189-023-00364-w",
+    ),
+}
+
 
 def arxiv_id(record: dict[str, object]) -> str | None:
     links = record.get("links")
@@ -44,6 +56,9 @@ def safe_id(value: str) -> str:
 
 
 def source_identity(record: dict[str, object]) -> tuple[str, str, str, str]:
+    alias = CATALOG_SOURCE_ALIASES.get(str(record["id"]))
+    if alias is not None:
+        return alias
     paper_id = arxiv_id(record)
     if paper_id:
         return "arxiv", paper_id, safe_id(paper_id), f"https://arxiv.org/abs/{paper_id}"

@@ -125,6 +125,15 @@ CARDS = [
     ),
 ]
 
+# The PMC catalog row is the same article as the DOI row above. Preserve both
+# catalog records in the canonical card provenance without publishing a clone.
+active_ising_provenance = CARDS[0]["provenance"]
+assert isinstance(active_ising_provenance, dict)
+active_ising_provenance["catalog_record_ids"] = [
+    "6cd1881cb7f6a7d0",
+    "56bc183d58cbbde2",
+]
+
 
 def main() -> int:
     OUT.mkdir(parents=True, exist_ok=True)
