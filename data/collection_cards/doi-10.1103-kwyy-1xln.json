@@ -1,0 +1,140 @@
+{
+  "arxiv_id": "doi-10.1103-kwyy-1xln",
+  "source_version": "arXiv manuscript",
+  "source_pdf": "https://arxiv.org/pdf/2506.15121",
+  "title_en": "Generative Thermodynamic Computing",
+  "title_zh": "生成式热力学计算",
+  "curation_status": "full_text_verified",
+  "card_standard_version": "2.3",
+  "paper_profile": "theory_numerics",
+  "style_reference": "physicist_daily_arxiv",
+  "provenance": {
+    "program": "Collection",
+    "catalog": "Paper Collection",
+    "catalog_record_id": "41206da31a1be155",
+    "catalog_record_ids": [
+      "41206da31a1be155"
+    ],
+    "catalog_topic": "Thermodynamic Computing",
+    "collection_date": "2026-08-23",
+    "sampled_at": "2026-08-28",
+    "selected_by": "full_collection_backfill",
+    "sampling_seed": "not_applicable_full_collection",
+    "candidate_count": 452
+  },
+  "verified_metadata": {
+    "doi": "10.1103/kwyy-1xln",
+    "arxiv_id": "2506.15121",
+    "version": "arXiv v3 full text",
+    "title": "Generative Thermodynamic Computing",
+    "authors": [
+      "Stephen Whitelam"
+    ],
+    "journal": "Physical Review Letters",
+    "volume": "136",
+    "issue": "3",
+    "article": "037101",
+    "published": "2026-01-20",
+    "abstract": "A continuous-spin Langevin computer is trained from forward noising trajectories so that its autonomous physical dynamics approximately reverses them and generates small MNIST-like samples.",
+    "comment": "ArXiv v3 manuscript cross-checked with version-of-record metadata; no Crossref update relation found"
+  },
+  "sections": [
+    {
+      "title": "作者信息",
+      "paragraphs": [
+        "作者 Stephen Whitelam；Physical Review Letters 136, 037101 (2026)，DOI:10.1103/kwyy-1xln。全文取 arXiv:2506.15121v3，共5页；Crossref 未列关联更正或撤稿。卡片使用作者手稿而非受限许可的 APS 排版版。"
+      ]
+    },
+    {
+      "title": "研究问题",
+      "paragraphs": [
+        "数字扩散模型用神经网络和伪随机噪声逐步去噪。论文问：能否让处于热浴中的非线性模拟器件自身提供噪声，并把训练得到的生成信息写入其势能 landscape，使系统从随机初态出发仅靠自然 Langevin dynamics 生成结构？"
+      ]
+    },
+    {
+      "title": "背景",
+      "paragraphs": [
+        "N 个连续自由度遵从 overdamped Langevin equation，势能含单元二次/四次项、bias 和 pairwise couplings。训练时先在 coupling-free 系统上把 MNIST 输入逐渐噪声化，再最大化带参数系统生成 reverse steps 的路径概率；生成时固定训练后的 couplings，不再由外部神经网络逐步控制。",
+        "这是数字模拟的 thermodynamic computer proof of principle。文中提及机械、电路或 Josephson oscillators 只是可能硬件载体，未制造、测量或校准真实模拟器件。"
+      ]
+    },
+    {
+      "title": "模型与方法",
+      "paragraphs": [
+        "作者用离散 Euler–Maruyama step 写出 forward 与 reverse transition likelihood，并沿每条 noising trajectory 对 Jij、bi 做 gradient ascent。通过 fluctuation relation，最大化 reverse likelihood 等价于降低生成反向轨迹的预期 heat/entropy production。",
+        "示例含28² visible units、512 hidden units，训练参数包括 NvNh 可见–隐藏耦合、隐藏层互耦和 biases；训练集只含三个数字。生成轨迹长度 tf=2.5，从 coupling-free equilibrium noise 出发，论文报告的是1000条数字模拟的统计与示例。"
+      ]
+    },
+    {
+      "title": "核心结果与证据",
+      "paragraphs": [
+        "Figure 2a 的三条独立轨迹从噪声逐渐形成训练过的数字结构；Figure 2b 展示25个终态，样式具有多样性但也出现倒相数字和 mode mixing。作者明确称其为 rudimentary proof of principle，而不是高质量 MNIST benchmark。",
+        "Figure 2c 的16个隐藏单元 coupling maps 呈局域笔画样 receptive fields，说明训练把部分视觉结构编码到能量 landscape。该可视化是机制线索，未证明隐变量唯一可解释或覆盖完整数据分布。",
+        "数字估算中，模拟 thermodynamic trajectory 的平均 heat emission 为2.9×10^3 kBT；与假设每 MAC 约1 pJ、784→128→128→784 denoiser、10 steps 的数字预算相比得到>10^11能耗比。比较没有实际硬件、控制/读出/训练/制冷成本，不能当作实测节能。"
+      ]
+    },
+    {
+      "title": "有效性与局限",
+      "paragraphs": [
+        "全部生成结果来自数值积分，训练仅三种数字且没有 FID、likelihood、coverage 或与数字 diffusion baseline 的同协议比较。连续变量、全连接耦合的精确物理实现、parameter precision、device disorder 和读出都会改变可行性。",
+        "thermodynamic optimal 的含义限定为给定 reference process 与模型族内，训练降低 reverse-path heat；不保证全局最优，也不等于 Landauer 极限或整个计算系统的最小能耗。条件生成和 time-dependent couplings 被留作未来扩展。"
+      ]
+    },
+    {
+      "title": "复现与资源",
+      "paragraphs": [
+        "全文：https://arxiv.org/abs/2506.15121；期刊：https://doi.org/10.1103/kwyy-1xln。PDF SHA-256：a66f12fad69b91e609372e3f4e817c24a6db7749b0d5851b04b18790d3bd73fa。",
+        "复现需固定 J2=J4=10kBT、Nv=784、Nh=512、训练三数字、tf=2.5、dt、mobility、trajectory count、learning rate、initial biases、seeds 与 heat/MAC accounting assumptions。Evidence status: full-text verified theory/digital simulation manuscript; no independent reproduction performed."
+      ]
+    },
+    {
+      "title": "阅读指南",
+      "paragraphs": [
+        "先读 pp.1–2 的 Langevin dynamics、potential 和 reverse-step likelihood；p.3 Figure 2 看实际生成质量与 mode mixing。pp.3–5 的 fluctuation relation 给出热解释；阅读能耗部分时把模拟 heat、假设硬件能标和端到端系统能耗严格分开。"
+      ]
+    }
+  ],
+  "cover": {
+    "mode": "source_figure",
+    "asset_path": "assets/collection-figures/doi-10.1103-kwyy-1xln/figure-2-thermodynamic-generation.webp",
+    "label": "Figure 2",
+    "visual_type": "comparison",
+    "evidence": "paper.pdf p. 3, Figure 2",
+    "alt_text": "三条噪声到数字的 Langevin 轨迹、25个生成终态和代表性隐藏单元耦合图。",
+    "caption": "训练后的势能 landscape 能在数字模拟中把热噪声初态导向多样的数字样结构，同时仍出现 mode mixing。",
+    "selection_rationale": "Figure 2同时给出成功样本、失败模式与内部耦合，是评估 proof-of-principle 最完整的证据。"
+  },
+  "figure_refs": [
+    {
+      "label": "Figure 2",
+      "asset_path": "assets/collection-figures/doi-10.1103-kwyy-1xln/figure-2-thermodynamic-generation.webp",
+      "section": "核心结果与证据",
+      "role": "support the central result",
+      "evidence": "paper.pdf p. 3, Figure 2",
+      "alt_text": "三条噪声到数字的 Langevin 轨迹、25个生成终态和代表性隐藏单元耦合图。",
+      "caption": "训练后的势能 landscape 能在数字模拟中把热噪声初态导向多样的数字样结构，同时仍出现 mode mixing。",
+      "interpretation": "The figure supports the stated protocol-specific claim, not an unrestricted generalization."
+    }
+  ],
+  "equation_refs": [
+    {
+      "label": "Langevin computer dynamics",
+      "latex": "\\dot x_i=-\\mu\\,\\partial_i V_\\theta(\\mathbf x)+\\sqrt{2\\mu k_BT}\\,\\eta_i(t)",
+      "role": "generate samples through autonomous noisy physical dynamics",
+      "symbols": {
+        "mu": "mobility",
+        "V_theta": "trainable potential energy",
+        "eta": "Gaussian white noise"
+      },
+      "evidence": "paper.pdf p. 2, Eq. (1)",
+      "interpretation": "The paper simulates this stochastic dynamics; no physical hardware implementation is demonstrated."
+    }
+  ],
+  "evidence_refs": [
+    "paper.pdf pp. 1–2, Eqs. (1)–(12): Langevin model and reverse-path training",
+    "paper.pdf p. 3, Figure 2: generated trajectories, samples and couplings",
+    "paper.pdf pp. 3–5, Eqs. (13)–(14): heat interpretation and hardware extrapolation",
+    "source PDF SHA-256 a66f12fad69b91e609372e3f4e817c24a6db7749b0d5851b04b18790d3bd73fa",
+    "Evidence status: full-text verified theory/digital simulation manuscript; no independent reproduction performed."
+  ]
+}
