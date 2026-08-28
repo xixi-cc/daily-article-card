@@ -1,0 +1,152 @@
+{
+  "arxiv_id": "doi-10.1038-s41467-021-26434-1",
+  "source_version": "version of record",
+  "source_pdf": "https://www.nature.com/articles/s41467-021-26434-1.pdf",
+  "title_en": "Physics-informed learning of governing equations from scarce data",
+  "title_zh": "从稀缺数据中物理信息驱动地学习控制方程",
+  "curation_status": "full_text_verified",
+  "card_standard_version": "2.3",
+  "paper_profile": "ai_empirical",
+  "style_reference": "physicist_daily_arxiv",
+  "provenance": {
+    "program": "Collection",
+    "catalog": "Paper Collection",
+    "catalog_record_id": "3418e7b2e0b58e2b",
+    "catalog_record_ids": [
+      "3418e7b2e0b58e2b"
+    ],
+    "catalog_topic": "AI for Science",
+    "collection_date": "2026-08-23",
+    "sampled_at": "2026-08-28",
+    "selected_by": "full_collection_backfill",
+    "sampling_seed": "not_applicable_full_collection",
+    "candidate_count": 452
+  },
+  "verified_metadata": {
+    "doi": "10.1038/s41467-021-26434-1",
+    "version": "version of record",
+    "title": "Physics-informed learning of governing equations from scarce data",
+    "authors": [
+      "Zhao Chen",
+      "Yang Liu",
+      "Hao Sun"
+    ],
+    "journal": "Nature Communications",
+    "volume": "12",
+    "article": "6136",
+    "published": "2021-10-21",
+    "abstract": "PINN-SR combines neural field reconstruction, automatic differentiation and sparse regression to identify PDEs from scarce noisy measurements across initial and boundary conditions.",
+    "comment": "Open-access version of record; no Crossref update notice found"
+  },
+  "sections": [
+    {
+      "title": "作者信息",
+      "paragraphs": [
+        "作者 Zhao Chen、Yang Liu、Hao Sun；Nature Communications 12, 6136 (2021)，DOI:10.1038/s41467-021-26434-1，发表于 2021-10-21。核验 13 页开放期刊版、Crossref 元数据和代码/数据声明；未发现关联更正或撤稿通知。"
+      ]
+    },
+    {
+      "title": "研究问题",
+      "paragraphs": [
+        "PDE-FIND/SINDy 一类方法需要从测量数据数值求导，数据稀疏且含噪时容易放大误差；纯神经网络又可能只能给黑箱演化。论文问：能否用神经网络连续重构场和自动微分得到导数，同时用稀疏回归选择少量候选项，从单个或多个初/边值条件下的稀缺观测恢复可解释的闭式 PDE？"
+      ]
+    },
+    {
+      "title": "背景",
+      "paragraphs": [
+        "作者假设未知动力学可写为 u_t=ϕ(u,∂u,…)Λ，且真实方程在预设候选库中是稀疏的。PINN 在无标签 collocation points 上约束 PDE residual，测量点只负责数据拟合；不同初/边值条件使用共享 root、独立 branch 的网络，最终拼接候选库并寻找共同 Λ。",
+        "Figure 5 是真实 scratch-assay 例子：14k–20k 初始细胞的密度数据只有 0、12、24、36、48 h，算法保留扩散、ρ 和 ρ² 三项，并用识别方程模拟后续密度。"
+      ]
+    },
+    {
+      "title": "模型与方法",
+      "paragraphs": [
+        "总损失由数据误差 Ld、残差物理误差 αLp 和 β||Λ||0 组成。由于 ℓ0 优化为组合问题，作者先以 ℓ1 预训练，再交替更新神经网络参数 θ 与稀疏系数 Λ：STRidge/hard thresholding 选择项，固定结构后 post-training 校准系数。自动微分避免直接对噪声数据做有限差分，但导数仍来自网络近似。",
+        "数值基准包括 Burgers、Kuramoto–Sivashinsky、非线性 Schrödinger、Navier–Stokes、λ–ω reaction–diffusion 与多初值 FitzHugh–Nagumo。实验例子提前施加扩散—反应先验 ρ_t=γρ_xx+F(ρ)，只在九项库中选择 F；因此它不是从任意 PDE 空间无先验发现。"
+      ]
+    },
+    {
+      "title": "核心结果与证据",
+      "paragraphs": [
+        "Table 1 报告五个单数据集基准在 10% Gaussian noise 下，已识别非零系数相对误差约 0.08%–1.84%；采样比例依问题从 0.22% 到 37.5%。Burgers 例用 3.19% 网格点、10% 噪声，系数误差约 0.88%，full-field ℓ2 误差 1.32%。这些是已知真值的合成基准，不是一般误差保证。",
+        "多初值 FitzHugh–Nagumo 例恢复正确 active terms，未测时刻 stacked full-field ℓ2 error 为 5.02%；一个 diffusion coefficient 较不敏感。Figure 5 中四组细胞数据均得到 Fisher–Kolmogorov 形式 ρ_t=γρ_xx+λ1ρ+λ2ρ²，模拟曲线与 12–48 h 测量总体一致。",
+        "实验识别使用三个相同制备的 replicate 平均值和明确的 diffusion–reaction library。它支持在该先验与数据处理下恢复可预测的稀疏模型，但不证明该 PDE 是细胞迁移/增殖的唯一微观机制。"
+      ]
+    },
+    {
+      "title": "有效性与局限",
+      "paragraphs": [
+        "候选库必须预先包含正确项；过大库增加共线性和优化困难，遗漏项则无法被发现。当前版本不能处理时空变化的系数。全连接 PINN 对三维域、尖锐波前和混沌场需要大量 collocation points，计算成本显著高于 SINDy，root–branch 结构也随独立数据集数量近线性扩张。",
+        "稀疏/噪声场重构的 wave-front error 会传递到系数；阈值、正则权重与传感器位置需调参。实验例的方程结构受领域先验限制，且没有独立实验、外部数据集或因果扰动验证。"
+      ]
+    },
+    {
+      "title": "复现与资源",
+      "paragraphs": [
+        "期刊：https://doi.org/10.1038/s41467-021-26434-1；代码与数据：https://github.com/isds-neu/EQDiscovery。核验 PDF SHA-256：8e01d81c5cac6a7f0feec06bf5ae548595e5b6fa5fdac5783c93ec974482dca9。复现需固定候选库、采样点/噪声定义、网络宽深、activation、collocation points、α/β、ℓ1 预训练、STRidge threshold、ADO cycles、随机种子和重复次数。",
+        "细胞例还需保留三 replicate 平均、初值、Neumann boundary、密度单位和 segmentation 流程。Evidence status: full-text verified version of record; no independent reproduction performed."
+      ]
+    },
+    {
+      "title": "阅读指南",
+      "paragraphs": [
+        "先读 pp.2–4 的 Eqs. (1)–(3) 与 Figure 1，确认“physics-informed”指候选 PDE residual。再读 pp.4–8 的合成基准及 Table 1；核心实验看 p.9 Figure 5。最后精读 pp.9–10 Discussion，把已知库内结构恢复与无约束物理定律发现区分开。"
+      ]
+    }
+  ],
+  "cover": {
+    "mode": "source_figure",
+    "asset_path": "assets/collection-figures/doi-10.1038-s41467-021-26434-1/figure-5-cell-pde.webp",
+    "label": "Figure 5",
+    "visual_type": "comparison",
+    "evidence": "paper.pdf p. 9, Figure 5",
+    "alt_text": "不同初始细胞数下稀疏系数、识别 PDE 与细胞密度预测的对照。",
+    "caption": "PINN-SR 从 scratch-assay 数据选择扩散、线性和二次反应项，并比较预测与测量。",
+    "selection_rationale": "Figure 5 是全文唯一真实实验发现案例，同时显示结构选择、参数变化和外推拟合。"
+  },
+  "figure_refs": [
+    {
+      "label": "Figure 5",
+      "asset_path": "assets/collection-figures/doi-10.1038-s41467-021-26434-1/figure-5-cell-pde.webp",
+      "section": "核心结果与证据",
+      "role": "show experimental PDE discovery for cell assays",
+      "evidence": "paper.pdf p. 9, Figure 5",
+      "alt_text": "四个初始细胞数下的系数和密度曲线。",
+      "caption": "识别结构与 Fisher–Kolmogorov 形式一致。",
+      "interpretation": "The candidate library already encodes a diffusion–reaction prior and does not establish uniqueness."
+    }
+  ],
+  "equation_refs": [
+    {
+      "label": "Sparse PDE representation",
+      "latex": "u_t=\\phi\\Lambda",
+      "role": "represent an unknown PDE with a candidate library and sparse coefficients",
+      "symbols": {
+        "phi": "candidate terms from the neural field and derivatives",
+        "Lambda": "sparse coefficient matrix"
+      },
+      "evidence": "paper.pdf p. 3, Eq. (2)",
+      "interpretation": "Equation discovery becomes support selection inside a predefined function library."
+    },
+    {
+      "label": "PINN-SR objective",
+      "latex": "\\mathcal L=L_d+\\alpha L_p+\\beta\\|\\Lambda\\|_0",
+      "role": "balance measurement fit, PDE residual and sparsity",
+      "symbols": {
+        "L_d": "data loss",
+        "L_p": "collocation residual loss",
+        "alpha_beta": "loss weights"
+      },
+      "evidence": "paper.pdf p. 3, Eq. (3)",
+      "interpretation": "Alternating optimization is required because the exact sparsity term is not handled by ordinary gradient descent."
+    }
+  ],
+  "evidence_refs": [
+    "paper.pdf pp. 2–4: PINN-SR formulation and Figure 1",
+    "paper.pdf pp. 4–8: synthetic benchmarks, Table 1 and multi-I/BC tests",
+    "paper.pdf p. 9, Figure 5: experimental cell-density discovery",
+    "paper.pdf pp. 9–10: computational, library and variable-coefficient limitations",
+    "source PDF SHA-256 8e01d81c5cac6a7f0feec06bf5ae548595e5b6fa5fdac5783c93ec974482dca9",
+    "Evidence status: full-text verified version of record; no independent reproduction performed."
+  ]
+}

@@ -1,0 +1,151 @@
+{
+  "arxiv_id": "doi-10.1038-s41467-024-52878-2",
+  "source_version": "version of record",
+  "source_pdf": "https://www.nature.com/articles/s41467-024-52878-2.pdf",
+  "title_en": "Learning protocols for the fast and efficient control of active matter",
+  "title_zh": "学习快速高效控制主动物质的协议",
+  "curation_status": "full_text_verified",
+  "card_standard_version": "2.3",
+  "paper_profile": "numerical",
+  "style_reference": "physicist_daily_arxiv",
+  "provenance": {
+    "program": "Collection",
+    "catalog": "Paper Collection",
+    "catalog_record_id": "b190514e354e6fa5",
+    "catalog_record_ids": [
+      "b190514e354e6fa5"
+    ],
+    "catalog_topic": "Active Matter",
+    "collection_date": "2026-08-23",
+    "sampled_at": "2026-08-28",
+    "selected_by": "full_collection_backfill",
+    "sampling_seed": "not_applicable_full_collection",
+    "candidate_count": 452
+  },
+  "verified_metadata": {
+    "doi": "10.1038/s41467-024-52878-2",
+    "version": "version of record",
+    "title": "Learning protocols for the fast and efficient control of active matter",
+    "authors": [
+      "Corneel Casert",
+      "Stephen Whitelam"
+    ],
+    "journal": "Nature Communications",
+    "volume": "15",
+    "article": "9128",
+    "published": "2024-10-23",
+    "abstract": "Neuroevolution learns rapid, discontinuous control protocols for simulated active Ornstein–Uhlenbeck and active Brownian particles, including work extraction.",
+    "comment": "Version of record; no Crossref update notice found"
+  },
+  "sections": [
+    {
+      "title": "作者信息",
+      "paragraphs": [
+        "作者 Corneel Casert、Stephen Whitelam；Nature Communications 15, 9128 (2024)，DOI:10.1038/s41467-024-52878-2，发表于 2024-10-23。核验 9 页期刊版、Supplementary Data 声明与 Crossref 状态；正文全部结果来自随机模拟及部分解析基线，没有新实验。"
+      ]
+    },
+    {
+      "title": "研究问题",
+      "paragraphs": [
+        "被动过阻尼体系的最优控制常含端点跳跃和快速变化，但 active matter 难以解析求解，已有近似工作因慢变或固定函数形式而限制协议。论文问：把 time-dependent control parameters 编码为神经网络，再用 genetic algorithm 直接最小化热、时间、分布误差或功，能否找到更快/更省能的 active-particle state-to-state protocols，并扩展到相互作用多体 active engine？"
+      ]
+    },
+    {
+      "title": "背景",
+      "paragraphs": [
+        "协议写成 g_θ(t/t_f)，输出 trap stiffness、activity 等控制量；网络的表达能力允许 discontinuities、non-monotonic variations 和多参数同步控制。每个候选协议通过随机动力学模拟评估目标，遗传算法只用最终 objective 更新 θ。作者强调得到的是 learned 而非 optimal protocols，因为非凸搜索不保证全局最优，并用多初始化一致性作为实践检查。",
+        "Figure 2 比较二维 harmonic trap 内 active Brownian particle 的 learned protocol 与先前参数化 BGT protocol；蓝色路径用约三分之一时间达到相同目标分布误差。"
+      ]
+    },
+    {
+      "title": "模型与方法",
+      "paragraphs": [
+        "第一问题为一维 harmonic trap 中 active Ornstein–Uhlenbeck particle，控制 α(t) 并计算 trajectory-averaged heat；第二问题控制二维 active Brownian particle 的 activity λ(t) 和 confinement κ(t)，目标是把被动中心态变成 active annular steady state。",
+        "多体问题含 N 个 WCA 排斥 active Brownian particles，控制 λ、κ，以 10^3 independent trajectories 估计平均功；分布误差图使用 10^5 trajectories。forward Euler step 为 Δt=10^-3，参数受实验可达范围约束。目标函数对未达到 transformation tolerance 的协议施加罚项，达到后才最小化 work。"
+      ]
+    },
+    {
+      "title": "核心结果与证据",
+      "paragraphs": [
+        "单 active OU particle 的 heat-minimizing protocols 随 t_f 从末端 jump 过渡到初端 jump，中间出现快速和非单调结构；在作者设定与约束内，它们比先前慢变解析协议耗热更低。Figure 2 中双参数 learned protocol 在 t_f≈0.16 达到参照误差，BGT 约需 0.44，因而“about three times”更快。",
+        "加入 work objective 后，learned protocol 先提高 κ 和 λ、付出少量功，再在分布扩张后降低 κ，实现最终平均净负功；这是有限模拟下的 control solution，不是违反热力学，因为 active drive 提供能量。",
+        "多体 N=1–40、t_f=1 的 Figure 4 显示每粒子 extracted work 对 N 非单调，N=12 最低，N>25 时比单粒子更高效；简化 steady-state estimate 只捕捉非单调性而非定量值。延长 t_f=10 的协议出现 passive→active→passive 两次 activity switch。"
+      ]
+    },
+    {
+      "title": "有效性与局限",
+      "paragraphs": [
+        "所有控制结果来自理想化 OU/ABP simulations；论文只论证算法可直接用于实验所能测量的 objective，并未实际闭环实验。learned protocol 的优越性是相对特定 constrained analytical baselines、parameter bounds、timestep、trajectory count 和目标定义，不是对所有控制算法的排名。",
+        "神经网络与遗传算法不保证 global optimum；sharp jumps 在真实 actuator 中受 bandwidth、delay 和 energy overhead 限制。多体结果仅 N≤40、二维 harmonic trap、WCA interaction 和指定噪声参数；未计训练计算成本，也未把该 segment 闭合成完整 engine cycle。"
+      ]
+    },
+    {
+      "title": "复现与资源",
+      "paragraphs": [
+        "期刊：https://doi.org/10.1038/s41467-024-52878-2；协议数据随 Supplementary Data 1 提供；示例优化代码由文中 ref.70 指向作者既有公开实现。核验 PDF SHA-256：0a2335dd20d82d081833caa3e5f2e65b1c08d60e2ac6423bd10a92cf08ca24d4。",
+        "复现需固定 SDE/nondimensionalization、Δt、trajectory seeds/count、network architecture、mutation/population、parameter bounds、penalty c、Δ0、t_f、initial steady-state sampling 和独立训练次数。Evidence status: full-text verified numerical study; no independent reproduction performed."
+      ]
+    },
+    {
+      "title": "阅读指南",
+      "paragraphs": [
+        "先读 pp.1–3 的 neuroevolution 设定和 OU heat example，注意 learned≠optimal。核心速度证据看 p.5 Figure 2；净功看 p.6 Figure 3；多体尺度效应看 p.7 Figure 4。最后检查 Discussion，把模拟可行性、相对 baseline 改进和实验适用建议分开。"
+      ]
+    }
+  ],
+  "cover": {
+    "mode": "source_figure",
+    "asset_path": "assets/collection-figures/doi-10.1038-s41467-024-52878-2/figure-2-control-protocol.webp",
+    "label": "Figure 2",
+    "visual_type": "comparison",
+    "evidence": "paper.pdf p. 5, Figure 2",
+    "alt_text": "learned 与参数化协议在 active Brownian particle 状态转换中的路径、时间和误差对比。",
+    "caption": "允许快速跳跃和双参数协同后，该模拟任务约以参照协议三分之一时间达到目标误差。",
+    "selection_rationale": "Figure 2 直接展示“fast control”的量化比较、目标分布和控制路径，而非只显示算法框图。"
+  },
+  "figure_refs": [
+    {
+      "label": "Figure 2",
+      "asset_path": "assets/collection-figures/doi-10.1038-s41467-024-52878-2/figure-2-control-protocol.webp",
+      "section": "核心结果与证据",
+      "role": "compare learned and constrained state-transfer protocols",
+      "evidence": "paper.pdf p. 5, Figure 2",
+      "alt_text": "λ–κ 路径、时间序列、分布演化和误差。",
+      "caption": "learned protocol 在该模拟设定中约快三倍达到参照误差。",
+      "interpretation": "The result is baseline- and constraint-specific and does not prove global optimality or experimental performance."
+    }
+  ],
+  "equation_refs": [
+    {
+      "label": "Active OU particle",
+      "latex": "\\dot r=v-\\mu\\alpha r+\\sqrt{2D}\\,\\eta(t)",
+      "role": "define the single-particle controlled stochastic dynamics",
+      "symbols": {
+        "alpha": "time-dependent trap stiffness",
+        "v": "OU self-propulsion",
+        "D": "passive diffusion"
+      },
+      "evidence": "paper.pdf p. 2, Eq. (1)",
+      "interpretation": "The protocol changes confinement while activity supplies an additional nonequilibrium degree of freedom."
+    },
+    {
+      "label": "Mean work under stiffness control",
+      "latex": "\\langle W\\rangle=\\frac12\\int_0^{t_f}dt\\,\\dot\\kappa\\,\\langle r^2\\rangle",
+      "role": "score energy input or extraction during the protocol",
+      "symbols": {
+        "kappa": "controlled stiffness",
+        "r": "particle radius"
+      },
+      "evidence": "paper.pdf p. 5, Eq. (15); N-particle extension on p. 6, Eq. (18)",
+      "interpretation": "Negative mean work is enabled by active energy injection and protocol timing, not by an equilibrium free-energy cycle."
+    }
+  ],
+  "evidence_refs": [
+    "paper.pdf pp. 1–3: neuroevolution and active-OU heat protocols",
+    "paper.pdf p. 5, Figure 2: threefold state-transfer comparison",
+    "paper.pdf p. 6, Figure 3: state transfer with net work extraction",
+    "paper.pdf p. 7, Figure 4: finite-N many-body engine segment",
+    "source PDF SHA-256 0a2335dd20d82d081833caa3e5f2e65b1c08d60e2ac6423bd10a92cf08ca24d4",
+    "Evidence status: full-text verified numerical study; no independent reproduction performed."
+  ]
+}

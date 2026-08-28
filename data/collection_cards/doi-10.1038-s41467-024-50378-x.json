@@ -1,0 +1,154 @@
+{
+  "arxiv_id": "doi-10.1038-s41467-024-50378-x",
+  "source_version": "version of record",
+  "source_pdf": "https://www.nature.com/articles/s41467-024-50378-x.pdf",
+  "title_en": "Learning interpretable dynamics of stochastic complex systems from experimental data",
+  "title_zh": "从实验数据学习随机复杂系统的可解释动力学",
+  "curation_status": "full_text_verified",
+  "card_standard_version": "2.3",
+  "paper_profile": "ai_empirical",
+  "style_reference": "physicist_daily_arxiv",
+  "provenance": {
+    "program": "Collection",
+    "catalog": "Paper Collection",
+    "catalog_record_id": "37ebcfc7f9e65194",
+    "catalog_record_ids": [
+      "37ebcfc7f9e65194"
+    ],
+    "catalog_topic": "Complex Systems",
+    "collection_date": "2026-08-23",
+    "sampled_at": "2026-08-28",
+    "selected_by": "full_collection_backfill",
+    "sampling_seed": "not_applicable_full_collection",
+    "candidate_count": 452
+  },
+  "verified_metadata": {
+    "doi": "10.1038/s41467-024-50378-x",
+    "version": "version of record",
+    "title": "Learning interpretable dynamics of stochastic complex systems from experimental data",
+    "authors": [
+      "Ting-Ting Gao",
+      "Baruch Barzel",
+      "Gang Yan"
+    ],
+    "journal": "Nature Communications",
+    "volume": "15",
+    "article": "6029",
+    "published": "2024-07-17",
+    "abstract": "LaGNA separates self, interaction and diffusion terms of networked SDEs and applies symbolic sparsification to flocking and mouse tau-pathology data.",
+    "comment": "Open-access version of record; no Crossref update notice found"
+  },
+  "sections": [
+    {
+      "title": "作者信息",
+      "paragraphs": [
+        "作者 Ting-Ting Gao、Baruch Barzel、Gang Yan；Nature Communications 15, 6029 (2024)，DOI:10.1038/s41467-024-50378-x，发表于 2024-07-17。核验 10 页开放期刊版、Figshare/GitHub/Zenodo 声明和 Crossref 状态。"
+      ]
+    },
+    {
+      "title": "研究问题",
+      "paragraphs": [
+        "网络化复杂系统既有节点自身动力学和邻接相互作用，也有状态依赖随机扩散。论文问：给定已知拓扑和节点活动序列，能否不预设具体 SDE 形式，先用 graph message passing 分离 self、interaction、diffusion 三个来源，再把每个神经模块压缩为可读的解析项；该方法在真实鸟群与 tau 病理数据上能否产生可预测的方程？"
+      ]
+    },
+    {
+      "title": "背景",
+      "paragraphs": [
+        "目标 SDE 为 dx_i=[F(x_i)+Σ_jA_ijG(x_i,x_j)]dt+Φ(x_i)dW_t。普通 graph neural network 侧重预测，未必把随机扩散与确定性作用分离；常规 symbolic/SINDy 又难处理大网络和 intrinsic noise。LaGNA 第一阶段用三个网络分别估计 F、G、Φ 的 conditional Gaussian transition，第二阶段在各自候选库中做稀疏表达。",
+        "Figure 3 并列二阶 Vicsek 合成数据和四组 GPS pigeon flights：合成真值恢复几乎重合，真实 flock 的 inferred SDE 生成轨迹与 force field 与观测总体一致。"
+      ]
+    },
+    {
+      "title": "模型与方法",
+      "paragraphs": [
+        "离散时间下 x_i(t+dt) 被建模为均值 μ_i=x_i+[f(x_i)+ΣA_ijg(x_i,x_j)]dt、方差由 ϕ²dt 给出的 Gaussian。message passing 按邻接聚合 interaction；negative log likelihood 同时训练三模块。随后把模块输出投影到预构造 elementary-function libraries，以 sparse regression 得到显式系数。",
+        "基准覆盖 signed/weighted networks 和多维、cross-dimensional diffusion，并与五种方法比较。鸟群数据来自四次 homing flights，GPS 原采样 0.2 s，经 spline 到 0.01、归一化、选择 collective 段和去除 outliers；第一群 8 只，另三群各 7 只。tau 数据为不同小鼠在 1/3/6/9 月 euthanized 后形成的 pseudo-longitudinal snapshots，160 brain regions 和 neuroanatomical/Euclidean networks。"
+      ]
+    },
+    {
+      "title": "核心结果与证据",
+      "paragraphs": [
+        "合成系统中 LaGNA 恢复 self/interaction/diffusion force fields，并在作者选择的误差指标上优于五个比较方法。Figure 3 的二阶 Vicsek 测试中三类作用与真值 R²≈1，inferred stochastic trajectories 再现 flock；这是已知模型基准。",
+        "对第一组真实 pigeon data，识别式含 self-propulsion、distance-dependent cohesion、alignment 和 stochastic term，形式接近 second-order Vicsek model；固定方程形式、只微调 scaling coefficients 后也描述另三组飞行。它支持 Vicsek-like effective dynamics 与数据兼容，不证明个体鸟遵循唯一微观定律。",
+        "tau 例识别 initial retention、retrograde、anterograde、spatial diffusion 与 noise，预测 6/9 月 pathology；真实 injection seeds 在 500 组随机 seeds 中准确度最高。LRRK2G2019S mutant 使用同一形式但 retrograde coefficient 约 0.7–0.9、anterograde 约 0.1–0.3。结果依赖 pseudo-longitudinal aggregation、网络和阈值，不是单鼠纵向因果追踪。"
+      ]
+    },
+    {
+      "title": "有效性与局限",
+      "paragraphs": [
+        "方法假设网络拓扑已知且节点序列可观察；缺失节点时所需最小 subnetwork 尚未解决。真实噪声混合 intrinsic dynamics 与 measurement noise，作者把全部噪声先视为 intrinsic；实验显示 extrinsic relative strength 低于约 10% 时较可靠，更强时需预处理，二者一般不可无先验区分。",
+        "第二阶段仍用预构造 library，可能遗漏真实项；同时学习大网络拓扑和动力学、higher-order interactions 都留待未来。pigeon 数据经过插值/归一化/筛选，tau 数据跨个体构造；预测成功和方程相似性不能替代干预、外部 cohort 和结构可识别性检验。"
+      ]
+    },
+    {
+      "title": "复现与资源",
+      "paragraphs": [
+        "期刊：https://doi.org/10.1038/s41467-024-50378-x；代码：https://github.com/Ting-TingGao/Network-SDE-Inference；归档：https://doi.org/10.5281/zenodo.12112887；真实数据：https://doi.org/10.6084/m9.figshare.24804894.v4。PDF SHA-256：10396ed47a9c8b041f80c3131015ddf612a66011ac718329e7596f705098d16e。",
+        "复现需固定 topology、dt、trajectory segmentation、normalization、library、sparsity、likelihood、seed 和 splits；真实数据还需 outlier、pseudo-longitudinal 和 diffusion-threshold 规则。Evidence status: full-text verified version of record; no independent reproduction performed."
+      ]
+    },
+    {
+      "title": "阅读指南",
+      "paragraphs": [
+        "先读 pp.2–3 Figure 1 与 Eqs. (1)–(2)，再读 p.4 synthetic benchmark。核心真实证据看 p.5 Figure 3 的 bird flocks 和 p.6 Figure 4 的 tau；最后读 p.7 Discussion 的四类限制。将“方程形式相似”“预测有效”和“机制被证明”严格分开。"
+      ]
+    }
+  ],
+  "cover": {
+    "mode": "source_figure",
+    "asset_path": "assets/collection-figures/doi-10.1038-s41467-024-50378-x/figure-3-flock-inference.webp",
+    "label": "Figure 3",
+    "visual_type": "comparison",
+    "evidence": "paper.pdf p. 5, Figure 3",
+    "alt_text": "LaGNA 对二阶 Vicsek 合成数据和四组真实鸽群轨迹的动力学推断。",
+    "caption": "合成基准恢复已知作用；真实 GPS 数据得到 Vicsek-like effective SDE 并生成相近轨迹。",
+    "selection_rationale": "Figure 3 同时展示 ground-truth validation 与真实实验应用，最适合区分验证强度。"
+  },
+  "figure_refs": [
+    {
+      "label": "Figure 3",
+      "asset_path": "assets/collection-figures/doi-10.1038-s41467-024-50378-x/figure-3-flock-inference.webp",
+      "section": "核心结果与证据",
+      "role": "compare inferred flock dynamics with synthetic truth and GPS data",
+      "evidence": "paper.pdf p. 5, Figure 3",
+      "alt_text": "Vicsek 合成恢复与四组 empirical flock trajectories/force fields。",
+      "caption": "识别 SDE 在数据处理后的鸟群轨迹上呈 Vicsek-like 结构。",
+      "interpretation": "Agreement supports an effective description but does not establish a unique microscopic law."
+    }
+  ],
+  "equation_refs": [
+    {
+      "label": "Networked stochastic dynamics",
+      "latex": "d\\mathbf x_i=\\left[\\mathbf F(\\mathbf x_i)+\\sum_jA_{ij}\\mathbf G(\\mathbf x_i,\\mathbf x_j)\\right]dt+\\mathbf\\Phi(\\mathbf x_i)d\\mathbf W_t",
+      "role": "separate self, interaction and diffusion sources",
+      "symbols": {
+        "A": "known network",
+        "F": "self dynamics",
+        "G": "pair interaction",
+        "Phi": "state-dependent diffusion"
+      },
+      "evidence": "paper.pdf p. 7, Eq. (6); equivalent setup on p. 2, Eq. (1)",
+      "interpretation": "LaGNA is structured around an additive source decomposition rather than an unconstrained black-box transition."
+    },
+    {
+      "label": "Inferred flock equation",
+      "latex": "\\dot{\\mathbf v}_i=s_1(|\\mathbf v_i|^2+s_2)+s_3+\\sum_{j\\ne i}[\\widetilde C(r_{ij})\\mathbf r_{ij}+\\widetilde A(r_{ij})\\mathbf v_{ij}]+\\hat\\epsilon\\,d\\mathbf W_t",
+      "role": "give the effective empirical pigeon-flock SDE",
+      "symbols": {
+        "C_tilde": "cohesion function",
+        "A_tilde": "alignment function",
+        "epsilon_hat": "estimated stochasticity"
+      },
+      "evidence": "paper.pdf p. 5, Eq. (4)",
+      "interpretation": "Its resemblance to a second-order Vicsek model is an observational effective-model result."
+    }
+  ],
+  "evidence_refs": [
+    "paper.pdf pp. 2–3: LaGNA pipeline and likelihood decomposition",
+    "paper.pdf p. 4: synthetic signed/weighted-network validation",
+    "paper.pdf p. 5, Figure 3: simulated and empirical flock inference",
+    "paper.pdf pp. 6–7, Figure 4: tau-pathology equation, prediction and limitations",
+    "source PDF SHA-256 10396ed47a9c8b041f80c3131015ddf612a66011ac718329e7596f705098d16e",
+    "Evidence status: full-text verified version of record; no independent reproduction performed."
+  ]
+}
