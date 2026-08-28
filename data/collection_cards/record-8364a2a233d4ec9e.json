@@ -1,0 +1,143 @@
+{
+  "arxiv_id": "record-8364a2a233d4ec9e",
+  "source_version": "NeurIPS 2021 proceedings PDF",
+  "source_pdf": "https://proceedings.neurips.cc/paper_files/paper/2021/file/940392f5f32a7ade1cc201767cf83e31-Paper.pdf",
+  "title_en": "Diffusion Schrödinger Bridge with Applications to Score-Based Generative Modeling",
+  "title_zh": "扩散Schrödinger桥及其在基于得分的生成建模中的应用",
+  "curation_status": "full_text_verified",
+  "card_standard_version": "2.3",
+  "paper_profile": "theory_numerics",
+  "style_reference": "physicist_daily_arxiv",
+  "provenance": {
+    "program": "Collection",
+    "catalog": "Paper Collection",
+    "catalog_record_id": "8364a2a233d4ec9e",
+    "catalog_record_ids": [
+      "8364a2a233d4ec9e"
+    ],
+    "catalog_topic": "Flow Matching",
+    "collection_date": "2026-08-23",
+    "sampled_at": "2026-08-28",
+    "selected_by": "full_collection_backfill",
+    "sampling_seed": "not_applicable_full_collection",
+    "candidate_count": 452
+  },
+  "verified_metadata": {
+    "doi": null,
+    "arxiv_id": "2106.01357",
+    "version": "NeurIPS 2021 proceedings full text",
+    "title": "Diffusion Schrödinger Bridge with Applications to Score-Based Generative Modeling",
+    "authors": [
+      "Valentin De Bortoli",
+      "James Thornton",
+      "Jeremy Heng",
+      "Arnaud Doucet"
+    ],
+    "journal": "Advances in Neural Information Processing Systems",
+    "volume": "34",
+    "pages": null,
+    "published": "2021",
+    "abstract": "Diffusion Schrödinger Bridge alternates learned forward and backward Markov kernels as a continuous-state IPF approximation, correcting finite-time endpoint mismatch in score-based diffusion.",
+    "comment": "Proceedings PDF verified; corresponding preprint is arXiv:2106.01357"
+  },
+  "sections": [
+    {
+      "title": "作者信息",
+      "paragraphs": [
+        "作者 Valentin De Bortoli、James Thornton、Jeremy Heng、Arnaud Doucet；NeurIPS 2021。核验会议正式PDF全文15页；对应 arXiv:2106.01357。会议PDF未列DOI，本卡不推测。"
+      ]
+    },
+    {
+      "title": "研究问题",
+      "paragraphs": [
+        "score-based generative modeling需让forward noising SDE在终点足够接近Gaussian prior；短T或少steps会留下endpoint mismatch。能否把生成建模写成path-space entropy-regularized optimal transport，即Schrödinger bridge，并用多次forward/backward修正使有限时间两端精确匹配？"
+      ]
+    },
+    {
+      "title": "背景",
+      "paragraphs": [
+        "Schrödinger bridge在reference diffusion path measure附近寻找满足data和prior marginals的最小KL process。Iterative Proportional Fitting交替投影两个endpoint constraints，类似discrete Sinkhorn；reverse-time drifts可由score/conditional regression估计。",
+        "第一轮DSB等价于传统SGM的reverse fit；后续轮次也更新forward drift，从而补偿pN≠pprior。‘finite time exact’属于理想IPF/continuous model极限，neural approximation、finite particles和Euler discretization仍产生误差。"
+      ]
+    },
+    {
+      "title": "模型与方法",
+      "paragraphs": [
+        "作者先离散reference diffusion为N-step Markov chain，交替用regression拟合backward kernels Bkn和forward kernels Fkn，构成Diffusion SB。理论分析IPF KL convergence、time-discretization和early SGM error，并给OU-like reference下的bounds。",
+        "实验用2D toy distributions验证marginals，MNIST/CelebA用reduced U-Net，扫描N=12–50与DSB iterations；另做Swiss-roll到S-curve、EMNIST到MNIST的arbitrary endpoint interpolation。"
+      ]
+    },
+    {
+      "title": "核心结果与证据",
+      "paragraphs": [
+        "Figure 1在T=0.2、N=20时显示初始forward diffusion未到Gaussian且第一轮reverse未回data；第五轮DSB后两个endpoint明显匹配，直观展示迭代修正。",
+        "Figures 2–3定量/可视验证toy ground-truth mean、variance、covariance和四种2D shapes随20轮逼近。Figures 5–6显示CelebA在N=12等少steps时图像与FID随DSB iterations改善；作者明确说实现尚不与SOTA竞争。",
+        "Figure 7展示non-Gaussian endpoint间bridge，支持DSB不仅是data-to-Gaussian generator，也可视为continuous-state Sinkhorn工具。T过小时score在prior support附近难学，论文在discussion中承认质量下降。"
+      ]
+    },
+    {
+      "title": "有效性与局限",
+      "paragraphs": [
+        "每个DSB iteration需重新训练forward/backward regressors，少sampling steps不等于总训练更便宜；errors会在IPF iterations中传播。理论常数依赖regularity、finite entropy与kernel assumptions，未覆盖任意neural score class。",
+        "image实验低分辨率且缺少强SOTA baselines、多seed error bars和完整compute accounting。FID改善来自该配置，不能推出所有short-schedule diffusion都应增加IPF rounds；T、N、model capacity需联合调节。"
+      ]
+    },
+    {
+      "title": "复现与资源",
+      "paragraphs": [
+        "全文：https://proceedings.neurips.cc/paper/2021/hash/940392f5f32a7ade1cc201767cf83e31-Abstract.html；项目：https://vdeborto.github.io/publication/schrodinger_bridge/。PDF SHA-256：a896f34cefb188d72f04ce3490d43a0ed03db4e4ffd2a5bf2dab115855f0fe57。",
+        "复现需固定reference drift/noise、T、N、DSB rounds、kernel regression/U-Net、forward/backward sampling counts、optimizer、FID implementation与dataset preprocessing。Evidence status: full-text verified theoretical/numerical study; no independent reproduction performed."
+      ]
+    },
+    {
+      "title": "阅读指南",
+      "paragraphs": [
+        "先读 pp.1–3 Figure 1与SB/IPF联系；pp.3–6看DSB算法和theory；pp.7–10读Figures 2–7实验；pp.10–15为discussion、proof sketches和实现细节。"
+      ]
+    }
+  ],
+  "cover": {
+    "mode": "source_figure",
+    "asset_path": "assets/collection-figures/record-8364a2a233d4ec9e/figures-2-3-dsb-convergence.webp",
+    "label": "Figures 2–3",
+    "visual_type": "comparison",
+    "evidence": "paper.pdf p. 9, Figures 2–3",
+    "alt_text": "DSB对ground-truth moments的迭代收敛及四个二维分布从第一轮到第二十轮的改善。",
+    "caption": "后续IPF rounds修正第一轮SGM留下的短时endpoint mismatch。",
+    "selection_rationale": "Figures 2–3同时给出moment-level与distribution-level convergence证据。"
+  },
+  "figure_refs": [
+    {
+      "label": "Figures 2–3",
+      "asset_path": "assets/collection-figures/record-8364a2a233d4ec9e/figures-2-3-dsb-convergence.webp",
+      "section": "核心结果与证据",
+      "role": "support the central result",
+      "evidence": "paper.pdf p. 9, Figures 2–3",
+      "alt_text": "DSB对ground-truth moments的迭代收敛及四个二维分布从第一轮到第二十轮的改善。",
+      "caption": "后续IPF rounds修正第一轮SGM留下的短时endpoint mismatch。",
+      "interpretation": "The figure supports the stated protocol-specific claim, not an unrestricted generalization."
+    }
+  ],
+  "equation_refs": [
+    {
+      "label": "Schrödinger bridge objective",
+      "latex": "P^\\star=\\arg\\min_{P:\\,P_0=p_{\\rm data},\\,P_T=p_{\\rm prior}}\\mathrm{KL}(P\\,\\|\\,P^{\\rm ref})",
+      "role": "find the closest diffusion path measure satisfying both endpoint marginals",
+      "symbols": {
+        "P_ref": "reference diffusion",
+        "P_0,P_T": "endpoint marginals",
+        "KL": "path-space relative entropy"
+      },
+      "evidence": "paper.pdf pp. 2–4, Schrödinger bridge formulation",
+      "interpretation": "Practical DSB approximates alternating path-space projections with learned discrete kernels."
+    }
+  ],
+  "evidence_refs": [
+    "paper.pdf pp. 1–3, Figure 1: endpoint mismatch and DSB idea",
+    "paper.pdf pp. 3–6: IPF/DSB algorithm and theory",
+    "paper.pdf pp. 8–9, Figures 2–4: toy and CelebA results",
+    "paper.pdf p. 10, Figures 5–7: FID and endpoint interpolation",
+    "source PDF SHA-256 a896f34cefb188d72f04ce3490d43a0ed03db4e4ffd2a5bf2dab115855f0fe57",
+    "Evidence status: full-text verified theoretical/numerical study; no independent reproduction performed."
+  ]
+}

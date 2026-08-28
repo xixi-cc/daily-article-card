@@ -1,0 +1,143 @@
+{
+  "arxiv_id": "record-8ae792fdc6e22ec9",
+  "source_version": "arXiv v3 manuscript",
+  "source_pdf": "https://arxiv.org/pdf/2203.11010",
+  "title_en": "Sparse inference and active learning of stochastic differential equations from data",
+  "title_zh": "从数据稀疏推断并主动学习随机微分方程",
+  "curation_status": "full_text_verified",
+  "card_standard_version": "2.3",
+  "paper_profile": "theory_numerics",
+  "style_reference": "physicist_daily_arxiv",
+  "provenance": {
+    "program": "Collection",
+    "catalog": "Paper Collection",
+    "catalog_record_id": "8ae792fdc6e22ec9",
+    "catalog_record_ids": [
+      "8ae792fdc6e22ec9"
+    ],
+    "catalog_topic": "Active Matter",
+    "collection_date": "2026-08-23",
+    "sampled_at": "2026-08-28",
+    "selected_by": "full_collection_backfill",
+    "sampling_seed": "not_applicable_full_collection",
+    "candidate_count": 452
+  },
+  "verified_metadata": {
+    "doi": "10.1038/s41598-022-25638-9",
+    "arxiv_id": "2203.11010",
+    "version": "arXiv v3 full text",
+    "title": "Sparse inference and active learning of stochastic differential equations from data",
+    "authors": [
+      "Yunfei Huang",
+      "Youssef Mabrouk",
+      "Gerhard Gompper",
+      "Benedikt Sabass"
+    ],
+    "journal": "Scientific Reports",
+    "volume": "12",
+    "pages": "21691",
+    "published": "2022",
+    "abstract": "Automatic-threshold sparse Bayesian learning recovers differential-equation terms, while feedback control actively drives stochastic trajectories into under-sampled regions to improve global drift inference.",
+    "comment": "ArXiv v3 full text cross-checked with Scientific Reports metadata"
+  },
+  "sections": [
+    {
+      "title": "作者信息",
+      "paragraphs": [
+        "作者 Yunfei Huang、Youssef Mabrouk、Gerhard Gompper、Benedikt Sabass；Scientific Reports 12, 21691 (2022)，DOI:10.1038/s41598-022-25638-9。核验 arXiv:2203.11010v3 全文17页。"
+      ]
+    },
+    {
+      "title": "研究问题",
+      "paragraphs": [
+        "从trajectory识别SDE drift/diffusion时，稀疏回归既要自动选threshold，又受metastable wells造成的phase-space sampling bias：粒子长期困在一个basin，只能局部知道force。能否用Bayesian sparsity稳定选项，并让当前推断反过来设计control perturbation主动探索未知区域？"
+      ]
+    },
+    {
+      "title": "背景",
+      "paragraphs": [
+        "Kramers–Moyal coefficients D(1)、D(2)可由short-time increments估计，再表示为library Θ(z)与稀疏weights。作者采用Laplacian prior的Bayesian compressive sensing，并以train/test error迭代删除小weights，称ATSBL。",
+        "active loop AISO根据当前估计potential minima添加flattening control，生成新trajectory，去除已知control后重新推断uncontrolled drift。它要求能安全、准确施加外力，并假设control作用可从动力学中分离。"
+      ]
+    },
+    {
+      "title": "模型与方法",
+      "paragraphs": [
+        "ATSBL把threshold candidates通过cross-validation式test error筛选，Laplacian prior相比Gaussian prior更强稀疏。对短SDE trajectories，binning与probability cutoff排除采样极少区域；同一framework还用于Lorenz ODE和reaction–diffusion PDE。",
+        "AISO在1D three-well和2D Mexican-hat-like force fields中循环：定位估计minimum、加入局部control使well变平、收集controlled samples、subtract control并更新global model。以coefficient deviation DIC评估每轮改善。"
+      ]
+    },
+    {
+      "title": "核心结果与证据",
+      "paragraphs": [
+        "Figure 1的double-well SDE显示ATSBL从一条10^6-step noisy trajectory恢复drift与diffusion；Laplacian prior减少所需samples并更快threshold convergence。Figure 2说明short trajectory未访问区域的不确定性和binning cutoff作用。",
+        "Figure 3是主动学习主证据：无control的1D/2D trajectories困在局部区域；逐轮flatten estimated wells后覆盖扩大，DIC下降。2D streamlines从第一轮明显偏离真值，到第十轮pink identified field基本贴合black ground truth。",
+        "Figures 4–5在Lorenz和reaction–diffusion上展示ODE/PDE term discovery。所有ground truth与active-control结果来自simulation，论文没有真实在线实验或control-cost/safety benchmark。"
+      ]
+    },
+    {
+      "title": "有效性与局限",
+      "paragraphs": [
+        "library必须含真实函数，finite-difference KM estimates要求足够小Δt且近似Markov/Itô；measurement noise、colored noise、hidden variables和rare transitions会偏置。threshold选于有限test split，不保证结构posterior calibration。",
+        "AISO依据当前错误模型设计control，可能把系统推向危险或model-invalid区域；本文control landscape可解析且模拟可reset。高维系统的potential minima搜索、actuator constraints和control/data tradeoff尚未解决。"
+      ]
+    },
+    {
+      "title": "复现与资源",
+      "paragraphs": [
+        "全文：https://arxiv.org/abs/2203.11010；期刊：https://doi.org/10.1038/s41598-022-25638-9。PDF SHA-256：b34b22371e314236ef7e23c26e9cb3b15216c51bdd5de2082b3d71d18bd5d7d6。正文说明源码和数据可由通讯作者获取，未列公开仓库URL。",
+        "复现需固定Δt、trajectory length、library、Laplace hyperparameters、threshold grid/train-test split、bin cutoff、control amplitude/width、AISO iterations和DIC definition。Evidence status: full-text verified analytical/numerical study; no independent reproduction performed."
+      ]
+    },
+    {
+      "title": "阅读指南",
+      "paragraphs": [
+        "先读 pp.1–5 ATSBL与threshold；pp.6–9看SDE/KM和binning；pp.9–12看AISO feedback；p.16 Figure 3是主证据，pp.14–17汇总所有figures和完整captions。"
+      ]
+    }
+  ],
+  "cover": {
+    "mode": "source_figure",
+    "asset_path": "assets/collection-figures/record-8ae792fdc6e22ec9/figure-3-active-learning.webp",
+    "label": "Figure 3",
+    "visual_type": "schematic",
+    "evidence": "paper.pdf p. 16, Figure 3",
+    "alt_text": "AISO反馈控制示意及1D/2D受困轨迹、DIC迭代与识别force-field streamlines。",
+    "caption": "主动flatten当前估计的local wells扩大采样域，使全局drift模型逐轮接近真值。",
+    "selection_rationale": "Figure 3同时呈现控制机制、coverage变化和推断误差收敛。"
+  },
+  "figure_refs": [
+    {
+      "label": "Figure 3",
+      "asset_path": "assets/collection-figures/record-8ae792fdc6e22ec9/figure-3-active-learning.webp",
+      "section": "核心结果与证据",
+      "role": "support the central result",
+      "evidence": "paper.pdf p. 16, Figure 3",
+      "alt_text": "AISO反馈控制示意及1D/2D受困轨迹、DIC迭代与识别force-field streamlines。",
+      "caption": "主动flatten当前估计的local wells扩大采样域，使全局drift模型逐轮接近真值。",
+      "interpretation": "The figure supports the stated protocol-specific claim, not an unrestricted generalization."
+    }
+  ],
+  "equation_refs": [
+    {
+      "label": "Sparse KM regression",
+      "latex": "F^{(n)}=\\Theta(z)W^{(n)}+\\epsilon,\\qquad n\\in\\{1,2\\}",
+      "role": "identify drift and diffusion from Kramers–Moyal estimates over a candidate library",
+      "symbols": {
+        "F_n": "estimated KM coefficient samples",
+        "Theta": "function library",
+        "W_n": "sparse weights"
+      },
+      "evidence": "paper.pdf pp. 2–5, linear inverse formulation",
+      "interpretation": "Finite-time increments and incomplete phase-space sampling can bias both targets and selected terms."
+    }
+  ],
+  "evidence_refs": [
+    "paper.pdf pp. 1–5: sparse Bayesian learning and ATSBL",
+    "paper.pdf pp. 6–9: SDE/KM inference and binning",
+    "paper.pdf pp. 9–12: AISO active-learning loop",
+    "paper.pdf pp. 14–17, Figures 1–5: complete visual evidence",
+    "source PDF SHA-256 b34b22371e314236ef7e23c26e9cb3b15216c51bdd5de2082b3d71d18bd5d7d6",
+    "Evidence status: full-text verified analytical/numerical study; no independent reproduction performed."
+  ]
+}
