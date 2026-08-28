@@ -1,0 +1,152 @@
+{
+  "arxiv_id": "2608.03117",
+  "source_version": "v1",
+  "source_pdf": "https://arxiv.org/pdf/2608.03117",
+  "title_en": "Simulation-free and finite-time diffusion model",
+  "title_zh": "免模拟训练且有限时间生成的扩散模型",
+  "curation_status": "full_text_verified",
+  "card_standard_version": "2.3",
+  "paper_profile": "theory_numerics",
+  "style_reference": "physicist_daily_arxiv",
+  "provenance": {
+    "program": "Collection",
+    "catalog": "Paper Collection",
+    "catalog_record_id": "befae0a92a07baa6",
+    "catalog_record_ids": [
+      "befae0a92a07baa6"
+    ],
+    "catalog_topic": "Generative Models",
+    "collection_date": "2026-08-23",
+    "sampled_at": "2026-08-28",
+    "selected_by": "full_collection_backfill",
+    "sampling_seed": "not_applicable_full_collection",
+    "candidate_count": 452
+  },
+  "verified_metadata": {
+    "arxiv_id": "2608.03117",
+    "version": "v1",
+    "title": "Simulation-free and finite-time diffusion model",
+    "authors": [
+      "Kentaro Kaba",
+      "Masayuki Ohzeki",
+      "Yuki Sughiyama"
+    ],
+    "categories": [
+      "cs.LG"
+    ],
+    "primary_category": "cs.LG",
+    "published": "2026-08-04T04:39:14Z",
+    "abstract": "Prescribing tractable time-dependent conditional marginals and constructing their reference process yields simulation-free training and finite-time generation.",
+    "comment": ""
+  },
+  "sections": [
+    {
+      "title": "作者信息",
+      "paragraphs": [
+        "作者：Kentaro Kaba、Masayuki Ohzeki、Yuki Sughiyama；arXiv:2608.03117v1。全文 14 页。论文给出 reference diffusion 的构造框架，并在四个二维 toy distributions 上检验 Gaussian 与 Johnson’s \\(S_U\\) priors。"
+      ]
+    },
+    {
+      "title": "研究问题",
+      "paragraphs": [
+        "标准 score-based model 用可解析 OU marginals 获得 simulation-free training，却只在长时间渐近到 prior；finite-time bridge 往往需要模拟参考过程。论文问：能否同时获得可直接采样的训练 pair 和严格有限时间的 data-to-prior connection？"
+      ]
+    },
+    {
+      "title": "背景",
+      "paragraphs": [
+        "reference process 决定训练和生成，而不只是噪声 schedule。通常先写 SDE 再求 marginals；作者反过来先规定 \\(\\rho_t(z\\mid x)\\)，让 \\(p_t(z)=\\int\\rho_t(z\\mid x)\\mu(dx)\\) 在 \\(t=0,1\\) 连接 data 与 prior，再反构 realizing SDE。",
+        "Figure 1 把训练数据与三种生成设置并排：Gaussian prior、Johnson’s \\(S_U\\) prior 和 VP-SBM baseline，覆盖 Gaussian mixture、spiral、checkerboard 与 moon。"
+      ]
+    },
+    {
+      "title": "模型与方法",
+      "paragraphs": [
+        "条件边缘必须可采样、端点正确并满足 continuity equation。给定 conditional velocity \\(\\bar\\alpha(t,z,x)\\) 和正 diffusion tensor \\(\\Gamma(t,z)\\)，作者积分掉 \\(x\\) 得 marginal drift，再构造 forward reference SDE；time reversal 产生生成方向 drift。",
+        "simulation-free loss 用 \\((X,Z_t)\\) 的直接样本回归 conditional drift/score，无需轨迹模拟。Gaussian 条件用线性 mean 与 variance schedule；non-Gaussian prior 通过一族 bijections/pushforwards 构造。"
+      ]
+    },
+    {
+      "title": "核心结果与证据",
+      "paragraphs": [
+        "框架在 \\([0,1]\\) 上精确匹配端点，因此 generation horizon 有限；训练 pair 来自显式 conditional marginals，因此 objective 不需模拟 reference SDE。score matching 在这里不是原始公理，而是把 data-to-prior reference process 反转后出现的回归量。",
+        "将 diffusion level 缩放为 \\(\\epsilon\\Gamma\\) 并取 \\(\\epsilon\\to0\\)，SDE 退化为 conditional continuity equation，objective 收敛到 conditional flow matching；这给出 stochastic diffusion 到 deterministic flow 的结构极限。",
+        "Figure 1 的 7,500 training points 与 7,500 generated samples 显示四类 toy distributions 在 Gaussian 和 Johnson priors 下均被重建；VP-SBM 用 \\(T=10\\)、100 Euler–Maruyama steps。结果是定性结构比较，没有高维数据或 likelihood/FID。"
+      ]
+    },
+    {
+      "title": "有效性与局限",
+      "paragraphs": [
+        "优点是把 finite horizon 与 simulation-free property 归结为 conditional-family design，并允许 non-Gaussian prior。推导清楚区分 reference process、reverse process 与 learned drift。",
+        "数值只覆盖二维 toy data；图中质量依赖 interpolation schedule，作者也指出不良 schedule 会降低生成质量。构造要求 tractable conditional distributions/bijections 和可逆 covariance；高维图像/文本中的数值稳定性、网络规模和 compute 尚未验证。"
+      ]
+    },
+    {
+      "title": "复现与资源",
+      "paragraphs": [
+        "原文：https://arxiv.org/abs/2608.03117。全文 14 页，PDF SHA-256：befae0a92a07baa6f0d0b7f094fdfb94b40a652d7783e728432a202a0967f8b1。",
+        "复现需固定 conditional family、mean/variance schedules、prior parameters、network (3 residual blocks, width 256, SiLU)、optimizer、batch、iterations、time reversal convention、Euler–Maruyama steps、7,500-point evaluation 与 random seeds。",
+        "Evidence status: full-text verified; no independent reproduction performed."
+      ]
+    },
+    {
+      "title": "阅读指南",
+      "paragraphs": [
+        "先读 Section III 的 prescribed conditional construction 和 Eq. (23) loss；再看 Gaussian/non-Gaussian realizations。随后读 score reversal 与 \\(\\epsilon\\to0\\) flow limit，最后用 Figure 1 和 Appendix E 的 schedule study 检查经验边界。"
+      ]
+    }
+  ],
+  "cover": {
+    "mode": "source_figure",
+    "asset_path": "assets/collection-figures/2608.03117/figure-1-toy-samples.webp",
+    "label": "Figure 1",
+    "visual_type": "comparison",
+    "evidence": "paper.pdf p. 8, Figure 1",
+    "alt_text": "四个二维训练分布与三种生成设置的样本矩阵。",
+    "caption": "有限时间 reference process 在 Gaussian 与 non-Gaussian priors 下重建四类 toy geometry。",
+    "selection_rationale": "Figure 1 是唯一且最重要的生成结果可视化，直接比较数据与不同 priors。"
+  },
+  "figure_refs": [
+    {
+      "label": "Figure 1",
+      "asset_path": "assets/collection-figures/2608.03117/figure-1-toy-samples.webp",
+      "section": "核心结果与证据",
+      "role": "generated-sample geometry",
+      "evidence": "paper.pdf p. 8, Figure 1",
+      "alt_text": "四类训练数据和三种生成样本。",
+      "caption": "Gaussian、Johnson 与 VP-SBM 生成结果。",
+      "interpretation": "The finite-time construction preserves the qualitative topology of four two-dimensional datasets under two priors."
+    }
+  ],
+  "equation_refs": [
+    {
+      "label": "Prescribed marginal family",
+      "latex": "p_t(z)=\\int \\rho_t(z\\mid x)\\,\\mu(dx),\\qquad p_0=\\mu,\\quad p_1=\\pi",
+      "role": "design finite-time probability path",
+      "symbols": {
+        "rho_t": "tractable conditional distribution",
+        "pi": "chosen prior"
+      },
+      "evidence": "paper.pdf pp. 4–5, Eq. (17)",
+      "interpretation": "A tractable conditional family fixes the full marginal path and exact endpoints."
+    },
+    {
+      "label": "Small-noise flow limit",
+      "latex": "\\partial_t\\rho_t(z\\mid x)=-\\nabla_z\\!\\cdot\\left[\\bar\\alpha(t,z,x)\\rho_t(z\\mid x)\\right]",
+      "role": "conditional flow matching limit",
+      "symbols": {
+        "bar_alpha": "conditional velocity",
+        "rho_t": "conditional path"
+      },
+      "evidence": "paper.pdf p. 6, Eq. (40)",
+      "interpretation": "When diffusion vanishes, the stochastic construction reduces to deterministic conditional transport."
+    }
+  ],
+  "evidence_refs": [
+    "paper.pdf pp. 4–7: conditional marginals, reference SDE and reversal",
+    "paper.pdf pp. 6–8: score/flow connections and experiments",
+    "paper.pdf p. 8, Figure 1",
+    "source PDF SHA-256 befae0a92a07baa6f0d0b7f094fdfb94b40a652d7783e728432a202a0967f8b1",
+    "Evidence status: full-text verified; no independent reproduction performed."
+  ]
+}

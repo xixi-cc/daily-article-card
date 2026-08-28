@@ -1,0 +1,153 @@
+{
+  "arxiv_id": "2608.02844",
+  "source_version": "v1",
+  "source_pdf": "https://arxiv.org/pdf/2608.02844",
+  "title_en": "Particle-based Generalised Stochastic Optimisation",
+  "title_zh": "基于粒子的广义随机优化",
+  "curation_status": "full_text_verified",
+  "card_standard_version": "2.3",
+  "paper_profile": "theory_numerics",
+  "style_reference": "physicist_daily_arxiv",
+  "provenance": {
+    "program": "Collection",
+    "catalog": "Paper Collection",
+    "catalog_record_id": "0a0b564bed928702",
+    "catalog_record_ids": [
+      "0a0b564bed928702"
+    ],
+    "catalog_topic": "Machine Learning",
+    "collection_date": "2026-08-23",
+    "sampled_at": "2026-08-28",
+    "selected_by": "full_collection_backfill",
+    "sampling_seed": "not_applicable_full_collection",
+    "candidate_count": 452
+  },
+  "verified_metadata": {
+    "arxiv_id": "2608.02844",
+    "version": "v1",
+    "title": "Particle-based Generalised Stochastic Optimisation",
+    "authors": [
+      "Jiechen Jackie Zhang",
+      "O. Deniz Akyildiz"
+    ],
+    "categories": [
+      "stat.ML",
+      "cs.LG",
+      "stat.CO"
+    ],
+    "primary_category": "stat.ML",
+    "published": "2026-08-03T19:59:47Z",
+    "abstract": "A mean-field optimiser coupled to parameter-dependent sampler particles yields momentum and higher-order Langevin variants with contraction and finite-particle bounds.",
+    "comment": ""
+  },
+  "sections": [
+    {
+      "title": "作者信息",
+      "paragraphs": [
+        "作者：Jiechen Jackie Zhang、O. Deniz Akyildiz；arXiv:2608.02844v1。全文 39 页。论文把若干 persistent-particle stochastic optimisers纳入同一 mean-field framework，并给出理论、去模糊和 energy-based model 实验。"
+      ]
+    },
+    {
+      "title": "研究问题",
+      "paragraphs": [
+        "目标梯度常写成依赖参数的期望 \\(\\nabla\\ell(\\theta)=\\int F(\\theta,x)\\pi_\\theta(dx)\\)，而 \\(\\pi_\\theta\\) 只能由 MCMC 采样。论文问：能否让 optimiser 与 sampler 同时连续演化，以 persistent particles 替代每步重启内层链，并仍得到收敛和有限粒子误差？"
+      ]
+    },
+    {
+      "title": "背景",
+      "paragraphs": [
+        "普通 stochastic gradient 假设可直接抽样无偏梯度；latent-variable likelihood、EBM 和部分 generative training 则需从当前 \\(\\pi_\\theta\\) 采样。若粒子未混合，gradient bias 与 optimisation dynamics 相互反馈。",
+        "Figure 2 以图像去模糊展示 particle cloud 的可解释输出：原图、blurred observation、MYPGD 与 higher-order Langevin MYPGD 的单粒子重建并排比较。"
+      ]
+    },
+    {
+      "title": "模型与方法",
+      "paragraphs": [
+        "一般系统包含 optimiser state \\(\\vartheta_t\\) 与 sampler state \\(Z_t=(X_t,V_t)\\)：optimiser drift 由粒子 law \\(\\nu_t\\) 下的期望 \\(G_{\\nu_t}(\\vartheta_t)\\) 驱动，sampler 则由 \\(\\Psi_t(\\vartheta_t,Z_t)\\) 与 Brownian noise 演化。用 \\(N\\) 个独立噪声、共同 optimiser 的 interacting system 近似 \\(\\nu_t\\)。",
+        "框架覆盖 PGD、proximal MYPGD、implicit diffusion，并构造 momentum MFPO 与 higher-order Langevin variants。离散实现使用 splitting/OBABO 类 scheme。"
+      ]
+    },
+    {
+      "title": "核心结果与证据",
+      "paragraphs": [
+        "Theorem 2 在 well-posedness 与 twisted joint contractivity A3 下给出 mean-field law 到 stationary pair 的 exponential Wasserstein contraction。A3 是 optimiser–sampler 联合强单调条件，单独的 objective convexity 或 sampler dissipativity 并不足够。",
+        "Theorems 3–4 给出 continuous-time interacting system 的非渐近 parameter error：transient 以 \\(e^{-\\rho t}\\) 衰减，particle interaction 项按 \\(N^{-1/2}\\) 缩放；time discretisation error 需另加，不能由该定理消失。",
+        "去模糊实验中 higher-order Langevin 方案报告更优 MSE/SSIM 和更清晰重建。EBM rings/beads/lattice 使用 \\(N=10{,}000\\) particles、25 independent runs，momentum method 更快达到较低 Fisher divergence；这些是特定调参下的数值结果。"
+      ]
+    },
+    {
+      "title": "有效性与局限",
+      "paragraphs": [
+        "统一 mean-field 描述和显式 finite-particle bound 是主要理论贡献，多个采样器/优化器实例增加可迁移性。实验同时检查 image quality 与 distribution-level Fisher divergence，而非只报 objective。",
+        "理论依赖 global joint contractivity、uniform moment/variance bounds 与 stationary pair，深网和多峰 EBM 中可能不成立。实验规模有限，higher-order 方法有额外状态、friction 与 step-size 调参；图像更锐利不证明普遍更快或更省计算。"
+      ]
+    },
+    {
+      "title": "复现与资源",
+      "paragraphs": [
+        "原文：https://arxiv.org/abs/2608.02844。全文 39 页，PDF SHA-256：0a0b564bed92870219d8c0d6e26adddd88d4a9292c4b866147e44720e0b31b47。",
+        "复现需固定 particle count、initial law、Brownian seeds、energy/gradient estimator、friction、mass/higher-order coefficients、splitting scheme、step size、deblurring operator/noise、Fisher-divergence estimator 和 25-run aggregation。",
+        "Evidence status: full-text verified; no independent reproduction performed."
+      ]
+    },
+    {
+      "title": "阅读指南",
+      "paragraphs": [
+        "先读 Eqs. (3)–(4) 和 Figure 0 的 general system，再看 Theorems 2–4 的 A3–A5。随后用 Figure 2 理解粒子输出，再看 Figures 1、3–4 的 MSE/SSIM 与 EBM diagnostics；最后检查 Appendix 的 counterexample 和 discretisation assumptions。"
+      ]
+    }
+  ],
+  "cover": {
+    "mode": "source_figure",
+    "asset_path": "assets/collection-figures/2608.02844/figure-2-deblurring.webp",
+    "label": "Figure 2",
+    "visual_type": "comparison",
+    "evidence": "paper.pdf p. 11, Figure 2",
+    "alt_text": "原图、模糊图、MYPGD 与 HOL-MYPGD 重建的并排比较。",
+    "caption": "persistent particle optimisers 的输出可直接作为重建样本比较。",
+    "selection_rationale": "Figure 2 是最直观的可视化结果，优先于 MSE/SSIM 曲线。"
+  },
+  "figure_refs": [
+    {
+      "label": "Figure 2",
+      "asset_path": "assets/collection-figures/2608.02844/figure-2-deblurring.webp",
+      "section": "核心结果与证据",
+      "role": "visual reconstruction comparison",
+      "evidence": "paper.pdf p. 11, Figure 2",
+      "alt_text": "原图、模糊观测和两种 particle reconstruction。",
+      "caption": "去模糊重建对照。",
+      "interpretation": "The higher-order particle scheme produces a visibly sharper single-particle reconstruction in this setup."
+    }
+  ],
+  "equation_refs": [
+    {
+      "label": "Coupled mean-field optimiser",
+      "latex": "d\\vartheta_t=-G_{\\nu_t}(\\vartheta_t)\\,dt,\\qquad dZ_t=\\Psi_t(\\vartheta_t,Z_t)\\,dt+\\Sigma\\,dB_t",
+      "role": "joint optimiser-sampler dynamics",
+      "symbols": {
+        "nu_t": "law of sampler state",
+        "vartheta": "general optimiser state"
+      },
+      "evidence": "paper.pdf pp. 4–5, Eqs. (3)–(4)",
+      "interpretation": "The parameter and persistent sampler evolve on one coupled timescale."
+    },
+    {
+      "label": "Finite-particle parameter bound",
+      "latex": "\\mathbb E\\Vert\\vartheta_t^N-\\vartheta^\\star\\Vert\\lesssim e^{-\\rho t}\\,\\mathcal W_2(\\mu_0,\\mu^\\star)+C N^{-1/2}",
+      "role": "transient plus interaction error",
+      "symbols": {
+        "rho": "joint contraction rate",
+        "N": "particle count"
+      },
+      "evidence": "paper.pdf pp. 8–9, Theorem 4",
+      "interpretation": "Continuous-time error separates exponentially decaying initialization bias from Monte Carlo interaction error."
+    }
+  ],
+  "evidence_refs": [
+    "paper.pdf pp. 4–9: mean-field system and Theorems 1–4",
+    "paper.pdf pp. 10–13: deblurring and EBM experiments",
+    "paper.pdf p. 11, Figure 2 and p. 12, Figure 3",
+    "source PDF SHA-256 0a0b564bed92870219d8c0d6e26adddd88d4a9292c4b866147e44720e0b31b47",
+    "Evidence status: full-text verified; no independent reproduction performed."
+  ]
+}
