@@ -1,0 +1,157 @@
+{
+  "arxiv_id": "2602.00869",
+  "source_version": "v1",
+  "source_pdf": "https://arxiv.org/pdf/2602.00869",
+  "title_en": "Improving Flow Matching by Aligning Flow Divergence",
+  "title_zh": "通过对齐流散度改进流匹配",
+  "curation_status": "full_text_verified",
+  "card_standard_version": "2.3",
+  "paper_profile": "theory_numerics",
+  "style_reference": "physicist_daily_arxiv",
+  "provenance": {
+    "program": "Collection",
+    "catalog": "Paper Collection",
+    "catalog_record_id": "718967ebb315d9b4",
+    "catalog_record_ids": [
+      "718967ebb315d9b4"
+    ],
+    "catalog_topic": "Flow Matching",
+    "collection_date": "2026-08-23",
+    "sampled_at": "2026-08-28",
+    "selected_by": "full_collection_backfill",
+    "sampling_seed": "not_applicable_full_collection",
+    "candidate_count": 452
+  },
+  "verified_metadata": {
+    "arxiv_id": "2602.00869",
+    "version": "v1",
+    "title": "Improving Flow Matching by Aligning Flow Divergence",
+    "authors": [
+      "Yuhao Huang",
+      "Taos Transue",
+      "Shih-Hsin Wang",
+      "William Feldman",
+      "Hong Zhang",
+      "Bao Wang"
+    ],
+    "categories": [
+      "cs.LG",
+      "cs.AI",
+      "math.NA"
+    ],
+    "primary_category": "cs.LG",
+    "published": "2026-01-31T19:07:54Z",
+    "abstract": "A PDE error identity bounds probability-path total variation by vector-field and divergence mismatch, motivating Flow and Divergence Matching.",
+    "comment": ""
+  },
+  "sections": [
+    {
+      "title": "作者信息",
+      "paragraphs": [
+        "作者：Yuhao Huang、Taos Transue、Shih-Hsin Wang、William Feldman、Hong Zhang、Bao Wang；arXiv:2602.00869v1。全文 23 页，发表于 ICML 2025（PMLR 267）。论文从 continuity equation 的误差传播推导 FDM，并覆盖 density、DNA、dynamical systems 与 video benchmarks。"
+      ]
+    },
+    {
+      "title": "研究问题",
+      "paragraphs": [
+        "CFM 让 learned velocity \\(v_t\\) 在平方误差意义下逼近 conditional target，却不直接控制 induced density \\(\\hat p_t\\)。论文问：两个速度场很接近时，为什么 probability paths 仍可偏离；需要控制什么局部量，才能给 \\(\\mathrm{TV}(p_t,\\hat p_t)\\) 一个可训练的上界？"
+      ]
+    },
+    {
+      "title": "背景",
+      "paragraphs": [
+        "exact 与 learned density 分别满足 continuity equations。令 \\(\\epsilon_t=p_t-\\hat p_t\\)，相减后得到带 forcing term 的线性输运 PDE；forcing 不只含 \\(u_t-v_t\\)，还含 divergence gap \\(\\nabla\\!\\cdot u_t-\\nabla\\!\\cdot v_t\\)。",
+        "Figure 2 在 \\(t=0.6,0.85,1\\) 比较四峰 Gaussian mixture：普通 FM 的蓝色路径逐步偏离红色 data，FDM 的黑色路径到终点仍对齐。图直接把“低 velocity loss 不等于正确 density”变成可视化。"
+      ]
+    },
+    {
+      "title": "模型与方法",
+      "paragraphs": [
+        "Theorem 3.3 先以 \\(\\mathcal L_{DM}\\) 控制 TV gap；由于 marginal target divergence 不可直接得到，作者构造 conditional divergence matching loss \\(\\mathcal L_{CDM}\\) 作为上界，并训练 \\(\\mathcal L_{FDM}=\\lambda_1\\mathcal L_{CFM}+\\lambda_2\\mathcal L_{CDM}\\)。",
+        "高维 divergence 用 Hutchinson trace estimator；efficient squared CDM 采用 stop-gradient，只比 baseline 多一次 backward pass。不同任务仍使用 OT、VE/VP 或 Dirichlet probability paths，FDM 改的是训练约束而非 ODE sampler。"
+      ]
+    },
+    {
+      "title": "核心结果与证据",
+      "paragraphs": [
+        "Figure 2 显示误差传播的时间结构：FM 在中间时刻已错配弱峰，终点放大为明显 density bias；FDM 同时约束 compression/expansion rate 后，四个峰的质量与位置都更接近 target。Figure 3 的整条 probability surface 给出同一结论。",
+        "理论上 \\(\\mathrm{TV}(p_t,\\hat p_t)\\le\\tfrac12\\mathcal L_{DM}\\le\\tfrac12\\mathcal L_{CDM}\\)。CIFAR-10 OT path 上 NLL 从 2.99 降到 2.85、FID 从 6.35 降到 5.62；checkerboard、DNA 的 likelihood/TV 也一致改善。",
+        "KTH 以前 10 帧预测后 30 帧时，latent FM 的 FVD/PSNR 为 180/30.4，latent FDM 为 \\(155.5\\pm5\\)/31.2；代价从每 iter 0.18 s 增至 0.27 s。结果说明 divergence regularization 有实质收益，同时也明确存在约 50% 的训练迭代开销。"
+      ]
+    },
+    {
+      "title": "有效性与局限",
+      "paragraphs": [
+        "TV bound 依赖文中 mild regularity/integrability assumptions，且上界可能松；控制 TV 不自动控制 KL、tails 或 rare events。conditional upper bound 与 Hutchinson estimator 会引入方差，\\(\\lambda_2\\) 仍需 task-specific search。",
+        "实验横跨多域但每域规模有限；CIFAR-10 和 KTH/BAIR 不能代表现代大规模生成。FDM 增加 backward compute，论文所说“不牺牲 generation efficiency”仅指 inference ODE 未变，不是 training cost 不变。代码可用仍不等于结果已被独立复现。"
+      ]
+    },
+    {
+      "title": "复现与资源",
+      "paragraphs": [
+        "原文：https://arxiv.org/abs/2602.00869；代码：https://github.com/Utah-Math-Data-Science/Flow_Div_Matching。全文 23 页，PDF SHA-256：e54a1d133672fbe9d1b27f9ca01c33442657b825db44c30a8fd7a657329b89b9。",
+        "复现需固定 probability path、\\(\\lambda_1,\\lambda_2\\)、Hutchinson probe count/distribution、stop-gradient estimator、network/optimizer、ODE solver、dataset splits、NLL/FID/FVD checkpoint、event-guidance protocol 与 seeds，并同时报告 training time。",
+        "Evidence status: full-text verified; no independent reproduction performed."
+      ]
+    },
+    {
+      "title": "阅读指南",
+      "paragraphs": [
+        "先看 Figure 2，直观看 density path 而非只看 velocity loss；再读 Proposition 3.1 与 Theorems 3.3/4.1 的 PDE 和 TV bound。随后看 efficient CDM estimator，最后按 Table 2、DNA、dynamical systems、KTH/BAIR 顺序检查收益与额外训练成本。"
+      ]
+    }
+  ],
+  "cover": {
+    "mode": "source_figure",
+    "asset_path": "assets/collection-figures/2602.00869/figure-2-probability-paths.webp",
+    "label": "Figure 2",
+    "visual_type": "distribution",
+    "evidence": "paper.pdf p. 5, Figure 2",
+    "alt_text": "FM 与 FDM 在三个时刻拟合四峰 Gaussian mixture probability path 的比较。",
+    "caption": "速度误差小仍可能累积为密度偏差；加入散度匹配后，四峰概率路径在终点保持对齐。",
+    "selection_rationale": "Figure 2 直接可视化论文的 PDE 机制，比单项 benchmark 数据更适合作为封面。"
+  },
+  "figure_refs": [
+    {
+      "label": "Figure 2",
+      "asset_path": "assets/collection-figures/2602.00869/figure-2-probability-paths.webp",
+      "section": "核心结果与证据",
+      "role": "show probability-path error accumulation",
+      "evidence": "paper.pdf p. 5, Figure 2",
+      "alt_text": "上排 FM、下排 FDM 在三个时间点与四峰目标密度比较。",
+      "caption": "Divergence matching suppresses the density error that remains invisible to a small conditional velocity loss.",
+      "interpretation": "The visualization is one controlled one-dimensional mixture, not a universal estimate of high-dimensional error."
+    }
+  ],
+  "equation_refs": [
+    {
+      "label": "Probability-path TV bound",
+      "latex": "\\operatorname{TV}(p_t,\\hat p_t)\\le\\frac12\\mathcal L_{DM}(\\theta)\\le\\frac12\\mathcal L_{CDM}(\\theta)",
+      "role": "connect local flow/divergence mismatch to density error",
+      "symbols": {
+        "p_t": "exact path",
+        "p_hat_t": "learned path",
+        "L_CDM": "conditional divergence matching loss"
+      },
+      "evidence": "paper.pdf pp. 4–5, Theorems 3.3 and 4.1",
+      "interpretation": "Matching divergence supplies a trainable control on the total-variation gap that CFM alone does not provide."
+    },
+    {
+      "label": "Flow and divergence matching objective",
+      "latex": "\\mathcal L_{FDM}=\\lambda_1\\mathcal L_{CFM}+\\lambda_2\\mathcal L_{CDM},\\qquad \\lambda_1,\\lambda_2>0",
+      "role": "train velocity and local volume change jointly",
+      "symbols": {
+        "lambda_1": "flow weight",
+        "lambda_2": "divergence weight"
+      },
+      "evidence": "paper.pdf p. 5, Eq. (17)",
+      "interpretation": "The second term regularizes compression and expansion of probability mass without changing the inference solver."
+    }
+  ],
+  "evidence_refs": [
+    "paper.pdf pp. 3–5: error PDE, TV bounds and FDM objective",
+    "paper.pdf pp. 5–9: density, DNA, dynamical-system and video experiments",
+    "source PDF SHA-256 e54a1d133672fbe9d1b27f9ca01c33442657b825db44c30a8fd7a657329b89b9",
+    "Evidence status: full-text verified; no independent reproduction performed."
+  ]
+}

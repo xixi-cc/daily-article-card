@@ -1,0 +1,152 @@
+{
+  "arxiv_id": "2512.18184",
+  "source_version": "v1",
+  "source_pdf": "https://arxiv.org/pdf/2512.18184",
+  "title_en": "Is There a Better Source Distribution than Gaussian? Exploring Source Distributions for Image Flow Matching",
+  "title_zh": "图像流匹配中是否存在优于高斯的源分布？",
+  "curation_status": "full_text_verified",
+  "card_standard_version": "2.3",
+  "paper_profile": "theory_numerics",
+  "style_reference": "physicist_daily_arxiv",
+  "provenance": {
+    "program": "Collection",
+    "catalog": "Paper Collection",
+    "catalog_record_id": "dd2c72d8e038972e",
+    "catalog_record_ids": [
+      "dd2c72d8e038972e"
+    ],
+    "catalog_topic": "Flow Matching",
+    "collection_date": "2026-08-23",
+    "sampled_at": "2026-08-28",
+    "selected_by": "full_collection_backfill",
+    "sampling_seed": "not_applicable_full_collection",
+    "candidate_count": 452
+  },
+  "verified_metadata": {
+    "arxiv_id": "2512.18184",
+    "version": "v1",
+    "title": "Is There a Better Source Distribution than Gaussian? Exploring Source Distributions for Image Flow Matching",
+    "authors": [
+      "Junho Lee",
+      "Kwanseok Kim",
+      "Joonseok Lee"
+    ],
+    "categories": [
+      "cs.CV"
+    ],
+    "primary_category": "cs.CV",
+    "published": "2025-12-20T02:44:54Z",
+    "abstract": "A high-dimensional geometric analysis explains why Gaussian sources remain robust and motivates norm-aligned training with directionally pruned inference.",
+    "comment": ""
+  },
+  "sections": [
+    {
+      "title": "作者信息",
+      "paragraphs": [
+        "作者：Junho Lee、Kwanseok Kim、Joonseok Lee；arXiv:2512.18184v1。全文 29 页，发表于 TMLR（2025-12）。论文把 source-distribution design 拆成密度、方向和模长三个几何问题，并在 CIFAR-10 与 ImageNet-64 上验证。"
+      ]
+    },
+    {
+      "title": "研究问题",
+      "paragraphs": [
+        "流匹配允许自由选择 source distribution，但标准各向同性 Gaussian 是否只是方便，还是高维几何下的稳健选择？论文问：让源分布逼近 target density、方向或模长，分别会怎样改变路径纠缠、mode coverage、有限 NFE 误差与生成质量？"
+      ]
+    },
+    {
+      "title": "背景",
+      "paragraphs": [
+        "连续流以 ODE \\(\\dot x_t=v_t(x_t)\\) 把 \\(p_0\\) 推到 \\(p_1\\)。高维 Gaussian 的半径集中在 \\(\\sqrt d\\) 附近而方向近似均匀；因此“二维平面上的 Gaussian 云”不能同时表现径向集中和球面方向覆盖。",
+        "Figure 1(c) 把高维样本压到“方向角—模长”二维表示：黑点是 source，蓝点是 data，细线是 source–target transport。相较 Figure 1(a,b) 的普通二维玩具，它把方向覆盖、模长错配和 sparse angular sectors 可视化。"
+      ]
+    },
+    {
+      "title": "模型与方法",
+      "paragraphs": [
+        "作者先证明 Gaussian 可等价写成独立的 \\(\\chi_d\\) 半径与球面均匀方向，即 \\(x_0=r u\\)，\\(r\\sim\\chi_d\\)、\\(u\\sim\\mathrm{Unif}(\\mathbb S^{d-1})\\)。随后分别构造 target-density approximation、vMF directional alignment、norm alignment 与 angular pruning，在 I-CFM/OT-CFM 下做消融。",
+        "最终策略训练时保留完整 Gaussian 的 omnidirectional supervision，并把 target 平均模长缩放到 source shell；推理时才删除数据稀疏或 mode-equidistant 的方向。pruned sampling 因而可直接用于既有 Gaussian-trained model，不需要重训。"
+      ]
+    },
+    {
+      "title": "核心结果与证据",
+      "paragraphs": [
+        "Figure 1 的关键不是三幅漂亮轨迹，而是第三幅所暴露的高维约束：Gaussian shell 从所有方向提供监督；若方向分布过窄，多个 target modes 的路径在同一 angular sector 纠缠，局部 vector field 反而更难学。",
+        "逼近 target density 并不单调改善结果：CIFAR-10 上 Gaussian baseline FID 为 4.40，DCT-Weak 为 4.20，但 GMM-1/GMM-2/GMM-10 分别恶化到 11.75/12.49/12.11，CNF source 为 17.18。更“像数据”的 source 会因 mode discrepancy 与 sparse coverage 失去稳定监督。",
+        "hybrid Gaussian-train→Pruned-inference 在不同 NFE 上稳定优于完整或全程 pruned；ImageNet-64 的 FID 从 NFE 5/10/20/100 的 53.95/18.84/10.62/9.10 改善为 49.56/16.70/9.54/8.78。收益来自避开 poorly trained initial regions，而非证明 Gaussian 在所有任务上全局最优。"
+      ]
+    },
+    {
+      "title": "有效性与局限",
+      "paragraphs": [
+        "核心机制来自作者设计的二维投影和有限数据集实验；它把高维方向与模长分离得很清楚，却不保留真实图像流形的全部 topology。FID 对特征空间和样本数敏感，不能单独判断 mode fidelity、likelihood 或语义覆盖。",
+        "pruning 依赖训练数据方向/聚类估计，可能删除 rare modes；norm alignment 使用全局平均半径，会掩盖 class-conditional 或 heavy-tailed radial structure。结论支持 Gaussian 的 robust baseline 地位，不构成不存在更优 task-specific source 的定理。"
+      ]
+    },
+    {
+      "title": "复现与资源",
+      "paragraphs": [
+        "原文：https://arxiv.org/abs/2512.18184；代码：https://github.com/kwanseokk/SourceFM。全文 29 页，PDF SHA-256：ab773183888f02162d4f4371209fb3038b24664171335dda56b8d4f802685804。",
+        "复现需固定 CIFAR-10/ImageNet-64 preprocessing、I-CFM/OT-CFM pairing、source estimator、vMF concentration \\(\\kappa\\)、cluster count、angular pruning threshold、norm rescaling、ODE solver、NFE、FID implementation 与 seeds。",
+        "Evidence status: full-text verified; no independent reproduction performed."
+      ]
+    },
+    {
+      "title": "阅读指南",
+      "paragraphs": [
+        "先看 Figure 1，把普通二维 toy 与 direction–norm projection 区分；再按 Figures 2–5 依次检查 density approximation、directional entanglement、Gaussian coverage 和 sparse-region failure。最后看 Tables 2–6，特别区分 training source 与 inference source。"
+      ]
+    }
+  ],
+  "cover": {
+    "mode": "source_figure",
+    "asset_path": "assets/collection-figures/2512.18184/figure-1-2d-simulations.webp",
+    "label": "Figure 1",
+    "visual_type": "schematic",
+    "evidence": "paper.pdf p. 2, Figure 1",
+    "alt_text": "三种二维流匹配模拟，第三幅把高维方向和模长几何投影到二维。",
+    "caption": "高维 Gaussian 的价值在于球面方向的全面监督；只让源分布更接近数据并不保证更容易学习。",
+    "selection_rationale": "Figure 1 是全文的几何直觉入口，比单个 FID 表更直接解释主要机制。"
+  },
+  "figure_refs": [
+    {
+      "label": "Figure 1",
+      "asset_path": "assets/collection-figures/2512.18184/figure-1-2d-simulations.webp",
+      "section": "核心结果与证据",
+      "role": "visualize the high-dimensional direction–norm surrogate",
+      "evidence": "paper.pdf p. 2, Figure 1",
+      "alt_text": "三幅 source–target transport 图比较普通二维玩具与高维几何代理。",
+      "caption": "第三幅把 omnidirectional coverage、radial shell 和 path failures 放进同一图。",
+      "interpretation": "This is a diagnostic surrogate, not an isometric embedding of an image manifold."
+    }
+  ],
+  "equation_refs": [
+    {
+      "label": "Gaussian radial-direction factorization",
+      "latex": "x_0=r u,\\qquad r\\sim\\chi_d,\\quad u\\sim\\operatorname{Unif}(\\mathbb S^{d-1}),\\quad r\\perp u",
+      "role": "separate norm and direction in the source",
+      "symbols": {
+        "d": "latent dimension",
+        "r": "source norm",
+        "u": "source direction"
+      },
+      "evidence": "paper.pdf pp. 4–5, Section 3.1",
+      "interpretation": "High-dimensional Gaussian mass occupies a thin radial shell while retaining nearly uniform angular coverage."
+    },
+    {
+      "label": "Norm alignment",
+      "latex": "x_1'=x_1\\,\\frac{\\mathbb E\\lVert x_0\\rVert}{\\mathbb E\\lVert x_1\\rVert}",
+      "role": "match average target and source radii during training",
+      "symbols": {
+        "x_0": "Gaussian source",
+        "x_1": "data sample"
+      },
+      "evidence": "paper.pdf p. 15, Section 5.4",
+      "interpretation": "Removing a global radial mismatch shortens transport without sacrificing angular supervision."
+    }
+  ],
+  "evidence_refs": [
+    "paper.pdf pp. 2–10: high-dimensional surrogate and five geometric findings",
+    "paper.pdf pp. 11–16: CIFAR-10/ImageNet-64 source and pruning experiments",
+    "source PDF SHA-256 ab773183888f02162d4f4371209fb3038b24664171335dda56b8d4f802685804",
+    "Evidence status: full-text verified; no independent reproduction performed."
+  ]
+}

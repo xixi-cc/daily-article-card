@@ -1,0 +1,158 @@
+{
+  "arxiv_id": "2601.09881",
+  "source_version": "v2",
+  "source_pdf": "https://arxiv.org/pdf/2601.09881",
+  "title_en": "Transition Matching Distillation for Fast Video Generation",
+  "title_zh": "用于快速视频生成的转移匹配蒸馏",
+  "curation_status": "full_text_verified",
+  "card_standard_version": "2.3",
+  "paper_profile": "ai_empirical",
+  "style_reference": "physicist_daily_arxiv",
+  "provenance": {
+    "program": "Collection",
+    "catalog": "Paper Collection",
+    "catalog_record_id": "4d124aa87b3150b9",
+    "catalog_record_ids": [
+      "4d124aa87b3150b9"
+    ],
+    "catalog_topic": "Video Generation",
+    "collection_date": "2026-08-23",
+    "sampled_at": "2026-08-28",
+    "selected_by": "full_collection_backfill",
+    "sampling_seed": "not_applicable_full_collection",
+    "candidate_count": 452
+  },
+  "verified_metadata": {
+    "arxiv_id": "2601.09881",
+    "version": "v2",
+    "title": "Transition Matching Distillation for Fast Video Generation",
+    "authors": [
+      "Weili Nie",
+      "Julius Berner",
+      "Nanye Ma",
+      "Chao Liu",
+      "Saining Xie",
+      "Arash Vahdat"
+    ],
+    "categories": [
+      "cs.CV",
+      "cs.AI",
+      "cs.LG"
+    ],
+    "primary_category": "cs.CV",
+    "published": "2026-01-14T21:30:03Z",
+    "abstract": "Transition Matching Distillation reuses semantic backbone features and performs lightweight inner flow updates to obtain fractional-NFE video generators.",
+    "comment": ""
+  },
+  "sections": [
+    {
+      "title": "作者信息",
+      "paragraphs": [
+        "作者：Weili Nie、Julius Berner、Nanye Ma、Chao Liu、Saining Xie、Arash Vahdat；arXiv:2601.09881v2。全文 27 页。作者把 Wan2.1 1.3B/14B text-to-video flow models 蒸馏为少步生成器，并报告 VBench、2AFC user study 与 wall-clock/compute proxy。"
+      ]
+    },
+    {
+      "title": "研究问题",
+      "paragraphs": [
+        "视频 diffusion/flow teacher 需要几十步全网络求值；直接一步 distribution matching 容易丢失时序细节，多步 student 又重复昂贵语义计算。论文问：能否把一次外层 transition 内的语义表示固定下来，只用小型 flow head 做多次内层修正，从而连续调节质量—计算成本？"
+      ]
+    },
+    {
+      "title": "背景",
+      "paragraphs": [
+        "Transition matching 不要求 student 逐点复制 teacher trajectory，而是让少数 probabilistic transitions 复现多步 denoising 的分布演化。TMD 将 30/40-block DiT 的前部视为 main backbone，最后 \\(H\\) 个 blocks 作为 flow head；每个 outer step 只运行一次 main backbone。",
+        "Figure 1 展示同一 prompt 在 5 s、480p 视频的四个时刻：有效 NFE 2.75 和 1.38 都保持主体与场景连续。它是视觉证据而非 metric，说明极低外层求值下仍能产生可辨运动序列。"
+      ]
+    },
+    {
+      "title": "模型与方法",
+      "paragraphs": [
+        "第一阶段 TM-MF pretraining 把 flow head 变为条件 flow map，并用 time-conditioned gate 融合 backbone feature、text condition 与 noisy head target；finite-difference JVP 避免依赖特定 attention/FSDP implementation。",
+        "第二阶段以改进的 DMD2-v 做 distribution matching，并在每个 transition 中 unroll inner flow。DMD2-v 使用 Conv3D discriminator、按步数选择 KD warm-up 和 timestep shifting；unrolled gradients 穿过所有 head steps，以减少 train–inference mismatch。"
+      ]
+    },
+    {
+      "title": "核心结果与证据",
+      "paragraphs": [
+        "Figure 1 的两组序列表明 TMD 的计算并非简单“少取帧”：NFE 1.38/2.75 是按使用的 DiT blocks 折算的全网络求值，四个展示帧仍跨越完整 5 s。图中视觉一致性需与盲测和 VBench 一起读，不能由精选样例单独成立。",
+        "Wan2.1 1.3B 蒸馏中，TMD-N2H5 在 effective NFE 2.33 得 VBench overall 84.68，超过 4-NFE rCM 的 84.43；NFE 1.17 时 overall 83.80，超过 1-NFE DMD2-v 的 83.24。Wan2.1 14B 上 NFE 1.38 的 TMD 为 84.24，对应 DMD2-v 为 83.69。",
+        "计算定义为 \\(M[1+(N-1)H/L]\\)，因此可出现 fractional NFE。5 个 head blocks、2 个 inner steps 对 30-block teacher 的额外 student-update compute 低于 17%。14B 的 2.75-NFE TMD 并未超过所有 2-step baselines，作者明确保留这一负结果。"
+      ]
+    },
+    {
+      "title": "有效性与局限",
+      "paragraphs": [
+        "Figure 1/3 是作者筛选的 qualitative examples；视频真实性、物理一致性和 rare prompt failure 不能从中推断。VBench 与 2AFC 覆盖有限 prompt distribution，且训练数据含 Wan2.1 14B 生成的 500k text–video pairs，可能继承 teacher bias 与 artifacts。",
+        "effective NFE 是按 block 数线性折算的 proxy，不等于真实 latency、memory traffic 或 energy；flow-head rollout 的 kernel efficiency 依硬件而变。主要证据围绕 Wan2.1 及 480p latent resolution，跨架构、长视频和高分辨率泛化尚未确立。"
+      ]
+    },
+    {
+      "title": "复现与资源",
+      "paragraphs": [
+        "原文：https://arxiv.org/abs/2601.09881；项目页：https://research.nvidia.com/labs/genair/tmd。全文 27 页，PDF SHA-256：226e7cba2ddb49b8b39aae62730cd4976cf1704c97027f6c1aed41756a874599。",
+        "复现需固定 Wan2.1 checkpoint、500k prompt/video corpus、latent shape \\([21,60,104]\\)、81-frame decoder、outer steps \\(M\\)、inner steps \\(N\\)、head blocks \\(H\\)、TM-MF finite difference、DMD2-v discriminator/KD/timestep shift、VBench revision 与 2AFC protocol。",
+        "Evidence status: full-text verified; no independent reproduction performed."
+      ]
+    },
+    {
+      "title": "阅读指南",
+      "paragraphs": [
+        "先看 Figure 2 的 main-backbone/flow-head 拆分，再看 Figure 1/3 的时间序列；随后读 Eqs. (13)–(16)，确认 inner rollout 与 effective NFE 的定义。最后对照 Tables 1–2 和 user study，并把 block-count proxy、实际 latency 与视觉质量分开。"
+      ]
+    }
+  ],
+  "cover": {
+    "mode": "source_figure",
+    "asset_path": "assets/collection-figures/2601.09881/figure-1-generated-videos.webp",
+    "label": "Figure 1",
+    "visual_type": "comparison",
+    "evidence": "paper.pdf p. 1, Figure 1",
+    "alt_text": "两个文本提示生成的 5 秒视频在四个时刻的帧序列，分别采用两种有效 NFE。",
+    "caption": "TMD 在约 1.38–2.75 次等效全网络求值下生成连贯的 5 秒视频序列。",
+    "selection_rationale": "按 v2.3 封面规则优先使用最重要的可视化生成结果，而不是 VBench 数据表。"
+  },
+  "figure_refs": [
+    {
+      "label": "Figure 1",
+      "asset_path": "assets/collection-figures/2601.09881/figure-1-generated-videos.webp",
+      "section": "核心结果与证据",
+      "role": "show temporal samples at very low effective NFE",
+      "evidence": "paper.pdf p. 1, Figure 1",
+      "alt_text": "兔子行走与人物饮咖啡两组视频各展示四个时间点。",
+      "caption": "少量外层 backbone evaluations 配合内层 head refinement 可维持可辨运动与场景。",
+      "interpretation": "These are selected generations and must be interpreted together with aggregate and blinded evaluations."
+    }
+  ],
+  "equation_refs": [
+    {
+      "label": "Conditional inner flow map",
+      "latex": "f_\\theta(y_s,s,r;m)=y_s+(s-r)u_\\theta(y_s,s,r;m)",
+      "role": "refine a transition using reused semantic features",
+      "symbols": {
+        "m": "main-backbone feature",
+        "u_theta": "average inner velocity"
+      },
+      "evidence": "paper.pdf p. 4, Eq. (13)",
+      "interpretation": "Several cheap head updates share one expensive semantic representation."
+    },
+    {
+      "label": "Effective network evaluations",
+      "latex": "\\operatorname{NFE}_{\\rm eff}=M\\!\\left[1+\\frac{(N-1)H}{L}\\right]",
+      "role": "compare fractional compute against full-backbone steps",
+      "symbols": {
+        "M": "outer transitions",
+        "N": "inner flow steps",
+        "H": "flow-head blocks",
+        "L": "teacher blocks"
+      },
+      "evidence": "paper.pdf p. 5, Eq. (16)",
+      "interpretation": "The proxy counts head blocks as fractions of a full DiT pass; it is not a direct latency measurement."
+    }
+  ],
+  "evidence_refs": [
+    "paper.pdf pp. 3–5: transition formulation, two-stage training and effective NFE",
+    "paper.pdf pp. 5–8: Wan2.1 evaluations, visual comparisons and user study",
+    "source PDF SHA-256 226e7cba2ddb49b8b39aae62730cd4976cf1704c97027f6c1aed41756a874599",
+    "Evidence status: full-text verified; no independent reproduction performed."
+  ]
+}
