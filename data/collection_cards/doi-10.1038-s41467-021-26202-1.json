@@ -1,0 +1,153 @@
+{
+  "arxiv_id": "doi-10.1038-s41467-021-26202-1",
+  "source_version": "version of record",
+  "source_pdf": "https://www.nature.com/articles/s41467-021-26202-1.pdf",
+  "title_en": "Learning non-stationary Langevin dynamics from stochastic observations of latent trajectories",
+  "title_zh": "从潜在轨迹的随机观测中学习非平稳朗之万动力学",
+  "curation_status": "full_text_verified",
+  "card_standard_version": "2.3",
+  "paper_profile": "numerical",
+  "style_reference": "physicist_daily_arxiv",
+  "provenance": {
+    "program": "Collection",
+    "catalog": "Paper Collection",
+    "catalog_record_id": "6190d5a20eefd8cc",
+    "catalog_record_ids": [
+      "6190d5a20eefd8cc"
+    ],
+    "catalog_topic": "Mathematical Physics",
+    "collection_date": "2026-08-23",
+    "sampled_at": "2026-08-28",
+    "selected_by": "full_collection_backfill",
+    "sampling_seed": "not_applicable_full_collection",
+    "candidate_count": 452
+  },
+  "verified_metadata": {
+    "doi": "10.1038/s41467-021-26202-1",
+    "version": "version of record",
+    "title": "Learning non-stationary Langevin dynamics from stochastic observations of latent trajectories",
+    "authors": [
+      "Mikhail Genkin",
+      "Owen Hughes",
+      "Tatiana A. Engel"
+    ],
+    "journal": "Nature Communications",
+    "volume": "12",
+    "article": "5986",
+    "published": "2021-10-13",
+    "abstract": "A nonparametric likelihood framework jointly infers a latent Langevin potential, diffusion and non-equilibrium initial distribution from stochastic Poisson observations with trial termination.",
+    "comment": "Open-access version of record"
+  },
+  "sections": [
+    {
+      "title": "作者信息",
+      "paragraphs": [
+        "作者 Mikhail Genkin、Owen Hughes、Tatiana A. Engel；Nature Communications 12, 5986 (2021)，DOI:10.1038/s41467-021-26202-1，发表于 2021-10-13。核验 9 页开放期刊版及 Methods。论文提出统计推断方法，并在合成神经 spike-train 数据上验证。"
+      ]
+    },
+    {
+      "title": "研究问题",
+      "paragraphs": [
+        "许多神经决策模型用低维 diffusion/Langevin 变量表示不可直接观测的证据积累，但实验只给出由潜变量随机产生的 spikes，trial 又可能在潜变量触及边界时结束。若错误假设稳态初始分布、反射边界或忽略终止选择，就会把非平稳采样偏差误认为势垒。论文问：能否从随机观测同时恢复势 Φ(x)、diffusion D 和非平衡初始分布 p0(x)？"
+      ]
+    },
+    {
+      "title": "背景",
+      "paragraphs": [
+        "潜变量 x∈[-1,1] 满足 overdamped Langevin equation，力 F=−dΦ/dx；神经 spike counts 条件于 x 服从已知 Poisson observation model。传统 stationary density 只约束 Φ∝−log p_eq，无法处理每个 trial 从 p0 启动、有限时长以及吸收边界造成的选择偏差。",
+        "Figure 3 以 ground-truth 线性势为例：只有同时包含非平衡 p0、吸收边界和 absorption operator 的完整模型恢复直线；删去任一组成都会产生虚假 valley 或 barrier。"
+      ]
+    },
+    {
+      "title": "模型与方法",
+      "paragraphs": [
+        "作者把路径联合似然分解为初始分布、相邻时间的 Fokker–Planck transition、每个时间 bin 的 Poisson emission、末次观测到终止时刻的传播，以及表示已观测终止条件的 absorption probability。通过前向—后向递推对所有潜在轨迹积分，而非先从 spikes 点估计 x。",
+        "Φ(x) 和 p0(x) 在空间网格上非参数化，D 同时优化；边界可设 absorbing/reflection 并与数据生成规则一致。模型选择不只最大化训练 likelihood，而比较不同 trial subsets 推断特征的一致性，用 Jensen–Shannon divergence 和 bootstrap 评估稳定性。"
+      ]
+    },
+    {
+      "title": "核心结果与证据",
+      "paragraphs": [
+        "Figure 3 的 200 条合成 trials 表明：完整 non-stationary model 恢复线性 ground truth；忽略 absorption、改成 reflecting boundaries 或用 equilibrium p0 都会制造并不存在的双稳/单稳结构。这是论文最关键的 failure-control，因为它显示错误机制假设可造成定性错误。",
+        "在 ramping 与 stepping 两类决策动力学中，方法能联合恢复 Φ、p0 和 D。Figure 4 使用 200、1600 或 400 trials 展示数据量与不同 ground truth 下的恢复；更多 trials 缩小不确定性，但有限样本仍可能让细节漂移。",
+        "特征一致性准则在合成数据中帮助选择合适空间分辨率和模型复杂度。所有结果都来自已知 Poisson observation function 的 synthetic datasets；本文没有在真实神经记录上验证 recovered potential 的生物解释。"
+      ]
+    },
+    {
+      "title": "有效性与局限",
+      "paragraphs": [
+        "方法当前是一维、Markov、白噪声、时间不变势与常数 D；跨 trial 的缓慢漂移、colored noise、多维决策变量和未知 observation function 不在验证范围。吸收边界和终止时刻必须被正确记录，否则 likelihood specification 仍会偏置。",
+        "非参数网格提高灵活性，也带来数据量、正则化和可识别性要求；Φ 的加法常数不可识别，p0、D 与势形在短 trial 中可能互相补偿。作者提出扩展到多维和多观测流，但这属于未来方向。合成恢复不能替代真实数据的 posterior predictive checks 与干预验证。"
+      ]
+    },
+    {
+      "title": "复现与资源",
+      "paragraphs": [
+        "期刊：https://doi.org/10.1038/s41467-021-26202-1；开放全文：https://www.nature.com/articles/s41467-021-26202-1。核验 PDF SHA-256：e962dbb8436c3396b3e8180c31499a79fdcdaaf2f506d2d8ddbb8a1f53ea2e3e。复现需固定 x-grid、time bins、boundary/absorption rule、Poisson tuning curves、trial counts、optimizer、regularization、initialization、bootstrap 与 JS-divergence split。",
+        "最低复核应重现 Figure 3 的四种消融，并检查概率质量、终止率、势的 gauge convention 和参数恢复区间。Evidence status: full-text verified version of record and synthetic validation; no independent reproduction performed."
+      ]
+    },
+    {
+      "title": "阅读指南",
+      "paragraphs": [
+        "先读 pp.1–3 的 Langevin/Poisson setup 和 non-stationarity 问题，再逐项读 p.4 Figure 3 的完整模型与三种错误设定。随后看 Figure 4 的样本量、ramping/stepping 恢复；Methods 中重点核查 joint likelihood、absorption operator、Fokker–Planck solver 与模型选择。"
+      ]
+    }
+  ],
+  "cover": {
+    "mode": "source_figure",
+    "asset_path": "assets/collection-figures/doi-10.1038-s41467-021-26202-1/figure-3-nonstationary-components.webp",
+    "label": "Figure 3",
+    "visual_type": "comparison",
+    "evidence": "paper.pdf p. 4, Figure 3",
+    "alt_text": "完整非平稳模型与三种错误设定恢复潜在势的对比。",
+    "caption": "忽略初态、吸收边界或终止机制会把选择偏差误判为虚假势垒。",
+    "selection_rationale": "Figure 3 直接验证方法的必要组成，并展示错误建模造成的定性失败。"
+  },
+  "figure_refs": [
+    {
+      "label": "Figure 3",
+      "asset_path": "assets/collection-figures/doi-10.1038-s41467-021-26202-1/figure-3-nonstationary-components.webp",
+      "section": "核心结果与证据",
+      "role": "ablate non-stationary likelihood components",
+      "evidence": "paper.pdf p. 4, Figure 3",
+      "alt_text": "线性真势下完整模型和三种误设模型的恢复结果。",
+      "caption": "只有完整处理 p0、吸收边界和终止选择才恢复 ground truth。",
+      "interpretation": "The comparison uses synthetic Poisson observations with a known observation model."
+    }
+  ],
+  "equation_refs": [
+    {
+      "label": "Latent Langevin dynamics",
+      "latex": "\\frac{dx}{dt}=D F(x)+\\sqrt{2D}\\,\\xi(t),\\qquad F(x)=-\\frac{d\\Phi}{dx}",
+      "role": "define the latent stochastic trajectory",
+      "symbols": {
+        "Phi": "latent potential",
+        "D": "diffusion coefficient",
+        "xi": "unit white noise"
+      },
+      "evidence": "paper.pdf p. 2, Eq. (1)",
+      "interpretation": "Both deterministic drift and stochastic diffusion govern the hidden decision variable."
+    },
+    {
+      "label": "Path-and-observation likelihood",
+      "latex": "P(X,Y)=p(x_{t_0})\\prod_i p(y_{t_i}|x_{t_i})p(x_{t_i}|x_{t_{i-1}})\\,p(x_{t_E}|x_{t_N})p(A|x_{t_E})",
+      "role": "include emissions, latent propagation, initial state and trial absorption",
+      "symbols": {
+        "X": "latent path",
+        "Y": "stochastic observations",
+        "A": "absorption event"
+      },
+      "evidence": "paper.pdf p. 3, Eq. (4)",
+      "interpretation": "Omitting the final absorption factor changes which latent paths are represented in terminated trials."
+    }
+  ],
+  "evidence_refs": [
+    "paper.pdf pp. 1–3: latent Langevin and non-stationary likelihood",
+    "paper.pdf p. 4, Figure 3: component ablation",
+    "paper.pdf pp. 4–6, Figure 4: simultaneous recovery and sample-size tests",
+    "paper.pdf Methods: Fokker–Planck inference and model selection",
+    "source PDF SHA-256 e962dbb8436c3396b3e8180c31499a79fdcdaaf2f506d2d8ddbb8a1f53ea2e3e",
+    "Evidence status: full-text verified version of record and synthetic validation; no independent reproduction performed."
+  ]
+}
