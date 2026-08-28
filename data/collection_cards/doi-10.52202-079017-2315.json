@@ -1,0 +1,143 @@
+{
+  "arxiv_id": "doi-10.52202-079017-2315",
+  "source_version": "arXiv v2 manuscript",
+  "source_pdf": "https://arxiv.org/pdf/2405.15926",
+  "title_en": "Dissecting the Interplay of Attention Paths in a Statistical Mechanics Theory of Transformers",
+  "title_zh": "用Transformer统计力学理论剖析注意力路径的相互作用",
+  "curation_status": "full_text_verified",
+  "card_standard_version": "2.3",
+  "paper_profile": "theory_numerics",
+  "style_reference": "physicist_daily_arxiv",
+  "provenance": {
+    "program": "Collection",
+    "catalog": "Paper Collection",
+    "catalog_record_id": "c3305c4765375bc3",
+    "catalog_record_ids": [
+      "c3305c4765375bc3"
+    ],
+    "catalog_topic": "Transformer Theory",
+    "collection_date": "2026-08-23",
+    "sampled_at": "2026-08-28",
+    "selected_by": "full_collection_backfill",
+    "sampling_seed": "not_applicable_full_collection",
+    "candidate_count": 452
+  },
+  "verified_metadata": {
+    "doi": "10.52202/079017-2315",
+    "arxiv_id": "2405.15926",
+    "version": "arXiv v2 full text",
+    "title": "Dissecting the Interplay of Attention Paths in a Statistical Mechanics Theory of Transformers",
+    "authors": [
+      "Lorenzo Tiberi",
+      "Francesca Mignacco",
+      "Kazuki Irie",
+      "Haim Sompolinsky"
+    ],
+    "journal": "Advances in Neural Information Processing Systems",
+    "volume": "37",
+    "pages": "72710–72753",
+    "published": "2024",
+    "abstract": "A finite-width Bayesian theory expresses a deep multi-head attention predictor as task-adapted combinations of kernels coupling pairs of attention paths.",
+    "comment": "ArXiv v2 full text cross-checked with NeurIPS proceedings metadata"
+  },
+  "sections": [
+    {
+      "title": "作者信息",
+      "paragraphs": [
+        "作者 Lorenzo Tiberi、Francesca Mignacco、Kazuki Irie、Haim Sompolinsky；NeurIPS 2024 / Advances in Neural Information Processing Systems 37, 72710–72753，DOI:10.52202/079017-2315。核验 arXiv:2405.15926v2 全文37页及公开代码。"
+      ]
+    },
+    {
+      "title": "研究问题",
+      "paragraphs": [
+        "深层multi-head attention形成许多跨层head序列，即attention paths；传统infinite-width GP极限会令隐藏权重独立，抹去路径间学习后的耦合。论文问：在训练样本P与宽度N共同趋大且P/N=O(1)时，能否精确描述路径怎样组合、哪些路径与任务相关，以及这种结构是否解释generalization和可剪枝性？"
+      ]
+    },
+    {
+      "title": "背景",
+      "paragraphs": [
+        "作者研究与Transformer相近但可解析的深层self-attention模型：query/key weights固定，Bayesian learning作用于value/readout weights。每条attention path选取每层一个head；任意两条路径形成path–path kernel，完整predictor由这些kernel加权求和。",
+        "这不是标准Transformer全参数训练的精确理论。固定Q/K、Bayesian posterior、平方损失与thermodynamic limit使计算闭合；迁移到gradient descent模型只由实验定性支持。"
+      ]
+    },
+    {
+      "title": "模型与方法",
+      "paragraphs": [
+        "replica/statistical-mechanics推导给出posterior predictor mean和covariance的self-consistent saddle-point equations。order parameter U编码不同路径value weights的幅值与相关性，使总kernel根据labels重新加权；α=P/N→0时回到未学习组合的GP limit。",
+        "验证包括synthetic hidden-Markov-chain序列分类和Omniglot one-shot classification，并在FashionMNIST等OOD集测试；比较理论、Bayesian sampling与gradient descent，另用理论head score做pruning。"
+      ]
+    },
+    {
+      "title": "核心结果与证据",
+      "paragraphs": [
+        "Figure 2的两层两头HMC模型含4条路径：一条good、一条denoising和两条adversarial。有限N时任务相关U压低adversarial路径、组合good与denoising kernel，分类准确率高于全部路径的GP极限；理论曲线与posterior samples吻合。",
+        "Figure 3在Omniglot/FashionMNIST复现kernel-task alignment，并显示由learned weights估计的empirical order parameter与Bayesian理论趋势一致。该一致性是特定浅层attention模型证据，不证明大语言模型所有head具有相同机制。",
+        "Appendix pruning实验以head score移除低相关head，在所测任务中可缩小网络而保持大部分accuracy；它是机制的应用演示，不是与现代结构化pruning方法的全面效率benchmark。"
+      ]
+    },
+    {
+      "title": "有效性与局限",
+      "paragraphs": [
+        "exact equations依赖N,P同时趋大、fixed ratio、Gaussian priors和固定attention maps；有限数据/宽度的近似误差在图中评估但无普适界。真实Transformer的softmax Q/K也学习、含MLP、layer norm、residual与cross-entropy，路径定义和耦合会改变。",
+        "synthetic和小规模vision任务说明可控机制，不代表语言建模或大规模in-context learning。head score可能受参数ization和path冗余影响，单head移除的performance drop也不是因果功能的唯一度量。"
+      ]
+    },
+    {
+      "title": "复现与资源",
+      "paragraphs": [
+        "全文：https://arxiv.org/abs/2405.15926；代码：https://github.com/tiberilor/attention-paths-interplay。核验PDF SHA-256：94d7ba693600d3867071fdc1c0e351cba002bf1852b67d9ebf40e58d1561a317。",
+        "复现需固定Q/K construction、prior variance、α、N、P、posterior sampler、gradient optimizer、task split和head-pruning顺序。Evidence status: full-text verified theory/numerical study; no independent reproduction performed."
+      ]
+    },
+    {
+      "title": "阅读指南",
+      "paragraphs": [
+        "先读 pp.2–3 Figure 1和path–path kernel定义；pp.4–6看predictor equations与U。p.7 Figure 2是最直观机制，pp.8–9 Figure 3看真实图像任务；pp.33–37核对噪声、OOD和pruning补充。"
+      ]
+    }
+  ],
+  "cover": {
+    "mode": "source_figure",
+    "asset_path": "assets/collection-figures/doi-10.52202-079017-2315/figure-2-attention-paths.webp",
+    "label": "Figure 2",
+    "visual_type": "comparison",
+    "evidence": "paper.pdf p. 7, Figure 2",
+    "alt_text": "HMC任务、四条attention paths、准确率、order parameter与kernel-label alignment。",
+    "caption": "有限宽度学习通过U组合good与denoising路径并抑制adversarial路径。",
+    "selection_rationale": "Figure 2在一个可控任务中同时连接路径结构、统计力学预测和分类性能。"
+  },
+  "figure_refs": [
+    {
+      "label": "Figure 2",
+      "asset_path": "assets/collection-figures/doi-10.52202-079017-2315/figure-2-attention-paths.webp",
+      "section": "核心结果与证据",
+      "role": "support the central result",
+      "evidence": "paper.pdf p. 7, Figure 2",
+      "alt_text": "HMC任务、四条attention paths、准确率、order parameter与kernel-label alignment。",
+      "caption": "有限宽度学习通过U组合good与denoising路径并抑制adversarial路径。",
+      "interpretation": "The figure supports the stated protocol-specific claim, not an unrestricted generalization."
+    }
+  ],
+  "equation_refs": [
+    {
+      "label": "Task-adapted kernel predictor",
+      "latex": "\\bar f(x)=\\mathbf k_U(x)^T(\\mathbf K_U+\\lambda I)^{-1}\\mathbf y,\\qquad \\mathbf K_U=\\sum_{\\pi,\\pi'}U_{\\pi\\pi'}\\mathbf K_{\\pi\\pi'}",
+      "role": "combine path-pair kernels according to learned task relevance",
+      "symbols": {
+        "pi": "attention path",
+        "U": "path coupling order parameter",
+        "y": "training labels"
+      },
+      "evidence": "paper.pdf pp. 4–6, predictor statistics",
+      "interpretation": "The formula holds for the paper's Bayesian finite-width model with fixed query/key weights."
+    }
+  ],
+  "evidence_refs": [
+    "paper.pdf pp. 2–6: attention paths and finite-width theory",
+    "paper.pdf p. 7, Figure 2: HMC mechanism test",
+    "paper.pdf pp. 8–9, Figure 3: one-shot and OOD tests",
+    "paper.pdf pp. 33–37, Figures 5–7: robustness and pruning",
+    "source PDF SHA-256 94d7ba693600d3867071fdc1c0e351cba002bf1852b67d9ebf40e58d1561a317",
+    "Evidence status: full-text verified theory/numerical study; no independent reproduction performed."
+  ]
+}

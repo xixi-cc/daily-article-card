@@ -1,0 +1,143 @@
+{
+  "arxiv_id": "doi-10.52202-085713-2961",
+  "source_version": "arXiv v3 manuscript",
+  "source_pdf": "https://arxiv.org/pdf/2505.19350",
+  "title_en": "FlashMD: long-stride, universal prediction of molecular dynamics",
+  "title_zh": "FlashMD：分子动力学的长步长通用预测",
+  "curation_status": "full_text_verified",
+  "card_standard_version": "2.3",
+  "paper_profile": "theory_numerics",
+  "style_reference": "physicist_daily_arxiv",
+  "provenance": {
+    "program": "Collection",
+    "catalog": "Paper Collection",
+    "catalog_record_id": "cac2f42d53a43b72",
+    "catalog_record_ids": [
+      "cac2f42d53a43b72"
+    ],
+    "catalog_topic": "AI for Science",
+    "collection_date": "2026-08-23",
+    "sampled_at": "2026-08-28",
+    "selected_by": "full_collection_backfill",
+    "sampling_seed": "not_applicable_full_collection",
+    "candidate_count": 452
+  },
+  "verified_metadata": {
+    "doi": "10.52202/085713-2961",
+    "arxiv_id": "2505.19350",
+    "version": "arXiv v3 full text (post-proceedings revision)",
+    "title": "FlashMD: long-stride, universal prediction of molecular dynamics",
+    "authors": [
+      "Filippo Bigi",
+      "Sanggyu Chong",
+      "Agustinus Kristiadi",
+      "Michele Ceriotti"
+    ],
+    "journal": "Advances in Neural Information Processing Systems",
+    "volume": "38",
+    "pages": "98379–98416",
+    "published": "2025",
+    "abstract": "Equivariant direct propagators predict molecular positions and momenta over strides one to two orders larger than conventional integration, with physics filters and ensemble control.",
+    "comment": "Evidence uses arXiv v3 dated 2026-01-22, newer than the NeurIPS 2025 proceedings record"
+  },
+  "sections": [
+    {
+      "title": "作者信息",
+      "paragraphs": [
+        "作者 Filippo Bigi、Sanggyu Chong、Agustinus Kristiadi、Michele Ceriotti；NeurIPS 2025，DOI:10.52202/085713-2961。页码证据来自 arXiv:2505.19350v3（2026-01-22，31页），它晚于会议版本，故本卡明确按v3陈述。"
+      ]
+    },
+    {
+      "title": "研究问题",
+      "paragraphs": [
+        "ML interatomic potentials降低每次force evaluation成本，却仍受0.5–1 fs积分步长限制。论文问：能否直接从当前positions q和momenta p预测长stride后的状态，跳过中间force/integration，并仍保持equivariance、energy behavior、thermodynamic ensembles及平衡/动力学observable？"
+      ]
+    },
+    {
+      "title": "背景",
+      "paragraphs": [
+        "FlashMD学习phase-space propagator而非potential。MD确定、Markov但通常chaotic：误差随Lyapunov exponent放大，所以长stride target最终不可预测；作者把这一上限、symplecticity、rotation covariance和energy conservation列为架构约束与failure modes。",
+        "‘universal’指训练于多化学体系的MAD/PET数据并迁移若干系统，不是对任意元素、相态或反应的保证；reference dynamics本身来自MLIP而非直接ab-initio on the fly。"
+      ]
+    },
+    {
+      "title": "模型与方法",
+      "paragraphs": [
+        "模型以equivariant graph network预测mass-scaled displacement和momentum increment；random-rotation filter修正非严格equivariant backbone，inference-time energy filter沿预测momentum方向调节以满足目标Hamiltonian。split-operator结构把长stride propagator嵌入Langevin thermostat/barostat，支持NVT/NpT。",
+        "分别训练water-specific与universal models，stride覆盖1–64/128 fs量级；评估water RDF、temperature和density，以及alanine Ramachandran分布、Al(110) premelting和LiPS diffusion。附录检查uncertainty、energy drift、timing与Lyapunov尺度。"
+      ]
+    },
+    {
+      "title": "核心结果与证据",
+      "paragraphs": [
+        "Figure 2显示water-specific FlashMD在多个stride下复现O–O/O–H RDF；density较reference接近但并非统计等价。universal模型偏差更大，作者明确指出其误差仍小于更换电子结构方法的典型差异，这是一种尺度比较而非精确一致。",
+        "Figure 3中alanine以8–16 fs再现主要Ramachandran basin（相对0.5 fs MD达16–32倍stride），Al表面捕捉soft-mode/premelting趋势，LiPS给出温度依赖diffusion的定性/定量测试。局部thermostat会破坏动力学，因此作者主要强调静态平衡observable。",
+        "timing表显示实际加速低于stride倍率，且随system/GPU变化；长trajectory不能逐原子保持shadowing，只要求distributional observables。v3还警告所有FlashMD发现应以传统MD复核。"
+      ]
+    },
+    {
+      "title": "有效性与局限",
+      "paragraphs": [
+        "chaos给可学stride设置系统相关上限；out-of-domain uncertainty并不自动保证检测所有失败。energy projection可稳定NVE但不保证symplectic map或正确动力学相关函数，thermostat虽修正sampling也可能遮蔽propagator误差。",
+        "训练target依赖PET-MAD/PET-OMATPES及其DFT functional偏差；化学反应、rare events和新composition需单独验证。模型输出轨迹是近似生成器，不能替代精确积分来确认新机制。"
+      ]
+    },
+    {
+      "title": "复现与资源",
+      "paragraphs": [
+        "全文：https://arxiv.org/abs/2505.19350；代码：https://github.com/lab-cosmo/flashmd；材料：https://doi.org/10.24435/materialscloud:b7-xq。PDF SHA-256：4834d435bf449c44ba5ccde36c6a2613ce5ba967e5b26d77f07194eb6db07368。",
+        "复现需固定v3、flashmd/model checkpoint、reference MLIP、stride、ensemble operators、energy filter、initial conditions和observable block averaging。Evidence status: full-text verified theory/numerical study; no independent reproduction performed."
+      ]
+    },
+    {
+      "title": "阅读指南",
+      "paragraphs": [
+        "先读 pp.2–5问题与Figure 1，再读 pp.5–7架构/ensemble。p.8 Figure 2看water，pp.8–9 Figure 3看三类迁移；pp.24–31检查uncertainty、energy drift、timings与Lyapunov failure boundary。"
+      ]
+    }
+  ],
+  "cover": {
+    "mode": "source_figure",
+    "asset_path": "assets/collection-figures/doi-10.52202-085713-2961/figure-2-water-observables.webp",
+    "label": "Figure 2",
+    "visual_type": "comparison",
+    "evidence": "paper.pdf p. 8, Figure 2",
+    "alt_text": "传统MD与water-specific/universal FlashMD的径向分布函数和NpT密度。",
+    "caption": "长stride模型可保留主要平衡结构，但density尤其通用模型仍有可见偏差。",
+    "selection_rationale": "Figure 2同时呈现成功与偏差，适合作为distributional而非trajectory-exact主张的证据。"
+  },
+  "figure_refs": [
+    {
+      "label": "Figure 2",
+      "asset_path": "assets/collection-figures/doi-10.52202-085713-2961/figure-2-water-observables.webp",
+      "section": "核心结果与证据",
+      "role": "support the central result",
+      "evidence": "paper.pdf p. 8, Figure 2",
+      "alt_text": "传统MD与water-specific/universal FlashMD的径向分布函数和NpT密度。",
+      "caption": "长stride模型可保留主要平衡结构，但density尤其通用模型仍有可见偏差。",
+      "interpretation": "The figure supports the stated protocol-specific claim, not an unrestricted generalization."
+    }
+  ],
+  "equation_refs": [
+    {
+      "label": "Long-stride propagator",
+      "latex": "(\\mathbf q_{t+\\Delta\\tau},\\mathbf p_{t+\\Delta\\tau})=\\mathcal F_\\theta(\\mathbf q_t,\\mathbf p_t;\\Delta\\tau)",
+      "role": "skip intermediate force evaluations and integration steps",
+      "symbols": {
+        "q": "positions",
+        "p": "momenta",
+        "Delta_tau": "learned stride"
+      },
+      "evidence": "paper.pdf pp. 2–5, problem definition and Figure 1",
+      "interpretation": "Distributional fidelity must be validated because chaotic trajectories cannot generally be pointwise shadowed at long horizons."
+    }
+  ],
+  "evidence_refs": [
+    "paper.pdf pp. 2–7: direct-propagator theory and architecture",
+    "paper.pdf pp. 7–8, Figure 2 and Table 1: water equilibrium observables",
+    "paper.pdf pp. 8–9, Figure 3: universal case studies",
+    "paper.pdf pp. 24–31: uncertainty, energy, timing and Lyapunov checks",
+    "source PDF SHA-256 4834d435bf449c44ba5ccde36c6a2613ce5ba967e5b26d77f07194eb6db07368",
+    "Evidence status: full-text verified theory/numerical study; no independent reproduction performed."
+  ]
+}
