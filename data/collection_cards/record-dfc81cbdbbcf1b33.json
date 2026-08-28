@@ -1,0 +1,142 @@
+{
+  "arxiv_id": "record-dfc81cbdbbcf1b33",
+  "source_version": "ICML 2024 full text",
+  "source_pdf": "https://arxiv.org/pdf/2310.16834",
+  "title_en": "Discrete Diffusion Modeling by Estimating the Ratios of the Data Distribution",
+  "title_zh": "通过估计数据分布比率进行离散扩散建模",
+  "curation_status": "full_text_verified",
+  "card_standard_version": "2.3",
+  "paper_profile": "theory_numerics",
+  "style_reference": "physicist_daily_arxiv",
+  "provenance": {
+    "program": "Collection",
+    "catalog": "Paper Collection",
+    "catalog_record_id": "dfc81cbdbbcf1b33",
+    "catalog_record_ids": [
+      "dfc81cbdbbcf1b33"
+    ],
+    "catalog_topic": "Transformer Theory",
+    "collection_date": "2026-08-23",
+    "sampled_at": "2026-08-28",
+    "selected_by": "full_collection_backfill",
+    "sampling_seed": "not_applicable_full_collection",
+    "candidate_count": 452
+  },
+  "verified_metadata": {
+    "doi": null,
+    "arxiv_id": "2310.16834",
+    "version": "arXiv v3 / ICML 2024 full text",
+    "title": "Discrete Diffusion Modeling by Estimating the Ratios of the Data Distribution",
+    "authors": [
+      "Aaron Lou",
+      "Chenlin Meng",
+      "Stefano Ermon"
+    ],
+    "journal": "Proceedings of the 41st International Conference on Machine Learning",
+    "volume": "PMLR 235",
+    "pages": "32819–32848",
+    "published": "2024",
+    "abstract": "Score entropy learns discrete probability ratios for reverse continuous-time Markov chains, producing competitive non-autoregressive language models.",
+    "comment": "ICML 2024 Best Paper; PMLR metadata cross-checked with arXiv v3"
+  },
+  "sections": [
+    {
+      "title": "作者信息",
+      "paragraphs": [
+        "作者 Aaron Lou、Chenlin Meng、Stefano Ermon；ICML 2024, PMLR 235, 32819–32848；对应 arXiv:2310.16834v3。核验全文30页；PMLR未列传统DOI。"
+      ]
+    },
+    {
+      "title": "研究问题",
+      "paragraphs": [
+        "continuous diffusion依赖score ∇log p，但text/token state space没有普通梯度。如何定义可训练的discrete score，让reverse continuous-time Markov chain无需显式归一化整个vocabulary，并在likelihood、sampling与infilling上接近autoregressive language models？"
+      ]
+    },
+    {
+      "title": "背景",
+      "paragraphs": [
+        "离散reverse rates取决于相邻states的marginal probability ratio p_t(y)/p_t(x)。直接ratio matching或dimension-wise prediction可能不稳定/不一致。作者定义score entropy，使最优sθ(x)_y恰为这些ratios。",
+        "SEDD仍使用Transformer backbone和forward noise process；它是非autoregressive生成机制，不意味着一次network pass生成完整高质量序列。"
+      ]
+    },
+    {
+      "title": "模型与方法",
+      "paragraphs": [
+        "论文从finite-state CTMC推导implicit与denoising score entropy。denoising form只需从clean x0采样noisy xt和transition kernel，避免未知p_t；network输出与allowed transitions对应的ratios。",
+        "实现uniform与absorbing noise graphs，推导reverse sampler与Tweedie-style改进，并将conditioning/infilling作为clamping or reverse dynamics约束。训练在text8、OpenWebText和LM1B等语料上。"
+      ]
+    },
+    {
+      "title": "核心结果与证据",
+      "paragraphs": [
+        "Table 1显示同规模SEDD在多个zero-shot datasets上优于D3PM等离散diffusion，并与GPT-2量级autoregressive baselines竞争；Table 2在text8报告bits-per-character。",
+        "Figure 1按生成样本文本的external perplexity比较SEDD与GPT-2，SEDD无需temperature/nucleus annealing也能保持较好质量；sampling steps可与quality交换。Tables 4–5展示prefix/suffix infilling。",
+        "‘32× fewer evaluations’是相对论文自身特定diffusion sampler/quality点，不等于比所有autoregressive systems快32×；wall-clock还受每步全序列attention成本影响。"
+      ]
+    },
+    {
+      "title": "有效性与局限",
+      "paragraphs": [
+        "评估模型规模和数据远小于当前frontier LLM；perplexity由模型likelihood或外部evaluator测量，不能完整代表语义事实性。diffusion采样仍多步，长序列memory/latency未充分解决。",
+        "score ratios依赖noise graph；uniform graph在大vocabulary需结构化输出，absorbing schedule引入mask inductive bias。结果不保证任意discrete domains或conditional generation都同样有效。"
+      ]
+    },
+    {
+      "title": "复现与资源",
+      "paragraphs": [
+        "全文：https://arxiv.org/abs/2310.16834；代码：https://github.com/louaaron/Score-Entropy-Discrete-Diffusion。PDF SHA-256：1f3a135a52346270ef4b0872d52f17954af7ea0fa53d0a0b31a9183599ec976e。",
+        "复现需固定dataset/tokenizer、noise graph/schedule、small/medium Transformer configs、training tokens、likelihood estimator、sampling steps与temperature-free decoding，并记录hardware latency。Evidence status: full-text verified theoretical/empirical study; no independent reproduction performed."
+      ]
+    },
+    {
+      "title": "阅读指南",
+      "paragraphs": [
+        "先读 pp.1–4 discrete score与score entropy；pp.4–6 denoising objective/sampler；pp.6–9 Tables 1–5；pp.10–13看局限；pp.14–30为证明与样例。"
+      ]
+    }
+  ],
+  "cover": {
+    "mode": "source_figure",
+    "asset_path": "assets/collection-figures/record-dfc81cbdbbcf1b33/tables-1-3-language-results.webp",
+    "label": "Tables 1–3",
+    "visual_type": "table",
+    "evidence": "paper.pdf p. 6, Tables 1–3",
+    "alt_text": "SEDD与GPT-2、D3PM等模型在zero-shot perplexity、text8 BPC和LM1B上的比较。",
+    "caption": "在给定模型规模和训练设置下，SEDD显著改善既有离散diffusion并达到autoregressive基线量级。",
+    "selection_rationale": "Tables 1–3集中呈现likelihood核心结论，并保留数据集、规模与指标限定，是最可核查的性能证据。"
+  },
+  "figure_refs": [
+    {
+      "label": "Tables 1–3",
+      "asset_path": "assets/collection-figures/record-dfc81cbdbbcf1b33/tables-1-3-language-results.webp",
+      "section": "核心结果与证据",
+      "role": "support the central result",
+      "evidence": "paper.pdf p. 6, Tables 1–3",
+      "alt_text": "SEDD与GPT-2、D3PM等模型在zero-shot perplexity、text8 BPC和LM1B上的比较。",
+      "caption": "在给定模型规模和训练设置下，SEDD显著改善既有离散diffusion并达到autoregressive基线量级。",
+      "interpretation": "The figure supports the stated protocol-specific claim, not an unrestricted generalization."
+    }
+  ],
+  "equation_refs": [
+    {
+      "label": "Discrete score ratio",
+      "latex": "s_t(x)_y=\\frac{p_t(y)}{p_t(x)}",
+      "role": "parameterize reverse transition rates between discrete states",
+      "symbols": {
+        "p_t": "noisy marginal distribution",
+        "x,y": "connected discrete states",
+        "s_t": "learned ratio score"
+      },
+      "evidence": "paper.pdf pp. 2–5, score entropy definitions",
+      "interpretation": "The denoising objective learns these ratios without evaluating the unknown marginal normalizer."
+    }
+  ],
+  "evidence_refs": [
+    "paper.pdf pp. 1–4: discrete ratios and score entropy",
+    "paper.pdf pp. 4–6: denoising loss and reverse sampler",
+    "paper.pdf pp. 6–9, Tables 1–5 and Figure 1: language results",
+    "paper.pdf pp. 14–30: proofs, samples and ablations",
+    "source PDF SHA-256 1f3a135a52346270ef4b0872d52f17954af7ea0fa53d0a0b31a9183599ec976e",
+    "Evidence status: full-text verified theoretical/empirical study; no independent reproduction performed."
+  ]
+}

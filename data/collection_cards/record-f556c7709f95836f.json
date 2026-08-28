@@ -1,0 +1,143 @@
+{
+  "arxiv_id": "record-f556c7709f95836f",
+  "source_version": "NeurIPS 2022 full text",
+  "source_pdf": "https://arxiv.org/pdf/2208.05003",
+  "title_en": "Wavelet Score-Based Generative Modeling",
+  "title_zh": "小波得分生成建模",
+  "curation_status": "full_text_verified",
+  "card_standard_version": "2.3",
+  "paper_profile": "theory_numerics",
+  "style_reference": "physicist_daily_arxiv",
+  "provenance": {
+    "program": "Collection",
+    "catalog": "Paper Collection",
+    "catalog_record_id": "f556c7709f95836f",
+    "catalog_record_ids": [
+      "f556c7709f95836f"
+    ],
+    "catalog_topic": "Generative Models",
+    "collection_date": "2026-08-23",
+    "sampled_at": "2026-08-28",
+    "selected_by": "full_collection_backfill",
+    "sampling_seed": "not_applicable_full_collection",
+    "candidate_count": 452
+  },
+  "verified_metadata": {
+    "doi": null,
+    "arxiv_id": "2208.05003",
+    "version": "arXiv full text / NeurIPS 2022",
+    "title": "Wavelet Score-Based Generative Modeling",
+    "authors": [
+      "Florentin Guth",
+      "Simon Coste",
+      "Valentin De Bortoli",
+      "Stéphane Mallat"
+    ],
+    "journal": "Advances in Neural Information Processing Systems",
+    "volume": "35",
+    "pages": null,
+    "published": "2022",
+    "abstract": "Wavelet factorization conditions fine coefficients on coarser scales, controls score ill-conditioning and gives linear-in-image-size sampling complexity under stated assumptions.",
+    "comment": "NeurIPS 2022 proceedings paper; DOI not asserted"
+  },
+  "sections": [
+    {
+      "title": "作者信息",
+      "paragraphs": [
+        "作者 Florentin Guth、Simon Coste、Valentin De Bortoli、Stéphane Mallat；NeurIPS 2022，卷35；对应 arXiv:2208.05003。核验全文42页，含理论与补充实验；正文未列传统DOI。"
+      ]
+    },
+    {
+      "title": "研究问题",
+      "paragraphs": [
+        "pixel-space score models在大图和临界随机场中为何需要很多reverse-SDE steps？能否用orthogonal wavelet multiscale factorization降低conditional score的Hessian condition number，使各尺度使用固定步数且总复杂度随pixels线性增长？"
+      ]
+    },
+    {
+      "title": "背景",
+      "paragraphs": [
+        "forward diffusion把data逐渐高斯化，reverse integration稳定性受score Jacobian/Hessian最大与最小eigenvalues控制。scale-invariant distributions在pixel coordinates中低频/高频variance跨度随image size增长，造成stiffness。",
+        "wavelet transform本身不生成数据；WSGM把joint distribution分解为coarse marginal与逐尺度detail conditional，每一级各训练conditional score。"
+      ]
+    },
+    {
+      "title": "模型与方法",
+      "paragraphs": [
+        "使用orthogonal wavelet把x_j−1分为coarse x_j和detail coefficients，写p(x)=p(x_J)∏p(detail_j|x_j)。从最粗尺度开始，reverse SDE依次生成各scale details并inverse transform。",
+        "理论对Gaussian stationary processes证明renormalized wavelet conditional covariance在适当wavelet moments下condition number不随image size发散。实验覆盖φ4 critical fields、turbulence类physical processes与CelebA等natural images。"
+      ]
+    },
+    {
+      "title": "核心结果与证据",
+      "paragraphs": [
+        "Figure 2比较pixel SGM与WSGM估计covariance随steps的误差；普通SGM达到固定误差所需N随L增长，而WSGM近乎size-independent，对应总linear complexity。",
+        "Figure 3在不同L的φ4 fields比较distribution statistics；Figure 4在固定16 steps下显示pixel SGM artifacts明显，WSGM生成更接近reference，且报告FID/物理统计改善。",
+        "线性complexity是每scale固定steps与network cost assumptions下的渐近结论；多尺度模型数量、训练成本、channel widths和硬件并行会影响实际wall-clock。"
+      ]
+    },
+    {
+      "title": "有效性与局限",
+      "paragraphs": [
+        "Gaussian theorem不直接覆盖strongly non-Gaussian natural images；wavelet choice、boundary handling和conditional architecture会影响conditioning。逐尺度生成仍串行，超高分辨率的memory与training data成本未消失。",
+        "自然图像实验不是当代大型diffusion的统一SOTA比较；图像quality与physical-statistics benchmarks规模有限。wavelet factorization可能引入方向/translation artifacts。"
+      ]
+    },
+    {
+      "title": "复现与资源",
+      "paragraphs": [
+        "全文：https://arxiv.org/abs/2208.05003；会议PDF：https://proceedings.neurips.cc/paper_files/paper/2022/hash/03474669b759f6d38cdca6fb4eb905f4-Abstract-Conference.html。PDF SHA-256：4f3f173b8075a91c844d687ea87679400f1aaae2d7a96efb402366120e1ef77a。正文提供Algorithm 1与补充参数，未在主文列单一官方代码URL。",
+        "复现需固定wavelet family/levels、normalization、score architectures、SDE schedule、steps per scale、φ4 sampler、image preprocessing及FID/statistics实现。Evidence status: full-text verified theoretical/numerical study; no independent reproduction performed."
+      ]
+    },
+    {
+      "title": "阅读指南",
+      "paragraphs": [
+        "先读 pp.1–4 Figure 1与factorization；pp.4–7 conditioning theory；pp.7–10 Figures 2–4；pp.11–13局限；pp.14–42为proofs、Algorithm 1与额外实验。"
+      ]
+    }
+  ],
+  "cover": {
+    "mode": "source_figure",
+    "asset_path": "assets/collection-figures/record-f556c7709f95836f/figure-2-conditioning.webp",
+    "label": "Figure 2",
+    "visual_type": "comparison",
+    "evidence": "paper.pdf p. 7, Figure 2",
+    "alt_text": "普通SGM与WSGM的covariance error随reverse steps和image size变化。",
+    "caption": "pixel-space所需steps随L增加，而wavelet conditional models达到同一误差的steps近乎与L无关。",
+    "selection_rationale": "Figure 2直接检验论文的conditioning与线性复杂度机制，比单纯展示生成样本更能支撑中心主张。"
+  },
+  "figure_refs": [
+    {
+      "label": "Figure 2",
+      "asset_path": "assets/collection-figures/record-f556c7709f95836f/figure-2-conditioning.webp",
+      "section": "核心结果与证据",
+      "role": "support the central result",
+      "evidence": "paper.pdf p. 7, Figure 2",
+      "alt_text": "普通SGM与WSGM的covariance error随reverse steps和image size变化。",
+      "caption": "pixel-space所需steps随L增加，而wavelet conditional models达到同一误差的steps近乎与L无关。",
+      "interpretation": "The figure supports the stated protocol-specific claim, not an unrestricted generalization."
+    }
+  ],
+  "equation_refs": [
+    {
+      "label": "Wavelet probability factorization",
+      "latex": "p(x)=p(x_J)\\prod_{j=1}^{J}p(\\bar x_j\\mid x_j)",
+      "role": "generate coarse content first and conditionally synthesize wavelet details at each scale",
+      "symbols": {
+        "x_J": "coarsest coefficients",
+        "bar_x_j": "detail coefficients",
+        "j": "wavelet scale"
+      },
+      "evidence": "paper.pdf pp. 3–5, multiscale factorization",
+      "interpretation": "Separate conditional scores reduce cross-scale stiffness under the paper's assumptions."
+    }
+  ],
+  "evidence_refs": [
+    "paper.pdf pp. 1–4, Figure 1: wavelet SGM construction",
+    "paper.pdf pp. 4–7: conditioning and complexity theory",
+    "paper.pdf pp. 7–10, Figures 2–4: Gaussian, critical-field and image tests",
+    "paper.pdf pp. 14–42: proofs, algorithms and supplementary experiments",
+    "source PDF SHA-256 4f3f173b8075a91c844d687ea87679400f1aaae2d7a96efb402366120e1ef77a",
+    "Evidence status: full-text verified theoretical/numerical study; no independent reproduction performed."
+  ]
+}
