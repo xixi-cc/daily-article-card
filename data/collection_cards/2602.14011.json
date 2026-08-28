@@ -1,0 +1,153 @@
+{
+  "arxiv_id": "2602.14011",
+  "source_version": "v1",
+  "source_pdf": "https://arxiv.org/pdf/2602.14011",
+  "title_en": "KoopGen: Koopman Generator Networks for Representing and Predicting Dynamical Systems with Continuous Spectra",
+  "title_zh": "KoopGen：连续谱动力系统的 Koopman 生成元网络",
+  "curation_status": "full_text_verified",
+  "card_standard_version": "2.3",
+  "paper_profile": "theory_numerics",
+  "style_reference": "physicist_daily_arxiv",
+  "provenance": {
+    "program": "Collection",
+    "catalog": "Paper Collection",
+    "catalog_record_id": "0bee563c36d224a2",
+    "catalog_record_ids": [
+      "0bee563c36d224a2"
+    ],
+    "catalog_topic": "Machine Learning",
+    "collection_date": "2026-08-23",
+    "sampled_at": "2026-08-28",
+    "selected_by": "full_collection_backfill",
+    "sampling_seed": "not_applicable_full_collection",
+    "candidate_count": 452
+  },
+  "verified_metadata": {
+    "arxiv_id": "2602.14011",
+    "version": "v1",
+    "title": "KoopGen: Koopman Generator Networks for Representing and Predicting Dynamical Systems with Continuous Spectra",
+    "authors": [
+      "Liangyu Su",
+      "Jun Shu",
+      "Rui Liu",
+      "Deyu Meng",
+      "Zongben Xu"
+    ],
+    "categories": [
+      "cs.LG"
+    ],
+    "primary_category": "cs.LG",
+    "published": "2026-02-15T06:32:23Z",
+    "abstract": "A state-dependent Koopman generator with exact skew-adjoint and self-adjoint blocks separates conservative transport from dissipation in continuous-spectrum systems.",
+    "comment": ""
+  },
+  "sections": [
+    {
+      "title": "作者信息",
+      "paragraphs": [
+        "作者：Liangyu Su、Jun Shu、Rui Liu、Deyu Meng、Zongben Xu；arXiv:2602.14011v1。全文 26 页。论文针对 broadband/continuous-spectrum dynamics 提出 KoopGen，并在 pendulum、Lorenz-63、Lorenz-96 与 Kuramoto–Sivashinsky systems 上测试。"
+      ]
+    },
+    {
+      "title": "研究问题",
+      "paragraphs": [
+        "经典 finite-dimensional Koopman model 以固定矩阵 \\(K\\) 在线性 latent space 中推进状态，适合离散谱近似；对湍流、混沌和连续谱，固定 eigenmodes/eigenvalues 难以维持长期稳定。论文问：能否学习随 latent state 连续变化的 generator，同时严格编码 conservative 与 dissipative operator structure？"
+      ]
+    },
+    {
+      "title": "背景",
+      "paragraphs": [
+        "Koopman semigroup 在线性 observable space 作用，generator 是其 infinitesimal derivative。任意闭算子形式上可作 Cartesian decomposition \\(G=(G-G^*)/2+(G+G^*)/2\\)：skew-adjoint 部分产生 unitary/oscillatory transport，self-adjoint 部分产生 contraction or amplification。",
+        "Figure 1 把这一物理分解嵌入网络：lifting map 得到 \\(z=\\Phi(x)\\)，gate network 根据当前 \\(z\\) 混合一组 skew/self-adjoint generators；指数映射生成 state-dependent \\(K(z)\\)，再同时做 prediction 与 reconstruction。"
+      ]
+    },
+    {
+      "title": "模型与方法",
+      "paragraphs": [
+        "KoopGen block 写成 \\(G(z)=\\widetilde G(z)+\\overline G(z)\\)。前者由若干 exact skew-adjoint real blocks 线性组合，编码 reversible oscillation；后者由 self-adjoint blocks 组合，编码 irreversible dissipation。gate weights 随 \\(z\\) 变化，因而 spectrum 沿 trajectory 连续变化。",
+        "结构约束通过 real block parameterization 精确满足，而不是 soft penalty。一步 latent evolution 用 matrix exponential \\(K(z)=\\exp G(z)\\)，训练结合 multi-step prediction、reconstruction 与 regularization，并与 DeepKoopman、LRAN 等固定谱 baselines 比较。"
+      ]
+    },
+    {
+      "title": "核心结果与证据",
+      "paragraphs": [
+        "Figure 1 的关键是把“连续谱”转译成 state-dependent operator family：固定 \\(K\\) 的红框不能让 spectrum 随轨迹变化；KoopGen 的绿框以 gate-dependent \\(K(z(t))\\) 允许局部 generator 在 phase space 中连续重排。",
+        "在 Lorenz-63 与 pendulum 中，learned skew/self-adjoint fields 分别追踪旋转 transport 与 contraction；Lorenz-96 和 KS 的时空图显示 KoopGen 在更长 rollout 上保持更接近真值的 coherent structures，而 fixed-spectrum baselines 更早出现 phase drift 或过度平滑。",
+        "作者报告四个系统上 prediction RMSE 与 reconstruction error 整体优于或接近 baselines，并强调结构约束改善长期稳定性。结果最有说服力的是 qualitative field evolution 与 operator interpretation 的一致，而不是宣称有限 generator bank 完整解析了数学意义上的连续谱。"
+      ]
+    },
+    {
+      "title": "有效性与局限",
+      "paragraphs": [
+        "state-dependent \\(K(z)\\) 不再是单一 global linear Koopman operator；它是局部/非自治 operator model，解释性与经典 Koopman spectral theorem 不能直接等同。有限 generator bank 和 learned lifting 仍可能把复杂 dynamics 隐藏在 encoder/gates 中。",
+        "实验集中于合成或标准 PDE/ODE systems，noise、irregular sampling、parameter shift 与真实实验数据有限。长期稳定与 energy behavior 依赖训练窗口、time step、matrix exponential 数值和 self-adjoint eigenvalue constraints；没有独立 reproduction。"
+      ]
+    },
+    {
+      "title": "复现与资源",
+      "paragraphs": [
+        "原文：https://arxiv.org/abs/2602.14011。全文 26 页，PDF SHA-256：804f9459589a0a076c06cf4437c0e33f73a18ca96c613e4d68ec5fa595831d2f。",
+        "复现需固定 ODE/PDE integrator、sampling \\(\\Delta t\\)、train/test trajectories、lifting dimension、skew/self generator counts、gate architecture、block parameterization、matrix-exponential backend、rollout horizon、normalization 与 seeds。",
+        "Evidence status: full-text verified; no independent reproduction performed."
+      ]
+    },
+    {
+      "title": "阅读指南",
+      "paragraphs": [
+        "先看 Figure 1，理解 lifting、gate 和 Cartesian blocks；再读 Section 2.3 的 generator decomposition 与 exact parameterization。随后用 Figure 4 检查 Lorenz local fields，再看 Figures 5–6 的 long rollout，最后回到 conclusion 区分 operator-inspired model 与严格谱识别。"
+      ]
+    }
+  ],
+  "cover": {
+    "mode": "source_figure",
+    "asset_path": "assets/collection-figures/2602.14011/figure-1-koopgen-overview.webp",
+    "label": "Figure 1",
+    "visual_type": "schematic",
+    "evidence": "paper.pdf p. 3, Figure 1",
+    "alt_text": "KoopGen 从 nonlinear system 经 lifting、state-dependent generator blocks 到 latent prediction 的整体框架。",
+    "caption": "状态依赖的 skew/self-adjoint generator 混合把可逆输运和不可逆耗散分离，并允许谱沿轨迹变化。",
+    "selection_rationale": "Figure 1 同时呈现连续谱动机、模型结构和物理算子分解，是最重要的机制图。"
+  },
+  "figure_refs": [
+    {
+      "label": "Figure 1",
+      "asset_path": "assets/collection-figures/2602.14011/figure-1-koopgen-overview.webp",
+      "section": "核心结果与证据",
+      "role": "summarize the state-dependent generator architecture",
+      "evidence": "paper.pdf p. 3, Figure 1",
+      "alt_text": "上部对比固定与状态依赖 Koopman model，下部展示 gate、generator sets 与 structure-preserving blocks。",
+      "caption": "A Cartesian decomposition is enforced exactly while the gate makes the local spectrum trajectory dependent.",
+      "interpretation": "State dependence moves the model beyond a single global finite-dimensional Koopman operator."
+    }
+  ],
+  "equation_refs": [
+    {
+      "label": "Cartesian generator decomposition",
+      "latex": "G(z)=\\widetilde G(z)+\\overline G(z),\\qquad \\widetilde G^*=-\\widetilde G,\\quad \\overline G^*=\\overline G",
+      "role": "separate conservative and dissipative dynamics",
+      "symbols": {
+        "G_tilde": "skew-adjoint generator",
+        "G_bar": "self-adjoint generator"
+      },
+      "evidence": "paper.pdf pp. 7–9, Section 2.3",
+      "interpretation": "The two operator sectors encode oscillatory transport and contraction/amplification with exact algebraic constraints."
+    },
+    {
+      "label": "State-dependent Koopman step",
+      "latex": "z(t+1)=K(z(t))z(t),\\qquad K(z)=\\exp(G(z))",
+      "role": "advance latent dynamics with a local generator",
+      "symbols": {
+        "z": "lifted state",
+        "K": "state-dependent propagator"
+      },
+      "evidence": "paper.pdf pp. 3–5, Eqs. (2)–(4)",
+      "interpretation": "The propagator spectrum can vary continuously along the trajectory instead of remaining globally fixed."
+    }
+  ],
+  "evidence_refs": [
+    "paper.pdf pp. 3–9: architecture, generator decomposition and structure-preserving blocks",
+    "paper.pdf pp. 10–15: ODE/PDE prediction and interpretability experiments",
+    "source PDF SHA-256 804f9459589a0a076c06cf4437c0e33f73a18ca96c613e4d68ec5fa595831d2f",
+    "Evidence status: full-text verified; no independent reproduction performed."
+  ]
+}

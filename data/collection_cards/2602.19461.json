@@ -1,0 +1,153 @@
+{
+  "arxiv_id": "2602.19461",
+  "source_version": "v1",
+  "source_pdf": "https://arxiv.org/pdf/2602.19461",
+  "title_en": "Laplacian Multi-scale Flow Matching for Generative Modeling",
+  "title_zh": "用于生成建模的拉普拉斯多尺度流匹配",
+  "curation_status": "full_text_verified",
+  "card_standard_version": "2.3",
+  "paper_profile": "ai_empirical",
+  "style_reference": "physicist_daily_arxiv",
+  "provenance": {
+    "program": "Collection",
+    "catalog": "Paper Collection",
+    "catalog_record_id": "e081dffe139abbb4",
+    "catalog_record_ids": [
+      "e081dffe139abbb4"
+    ],
+    "catalog_topic": "Flow Matching",
+    "collection_date": "2026-08-23",
+    "sampled_at": "2026-08-28",
+    "selected_by": "full_collection_backfill",
+    "sampling_seed": "not_applicable_full_collection",
+    "candidate_count": 452
+  },
+  "verified_metadata": {
+    "arxiv_id": "2602.19461",
+    "version": "v1",
+    "title": "Laplacian Multi-scale Flow Matching for Generative Modeling",
+    "authors": [
+      "Zelin Zhao",
+      "Petr Molodyk",
+      "Haotian Xue",
+      "Yongxin Chen"
+    ],
+    "categories": [
+      "cs.CV",
+      "cs.LG"
+    ],
+    "primary_category": "cs.CV",
+    "published": "2026-02-23T03:09:56Z",
+    "abstract": "LapFlow generates Laplacian-pyramid residuals with a causally coupled mixture-of-transformers, allocating flow time from coarse to fine scales.",
+    "comment": ""
+  },
+  "sections": [
+    {
+      "title": "作者信息",
+      "paragraphs": [
+        "作者：Zelin Zhao、Petr Molodyk、Haotian Xue、Yongxin Chen；arXiv:2602.19461v1。全文 21 页。论文提出 LapFlow，在 CelebA-HQ 256–1024 与 ImageNet-256 上比较 single-scale 和 cascaded multi-scale flow models。"
+      ]
+    },
+    {
+      "title": "研究问题",
+      "paragraphs": [
+        "高分辨率 flow matching 在完整 latent grid 上从头到尾更新所有频率，attention cost 随 token 数快速增长；cascaded pyramids 又需要每尺度独立模型和 re-noising bridge。论文问：能否在一个共享模型里并行表示多尺度 Laplacian residuals，但沿 flow time 维持 coarse-to-fine 因果依赖？"
+      ]
+    },
+    {
+      "title": "背景",
+      "paragraphs": [
+        "Laplacian pyramid 将图像写成最粗 low-pass component 与逐层 band-pass residuals；重建是上采样粗尺度再加 residual。自然图像的 global geometry 主要在低频，纹理和边缘在高频，因此 flow time 可按尺度贡献分段。",
+        "Figure 1 从 \\(t=0\\) 到 1 展示三尺度 schedule：先只去噪最粗层，到 \\(T_2\\) 后加入中尺度，到 \\(T_1\\) 后加入最细 residual，最后层级重建。图直接表达了模型的 causal information flow。"
+      ]
+    },
+    {
+      "title": "模型与方法",
+      "paragraphs": [
+        "LapFlow 用 multi-scale Mixture-of-Transformers：各尺度有独立 Q/K/V projections 与 scale expert，global attention weights 共享；causal mask 只允许 fine scale 读取已稳定的 coarse states。多个 residual fields 由同一 \\(V_\\theta\\) 并行预测。",
+        "training/sampling 将 \\([0,1]\\) 分成 scale-specific segments，并对各尺度使用 modified noise schedule；较细尺度在其 activation time 前保持 noise。与 cascades 不同，尺度间不做显式 re-noising 或独立 bridge model。"
+      ]
+    },
+    {
+      "title": "核心结果与证据",
+      "paragraphs": [
+        "Figure 1 的核心是 time–scale light cone：粗尺度先形成全局结构，之后的细尺度只能在已完成 coarse image 条件下补 residual；这避免高频路径反向扰动尚未稳定的低频 geometry。",
+        "CelebA-HQ 256 上 LapFlow FID 为 3.53，而文中 LFM baseline 为 5.26；模型扩展到 1024。附录 scale ablation 显示 256 分辨率用 2/3/4 scales 的 FID 分别为 3.53/3.59/5.12，说明更多尺度并非单调更好。",
+        "在 1024 的三尺度 temporal split 中，平衡的 \\(T_1=0.67,T_2=0.33\\) 最佳；过晚加入 fine scale 留下不足优化时间，过早加入则破坏 global consistency。ImageNet-256 结果也在较低 GFLOPs 下优于多项 single/multi-scale baselines，但依赖 matched implementation。"
+      ]
+    },
+    {
+      "title": "有效性与局限",
+      "paragraphs": [
+        "Laplacian decomposition 是手工频带先验，边界、aliasing 与 VAE latent statistics 可能使 residuals 不正交；coarse-to-fine 对纹理主导或非图像数据未必最优。MoT、causal mask、noise schedule 和 training allocation 同时变化，归因需要依赖消融。",
+        "主要数据是 CelebA-HQ 与 ImageNet，FID 不能覆盖语义 fidelity、diversity 或 memorization。GFLOPs 与 measured inference time 受 kernel/hardware 影响；1024 结果样本/训练预算有限，尚无独立 reproduction。"
+      ]
+    },
+    {
+      "title": "复现与资源",
+      "paragraphs": [
+        "原文：https://arxiv.org/abs/2602.19461；代码链接见论文：https://github.com/sjtuytc/gen。全文 21 页，PDF SHA-256：2238514b8ac4722fbc832e9a91a401e06db2bc143ce48c18916c7519eea18332。",
+        "复现需固定 VAE、Laplacian filters/downsampling、scale count、MoT experts、shared attention、causal mask、\\(T_i\\)、noise schedule、CFG、ODE steps、GFLOPs convention、FID-50K implementation、resolution-specific training budget 与 seeds。",
+        "Evidence status: full-text verified; no independent reproduction performed."
+      ]
+    },
+    {
+      "title": "阅读指南",
+      "paragraphs": [
+        "先看 Figure 1 的时间—尺度顺序，再看 Figure 2 的 MoT 与 causal mask；随后读 Eqs. (8)–(10) 的 multi-scale path。最后对照 Tables 1–3 和附录 scale/split ablations，注意 2 scales 优于更多 scales 的负结果。"
+      ]
+    }
+  ],
+  "cover": {
+    "mode": "source_figure",
+    "asset_path": "assets/collection-figures/2602.19461/figure-1-multiscale-generation.webp",
+    "label": "Figure 1",
+    "visual_type": "schematic",
+    "evidence": "paper.pdf p. 2, Figure 1",
+    "alt_text": "三尺度 Laplacian pyramid 从粗到细分段去噪并层级重建图像的流程。",
+    "caption": "LapFlow 把 flow time 分配给不同频带：先确定全局低频结构，再因果地加入中高频 residual。",
+    "selection_rationale": "Figure 1 是全文最重要的生成机制图，优先于 FID 表和精选人脸样例。"
+  },
+  "figure_refs": [
+    {
+      "label": "Figure 1",
+      "asset_path": "assets/collection-figures/2602.19461/figure-1-multiscale-generation.webp",
+      "section": "核心结果与证据",
+      "role": "show the coarse-to-fine temporal schedule",
+      "evidence": "paper.pdf p. 2, Figure 1",
+      "alt_text": "Three Laplacian scales activate sequentially and reconstruct into a full-resolution sample.",
+      "caption": "The schedule imposes a causal hierarchy from global structure to fine residuals.",
+      "interpretation": "The ordering is an architectural prior whose benefit is established only on the tested image domains."
+    }
+  ],
+  "equation_refs": [
+    {
+      "label": "Laplacian reconstruction",
+      "latex": "x^{(s)}=\\operatorname{Up}(x^{(s+1)})+r^{(s)}",
+      "role": "reconstruct a finer scale from coarse image and residual",
+      "symbols": {
+        "r_s": "Laplacian band residual",
+        "Up": "upsampling operator"
+      },
+      "evidence": "paper.pdf pp. 3–4, Laplacian decomposition",
+      "interpretation": "Each scale adds a band-limited correction to an already formed coarse image."
+    },
+    {
+      "label": "Scale-activated flow",
+      "latex": "\\dot x_t^{(s)}=\\mathbf 1_{t\\ge T_s}\\,v_\\theta^{(s)}(x_t^{(\\ge s)},t)",
+      "role": "encode the coarse-to-fine temporal activation",
+      "symbols": {
+        "T_s": "activation time for scale s",
+        "v_theta_s": "scale-specific velocity"
+      },
+      "evidence": "paper.pdf pp. 4–6, methodology",
+      "interpretation": "Fine-scale dynamics begin only after the required coarse context has entered the causal model."
+    }
+  ],
+  "evidence_refs": [
+    "paper.pdf pp. 2–6: Laplacian schedule, MoT architecture and multi-scale path",
+    "paper.pdf pp. 7–10 and appendix: CelebA-HQ/ImageNet results and scale/split ablations",
+    "source PDF SHA-256 2238514b8ac4722fbc832e9a91a401e06db2bc143ce48c18916c7519eea18332",
+    "Evidence status: full-text verified; no independent reproduction performed."
+  ]
+}

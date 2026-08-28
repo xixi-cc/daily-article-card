@@ -1,0 +1,155 @@
+{
+  "arxiv_id": "2602.05435",
+  "source_version": "v2",
+  "source_pdf": "https://arxiv.org/pdf/2602.05435",
+  "title_en": "Stable Velocity: A Variance Perspective on Flow Matching",
+  "title_zh": "稳定速度：流匹配的方差视角",
+  "curation_status": "full_text_verified",
+  "card_standard_version": "2.3",
+  "paper_profile": "theory_numerics",
+  "style_reference": "physicist_daily_arxiv",
+  "provenance": {
+    "program": "Collection",
+    "catalog": "Paper Collection",
+    "catalog_record_id": "7cc62f0d37b6d5c2",
+    "catalog_record_ids": [
+      "7cc62f0d37b6d5c2"
+    ],
+    "catalog_topic": "Flow Matching",
+    "collection_date": "2026-08-23",
+    "sampled_at": "2026-08-28",
+    "selected_by": "full_collection_backfill",
+    "sampling_seed": "not_applicable_full_collection",
+    "candidate_count": 452
+  },
+  "verified_metadata": {
+    "arxiv_id": "2602.05435",
+    "version": "v2",
+    "title": "Stable Velocity: A Variance Perspective on Flow Matching",
+    "authors": [
+      "Donglin Yang",
+      "Yongxing Zhang",
+      "Xin Yu",
+      "Liang Hou",
+      "Xin Tao",
+      "Pengfei Wan",
+      "Xiaojuan Qi",
+      "Renjie Liao"
+    ],
+    "categories": [
+      "cs.CV"
+    ],
+    "primary_category": "cs.CV",
+    "published": "2026-02-05T08:25:05Z",
+    "abstract": "A variance decomposition of conditional flow matching motivates unbiased multi-reference targets, regime-aware representation alignment and a finetuning-free low-variance sampler.",
+    "comment": ""
+  },
+  "sections": [
+    {
+      "title": "作者信息",
+      "paragraphs": [
+        "作者：Donglin Yang、Yongxing Zhang、Xin Yu、Liang Hou、Xin Tao、Pengfei Wan、Xiaojuan Qi、Renjie Liao；arXiv:2602.05435v2。全文 37 页。论文统一分析 CFM training-target variance，并在 ImageNet-256、SD3.5、Flux、Qwen-Image 与 Wan2.2 上验证训练和采样方案。"
+      ]
+    },
+    {
+      "title": "研究问题",
+      "paragraphs": [
+        "CFM 用单个 conditional velocity \\(v_t(x_t\\mid x_0)\\) 作为 marginal velocity \\(v_t(x_t)\\) 的 Monte Carlo target；均值正确并不意味着方差小。论文问：方差沿 flow time 如何分区；怎样在不改变 global minimizer 的前提下降方差；低方差区能否支持更强语义监督和解析采样捷径？"
+      ]
+    },
+    {
+      "title": "背景",
+      "paragraphs": [
+        "给定 \\(x_t\\) 时，CFM target 的随机性来自 posterior \\(p_t(x_0\\mid x_t)\\)。靠近 data endpoint 时 posterior 通常尖锐，单个 reference 已几乎确定 velocity；靠近 pure-noise endpoint 时 posterior 多峰，不同 reference 给出相互冲突的 conditional velocities。",
+        "Figure 2 把这一点画成两幅局部速度场：左侧 \\(t\\le\\xi\\) 时蓝色 conditional arrow 与黑色 marginal arrow 重合；右侧 \\(t>\\xi\\) 时多条 colored arrows 分散。图直接替代了对 posterior mixing 的冗长描述。"
+      ]
+    },
+    {
+      "title": "模型与方法",
+      "paragraphs": [
+        "StableVM 从 data distribution 取 \\(n\\) 个 references，构造 mixture conditional path，并以 posterior weights 对 conditional velocities 做 self-normalized aggregation。Theorem 3.1 证明 target 无偏且与 CFM 有同一最优 velocity；Theorem 3.2 在 affine conditional field 下给出严格方差下降。",
+        "VA-REPA 只在低方差区激活 representation alignment，并按有效样本归一化；conditional generation 用 class-specific FIFO memory bank 缓解同类 references 稀疏。StableVS 则利用低方差区由单一 data mode 主导，把 ODE/SDE 更新化为闭式近似，无需 finetuning。"
+      ]
+    },
+    {
+      "title": "核心结果与证据",
+      "paragraphs": [
+        "Figure 2 的物理含义是一个 time-dependent conditioning transition：低方差区仍携带关于 \\(x_0\\) 的语义信息，alignment 是 well posed；高方差区接近噪声，试图从 \\(x_t\\) 恢复唯一语义会把 irreducible posterior ambiguity 当成监督。",
+        "Figure 3 的 ImageNet-256 消融中，100k iterations 的 SiT-XL baseline FID 为 18.58；全时段 REPA 为 17.88；仅低方差 \\([0,0.7]\\) 对齐最好，而仅高方差区为 38.89，直接支持 regime-aware weighting。StableVM 的 large-\\(n\\) variance 主项约缩小为 \\(\\mathcal V_{CFM}/(n-1)\\)。",
+        "StableVS 在 SD3.5、Flux、Qwen-Image 与 Wan2.2 的低方差区实现超过 \\(2\\times\\) step reduction，并在相同 seed 下维持或改善 aggregate quality；它只替换 \\([0,\\xi]\\) 内的 solver，高方差区仍沿用 base method。"
+      ]
+    },
+    {
+      "title": "有效性与局限",
+      "paragraphs": [
+        "方差定理的严格不等式依赖 affine conditional velocity、连续性和 reference sampling assumptions；有限 \\(n\\) 的 self-normalized estimator 与 memory bank 会带来相关性和额外计算/显存。split \\(\\xi\\) 随维度、VAE、path 和数据分布变化，并非普适常数。",
+        "采样加速集中在作者定义的低方差区，“超过 2×”不是完整 end-to-end latency 必然减半。大型 pretrained-model 结果主要是 benchmark 与精选视觉比较，不能排除 rare prompt、motion consistency 或 long-tail mode 的损失。"
+      ]
+    },
+    {
+      "title": "复现与资源",
+      "paragraphs": [
+        "原文：https://arxiv.org/abs/2602.05435；代码：https://github.com/linYDTHU/StableVelocity。全文 37 页，PDF SHA-256：4d40e1a56ebff4f55e9ebe8e9402de470d064469c58a39528b0697a46e502bf7。",
+        "复现需固定 interpolant convention、time direction、reference count \\(n\\)、memory-bank capacity、split \\(\\xi\\)、VA-REPA weighting、CFG、base solver/steps、VAE、FID/GenEval/T2V-CompBench revisions、seeds 与 end-to-end latency。",
+        "Evidence status: full-text verified; no independent reproduction performed."
+      ]
+    },
+    {
+      "title": "阅读指南",
+      "paragraphs": [
+        "先看 Figures 1–2，建立 variance curve 与 posterior picture；再读 Theorems 3.1–3.2，区分 unbiasedness 和 variance reduction。随后看 Figure 3 的 alignment failure，再读 StableVS 闭式更新与 Tables 4–6，最后核对附录的 estimator assumptions。"
+      ]
+    }
+  ],
+  "cover": {
+    "mode": "source_figure",
+    "asset_path": "assets/collection-figures/2602.05435/figure-2-cfm-variance.webp",
+    "label": "Figure 2",
+    "visual_type": "schematic",
+    "evidence": "paper.pdf p. 4, Figure 2",
+    "alt_text": "低方差与高方差流匹配区间中 posterior concentration 和 conditional velocities 的示意。",
+    "caption": "靠近数据时 posterior 尖锐、conditional velocity 稳定；靠近噪声时多 references 产生冲突速度。",
+    "selection_rationale": "Figure 2 是全文最重要的机制图，优先于单一 FID 表或生成样例。"
+  },
+  "figure_refs": [
+    {
+      "label": "Figure 2",
+      "asset_path": "assets/collection-figures/2602.05435/figure-2-cfm-variance.webp",
+      "section": "核心结果与证据",
+      "role": "explain the two variance regimes",
+      "evidence": "paper.pdf p. 4, Figure 2",
+      "alt_text": "左图 posterior 集中且速度一致，右图 posterior 覆盖多个 references 且速度分散。",
+      "caption": "The training target changes from informative to intrinsically ambiguous along flow time.",
+      "interpretation": "The split point is distribution- and representation-dependent rather than universal."
+    }
+  ],
+  "equation_refs": [
+    {
+      "label": "StableVM target",
+      "latex": "\\widehat v_{\\rm StableVM}(x_t)=\\frac{\\sum_{k=1}^{n}p_t(x_t\\mid x_0^k)v_t(x_t\\mid x_0^k)}{\\sum_{j=1}^{n}p_t(x_t\\mid x_0^j)}",
+      "role": "average conditional velocities with posterior-like weights",
+      "symbols": {
+        "n": "number of references",
+        "x_0_k": "reference data samples"
+      },
+      "evidence": "paper.pdf p. 3, Eq. (7)",
+      "interpretation": "Multiple references reduce Monte Carlo fluctuations while preserving the marginal velocity in expectation."
+    },
+    {
+      "label": "Asymptotic variance reduction",
+      "latex": "\\mathcal V_{\\rm StableVM}(t)=\\frac{1}{n-1}\\mathcal V_{\\rm CFM}(t)+O(n^{-1})\\ \\text{corrections}",
+      "role": "quantify the leading variance gain",
+      "symbols": {
+        "V": "trace-of-covariance target variance"
+      },
+      "evidence": "paper.pdf p. 4, Eq. (10)",
+      "interpretation": "The dominant single-reference noise is suppressed approximately inversely with reference count."
+    }
+  ],
+  "evidence_refs": [
+    "paper.pdf pp. 2–5: variance regimes, StableVM and VA-REPA",
+    "paper.pdf pp. 5–8: StableVS and large-model evaluations",
+    "source PDF SHA-256 4d40e1a56ebff4f55e9ebe8e9402de470d064469c58a39528b0697a46e502bf7",
+    "Evidence status: full-text verified; no independent reproduction performed."
+  ]
+}
