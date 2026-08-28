@@ -1,0 +1,203 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Deep learning for predicting rate-induced tipping - physics+AI Collection 随机精选</title>
+    <meta name="description" content="作者 Yu Huang、Sebastian Bathiany、Peter Ashwin、Niklas Boers；Nature Machine Intelligence 6, 1556–1565 (2024)，DOI:10.1038/s42256-024-00937-0；全文取 arXiv:2409.07590，共35页含补充图。核验 Crossref 开放许可与状态，未发现关联更正或撤稿。" />
+    <script>
+      (function() {
+        try {
+          var themePreference = window.localStorage.getItem('color-theme') || 'system';
+          var systemUsesDarkTheme = window.matchMedia('(prefers-color-scheme: dark)').matches;
+          var resolvedTheme = themePreference === 'system'
+            ? (systemUsesDarkTheme ? 'dark' : 'light')
+            : themePreference;
+          document.documentElement.dataset.theme = resolvedTheme;
+          document.documentElement.dataset.themePreference = themePreference;
+          document.documentElement.style.colorScheme = resolvedTheme;
+        } catch (error) {
+          document.documentElement.dataset.theme = 'light';
+          document.documentElement.dataset.themePreference = 'system';
+        }
+      })();
+    </script>
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='18' fill='%23111827'/%3E%3Ctext x='50%25' y='55%25' text-anchor='middle' dominant-baseline='middle' font-size='30' font-family='Arial, sans-serif' fill='white'%3EV%3C/text%3E%3C/svg%3E" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700;800&family=Noto+Sans+SC:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <script>document.documentElement.classList.add('math-pending');</script>
+    <script>
+      window.MathJax = {
+        tex: {
+          inlineMath: [['$', '$'], ['\\(', '\\)']],
+          displayMath: [['$$', '$$'], ['\\[', '\\]']],
+          processEscapes: true
+        },
+        options: {
+          skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+        },
+        chtml: {
+          scale: 1,
+          displayAlign: 'center'
+        },
+        startup: {
+          ready: function() {
+            MathJax.startup.defaultReady();
+            MathJax.startup.promise.then(function() {
+              document.documentElement.classList.remove('math-pending');
+              document.documentElement.dataset.mathReady = 'true';
+            });
+          }
+        }
+      };
+    </script>
+    <script defer src="../../assets/vendor/mathjax/tex-chtml.js"></script>
+    <link rel="stylesheet" href="../../assets/style.css" />
+  </head>
+  <body class="detail-page" data-paper-id="doi-10.1038-s42256-024-00937-0">
+    <div class="page-noise"></div>
+    <div class="page-blur page-blur-a"></div>
+    <div class="page-blur page-blur-b"></div>
+
+    <header class="header detail-page-header">
+      <div class="container">
+        <div class="detail-page-topbar">
+          <a class="back-link" href="../../collection.html">返回列表</a>
+          <div class="detail-topbar-actions">
+            <span class="detail-site-name">physics+AI Collection 随机精选</span>
+            <button class="theme-toggle" type="button" data-theme-toggle aria-label="当前主题：设备，点击切换主题" title="当前主题：设备">
+  <span class="theme-toggle-icons" aria-hidden="true">
+    <svg class="theme-toggle-icon theme-toggle-icon-light" viewBox="0 0 24 24" fill="none">
+      <circle cx="12" cy="12" r="3.5" stroke="currentColor" stroke-width="1.8"/>
+      <path d="M12 2.5v2M12 19.5v2M2.5 12h2M19.5 12h2M5.3 5.3l1.4 1.4M17.3 17.3l1.4 1.4M18.7 5.3l-1.4 1.4M6.7 17.3l-1.4 1.4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+    </svg>
+    <svg class="theme-toggle-icon theme-toggle-icon-dark" viewBox="0 0 24 24" fill="none">
+      <path d="M20 15.2A8.1 8.1 0 0 1 8.8 4a8.2 8.2 0 1 0 11.2 11.2z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>
+    </svg>
+    <svg class="theme-toggle-icon theme-toggle-icon-system" viewBox="0 0 24 24" fill="none">
+      <rect x="3" y="4" width="18" height="13" rx="2.5" stroke="currentColor" stroke-width="1.8"/>
+      <path d="M8 21h8M12 17v4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+    </svg>
+  </span>
+  <span class="theme-toggle-label" data-theme-toggle-label>设备</span>
+</button>
+          </div>
+        </div>
+
+        <div class="detail-hero-grid">
+          <div class="detail-hero-cover"><figure class="paper-figure-card paper-figure-card-detail">
+  <img class="paper-figure-image" src="../../assets/collection-figures/doi-10.1038-s42256-024-00937-0/figure-2-tipping-ensembles.webp" alt="三个原型系统在相同 forcing、不同噪声下的突变/非突变轨迹、forcing 曲线与突变时刻分布。" loading="lazy" onclick="window.openPaperFigureImage && window.openPaperFigureImage(this)" />
+  <figcaption class="paper-figure-caption">噪声使相同 forcing 下的轨迹产生宽分布突变时刻，为概率预测而非确定阈值判断提供了测试场景。</figcaption>
+</figure></div>
+          <div class="detail-hero-copy">
+            <p class="eyebrow">Collection 全文卡</p>
+            <h1 class="detail-page-title">Deep learning for predicting rate-induced tipping</h1>
+            <p class="detail-page-title-zh">用深度学习预测速率诱导突变</p>
+            <div class="detail-meta">Paper Collection · Climate Dynamics · <a href="https://arxiv.org/abs/doi-10.1038-s42256-024-00937-0" target="_blank" rel="noopener noreferrer">原文</a></div>
+            <p class="detail-summary">作者 Yu Huang、Sebastian Bathiany、Peter Ashwin、Niklas Boers；Nature Machine Intelligence 6, 1556–1565 (2024)，DOI:10.1038/s42256-024-00937-0；全文取 arXiv:2409.07590，共35页含补充图。核验 Crossref 开放许可与状态，未发现关联更正或撤稿。</p>
+            <div class="detail-micro-meta">
+              <span class="meta-pill">9 分钟读完</span>
+              <span class="meta-pill">8 张阅读卡</span>
+              <span class="meta-pill">作者 Yu Huang、Sebastian Bathiany、Peter Ashwin、Niklas…</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <main class="container detail-layout">
+      <div class="detail-shell">
+        <article id="detail-body" class="reading-flow"><section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 01</span>
+    <span class="reading-step-note">作者信息</span>
+  </div>
+  <h2>作者信息</h2>
+  <div class="reading-card-content"><ul><li>作者 Yu Huang、Sebastian Bathiany、Peter Ashwin、Niklas Boers；Nature Machine Intelligence 6, 1556–1565 (2024)，DOI:10.1038/\(s_{42256}\)-024-00937-0；全文取 arXiv:2409.07590，共35页含补充图。核验 Crossref 开放许可与状态，未发现关联更正或撤稿。</li></ul></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 02</span>
+    <span class="reading-step-note">研究问题</span>
+  </div>
+  <h2>研究问题</h2>
+  <div class="reading-card-content"><ul><li>当外部 forcing 改变得太快，系统可能在静态平衡仍局部稳定时越过 basin boundary，发生 rate-induced tipping（R-tipping）；噪声又使相同 forcing 下部分轨迹突变、部分不突变。论文问：单条轨迹在突变前是否含有超越 variance 与 lag-1 autocorrelation 的可预测信息，以及深度网络能否输出提前量相关的突变概率？</li></ul></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 03</span>
+    <span class="reading-step-note">背景</span>
+  </div>
+  <h2>背景</h2>
+  <div class="reading-card-content"><ul><li>critical slowing down（CSD）依赖系统接近缓慢移动的 equilibrium 与局部线性化；R-tipping 正是破坏这一假设。Figure 2 对 saddle-node、Bautin 和 Compost-bomb 三个原型施加相同时间 forcing、不同白噪声，显示突变时刻分布很宽且突变/非突变轨迹在视觉上高度重叠。</li><li>这些都是已知随机微分方程的 ensemble simulations，不是气候观测。文章借 climate tipping 说明动机，但没有直接预测 AMOC、冰盖或真实生态系统的突变概率。</li></ul></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 04</span>
+    <span class="reading-step-note">模型与方法</span>
+  </div>
+  <h2>模型与方法</h2>
+  <div class="reading-card-content"><ul><li>三个原型分别包含移动固定点、移动周期吸引子和 soil-carbon/temperature feedback；用 Euler–Maruyama 积分并按是否越出 non-tipping envelope 标注。对每个 lead time，训练由两层一维 CNN、average pooling 和全连接层组成的二分类器；输入是截断到突变前的时间序列。</li><li>作者将 tipping 与 non-tipping 样本配平，再用 Kolmogorov–Smirnov test 比较输出分布；Layer-wise Relevance Propagation（LRP）定位时间点贡献。不同 lead time 使用不同模型，因此实验已知距突变时间，尚不是无需时间对齐的在线报警器。</li></ul></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 05</span>
+    <span class="reading-step-note">核心结果与证据</span>
+  </div>
+  <h2>核心结果与证据</h2>
+  <div class="reading-card-content"><ul><li>saddle-node 模型的30万条 ensemble 中约37%突变；进一步各取60,000条形成 A/B 组。Figure 3 显示 variance 与 autocorrelation 的99%区间大幅重叠，而 DL 概率在突变前分离；KS 检验给出的可分提前量约为 saddle-node 290、Bautin 130、Compost-bomb 1000 time steps。</li><li>在 saddle-node 的突变前100到10步，简单 envelope 方法成功率低于20%，CNN 从约60%升至95%。这是相对于作者构造的平衡分类任务与模拟分布；50%基线、时间步长和各模型的物理时间不同，不能直接横向解释为现实预警年数。</li><li>LRP 的高 relevance 通常靠近输入末端，并在部分提前量上出现更早窗口；作者将其解释为 R-tipping fingerprint。LRP 是模型归因而非机制证明，且 forcing rate、噪声幅度变化会改变输出分布。</li></ul><figure class="evidence-figure">
+  <button class="evidence-figure-image-button" type="button" aria-label="放大查看 Figure 2" onclick="window.openPaperFigureImage && window.openPaperFigureImage(this.querySelector('img'))">
+    <img class="paper-figure-image evidence-figure-image" src="../../assets/collection-figures/doi-10.1038-s42256-024-00937-0/figure-2-tipping-ensembles.webp" alt="三个原型系统在相同 forcing、不同噪声下的突变/非突变轨迹、forcing 曲线与突变时刻分布。" loading="lazy" />
+  </button>
+  <figcaption>
+    <strong>Figure 2</strong> · 噪声使相同 forcing 下的轨迹产生宽分布突变时刻，为概率预测而非确定阈值判断提供了测试场景。
+    <span class="evidence-figure-reading">物理解读：The figure supports the stated protocol-specific claim, not an unrestricted generalization.</span>
+    <span class="evidence-figure-source">来源：paper.pdf p. 20, Figure 2</span>
+  </figcaption>
+</figure></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 06</span>
+    <span class="reading-step-note">有效性与局限</span>
+  </div>
+  <h2>有效性与局限</h2>
+  <div class="reading-card-content"><ul><li>训练与测试来自同一三类低维方程和参数协议，标签依赖作者定义的 non-tipping envelope。模型能区分模拟轨迹不等于识别未知 governing equations、结构误差、非平稳观测噪声或多变量气候数据中的真实突变。</li><li>实际应用通常不知道当前距突变还有多少时间，而本文逐 lead-time 训练；作者也把 continuous updating 作为未来工作。校准、class prevalence、false alarms、OOD forcing 与跨系统 transfer 尚未充分验证；CSD 失败只针对这些 R/\(N\)-tipping 设定。</li></ul></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 07</span>
+    <span class="reading-step-note">复现与资源</span>
+  </div>
+  <h2>复现与资源</h2>
+  <div class="reading-card-content"><ul><li>原文：https://arxiv.org/abs/2409.07590；期刊：https://doi.org/10.1038/s42256-024-00937-0；代码：https://github.com/yhuangDLClimate/predict-rate-induced-tipping。PDF SHA-256：d34199bac5003e5ca7785067984220079c51f697623243f35baa7d621f2ffd47。</li><li>复现需固定三组 SDE 参数、dt、noise seeds、tipping envelope、group balancing、lead-time slicing、CNN filters/kernel、train split、KS/LRP 实现与概率校准。Evidence status: full-text verified simulation manuscript; no independent reproduction performed.</li></ul></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 08</span>
+    <span class="reading-step-note">阅读指南</span>
+  </div>
+  <h2>阅读指南</h2>
+  <div class="reading-card-content"><ul><li>先读 pp.2–4 与 \(p\).19 Figure 1，确认 R-tipping 与 CSD 的适用边界；\(p\).20 Figure 2看 ensemble 构造，pp.4–8看 CNN、KS 与 LRP 结果。最后读 pp.9–13 Discussion/Methods，特别保留‘已知 lead time、三类原型系统、模拟数据’三个限定。</li></ul></div>
+</section></article>
+        <aside id="detail-toc" class="detail-toc hidden" aria-label="内容目录">
+          <p class="detail-toc-title">阅读目录</p>
+          <nav id="detail-toc-nav" class="detail-toc-nav"></nav>
+        </aside>
+      </div>
+      <nav class="paper-nav"><a class="paper-nav-link paper-nav-prev" href="../../collection-papers/doi-10.1038-s42256-024-00918-3/"><span class="paper-nav-label">← 上一篇</span><span class="paper-nav-title">Efficient rare event sampling with unsupervised normalizing flows</span></a>
+      <a class="paper-nav-link paper-nav-next" href="../../collection-papers/doi-10.1038-s42256-026-01233-9/"><span class="paper-nav-label">下一篇 →</span><span class="paper-nav-title">Deep neural operator for free boundary problems</span></a></nav>
+    </main>
+
+    <footer class="footer">
+      <div class="container">
+        <p>内容来自 <a href="https://arxiv.org" target="_blank" rel="noopener noreferrer">arXiv.org</a>，阅读卡片由静态站点生成器构建。</p>
+      </div>
+    </footer>
+
+    <script src="../../assets/theme.js"></script>
+    <script src="../../assets/media.js"></script>
+    <script src="../../assets/paper.js"></script>
+  </body>
+</html>
