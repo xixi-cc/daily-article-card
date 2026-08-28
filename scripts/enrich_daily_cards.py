@@ -57,6 +57,13 @@ def preserve_proper_nouns(value: str) -> str:
     return value
 
 
+def arxiv_id_from_entry_url(entry_url: str) -> str:
+    """Keep legacy archive prefixes while extracting an arXiv entry ID."""
+    if "/abs/" in entry_url:
+        return entry_url.split("/abs/", 1)[1]
+    return entry_url.rsplit("/", 1)[-1]
+
+
 def fetch_metadata(ids: list[str]) -> dict[str, dict[str, object]]:
     records: dict[str, dict[str, object]] = {}
     for offset in range(0, len(ids), 20):
@@ -69,7 +76,8 @@ def fetch_metadata(ids: list[str]) -> dict[str, dict[str, object]]:
         with urllib.request.urlopen(request, timeout=60) as response:
             root = ET.fromstring(response.read())
         for entry in root.findall("a:entry", ATOM):
-            versioned_id = entry.findtext("a:id", default="", namespaces=ATOM).rsplit("/", 1)[-1]
+            entry_url = entry.findtext("a:id", default="", namespaces=ATOM)
+            versioned_id = arxiv_id_from_entry_url(entry_url)
             version_match = re.search(r"(v\d+)$", versioned_id)
             arxiv_id = re.sub(r"v\d+$", "", versioned_id)
             primary = entry.find("arxiv:primary_category", {**ATOM, **ARXIV})

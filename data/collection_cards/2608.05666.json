@@ -1,0 +1,155 @@
+{
+  "arxiv_id": "2608.05666",
+  "source_version": "v1",
+  "source_pdf": "https://arxiv.org/pdf/2608.05666",
+  "title_en": "Potential Matching Optimal Transport: Continuous Normalizing Flows for Exact $p$-Wasserstein Dynamics",
+  "title_zh": "势匹配最优传输：实现精确 p-Wasserstein 动力学的连续归一化流",
+  "curation_status": "full_text_verified",
+  "card_standard_version": "2.3",
+  "paper_profile": "theory_numerics",
+  "style_reference": "physicist_daily_arxiv",
+  "provenance": {
+    "program": "Collection",
+    "catalog": "Paper Collection",
+    "catalog_record_id": "f8a93a5f3481da6d",
+    "catalog_record_ids": [
+      "f8a93a5f3481da6d"
+    ],
+    "catalog_topic": "Fluid Dynamics",
+    "collection_date": "2026-08-23",
+    "sampled_at": "2026-08-28",
+    "selected_by": "full_collection_backfill",
+    "sampling_seed": "not_applicable_full_collection",
+    "candidate_count": 452
+  },
+  "verified_metadata": {
+    "arxiv_id": "2608.05666",
+    "version": "v1",
+    "title": "Potential Matching Optimal Transport: Continuous Normalizing Flows for Exact $p$-Wasserstein Dynamics",
+    "authors": [
+      "Lishuo Zhang",
+      "Ruizhi Huang",
+      "Yang Yu",
+      "Lei Li"
+    ],
+    "categories": [
+      "cs.LG",
+      "math.NA"
+    ],
+    "primary_category": "cs.LG",
+    "published": "2026-08-06T07:04:30Z",
+    "abstract": "PMOT trains a scalar-potential CNF with self-induced straight bridges and proves ideal zero-loss recovery of the p-optimal transport dynamics under explicit regularity and uniqueness assumptions.",
+    "comment": ""
+  },
+  "sections": [
+    {
+      "title": "作者信息",
+      "paragraphs": [
+        "作者：Lishuo Zhang、Ruizhi Huang、Yang Yu、Lei Li；arXiv:2608.05666v1。全文 22 页。工作把 generalized Benamou–Brenier potential velocity 用于任意 (p>1) 的连续归一化流。"
+      ]
+    },
+    {
+      "title": "研究问题",
+      "paragraphs": [
+        "标准 flow matching 可生成正确终点分布，却不保证轨迹实现给定 (c_p(x,y)=\\lVert x-y\\rVert^p) 下的最优传输。论文问：能否不用预先计算 OT coupling 或内层 OT solver，直接训练一个 (p)-特异的 potential flow，并在理想条件下恢复最优 map 与整条动力学？"
+      ]
+    },
+    {
+      "title": "背景",
+      "paragraphs": [
+        "广义 Benamou–Brenier 表述把速度写为 (v_\\Phi=-\\lVert\\nabla\\Phi\\rVert^{q-2}\\nabla\\Phi)，其中 (q=p/(p-1))。不同 (p) 会选择不同 coupling；仅匹配 terminal distribution 不能区分这些路径。",
+        "Figure 2 用 two moons 同时显示 PMOT 诱导 coupling、仅作事后评价的 Sinkhorn coupling 和连续 trajectories，直观区分训练对象与评价参考。"
+      ]
+    },
+    {
+      "title": "模型与方法",
+      "paragraphs": [
+        "PMOT 从源样本 (x) 经当前流得到 endpoint (F_\\Phi(x))，再沿二者的直线桥采样。损失将桥上的 (\\nabla\\Phi) 匹配到 (-\\lVert F_\\Phi(x)-x\\rVert^{p-2}[F_\\Phi(x)-x])，并另加灵活的 terminal discrepancy。桥和 target 都由当前模型自身产生。",
+        "这种构造不需要外部 coupling；Sinkhorn 只在训练后用来比较。likelihood 任务可用 CNF density objective，sample-only color transfer 则用 MMD terminal loss。"
+      ]
+    },
+    {
+      "title": "核心结果与证据",
+      "paragraphs": [
+        "Theorem 3.2 说明：在 absolute continuity、BB minimizer 可由给定 potential class 表示、interior (C^2) regularity、所有中间分布 full support、terminal exact matching 和唯一性成立时，任何 zero-loss solution 满足 generalized BB optimality system，并恢复相应 (p)-optimal map。有限网络训练的非零经验损失不自动获得这一结论。",
+        "8-Gaussians 与 Pinwheel 上，学习到的 transport cost 分别在 matched OT reference 的约 2.4% 与 3.4% 内。Figure 1 的重复 evaluation resampling 给出 off-diagonal/diagonal endpoint-MSE ratio (1.410\\pm0.048)；它衡量评价样本波动，不是独立重训误差。",
+        "tabular density experiments 中 PMOT 在 MiniBooNE、POWER、HEPMASS 报告较低 NLL，但 OT-Flow baseline 对 regularization weight 敏感且各数据集使用不同设置；这些结果支持竞争力，不证明普遍优势。"
+      ]
+    },
+    {
+      "title": "有效性与局限",
+      "paragraphs": [
+        "理论贡献是把 (p)-specific geometry、terminal matching 与 potential PDE 连接起来，并明确列出 exactness 条件。多种 (p)、density 与 sample-only experiments 检查了不同使用方式。",
+        "zero-loss、realizability、full support 与 uniqueness 都很强；有限采样、网络容量、ODE integration 和优化误差不在 exact theorem 中消失。deterministic CNF 仍受 Monge-map 可表达性限制，且没有独立复现或大规模图像基准。"
+      ]
+    },
+    {
+      "title": "复现与资源",
+      "paragraphs": [
+        "原文：https://arxiv.org/abs/2608.05666。全文 22 页，PDF SHA-256：f8a93a5f3481da6d22f9bd11591296a4d278cb3f288d5e97b3cc00771faddf5d。",
+        "复现需固定 (p,q)、potential network、ODE solver/tolerances、bridge-time sampling、terminal discrepancy、optimization schedule、evaluation Sinkhorn regularization、seeds 与重复抽样协议。",
+        "Evidence status: full-text verified; no independent reproduction performed."
+      ]
+    },
+    {
+      "title": "阅读指南",
+      "paragraphs": [
+        "先读 p.4 的 generalized velocity 与 PM objective，再核对 pp.4–5 Theorem 3.2 的全部假设。随后看 p.7 Figure 2 和 p.6 Table 1，最后读 appendix 的 resampling study，并把 post-hoc OT reference 与训练信号分开。"
+      ]
+    }
+  ],
+  "cover": {
+    "mode": "source_figure",
+    "asset_path": "assets/collection-figures/2608.05666/figure-2-transport.webp",
+    "label": "Figure 2",
+    "visual_type": "comparison",
+    "evidence": "paper.pdf p. 7, Figure 2",
+    "alt_text": "two-moons 数据上的 PMOT coupling、Sinkhorn reference 与连续轨迹。",
+    "caption": "PMOT 直接诱导 coupling 与 trajectories；Sinkhorn 仅在训练后用于比较。",
+    "selection_rationale": "Figure 2 最直接展示方法如何同时产生 map 和连续动力学。"
+  },
+  "figure_refs": [
+    {
+      "label": "Figure 2",
+      "asset_path": "assets/collection-figures/2608.05666/figure-2-transport.webp",
+      "section": "核心结果与证据",
+      "role": "show learned coupling and trajectories",
+      "evidence": "paper.pdf p. 7, Figure 2",
+      "alt_text": "PMOT coupling、事后 Sinkhorn reference 和 transport trajectories。",
+      "caption": "two-moons 上的 (p=2) transport geometry。",
+      "interpretation": "The learned map is evaluated against Sinkhorn only after training; the figure does not show an external coupling used as supervision."
+    }
+  ],
+  "equation_refs": [
+    {
+      "label": "Generalized potential velocity",
+      "latex": "v_\\Phi(x,t)=-\\lVert\\nabla\\Phi(x,t)\\rVert^{q-2}\\nabla\\Phi(x,t),\\qquad q=\\frac{p}{p-1}",
+      "role": "parameterize p-Wasserstein CNF dynamics",
+      "symbols": {
+        "p": "transport-cost exponent",
+        "q": "Hölder conjugate"
+      },
+      "evidence": "paper.pdf p. 4, Eq. (1)",
+      "interpretation": "Changing p changes how the scalar-potential gradient is converted into velocity."
+    },
+    {
+      "label": "Potential-matching target",
+      "latex": "\\nabla\\Phi(x_t,t)\\approx-\\lVert F_\\Phi(x)-x\\rVert^{p-2}\\bigl(F_\\Phi(x)-x\\bigr)",
+      "role": "self-induced straight-bridge matching",
+      "symbols": {
+        "F_Phi": "current flow endpoint",
+        "x_t": "point on the endpoint bridge"
+      },
+      "evidence": "paper.pdf p. 4, PM objective",
+      "interpretation": "The current model supplies its own endpoints and hence its own bridge target."
+    }
+  ],
+  "evidence_refs": [
+    "paper.pdf pp. 4–5: objective and zero-loss exactness theorem",
+    "paper.pdf pp. 6–9: synthetic, density and color-transfer experiments",
+    "paper.pdf p. 7, Figure 2",
+    "paper.pdf p. 20: repeated evaluation resampling",
+    "source PDF SHA-256 f8a93a5f3481da6d22f9bd11591296a4d278cb3f288d5e97b3cc00771faddf5d",
+    "Evidence status: full-text verified; no independent reproduction performed."
+  ]
+}

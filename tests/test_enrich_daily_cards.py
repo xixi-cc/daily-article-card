@@ -1,7 +1,7 @@
 import unittest
 from urllib.error import URLError
 
-from scripts.enrich_daily_cards import enrich_text
+from scripts.enrich_daily_cards import arxiv_id_from_entry_url, enrich_text
 
 
 def card(with_metadata=True):
@@ -35,6 +35,12 @@ SOURCE = (
 
 
 class OfflineEnrichmentTests(unittest.TestCase):
+    def test_legacy_arxiv_id_keeps_archive_prefix(self):
+        self.assertEqual(
+            arxiv_id_from_entry_url("http://arxiv.org/abs/cond-mat/0107443v2"),
+            "cond-mat/0107443v2",
+        )
+
     def test_complete_verified_metadata_never_calls_network(self):
         def forbidden(_ids):
             raise AssertionError("network must not be called")
