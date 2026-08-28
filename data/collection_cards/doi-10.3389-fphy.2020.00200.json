@@ -1,0 +1,143 @@
+{
+  "arxiv_id": "doi-10.3389-fphy.2020.00200",
+  "source_version": "version of record",
+  "source_pdf": "https://www.frontiersin.org/journals/physics/articles/10.3389/fphy.2020.00200/pdf",
+  "title_en": "Automated Discovery of Local Rules for Desired Collective-Level Behavior Through Reinforcement Learning",
+  "title_zh": "通过强化学习自动发现产生目标集体行为的局域规则",
+  "curation_status": "full_text_verified",
+  "card_standard_version": "2.3",
+  "paper_profile": "ai_empirical",
+  "style_reference": "physicist_daily_arxiv",
+  "provenance": {
+    "program": "Collection",
+    "catalog": "Paper Collection",
+    "catalog_record_id": "92b6eba53ee7220b",
+    "catalog_record_ids": [
+      "92b6eba53ee7220b"
+    ],
+    "catalog_topic": "Control & Reinforcement Learning",
+    "collection_date": "2026-08-23",
+    "sampled_at": "2026-08-28",
+    "selected_by": "full_collection_backfill",
+    "sampling_seed": "not_applicable_full_collection",
+    "candidate_count": 452
+  },
+  "verified_metadata": {
+    "doi": "10.3389/fphy.2020.00200",
+    "version": "version of record",
+    "title": "Automated Discovery of Local Rules for Desired Collective-Level Behavior Through Reinforcement Learning",
+    "authors": [
+      "Tiago Costa",
+      "Andres Laan",
+      "Francisco J. H. Heras",
+      "Gonzalo G. de Polavieja"
+    ],
+    "journal": "Frontiers in Physics",
+    "volume": "8",
+    "article": "200",
+    "published": "2020-06-25",
+    "abstract": "Evolution strategies optimize modular neural local policies that make simulated self-propelled agents form rotating balls, tornadoes and full- or hollow-core mills.",
+    "comment": "Open-access version of record; no Crossref correction or retraction relation found"
+  },
+  "sections": [
+    {
+      "title": "作者信息",
+      "paragraphs": [
+        "作者 Tiago Costa、Andres Laan、Francisco J. H. Heras、Gonzalo G. de Polavieja；Frontiers in Physics 8, 200 (2020)，DOI:10.3389/fphy.2020.00200。核验13页开放期刊版、补充材料/视频声明和代码链接；未发现关联更正或撤稿。"
+      ]
+    },
+    {
+      "title": "研究问题",
+      "paragraphs": [
+        "经典collective-motion建模通常先手写alignment、attraction和repulsion规则，再反复调参观察群体形态。论文问：能否反过来指定目标宏观构型，以reinforcement-learning式reward和evolution strategies自动搜索个体局域policy，并让网络结构本身保持可解释？"
+      ]
+    },
+    {
+      "title": "背景",
+      "paragraphs": [
+        "模拟鱼在三维空间以速度、azimuth和elevation演化；每个agent只用自身速度及邻居相对位置/速度。目标包括rotating ball、tornado、full-core mill与hollow-core mill，global reward组合防碰撞、凝聚、旋转和最低速度等项。",
+        "虽然标题称reinforcement learning，优化实际采用derivative-free evolution strategies：所有agents共享同一policy参数，通过成对随机扰动的多次simulation估计reward gradient。没有真实动物在线学习。"
+      ]
+    },
+    {
+      "title": "模型与方法",
+      "paragraphs": [
+        "policy由pair-interaction module和aggregation/attention module组成：前者逐邻居输出三种动作分布的均值/方差，后者给正权重，再归一加权成最终turning与speed commands。低维输入输出可绘制为attraction–repulsion、alignment、elevation、speed和neighbor weighting maps。",
+        "Evolution strategies每轮采样K个正态参数扰动及其反向扰动，运行2K次群体模拟，并以扰动乘reward近似∇R更新共享网络。另以ray-tracing artificial retina替代显式邻居变量，测试更感知化但更难解释的输入。"
+      ]
+    },
+    {
+      "title": "核心结果与证据",
+      "paragraphs": [
+        "Figure 3的四个示例run中，reward在数千epochs内上升并趋于平台；100 epochs的散乱群体到8,000 epochs分别形成球、tornado与两种mill。补充independent quality indices支持形态收敛，并在agent数翻倍时仍观察到目标结构。",
+        "Figure 5–6把学得policy可视化：rotating ball呈近邻repulsion、中距离alignment/attraction并偏重近邻；tornado沿z方向排斥更强，full-core mill前方repulsion更广，hollow-core mill的alignment与speed-up区域更大。可解释性来自模块化低维映射，不等于网络内部每个参数有生物意义。",
+        "artificial-retina输入也能生成四种定性相似构型，但平均agent间距更大、结构较松散。作者没有将learned rules与真实鱼群轨迹做定量拟合；结果证明simulation中reward-to-pattern搜索可行，而非发现了真实生物法则。"
+      ]
+    },
+    {
+      "title": "有效性与局限",
+      "paragraphs": [
+        "目标由engineered global reward定义，搜索可能利用reward漏洞；四种构型和特定agent dynamics限制外推。Figure 3是example runs，理论上neural multi-agent ES没有收敛保证；补充多run robustness仍不等同全面hyperparameter和seed审计。",
+        "显式输入让policy易画图，却假设精确获得所有邻居位置/速度；retina版本更现实但失去模块解释且更松散。无真实传感噪声、碰撞物理、能耗、个体异质性或sim-to-real验证。"
+      ]
+    },
+    {
+      "title": "复现与资源",
+      "paragraphs": [
+        "期刊：https://doi.org/10.3389/fphy.2020.00200；代码：https://gitlab.com/polavieja_lab/rl_collective_behaviour；补充材料与12段视频由期刊页面提供。核验PDF SHA-256：df26c5817bb8ff944ff4b27026b99428f467d1a62ad068d71e8d4537af1a21d7。",
+        "复现需固定environment Table 1、agent count、reward terms、2K扰动数、σ与annealing、learning rate、network sizes、episode length、seed及质量指标。Evidence status: full-text verified simulation/learning study; no independent reproduction performed."
+      ]
+    },
+    {
+      "title": "阅读指南",
+      "paragraphs": [
+        "先读 pp.2–3 Figure 1和环境方程；pp.4–6 Figure 2及ES公式说明policy与优化。p.7 Figure 3看训练现象，pp.8–10 Figures 5–6看局域规则解释；p.11 Discussion核对无收敛保证、simulation和真实行为之间的边界。"
+      ]
+    }
+  ],
+  "cover": {
+    "mode": "source_figure",
+    "asset_path": "assets/collection-figures/doi-10.3389-fphy.2020.00200/figure-3-training-convergence.webp",
+    "label": "Figure 3",
+    "visual_type": "simulation_snapshot",
+    "evidence": "paper.pdf p. 7, Figure 3",
+    "alt_text": "四种目标群体构型的reward训练曲线，以及100与8,000 epochs时的三维agent快照。",
+    "caption": "共享局域policy经evolution strategies优化后，四类reward均趋稳并产生目标宏观形态。",
+    "selection_rationale": "Figure 3同时展示优化轨迹和生成构型，是从global reward到collective pattern的直接模拟证据。"
+  },
+  "figure_refs": [
+    {
+      "label": "Figure 3",
+      "asset_path": "assets/collection-figures/doi-10.3389-fphy.2020.00200/figure-3-training-convergence.webp",
+      "section": "核心结果与证据",
+      "role": "support the central result",
+      "evidence": "paper.pdf p. 7, Figure 3",
+      "alt_text": "四种目标群体构型的reward训练曲线，以及100与8,000 epochs时的三维agent快照。",
+      "caption": "共享局域policy经evolution strategies优化后，四类reward均趋稳并产生目标宏观形态。",
+      "interpretation": "The figure supports the stated protocol-specific claim, not an unrestricted generalization."
+    }
+  ],
+  "equation_refs": [
+    {
+      "label": "Evolution-strategy update",
+      "latex": "\\boldsymbol\\omega\\leftarrow\\boldsymbol\\omega+\\lambda\\frac{1}{2\\sigma^2K}\\sum_{i=1}^{2K}\\boldsymbol\\epsilon_iR_i",
+      "role": "estimate a shared-policy reward gradient from antithetic parameter perturbations",
+      "symbols": {
+        "omega": "policy-network parameters",
+        "epsilon": "Gaussian perturbation",
+        "R": "episode reward",
+        "K": "number of perturbation pairs"
+      },
+      "evidence": "paper.pdf p. 6, Eq. (10)",
+      "interpretation": "This is a simulation-based gradient estimator and carries no general convergence guarantee for the neural multi-agent setting."
+    }
+  ],
+  "evidence_refs": [
+    "paper.pdf pp. 2–3, Figure 1 and Table 1: agent dynamics and framework",
+    "paper.pdf pp. 4–6, Figure 2 and Eqs. (7)–(10): modular policy and ES",
+    "paper.pdf p. 7, Figure 3: reward curves and collective configurations",
+    "paper.pdf pp. 8–11, Figures 5–6: learned-rule interpretation and discussion",
+    "source PDF SHA-256 df26c5817bb8ff944ff4b27026b99428f467d1a62ad068d71e8d4537af1a21d7",
+    "Evidence status: full-text verified simulation/learning study; no independent reproduction performed."
+  ]
+}
