@@ -1,0 +1,141 @@
+{
+  "arxiv_id": "record-982fc46bbe09aee7",
+  "source_version": "arXiv manuscript",
+  "source_pdf": "https://arxiv.org/pdf/2505.19458",
+  "title_en": "Recurrent Self-Attention Dynamics: An Energy-Agnostic Perspective from Jacobians",
+  "title_zh": "循环自注意力动力学：基于雅可比矩阵的能量无关视角",
+  "curation_status": "full_text_verified",
+  "card_standard_version": "2.3",
+  "paper_profile": "theory_numerics",
+  "style_reference": "physicist_daily_arxiv",
+  "provenance": {
+    "program": "Collection",
+    "catalog": "Paper Collection",
+    "catalog_record_id": "982fc46bbe09aee7",
+    "catalog_record_ids": [
+      "982fc46bbe09aee7"
+    ],
+    "catalog_topic": "Transformer Theory",
+    "collection_date": "2026-08-23",
+    "sampled_at": "2026-08-28",
+    "selected_by": "full_collection_backfill",
+    "sampling_seed": "not_applicable_full_collection",
+    "candidate_count": 452
+  },
+  "verified_metadata": {
+    "doi": null,
+    "arxiv_id": "2505.19458",
+    "version": "arXiv full text",
+    "title": "Recurrent Self-Attention Dynamics: An Energy-Agnostic Perspective from Jacobians",
+    "authors": [
+      "Akiyoshi Tomihari",
+      "Ryo Karakida"
+    ],
+    "journal": "Advances in Neural Information Processing Systems",
+    "volume": "38",
+    "pages": null,
+    "published": "2025",
+    "abstract": "Jacobian spectra and Lyapunov exponents characterize recurrent self-attention beyond symmetric energy models, explaining how normalization promotes near-critical stable computation.",
+    "comment": "NeurIPS 2025 manuscript metadata; DOI not asserted"
+  },
+  "sections": [
+    {
+      "title": "作者信息",
+      "paragraphs": [
+        "作者 Akiyoshi Tomihari、Ryo Karakida；NeurIPS 2025论文，对应 arXiv:2505.19458。核验全文34页。当前可核验文本未给稳定DOI或页码，本卡不推测。"
+      ]
+    },
+    {
+      "title": "研究问题",
+      "paragraphs": [
+        "把同一个self-attention block循环T次可产生iterative inference，但已有Hopfield/energy解释通常要求对称权重、单头或特殊activation。对一般multi-head、非对称recurrent SA，如何判断轨迹收敛、振荡或chaos，并解释normalization为何改善长循环计算？"
+      ]
+    },
+    {
+      "title": "背景",
+      "paragraphs": [
+        "离散动力系统x_{t+1}=F(x_t)的局部行为由Jacobian J=∂F/∂x控制：谱半径、复特征值与Lyapunov exponent分别决定扰动收缩、旋转/振荡和长期稳定性。该视角不需要先构造单调下降的energy。",
+        "作者研究recurrent/iterative SA，不是普通Transformer每层参数都不同的深度网络。把loop数增加带来的accuracy变化解释为同一map的动力学性质，不能直接外推到任意trained transformer。"
+      ]
+    },
+    {
+      "title": "模型与方法",
+      "paragraphs": [
+        "论文推导single-与multi-head SA Jacobian，分析attention、value projection和normalization的谱贡献；用maximum/mean Lyapunov exponents量化循环轨迹对微扰的放大。实验覆盖Sudoku、CIFAR-10与文本summarization式任务，并比较LayerNorm、RMSNorm、无归一化及AKOrN等迭代模型。",
+        "作者还提出ItrSA表述和pseudo-energy/contribution index，用以分析不存在严格energy function时的计算进度；并测试energy-inspired regularization是否真的改善accuracy。"
+      ]
+    },
+    {
+      "title": "核心结果与证据",
+      "paragraphs": [
+        "Figure 1显示normalization压低recurrent SA Jacobian最大spectral norm；Figure 2从模型、几何示意和complex-plane eigenvalues说明归一化把谱推向临界附近，而非简单让所有mode强收缩。",
+        "Figure 3把mean Lyapunov exponent与accuracy关联：高性能模型多集中在接近零的区域，过正导致不稳定、过负导致快速遗忘。Figure 4显示ItrSA在不同normalization下随loops增加稳定提升，而缺少控制时可能退化。",
+        "Figure 5显示强制energy-style regularization反而弱于原模型，支持Jacobian框架比特定能量假设更普适。Figure 6及附录用test-time trajectories、pseudo-energy与多头扫描补充，但这些仍是所选架构与任务上的经验关联。"
+      ]
+    },
+    {
+      "title": "有效性与局限",
+      "paragraphs": [
+        "Jacobian是局部线性化，non-normal transient growth可能不由eigenvalues单独捕捉；finite-time Lyapunov estimates依赖trajectory、loop horizon和numerical precision。接近零exponent与accuracy相关，不构成因果充分条件。",
+        "实验规模和任务有限，训练protocol、normalization位置与residual parameterization都会改变结论。论文不保证循环无限次收敛，也没有证明pseudo-energy单调；计算完整Jacobian在大模型中昂贵，需要近似估计。"
+      ]
+    },
+    {
+      "title": "复现与资源",
+      "paragraphs": [
+        "全文：https://arxiv.org/abs/2505.19458。PDF SHA-256：fae7c03225d387c7bf0fa8ef31d52acd10638e584ff2d74b3d230b5c098c2d94。正文未给本文自身的公开代码仓库；补充材料仅为比较方法AKOrN列出外部实现。",
+        "复现需固定loop T、heads、normalization placement/epsilon、residual scaling、Jacobian evaluation point、Lyapunov horizon、datasets、training seeds及accuracy aggregation；谱图与task metrics应配对报告。Evidence status: full-text verified theoretical/numerical study; no independent reproduction performed."
+      ]
+    },
+    {
+      "title": "阅读指南",
+      "paragraphs": [
+        "先读 pp.1–4问题与Jacobian视角；pp.5–7看Figures 1–3和谱机制；pp.8–10看loops与regularization；pp.11–14读讨论；pp.15–34为推导、实验细节与补充图。"
+      ]
+    }
+  ],
+  "cover": {
+    "mode": "source_figure",
+    "asset_path": "assets/collection-figures/record-982fc46bbe09aee7/figure-2-jacobian-spectrum.webp",
+    "label": "Figure 2",
+    "visual_type": "comparison",
+    "evidence": "paper.pdf p. 6, Figure 2",
+    "alt_text": "归一化对最大Lyapunov exponent、轨迹几何与Jacobian复特征值分布的影响。",
+    "caption": "normalization把不稳定谱压向接近临界的区域，同时保留可用于循环推理的非平凡模式。",
+    "selection_rationale": "Figure 2是论文energy-agnostic Jacobian解释的直接证据。"
+  },
+  "figure_refs": [
+    {
+      "label": "Figure 2",
+      "asset_path": "assets/collection-figures/record-982fc46bbe09aee7/figure-2-jacobian-spectrum.webp",
+      "section": "核心结果与证据",
+      "role": "support the central result",
+      "evidence": "paper.pdf p. 6, Figure 2",
+      "alt_text": "归一化对最大Lyapunov exponent、轨迹几何与Jacobian复特征值分布的影响。",
+      "caption": "normalization把不稳定谱压向接近临界的区域，同时保留可用于循环推理的非平凡模式。",
+      "interpretation": "The figure supports the stated protocol-specific claim, not an unrestricted generalization."
+    }
+  ],
+  "equation_refs": [
+    {
+      "label": "Recurrent local dynamics",
+      "latex": "\\delta x_{t+1}=J(x_t)\\,\\delta x_t,\\qquad J=\\frac{\\partial F}{\\partial x}",
+      "role": "track perturbation propagation through repeated applications of the same attention map",
+      "symbols": {
+        "F": "recurrent self-attention update",
+        "J": "state-dependent Jacobian",
+        "delta_x": "infinitesimal perturbation"
+      },
+      "evidence": "paper.pdf pp. 3–6, Jacobian formulation and Figures 1–2",
+      "interpretation": "Eigenvalues describe local modes, while finite-time Lyapunov exponents summarize products along a trajectory."
+    }
+  ],
+  "evidence_refs": [
+    "paper.pdf pp. 1–4: recurrent-SA problem and energy limitations",
+    "paper.pdf pp. 5–7, Figures 1–3: normalization, spectra and Lyapunov exponents",
+    "paper.pdf pp. 8–10, Figures 4–6: iterative inference and regularization",
+    "paper.pdf pp. 15–34: derivations and supplementary experiments",
+    "source PDF SHA-256 fae7c03225d387c7bf0fa8ef31d52acd10638e584ff2d74b3d230b5c098c2d94",
+    "Evidence status: full-text verified theoretical/numerical study; no independent reproduction performed."
+  ]
+}

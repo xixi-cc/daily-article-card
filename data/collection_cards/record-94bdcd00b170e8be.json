@@ -1,0 +1,142 @@
+{
+  "arxiv_id": "record-94bdcd00b170e8be",
+  "source_version": "arXiv v2 manuscript",
+  "source_pdf": "https://arxiv.org/pdf/2410.07799",
+  "title_en": "Mind the Gap: a Spectral Analysis of Rank Collapse and Signal Propagation in Attention Layers",
+  "title_zh": "注意谱隙：注意力层秩坍缩与信号传播的谱分析",
+  "curation_status": "full_text_verified",
+  "card_standard_version": "2.3",
+  "paper_profile": "theory_numerics",
+  "style_reference": "physicist_daily_arxiv",
+  "provenance": {
+    "program": "Collection",
+    "catalog": "Paper Collection",
+    "catalog_record_id": "94bdcd00b170e8be",
+    "catalog_record_ids": [
+      "94bdcd00b170e8be"
+    ],
+    "catalog_topic": "Transformer Theory",
+    "collection_date": "2026-08-23",
+    "sampled_at": "2026-08-28",
+    "selected_by": "full_collection_backfill",
+    "sampling_seed": "not_applicable_full_collection",
+    "candidate_count": 452
+  },
+  "verified_metadata": {
+    "doi": null,
+    "arxiv_id": "2410.07799",
+    "version": "arXiv v2 full text",
+    "title": "Mind the Gap: a Spectral Analysis of Rank Collapse and Signal Propagation in Attention Layers",
+    "authors": [
+      "Alireza Naderi",
+      "Thiziri Nait Saada",
+      "Jared Tanner"
+    ],
+    "journal": "Proceedings of The 28th International Conference on Artificial Intelligence and Statistics",
+    "volume": "PMLR 267",
+    "pages": null,
+    "published": "2025",
+    "abstract": "Random-matrix analysis links attention's outlier singular value and spectral gap to width- and depth-wise rank collapse, and motivates removing the uniform-token component.",
+    "comment": "AISTATS 2025 paper; PMLR volume verified from manuscript metadata"
+  },
+  "sections": [
+    {
+      "title": "作者信息",
+      "paragraphs": [
+        "作者 Alireza Naderi、Thiziri Nait Saada、Jared Tanner；AISTATS 2025, PMLR 267；对应 arXiv:2410.07799v2。核验全文32页。正文元数据未稳定给出页码或DOI，本卡不推测。"
+      ]
+    },
+    {
+      "title": "研究问题",
+      "paragraphs": [
+        "self-attention为何会让token representations逐层趋同并丢失有效rank？既有分析常只看深度乘积或特殊初始化。本文问：单层在width增加时是否已出现rank collapse，决定collapse rate的谱结构是什么，能否用一个直接的谱修正同时缓解width与depth问题？"
+      ]
+    },
+    {
+      "title": "背景",
+      "paragraphs": [
+        "softmax attention matrix是row-stochastic Markov matrix，因此总有特征值1及接近uniform token direction的outlier singular component。其余singular values随token width缩小，形成spectral gap；反复相乘便把信号偏向相同方向。",
+        "作者区分width collapse（单层输出随embedding width增大趋于rank one）和depth collapse（多层迭代造成token uniformity）。LayerNorm、residual和MLP会改变完整Transformer，但不能消除分析所指出的attention谱偏置。"
+      ]
+    },
+    {
+      "title": "模型与方法",
+      "paragraphs": [
+        "在随机Gaussian key/query/value与近isometric token输入下，作者用random matrix theory刻画attention spectrum，并证明Frobenius stable rank与token covariance的收缩率。理论同时覆盖softmax矩阵及一类i.i.d. Markov attention surrogates。",
+        "修正方法从attention matrix减去rank-one uniform component，即移除对应outlier/spectral gap；实验在synthetic layers、BERT/TinyBERT初始化及带residual/LayerNorm的deep stacks中比较vanilla、gap removal与更昂贵的full outlier removal。"
+      ]
+    },
+    {
+      "title": "核心结果与证据",
+      "paragraphs": [
+        "Theorem 1给出width趋于无穷时attention输出rank collapse的速率，并把它与outlier singular value分离。Figure 1显示softmax与多类random attention均出现相同gap；Figure 2用Markov surrogate核对理论scaling。",
+        "Figures 3–4展示BERT-family初始化以及随width/depth的rank下降：vanilla curves快速坍缩，减去uniform rank-one项后stable rank与signal propagation明显保持。Figure 5进一步显示deep product中该修正避免梯度范数爆炸。",
+        "Figure 6追踪真实softmax attention跨层的spectrum，Figure 7说明便宜的uniform-component removal接近逐层精确移除principal component的效果。附录在non-isometric和tokenized sentence输入上复核spectral gap。"
+      ]
+    },
+    {
+      "title": "有效性与局限",
+      "paragraphs": [
+        "主要定理依赖随机初始化、独立Gaussian weights、宽度/长度渐近和输入近isometry；训练后的attention、causal masks、multi-head correlations与positional structure可能显著改变spectrum。rank preservation不等价于下游accuracy提升。",
+        "实验多为初始化和synthetic propagation，模型与任务规模有限。减uniform component改变row sums与概率解释，实际架构需考虑residual scaling和optimization；论文未给大规模预训练的quality/compute对照。"
+      ]
+    },
+    {
+      "title": "复现与资源",
+      "paragraphs": [
+        "全文：https://arxiv.org/abs/2410.07799。PDF SHA-256：2d54a86b555c40851eae45c863fa09203313afc41c0c2da1e3c0ce93c7cb51a0。正文给出公开实现链接：https://github.com/thizirinait/Spectral-Analysis-of-Attention-Layers.git 。",
+        "复现需固定T、width d、depth L、Q/K/V scaling、softmax temperature、normalization/residual variant、random seeds及stable-rank/gradient-norm定义，并分别报告single-layer spectrum与multi-layer product。Evidence status: full-text verified theoretical/numerical study; no independent reproduction performed."
+      ]
+    },
+    {
+      "title": "阅读指南",
+      "paragraphs": [
+        "先读 pp.1–4 Figure 1和问题；pp.5–9看谱定理；pp.9–13读Figures 3–7与修正；pp.14–20看讨论和证明；pp.21–32为附录与额外实验。"
+      ]
+    }
+  ],
+  "cover": {
+    "mode": "source_figure",
+    "asset_path": "assets/collection-figures/record-94bdcd00b170e8be/figure-4-rank-collapse.webp",
+    "label": "Figure 4",
+    "visual_type": "comparison",
+    "evidence": "paper.pdf p. 10, Figure 4",
+    "alt_text": "vanilla attention与remove-the-gap修正在width和depth方向的rank collapse对比。",
+    "caption": "移除uniform-token谱分量后，stable rank随宽度与层数保持得更好。",
+    "selection_rationale": "Figure 4在同一组实验中并列width与depth两种rank collapse，并直接展示谱隙修正后的变化，是连接理论机制和数值结果的关键图证。"
+  },
+  "figure_refs": [
+    {
+      "label": "Figure 4",
+      "asset_path": "assets/collection-figures/record-94bdcd00b170e8be/figure-4-rank-collapse.webp",
+      "section": "核心结果与证据",
+      "role": "support the central result",
+      "evidence": "paper.pdf p. 10, Figure 4",
+      "alt_text": "vanilla attention与remove-the-gap修正在width和depth方向的rank collapse对比。",
+      "caption": "移除uniform-token谱分量后，stable rank随宽度与层数保持得更好。",
+      "interpretation": "The figure supports the stated protocol-specific claim, not an unrestricted generalization."
+    }
+  ],
+  "equation_refs": [
+    {
+      "label": "Remove-the-gap attention",
+      "latex": "A_\\perp=A-\\frac{1}{T}\\mathbf{1}\\mathbf{1}^{\\top}",
+      "role": "remove the uniform-token rank-one component associated with the spectral outlier",
+      "symbols": {
+        "A": "row-stochastic attention matrix",
+        "T": "number of tokens",
+        "1": "uniform token direction"
+      },
+      "evidence": "paper.pdf pp. 8–10, proposed spectral-gap removal and Figure 4",
+      "interpretation": "The operation targets the dominant uniform direction; architecture-level effects still require empirical validation."
+    }
+  ],
+  "evidence_refs": [
+    "paper.pdf pp. 1–4, Figure 1: spectral-gap mechanism",
+    "paper.pdf pp. 5–9: random-matrix theorems",
+    "paper.pdf pp. 9–13, Figures 3–7: width/depth and gradient experiments",
+    "paper.pdf pp. 21–32, Figures 8–11: non-isometric and model checks",
+    "source PDF SHA-256 2d54a86b555c40851eae45c863fa09203313afc41c0c2da1e3c0ce93c7cb51a0",
+    "Evidence status: full-text verified theoretical/numerical study; no independent reproduction performed."
+  ]
+}

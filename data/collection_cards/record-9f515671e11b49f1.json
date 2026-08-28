@@ -1,0 +1,147 @@
+{
+  "arxiv_id": "record-9f515671e11b49f1",
+  "source_version": "AISTATS 2024 manuscript",
+  "source_pdf": "https://arxiv.org/pdf/2307.03672",
+  "title_en": "Simulation-Free Schrödinger Bridges via Score and Flow Matching",
+  "title_zh": "通过得分匹配与流匹配实现免模拟薛定谔桥",
+  "curation_status": "full_text_verified",
+  "card_standard_version": "2.3",
+  "paper_profile": "theory_numerics",
+  "style_reference": "physicist_daily_arxiv",
+  "provenance": {
+    "program": "Collection",
+    "catalog": "Paper Collection",
+    "catalog_record_id": "9f515671e11b49f1",
+    "catalog_record_ids": [
+      "9f515671e11b49f1"
+    ],
+    "catalog_topic": "Flow Matching",
+    "collection_date": "2026-08-23",
+    "sampled_at": "2026-08-28",
+    "selected_by": "full_collection_backfill",
+    "sampling_seed": "not_applicable_full_collection",
+    "candidate_count": 452
+  },
+  "verified_metadata": {
+    "doi": null,
+    "arxiv_id": "2307.03672",
+    "version": "arXiv v3 full text",
+    "title": "Simulation-Free Schrödinger Bridges via Score and Flow Matching",
+    "authors": [
+      "Alexander Y. Tong",
+      "Nikolay Malkin",
+      "Kilian Fatras",
+      "Lazar Atanackovic",
+      "Yanlei Zhang",
+      "Guillaume Huguet",
+      "Guy Wolf",
+      "Yoshua Bengio"
+    ],
+    "journal": "Proceedings of The 27th International Conference on Artificial Intelligence and Statistics",
+    "volume": "PMLR 238",
+    "pages": "1279–1287",
+    "published": "2024",
+    "abstract": "[SF]2M trains Schrödinger bridge vector fields and scores from static endpoint couplings, avoiding simulation of the learned process during training.",
+    "comment": "AISTATS 2024 PMLR 238 article; arXiv v3 includes appendices"
+  },
+  "sections": [
+    {
+      "title": "作者信息",
+      "paragraphs": [
+        "作者 Alexander Y. Tong、Nikolay Malkin、Kilian Fatras、Lazar Atanackovic、Yanlei Zhang、Guillaume Huguet、Guy Wolf、Yoshua Bengio；AISTATS 2024, PMLR 238, 1279–1287；对应 arXiv:2307.03672v3。核验全文29页。"
+      ]
+    },
+    {
+      "title": "研究问题",
+      "paragraphs": [
+        "Schrödinger bridge在两个任意分布之间寻找entropy-regularized最优随机过程，但许多算法训练时要反复模拟当前SDE并拟合其marginals，代价高且误差累积。能否只采样静态endpoint pairs和解析conditional paths，同时学习probability-flow ODE与stochastic bridge SDE？"
+      ]
+    },
+    {
+      "title": "背景",
+      "paragraphs": [
+        "conditional flow matching可从简单的条件路径回归marginal velocity；score matching可学习同一路径的score。若endpoint coupling取Schrödinger/entropic OT coupling，对每对(x0,x1)使用Brownian-bridge-like Gaussian conditional，混合后的marginals就是目标bridge。",
+        "‘simulation-free’限定于training objective不需从当前learned process rollout；生成或评估动态时仍要数值积分ODE/SDE。真实Schrödinger coupling通常未知，论文用minibatch entropic OT近似，因此仍有batch bias和Sinkhorn计算。"
+      ]
+    },
+    {
+      "title": "模型与方法",
+      "paragraphs": [
+        "[SF]²M联合回归conditional probability-flow velocity与score，边缘化后得到同一marginal path的ODE和正/反向SDE。源—目标pair由static entropic OT coupling采样；作者证明在全局optimum下目标等价于对应Schrödinger bridge。",
+        "实验包括二维distribution transport、Gaussian ground truth、single-cell time-course interpolation/trajectory、Waddington landscape和gene regulatory network recovery；与DSB、IPF、OT-CFM等方法比较Wasserstein、NPE、MMD与生物指标。"
+      ]
+    },
+    {
+      "title": "核心结果与证据",
+      "paragraphs": [
+        "Figure 1显示8-Gaussians到moons的ODE与SDE trajectories，并说明同一网络体系可产生deterministic flow和stochastic bridge。Table 1突出训练时无需模拟或预训练score的算法差异。",
+        "Figure 2从scRNA-seq bridge提取time-dependent Waddington landscape；Tables 4–5在多套单细胞数据上比较distribution fit与held-out timepoint interpolation。[SF]²M整体有竞争力，但并非每个指标都统一最佳。",
+        "Figure 3从给定cell模拟多条未来轨迹，并将velocity-derived Granger关系用于GRN recovery；后续表格显示在synthetic networks上可恢复部分边。结果支持方法兼顾分布与动态推断，但生物因果解释仍依赖模型与观测时间分辨率。"
+      ]
+    },
+    {
+      "title": "有效性与局限",
+      "paragraphs": [
+        "理论等价要求函数类达到global optimum且endpoint coupling正确；minibatch OT并非全数据Schrödinger coupling，regularization、batch size与cost选择都会改变bridge。score/velocity estimation误差及ODE/SDE discretization仍影响结果。",
+        "single-cell snapshots没有真实cell lineage，识别的trajectory和landscape是模型解释而非直接观察。GRN recovery由velocity derivatives推断，不能替代干预因果验证；高维Sinkhorn成本、feature metric和时间不等间隔也是实践限制。"
+      ]
+    },
+    {
+      "title": "复现与资源",
+      "paragraphs": [
+        "全文：https://arxiv.org/abs/2307.03672；PMLR：https://proceedings.mlr.press/v238/tong24a.html；代码：https://github.com/atong01/conditional-flow-matching。PDF SHA-256：4b492b1d7b03f377e04c91d672578a4708b5bb908a7a7cc1bd311e5de2750a55。",
+        "复现需固定OT cost/ε、minibatch size、conditional variance schedule、ODE/SDE solver与steps、network/optimizer、cell preprocessing/PCA、timepoint split、seeds及各benchmark metric。Evidence status: full-text verified theoretical/numerical study; no independent reproduction performed."
+      ]
+    },
+    {
+      "title": "阅读指南",
+      "paragraphs": [
+        "先读 pp.1–3 Figure 1与贡献；pp.3–6看score/flow matching推导；pp.6–10读Tables 1–5和细胞结果；pp.11–15看结论与实验细节；pp.16–29为证明和补充实验。"
+      ]
+    }
+  ],
+  "cover": {
+    "mode": "source_figure",
+    "asset_path": "assets/collection-figures/record-9f515671e11b49f1/figure-1-ode-sde-paths.webp",
+    "label": "Figure 1",
+    "visual_type": "comparison",
+    "evidence": "paper.pdf p. 2, Figure 1",
+    "alt_text": "8-Gaussians到moons的deterministic ODE paths、stochastic SDE paths及单个条件bridge示意。",
+    "caption": "同一静态pair-conditioned训练目标可恢复共享marginals的流与随机桥。",
+    "selection_rationale": "Figure 1最直接说明[SF]²M训练对象和ODE/SDE双重输出。"
+  },
+  "figure_refs": [
+    {
+      "label": "Figure 1",
+      "asset_path": "assets/collection-figures/record-9f515671e11b49f1/figure-1-ode-sde-paths.webp",
+      "section": "核心结果与证据",
+      "role": "support the central result",
+      "evidence": "paper.pdf p. 2, Figure 1",
+      "alt_text": "8-Gaussians到moons的deterministic ODE paths、stochastic SDE paths及单个条件bridge示意。",
+      "caption": "同一静态pair-conditioned训练目标可恢复共享marginals的流与随机桥。",
+      "interpretation": "The figure supports the stated protocol-specific claim, not an unrestricted generalization."
+    }
+  ],
+  "equation_refs": [
+    {
+      "label": "Joint flow-score objective",
+      "latex": "\\mathcal{L}_{[SF]^2M}=\\mathcal{L}_{FM}(v_\\theta)+\\lambda(t)\\mathcal{L}_{SM}(s_\\theta)",
+      "role": "learn marginal velocity and score from analytically sampled conditional bridges",
+      "symbols": {
+        "v_theta": "learned probability-flow velocity",
+        "s_theta": "learned marginal score",
+        "lambda": "time-dependent weighting"
+      },
+      "evidence": "paper.pdf pp. 3–5, Eqs. (5)–(8)",
+      "interpretation": "At the ideal optimum, the two regressions define ODE and SDE representations of the selected bridge marginals."
+    }
+  ],
+  "evidence_refs": [
+    "paper.pdf pp. 1–3, Figure 1: simulation-free bridge overview",
+    "paper.pdf pp. 3–6: score and flow matching theory",
+    "paper.pdf pp. 6–10, Figure 2 and Tables 1–5: benchmarks and cell dynamics",
+    "paper.pdf pp. 9–11, Figure 3: trajectories and GRN recovery",
+    "source PDF SHA-256 4b492b1d7b03f377e04c91d672578a4708b5bb908a7a7cc1bd311e5de2750a55",
+    "Evidence status: full-text verified theoretical/numerical study; no independent reproduction performed."
+  ]
+}

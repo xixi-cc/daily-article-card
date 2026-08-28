@@ -1,0 +1,142 @@
+{
+  "arxiv_id": "record-8d02528b4e10e2a4",
+  "source_version": "arXiv manuscript",
+  "source_pdf": "https://arxiv.org/pdf/1509.03580",
+  "title_en": "Discovering governing equations from data by sparse identification of nonlinear dynamical systems",
+  "title_zh": "通过非线性动力系统稀疏辨识从数据发现控制方程",
+  "curation_status": "full_text_verified",
+  "card_standard_version": "2.3",
+  "paper_profile": "theory_numerics",
+  "style_reference": "physicist_daily_arxiv",
+  "provenance": {
+    "program": "Collection",
+    "catalog": "Paper Collection",
+    "catalog_record_id": "8d02528b4e10e2a4",
+    "catalog_record_ids": [
+      "8d02528b4e10e2a4"
+    ],
+    "catalog_topic": "Active Matter",
+    "collection_date": "2026-08-23",
+    "sampled_at": "2026-08-28",
+    "selected_by": "full_collection_backfill",
+    "sampling_seed": "not_applicable_full_collection",
+    "candidate_count": 452
+  },
+  "verified_metadata": {
+    "doi": "10.1073/pnas.1517384113",
+    "arxiv_id": "1509.03580",
+    "version": "arXiv full text",
+    "title": "Discovering governing equations from data by sparse identification of nonlinear dynamical systems",
+    "authors": [
+      "Steven L. Brunton",
+      "Joshua L. Proctor",
+      "J. Nathan Kutz"
+    ],
+    "journal": "Proceedings of the National Academy of Sciences",
+    "volume": "113",
+    "pages": "3932–3937",
+    "published": "2016",
+    "abstract": "SINDy identifies parsimonious nonlinear dynamical systems by sparse regression over a library of candidate functions evaluated on measured trajectories.",
+    "comment": "PNAS article with extended arXiv manuscript and supplementary examples"
+  },
+  "sections": [
+    {
+      "title": "作者信息",
+      "paragraphs": [
+        "作者 Steven L. Brunton、Joshua L. Proctor、J. Nathan Kutz；PNAS 113(15), 3932–3937 (2016)，DOI:10.1073/pnas.1517384113。核验 arXiv:1509.03580 全文26页，其中包含主文与扩展补充材料。"
+      ]
+    },
+    {
+      "title": "研究问题",
+      "paragraphs": [
+        "仅给定多变量状态随时间的测量X(t)，能否自动发现满足ẋ=f(x)的低维控制方程？核心困难是候选非线性数量很快爆炸、数值微分放大噪声，而一般黑箱预测器又不直接给出可解释方程。"
+      ]
+    },
+    {
+      "title": "背景",
+      "paragraphs": [
+        "论文提出后来被称为SINDy的框架：许多物理系统虽然非线性，但真正控制动力学的项在合适函数库中是稀疏的。将常数、多项式、三角函数等候选列组成Θ(X)，每个状态分量的导数只需少数非零系数。",
+        "目录把本文归入Active Matter，但原文是通用数据驱动动力系统方法，例子包括Lorenz、圆柱尾流和参数化系统，并未研究活性粒子；本卡保留目录标签，同时明确其真实范围。"
+      ]
+    },
+    {
+      "title": "模型与方法",
+      "paragraphs": [
+        "先由时间序列构造状态矩阵X和导数矩阵Ẋ，再解Ẋ=Θ(X)Ξ。作者采用sequentially thresholded least squares：拟合后删除小于阈值的系数，并在剩余support上反复回归，以近似l0稀疏选择。",
+        "圆柱绕流例子先用POD把高维流场压缩为少量modal coordinates，再加入mean-shift mode；稀疏模型恢复Landau型振幅动力学与slow manifold。参数化logistic map与Hopf normal form则把控制参数作为额外变量或候选项。"
+      ]
+    },
+    {
+      "title": "核心结果与证据",
+      "paragraphs": [
+        "Figure 1把完整流程画成数据矩阵、候选函数库、逐列稀疏系数与恢复方程，直接说明算法为何可解释。Lorenz实验在低噪声下精确恢复三个方程；噪声增大时短时轨迹仍贴合，但chaos使长期逐点误差不可避免地指数增长。",
+        "Figures 7–10展示圆柱尾流：POD轨迹位于抛物slow manifold，含shift mode的稀疏模型能描述从不稳定定点到limit cycle的transient；只用吸引子上的训练数据则无法可靠外推off-attractor dynamics。",
+        "补充材料还测试linear/cubic systems、logistic bifurcation与Hopf parameter discovery。证据说明稀疏结构在设计例子中可恢复，并不证明任意隐藏变量、非Markov或高噪声观测都存在唯一稀疏方程。"
+      ]
+    },
+    {
+      "title": "有效性与局限",
+      "paragraphs": [
+        "成功依赖候选library包含真实项、坐标选择合适、采样覆盖关键transient且导数估计足够稳定。高度相关的library columns会破坏identifiability；阈值是bias–variance超参数，论文没有给一般自动选择准则或finite-sample support-recovery保证。",
+        "流体例子依赖POD和物理启发的shift mode，说明表示学习并非由SINDy自动完成。测量噪声、outliers、控制输入、hidden variables和weak-form differentiation需要后续扩展；chaotic trajectory的长期不重合也不能简单判为方程错误。"
+      ]
+    },
+    {
+      "title": "复现与资源",
+      "paragraphs": [
+        "全文：https://arxiv.org/abs/1509.03580；期刊：https://doi.org/10.1073/pnas.1517384113。PDF SHA-256：018edd169c3057304a5a09e5b42622ef6e5eeb350c8e912730e5bc7e5a507255。原文补充材料给出算法与数据细节；现代维护实现可参考 PySINDy，但其版本并非本文原始实验环境。",
+        "复现应固定sampling interval、derivative scheme、library degree、column normalization、sparsity threshold、training window、noise realization及POD truncation，并同时报告equation support、coefficient error与trajectory metrics。Evidence status: full-text verified analytical/numerical study; no independent reproduction performed."
+      ]
+    },
+    {
+      "title": "阅读指南",
+      "paragraphs": [
+        "先读 pp.1–6 概念、Figure 1与算法；pp.7–14看Lorenz和cylinder-wake主证据；pp.15–21读补充数值例子；pp.22–26看实现与参数细节。"
+      ]
+    }
+  ],
+  "cover": {
+    "mode": "source_figure",
+    "asset_path": "assets/collection-figures/record-8d02528b4e10e2a4/figure-1-sindy-workflow.webp",
+    "label": "Figure 1",
+    "visual_type": "schematic",
+    "evidence": "paper.pdf p. 5, Figure 1",
+    "alt_text": "从状态与导数数据构造非线性候选库，再逐状态变量求稀疏系数并恢复控制方程。",
+    "caption": "真正活跃的少数library terms在系数矩阵中形成稀疏support，使输出保持可解释。",
+    "selection_rationale": "Figure 1把原始轨迹、候选函数库、稀疏回归和最终方程放在同一流程中，是理解SINDy核心机制最直接且信息完整的原文图证。"
+  },
+  "figure_refs": [
+    {
+      "label": "Figure 1",
+      "asset_path": "assets/collection-figures/record-8d02528b4e10e2a4/figure-1-sindy-workflow.webp",
+      "section": "核心结果与证据",
+      "role": "support the central result",
+      "evidence": "paper.pdf p. 5, Figure 1",
+      "alt_text": "从状态与导数数据构造非线性候选库，再逐状态变量求稀疏系数并恢复控制方程。",
+      "caption": "真正活跃的少数library terms在系数矩阵中形成稀疏support，使输出保持可解释。",
+      "interpretation": "The figure supports the stated protocol-specific claim, not an unrestricted generalization."
+    }
+  ],
+  "equation_refs": [
+    {
+      "label": "Sparse dynamics regression",
+      "latex": "\\dot X=\\Theta(X)\\Xi",
+      "role": "represent each state derivative with a sparse combination of candidate nonlinearities",
+      "symbols": {
+        "X": "sampled state matrix",
+        "Theta(X)": "candidate nonlinear feature library",
+        "Xi": "sparse coefficient matrix"
+      },
+      "evidence": "paper.pdf p. 5, Eqs. (6)–(7) and Figure 1",
+      "interpretation": "Equation discovery is conditional on a suitable library, coordinates and derivative estimates."
+    }
+  ],
+  "evidence_refs": [
+    "paper.pdf pp. 1–6, Figure 1: SINDy formulation and algorithm",
+    "paper.pdf pp. 7–12, Figures 3–6: Lorenz recovery and noise",
+    "paper.pdf pp. 12–15, Figures 7–10: cylinder-wake reduced dynamics",
+    "paper.pdf pp. 15–21: parameterized and supplementary systems",
+    "source PDF SHA-256 018edd169c3057304a5a09e5b42622ef6e5eeb350c8e912730e5bc7e5a507255",
+    "Evidence status: full-text verified analytical/numerical study; no independent reproduction performed."
+  ]
+}
