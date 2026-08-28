@@ -1,0 +1,139 @@
+{
+  "arxiv_id": "doi-10.1038-s44387-025-00057-z",
+  "source_version": "version of record",
+  "source_pdf": "https://www.nature.com/articles/s44387-025-00057-z.pdf",
+  "title_en": "A self-correcting multi-agent LLM framework for language-based physics simulation and explanation",
+  "title_zh": "面向自然语言物理仿真与解释的自纠错多智能体大模型框架",
+  "curation_status": "full_text_verified",
+  "card_standard_version": "2.3",
+  "paper_profile": "ai_empirical",
+  "style_reference": "physicist_daily_arxiv",
+  "provenance": {
+    "program": "Collection",
+    "catalog": "Paper Collection",
+    "catalog_record_id": "513dc1157f56f368",
+    "catalog_record_ids": [
+      "513dc1157f56f368"
+    ],
+    "catalog_topic": "LLM Agents",
+    "collection_date": "2026-08-23",
+    "sampled_at": "2026-08-28",
+    "selected_by": "full_collection_backfill",
+    "sampling_seed": "not_applicable_full_collection",
+    "candidate_count": 452
+  },
+  "verified_metadata": {
+    "doi": "10.1038/s44387-025-00057-z",
+    "version": "version of record",
+    "title": "A self-correcting multi-agent LLM framework for language-based physics simulation and explanation",
+    "authors": [
+      "Donggeun Park",
+      "Hyeonbin Moon",
+      "Seunghwa Ryu"
+    ],
+    "journal": "npj Artificial Intelligence",
+    "volume": "2",
+    "article": "10",
+    "published": "2026-01-20",
+    "abstract": "MCP-SIM coordinates six GPT-4o-based agents, persistent memory and a FEniCS execution loop to turn underspecified prompts into simulations and multilingual explanations on a curated twelve-task benchmark.",
+    "comment": "Open-access version of record; no Crossref update relation found"
+  },
+  "sections": [
+    {
+      "title": "作者信息",
+      "paragraphs": [
+        "作者 Donggeun Park、Hyeonbin Moon、Seunghwa Ryu；npj Artificial Intelligence 2, 10 (2026)，DOI:10.1038/s44387-025-00057-z。核验10页开放期刊版、Supplementary、Zenodo/GitHub 声明与 Crossref；未发现关联更正或撤稿。"
+      ]
+    },
+    {
+      "title": "研究问题",
+      "paragraphs": [
+        "自然语言提出有限元任务时常缺 geometry、材料、PDE 或 boundary conditions；一次性 LLM 生成的代码又可能语法错误、solver divergence 或物理不一致。论文问：把 clarification、code generation、execution、diagnosis、prompt revision 和 explanation 分给专门 agents，并共享历史记忆，能否减少人工介入并提高小型跨域基准的成功率？"
+      ]
+    },
+    {
+      "title": "背景",
+      "paragraphs": [
+        "MCP-SIM 由 Memory-Centric Orchestrator 协调六个 agents：Input Clarifier、Code Builder、Simulation Executor、Error Diagnosis、Input Rewriter、Mechanical Insight。Figure 1 的 Plan–Act–Reflect–Revise loop 会保存规范化问题、代码版本、错误日志和 error→fix 映射。",
+        "仿真后端是 FEniCS，agents 使用 GPT-4o 与人工设计的 physics-aware prompt templates。所谓 persistent memory 是该流程内的状态记录，不等于模型权重更新，也不自动证明生成解释科学正确。"
+      ]
+    },
+    {
+      "title": "模型与方法",
+      "paragraphs": [
+        "12个任务从完整的 elasticity/heat problems 递增到缺设定的 fluid、thermomechanical、piezoelectric 与 phase-field fracture。成功需代码可执行、归一化 governing-equation residual 低于10^-4且 field distribution 被作者判为 physically plausible。",
+        "三条 baseline 是 one-shot GPT、GPT+自动澄清、GPT+澄清+human diagnosis；它们分别保留不同程度人工操作。测试数量只有12，任务源于教程/作者设计且未报告多次随机重复、置信区间或 blind external graders。"
+      ]
+    },
+    {
+      "title": "核心结果与证据",
+      "paragraphs": [
+        "Figure 2 报告 B1、B2、B3 分别完成6/12、8/12、9/12，而 MCP-SIM 完成12/12；正文另一处写 B3 为10/12，图文存在需保留的内部不一致。不能把12/12写成一般物理仿真100%可靠。",
+        "多数 MCP-SIM 任务在不超过5个修订周期完成，但最难的 phase-field crack growth 需要10轮。Figure 3展示12个最终 field plots；这些图证明 pipeline 产生可运行输出，未与解析解或独立高精度 solver 对每项做统一误差基准。",
+        "作者以 fracture 例说明自动补全材料/边界、修复 variational form 和 mesh resolution。相对于人为设限的 baselines，完整 loop 的优势同时包含更多自动化步骤、记忆和诊断，因此不能从消融唯一归因于‘多智能体’或某一 agent。"
+      ]
+    },
+    {
+      "title": "有效性与局限",
+      "paragraphs": [
+        "基准规模小且 curated，任务/判据/agent prompts 均由作者掌控；缺少未见专业领域、对抗提示、错误物理先验、unsafe boundary conditions 和真实工程认证。physically plausible 仍需 human/external verification，residual 小只说明离散方程求解收敛，不保证方程选择正确。",
+        "GPT-4o 服务、prompt stochasticity、成本/延迟与依赖版本影响复现。系统会在含糊输入时自行补假设，这提高可执行性却可能偏离用户意图；高风险仿真不能取消专家审批。图文 B3 计数不一致也说明需直接核查 artifacts。"
+      ]
+    },
+    {
+      "title": "复现与资源",
+      "paragraphs": [
+        "期刊：https://doi.org/10.1038/s44387-025-00057-z；代码/数据：https://doi.org/10.5281/zenodo.15645333 与 https://github.com/KAIST-M4/MCP-SIM。PDF SHA-256：3055a70df955d5d540ef27ccfaaac88dc5a0a375764512dcee3880179afd6c3a。",
+        "复现需固定 GPT-4o snapshot、temperature、agent templates、memory schema、FEniCS/container、12 prompts、success judge、retry budget 与人工 baseline protocol。Evidence status: full-text verified version of record; no independent reproduction performed."
+      ]
+    },
+    {
+      "title": "阅读指南",
+      "paragraphs": [
+        "先读 pp.1–2 Figure 1建立 agent/记忆边界，再看 pp.3–4 Figure 2和 Table 1逐项核对任务、成功率与迭代数；pp.4–6看 fracture 与解释输出。最后读 Discussion/Methods，并特别记录 B3 图文计数差异和12-task外推限制。"
+      ]
+    }
+  ],
+  "cover": {
+    "mode": "source_figure",
+    "asset_path": "assets/collection-figures/doi-10.1038-s44387-025-00057-z/figure-2-mcp-sim-benchmark.webp",
+    "label": "Figure 2",
+    "visual_type": "comparison",
+    "evidence": "paper.pdf p. 4, Figure 2",
+    "alt_text": "12个物理仿真任务、四种 agent setup 的成功计数，以及各任务达到成功所需修订轮数。",
+    "caption": "完整 MCP-SIM loop 在作者的12任务基准上全部达到既定 residual 与 plausibility 判据。",
+    "selection_rationale": "Figure 2是全文唯一把任务难度、成功计数、迭代数和自动化范围并列的核心比较。"
+  },
+  "figure_refs": [
+    {
+      "label": "Figure 2",
+      "asset_path": "assets/collection-figures/doi-10.1038-s44387-025-00057-z/figure-2-mcp-sim-benchmark.webp",
+      "section": "核心结果与证据",
+      "role": "support the central result",
+      "evidence": "paper.pdf p. 4, Figure 2",
+      "alt_text": "12个物理仿真任务、四种 agent setup 的成功计数，以及各任务达到成功所需修订轮数。",
+      "caption": "完整 MCP-SIM loop 在作者的12任务基准上全部达到既定 residual 与 plausibility 判据。",
+      "interpretation": "The figure supports the stated protocol-specific claim, not an unrestricted generalization."
+    }
+  ],
+  "equation_refs": [
+    {
+      "label": "Numerical convergence criterion",
+      "latex": "r_k/r_0<10^{-4}",
+      "role": "declare a generated finite-element solve numerically converged",
+      "symbols": {
+        "r_k": "total governing-equation imbalance at iteration k",
+        "r_0": "initial imbalance"
+      },
+      "evidence": "paper.pdf p. 3, benchmark metrics",
+      "interpretation": "A small normalized residual does not validate whether the inferred PDE and boundary conditions match the user's intended physics."
+    }
+  ],
+  "evidence_refs": [
+    "paper.pdf pp. 1–3, Figure 1: agent roles, memory and correction loop",
+    "paper.pdf pp. 3–5, Figure 2 and Table 1: twelve-task benchmark",
+    "paper.pdf pp. 5–7: fracture case, explanations and limitations",
+    "source PDF SHA-256 3055a70df955d5d540ef27ccfaaac88dc5a0a375764512dcee3880179afd6c3a",
+    "Evidence status: full-text verified version of record; no independent reproduction performed."
+  ]
+}

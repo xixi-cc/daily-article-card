@@ -1,0 +1,155 @@
+{
+  "arxiv_id": "doi-10.1038-s42256-026-01233-9",
+  "source_version": "version of record",
+  "source_pdf": "https://www.nature.com/articles/s42256-026-01233-9.pdf",
+  "title_en": "Deep neural operator for free boundary problems",
+  "title_zh": "用于自由边界问题的深度神经算子",
+  "curation_status": "full_text_verified",
+  "card_standard_version": "2.3",
+  "paper_profile": "ai_empirical",
+  "style_reference": "physicist_daily_arxiv",
+  "provenance": {
+    "program": "Collection",
+    "catalog": "Paper Collection",
+    "catalog_record_id": "4e5d867d540801bc",
+    "catalog_record_ids": [
+      "4e5d867d540801bc"
+    ],
+    "catalog_topic": "AI for Science",
+    "collection_date": "2026-08-23",
+    "sampled_at": "2026-08-28",
+    "selected_by": "full_collection_backfill",
+    "sampling_seed": "not_applicable_full_collection",
+    "candidate_count": 452
+  },
+  "verified_metadata": {
+    "doi": "10.1038/s42256-026-01233-9",
+    "version": "version of record",
+    "title": "Deep neural operator for free boundary problems",
+    "authors": [
+      "Zongjia Long",
+      "Qi Zhou",
+      "Aiqing Zhu",
+      "Dong Dai",
+      "Yiqun Liu"
+    ],
+    "journal": "Nature Machine Intelligence",
+    "volume": "8",
+    "pages": "806–817",
+    "published": "2026-05-21",
+    "abstract": "FBNO learns a conjugate flow on a fixed reference domain together with a diffeomorphic map to evolving physical domains, enabling operator learning for free-boundary PDE families.",
+    "comment": "Open-access version of record; no Crossref update relation found"
+  },
+  "sections": [
+    {
+      "title": "作者信息",
+      "paragraphs": [
+        "作者 Zongjia Long、Qi Zhou、Aiqing Zhu、Dong Dai、Yiqun Liu；Nature Machine Intelligence 8, 806–817 (2026)，DOI:10.1038/s42256-026-01233-9。核验15页开放期刊版、Methods、Supplementary/Source Data 声明与 Crossref；未发现关联更正或撤稿。"
+      ]
+    },
+    {
+      "title": "研究问题",
+      "paragraphs": [
+        "经典 neural operator 通常在预先给定 domain 上学习 function-to-function map，但 free boundary problem 的输出场和定义域同时未知且互相耦合。论文问：能否把随时间变化的未知几何映射到固定 reference domain，在同一算子中预测内部物理场与移动边界，并保留 operator universal approximation 的理论基础？"
+      ]
+    },
+    {
+      "title": "背景",
+      "paragraphs": [
+        "FBNO 将原 FBP 看成 infinite-dimensional dynamical system：未知-domain flow map F_t 与固定-domain conjugate flow G_t 通过 homeomorphism H 相连。Figure 1 展示 H^{-1} 把初态映入 reference domain、G_t 演化，再由 H 返回物理域；网络同时学习场值和 diffeomorphism χ。",
+        "严格正的空间 Jacobian determinant 用作局部可逆约束，以避免网格折叠。该构造假设演化域与 reference domain 在所考虑时间内可微同胚；发生拓扑变化或 singularity 时不一定适用。"
+      ]
+    },
+    {
+      "title": "模型与方法",
+      "paragraphs": [
+        "框架支持 physics-informed 与 supervised data-driven 两种训练。前者联合 initial、fixed/free-boundary、PDE residual 与 diffeomorphism losses；后者直接用 u(x,t) 数据，无需显式构造每个参考点到物理点的配对。实现以 MIONet 类多输入算子作为基础网络。",
+        "数值验证包括一维 Stefan melting、二维 thermal–structural coupling 和 tumour-growth free boundary。Stefan 例用有限元生成训练/测试数据；肿瘤例共运行3,660个高保真模拟，并通过经验证的 interpolation 增广，划分3,000训练、600测试、60验证。"
+      ]
+    },
+    {
+      "title": "核心结果与证据",
+      "paragraphs": [
+        "Figure 2 中 Stefan problem 的场 u 平均 relative L2 error 为0.0125，自由边界 Γ_f 为0.0072；300个测试样本的误差分布和 Riemannian metric 分析支持对不同 forcing/domain 的稳定预测。误差是对作者有限元 reference 的 surrogate 精度，不是解析真解误差。",
+        "thermal–structural 例同时预测 density、temperature、velocity 和 geometry，Figure 3 报告各量约0.1%到2.8%的平均 relative L2 error；加入 physics-informed constraints 在作者设置下改善多物理量误差。",
+        "肿瘤例在训练分布覆盖的参数和初始几何上预测 size/nutrient fields；推理相对传统数值方法报告最高约10^4 speed-up，但训练、数据生成和硬件成本未计入单次推理比较。临床个体化治疗是潜在应用，不是临床验证。"
+      ]
+    },
+    {
+      "title": "有效性与局限",
+      "paragraphs": [
+        "近似定理保证在连续性、紧性和 diffeomorphic conjugacy 等假设下存在逼近，不保证有限网络、有限优化能找到全局最优。shock、pinch-off、merger 等 singularity/topology change 会破坏当前映射；多相问题还需显式耦合多个子域。",
+        "训练数据稀缺、interpolation bias 和 local minima 限制 OOD generalization。inference speed-up 不能替代 end-to-end cost；肿瘤模型是合成 PDE 数据，未输入真实患者 longitudinal scans，也未验证 treatment outcome。"
+      ]
+    },
+    {
+      "title": "复现与资源",
+      "paragraphs": [
+        "期刊：https://doi.org/10.1038/s42256-026-01233-9；开放 Supplementary 与 Source Data 位于期刊页面。PDF SHA-256：6d14e39b9a6e2a8a743028a2ca28105fc664fe3fc443b15871855f8e603ec2e2。",
+        "复现需固定 FBP equations、reference-domain parameterization、MIONet width/depth、sensor sampling、loss weights、Jacobian lower bound、FEM mesh/time step、data split、interpolation 和硬件计时口径。Evidence status: full-text verified version of record; no independent reproduction performed."
+      ]
+    },
+    {
+      "title": "阅读指南",
+      "paragraphs": [
+        "先读 pp.2–4 Figure 1 与 Eqs. (3)–(7)，确认 conjugacy/χ 的角色；p.5 Figure 2看 Stefan 精度，pp.6–8 Figures 3–4看多物理和肿瘤结果。最后读 pp.8–10 Discussion/Methods，重点检查 singularity、diffeomorphism、训练成本与临床外推边界。"
+      ]
+    }
+  ],
+  "cover": {
+    "mode": "source_figure",
+    "asset_path": "assets/collection-figures/doi-10.1038-s42256-026-01233-9/figure-2-stefan-validation.webp",
+    "label": "Figure 2",
+    "visual_type": "comparison",
+    "evidence": "paper.pdf p. 5, Figure 2",
+    "alt_text": "Stefan 问题中参考场、FBNO 预测、绝对误差、自由边界误差和测试集统计。",
+    "caption": "FBNO在所测 Stefan forcing family 上同时重建温度场与移动边界，平均相对误差约为百分之一量级。",
+    "selection_rationale": "Figure 2把定性场图、边界误差和300个测试样本统计放在一起，是最完整的基准证据。"
+  },
+  "figure_refs": [
+    {
+      "label": "Figure 2",
+      "asset_path": "assets/collection-figures/doi-10.1038-s42256-026-01233-9/figure-2-stefan-validation.webp",
+      "section": "核心结果与证据",
+      "role": "support the central result",
+      "evidence": "paper.pdf p. 5, Figure 2",
+      "alt_text": "Stefan 问题中参考场、FBNO 预测、绝对误差、自由边界误差和测试集统计。",
+      "caption": "FBNO在所测 Stefan forcing family 上同时重建温度场与移动边界，平均相对误差约为百分之一量级。",
+      "interpretation": "The figure supports the stated protocol-specific claim, not an unrestricted generalization."
+    }
+  ],
+  "equation_refs": [
+    {
+      "label": "Conjugate operator",
+      "latex": "\\mathcal F_t=\\mathcal H\\circ\\mathcal G_t\\circ\\mathcal H^{-1}",
+      "role": "move free-boundary evolution to a fixed reference domain",
+      "symbols": {
+        "F": "original free-boundary flow",
+        "G": "conjugate flow on the reference domain",
+        "H": "homeomorphism between domains"
+      },
+      "evidence": "paper.pdf pp. 3–4, methodology",
+      "interpretation": "The factorization is useful only while a suitable invertible smooth correspondence exists."
+    },
+    {
+      "label": "Diffeomorphic constraint",
+      "latex": "\\det(\\partial\\chi/\\partial\\xi)>\\delta>0",
+      "role": "prevent local folding of the learned domain map",
+      "symbols": {
+        "chi": "reference-to-physical coordinate map",
+        "xi": "reference coordinate",
+        "delta": "positive safety margin"
+      },
+      "evidence": "paper.pdf p. 9, Eq. (13)",
+      "interpretation": "Positive local Jacobian supports invertibility but does not cover topology-changing boundaries."
+    }
+  ],
+  "evidence_refs": [
+    "paper.pdf pp. 2–4, Figure 1 and Eqs. (3)–(7): conjugate-system construction",
+    "paper.pdf p. 5, Figure 2: Stefan validation",
+    "paper.pdf pp. 6–8, Figures 3–4: thermal-structural and tumour tests",
+    "paper.pdf pp. 8–10: limitations and training methods",
+    "source PDF SHA-256 6d14e39b9a6e2a8a743028a2ca28105fc664fe3fc443b15871855f8e603ec2e2",
+    "Evidence status: full-text verified version of record; no independent reproduction performed."
+  ]
+}
