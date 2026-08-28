@@ -1,0 +1,153 @@
+{
+  "arxiv_id": "doi-10.1038-s41598-022-25638-9",
+  "source_version": "corrected version of record",
+  "source_pdf": "https://www.nature.com/articles/s41598-022-25638-9.pdf",
+  "title_en": "Sparse inference and active learning of stochastic differential equations from data",
+  "title_zh": "从数据稀疏推断并主动学习随机微分方程",
+  "curation_status": "full_text_verified",
+  "card_standard_version": "2.3",
+  "paper_profile": "theory_numerics",
+  "style_reference": "physicist_daily_arxiv",
+  "provenance": {
+    "program": "Collection",
+    "catalog": "Paper Collection",
+    "catalog_record_id": "d592ab7cb81d857c",
+    "catalog_record_ids": [
+      "d592ab7cb81d857c"
+    ],
+    "catalog_topic": "Active Matter",
+    "collection_date": "2026-08-23",
+    "sampled_at": "2026-08-28",
+    "selected_by": "full_collection_backfill",
+    "sampling_seed": "not_applicable_full_collection",
+    "candidate_count": 452
+  },
+  "verified_metadata": {
+    "doi": "10.1038/s41598-022-25638-9",
+    "version": "version of record with 2024 author correction",
+    "title": "Sparse inference and active learning of stochastic differential equations from data",
+    "authors": [
+      "Yunfei Huang",
+      "Youssef Mabrouk",
+      "Gerhard Gompper",
+      "Benedikt Sabass"
+    ],
+    "journal": "Scientific Reports",
+    "volume": "12",
+    "article": "21691",
+    "published": "2022-12-15",
+    "abstract": "Automatic threshold sparse Bayesian learning identifies drift and diffusion libraries, while feedback perturbations improve global SDE inference in multistable simulations.",
+    "comment": "Author Correction 10.1038/s41598-024-57801-9 (2024-03-29) supplements the Data Availability statement; scientific results unchanged"
+  },
+  "sections": [
+    {
+      "title": "作者信息",
+      "paragraphs": [
+        "作者 Yunfei Huang、Youssef Mabrouk、Gerhard Gompper、Benedikt Sabass；Scientific Reports 12, 21691 (2022)，DOI:10.1038/s41598-022-25638-9。核验17页开放期刊版及2024 Author Correction 10.1038/s41598-024-57801-9；更正补充Data Availability，不改变结果。"
+      ]
+    },
+    {
+      "title": "研究问题",
+      "paragraphs": [
+        "从有限含噪轨迹识别ODE/PDE/SDE时，候选函数库通常高度共线，稀疏阈值又依赖人工调参；多稳态轨迹还可能只覆盖一个basin。论文问：Bayesian Laplace prior能否自动选择稀疏项并给不确定度，以及反馈施加小扰动能否主动探索未采样区域以恢复全局Langevin方程？"
+      ]
+    },
+    {
+      "title": "背景",
+      "paragraphs": [
+        "Kramers–Moyal系数由短时间增量估计：一阶对应drift，二阶对应diffusion。把候选函数在数据点上的值组成library Θ，未知系数ξ进入线性逆问题。Automatic threshold sparse Bayesian learning（ATSBL）用Laplacian prior促进稀疏并迭代删除低可信项。",
+        "Figure 1以一维SDE展示从轨迹、binned KM estimates到正确drift/diffusion terms的恢复，并比较Laplacian与Gaussian prior的数据效率。"
+      ]
+    },
+    {
+      "title": "模型与方法",
+      "paragraphs": [
+        "作者先用Euler–Maruyama生成已知SDE轨迹，估计conditional moments并按state bins平均；ATSBL同时拟合D(1)与D(2)。随后扩展到time-dependent SDE、Lorenz ODE和PDE，以已知真值评估coefficient error与term selection。",
+        "AISO主动学习循环根据当前模型的不确定性构造外力，使轨迹访问信息不足区域；每轮收集新数据、减去已知控制力并重估方程。控制只在模拟中施加，且假定可测状态与可加控制通道已知。"
+      ]
+    },
+    {
+      "title": "核心结果与证据",
+      "paragraphs": [
+        "Figure 1的一维多项式drift/diffusion例中，ATSBL在作者的采样范围内恢复正确非零项和近真值系数；Laplacian prior比Gaussian prior用更少数据达到低误差。该比较依赖候选库含真项和所用阈值/噪声模型。",
+        "Figure 2显示time-dependent force及短trajectory下的adaptive binning能改善KM估计。有限sampling interval会产生系统偏差，作者明确指出需要finite-time corrections；本文重点不是消除这类偏差。",
+        "Figure 3的二维多井势中，被动轨迹长时间困于单井，局部模型对其他区域错误；AISO逐轮降低uncertainty并增加跨saddle rare events，使global drift coefficients接近真值。这是已知模拟系统的闭环验证，不是实验自主发现。"
+      ]
+    },
+    {
+      "title": "有效性与局限",
+      "paragraphs": [
+        "稀疏恢复假设真实方程位于候选library；遗漏项、共线性、measurement noise或隐藏变量会造成错误结构。KM估计需要Markov近似、足够小采样间隔和充分bin occupancy；高维时binning与library规模迅速增长。",
+        "AISO需要能够安全、近似加性地操纵系统并知道控制力；真实实验可能有delay、state constraints和control-dependent noise。作者更正只补充代码/数据位置，不增强科学验证。"
+      ]
+    },
+    {
+      "title": "复现与资源",
+      "paragraphs": [
+        "期刊：https://doi.org/10.1038/s41598-022-25638-9；更正：https://doi.org/10.1038/s41598-024-57801-9；代码与数据：https://doi.org/10.5281/zenodo.10732552。核验PDF SHA-256：5aaa46b06fb6edc96dbb68f102ca8921959ebb49ae753ff6e98a2118d828e466。",
+        "复现需固定dt、trajectory length、bins、library、prior、threshold iterations、control cost、uncertainty metric与seeds。Evidence status: full-text verified corrected record; no independent reproduction performed."
+      ]
+    },
+    {
+      "title": "阅读指南",
+      "paragraphs": [
+        "先读 pp.2–7的KM、library与ATSBL公式，再看 p.9 Figure 1的一维验证；p.10–11 Figure 2检查sampling/binning，p.12 Figure 3是主动学习主结果。最后读Discussion和2024 correction，区分算法结构、模拟性能与数据声明更新。"
+      ]
+    }
+  ],
+  "cover": {
+    "mode": "source_figure",
+    "asset_path": "assets/collection-figures/doi-10.1038-s41598-022-25638-9/figure-1-sde-inference.webp",
+    "label": "Figure 1",
+    "visual_type": "comparison",
+    "evidence": "paper.pdf p. 10, Figure 1",
+    "alt_text": "一维SDE轨迹、漂移/扩散估计、稀疏恢复方程及prior误差比较。",
+    "caption": "ATSBL把含噪Kramers–Moyal估计投影到稀疏候选库并恢复已知一维SDE。",
+    "selection_rationale": "Figure 1完整展示从随机轨迹、条件矩估计到稀疏可解释方程及误差比较的基础验证。"
+  },
+  "figure_refs": [
+    {
+      "label": "Figure 1",
+      "asset_path": "assets/collection-figures/doi-10.1038-s41598-022-25638-9/figure-1-sde-inference.webp",
+      "section": "核心结果与证据",
+      "role": "support the central result",
+      "evidence": "paper.pdf p. 10, Figure 1",
+      "alt_text": "一维SDE轨迹、漂移/扩散估计、稀疏恢复方程及prior误差比较。",
+      "caption": "ATSBL把含噪Kramers–Moyal估计投影到稀疏候选库并恢复已知一维SDE。",
+      "interpretation": "The figure supports the stated protocol-specific claim, not an unrestricted generalization."
+    }
+  ],
+  "equation_refs": [
+    {
+      "label": "Kramers–Moyal coefficients",
+      "latex": "D^{(n)}(x)=\\frac{1}{n!}\\lim_{\\tau\\to0}\\frac{\\langle[X(t+\\tau)-X(t)]^n\\mid X(t)=x\\rangle}{\\tau}",
+      "role": "estimate drift and diffusion from conditional increments",
+      "symbols": {
+        "D1": "drift",
+        "D2": "diffusion coefficient",
+        "tau": "sampling lag"
+      },
+      "evidence": "paper.pdf p. 2, Eq. (2)",
+      "interpretation": "Finite lag and sparse occupancy bias these estimates unless their limits are controlled."
+    },
+    {
+      "label": "Sparse library model",
+      "latex": "\\mathcal F_\\ell(Z)=\\Theta(Z)\\boldsymbol\\xi_\\ell",
+      "role": "cast equation discovery as sparse linear inference",
+      "symbols": {
+        "Theta": "candidate-function library",
+        "xi": "sparse coefficients"
+      },
+      "evidence": "paper.pdf p. 3, Eqs. (3)–(4)",
+      "interpretation": "Interpretability is conditional on the true terms being represented in the library."
+    }
+  ],
+  "evidence_refs": [
+    "paper.pdf pp. 2–7: KM estimation and ATSBL",
+    "paper.pdf p. 9, Figure 1: one-dimensional SDE recovery",
+    "paper.pdf pp. 10–12, Figures 2–3: adaptive binning and AISO",
+    "Author Correction DOI 10.1038/s41598-024-57801-9: Data Availability update",
+    "source PDF SHA-256 5aaa46b06fb6edc96dbb68f102ca8921959ebb49ae753ff6e98a2118d828e466",
+    "Evidence status: full-text verified corrected record; no independent reproduction performed."
+  ]
+}

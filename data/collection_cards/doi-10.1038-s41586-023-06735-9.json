@@ -1,0 +1,142 @@
+{
+  "arxiv_id": "doi-10.1038-s41586-023-06735-9",
+  "source_version": "version of record",
+  "source_pdf": "https://www.nature.com/articles/s41586-023-06735-9.pdf",
+  "title_en": "Scaling deep learning for materials discovery",
+  "title_zh": "扩展深度学习以发现材料",
+  "curation_status": "full_text_verified",
+  "card_standard_version": "2.3",
+  "paper_profile": "ai_empirical",
+  "style_reference": "physicist_daily_arxiv",
+  "provenance": {
+    "program": "Collection",
+    "catalog": "Paper Collection",
+    "catalog_record_id": "155d977401d19b7b",
+    "catalog_record_ids": [
+      "155d977401d19b7b"
+    ],
+    "catalog_topic": "AI for Science",
+    "collection_date": "2026-08-23",
+    "sampled_at": "2026-08-28",
+    "selected_by": "full_collection_backfill",
+    "sampling_seed": "not_applicable_full_collection",
+    "candidate_count": 452
+  },
+  "verified_metadata": {
+    "doi": "10.1038/s41586-023-06735-9",
+    "version": "version of record",
+    "title": "Scaling deep learning for materials discovery",
+    "authors": [
+      "Amil Merchant",
+      "Simon Batzner",
+      "Samuel S. Schoenholz",
+      "Muratahan Aykol",
+      "Gowoon Cheon",
+      "Ekin Dogus Cubuk"
+    ],
+    "journal": "Nature",
+    "volume": "624",
+    "pages": "80–85",
+    "published": "2023-11-29",
+    "abstract": "GNoME uses graph networks and large-scale active learning to identify 2.2 million candidate structures below the then-current computational convex hull.",
+    "comment": "Open-access version of record; no Crossref update relation found"
+  },
+  "sections": [
+    {
+      "title": "作者信息",
+      "paragraphs": [
+        "作者 Amil Merchant、Simon Batzner、Samuel S. Schoenholz、Muratahan Aykol、Gowoon Cheon、Ekin Dogus Cubuk；Nature 624, 80–85 (2023)，DOI:10.1038/s41586-023-06735-9。核验11页开放期刊版、Methods和Crossref；未发现关联更正或撤稿。"
+      ]
+    },
+    {
+      "title": "研究问题",
+      "paragraphs": [
+        "既有材料数据库只有约数万种DFT稳定晶体，而组合/结构空间巨大；早期ML在真正out-of-distribution候选上的稳定性预测不够准确。论文问：扩大graph-network训练、候选生成与DFT主动学习循环，能否提高命中率并发现数量级更多的计算稳定结构？"
+      ]
+    },
+    {
+      "title": "背景",
+      "paragraphs": [
+        "GNoME并用composition-only与structure-aware GNN。候选来自prototype substitution和随机结构搜索；模型预测decomposition energy后筛选，DFT松弛提供新标签，再迭代六轮。稳定性按相对于已有竞争相convex hull的PBE能量判断。",
+        "Figure 1展示active-learning pipeline、训练集增长、实验匹配样例和命中率提升。候选是计算结构，‘发现’首先指通过DFT筛选，不等于全部已合成。"
+      ]
+    },
+    {
+      "title": "模型与方法",
+      "paragraphs": [
+        "结构模型用图消息传递预测总能量/formation energy；composition模型在没有候选结构时先筛化学式。DFT验证包括结构松弛与相分离能计算，新结果加入训练。最终还训练大规模interatomic potential，测试energy/force prediction与AIMD迁移。",
+        "评估含time-split/novel-composition等OOD划分，但candidate generation与数据库本身存在化学先验。hull会随新竞争相加入而变化；论文明确一些当前稳定候选未来可能被新结构推到hull上方。"
+      ]
+    },
+    {
+      "title": "核心结果与证据",
+      "paragraphs": [
+        "六轮主动学习后，作者报告约2.2 million个结构低于当时Materials Project convex hull，其中约381,000个为new compositions；prototype数量从约8,000扩展到45,500。该数字是PBE计算稳定候选，不是实验稳定材料计数。",
+        "Figure 1d显示最终GNoME筛选相对早期模型将DFT hit rate提高约一个数量级。736个预测结构后来与独立实验数据库中的结构匹配，且配套A-Lab工作合成了部分目标；匹配提供外部支持，但不构成对220万候选的普遍验证。",
+        "Figure 3显示interatomic potential随数据和模型规模呈幂律式改善，并在不同温度AIMD上迁移。准确率仍受DFT标签、元素覆盖、磁性/电荷状态和长程相互作用限制，模型速度或低loss不能替代高精度量子化学或实验。"
+      ]
+    },
+    {
+      "title": "有效性与局限",
+      "paragraphs": [
+        "PBE formation energy有系统误差，0 K hull忽略熵、缺陷、动力学和合成路线。近hull候选对误差很敏感；结构去重与prototype归类也影响数量。论文的稳定性阈值不是实验可合成性的充分条件。",
+        "大规模active learning消耗大量DFT计算，训练与候选生成由Google内部基础设施完成；完全复现需要数据快照、代码、算力与筛选细节。实验matched structures可能受发表/数据库选择偏差，不能直接估计全体precision。"
+      ]
+    },
+    {
+      "title": "复现与资源",
+      "paragraphs": [
+        "期刊：https://doi.org/10.1038/s41586-023-06735-9；项目数据：https://next-gen.materialsproject.org。核验PDF SHA-256：f1af6c92eda54f5bd84eb5012f3010d7bb9167dca337414cffca81623b4a535a。复现需固定database snapshot、DFT functional/settings、hull construction、candidate generators、deduplication、GNN规模、rounds与splits。",
+        "应同时报告候选数、DFT hit rate、hull threshold、元素覆盖和独立实验匹配规则。Evidence status: full-text verified version of record; no independent reproduction performed."
+      ]
+    },
+    {
+      "title": "阅读指南",
+      "paragraphs": [
+        "先看 pp.2–3 Figure 1理解GNoME循环和hit-rate指标，再看 pp.3–4 Figure 2的220万结构组成。p.4–5 Figure 3是势函数缩放；最后读Methods和limitations，将模型预测、DFT确认、数据库匹配与实验合成分成四级证据。"
+      ]
+    }
+  ],
+  "cover": {
+    "mode": "source_figure",
+    "asset_path": "assets/collection-figures/doi-10.1038-s41586-023-06735-9/figure-1-gnome.webp",
+    "label": "Figure 1",
+    "visual_type": "schematic",
+    "evidence": "paper.pdf p. 2, Figure 1",
+    "alt_text": "GNoME候选生成、GNN筛选、DFT验证与主动学习循环及命中率图。",
+    "caption": "GNoME用六轮主动学习把模型筛选与DFT验证连接起来，提高计算稳定结构的搜索效率。",
+    "selection_rationale": "Figure 1同时给出候选生成流程、训练数据增长、实验匹配样例与搜索效率指标。"
+  },
+  "figure_refs": [
+    {
+      "label": "Figure 1",
+      "asset_path": "assets/collection-figures/doi-10.1038-s41586-023-06735-9/figure-1-gnome.webp",
+      "section": "核心结果与证据",
+      "role": "support the central result",
+      "evidence": "paper.pdf p. 2, Figure 1",
+      "alt_text": "GNoME候选生成、GNN筛选、DFT验证与主动学习循环及命中率图。",
+      "caption": "GNoME用六轮主动学习把模型筛选与DFT验证连接起来，提高计算稳定结构的搜索效率。",
+      "interpretation": "The figure supports the stated protocol-specific claim, not an unrestricted generalization."
+    }
+  ],
+  "equation_refs": [
+    {
+      "label": "Convex-hull stability",
+      "latex": "E_{\\rm hull}=E_{\\rm form}-E_{\\rm convex\\ hull}",
+      "role": "classify a candidate against competing phases",
+      "symbols": {
+        "E_form": "DFT formation energy",
+        "E_convex_hull": "lowest mixture energy at the same composition"
+      },
+      "evidence": "paper.pdf pp. 2–4, stability definitions",
+      "interpretation": "A non-positive value indicates computational stability only within the database and DFT approximation."
+    }
+  ],
+  "evidence_refs": [
+    "paper.pdf pp. 2–3, Figure 1: GNoME pipeline and hit rate",
+    "paper.pdf pp. 3–4, Figure 2: discovered candidate counts",
+    "paper.pdf pp. 4–5, Figure 3: interatomic-potential scaling",
+    "source PDF SHA-256 f1af6c92eda54f5bd84eb5012f3010d7bb9167dca337414cffca81623b4a535a",
+    "Evidence status: full-text verified version of record; no independent reproduction performed."
+  ]
+}

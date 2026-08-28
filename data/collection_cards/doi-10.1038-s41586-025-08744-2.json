@@ -1,0 +1,141 @@
+{
+  "arxiv_id": "doi-10.1038-s41586-025-08744-2",
+  "source_version": "version of record",
+  "source_pdf": "https://www.nature.com/articles/s41586-025-08744-2.pdf",
+  "title_en": "Mastering diverse control tasks through world models",
+  "title_zh": "通过世界模型掌握多样化控制任务",
+  "curation_status": "full_text_verified",
+  "card_standard_version": "2.3",
+  "paper_profile": "ai_empirical",
+  "style_reference": "physicist_daily_arxiv",
+  "provenance": {
+    "program": "Collection",
+    "catalog": "Paper Collection",
+    "catalog_record_id": "2624e1e69131305b",
+    "catalog_record_ids": [
+      "2624e1e69131305b"
+    ],
+    "catalog_topic": "World Models",
+    "collection_date": "2026-08-23",
+    "sampled_at": "2026-08-28",
+    "selected_by": "full_collection_backfill",
+    "sampling_seed": "not_applicable_full_collection",
+    "candidate_count": 452
+  },
+  "verified_metadata": {
+    "doi": "10.1038/s41586-025-08744-2",
+    "version": "version of record",
+    "title": "Mastering diverse control tasks through world models",
+    "authors": [
+      "Danijar Hafner",
+      "Jurgis Pasukonis",
+      "Jimmy Ba",
+      "Timothy Lillicrap"
+    ],
+    "journal": "Nature",
+    "volume": "640",
+    "pages": "647–653",
+    "published": "2025-04-02",
+    "abstract": "DreamerV3 uses a recurrent world model and imagined trajectories with one fixed hyperparameter configuration across more than 150 control tasks.",
+    "comment": "Version of record; no Crossref update relation found"
+  },
+  "sections": [
+    {
+      "title": "作者信息",
+      "paragraphs": [
+        "作者 Danijar Hafner、Jurgis Pasukonis、Jimmy Ba、Timothy Lillicrap；Nature 640, 647–653 (2025)，DOI:10.1038/s41586-025-08744-2。核验19页期刊版含Extended Data/Methods、代码声明与Crossref；未发现关联更正或撤稿。"
+      ]
+    },
+    {
+      "title": "研究问题",
+      "paragraphs": [
+        "强化学习算法常针对Atari、连续控制、3D导航或Minecraft分别调参。论文问：一个学习latent world model、在想象轨迹中训练actor–critic的算法，能否用同一组hyperparameters跨150余种视觉与状态控制任务稳定学习，并在数据效率上达到强基线？"
+      ]
+    },
+    {
+      "title": "背景",
+      "paragraphs": [
+        "Dreamer将观察编码为recurrent state-space model，预测reward、continuation与下一latent state；actor在模型生成的imagined trajectories上优化，critic估计回报。DreamerV3引入symlog predictions、two-hot regression、free bits、percentile return normalization和unimix等稳定化技术。",
+        "Figure 1给出world-model、critic和actor三网络的训练流。world model不是生成任意真实世界视频，而是对训练环境中action-conditioned dynamics的任务相关近似。"
+      ]
+    },
+    {
+      "title": "模型与方法",
+      "paragraphs": [
+        "评估覆盖Atari、ProcGen、DMLab、Meta-World、Atari100k、Crafter、Minecraft和多类continuous control，总计超过150 tasks。主张强调固定超参数；网络规模随预设配置变化，环境wrapper、action repeat和训练步数仍按benchmark协议。",
+        "模型以latent KL regularization平衡representation与dynamics losses；critic用离散桶预测return，actor通过想象回报反传。Minecraft diamond challenge从pixels与稀疏reward学习，无demonstrations或手工curriculum，但含环境接口和已知action space。"
+      ]
+    },
+    {
+      "title": "核心结果与证据",
+      "paragraphs": [
+        "Figure 4汇总各domain normalized scores：固定配置的Dreamer在多数组合上达到或超过专用基线，并通常用更少environment interactions。跨suite平均会掩盖单任务失败，因此正文同时报告各task curves与置信区间。",
+        "Figure 5中Dreamer从头收集经验并在Minecraft获得diamond，成功率随训练增长；这是特定游戏版本、action abstraction和大规模训练下的结果，不等于开放世界一般智能。",
+        "Figure 6的ablations显示return normalization、KL balancing、free bits等对跨domain稳定性重要，模型与数据规模增加时performance总体上升。消融是组合算法内证据，不能唯一证明每项在所有环境的独立因果作用。"
+      ]
+    },
+    {
+      "title": "有效性与局限",
+      "paragraphs": [
+        "任务虽多但都为模拟benchmark；没有实体机器人安全、sim-to-real、传感延迟或执行器故障验证。固定hyperparameters不等于零先验：architecture、observation preprocessing、reward和benchmark budget已经确定。",
+        "world model可能在训练分布外产生错误想象，actor会利用model bias；KL与regularizers是经验稳定化而非正确动力学保证。算力、replay和实现质量影响比较，部分baseline结果来自文献而非统一重跑。"
+      ]
+    },
+    {
+      "title": "复现与资源",
+      "paragraphs": [
+        "期刊：https://doi.org/10.1038/s41586-025-08744-2；代码：https://github.com/danijar/dreamerv3。核验PDF SHA-256：b34e999951cb5b8b84594f3936b1c395e9d51e563e0932273e9197cee66e37ef。复现需固定commit、JAX/XLA、environment versions、frames/action repeat、replay ratio、model size、seed和evaluation episodes。",
+        "跨算法比较需统一interaction budget和score normalization。Evidence status: full-text verified version of record benchmarks; no independent reproduction performed."
+      ]
+    },
+    {
+      "title": "阅读指南",
+      "paragraphs": [
+        "先看 pp.2–3 Figure 1理解latent imagination，再看 p.3 Figure 2的任务范围与p.4 Figure 3的视频预测。核心比较在 p.5 Figure 4，Minecraft和消融看 pp.6–7 Figures 5–6；最后读Methods核对固定与变化的配置。"
+      ]
+    }
+  ],
+  "cover": {
+    "mode": "source_figure",
+    "asset_path": "assets/collection-figures/doi-10.1038-s41586-025-08744-2/figure-4-dreamer-benchmarks.webp",
+    "label": "Figure 4",
+    "visual_type": "comparison",
+    "evidence": "paper.pdf p. 5, Figure 4",
+    "alt_text": "Dreamer与多种强化学习基线在七个任务域上的标准化分数柱状图。",
+    "caption": "固定超参数的Dreamer在多个视觉与连续控制suite上取得广泛而非逐任务一致的高性能。",
+    "selection_rationale": "Figure 4是‘多样任务’主张的直接跨域证据，并保留各benchmark与强基线的差异。"
+  },
+  "figure_refs": [
+    {
+      "label": "Figure 4",
+      "asset_path": "assets/collection-figures/doi-10.1038-s41586-025-08744-2/figure-4-dreamer-benchmarks.webp",
+      "section": "核心结果与证据",
+      "role": "support the central result",
+      "evidence": "paper.pdf p. 5, Figure 4",
+      "alt_text": "Dreamer与多种强化学习基线在七个任务域上的标准化分数柱状图。",
+      "caption": "固定超参数的Dreamer在多个视觉与连续控制suite上取得广泛而非逐任务一致的高性能。",
+      "interpretation": "The figure supports the stated protocol-specific claim, not an unrestricted generalization."
+    }
+  ],
+  "equation_refs": [
+    {
+      "label": "World-model objective",
+      "latex": "\\mathcal L=\\mathcal L_{\\rm pred}+\\beta_{\\rm dyn}\\mathcal L_{\\rm dyn}+\\beta_{\\rm rep}\\mathcal L_{\\rm rep}",
+      "role": "train predictions while regularizing recurrent latent states",
+      "symbols": {
+        "L_pred": "observation/reward/continuation prediction",
+        "L_dyn": "dynamics KL",
+        "L_rep": "representation KL"
+      },
+      "evidence": "paper.pdf pp. 2–3, learning algorithm",
+      "interpretation": "KL balancing controls latent predictability but does not guarantee an exact environment model."
+    }
+  ],
+  "evidence_refs": [
+    "paper.pdf pp. 2–3, Figure 1: Dreamer architecture",
+    "paper.pdf pp. 3–5, Figures 2–4: domains and benchmark scores",
+    "paper.pdf pp. 5–7, Figures 5–6: Minecraft and ablations",
+    "source PDF SHA-256 b34e999951cb5b8b84594f3936b1c395e9d51e563e0932273e9197cee66e37ef",
+    "Evidence status: full-text verified version of record; no independent reproduction performed."
+  ]
+}
