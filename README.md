@@ -2,6 +2,14 @@
 
 一个展示 physics+AI arXiv 精选论文的静态网站。每日 Codex 自动任务直接检查 arXiv daily listing，独立完成筛选、全文证据核验、S 级判定、中文论文卡片生成和 GitHub Pages 发布。
 
+## 许可与引用
+
+原创中文概述、评价、证据综合、局限和阅读指南采用 CC BY-NC 4.0；原创网站、
+构建器和验证器代码采用 MIT。原论文、摘要、公式、图表和其他第三方材料不在
+本站授权范围内。完整边界见 [`LICENSE.md`](LICENSE.md)，具体卡片的中英文引用
+格式见 [`CITATION.md`](CITATION.md) 和 [`CITATION.cff`](CITATION.cff)。引用卡片
+不能替代对原始论文的正式引用。
+
 ## 功能
 
 - 每日自动收录 Codex 按固定 40 分标准评为 S 的论文

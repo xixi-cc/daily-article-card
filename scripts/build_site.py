@@ -1003,7 +1003,7 @@ def generate_index_html(program: str = "Daily") -> str:
 
     <footer class="footer">
       <div class="container">
-        <p>内容来自 <a href="https://arxiv.org" target="_blank" rel="noopener noreferrer">arXiv.org</a>，封面与阅读卡片由静态站点生成器构建。</p>
+        <p>内容来自 <a href="https://arxiv.org" target="_blank" rel="noopener noreferrer">arXiv.org</a>；原创解读采用 CC BY-NC 4.0。<a href="rights.html">许可与引用</a></p>
       </div>
     </footer>
 
@@ -1098,7 +1098,7 @@ def generate_paper_html(record: Dict[str, object], prev_record: Dict[str, object
 
     <footer class="footer">
       <div class="container">
-        <p>内容来自 <a href="https://arxiv.org" target="_blank" rel="noopener noreferrer">arXiv.org</a>，阅读卡片由静态站点生成器构建。</p>
+        <p>内容来自 <a href="https://arxiv.org" target="_blank" rel="noopener noreferrer">arXiv.org</a>；原创解读采用 CC BY-NC 4.0。<a href="../../rights.html">许可与引用</a></p>
       </div>
     </footer>
 
@@ -3832,6 +3832,7 @@ def main() -> int:
 
     write_text(SITE_DIR / SITE_DOCUMENT_NAME, generate_index_html("Daily"))
     write_text(SITE_DIR / COLLECTION_DOCUMENT_NAME, generate_index_html("Collection"))
+    shutil.copy2(PROJECT_ROOT / "rights.html", SITE_DIR / "rights.html")
     write_text(
         SITE_DIR / "index.html",
         '<!doctype html><html lang="zh-CN"><head><meta charset="utf-8">'
