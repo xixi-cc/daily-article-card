@@ -1,0 +1,146 @@
+{
+  "arxiv_id": "2608.25990",
+  "source_version": "v1",
+  "source_pdf": "https://arxiv.org/pdf/2608.25990",
+  "title_en": "Spectral Allocation: Why Muon Outperforms Adam, and How to Improve Muon",
+  "title_zh": "谱分配：Muon 为何优于 Adam，以及如何进一步改进",
+  "curation_status": "full_text_verified",
+  "card_standard_version": "2.3",
+  "paper_profile": "ai_empirical",
+  "style_reference": "physicist_daily_arxiv",
+  "selection_record": {
+    "selected_by": "codex_direct_arxiv",
+    "report_date": "2026-08-28",
+    "listing_date": "2026-08-27",
+    "grade": "S",
+    "score": "35/40",
+    "score_breakdown": [
+      4,
+      4,
+      3,
+      5,
+      4,
+      5,
+      5,
+      5
+    ],
+    "rubric_version": "codex-direct-40-point-v1",
+    "selection_rationale": "用 held-out 谱探测把 Muon 的优势定位为 head/bulk 最优步长分离，并用干预式优化器验证该机制。"
+  },
+  "provenance": {
+    "program": "Daily",
+    "discovery_source": "official arXiv category listings",
+    "listing_date": "2026-08-27"
+  },
+  "verified_metadata": {
+    "arxiv_id": "2608.25990",
+    "version": "v1",
+    "title": "Spectral Allocation: Why Muon Outperforms Adam, and How to Improve Muon",
+    "abstract": "Orthogonal optimisers such as Muon can substantially accelerate large language model pretraining relative to Adam, yet the mechanism remains incompletely understood. We investigate this through an out-of-sample spectral probing analysis of Transformer loss landscapes. At checkpoints along real training trajectories, we decompose each momentum buffer into its singular directions and estimate the loss-optimal step size along each direction on held-out data. The resulting spectral profile is anisotropic yet stable across batches and training stages, and consistent across the optimisers and model scales: a volatile head operating at the Edge-of-Stability supports a much smaller step size than the tolerant bulk, which permits substantially larger steps. This profile provides a unified spectral allocation account of why Muon outperforms Adam, which outperforms SGD. It also exposes a limitation of Muon's uniform scaling: it still underutilises the bulk. Guided by this finding, we introduce Spectral-Aware Muon (SAMuon), which holds the head at the Muon scale and amplifies the bulk using a static spectral prior. We provide two variants: the complete SAMuon follows the measured profile using a low-rank randomised SVD and the simplified SAMuon-lite uses a two-level approximation via rank-one power iteration. Neither method adds persistent optimiser state or notable extra FLOPs beyond Muon at scale, and the idealised exact-whitening versions of both retain Muon's asymptotic convergence rate under standard assumptions. Across \"modded-nanogpt\" models from 124M to 1B parameters, both variants outperform tuned AdamW and Muon (Scion implementation) baselines in all evaluated model-scale and batch-size configurations. SAMuon requires 13.3% to 24.0% fewer training tokens to reach the same validation loss as Muon, while SAMuon-lite retains most of this gain with near-zero wall-clock overhead.",
+    "authors": [
+      "Xiaodong Wu",
+      "Wenyi Yu",
+      "Chao Zhang",
+      "Philip Woodland"
+    ],
+    "categories": [
+      "cs.LG"
+    ],
+    "primary_category": "cs.LG",
+    "published": "2026-08-26T16:41:12Z",
+    "comment": "34 pages, 13 figures, 7 tables"
+  },
+  "equation_refs": [
+    {
+      "label": "Table 1 token-efficiency metric",
+      "latex": "\\mathrm{gain}=1-T_\\star/N",
+      "role": "衡量新优化器达到 Muon 最终 validation loss 时节省的 token 比例",
+      "symbols": {
+        "T_star": "shortest token budget reaching the baseline final loss",
+        "N": "Muon schedule length"
+      },
+      "evidence": "paper.pdf pp. 12-13, Table 1",
+      "interpretation": "在所有训练 cell 中 SAMuon 节省 13.3%-24.0% token；该量不是独立 wall-clock 加速。",
+      "epistemic_status": "empirical benchmark metric"
+    }
+  ],
+  "figure_refs": [],
+  "cover": {
+    "mode": "title_abstract",
+    "selection_rationale": "The paper contains evidence-bearing figures, but this publication pass did not establish figure-redistribution permission; use the exact title and a faithful abstract condensation instead.",
+    "abstract_text": "Orthogonal optimisers such as Muon can substantially accelerate large language model pretraining relative to Adam, yet the mechanism remains incompletely understood. We investigate this through an out-of-sample spectral probing analysis of Transformer loss landscapes. At checkpoints along real training trajectories, we decompose each momentum buffer into its singular directions and estimate the loss-optimal step size along each direction on held-out data. The resulting spectral profile is anisotropic yet stable across batches and training stages, and…"
+  },
+  "sections": [
+    {
+      "title": "作者信息",
+      "bullets": [
+        "作者：Xiaodong Wu、Wenyi Yu、Chao Zhang、Philip Woodland。",
+        "Xiaodong Wu、Philip Woodland：University of Cambridge；Wenyi Yu、Chao Zhang：Tsinghua University。",
+        "arXiv:2608.25990v1；primary category cs.LG；listing 2026-08-27；Codex-direct 35/40，S。"
+      ]
+    },
+    {
+      "title": "摘要",
+      "paragraphs": [
+        "作者沿真实 Transformer 训练轨迹把 momentum buffer 分解为奇异方向，在 held-out data 上探测各方向 loss-optimal step。谱头处于 Edge of Stability、只能承受小步长，而宽广 bulk 可承受更大步长；Adam、Muon、SGD 的差异可解释为对这份谱预算的不同分配。"
+      ]
+    },
+    {
+      "title": "研究问题",
+      "paragraphs": [
+        "Muon 的正交化为何能比 Adam 更快？若真正机制是不同奇异方向的可承受步长不同，Muon 统一缩放是否仍浪费 bulk 的 headroom？"
+      ]
+    },
+    {
+      "title": "为什么进入 Daily",
+      "paragraphs": [
+        "用 held-out 谱探测把 Muon 的优势定位为 head/bulk 最优步长分离，并用干预式优化器验证该机制。 本次遴选不是依据标题关键词或摘要热度：先从 2026-08-27 的官方 arXiv 分类清单锁定 v1 候选，再核对全文中的问题定义、方法、关键公式、实验或定理、限制条件和资源声明。该文按统一 40 分量表得到 35/40，达到 Daily 的 S 级门槛；分数只表示本网站本轮的相关性与证据完整度，不替代同行评议。"
+      ]
+    },
+    {
+      "title": "模型与方法",
+      "paragraphs": [
+        "在 64M/124M 探测模型上逐奇异秩做二次局域近似和 held-out loss probe；由近似 log-rank-linear 的最优步长谱设计 SAMuon 与只分 head/bulk 两级的 SAMuon-lite，再在 124M、300M、1B 与多 batch size 上比较。"
+      ]
+    },
+    {
+      "title": "核心结果与证据",
+      "bullets": [
+        "Figure 2：从谱头到 bulk 的最优步长随 log-rank 近似线性上升，bulk 形成平台；该形状跨 checkpoint、batch、优化器与两种模型宽度稳定。",
+        "Table 1：在全部已训练模型×batch cell 中，SAMuon 相对 tuned Muon 达到同一 final loss 时少用 13.3%-24.0% tokens；SAMuon-lite 为 13.3%-22.1%。1B 单迭代计时中 lite 仅比 Muon 多约 0.5%，完整 low-rank SVD 版多 7.4%。"
+      ]
+    },
+    {
+      "title": "有效性与局限",
+      "paragraphs": [
+        "所有模型是 12 层 GPT-2-like、最大 1B、FineWeb 预训练；超参数在 124M 调后向大模型迁移。谱 probe 依赖局域二次近似并过滤少量失常方向；token efficiency 不是端到端成本。理论保证只覆盖理想 exact-whitening 版本，不直接覆盖随机低秩近似实现。"
+      ]
+    },
+    {
+      "title": "证据审计",
+      "bullets": [
+        "全文核验锚点：paper.pdf pp. 1-8: out-of-sample spectral probing and head/bulk mechanism; paper.pdf pp. 9-13: SAMuon design, training protocol, and Table 1 results; paper.pdf pp. 28-32: hyperparameter sweeps, hardware, and wall-clock overhead。卡片中的定量结论只在这些页码和作者声明的设定内复述，未把理论极限、受控数值或小规模实验外推为生产系统结论。",
+        "来源边界：发现记录来自官方 arXiv listing，卡片由 Codex-direct 全文核验生成，provenance 固定为 Daily；它不是 Paper Collection 的人工收藏条目，也不会因 Collection 中存在同一论文而改变 Daily 的筛选结论。",
+        "复现边界：本轮完成的是 PDF、公式、图表/定理与元数据交叉检查，没有独立重跑训练、模拟或形式化证明。因而本文的证据强度按原作者提供的解析、数值或实验材料表述，不把‘已核读’写成‘已复现’。"
+      ]
+    },
+    {
+      "title": "复现与资源",
+      "paragraphs": [
+        "论文给出训练预算、batch、学习率/半径 sweep、硬件与算法；本卡未重训约 10B-20B token 模型。"
+      ]
+    },
+    {
+      "title": "阅读指南",
+      "paragraphs": [
+        "先看 Figures 1-2 的谱头/bulk 分离，再读 Algorithm 1 和 Table 1；最后看 Appendix G 的完整超参数与 wall-clock，避免只根据 token savings 判断实际成本。"
+      ]
+    }
+  ],
+  "evidence_refs": [
+    "paper.pdf pp. 1-8: out-of-sample spectral probing and head/bulk mechanism",
+    "paper.pdf pp. 9-13: SAMuon design, training protocol, and Table 1 results",
+    "paper.pdf pp. 28-32: hyperparameter sweeps, hardware, and wall-clock overhead",
+    "Evidence status: full-text verified; no independent reproduction performed."
+  ]
+}

@@ -27,6 +27,11 @@ except ModuleNotFoundError:  # Direct execution: python3 scripts/build_site.py
     from math_typography import normalize_inline_math_notation
 
 try:
+    from scripts.card_taxonomy import classify_card
+except ModuleNotFoundError:  # Direct execution: python3 scripts/build_site.py
+    from card_taxonomy import classify_card
+
+try:
     from PIL import Image
     HAS_PIL = True
 except ImportError:
@@ -35,6 +40,7 @@ except ImportError:
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 INPUT_MD = PROJECT_ROOT / "papers.md"
+CURATED_CARDS_DIR = PROJECT_ROOT / "data" / "curated_cards"
 COLLECTION_CARDS_DIR = PROJECT_ROOT / "data" / "collection_cards"
 COLLECTION_FIGURES_DIR = PROJECT_ROOT / "data" / "collection_figures"
 SITE_DIR = PROJECT_ROOT / "site"
@@ -48,6 +54,7 @@ COLLECTION_PAPERS_DIR = SITE_DIR / "collection-papers"
 COLLECTION_COVERS_DIR = SITE_DIR / "collection-covers"
 IMAGE_DIR = ASSETS_DIR / "paper-images"
 PAPER_IMAGES_MANIFEST = ASSETS_DIR / "paper-images.json"
+DAILY_BOOTSTRAP = PROJECT_ROOT / "automation_outputs" / "arxiv_daily_cards" / "bootstrap-2026-08-11-to-2026-08-14.json"
 SITE_TOPIC_LABEL = "physics+AI"
 DAILY_SITE_TITLE = "每日论文卡"
 SITE_DOCUMENT_NAME = "physics_AI.html"
@@ -704,6 +711,61 @@ def build_site_records(records: List[Dict[str, str]], paper_image_manifest: Dict
     return built
 
 
+def load_card_file(directory: Path, card_id: str) -> Dict[str, object]:
+    path = directory / f"{card_id.replace('/', '-')}.json"
+    card = load_json(path)
+    return card if isinstance(card, dict) else {}
+
+
+def load_legacy_daily_dates() -> set[str]:
+    bootstrap = load_json(DAILY_BOOTSTRAP)
+    if not isinstance(bootstrap, dict):
+        return set()
+    reports = bootstrap.get("reports")
+    if not isinstance(reports, list):
+        return set()
+    return {
+        str(report.get("report_date", "")).strip()
+        for report in reports
+        if isinstance(report, dict) and report.get("report_date")
+    }
+
+
+def assert_daily_eligibility(record: Dict[str, object], card: Dict[str, object], legacy_dates: set[str]) -> None:
+    """Fail closed when a rendered Daily row lacks independent Daily provenance."""
+
+    card_id = str(record.get("card_id") or record.get("arxiv_id") or record.get("page_dir"))
+    if not card:
+        raise ValueError(f"Daily row {card_id} has no curated-card source")
+    provenance = card.get("provenance")
+    if isinstance(provenance, dict) and provenance.get("program") == "Collection":
+        raise ValueError(f"Collection-only card {card_id} cannot enter the Daily feed")
+    selection = card.get("selection_record")
+    if isinstance(selection, dict):
+        if selection.get("grade") != "S" or selection.get("selected_by") != "codex_direct_arxiv":
+            raise ValueError(f"Daily card {card_id} has an invalid Codex-direct selection record")
+        return
+    source_report = card.get("source_report")
+    if isinstance(source_report, dict):
+        if source_report.get("grade") != "S":
+            raise ValueError(f"Daily card {card_id} is not S-grade in its source report")
+        return
+    if str(record.get("date", "")) in legacy_dates:
+        return
+    raise ValueError(f"Daily row {card_id} has no recognized Daily provenance")
+
+
+def attach_daily_metadata(records: List[Dict[str, object]]) -> None:
+    legacy_dates = load_legacy_daily_dates()
+    for record in records:
+        card_id = str(record.get("card_id") or record.get("arxiv_id") or record.get("page_dir"))
+        card = load_card_file(CURATED_CARDS_DIR, card_id)
+        assert_daily_eligibility(record, card, legacy_dates)
+        fallback = load_card_file(COLLECTION_CARDS_DIR, card_id)
+        record.update(classify_card(card, fallback))
+        record["program"] = "Daily"
+
+
 def render_collection_card_markdown(card: Dict[str, object]) -> str:
     chunks: List[str] = []
     for section in card.get("sections", []):
@@ -763,6 +825,7 @@ def build_collection_records(paper_image_manifest: Dict[str, Dict[str, object]])
                 "cover_path": f"collection-covers/{record['page_dir']}/",
             }
         )
+        record.update(classify_card(card))
         cover = record["cover"]
         if isinstance(cover, dict):
             record["cover_mode"] = str(cover.get("mode", ""))
@@ -801,6 +864,11 @@ def build_list_data(records: List[Dict[str, object]], thumb_map: Dict[str, str] 
             "cover_mode": record.get("cover_mode", ""),
             "cover_summary": record.get("cover_summary", record.get("hook_text", "")),
             "cover_alt_text": record.get("cover_alt_text", ""),
+            "program": record.get("program", "Daily"),
+            "category": record.get("category", "跨学科"),
+            "research_type": record.get("research_type", "理论"),
+            "tags": record.get("tags", []),
+            "arxiv_categories": record.get("arxiv_categories", []),
         }
         if record.get("program") == "Collection":
             item["program_label"] = record.get("program_label", "Paper Collection")
@@ -1028,7 +1096,17 @@ def generate_index_html(program: str = "Daily") -> str:
               </svg>
               <input id="search" type="search" placeholder="比如：神经网络场论、SPDE、生成模型..." aria-label="搜索论文卡片" />
             </div>
-            <p class="search-hint">支持同时输入多个关键词，将在标题、机构、摘要和 arXiv ID 中检索。</p>
+            <div class="taxonomy-filters" aria-label="论文分类与标签筛选">
+              <label class="taxonomy-filter-label" for="category-filter">
+                <span>文章分类</span>
+                <select id="category-filter"><option value="">全部分类</option></select>
+              </label>
+              <label class="taxonomy-filter-label" for="tag-filter">
+                <span>主题标签</span>
+                <select id="tag-filter"><option value="">全部标签</option></select>
+              </label>
+            </div>
+            <p class="search-hint">可按文章分类和主题标签筛选；搜索覆盖标题、机构、摘要、标签和 arXiv ID。</p>
           </div>
         </div>
       </div>
@@ -1135,6 +1213,9 @@ def generate_paper_html(record: Dict[str, object], prev_record: Dict[str, object
             <div class="detail-meta">{meta_html}</div>
             <p class="detail-summary">{escape(str(record["preview_text"]))}</p>
             <div class="detail-micro-meta">
+              <span class="meta-pill">{escape(str(record.get("category", "跨学科")))}</span>
+              <span class="meta-pill">{escape(str(record.get("research_type", "理论")))}</span>
+              {''.join(f'<span class="meta-pill">#{escape(str(tag))}</span>' for tag in record.get("tags", [])[:3])}
               <span class="meta-pill">{escape(str(record["reading_minutes"]))} 分钟读完</span>
               <span class="meta-pill">{escape(str(record["section_count"]))} 张阅读卡</span>
               {f'<span class="meta-pill">{escape(str(record["research_unit"]))}</span>' if record["research_unit"] else ''}
@@ -2688,6 +2769,8 @@ def generate_app_js() -> str:
   const statusEl = $('#status');
   const groupsEl = $('#groups');
   const searchEl = $('#search');
+  const categoryFilterEl = $('#category-filter');
+  const tagFilterEl = $('#tag-filter');
   const paperCountEl = $('#paper-count');
   const homeScrollKey = 'home-scroll:index';
   const paperModalQueryKey = 'paper';
@@ -2953,7 +3036,9 @@ def generate_app_js() -> str:
       return;
     }
 
-    const hasQuery = Boolean((searchEl.value || '').trim());
+    const hasQuery = Boolean(
+      (searchEl.value || '').trim() || categoryFilterEl.value || tagFilterEl.value
+    );
     paperCountEl.textContent = hasQuery
       ? `${visibleCount} / ${DATA.length} 篇`
       : `${DATA.length} 篇已收录`;
@@ -3025,23 +3110,41 @@ def generate_app_js() -> str:
       item.research_unit || '',
       item.arxiv_id || '',
       item.hook_text || '',
+      item.category || '',
+      item.research_type || '',
+      ...(item.tags || []),
+      ...(item.arxiv_categories || []),
       ...(item.key_points || [])
     ].join(' ').toLowerCase();
   }
 
   function filterItems(items, query){
     const raw = (query || '').trim().toLowerCase();
-    if(!raw){
-      return items;
-    }
     const tokens = raw.split(/\\s+/).filter(Boolean);
-    if(!tokens.length){
-      return items;
-    }
     return items.filter((item) => {
+      if(categoryFilterEl.value && item.category !== categoryFilterEl.value){
+        return false;
+      }
+      if(tagFilterEl.value && !(item.tags || []).includes(tagFilterEl.value)){
+        return false;
+      }
+      if(!tokens.length){
+        return true;
+      }
       const hay = buildSearchText(item).replace(/[-_]/g, '');
       return tokens.every((t) => hay.includes(t.replace(/[-_]/g, '')));
     });
+  }
+
+  function populateTaxonomyFilters(){
+    const categories = Array.from(new Set(DATA.map((item) => item.category).filter(Boolean))).sort();
+    const tags = Array.from(new Set(DATA.flatMap((item) => item.tags || []))).sort();
+    const selectedCategory = new URL(window.location).searchParams.get('category') || '';
+    const selectedTag = new URL(window.location).searchParams.get('tag') || '';
+    categories.forEach((value) => categoryFilterEl.add(new Option(value, value)));
+    tags.forEach((value) => tagFilterEl.add(new Option(value, value)));
+    if(categories.includes(selectedCategory)) categoryFilterEl.value = selectedCategory;
+    if(tags.includes(selectedTag)) tagFilterEl.value = selectedTag;
   }
 
   function createFeedCard(item){
@@ -3131,6 +3234,20 @@ def generate_app_js() -> str:
       program.textContent = item.topic ? `${item.program_label} · ${item.topic}` : item.program_label;
       meta.prepend(program);
     }
+
+    if(item.category){
+      const category = document.createElement('span');
+      category.className = 'feed-chip feed-chip-category';
+      category.textContent = item.category;
+      meta.appendChild(category);
+    }
+
+    (item.tags || []).slice(0, 2).forEach((value) => {
+      const tag = document.createElement('span');
+      tag.className = 'feed-chip subtle';
+      tag.textContent = `#${value}`;
+      meta.appendChild(tag);
+    });
 
     const bodyTitle = document.createElement('div');
     bodyTitle.className = 'feed-card-title';
@@ -3307,6 +3424,8 @@ def generate_app_js() -> str:
           label: '清空搜索',
           onClick: () => {
             searchEl.value = '';
+            categoryFilterEl.value = '';
+            tagFilterEl.value = '';
             syncSearchURL();
             sync();
             searchEl.focus();
@@ -3329,10 +3448,28 @@ def generate_app_js() -> str:
     } else {
       url.searchParams.delete('q');
     }
+    if(categoryFilterEl.value){
+      url.searchParams.set('category', categoryFilterEl.value);
+    } else {
+      url.searchParams.delete('category');
+    }
+    if(tagFilterEl.value){
+      url.searchParams.set('tag', tagFilterEl.value);
+    } else {
+      url.searchParams.delete('tag');
+    }
     window.history.replaceState(null, '', url);
   }
 
   searchEl.addEventListener('input', () => {
+    syncSearchURL();
+    sync();
+  });
+  categoryFilterEl.addEventListener('change', () => {
+    syncSearchURL();
+    sync();
+  });
+  tagFilterEl.addEventListener('change', () => {
     syncSearchURL();
     sync();
   });
@@ -3445,6 +3582,7 @@ def generate_app_js() -> str:
       }
 
       DATA = await response.json();
+      populateTaxonomyFilters();
       sync();
       openPaperModalFromURL();
     } catch (error) {
@@ -3877,8 +4015,7 @@ def main() -> int:
         write_text(PAPER_IMAGES_MANIFEST, json.dumps(paper_image_manifest, ensure_ascii=False, indent=2))
 
     site_records = build_site_records(records, paper_image_manifest)
-    for record in site_records:
-        record["program"] = "Daily"
+    attach_daily_metadata(site_records)
     collection_records = build_collection_records(paper_image_manifest)
 
     # 为首页列表数据使用缩略图路径

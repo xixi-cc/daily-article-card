@@ -10,6 +10,8 @@
   const statusEl = $('#status');
   const groupsEl = $('#groups');
   const searchEl = $('#search');
+  const categoryFilterEl = $('#category-filter');
+  const tagFilterEl = $('#tag-filter');
   const paperCountEl = $('#paper-count');
   const homeScrollKey = 'home-scroll:index';
   const paperModalQueryKey = 'paper';
@@ -275,7 +277,9 @@
       return;
     }
 
-    const hasQuery = Boolean((searchEl.value || '').trim());
+    const hasQuery = Boolean(
+      (searchEl.value || '').trim() || categoryFilterEl.value || tagFilterEl.value
+    );
     paperCountEl.textContent = hasQuery
       ? `${visibleCount} / ${DATA.length} 篇`
       : `${DATA.length} 篇已收录`;
@@ -347,23 +351,41 @@
       item.research_unit || '',
       item.arxiv_id || '',
       item.hook_text || '',
+      item.category || '',
+      item.research_type || '',
+      ...(item.tags || []),
+      ...(item.arxiv_categories || []),
       ...(item.key_points || [])
     ].join(' ').toLowerCase();
   }
 
   function filterItems(items, query){
     const raw = (query || '').trim().toLowerCase();
-    if(!raw){
-      return items;
-    }
     const tokens = raw.split(/\s+/).filter(Boolean);
-    if(!tokens.length){
-      return items;
-    }
     return items.filter((item) => {
+      if(categoryFilterEl.value && item.category !== categoryFilterEl.value){
+        return false;
+      }
+      if(tagFilterEl.value && !(item.tags || []).includes(tagFilterEl.value)){
+        return false;
+      }
+      if(!tokens.length){
+        return true;
+      }
       const hay = buildSearchText(item).replace(/[-_]/g, '');
       return tokens.every((t) => hay.includes(t.replace(/[-_]/g, '')));
     });
+  }
+
+  function populateTaxonomyFilters(){
+    const categories = Array.from(new Set(DATA.map((item) => item.category).filter(Boolean))).sort();
+    const tags = Array.from(new Set(DATA.flatMap((item) => item.tags || []))).sort();
+    const selectedCategory = new URL(window.location).searchParams.get('category') || '';
+    const selectedTag = new URL(window.location).searchParams.get('tag') || '';
+    categories.forEach((value) => categoryFilterEl.add(new Option(value, value)));
+    tags.forEach((value) => tagFilterEl.add(new Option(value, value)));
+    if(categories.includes(selectedCategory)) categoryFilterEl.value = selectedCategory;
+    if(tags.includes(selectedTag)) tagFilterEl.value = selectedTag;
   }
 
   function createFeedCard(item){
@@ -453,6 +475,20 @@
       program.textContent = item.topic ? `${item.program_label} · ${item.topic}` : item.program_label;
       meta.prepend(program);
     }
+
+    if(item.category){
+      const category = document.createElement('span');
+      category.className = 'feed-chip feed-chip-category';
+      category.textContent = item.category;
+      meta.appendChild(category);
+    }
+
+    (item.tags || []).slice(0, 2).forEach((value) => {
+      const tag = document.createElement('span');
+      tag.className = 'feed-chip subtle';
+      tag.textContent = `#${value}`;
+      meta.appendChild(tag);
+    });
 
     const bodyTitle = document.createElement('div');
     bodyTitle.className = 'feed-card-title';
@@ -629,6 +665,8 @@
           label: '清空搜索',
           onClick: () => {
             searchEl.value = '';
+            categoryFilterEl.value = '';
+            tagFilterEl.value = '';
             syncSearchURL();
             sync();
             searchEl.focus();
@@ -651,10 +689,28 @@
     } else {
       url.searchParams.delete('q');
     }
+    if(categoryFilterEl.value){
+      url.searchParams.set('category', categoryFilterEl.value);
+    } else {
+      url.searchParams.delete('category');
+    }
+    if(tagFilterEl.value){
+      url.searchParams.set('tag', tagFilterEl.value);
+    } else {
+      url.searchParams.delete('tag');
+    }
     window.history.replaceState(null, '', url);
   }
 
   searchEl.addEventListener('input', () => {
+    syncSearchURL();
+    sync();
+  });
+  categoryFilterEl.addEventListener('change', () => {
+    syncSearchURL();
+    sync();
+  });
+  tagFilterEl.addEventListener('change', () => {
     syncSearchURL();
     sync();
   });
@@ -767,6 +823,7 @@
       }
 
       DATA = await response.json();
+      populateTaxonomyFilters();
       sync();
       openPaperModalFromURL();
     } catch (error) {

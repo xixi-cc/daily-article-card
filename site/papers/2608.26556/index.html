@@ -1,0 +1,222 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Dynamical phase selection controls compute scaling in looped transformers - 每日论文卡</title>
+    <meta name="description" content="相同架构、目标和 100% held-out accuracy 的 looped Transformer，仅因初始化不同就落入 fold、Neimark-Sacker、rigid 等不同推理动力学相。fold 相产生临界慢化与 $P(\tau&gt;N)\sim N^{-2}$ workload tail；换到 Neimark-Sacker 相后该标度律直接消失。" />
+    <link rel="canonical" href="https://xixi-cc.github.io/daily-article-card/papers/2608.26556/" />
+    <script type="application/ld+json">{"@context": "https://schema.org", "@type": "Article", "headline": "Dynamical phase selection controls compute scaling in looped transformers", "description": "相同架构、目标和 100% held-out accuracy 的 looped Transformer，仅因初始化不同就落入 fold、Neimark-Sacker、rigid 等不同推理动力学相。fold 相产生临界慢化与 $P(\\tau>N)\\sim N^{-2}$ workload tail；换到 Neimark-Sacker 相后该标度律直接消失。", "url": "https://xixi-cc.github.io/daily-article-card/papers/2608.26556/", "mainEntityOfPage": "https://xixi-cc.github.io/daily-article-card/papers/2608.26556/", "inLanguage": "zh-CN", "author": {"@type": "Person", "name": "Xineng Cao", "alternateName": ["Xixi Cao", "曹溪能"], "url": "https://xixi-cc.github.io/"}, "isBasedOn": "https://arxiv.org/abs/2608.26556", "datePublished": "2026-08-29", "dateModified": "2026-08-29"}</script>
+    <script>
+      (function() {
+        try {
+          var themePreference = window.localStorage.getItem('color-theme') || 'system';
+          var systemUsesDarkTheme = window.matchMedia('(prefers-color-scheme: dark)').matches;
+          var resolvedTheme = themePreference === 'system'
+            ? (systemUsesDarkTheme ? 'dark' : 'light')
+            : themePreference;
+          document.documentElement.dataset.theme = resolvedTheme;
+          document.documentElement.dataset.themePreference = themePreference;
+          document.documentElement.style.colorScheme = resolvedTheme;
+        } catch (error) {
+          document.documentElement.dataset.theme = 'light';
+          document.documentElement.dataset.themePreference = 'system';
+        }
+      })();
+    </script>
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='18' fill='%23111827'/%3E%3Ctext x='50%25' y='55%25' text-anchor='middle' dominant-baseline='middle' font-size='30' font-family='Arial, sans-serif' fill='white'%3EV%3C/text%3E%3C/svg%3E" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700;800&family=Noto+Sans+SC:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <script>document.documentElement.classList.add('math-pending');</script>
+    <script>
+      window.MathJax = {
+        tex: {
+          inlineMath: [['$', '$'], ['\\(', '\\)']],
+          displayMath: [['$$', '$$'], ['\\[', '\\]']],
+          processEscapes: true
+        },
+        options: {
+          skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+        },
+        chtml: {
+          scale: 1,
+          displayAlign: 'center'
+        },
+        startup: {
+          ready: function() {
+            MathJax.startup.defaultReady();
+            MathJax.startup.promise.then(function() {
+              document.documentElement.classList.remove('math-pending');
+              document.documentElement.dataset.mathReady = 'true';
+            });
+          }
+        }
+      };
+    </script>
+    <script defer src="../../assets/vendor/mathjax/tex-chtml.js"></script>
+    <link rel="stylesheet" href="../../assets/style.css" />
+  </head>
+  <body class="detail-page" data-paper-id="2608.26556">
+    <div class="page-noise"></div>
+    <div class="page-blur page-blur-a"></div>
+    <div class="page-blur page-blur-b"></div>
+
+    <header class="header detail-page-header">
+      <div class="container">
+        <div class="detail-page-topbar">
+          <a class="back-link" href="../../physics_AI.html">返回列表</a>
+          <div class="detail-topbar-actions">
+            <span class="detail-site-name">每日论文卡</span>
+            <button class="theme-toggle" type="button" data-theme-toggle aria-label="当前主题：设备，点击切换主题" title="当前主题：设备">
+  <span class="theme-toggle-icons" aria-hidden="true">
+    <svg class="theme-toggle-icon theme-toggle-icon-light" viewBox="0 0 24 24" fill="none">
+      <circle cx="12" cy="12" r="3.5" stroke="currentColor" stroke-width="1.8"/>
+      <path d="M12 2.5v2M12 19.5v2M2.5 12h2M19.5 12h2M5.3 5.3l1.4 1.4M17.3 17.3l1.4 1.4M18.7 5.3l-1.4 1.4M6.7 17.3l-1.4 1.4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+    </svg>
+    <svg class="theme-toggle-icon theme-toggle-icon-dark" viewBox="0 0 24 24" fill="none">
+      <path d="M20 15.2A8.1 8.1 0 0 1 8.8 4a8.2 8.2 0 1 0 11.2 11.2z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>
+    </svg>
+    <svg class="theme-toggle-icon theme-toggle-icon-system" viewBox="0 0 24 24" fill="none">
+      <rect x="3" y="4" width="18" height="13" rx="2.5" stroke="currentColor" stroke-width="1.8"/>
+      <path d="M8 21h8M12 17v4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+    </svg>
+  </span>
+  <span class="theme-toggle-label" data-theme-toggle-label>设备</span>
+</button>
+          </div>
+        </div>
+
+        <div class="detail-hero-grid">
+          <div class="detail-hero-cover"><article class="note-cover note-cover-title-abstract" style="--cover-from: #177e89; --cover-to: #5ec2a8; --cover-spot: #c5f0de; --cover-ink: #f5fffb; --cover-muted: rgba(245, 255, 251, 0.82); --cover-chip: rgba(245, 255, 251, 0.16); --cover-stroke: rgba(245, 255, 251, 0.24)">
+  <div class="note-cover-mesh"></div>
+  <div class="note-cover-title-shell">
+    <span class="note-cover-kicker">TITLE · ABSTRACT</span>
+    <h1 class="note-cover-title">Dynamical phase selection controls compute scaling in looped transformers</h1>
+    <p class="note-cover-title-zh">动力学相选择控制循环 Transformer 的计算标度</p>
+    <p class="note-cover-abstract">相同架构、目标和 100% held-out accuracy 的 looped Transformer，仅因初始化不同就落入 fold、Neimark-Sacker、rigid 等不同推理动力学相。fold 相产生临界慢化与 $P(\tau&gt;N)\sim N^{-2}$ workload tail；换到 Neimark-Sacker 相后该标度律直接消失。</p>
+  </div>
+</article></div>
+          <div class="detail-hero-copy">
+            <p class="eyebrow">论文详情</p>
+            <h1 class="detail-page-title">Dynamical phase selection controls compute scaling in looped transformers</h1>
+            <p class="detail-page-title-zh">动力学相选择控制循环 Transformer 的计算标度</p>
+            <div class="detail-meta">2026-08-29 · <a href="https://arxiv.org/abs/2608.26556" target="_blank" rel="noopener noreferrer">原文</a></div>
+            <p class="detail-summary">相同架构、目标和 100% held-out accuracy 的 looped Transformer，仅因初始化不同就落入 fold、Neimark-Sacker、rigid 等不同推理动力学相。fold 相产生临界慢化与 $P(\tau&gt;N)\sim N^{-2}$ workload tail；换到 Neimark-Sacker 相后该标度律直接消失。</p>
+            <div class="detail-micro-meta">
+              <span class="meta-pill">AI for Science</span>
+              <span class="meta-pill">理论与数值</span>
+              <span class="meta-pill">#无序系统与神经网络</span><span class="meta-pill">#统计物理</span><span class="meta-pill">#机器学习</span>
+              <span class="meta-pill">8 分钟读完</span>
+              <span class="meta-pill">10 张阅读卡</span>
+              <span class="meta-pill">作者：Gunn Kim。</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <main class="container detail-layout">
+      <div class="detail-shell">
+        <article id="detail-body" class="reading-flow"><section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 01</span>
+    <span class="reading-step-note">作者信息</span>
+  </div>
+  <h2>作者信息</h2>
+  <div class="reading-card-content"><ul><li>作者：Gunn Kim。</li><li>Gunn Kim：Department of Physics, Sejong University。</li><li>arXiv:2608.26556v1；primary category cond-mat.dis-nn；listing 2026-08-28；Codex-direct 37/40，S。</li></ul></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 02</span>
+    <span class="reading-step-note">摘要</span>
+  </div>
+  <h2>摘要</h2>
+  <div class="reading-card-content"><p>相同架构、目标和 100% held-out accuracy 的 looped Transformer，仅因初始化不同就落入 fold、Neimark-Sacker、rigid 等不同推理动力学相。fold 相产生临界慢化与 $P(\tau>N)\sim N^{-2}$ workload tail；换到 Neimark-Sacker 相后该标度律直接消失。</p></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 03</span>
+    <span class="reading-step-note">研究问题</span>
+  </div>
+  <h2>研究问题</h2>
+  <div class="reading-card-content"><p>一个训练完的 recurrent reasoner 需要多少迭代，究竟由 architecture 决定，还是由训练选中的固定点与分岔结构决定？</p></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 04</span>
+    <span class="reading-step-note">为什么进入 Daily</span>
+  </div>
+  <h2>为什么进入 Daily</h2>
+  <div class="reading-card-content"><p>把 test-time compute 从外部预算改写为训练选择的推理动力学相之 observable，并给出无参数临界关系。 本次遴选不是依据标题关键词或摘要热度：先从 2026-08-28 的官方 arXiv 分类清单锁定 \(v_{1}\) 候选，再核对全文中的问题定义、方法、关键公式、实验或定理、限制条件和资源声明。该文按统一 40 分量表得到 37/40，达到 Daily 的 S 级门槛；分数只表示本网站本轮的相关性与证据完整度，不替代同行评议。</p></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 05</span>
+    <span class="reading-step-note">模型与方法</span>
+  </div>
+  <h2>模型与方法</h2>
+  <div class="reading-card-content"><p>weight-tied pre-norm attention+MLP block 在 latent state 上迭代，任务是证据中途撤走后保持符号决策。作者扫 memory pressure、三类初始化和 15 个网络，并以扩展系统定位 fold、以复特征值穿越单位圆识别 Neimark-Sacker。</p></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 06</span>
+    <span class="reading-step-note">核心结果与证据</span>
+  </div>
+  <h2>核心结果与证据</h2>
+  <div class="reading-card-content"><ul><li>固定 $\mu=0.5$ 的 10 次初始化产生 5 fold、1 Neimark-Sacker、1 rigid、3 monostable，且全部 accuracy 1.000；8/10 网络在 step 250 已呈最终相。</li><li>fold normal form 同时预测 $\tau\propto\varepsilon^{-1/2}$ 与谱隙 $1-\lambda_{\max}\propto\varepsilon^{1/2}$，乘积趋 $\pi$；regular difficulty density 再推出 $N^{-2}$ 计算尾。Neimark-Sacker 相不服从这条 fold collapse。</li></ul></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 07</span>
+    <span class="reading-step-note">有效性与局限</span>
+  </div>
+  <h2>有效性与局限</h2>
+  <div class="reading-card-content"><p>论文仅 5 页，模型维度 $d=16$、受控二分类任务、显式 stationarity penalty；没有证据证明大型 reasoning LLM 或自然 CoT 也由同一分岔控制。结论是可证伪机制候选，不是通用推理定律。</p></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 08</span>
+    <span class="reading-step-note">证据审计</span>
+  </div>
+  <h2>证据审计</h2>
+  <div class="reading-card-content"><ul><li>全文核验锚点：paper.pdf pp. 1-2: model, phase classification, initialization dependence, and held-out accuracy; paper.pdf pp. 2-3: fold normal form, parameter-free relation, and workload-tail derivation; paper.pdf pp. 4-5: Neimark-Sacker contrast, scope, and concluding limitations。卡片中的定量结论只在这些页码和作者声明的设定内复述，未把理论极限、受控数值或小规模实验外推为生产系统结论。</li><li>来源边界：发现记录来自官方 arXiv listing，卡片由 Codex-direct 全文核验生成，provenance 固定为 Daily；它不是 Paper Collection 的人工收藏条目，也不会因 Collection 中存在同一论文而改变 Daily 的筛选结论。</li><li>复现边界：本轮完成的是 PDF、公式、图表/定理与元数据交叉检查，没有独立重跑训练、模拟或形式化证明。因而本文的证据强度按原作者提供的解析、数值或实验材料表述，不把‘已核读’写成‘已复现’。</li></ul></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 09</span>
+    <span class="reading-step-note">复现与资源</span>
+  </div>
+  <h2>复现与资源</h2>
+  <div class="reading-card-content"><p>正文给出参数 sweep 与分岔判据；未发现可由本卡确认的独立代码复现。本卡未重训或重算 continuation。</p></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 10</span>
+    <span class="reading-step-note">阅读指南</span>
+  </div>
+  <h2>阅读指南</h2>
+  <div class="reading-card-content"><p>全篇很短：先看 Figure 1 的相图，再检查 normal-form 系数与 Figure 2 collapse，最后核对从单样本慢化到 workload tail 所需的 regular-density 假设。</p></div>
+</section></article>
+        <aside id="detail-toc" class="detail-toc hidden" aria-label="内容目录">
+          <p class="detail-toc-title">阅读目录</p>
+          <nav id="detail-toc-nav" class="detail-toc-nav"></nav>
+        </aside>
+      </div>
+      <nav class="paper-nav"><a class="paper-nav-link paper-nav-next" href="../../papers/2608.26288/"><span class="paper-nav-label">下一篇 →</span><span class="paper-nav-title">Muon with Finite Newton-Schulz: The Smoothing Benefit in Nonsmooth Nonconvex Optimization</span></a></nav>
+    </main>
+
+    <footer class="footer">
+      <div class="container">
+        <p>内容来自 <a href="https://arxiv.org" target="_blank" rel="noopener noreferrer">arXiv.org</a>；原创解读采用 CC BY-NC 4.0。<a href="../../rights.html">许可与引用</a></p>
+      </div>
+    </footer>
+
+    <script src="../../assets/theme.js"></script>
+    <script src="../../assets/media.js"></script>
+    <script src="../../assets/paper.js"></script>
+    <!-- Cloudflare Web Analytics -->
+<script type="module" src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon='{"token":"73522e5dee9b42b0be84b4847e4dd502"}'></script>
+<!-- End Cloudflare Web Analytics -->
+  </body>
+</html>

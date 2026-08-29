@@ -1,0 +1,223 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Renormalization Group Flow Matching for Scalable Local Generative Modeling - 每日论文卡</title>
+    <meta name="description" content="RGFM 以精确 RG coarse-graining 作为 flow-matching probability path，从长波到短波逐级生成。尺度分离让被积掉的高波数模成为可独立重采样的高斯扇区，准局域性则允许每个尺度用局域速度场反演。" />
+    <link rel="canonical" href="https://xixi-cc.github.io/daily-article-card/papers/2608.23696/" />
+    <script type="application/ld+json">{"@context": "https://schema.org", "@type": "Article", "headline": "Renormalization Group Flow Matching for Scalable Local Generative Modeling", "description": "RGFM 以精确 RG coarse-graining 作为 flow-matching probability path，从长波到短波逐级生成。尺度分离让被积掉的高波数模成为可独立重采样的高斯扇区，准局域性则允许每个尺度用局域速度场反演。", "url": "https://xixi-cc.github.io/daily-article-card/papers/2608.23696/", "mainEntityOfPage": "https://xixi-cc.github.io/daily-article-card/papers/2608.23696/", "inLanguage": "zh-CN", "author": {"@type": "Person", "name": "Xineng Cao", "alternateName": ["Xixi Cao", "曹溪能"], "url": "https://xixi-cc.github.io/"}, "isBasedOn": "https://arxiv.org/abs/2608.23696", "datePublished": "2026-08-27", "dateModified": "2026-08-27"}</script>
+    <script>
+      (function() {
+        try {
+          var themePreference = window.localStorage.getItem('color-theme') || 'system';
+          var systemUsesDarkTheme = window.matchMedia('(prefers-color-scheme: dark)').matches;
+          var resolvedTheme = themePreference === 'system'
+            ? (systemUsesDarkTheme ? 'dark' : 'light')
+            : themePreference;
+          document.documentElement.dataset.theme = resolvedTheme;
+          document.documentElement.dataset.themePreference = themePreference;
+          document.documentElement.style.colorScheme = resolvedTheme;
+        } catch (error) {
+          document.documentElement.dataset.theme = 'light';
+          document.documentElement.dataset.themePreference = 'system';
+        }
+      })();
+    </script>
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='18' fill='%23111827'/%3E%3Ctext x='50%25' y='55%25' text-anchor='middle' dominant-baseline='middle' font-size='30' font-family='Arial, sans-serif' fill='white'%3EV%3C/text%3E%3C/svg%3E" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700;800&family=Noto+Sans+SC:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <script>document.documentElement.classList.add('math-pending');</script>
+    <script>
+      window.MathJax = {
+        tex: {
+          inlineMath: [['$', '$'], ['\\(', '\\)']],
+          displayMath: [['$$', '$$'], ['\\[', '\\]']],
+          processEscapes: true
+        },
+        options: {
+          skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+        },
+        chtml: {
+          scale: 1,
+          displayAlign: 'center'
+        },
+        startup: {
+          ready: function() {
+            MathJax.startup.defaultReady();
+            MathJax.startup.promise.then(function() {
+              document.documentElement.classList.remove('math-pending');
+              document.documentElement.dataset.mathReady = 'true';
+            });
+          }
+        }
+      };
+    </script>
+    <script defer src="../../assets/vendor/mathjax/tex-chtml.js"></script>
+    <link rel="stylesheet" href="../../assets/style.css" />
+  </head>
+  <body class="detail-page" data-paper-id="2608.23696">
+    <div class="page-noise"></div>
+    <div class="page-blur page-blur-a"></div>
+    <div class="page-blur page-blur-b"></div>
+
+    <header class="header detail-page-header">
+      <div class="container">
+        <div class="detail-page-topbar">
+          <a class="back-link" href="../../physics_AI.html">返回列表</a>
+          <div class="detail-topbar-actions">
+            <span class="detail-site-name">每日论文卡</span>
+            <button class="theme-toggle" type="button" data-theme-toggle aria-label="当前主题：设备，点击切换主题" title="当前主题：设备">
+  <span class="theme-toggle-icons" aria-hidden="true">
+    <svg class="theme-toggle-icon theme-toggle-icon-light" viewBox="0 0 24 24" fill="none">
+      <circle cx="12" cy="12" r="3.5" stroke="currentColor" stroke-width="1.8"/>
+      <path d="M12 2.5v2M12 19.5v2M2.5 12h2M19.5 12h2M5.3 5.3l1.4 1.4M17.3 17.3l1.4 1.4M18.7 5.3l-1.4 1.4M6.7 17.3l-1.4 1.4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+    </svg>
+    <svg class="theme-toggle-icon theme-toggle-icon-dark" viewBox="0 0 24 24" fill="none">
+      <path d="M20 15.2A8.1 8.1 0 0 1 8.8 4a8.2 8.2 0 1 0 11.2 11.2z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>
+    </svg>
+    <svg class="theme-toggle-icon theme-toggle-icon-system" viewBox="0 0 24 24" fill="none">
+      <rect x="3" y="4" width="18" height="13" rx="2.5" stroke="currentColor" stroke-width="1.8"/>
+      <path d="M8 21h8M12 17v4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+    </svg>
+  </span>
+  <span class="theme-toggle-label" data-theme-toggle-label>设备</span>
+</button>
+          </div>
+        </div>
+
+        <div class="detail-hero-grid">
+          <div class="detail-hero-cover"><article class="note-cover note-cover-title-abstract" style="--cover-from: #6f4cc9; --cover-to: #c57be8; --cover-spot: #efd9ff; --cover-ink: #fdf7ff; --cover-muted: rgba(253, 247, 255, 0.82); --cover-chip: rgba(253, 247, 255, 0.16); --cover-stroke: rgba(253, 247, 255, 0.24)">
+  <div class="note-cover-mesh"></div>
+  <div class="note-cover-title-shell">
+    <span class="note-cover-kicker">TITLE · ABSTRACT</span>
+    <h1 class="note-cover-title">Renormalization Group Flow Matching for Scalable Local Generative Modeling</h1>
+    <p class="note-cover-title-zh">用于可扩展局域生成建模的重整化群流匹配</p>
+    <p class="note-cover-abstract">RGFM 以精确 RG coarse-graining 作为 flow-matching probability path，从长波到短波逐级生成。尺度分离让被积掉的高波数模成为可独立重采样的高斯扇区，准局域性则允许每个尺度用局域速度场反演。</p>
+  </div>
+</article></div>
+          <div class="detail-hero-copy">
+            <p class="eyebrow">论文详情</p>
+            <h1 class="detail-page-title">Renormalization Group Flow Matching for Scalable Local Generative Modeling</h1>
+            <p class="detail-page-title-zh">用于可扩展局域生成建模的重整化群流匹配</p>
+            <div class="detail-meta">2026-08-27 · <a href="https://arxiv.org/abs/2608.23696" target="_blank" rel="noopener noreferrer">原文</a></div>
+            <p class="detail-summary">RGFM 以精确 RG coarse-graining 作为 flow-matching probability path，从长波到短波逐级生成。尺度分离让被积掉的高波数模成为可独立重采样的高斯扇区，准局域性则允许每个尺度用局域速度场反演。</p>
+            <div class="detail-micro-meta">
+              <span class="meta-pill">AI for Science</span>
+              <span class="meta-pill">理论与数值</span>
+              <span class="meta-pill">#机器学习</span><span class="meta-pill">#统计物理</span><span class="meta-pill">#生成模型</span>
+              <span class="meta-pill">8 分钟读完</span>
+              <span class="meta-pill">10 张阅读卡</span>
+              <span class="meta-pill">作者：Kanta Masuki、Yuto Ashida。</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <main class="container detail-layout">
+      <div class="detail-shell">
+        <article id="detail-body" class="reading-flow"><section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 01</span>
+    <span class="reading-step-note">作者信息</span>
+  </div>
+  <h2>作者信息</h2>
+  <div class="reading-card-content"><ul><li>作者：Kanta Masuki、Yuto Ashida。</li><li>The University of Tokyo：Department of Physics 与 Institute for Physics of Intelligence。</li><li>arXiv:2608.23696v1；primary category cs.LG；listing 2026-08-26；Codex-direct 36/40，S。</li></ul></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 02</span>
+    <span class="reading-step-note">摘要</span>
+  </div>
+  <h2>摘要</h2>
+  <div class="reading-card-content"><p>RGFM 以精确 RG coarse-graining 作为 flow-matching probability path，从长波到短波逐级生成。尺度分离让被积掉的高波数模成为可独立重采样的高斯扇区，准局域性则允许每个尺度用局域速度场反演。</p></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 03</span>
+    <span class="reading-step-note">研究问题</span>
+  </div>
+  <h2>研究问题</h2>
+  <div class="reading-card-content"><p>局域生成模型计算便宜却看不到远距离，全球模型能保持结构却成本高。能否选择一种 probability path，使长程相关由尺度组织而非全局 receptive field 承担？</p></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 04</span>
+    <span class="reading-step-note">为什么进入 Daily</span>
+  </div>
+  <h2>为什么进入 Daily</h2>
+  <div class="reading-card-content"><p>把 RG 流作为 probability path，严格连接局域计算、尺度分离和长程相关，并给出对数 patch 尺度。 本次遴选不是依据标题关键词或摘要热度：先从 2026-08-26 的官方 arXiv 分类清单锁定 \(v_{1}\) 候选，再核对全文中的问题定义、方法、关键公式、实验或定理、限制条件和资源声明。该文按统一 40 分量表得到 36/40，达到 Daily 的 S 级门槛；分数只表示本网站本轮的相关性与证据完整度，不替代同行评议。</p></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 05</span>
+    <span class="reading-step-note">模型与方法</span>
+  </div>
+  <h2>模型与方法</h2>
+  <div class="reading-card-content"><p>作者从 Polchinski 型 RG diffusion 构造概率路径，交替进行局域 reverse ODE 与 site-decimation 的随机 lifting；对局域/条件局域目标证明 score locality、速度逼近误差和 ODE/SDE 稳定界，再以一维多尺度分布和 FFHQ 验证。</p></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 06</span>
+    <span class="reading-step-note">核心结果与证据</span>
+  </div>
+  <h2>核心结果与证据</h2>
+  <div class="reading-card-content"><ul><li>Main Theorems IV.15-IV.20 给出局域误差随 $\exp(-c\Lambda\ell_B)L^\alpha$ 衰减，并推出 $O(\ln L)$ patch。</li><li>一维实验显示 RGFM 在 receptive field 外仍恢复长程相关，而普通 local FM 出现显著误差；FFHQ 64×64 下 RGFM 在所有测试 patch 尺度保持更低 FID，256×256 样本全局脸部结构也更连贯，但仍有分离部件不一致。</li></ul></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 07</span>
+    <span class="reading-step-note">有效性与局限</span>
+  </div>
+  <h2>有效性与局限</h2>
+  <div class="reading-card-content"><p>严格定理依赖物理型 RG locality、Lipschitz 与稳定性假设；自然图像是否满足同一数学条件没有被证明。实验规模有限，256×256 结果仍有远距离五官不一致，且随机 lifting/decimation 会引入额外设计选择。</p></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 08</span>
+    <span class="reading-step-note">证据审计</span>
+  </div>
+  <h2>证据审计</h2>
+  <div class="reading-card-content"><ul><li>全文核验锚点：paper.pdf pp. 1-4: RGFM construction, informal locality theorem, and stated scaling; paper.pdf pp. 10-18: local approximation definitions and Main Theorems IV.15-IV.20; paper.pdf pp. 19-26: one-dimensional correlation tests and FFHQ comparisons; paper.pdf \(p\). 32: limitations and future directions。卡片中的定量结论只在这些页码和作者声明的设定内复述，未把理论极限、受控数值或小规模实验外推为生产系统结论。</li><li>来源边界：发现记录来自官方 arXiv listing，卡片由 Codex-direct 全文核验生成，provenance 固定为 Daily；它不是 Paper Collection 的人工收藏条目，也不会因 Collection 中存在同一论文而改变 Daily 的筛选结论。</li><li>复现边界：本轮完成的是 PDF、公式、图表/定理与元数据交叉检查，没有独立重跑训练、模拟或形式化证明。因而本文的证据强度按原作者提供的解析、数值或实验材料表述，不把‘已核读’写成‘已复现’。</li></ul></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 09</span>
+    <span class="reading-step-note">复现与资源</span>
+  </div>
+  <h2>复现与资源</h2>
+  <div class="reading-card-content"><p>原文 42 页、9 图；公开 arXiv PDF。正文给出 Algorithms 1-2、网络和采样流程；本卡未独立训练模型或复算 FID。</p></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 10</span>
+    <span class="reading-step-note">阅读指南</span>
+  </div>
+  <h2>阅读指南</h2>
+  <div class="reading-card-content"><p>快速读 Figure 1、\(p\).4 informal locality theorem 与 Figure 5 的定理依赖图；深读 Section IV 的 locality assumptions 和 Theorems IV.15-IV.20，再回到 Section V 检查一维相关与 FFHQ。</p></div>
+</section></article>
+        <aside id="detail-toc" class="detail-toc hidden" aria-label="内容目录">
+          <p class="detail-toc-title">阅读目录</p>
+          <nav id="detail-toc-nav" class="detail-toc-nav"></nav>
+        </aside>
+      </div>
+      <nav class="paper-nav"><a class="paper-nav-link paper-nav-prev" href="../../papers/2608.23938/"><span class="paper-nav-label">← 上一篇</span><span class="paper-nav-title">Generalization, memorization, and overfitting for diffusion models trained in the lazy high-dimensional regime</span></a>
+      <a class="paper-nav-link paper-nav-next" href="../../papers/2608.22007/"><span class="paper-nav-label">下一篇 →</span><span class="paper-nav-title">The Communication Map of a Transformer</span></a></nav>
+    </main>
+
+    <footer class="footer">
+      <div class="container">
+        <p>内容来自 <a href="https://arxiv.org" target="_blank" rel="noopener noreferrer">arXiv.org</a>；原创解读采用 CC BY-NC 4.0。<a href="../../rights.html">许可与引用</a></p>
+      </div>
+    </footer>
+
+    <script src="../../assets/theme.js"></script>
+    <script src="../../assets/media.js"></script>
+    <script src="../../assets/paper.js"></script>
+    <!-- Cloudflare Web Analytics -->
+<script type="module" src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon='{"token":"73522e5dee9b42b0be84b4847e4dd502"}'></script>
+<!-- End Cloudflare Web Analytics -->
+  </body>
+</html>
