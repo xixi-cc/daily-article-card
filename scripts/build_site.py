@@ -53,6 +53,7 @@ DAILY_SITE_TITLE = "每日论文卡"
 SITE_DOCUMENT_NAME = "physics_AI.html"
 COLLECTION_DOCUMENT_NAME = "collection.html"
 MATHJAX_VERSION = "3.2.2"
+PUBLIC_BASE_URL = "https://xixi-cc.github.io/daily-article-card/"
 
 COVER_THEMES = [
     {
@@ -819,6 +820,9 @@ def generate_head(
     description: str,
     stylesheet_prefix: str = "",
     include_math: bool = False,
+    canonical_url: str = "",
+    structured_data: Dict[str, object] | None = None,
+    noindex: bool = False,
 ) -> str:
     stylesheet_path = f"{stylesheet_prefix}assets/style.css"
     favicon = (
@@ -861,11 +865,22 @@ def generate_head(
     <script defer src="{stylesheet_prefix}assets/vendor/mathjax/tex-chtml.js"></script>
 """.rstrip()
 
+    canonical_html = (
+        f'\n    <link rel="canonical" href="{escape(canonical_url, quote=True)}" />'
+        if canonical_url
+        else ""
+    )
+    structured_data_html = ""
+    if structured_data:
+        payload = json.dumps(structured_data, ensure_ascii=False).replace("</", "<\\/")
+        structured_data_html = f'\n    <script type="application/ld+json">{payload}</script>'
+    robots_html = '\n    <meta name="robots" content="noindex, nofollow" />' if noindex else ""
+
     return f"""
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>{escape(title)}</title>
-    <meta name="description" content="{escape(description, quote=True)}" />
+    <meta name="description" content="{escape(description, quote=True)}" />{canonical_html}{structured_data_html}{robots_html}
     <script>
       (function() {{
         try {{
@@ -937,11 +952,31 @@ def generate_index_html(program: str = "Daily") -> str:
     )
 
     page_title = f"{site_title} - ArXiv Papers" if is_collection else site_title
+    canonical_url = f"{PUBLIC_BASE_URL}{COLLECTION_DOCUMENT_NAME if is_collection else SITE_DOCUMENT_NAME}"
+    structured_data = {
+        "@context": "https://schema.org",
+        "@type": "CollectionPage",
+        "name": site_title,
+        "description": site_description,
+        "url": canonical_url,
+        "inLanguage": "zh-CN",
+        "creator": {
+            "@type": "Person",
+            "name": "Xineng Cao",
+            "alternateName": ["Xixi Cao", "曹溪能"],
+            "url": "https://xixi-cc.github.io/",
+        },
+        "isPartOf": {
+            "@type": "WebSite",
+            "name": "Xixi Research Atlas",
+            "url": "https://xixi-cc.github.io/",
+        },
+    }
 
     return f"""<!doctype html>
 <html lang="zh-CN">
   <head>
-    {generate_head(page_title, site_description)}
+    {generate_head(page_title, site_description, canonical_url=canonical_url, structured_data=structured_data)}
   </head>
   <body>
     <div class="page-noise"></div>
@@ -1021,6 +1056,7 @@ def generate_paper_html(record: Dict[str, object], prev_record: Dict[str, object
     site_title = f"{keyword} Collection 随机精选" if is_collection else DAILY_SITE_TITLE
     back_document = COLLECTION_DOCUMENT_NAME if is_collection else SITE_DOCUMENT_NAME
     detail_root = "collection-papers" if is_collection else "papers"
+    canonical_url = f"{PUBLIC_BASE_URL}{detail_root}/{record['page_dir']}/"
     page_title = str(record["title"])
     page_description = str(record["preview_text"] or f"{keyword} 论文详情")
     meta_html = render_detail_meta(record)
@@ -1031,6 +1067,25 @@ def generate_paper_html(record: Dict[str, object], prev_record: Dict[str, object
         else render_note_cover(record)
     )
     detail_body_html = render_detail_sections(record)
+    structured_data: Dict[str, object] = {
+        "@context": "https://schema.org",
+        "@type": "Article",
+        "headline": page_title,
+        "description": page_description,
+        "url": canonical_url,
+        "mainEntityOfPage": canonical_url,
+        "inLanguage": "zh-CN",
+        "author": {
+            "@type": "Person",
+            "name": "Xineng Cao",
+            "alternateName": ["Xixi Cao", "曹溪能"],
+            "url": "https://xixi-cc.github.io/",
+        },
+        "isBasedOn": str(record["link"]),
+    }
+    if re.fullmatch(r"\d{4}-\d{2}-\d{2}", str(record.get("date", ""))):
+        structured_data["datePublished"] = str(record["date"])
+        structured_data["dateModified"] = str(record["date"])
 
     nav_parts: List[str] = []
     if prev_record:
@@ -1050,7 +1105,7 @@ def generate_paper_html(record: Dict[str, object], prev_record: Dict[str, object
     return f"""<!doctype html>
 <html lang="zh-CN">
   <head>
-    {generate_head(f"{page_title} - {site_title}", page_description, "../../", include_math=True)}
+    {generate_head(f"{page_title} - {site_title}", page_description, "../../", include_math=True, canonical_url=canonical_url, structured_data=structured_data)}
   </head>
   <body class="detail-page" data-paper-id="{escape(str(record["arxiv_id"] or record["page_dir"]), quote=True)}">
     <div class="page-noise"></div>
@@ -1125,7 +1180,7 @@ def generate_cover_html(record: Dict[str, object]) -> str:
     return f"""<!doctype html>
 <html lang="zh-CN">
   <head>
-    {generate_head(page_title, description, "../../")}
+    {generate_head(page_title, description, "../../", noindex=True)}
   </head>
   <body class="cover-page">
     <div class="page-noise"></div>
@@ -3834,10 +3889,15 @@ def main() -> int:
     write_text(SITE_DIR / COLLECTION_DOCUMENT_NAME, generate_index_html("Collection"))
     shutil.copy2(PROJECT_ROOT / "rights.html", SITE_DIR / "rights.html")
     write_text(
+        SITE_DIR / "robots.txt",
+        "User-agent: *\nAllow: /\n\n"
+        f"Sitemap: {PUBLIC_BASE_URL}sitemap.xml\n",
+    )
+    write_text(
         SITE_DIR / "index.html",
         '<!doctype html><html lang="zh-CN"><head><meta charset="utf-8">'
         f'<meta http-equiv="refresh" content="0; url={SITE_DOCUMENT_NAME}">'
-        f'<link rel="canonical" href="{SITE_DOCUMENT_NAME}">'
+        f'<link rel="canonical" href="{PUBLIC_BASE_URL}{SITE_DOCUMENT_NAME}">'
         f'<title>{DAILY_SITE_TITLE}</title></head><body>'
         f'<a href="{SITE_DOCUMENT_NAME}">进入 {DAILY_SITE_TITLE}</a>'
         '</body></html>\n',
@@ -3862,6 +3922,31 @@ def main() -> int:
       next_rec = collection_records[idx + 1] if idx < len(collection_records) - 1 else None
       write_text(COLLECTION_PAPERS_DIR / str(record["page_dir"]) / "index.html", generate_paper_html(record, prev_rec, next_rec))
       write_text(COLLECTION_COVERS_DIR / str(record["page_dir"]) / "index.html", generate_cover_html(record))
+
+    sitemap_urls = [
+        (f"{PUBLIC_BASE_URL}{SITE_DOCUMENT_NAME}", ""),
+        (f"{PUBLIC_BASE_URL}{COLLECTION_DOCUMENT_NAME}", ""),
+        (f"{PUBLIC_BASE_URL}rights.html", "2026-08-29"),
+    ]
+    sitemap_urls.extend(
+        (f"{PUBLIC_BASE_URL}papers/{record['page_dir']}/", str(record.get("date", "")))
+        for record in site_records
+    )
+    sitemap_urls.extend(
+        (f"{PUBLIC_BASE_URL}collection-papers/{record['page_dir']}/", "")
+        for record in collection_records
+    )
+    sitemap = [
+        '<?xml version="1.0" encoding="UTF-8"?>',
+        '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">',
+    ]
+    for url, last_modified in sitemap_urls:
+        sitemap.extend(["  <url>", f"    <loc>{escape(url)}</loc>"])
+        if re.fullmatch(r"\d{4}-\d{2}-\d{2}", last_modified):
+            sitemap.append(f"    <lastmod>{last_modified}</lastmod>")
+        sitemap.append("  </url>")
+    sitemap.append("</urlset>")
+    write_text(SITE_DIR / "sitemap.xml", "\n".join(sitemap) + "\n")
 
     print(f"生成完成：{SITE_DIR}")
     return 0
