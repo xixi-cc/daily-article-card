@@ -54,6 +54,9 @@ SITE_DOCUMENT_NAME = "physics_AI.html"
 COLLECTION_DOCUMENT_NAME = "collection.html"
 MATHJAX_VERSION = "3.2.2"
 PUBLIC_BASE_URL = "https://xixi-cc.github.io/daily-article-card/"
+CLOUDFLARE_ANALYTICS_HTML = """<!-- Cloudflare Web Analytics -->
+<script type="module" src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon='{"token":"73522e5dee9b42b0be84b4847e4dd502"}'></script>
+<!-- End Cloudflare Web Analytics -->"""
 
 COVER_THEMES = [
     {
@@ -1045,6 +1048,7 @@ def generate_index_html(program: str = "Daily") -> str:
     <script src="assets/theme.js"></script>
     <script src="assets/media.js"></script>
     <script src="assets/{script_name}"></script>
+    {CLOUDFLARE_ANALYTICS_HTML}
   </body>
 </html>
 """.strip()
@@ -1160,6 +1164,7 @@ def generate_paper_html(record: Dict[str, object], prev_record: Dict[str, object
     <script src="../../assets/theme.js"></script>
     <script src="../../assets/media.js"></script>
     <script src="../../assets/paper.js"></script>
+    {CLOUDFLARE_ANALYTICS_HTML}
   </body>
 </html>
 """.strip()
@@ -3900,6 +3905,7 @@ def main() -> int:
         f'<link rel="canonical" href="{PUBLIC_BASE_URL}{SITE_DOCUMENT_NAME}">'
         f'<title>{DAILY_SITE_TITLE}</title></head><body>'
         f'<a href="{SITE_DOCUMENT_NAME}">进入 {DAILY_SITE_TITLE}</a>'
+        f'{CLOUDFLARE_ANALYTICS_HTML}'
         '</body></html>\n',
     )
     write_text(ASSETS_DIR / "style.css", generate_style_css())
