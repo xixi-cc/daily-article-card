@@ -1,4 +1,4 @@
-# physics+AI Daily Paper Cards
+# 每日论文卡
 
 一个展示 physics+AI arXiv 精选论文的静态网站。每日 Codex 自动任务直接检查 arXiv daily listing，独立完成筛选、全文证据核验、S 级判定、中文论文卡片生成和 GitHub Pages 发布。
 
@@ -58,4 +58,4 @@ python scripts/validate_paper_cards.py
 
 Every completed website update must be pushed to GitHub. 发布完成的定义包括：验证与构建通过、提交当前变更、无强制推送到 GitHub `origin`、确认本地 `HEAD` 与 GitHub 分支头一致，并核验 GitHub Actions / Pages。OpenAI Sites 是并行发布目标，不能替代 GitHub 同步；两者同时发布时必须来自同一份已验证源码树。
 
-站点地址：<https://xixi-cc.github.io/physics_AI/>
+站点地址：<https://xixi-cc.github.io/daily-article-card/>

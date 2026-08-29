@@ -1,7 +1,7 @@
 # Repository setup
 
-- Repository: <https://github.com/xixi-cc/physics_AI>
-- Pages: <https://xixi-cc.github.io/physics_AI/>
+- Repository: <https://github.com/xixi-cc/daily-article-card>
+- Pages: <https://xixi-cc.github.io/daily-article-card/>
 - Default branch: `master`
 - Required GitHub Actions secrets: none
 

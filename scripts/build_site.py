@@ -49,6 +49,7 @@ COLLECTION_COVERS_DIR = SITE_DIR / "collection-covers"
 IMAGE_DIR = ASSETS_DIR / "paper-images"
 PAPER_IMAGES_MANIFEST = ASSETS_DIR / "paper-images.json"
 SITE_TOPIC_LABEL = "physics+AI"
+DAILY_SITE_TITLE = "每日论文卡"
 SITE_DOCUMENT_NAME = "physics_AI.html"
 COLLECTION_DOCUMENT_NAME = "collection.html"
 MATHJAX_VERSION = "3.2.2"
@@ -914,14 +915,14 @@ def render_theme_toggle() -> str:
 def generate_index_html(program: str = "Daily") -> str:
     keyword = get_arxiv_keyword_label()
     is_collection = program == "Collection"
-    site_title = f"{keyword} {'Collection 随机精选' if is_collection else '每日论文卡'}"
+    site_title = f"{keyword} Collection 随机精选" if is_collection else DAILY_SITE_TITLE
     site_description = (
         "从 Paper Collection 随机抽取并经全文证据核验的论文卡片"
         if is_collection
         else f"{keyword} 论文精选卡片"
     )
     eyebrow = "Paper Collection Sample" if is_collection else "Physics + AI Feed"
-    headline = "Collection <span class=\"site-title-nowrap\">随机精选</span>" if is_collection else f"{escape(keyword)} <span class=\"site-title-nowrap\">每日论文卡</span>"
+    headline = "Collection <span class=\"site-title-nowrap\">随机精选</span>" if is_collection else DAILY_SITE_TITLE
     subtitle = (
         "从长期 Paper Collection 中随机抽取，逐篇核对全文、公式、证据位置与适用边界；这些卡片不继承 Daily 的日期、分数或 S 级评级。"
         if is_collection
@@ -935,10 +936,12 @@ def generate_index_html(program: str = "Daily") -> str:
         else ("中文精读", "核心贡献提炼", "论文原图速览")
     )
 
+    page_title = f"{site_title} - ArXiv Papers" if is_collection else site_title
+
     return f"""<!doctype html>
 <html lang="zh-CN">
   <head>
-    {generate_head(f"{site_title} - ArXiv Papers", site_description)}
+    {generate_head(page_title, site_description)}
   </head>
   <body>
     <div class="page-noise"></div>
@@ -1015,7 +1018,7 @@ def generate_index_html(program: str = "Daily") -> str:
 def generate_paper_html(record: Dict[str, object], prev_record: Dict[str, object] | None = None, next_record: Dict[str, object] | None = None) -> str:
     keyword = get_arxiv_keyword_label()
     is_collection = record.get("program") == "Collection"
-    site_title = f"{keyword} {'Collection 随机精选' if is_collection else '每日论文卡'}"
+    site_title = f"{keyword} Collection 随机精选" if is_collection else DAILY_SITE_TITLE
     back_document = COLLECTION_DOCUMENT_NAME if is_collection else SITE_DOCUMENT_NAME
     detail_root = "collection-papers" if is_collection else "papers"
     page_title = str(record["title"])
@@ -1108,8 +1111,7 @@ def generate_paper_html(record: Dict[str, object], prev_record: Dict[str, object
 
 
 def generate_cover_html(record: Dict[str, object]) -> str:
-    keyword = get_arxiv_keyword_label()
-    site_title = f"{keyword} 每日论文卡"
+    site_title = DAILY_SITE_TITLE
     page_title = f"{record['title']} - 封面卡"
     description = str(record["hook_text"])
     figure_src = f"../../{record['paper_image_path']}" if record["paper_image_path"] else ""
@@ -3835,8 +3837,8 @@ def main() -> int:
         '<!doctype html><html lang="zh-CN"><head><meta charset="utf-8">'
         f'<meta http-equiv="refresh" content="0; url={SITE_DOCUMENT_NAME}">'
         f'<link rel="canonical" href="{SITE_DOCUMENT_NAME}">'
-        f'<title>{SITE_TOPIC_LABEL}</title></head><body>'
-        f'<a href="{SITE_DOCUMENT_NAME}">进入 {SITE_TOPIC_LABEL} 每日论文卡</a>'
+        f'<title>{DAILY_SITE_TITLE}</title></head><body>'
+        f'<a href="{SITE_DOCUMENT_NAME}">进入 {DAILY_SITE_TITLE}</a>'
         '</body></html>\n',
     )
     write_text(ASSETS_DIR / "style.css", generate_style_css())
