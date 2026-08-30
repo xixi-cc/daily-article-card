@@ -1,0 +1,174 @@
+{
+  "arxiv_id": "2404.14265",
+  "source_version": "v1",
+  "source_pdf": "https://arxiv.org/pdf/2404.14265",
+  "title_en": "Deep Learning as Ricci Flow",
+  "title_zh": "深度学习作为 Ricci 流",
+  "curation_status": "full_text_verified",
+  "card_standard_version": "2.3",
+  "paper_profile": "theory_experiment",
+  "style_reference": "physicist_daily_arxiv",
+  "provenance": {
+    "program": "Collection",
+    "catalog": "Paper Collection",
+    "catalog_record_id": "2404.14265",
+    "catalog_record_ids": [
+      "2404.14265"
+    ],
+    "catalog_topic": "Representation Learning",
+    "collection_date": "2026-08-30",
+    "sampled_at": "2026-08-31",
+    "selected_by": "ziming_mineru_serial_goal",
+    "sampling_seed": "not_applicable_source_complete",
+    "candidate_count": 464
+  },
+  "verified_metadata": {
+    "arxiv_id": "2404.14265",
+    "version": "v1",
+    "title": "Deep Learning as Ricci Flow",
+    "authors": [
+      "Anthony Baptista",
+      "Alessandro Barp",
+      "Tapabrata Chakraborti",
+      "Chris Harbron",
+      "Ben D. MacArthur",
+      "Christopher R. S. Banerji"
+    ],
+    "categories": [
+      "cs.LG",
+      "math.DG"
+    ],
+    "primary_category": "cs.LG",
+    "published": "2024-04-22T15:12:47Z",
+    "abstract": "Deep neural networks (DNNs) are powerful tools for approximating the distribution of complex data. It is known that data passing through a trained DNN classifier undergoes a series of geometric and topological simplifications. While some progress has been made toward understanding these transformations in neural networks with smooth activation functions, an understanding in the more general setting of non-smooth activation functions, such as the rectified linear unit (ReLU), which tend to perform better, is required. Here we propose that the geometric transformations performed by DNNs during classification tasks have parallels to those expected under Hamilton's Ricci flow - a tool from differential geometry that evolves a manifold by smoothing its curvature, in order to identify its topology. To illustrate this idea, we present a computational framework to quantify the geometric changes that occur as data passes through successive layers of a DNN, and use this framework to motivate a notion of `global Ricci network flow' that can be used to assess a DNN's ability to disentangle complex data geometries to solve classification problems. By training more than $1,500$ DNN classifiers of different widths and depths on synthetic and real-world data, we show that the strength of global Ricci network flow-like behaviour correlates with accuracy for well-trained DNNs, independently of depth, width and data set. Our findings motivate the use of tools from differential and discrete geometry to the problem of explainability in deep learning.",
+    "comment": ""
+  },
+  "sections": [
+    {
+      "title": "作者信息",
+      "paragraphs": [
+        "作者：Anthony Baptista、Alessandro Barp、Tapabrata Chakraborti、Chris Harbron、Ben D. MacArthur、Christopher R. S. Banerji；主要来自 Alan Turing Institute、Queen Mary University of London、University of Southampton、UCLH 与 Roche。arXiv:2404.14265v1，全文 13 页。"
+      ]
+    },
+    {
+      "title": "研究问题",
+      "paragraphs": [
+        "训练良好的分类网络会逐层平滑、展开并分离数据流形。论文问：这种表示几何的演化能否用 Hamilton Ricci flow 的离散类比来量化，特别是在 ReLU 这类非光滑激活下；一个跨层的“global Ricci network flow”指标是否与分类精度相关？",
+        "这里的命题是经验性全局类比，不是声称 DNN 层严格积分连续 Ricci-flow 方程。作者把每层测试点云变成 $k$ 近邻图，用 Forman–Ricci 曲率描述局部图结构，再检验总测地距离的层间变化是否与上一层总曲率负相关。"
+      ]
+    },
+    {
+      "title": "模型与方法",
+      "paragraphs": [
+        "对二分类数据 $M=M_a\\cup M_b\\subset\\mathbb R^N$，作者训练含 5 或 11 个隐藏层的前馈 ReLU DNN；宽度为 25、50 或 50→25→50 瓶颈。RMSprop 学习率为 0.001，损失为 binary cross-entropy。几何分析只在未见测试集的逐层表示 $X_{test}^l$ 上进行。",
+        "每一层构造 $k$ 近邻图 $G_k(X_{test}^l)$，边权和点权均设为 1；边 $(i,j)$ 的 Forman–Ricci 曲率化为 $4-\\deg_k^l(i)-\\deg_k^l(j)$。图上最短路 $\\gamma_k^l(i,j)$ 近似流形测地距离，总距离 $g_l$ 是全部点对最短路之和，总曲率 $\\mathrm{Ric}_l$ 是全部边曲率之和。",
+        "若层演化具有全局 Ricci-flow-like 行为，应有 $g_{l+1}-g_l\\approx-\\alpha\\mathrm{Ric}_l$。作者以跨层 Pearson 相关 $\\rho_k=\\mathrm{corr}(g_{l+1}-g_l,\\mathrm{Ric}_l)$ 定义 Ricci coefficient；负值表示总曲率与下一步总距离变化方向符合该类比。不同深度用文中定义的 Fisher-$z$ 变换量比较。",
+        "尺度 $k$ 不是预先固定：对每个数据集、宽度和深度组合扫描一组能保持各层图连通的 $k$，在至少 25 个高精度网络的聚合数据中选取最负的 Ricci coefficient，再用该 $k$ 计算单个网络指标。"
+      ]
+    },
+    {
+      "title": "实验设计",
+      "paragraphs": [
+        "任务包括三个合成二流形数据集 A/B/C、MNIST 的 1-vs-7 与 6-vs-8、Fashion-MNIST 的 sandal-vs-ankle-boot 与 shirt-vs-coat。合成任务各用 1,000 个训练点和独立 1,000 个测试点；MNIST/fMNIST 使用相应完整类别训练集，测试比较约含 2,000 个样本。",
+        "每个任务组合三种宽度、两种深度并重复训练 36 次，总计 1,512 个 DNN。151 个网络没有达到任务相关的高精度门槛，留下 1,361 个近完美分类器；其中 134 个因某层 $k$NN 图不连通而无法定义全局最短路，最终 1,227 个进入单网络 Ricci coefficient 与精度分析。"
+      ]
+    },
+    {
+      "title": "核心结果与证据",
+      "paragraphs": [
+        "所有七个二分类比较都能找到使聚合 Ricci coefficient 为负的尺度，但最优 $k$ 强烈依赖数据。合成集的最负区间较局部：A 为测试集大小的 3%–10%，B 为 0.6%–1%，C 为 0.6%–5%；MNIST/fMNIST 则约为 12.5%–25%。因此指标不能脱离邻域尺度解释。",
+        "在可计算的 1,227 个高精度网络中，1,144 个（93.2%）得到负 Ricci coefficient。合成数据的较小最优 $k$ 对应层间总曲率下降、异类点距离增大；MNIST/fMNIST 的较大 $k$ 对应曲率上升、同类点靠拢。作者据此认为 DNN 会按数据集选择“分离异类”或“聚合同类”的主导几何机制。",
+        "控制数据集、宽度和深度的多元线性模型中，Ricci coefficient 与测试精度呈负关联，回归系数的 $t=-2.27$、$p=0.023$：指标越负，即 global Ricci-flow-like 行为越强，观察到的精度越高。该结果是相关关系，且只在先筛选出的高精度网络范围内成立。"
+      ]
+    },
+    {
+      "title": "有效性与局限",
+      "paragraphs": [
+        "论文把“Ricci 流”严格限定为总量层面的类比：局部 Ricci flow 要求任意点对的距离变化与连接路径曲率相应关联，global flow 并不推出该更强条件。作者也明确预计在解缠阶段会出现强连接点彼此远离，与局部 Ricci 流相反。",
+        "尺度 $k$ 是从同一组高精度网络中选择使聚合相关最负的值，随后再用于单网络统计；这种数据依赖选择使指标更像经校准的描述量，而不是无需调参的外部预测器。9.8% 的近完美网络因图不连通被排除，且精度回归只覆盖已经超过 90% 左右任务门槛的网络，不能外推到训练失败或低精度区域。",
+        "实验局限于二分类、全连接 ReLU 网络和七个任务，没有卷积、残差、Transformer、多分类或分布外测试。$t=-2.27$、$p=0.023$ 支持条件关联，但没有独立验证集上的架构选择实验，也没有证明更负的系数会因果性提高泛化。总距离和总曲率把丰富的局部结构压成单个数，点级不确定性、公平性与异常检测仍只是未来假设。"
+      ]
+    },
+    {
+      "title": "复现与资源",
+      "paragraphs": [
+        "原文：https://arxiv.org/abs/2404.14265；代码与部分数据：https://github.com/anthbapt/Ricci-NN。全文 PDF SHA-256：87761a85d48984f809ba6dcb1fa481d304dc558f3463b566e1fd27b95f41960b。",
+        "复现需固定数据划分、网络宽深和重复次数、RMSprop/学习率、精度筛选阈值、每层表示、$k$ 候选集合、图连通规则、最短路实现、Forman 曲率求和、聚合最优 $k$ 选择、Fisher 变换和多元回归公式。必须报告因图不连通而排除的网络，不能只展示负相关样例。",
+        "Evidence status: full-text verified; no independent reproduction performed."
+      ]
+    },
+    {
+      "title": "阅读指南",
+      "paragraphs": [
+        "先看 p. 5 Figure 1 区分连续 Ricci flow、$k$NN 图曲率和 DNN 表示演化；再读 pp. 3–4 的 Eqs. (3)–(8)，确认负 $\\rho_k$ 的定义。随后检查 pp. 6–8 的 1,512→1,361→1,227 样本筛选与 $k$ 扫描，最后读 pp. 8–11 的精度回归和 global/local 边界；不要把标题理解成网络严格求解 Ricci-flow PDE。"
+      ]
+    }
+  ],
+  "cover": {
+    "mode": "source_figure",
+    "asset_path": "assets/collection-figures/2404.14265/figure-1c-network-ricci-flow.webp",
+    "label": "Figure 1C",
+    "visual_type": "schematic",
+    "evidence": "paper.pdf p. 5, Figure 1C",
+    "alt_text": "DNN 隐层点云转成近邻图后，树状负曲率区域使点分离，团状正曲率区域使点聚合。",
+    "caption": "作者把隐藏层表示离散为近邻图：负曲率树枝对应拉开点，正曲率团簇对应聚拢点。",
+    "selection_rationale": "该图最直接说明论文所谓 Ricci-flow-like 行为的离散图含义，也能防止把全局统计误读为严格连续流。"
+  },
+  "figure_refs": [
+    {
+      "label": "Figure 1C",
+      "asset_path": "assets/collection-figures/2404.14265/figure-1c-network-ricci-flow.webp",
+      "section": "模型与方法",
+      "role": "map DNN representations to positive- and negative-curvature graph motifs",
+      "evidence": "paper.pdf p. 5, Figure 1C",
+      "alt_text": "二维隐藏层点云、对应的树/团近邻图以及 Ricci 流下分离/聚合方向。",
+      "caption": "稀疏树状区域具有负 Forman 曲率并倾向扩张，稠密团状区域具有正曲率并倾向收缩。",
+      "interpretation": "This is the geometric intuition behind the global coefficient, not evidence that every point pair follows a local Ricci flow."
+    }
+  ],
+  "equation_refs": [
+    {
+      "label": "Unweighted Forman–Ricci edge curvature",
+      "latex": "R_k^l(i,j)=4-\\deg_k^l(i)-\\deg_k^l(j)",
+      "role": "assign discrete curvature to each edge of a layerwise k-nearest-neighbour graph",
+      "symbols": {
+        "l": "DNN layer",
+        "k": "number of nearest neighbours",
+        "deg": "vertex degree in the layerwise graph"
+      },
+      "evidence": "paper.pdf p. 4, Eq. (4)",
+      "interpretation": "Dense clique-like neighbourhoods tend toward positive curvature, while sparse tree-like neighbourhoods tend toward negative curvature."
+    },
+    {
+      "label": "Global network-flow hypothesis",
+      "latex": "g_{l+1}-g_l\\approx-\\alpha\\operatorname{Ric}(g_l)",
+      "role": "state the aggregate Ricci-flow-like relation tested across DNN layers",
+      "symbols": {
+        "g_l": "sum of graph shortest-path distances at layer l",
+        "Ric_l": "sum of Forman edge curvatures at layer l",
+        "alpha": "positive flow scale"
+      },
+      "evidence": "paper.pdf p. 4, Eqs. (5)–(7)",
+      "interpretation": "The paper tests a correlation between aggregate quantities rather than fitting a continuous-time local flow."
+    },
+    {
+      "label": "Ricci coefficient",
+      "latex": "\\rho_k=\\operatorname{corr}_{l=1,\\ldots,L-1}(g_{l+1}-g_l,\\operatorname{Ric}_l)",
+      "role": "quantify global Ricci-network-flow-like behaviour in one trained DNN",
+      "symbols": {
+        "rho_k": "layerwise Pearson correlation at neighbourhood scale k",
+        "L": "number of hidden layers"
+      },
+      "evidence": "paper.pdf p. 4, Eq. (8)",
+      "interpretation": "A more negative value means curvature and the next layer's total-distance change align more strongly with the proposed minus-sign relation."
+    }
+  ],
+  "evidence_refs": [
+    "paper.pdf pp. 3–5: ReLU classifier, kNN discretisation, Forman curvature and global Ricci coefficient",
+    "paper.pdf pp. 6–7: seven tasks, 1,512-network ensemble, accuracy thresholds and k scan",
+    "paper.pdf p. 8: 1,227-network analysis, 93.2% negative coefficients and accuracy regression t=-2.27, p=0.023",
+    "paper.pdf pp. 9–11: scale dependence, global/local distinction, limitations and proposed applications",
+    "source PDF SHA-256 87761a85d48984f809ba6dcb1fa481d304dc558f3463b566e1fd27b95f41960b",
+    "Evidence status: full-text verified; no independent reproduction performed."
+  ]
+}
