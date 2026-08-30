@@ -1,0 +1,142 @@
+{
+  "arxiv_id": "2211.04607",
+  "source_version": "v3",
+  "source_pdf": "https://arxiv.org/pdf/2211.04607",
+  "title_en": "First principles physics-informed neural network for quantum wavefunctions and eigenvalue surfaces",
+  "title_zh": "用于量子波函数与本征值曲面的第一性原理物理信息神经网络",
+  "curation_status": "full_text_verified",
+  "card_standard_version": "2.3",
+  "paper_profile": "theory_experiment",
+  "style_reference": "physicist_daily_arxiv",
+  "provenance": {
+    "program": "Collection",
+    "catalog": "Paper Collection",
+    "catalog_record_id": "2211.04607",
+    "catalog_record_ids": [
+      "2211.04607"
+    ],
+    "catalog_topic": "Generative Models",
+    "collection_date": "2026-08-30",
+    "sampled_at": "2026-08-31",
+    "selected_by": "ziming_mineru_serial_goal",
+    "sampling_seed": "not_applicable_source_complete",
+    "candidate_count": 464
+  },
+  "verified_metadata": {
+    "arxiv_id": "2211.04607",
+    "version": "v3",
+    "title": "First principles physics-informed neural network for quantum wavefunctions and eigenvalue surfaces",
+    "authors": [
+      "Marios Mattheakis",
+      "Gabriel R. Schleder",
+      "Daniel T. Larson",
+      "Efthimios Kaxiras"
+    ],
+    "categories": [
+      "cs.LG",
+      "cond-mat.mtrl-sci",
+      "physics.comp-ph"
+    ],
+    "primary_category": "cs.LG",
+    "published": "2022-11-08T23:22:42Z",
+    "updated": "2022-11-20T01:41:11Z"
+  },
+  "sections": [
+    {
+      "title": "作者信息",
+      "paragraphs": [
+        "作者：Marios Mattheakis、Gabriel R. Schleder、Daniel T. Larson、Efthimios Kaxiras，均来自 Harvard University。arXiv:2211.04607v3，工作发表于 NeurIPS 2022 Machine Learning and the Physical Sciences workshop。"
+      ]
+    },
+    {
+      "title": "研究问题",
+      "paragraphs": [
+        "传统电子结构计算通常对每个核构型分别求解离散本征问题；势能面和力再由插值或有限差分得到。作者问：能否让一个 PINN 同时输出随核间距 R 连续变化的波函数 ψ(r,R) 与能量 E(R)，直接满足含 Coulomb 奇点的 Schrödinger 方程，并通过自动微分得到力？",
+        "验证对象是最简单的分子离子 H₂⁺ 单电子基态。论文展示的是第一性原理方程约束下的参数化求解原型，不是面向一般多电子体系的成熟量子化学替代方案。"
+      ]
+    },
+    {
+      "title": "模型与方法",
+      "paragraphs": [
+        "输入为电子坐标 r 和两个核位置 R_i。Atomic Unit 先构造满足核尖点结构的 1s 轨道 φ_i=exp(-|r-R_i|)，LCAO 单元给出对称基线 ψ_LCAO=φ₁+φ₂；Basis 网络学习修正 N(r,R)，Gate 网络学习只依赖 R 的权重 f(R)，组成 ψ=ψ_LCAO+f∘N。",
+        "Energy Unit 单独输出连续标量 E(R)。损失由方程残差 ⟨(Hψ-Eψ)²⟩ 和远场边界项组成；网络通过 LCAO/对称化嵌入反演对称性与核尖点先验。训练后冻结波函数分支，只微调能量单元以降低 E(R) 误差。",
+        "训练每轮在 r∈[-18,18]、r_cut=17.5、R∈[0.2,3] 重新采样 10⁶ 个 collocation points，主训练 5×10³ epochs，随后用更小学习率微调 E。论文代码基于 PyTorch。"
+      ]
+    },
+    {
+      "title": "核心结果与证据",
+      "paragraphs": [
+        "Figure 1 显示网络不是黑箱直接拟合 ψ：原子轨道、LCAO、反演对称修正、R 门控和能量支路分别承担已知物理结构。该结构使输出在空间与核间距上连续可微，并保留核位置附近的波函数尖点。",
+        "在 H₂⁺ 上，神经波函数相对 LCAO 修正了核间区域形状；能量曲线与参考解接近。Figure 3 比较 E(R) 及相对误差，并展示用 autograd 求 dE/dR 的力；在斜率快速变化区域，自动微分比有限差分更平滑，避免差分步长误差。",
+        "作者报告在 NVIDIA Tesla V100 上训练少于 5 分钟，但该数字针对单电子、低维模型和特定硬件。连续曲面与解析导数是方法的主要优势；本工作没有证明对多电子反对称性、电子相关或大分子仍具同样精度和成本。"
+      ]
+    },
+    {
+      "title": "有效性与局限",
+      "paragraphs": [
+        "实验只有 H₂⁺ 基态，空间范围、R 区间和 collocation 分布均人工限定。H₂⁺ 的 LCAO、对称性和尖点结构已知且易编码；推广到多核多电子体系需要处理费米反对称、电子相关、归一化、激发态正交与指数增长的构型空间。",
+        "方程残差在随机采样点较小不保证全域误差或变分上界；论文没有系统的网格收敛、随机种子、误差条或与高精度量子化学方法的统一成本比较。E 与 ψ 分支分阶段训练可能造成残差和能量最优的不一致，自动微分给出的是 learned E(R) 的精确导数，而非真实力的无误差估计。"
+      ]
+    },
+    {
+      "title": "复现与资源",
+      "paragraphs": [
+        "原文：https://arxiv.org/abs/2211.04607；代码：https://github.com/mariosmat/PINN_for_quantum_wavefunction_surfaces。官方 PDF SHA-256：8d959cef31467c6e72913236e451f62239c011ea780398ec63724fd6710c528b。",
+        "复现需固定原子单位、H₂⁺ 几何、r/R 采样域与重采样策略、r_cut、网络深宽、对称化、Gate/LCAO 初始化、损失权重、两阶段学习率和 reference solver；同时报告 PDE/边界残差、ψ/E 网格误差、归一化、力误差和训练成本。Evidence status: full-text verified; no independent reproduction performed."
+      ]
+    },
+    {
+      "title": "阅读指南",
+      "paragraphs": [
+        "先读式 (1) 明确 H₂⁺ Hamiltonian 与核坐标约定；再沿 Figure 1 追踪 LCAO、Basis、Gate、Energy 四条支路；随后核对式 (3) 的 PDE 与边界损失；最后用 Figures 2–3 分开检查波函数形状、能量误差和 autograd 力，并把推广多电子体系视为开放问题。"
+      ]
+    }
+  ],
+  "cover": {
+    "mode": "source_figure",
+    "asset_path": "assets/collection-figures/2211.04607/figure-1-ab-initio-pinn.webp",
+    "label": "Figure 1",
+    "visual_type": "schematic",
+    "evidence": "paper.pdf p. 3, Figure 1",
+    "alt_text": "电子与核坐标通过原子轨道、LCAO、神经基函数、门控和能量支路产生连续波函数与能量。",
+    "caption": "网络把已知原子轨道和对称性作为骨架，只让神经分支学习 LCAO 修正与参数化能量。",
+    "selection_rationale": "Figure 1 明确区分硬编码物理先验与可训练部分，是判断该方法为何能处理 Coulomb 尖点和连续 R 依赖的核心。"
+  },
+  "figure_refs": [
+    {
+      "label": "Figure 1",
+      "asset_path": "assets/collection-figures/2211.04607/figure-1-ab-initio-pinn.webp",
+      "section": "模型与方法",
+      "role": "show how atomic orbitals, symmetry, neural corrections and energy prediction are composed",
+      "evidence": "paper.pdf p. 3, Figure 1",
+      "alt_text": "H₂⁺ 参数化 PINN 的多支路结构。",
+      "caption": "ψ_LCAO 与 f(R)N(r,R) 相加形成波函数，独立 Energy Unit 输出 E(R)。",
+      "interpretation": "The architecture embeds known cusp/asymptotic structure; accuracy still depends on residual sampling and optimization."
+    }
+  ],
+  "equation_refs": [
+    {
+      "label": "Parametric Schrödinger residual",
+      "latex": "\\mathcal L=\\left\\langle(\\hat{\\mathcal H}\\psi(\\mathbf r_i,R_i)-E(R_i)\\psi(\\mathbf r_i,R_i))^2\\right\\rangle_i+\\left\\langle\\psi(\\mathbf r_i,R_i)^2\\right\\rangle_{|\\mathbf r_i|>r_{\\mathrm{cut}}}",
+      "role": "train the wavefunction and energy surface without labeled eigenpairs",
+      "symbols": {
+        "H": "H₂⁺ Coulomb Hamiltonian",
+        "psi": "neural parametric wavefunction",
+        "E": "neural energy surface",
+        "r": "electron coordinate",
+        "R": "internuclear parameter",
+        "r_cut": "outer boundary cutoff"
+      },
+      "evidence": "paper.pdf p. 3, Eq. (3)",
+      "interpretation": "The first term enforces the eigenvalue PDE at sampled points and the second suppresses the wavefunction at the finite-domain boundary."
+    }
+  ],
+  "evidence_refs": [
+    "paper.pdf pp. 1–2: motivation, Coulomb cusp problem and H₂⁺ Hamiltonian",
+    "paper.pdf pp. 2–3: atomic/LCAO/Basis/Gate/Energy architecture and loss",
+    "paper.pdf pp. 3–4: sampling, optimization, wavefunction and energy/force results",
+    "paper.pdf pp. 4–5: conclusions and stated generalization scope",
+    "source PDF SHA-256 8d959cef31467c6e72913236e451f62239c011ea780398ec63724fd6710c528b",
+    "Evidence status: full-text verified; no independent reproduction performed."
+  ]
+}
