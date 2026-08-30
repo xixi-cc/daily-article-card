@@ -1,0 +1,63 @@
+{
+  "arxiv_id": "2306.00352",
+  "source_version": "v1",
+  "source_pdf": "https://arxiv.org/pdf/2306.00352",
+  "title_en": "Improving Energy Conserving Descent for Machine Learning: Theory and Practice",
+  "title_zh": "改进机器学习的能量守恒下降：理论与实践",
+  "curation_status": "full_text_verified",
+  "card_standard_version": "2.3",
+  "paper_profile": "theory_experiment",
+  "style_reference": "physicist_daily_arxiv",
+  "provenance": {
+    "program": "Collection", "catalog": "Paper Collection", "catalog_record_id": "2306.00352",
+    "catalog_record_ids": ["2306.00352"], "catalog_topic": "AI for Science",
+    "collection_date": "2026-08-30", "sampled_at": "2026-08-31",
+    "selected_by": "ziming_mineru_serial_goal", "sampling_seed": "not_applicable_source_complete", "candidate_count": 464
+  },
+  "verified_metadata": {
+    "arxiv_id": "2306.00352", "version": "v1",
+    "title": "Improving Energy Conserving Descent for Machine Learning: Theory and Practice",
+    "authors": ["G. Bruno De Luca", "Alice Gatti", "Eva Silverstein"],
+    "categories": ["cs.LG"], "primary_category": "cs.LG",
+    "published": "2023-06-01T00:00:00Z", "updated": "2023-06-01T00:00:00Z",
+    "comment": "28 pages; ECD theory, optimizer construction, and multi-domain experiments"
+  },
+  "sections": [
+    {"title": "作者信息", "paragraphs": ["作者为 G. Bruno De Luca、Alice Gatti 与 Eva Silverstein（Stanford Institute for Theoretical Physics）。arXiv:2306.00352v1。论文把优化构造成混沌、能量守恒动力系统，并给出可用于机器学习的 ECDSep。"]},
+    {"title": "研究问题", "paragraphs": ["能否通过一个具有受控平衡分布的物理动力系统，把轨迹更多地分配到低损失区域，同时在非凸、高维且无对称性的任务上形成可用的一阶优化器？", "作者还问如何改进早期 ECD 的动力学、混沌注入和超参数调节，使方法可与 SGD、Adam、AdamW 在图像、图、语言和合成任务上比较。"]},
+    {"title": "模型与方法", "paragraphs": ["ECD 在扩展相空间中引入位置、速度与状态相关质量/势能，使连续动力学守恒总能量；通过选择与目标损失 F 相关的体积因子，使长时采样分布偏向低 F。ECDSep 使用可分离的速度更新、随机正交混合与辛式离散更新。", "批训练时，算法根据当前批损失与梯度更新内部能量变量，并以参数 ν、时间步长 Δt、指数 η、目标能量 F0 等控制探索与收敛。随机混合承担打破可积结构、促进遍历的作用；分离形式则让每步只需梯度和逐坐标代数运算，而无需显式 Hessian。", "实验分别调节各优化器超参数，并在合成函数、CIFAR-100、TinyImageNet、ImageNet-1K 微调、OGB 图任务和 GLUE/BERT 上比较。图像任务还采用 stochastic weight averaging；因此表中的结果是完整训练协议的组合效果，不能只归因于单一更新公式。"]},
+    {"title": "核心结果与证据", "paragraphs": ["在 Zakharov 与正则化 Ackley 示例中，ECDSep 能沿低损失区域探索并在局部极小值存在时继续移动；Figure 1 展示其与 GDM、Adam/BBI 的代表性轨迹。", "图像实验中，表 2 报告 CIFAR-100 平均准确率 82.57、TinyImageNet 66.44，分别略高于该表的 SGD 82.50、64.83；ImageNet-1K 仅做 10 个 epoch 微调，各法约 70.5，不能据此宣称普遍优势。GLUE 表 4 的跨任务平均值接近 Adam/AdamW。", "论文报告整个实验约 11,658 GPU 小时、估算排放 683.34 kgCO2e；广任务覆盖的代价是多数设置重复次数少，证据更适合说明竞争力而非稳定排名。"]},
+    {"title": "有效性与局限", "paragraphs": ["实验主要是过参数化模型且统计量低：图像完整训练仅少量重复，部分图/语言任务为三次平均，合成图展示典型轨迹。不同算法采用各自搜索空间，仍缺少统一计算预算、wall-clock 与置信区间。", "理论控制针对连续、遍历/混沌动力学及其理想分布；实际实现是离散、随机批量并依赖有限时间混合。辛更新可减小能量漂移，但不能证明神经网络实验已经达到理论平衡分布，也未独立验证泛化机制。", "参数 F0 必须低于当前可达损失并影响有效温度与动力学尺度；ν 和 Δt 又共同决定数值稳定性。作者给出调参指南，但尚未证明这些规则跨架构迁移，额外状态与随机正交操作的实际吞吐成本也没有系统纳入比较。"]},
+    {"title": "复现与资源", "paragraphs": ["原文：https://arxiv.org/abs/2306.00352。官方 PDF SHA-256：57ad6f2f81ce0aeae7e0a818049f35dabde8501883c448d40b55c68a9b869f06。论文给出代码仓库链接及附录中的任务、模型和超参数表。", "复现应分别核对连续守恒量与离散能量误差，再固定数据划分、初始化、搜索预算与随机种子比较 ECDSep/SGD/AdamW；同时报告最佳验证配置、测试均值方差、训练时间和能耗。Evidence status: full-text verified; no independent reproduction performed."]},
+    {"title": "阅读指南", "paragraphs": ["先读 pp. 1–4 的能量守恒分布与动力学，再读 pp. 4–9 的 ECDSep 更新和调参；pp. 9–14 是跨任务实验与局限，Appendix B 给出任务细节、超参数及额外图表。"]}
+  ],
+  "cover": {
+    "mode": "source_figure", "asset_path": "assets/collection-figures/2306.00352/figure-2-image-training.webp",
+    "label": "Figure 2", "visual_type": "comparison", "evidence": "paper.pdf p. 12, Figure 2",
+    "alt_text": "CIFAR-100 训练中 ECDSep、SGD、Adam 与 AdamW 的训练损失、SWA 测试准确率和测试准确率三联曲线。",
+    "caption": "Figure 2 比较四种优化器在 300 个 epoch 内的损失与准确率。",
+    "selection_rationale": "该图把 ECDSep 的动力学主张连接到标准图像分类训练曲线，并同时显示优化与泛化指标。"
+  },
+  "figure_refs": [{
+    "label": "Figure 2", "asset_path": "assets/collection-figures/2306.00352/figure-2-image-training.webp",
+    "section": "核心结果与证据", "role": "compare optimizer trajectories on image classification",
+    "evidence": "paper.pdf p. 12, Figure 2", "alt_text": "四种优化器的训练损失、SWA 测试准确率和测试准确率曲线。",
+    "caption": "ECDSep 在该 CIFAR-100 设置中与 SGD 结果接近并优于所示 Adam 变体。",
+    "interpretation": "This is one tuned training setting with limited repeats, not a universal optimizer ranking."
+  }],
+  "equation_refs": [{
+    "label": "ECD target volume", "latex": "V[F(\\Theta)]\\propto (F(\\Theta)-F_0)^\\eta,\\qquad \\eta\\ge 1",
+    "role": "shape the state-space volume so lower-loss regions receive larger equilibrium weight",
+    "symbols": {"F": "objective function", "Theta": "model parameters", "F_0": "target energy below the observed loss", "eta": "volume-shaping exponent", "V": "auxiliary volume factor"},
+    "evidence": "paper.pdf p. 2, Eq. (3)", "interpretation": "The induced distribution is a continuous-time theoretical result; finite-step stochastic training only approximates it."
+  }],
+  "evidence_refs": [
+    "paper.pdf pp. 1–4: ECD distribution, conserved dynamics and formulaic changes",
+    "paper.pdf pp. 4–9: ECDSep updates, batch handling, chaos and tuning guide",
+    "paper.pdf pp. 9–14: synthetic, image, graph and BERT experiments",
+    "paper.pdf p. 14: limitations and reported carbon-emission estimate",
+    "paper.pdf Appendix B: experimental configurations and hyperparameters",
+    "source PDF SHA-256 57ad6f2f81ce0aeae7e0a818049f35dabde8501883c448d40b55c68a9b869f06",
+    "Evidence status: full-text verified; no independent reproduction performed."
+  ]
+}
