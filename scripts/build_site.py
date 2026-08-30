@@ -61,6 +61,10 @@ SITE_DOCUMENT_NAME = "physics_AI.html"
 COLLECTION_DOCUMENT_NAME = "collection.html"
 MATHJAX_VERSION = "3.2.2"
 PUBLIC_BASE_URL = "https://xixi-cc.github.io/daily-article-card/"
+COMMENTS_REPOSITORY = "xixi-cc/xixi-research-comments"
+COMMENTS_REPOSITORY_ID = "R_kgDOUIl8MQ"
+COMMENTS_CATEGORY = "Announcements"
+COMMENTS_CATEGORY_ID = "DIC_kwDOUIl8Mc4DEftB"
 CLOUDFLARE_ANALYTICS_HTML = """<!-- Cloudflare Web Analytics -->
 <script type="module" src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon='{"token":"73522e5dee9b42b0be84b4847e4dd502"}'></script>
 <!-- End Cloudflare Web Analytics -->"""
@@ -170,6 +174,63 @@ def load_json(path: Path) -> object:
         return json.loads(read_text(path))
     except json.JSONDecodeError:
         return {}
+
+
+def atom_timestamp(value: object) -> str:
+    """Return a conservative Atom timestamp from a date-like value."""
+
+    text = str(value or "").strip()
+    match = re.match(r"^(\d{4}-\d{2}-\d{2})", text)
+    return f"{match.group(1)}T00:00:00Z" if match else "2026-01-01T00:00:00Z"
+
+
+def generate_atom_feed(
+    records: List[Dict[str, object]],
+    *,
+    title: str,
+    subtitle: str,
+    feed_path: str,
+) -> str:
+    """Build a compact Atom feed from rendered Daily or Collection records."""
+
+    ordered = sorted(
+        records,
+        key=lambda record: str(record.get("feed_date") or record.get("date") or ""),
+        reverse=True,
+    )[:100]
+    updated = atom_timestamp(
+        ordered[0].get("feed_date") or ordered[0].get("date") if ordered else ""
+    )
+    lines = [
+        '<?xml version="1.0" encoding="UTF-8"?>',
+        '<feed xmlns="http://www.w3.org/2005/Atom" xml:lang="zh-CN">',
+        f"  <title>{escape(title)}</title>",
+        f"  <subtitle>{escape(subtitle)}</subtitle>",
+        f"  <id>{PUBLIC_BASE_URL}{escape(feed_path)}</id>",
+        f'  <link href="{PUBLIC_BASE_URL}" />',
+        f'  <link href="{PUBLIC_BASE_URL}{escape(feed_path, quote=True)}" rel="self" type="application/atom+xml" />',
+        f"  <updated>{updated}</updated>",
+        '  <author><name>Xineng Cao</name><uri>https://xixi-cc.github.io/</uri></author>',
+    ]
+    for record in ordered:
+        program = str(record.get("program") or "Daily").lower()
+        identifier = str(record.get("arxiv_id") or record.get("page_dir") or "")
+        detail_path = str(record.get("detail_path") or "")
+        date_value = record.get("feed_date") or record.get("date")
+        summary = str(record.get("hook_text") or record.get("preview_text") or "")
+        lines.extend(
+            [
+                "  <entry>",
+                f"    <title>{escape(str(record.get('title') or '未命名论文'))}</title>",
+                f"    <id>urn:xixi-paper:{escape(program)}:{escape(identifier)}</id>",
+                f'    <link href="{PUBLIC_BASE_URL}{escape(detail_path, quote=True)}" />',
+                f"    <updated>{atom_timestamp(date_value)}</updated>",
+                f"    <summary>{escape(summary)}</summary>",
+                "  </entry>",
+            ]
+        )
+    lines.append("</feed>")
+    return "\n".join(lines) + "\n"
 
 
 def get_arxiv_keyword_label() -> str:
@@ -764,6 +825,7 @@ def attach_daily_metadata(records: List[Dict[str, object]]) -> None:
         fallback = load_card_file(COLLECTION_CARDS_DIR, card_id)
         record.update(classify_card(card, fallback))
         record["program"] = "Daily"
+        record["feed_date"] = record.get("date", "")
 
 
 def render_collection_card_markdown(card: Dict[str, object]) -> str:
@@ -819,6 +881,9 @@ def build_collection_records(paper_image_manifest: Dict[str, Dict[str, object]])
                 "program": "Collection",
                 "program_label": "Paper Collection",
                 "topic": str(topic),
+                "feed_date": str(provenance.get("sampled_at") or provenance.get("collection_date") or "")
+                if isinstance(provenance, dict)
+                else "",
                 "figure_refs": card.get("figure_refs", []),
                 "cover": card.get("cover", {}),
                 "detail_path": f"collection-papers/{record['page_dir']}/",
@@ -1016,6 +1081,7 @@ def generate_index_html(program: str = "Daily") -> str:
     )
     status = "独立 Collection 来源" if is_collection else "每日自动更新"
     script_name = "collection-app.js" if is_collection else "app.js"
+    feed_path = "collection-feed.xml" if is_collection else "feed.xml"
     hero_tags = (
         ("全文证据", "公式与适用边界", "随机抽样")
         if is_collection
@@ -1048,6 +1114,8 @@ def generate_index_html(program: str = "Daily") -> str:
 <html lang="zh-CN">
   <head>
     {generate_head(page_title, site_description, canonical_url=canonical_url, structured_data=structured_data)}
+    <link rel="alternate" type="application/atom+xml" title="{escape(site_title)} 更新" href="{PUBLIC_BASE_URL}{feed_path}" />
+    <link rel="alternate" type="application/atom+xml" title="全部论文卡更新" href="{PUBLIC_BASE_URL}all-feed.xml" />
   </head>
   <body>
     <div class="page-noise"></div>
@@ -1107,6 +1175,14 @@ def generate_index_html(program: str = "Daily") -> str:
               </label>
             </div>
             <p class="search-hint">可按文章分类和主题标签筛选；搜索覆盖标题、机构、摘要、标签和 arXiv ID。</p>
+            <div class="reader-tools" aria-label="收藏与订阅">
+              <button id="favorites-only" class="reader-tool-button" type="button" aria-pressed="false">★ 只看收藏 <span id="favorite-count">0</span></button>
+              <button id="favorites-export" class="reader-tool-button" type="button">导出收藏</button>
+              <button id="favorites-import" class="reader-tool-button" type="button">导入收藏</button>
+              <input id="favorites-file" class="visually-hidden" type="file" accept="application/json,.json" />
+              <a class="reader-tool-link" href="{feed_path}">关注本页 · RSS</a>
+              <a class="reader-tool-link" href="all-feed.xml">全部论文卡 · RSS</a>
+            </div>
           </div>
         </div>
       </div>
@@ -1149,6 +1225,9 @@ def generate_paper_html(record: Dict[str, object], prev_record: Dict[str, object
         else render_note_cover(record)
     )
     detail_body_html = render_detail_sections(record)
+    favorite_program = "collection" if is_collection else "daily"
+    favorite_identifier = str(record["arxiv_id"] or record["page_dir"])
+    comment_term = f"{favorite_program}:{favorite_identifier}"
     structured_data: Dict[str, object] = {
         "@context": "https://schema.org",
         "@type": "Article",
@@ -1189,7 +1268,7 @@ def generate_paper_html(record: Dict[str, object], prev_record: Dict[str, object
   <head>
     {generate_head(f"{page_title} - {site_title}", page_description, "../../", include_math=True, canonical_url=canonical_url, structured_data=structured_data)}
   </head>
-  <body class="detail-page" data-paper-id="{escape(str(record["arxiv_id"] or record["page_dir"]), quote=True)}">
+  <body class="detail-page" data-paper-id="{escape(favorite_identifier, quote=True)}" data-paper-program="{favorite_program}">
     <div class="page-noise"></div>
     <div class="page-blur page-blur-a"></div>
     <div class="page-blur page-blur-b"></div>
@@ -1200,6 +1279,7 @@ def generate_paper_html(record: Dict[str, object], prev_record: Dict[str, object
           <a class="back-link" href="../../{back_document}">返回列表</a>
           <div class="detail-topbar-actions">
             <span class="detail-site-name">{escape(site_title)}</span>
+            <button id="detail-favorite" class="detail-favorite-button" type="button" aria-pressed="false">☆ 收藏</button>
             {render_theme_toggle()}
           </div>
         </div>
@@ -1234,6 +1314,33 @@ def generate_paper_html(record: Dict[str, object], prev_record: Dict[str, object
         </aside>
       </div>
       <nav class="paper-nav">{nav_html}</nav>
+      <section id="comments" class="comments-panel" aria-labelledby="comments-title">
+        <div class="comments-heading">
+          <div>
+            <p class="eyebrow">Discussion</p>
+            <h2 id="comments-title">评论与讨论</h2>
+          </div>
+          <a href="https://github.com/{COMMENTS_REPOSITORY}/discussions" target="_blank" rel="noopener noreferrer">在 GitHub 查看</a>
+        </div>
+        <p class="comments-note">评论公开保存在 GitHub Discussions；阅读无需登录，发表评论需要 GitHub 账号。</p>
+        <script src="https://giscus.app/client.js"
+                data-repo="{COMMENTS_REPOSITORY}"
+                data-repo-id="{COMMENTS_REPOSITORY_ID}"
+                data-category="{COMMENTS_CATEGORY}"
+                data-category-id="{COMMENTS_CATEGORY_ID}"
+                data-mapping="specific"
+                data-term="{escape(comment_term, quote=True)}"
+                data-strict="1"
+                data-reactions-enabled="1"
+                data-emit-metadata="0"
+                data-input-position="top"
+                data-theme="preferred_color_scheme"
+                data-lang="zh-CN"
+                data-loading="lazy"
+                crossorigin="anonymous"
+                async></script>
+        <noscript><p>请启用 JavaScript，或直接前往 GitHub Discussions 参与讨论。</p></noscript>
+      </section>
     </main>
 
     <footer class="footer">
@@ -2772,8 +2879,16 @@ def generate_app_js() -> str:
   const categoryFilterEl = $('#category-filter');
   const tagFilterEl = $('#tag-filter');
   const paperCountEl = $('#paper-count');
+  const favoritesOnlyEl = $('#favorites-only');
+  const favoriteCountEl = $('#favorite-count');
+  const favoritesExportEl = $('#favorites-export');
+  const favoritesImportEl = $('#favorites-import');
+  const favoritesFileEl = $('#favorites-file');
   const homeScrollKey = 'home-scroll:index';
+  const favoritesStorageKey = 'xixi-paper-favorites-v1';
   const paperModalQueryKey = 'paper';
+  let FAVORITES = readFavorites();
+  let favoritesOnly = false;
   let restoredScroll = false;
   let paperModalEl = null;
   let paperModalFrameEl = null;
@@ -2783,6 +2898,82 @@ def generate_app_js() -> str:
   let modalReturnFocusEl = null;
   let modalCleanupTimerId = null;
   let modalSessionId = 0;
+
+  function readFavorites(){
+    try{
+      const parsed = JSON.parse(window.localStorage.getItem(favoritesStorageKey) || '[]');
+      return Array.isArray(parsed) ? Array.from(new Set(parsed.filter((value) => typeof value === 'string'))).sort() : [];
+    } catch (error) {
+      console.warn('读取收藏失败', error);
+      return [];
+    }
+  }
+
+  function writeFavorites(values){
+    FAVORITES = Array.from(new Set(values)).sort();
+    try{
+      window.localStorage.setItem(favoritesStorageKey, JSON.stringify(FAVORITES));
+    } catch (error) {
+      console.warn('保存收藏失败', error);
+    }
+  }
+
+  function getFavoriteKey(item){
+    const program = String(item.detail_path || '').startsWith('collection-papers/') ? 'collection' : 'daily';
+    return `${program}:${item.arxiv_id || item.detail_path}`;
+  }
+
+  function isFavorite(item){
+    return FAVORITES.includes(getFavoriteKey(item));
+  }
+
+  function toggleFavorite(item){
+    const key = getFavoriteKey(item);
+    writeFavorites(FAVORITES.includes(key) ? FAVORITES.filter((value) => value !== key) : [...FAVORITES, key]);
+    sync();
+  }
+
+  function updateFavoriteControls(){
+    const currentCount = DATA.filter((item) => isFavorite(item)).length;
+    if(favoriteCountEl){
+      favoriteCountEl.textContent = String(currentCount);
+    }
+    if(favoritesOnlyEl){
+      favoritesOnlyEl.setAttribute('aria-pressed', String(favoritesOnly));
+    }
+    if(favoritesExportEl){
+      favoritesExportEl.disabled = FAVORITES.length === 0;
+    }
+  }
+
+  function exportFavorites(){
+    const payload = JSON.stringify({ version: 1, exported_at: new Date().toISOString(), favorites: FAVORITES }, null, 2);
+    const objectURL = URL.createObjectURL(new Blob([payload], { type: 'application/json' }));
+    const anchor = document.createElement('a');
+    anchor.href = objectURL;
+    anchor.download = `xixi-paper-favorites-${new Date().toISOString().slice(0, 10)}.json`;
+    anchor.click();
+    URL.revokeObjectURL(objectURL);
+  }
+
+  async function importFavorites(file){
+    if(!file){
+      return;
+    }
+    try{
+      const parsed = JSON.parse(await file.text());
+      const values = Array.isArray(parsed) ? parsed : parsed && parsed.favorites;
+      if(!Array.isArray(values) || !values.every((value) => typeof value === 'string')){
+        throw new Error('invalid favorites payload');
+      }
+      writeFavorites([...FAVORITES, ...values]);
+      sync();
+    } catch (error) {
+      window.alert('无法导入：请选择本站导出的收藏 JSON 文件。');
+    } finally {
+      favoritesFileEl.value = '';
+    }
+  }
 
   function getPaperIdentifier(item){
     return item.arxiv_id || item.detail_path;
@@ -3122,6 +3313,9 @@ def generate_app_js() -> str:
     const raw = (query || '').trim().toLowerCase();
     const tokens = raw.split(/\\s+/).filter(Boolean);
     return items.filter((item) => {
+      if(favoritesOnly && !isFavorite(item)){
+        return false;
+      }
       if(categoryFilterEl.value && item.category !== categoryFilterEl.value){
         return false;
       }
@@ -3148,6 +3342,9 @@ def generate_app_js() -> str:
   }
 
   function createFeedCard(item){
+    const cardShell = document.createElement('div');
+    cardShell.className = 'feed-card-shell';
+
     const cardLink = document.createElement('a');
     cardLink.className = 'feed-card-link';
     cardLink.href = item.detail_path;
@@ -3288,7 +3485,20 @@ def generate_app_js() -> str:
     card.appendChild(coverWrap);
     card.appendChild(cardBody);
     cardLink.appendChild(card);
-    return cardLink;
+
+    const favoriteButton = document.createElement('button');
+    const favorite = isFavorite(item);
+    favoriteButton.type = 'button';
+    favoriteButton.className = 'feed-favorite-button';
+    favoriteButton.textContent = favorite ? '★' : '☆';
+    favoriteButton.setAttribute('aria-pressed', String(favorite));
+    favoriteButton.setAttribute('aria-label', `${favorite ? '取消收藏' : '收藏'}：${item.title || '论文'}`);
+    favoriteButton.title = favorite ? '取消收藏' : '收藏';
+    favoriteButton.addEventListener('click', () => toggleFavorite(item));
+
+    cardShell.appendChild(cardLink);
+    cardShell.appendChild(favoriteButton);
+    return cardShell;
   }
 
   const GROUPS_PER_BATCH = 3;
@@ -3406,6 +3616,7 @@ def generate_app_js() -> str:
 
   function sync(){
     const items = filterItems(DATA, searchEl.value);
+    updateFavoriteControls();
     updatePaperCount(items.length);
 
     if(!DATA.length){
@@ -3426,6 +3637,7 @@ def generate_app_js() -> str:
             searchEl.value = '';
             categoryFilterEl.value = '';
             tagFilterEl.value = '';
+            favoritesOnly = false;
             syncSearchURL();
             sync();
             searchEl.focus();
@@ -3472,6 +3684,21 @@ def generate_app_js() -> str:
   tagFilterEl.addEventListener('change', () => {
     syncSearchURL();
     sync();
+  });
+  favoritesOnlyEl.addEventListener('click', () => {
+    favoritesOnly = !favoritesOnly;
+    restoredScroll = true;
+    sync();
+  });
+  favoritesExportEl.addEventListener('click', exportFavorites);
+  favoritesImportEl.addEventListener('click', () => favoritesFileEl.click());
+  favoritesFileEl.addEventListener('change', () => importFavorites(favoritesFileEl.files && favoritesFileEl.files[0]));
+
+  window.addEventListener('storage', (event) => {
+    if(event.key === favoritesStorageKey){
+      FAVORITES = readFavorites();
+      sync();
+    }
   });
 
   function restoreScroll(){
@@ -3553,6 +3780,12 @@ def generate_app_js() -> str:
       return;
     }
 
+    if(message.type === 'paper-favorite-changed'){
+      FAVORITES = readFavorites();
+      sync();
+      return;
+    }
+
     if(message.type === 'paper-image-open' && window.PaperImageViewer){
       window.PaperImageViewer.open({
         src: message.src,
@@ -3619,7 +3852,72 @@ def generate_paper_js() -> str:
   const detailToc = $('#detail-toc');
   const detailTocNav = $('#detail-toc-nav');
   const paperId = document.body.dataset.paperId || '';
+  const paperProgram = document.body.dataset.paperProgram || 'daily';
+  const favoriteButton = $('#detail-favorite');
+  const favoritesStorageKey = 'xixi-paper-favorites-v1';
   const isEmbedded = window.parent !== window && new URL(window.location.href).searchParams.get('embed') === '1';
+
+  function getFavoriteKey(){
+    return `${paperProgram}:${paperId}`;
+  }
+
+  function readFavorites(){
+    try{
+      const parsed = JSON.parse(window.localStorage.getItem(favoritesStorageKey) || '[]');
+      return Array.isArray(parsed) ? Array.from(new Set(parsed.filter((value) => typeof value === 'string'))).sort() : [];
+    } catch (error) {
+      console.warn('读取收藏失败', error);
+      return [];
+    }
+  }
+
+  function updateFavoriteButton(){
+    if(!favoriteButton || !paperId){
+      return;
+    }
+    const favorite = readFavorites().includes(getFavoriteKey());
+    favoriteButton.textContent = favorite ? '★ 已收藏' : '☆ 收藏';
+    favoriteButton.setAttribute('aria-pressed', String(favorite));
+    favoriteButton.title = favorite ? '取消收藏' : '收藏';
+  }
+
+  function toggleFavorite(){
+    if(!paperId){
+      return;
+    }
+    const key = getFavoriteKey();
+    const current = readFavorites();
+    const next = current.includes(key) ? current.filter((value) => value !== key) : [...current, key];
+    try{
+      window.localStorage.setItem(favoritesStorageKey, JSON.stringify(Array.from(new Set(next)).sort()));
+    } catch (error) {
+      console.warn('保存收藏失败', error);
+      return;
+    }
+    updateFavoriteButton();
+    if(isEmbedded){
+      window.parent.postMessage({ type: 'paper-favorite-changed', key }, window.location.origin);
+    }
+  }
+
+  function syncGiscusTheme(){
+    const frame = document.querySelector('iframe.giscus-frame');
+    if(!frame || !frame.contentWindow){
+      return;
+    }
+    frame.contentWindow.postMessage({
+      giscus: { setConfig: { theme: document.documentElement.dataset.theme === 'dark' ? 'dark' : 'light' } }
+    }, 'https://giscus.app');
+  }
+
+  function initializeReaderActions(){
+    if(favoriteButton){
+      favoriteButton.addEventListener('click', toggleFavorite);
+      updateFavoriteButton();
+    }
+    const themeObserver = new MutationObserver(syncGiscusTheme);
+    themeObserver.observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
+  }
 
   function getImagePayload(imageEl){
     const figureEl = imageEl.closest('.paper-figure-card');
@@ -3827,6 +4125,7 @@ def generate_paper_js() -> str:
   window.addEventListener('pagehide', saveScroll);
 
   initializeEmbeddedMode();
+  initializeReaderActions();
   initializeImageZoom();
   buildDetailToc();
   restoreScroll();
@@ -4053,6 +4352,33 @@ def main() -> int:
     write_text(ASSETS_DIR / "paper.js", generate_paper_js())
     write_text(ASSETS_DIR / "data.json", json.dumps(list_data, ensure_ascii=False, indent=2))
     write_text(ASSETS_DIR / "collection-data.json", json.dumps(collection_list_data, ensure_ascii=False, indent=2))
+    write_text(
+        SITE_DIR / "feed.xml",
+        generate_atom_feed(
+            site_records,
+            title="每日论文卡更新",
+            subtitle="Codex 筛选并完成全文证据核验的 physics+AI S 级论文卡。",
+            feed_path="feed.xml",
+        ),
+    )
+    write_text(
+        SITE_DIR / "collection-feed.xml",
+        generate_atom_feed(
+            collection_records,
+            title="Paper Collection 全文卡更新",
+            subtitle="Paper Collection 中已完成全文证据核验的论文卡。",
+            feed_path="collection-feed.xml",
+        ),
+    )
+    write_text(
+        SITE_DIR / "all-feed.xml",
+        generate_atom_feed(
+            [*site_records, *collection_records],
+            title="Xixi 全部论文卡更新",
+            subtitle="每日论文卡与 Paper Collection 全文卡的统一更新流。",
+            feed_path="all-feed.xml",
+        ),
+    )
 
     for idx, record in enumerate(site_records):
       prev_rec = site_records[idx - 1] if idx > 0 else None

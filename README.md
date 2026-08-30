@@ -18,6 +18,9 @@
 - 按 Paper Card Standard v2.3 选择论文最重要的物理可视化作为封面；无合适图片时使用题目与摘要封面
 - 支持标题、机构、摘要亮点和 arXiv ID 搜索
 - 为每篇论文生成独立详情页
+- 支持浏览器本地收藏、只看收藏以及 JSON 导入导出
+- 提供 Daily、Collection 和二者合并的 Atom 订阅源
+- 详情页通过 `xixi-cc/xixi-research-comments` GitHub Discussions 提供评论
 - 响应式界面与亮色、暗色主题
 
 本项目不在 GitHub Actions 中调用外部 LLM API，也不需要 ModelScope token。Codex 直接完成 arXiv 检索、筛选、全文卡片写作、验证与发布；GitHub Actions 只执行确定性图片处理、构建和 Pages 部署。

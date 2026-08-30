@@ -13,8 +13,16 @@
   const categoryFilterEl = $('#category-filter');
   const tagFilterEl = $('#tag-filter');
   const paperCountEl = $('#paper-count');
+  const favoritesOnlyEl = $('#favorites-only');
+  const favoriteCountEl = $('#favorite-count');
+  const favoritesExportEl = $('#favorites-export');
+  const favoritesImportEl = $('#favorites-import');
+  const favoritesFileEl = $('#favorites-file');
   const homeScrollKey = 'home-scroll:index';
+  const favoritesStorageKey = 'xixi-paper-favorites-v1';
   const paperModalQueryKey = 'paper';
+  let FAVORITES = readFavorites();
+  let favoritesOnly = false;
   let restoredScroll = false;
   let paperModalEl = null;
   let paperModalFrameEl = null;
@@ -24,6 +32,82 @@
   let modalReturnFocusEl = null;
   let modalCleanupTimerId = null;
   let modalSessionId = 0;
+
+  function readFavorites(){
+    try{
+      const parsed = JSON.parse(window.localStorage.getItem(favoritesStorageKey) || '[]');
+      return Array.isArray(parsed) ? Array.from(new Set(parsed.filter((value) => typeof value === 'string'))).sort() : [];
+    } catch (error) {
+      console.warn('读取收藏失败', error);
+      return [];
+    }
+  }
+
+  function writeFavorites(values){
+    FAVORITES = Array.from(new Set(values)).sort();
+    try{
+      window.localStorage.setItem(favoritesStorageKey, JSON.stringify(FAVORITES));
+    } catch (error) {
+      console.warn('保存收藏失败', error);
+    }
+  }
+
+  function getFavoriteKey(item){
+    const program = String(item.detail_path || '').startsWith('collection-papers/') ? 'collection' : 'daily';
+    return `${program}:${item.arxiv_id || item.detail_path}`;
+  }
+
+  function isFavorite(item){
+    return FAVORITES.includes(getFavoriteKey(item));
+  }
+
+  function toggleFavorite(item){
+    const key = getFavoriteKey(item);
+    writeFavorites(FAVORITES.includes(key) ? FAVORITES.filter((value) => value !== key) : [...FAVORITES, key]);
+    sync();
+  }
+
+  function updateFavoriteControls(){
+    const currentCount = DATA.filter((item) => isFavorite(item)).length;
+    if(favoriteCountEl){
+      favoriteCountEl.textContent = String(currentCount);
+    }
+    if(favoritesOnlyEl){
+      favoritesOnlyEl.setAttribute('aria-pressed', String(favoritesOnly));
+    }
+    if(favoritesExportEl){
+      favoritesExportEl.disabled = FAVORITES.length === 0;
+    }
+  }
+
+  function exportFavorites(){
+    const payload = JSON.stringify({ version: 1, exported_at: new Date().toISOString(), favorites: FAVORITES }, null, 2);
+    const objectURL = URL.createObjectURL(new Blob([payload], { type: 'application/json' }));
+    const anchor = document.createElement('a');
+    anchor.href = objectURL;
+    anchor.download = `xixi-paper-favorites-${new Date().toISOString().slice(0, 10)}.json`;
+    anchor.click();
+    URL.revokeObjectURL(objectURL);
+  }
+
+  async function importFavorites(file){
+    if(!file){
+      return;
+    }
+    try{
+      const parsed = JSON.parse(await file.text());
+      const values = Array.isArray(parsed) ? parsed : parsed && parsed.favorites;
+      if(!Array.isArray(values) || !values.every((value) => typeof value === 'string')){
+        throw new Error('invalid favorites payload');
+      }
+      writeFavorites([...FAVORITES, ...values]);
+      sync();
+    } catch (error) {
+      window.alert('无法导入：请选择本站导出的收藏 JSON 文件。');
+    } finally {
+      favoritesFileEl.value = '';
+    }
+  }
 
   function getPaperIdentifier(item){
     return item.arxiv_id || item.detail_path;
@@ -363,6 +447,9 @@
     const raw = (query || '').trim().toLowerCase();
     const tokens = raw.split(/\s+/).filter(Boolean);
     return items.filter((item) => {
+      if(favoritesOnly && !isFavorite(item)){
+        return false;
+      }
       if(categoryFilterEl.value && item.category !== categoryFilterEl.value){
         return false;
       }
@@ -389,6 +476,9 @@
   }
 
   function createFeedCard(item){
+    const cardShell = document.createElement('div');
+    cardShell.className = 'feed-card-shell';
+
     const cardLink = document.createElement('a');
     cardLink.className = 'feed-card-link';
     cardLink.href = item.detail_path;
@@ -529,7 +619,20 @@
     card.appendChild(coverWrap);
     card.appendChild(cardBody);
     cardLink.appendChild(card);
-    return cardLink;
+
+    const favoriteButton = document.createElement('button');
+    const favorite = isFavorite(item);
+    favoriteButton.type = 'button';
+    favoriteButton.className = 'feed-favorite-button';
+    favoriteButton.textContent = favorite ? '★' : '☆';
+    favoriteButton.setAttribute('aria-pressed', String(favorite));
+    favoriteButton.setAttribute('aria-label', `${favorite ? '取消收藏' : '收藏'}：${item.title || '论文'}`);
+    favoriteButton.title = favorite ? '取消收藏' : '收藏';
+    favoriteButton.addEventListener('click', () => toggleFavorite(item));
+
+    cardShell.appendChild(cardLink);
+    cardShell.appendChild(favoriteButton);
+    return cardShell;
   }
 
   const GROUPS_PER_BATCH = 3;
@@ -647,6 +750,7 @@
 
   function sync(){
     const items = filterItems(DATA, searchEl.value);
+    updateFavoriteControls();
     updatePaperCount(items.length);
 
     if(!DATA.length){
@@ -667,6 +771,7 @@
             searchEl.value = '';
             categoryFilterEl.value = '';
             tagFilterEl.value = '';
+            favoritesOnly = false;
             syncSearchURL();
             sync();
             searchEl.focus();
@@ -713,6 +818,21 @@
   tagFilterEl.addEventListener('change', () => {
     syncSearchURL();
     sync();
+  });
+  favoritesOnlyEl.addEventListener('click', () => {
+    favoritesOnly = !favoritesOnly;
+    restoredScroll = true;
+    sync();
+  });
+  favoritesExportEl.addEventListener('click', exportFavorites);
+  favoritesImportEl.addEventListener('click', () => favoritesFileEl.click());
+  favoritesFileEl.addEventListener('change', () => importFavorites(favoritesFileEl.files && favoritesFileEl.files[0]));
+
+  window.addEventListener('storage', (event) => {
+    if(event.key === favoritesStorageKey){
+      FAVORITES = readFavorites();
+      sync();
+    }
   });
 
   function restoreScroll(){
@@ -791,6 +911,12 @@
         standaloneURL.searchParams.delete('embed');
         paperModalOpenLinkEl.href = standaloneURL.href;
       }
+      return;
+    }
+
+    if(message.type === 'paper-favorite-changed'){
+      FAVORITES = readFavorites();
+      sync();
       return;
     }
 

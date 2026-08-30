@@ -8,7 +8,72 @@
   const detailToc = $('#detail-toc');
   const detailTocNav = $('#detail-toc-nav');
   const paperId = document.body.dataset.paperId || '';
+  const paperProgram = document.body.dataset.paperProgram || 'daily';
+  const favoriteButton = $('#detail-favorite');
+  const favoritesStorageKey = 'xixi-paper-favorites-v1';
   const isEmbedded = window.parent !== window && new URL(window.location.href).searchParams.get('embed') === '1';
+
+  function getFavoriteKey(){
+    return `${paperProgram}:${paperId}`;
+  }
+
+  function readFavorites(){
+    try{
+      const parsed = JSON.parse(window.localStorage.getItem(favoritesStorageKey) || '[]');
+      return Array.isArray(parsed) ? Array.from(new Set(parsed.filter((value) => typeof value === 'string'))).sort() : [];
+    } catch (error) {
+      console.warn('读取收藏失败', error);
+      return [];
+    }
+  }
+
+  function updateFavoriteButton(){
+    if(!favoriteButton || !paperId){
+      return;
+    }
+    const favorite = readFavorites().includes(getFavoriteKey());
+    favoriteButton.textContent = favorite ? '★ 已收藏' : '☆ 收藏';
+    favoriteButton.setAttribute('aria-pressed', String(favorite));
+    favoriteButton.title = favorite ? '取消收藏' : '收藏';
+  }
+
+  function toggleFavorite(){
+    if(!paperId){
+      return;
+    }
+    const key = getFavoriteKey();
+    const current = readFavorites();
+    const next = current.includes(key) ? current.filter((value) => value !== key) : [...current, key];
+    try{
+      window.localStorage.setItem(favoritesStorageKey, JSON.stringify(Array.from(new Set(next)).sort()));
+    } catch (error) {
+      console.warn('保存收藏失败', error);
+      return;
+    }
+    updateFavoriteButton();
+    if(isEmbedded){
+      window.parent.postMessage({ type: 'paper-favorite-changed', key }, window.location.origin);
+    }
+  }
+
+  function syncGiscusTheme(){
+    const frame = document.querySelector('iframe.giscus-frame');
+    if(!frame || !frame.contentWindow){
+      return;
+    }
+    frame.contentWindow.postMessage({
+      giscus: { setConfig: { theme: document.documentElement.dataset.theme === 'dark' ? 'dark' : 'light' } }
+    }, 'https://giscus.app');
+  }
+
+  function initializeReaderActions(){
+    if(favoriteButton){
+      favoriteButton.addEventListener('click', toggleFavorite);
+      updateFavoriteButton();
+    }
+    const themeObserver = new MutationObserver(syncGiscusTheme);
+    themeObserver.observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
+  }
 
   function getImagePayload(imageEl){
     const figureEl = imageEl.closest('.paper-figure-card');
@@ -216,6 +281,7 @@
   window.addEventListener('pagehide', saveScroll);
 
   initializeEmbeddedMode();
+  initializeReaderActions();
   initializeImageZoom();
   buildDetailToc();
   restoreScroll();
