@@ -1,0 +1,231 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Searching for internal symbols underlying deep learning - physics+AI Collection 随机精选</title>
+    <meta name="description" content="Jung H. Lee（Pacific Northwest National Laboratory）与 Sujith Vijayan（Virginia Tech School of Neuroscience）。论文提出用 segmentation、局部 activation vectors 与无监督聚类寻找可用于预测的离散“内部符号”。arXiv:2405.20605v2。" />
+    <link rel="canonical" href="https://xixi-cc.github.io/daily-article-card/collection-papers/2405.20605/" />
+    <script type="application/ld+json">{"@context": "https://schema.org", "@type": "Article", "headline": "Searching for internal symbols underlying deep learning", "description": "Jung H. Lee（Pacific Northwest National Laboratory）与 Sujith Vijayan（Virginia Tech School of Neuroscience）。论文提出用 segmentation、局部 activation vectors 与无监督聚类寻找可用于预测的离散“内部符号”。arXiv:2405.20605v2。", "url": "https://xixi-cc.github.io/daily-article-card/collection-papers/2405.20605/", "mainEntityOfPage": "https://xixi-cc.github.io/daily-article-card/collection-papers/2405.20605/", "inLanguage": "zh-CN", "author": {"@type": "Person", "name": "Xineng Cao", "alternateName": ["Xixi Cao", "曹溪能"], "url": "https://xixi-cc.github.io/"}, "isBasedOn": "https://arxiv.org/abs/2405.20605"}</script>
+    <script>
+      (function() {
+        try {
+          var themePreference = window.localStorage.getItem('color-theme') || 'system';
+          var systemUsesDarkTheme = window.matchMedia('(prefers-color-scheme: dark)').matches;
+          var resolvedTheme = themePreference === 'system'
+            ? (systemUsesDarkTheme ? 'dark' : 'light')
+            : themePreference;
+          document.documentElement.dataset.theme = resolvedTheme;
+          document.documentElement.dataset.themePreference = themePreference;
+          document.documentElement.style.colorScheme = resolvedTheme;
+        } catch (error) {
+          document.documentElement.dataset.theme = 'light';
+          document.documentElement.dataset.themePreference = 'system';
+        }
+      })();
+    </script>
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='18' fill='%23111827'/%3E%3Ctext x='50%25' y='55%25' text-anchor='middle' dominant-baseline='middle' font-size='30' font-family='Arial, sans-serif' fill='white'%3EV%3C/text%3E%3C/svg%3E" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700;800&family=Noto+Sans+SC:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <script>document.documentElement.classList.add('math-pending');</script>
+    <script>
+      window.MathJax = {
+        tex: {
+          inlineMath: [['$', '$'], ['\\(', '\\)']],
+          displayMath: [['$$', '$$'], ['\\[', '\\]']],
+          processEscapes: true
+        },
+        options: {
+          skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+        },
+        chtml: {
+          scale: 1,
+          displayAlign: 'center'
+        },
+        startup: {
+          ready: function() {
+            MathJax.startup.defaultReady();
+            MathJax.startup.promise.then(function() {
+              document.documentElement.classList.remove('math-pending');
+              document.documentElement.dataset.mathReady = 'true';
+            });
+          }
+        }
+      };
+    </script>
+    <script defer src="../../assets/vendor/mathjax/tex-chtml.js"></script>
+    <link rel="stylesheet" href="../../assets/style.css" />
+  </head>
+  <body class="detail-page" data-paper-id="2405.20605" data-paper-program="collection">
+    <div class="page-noise"></div>
+    <div class="page-blur page-blur-a"></div>
+    <div class="page-blur page-blur-b"></div>
+
+    <header class="header detail-page-header">
+      <div class="container">
+        <div class="detail-page-topbar">
+          <a class="back-link" href="../../collection.html">返回列表</a>
+          <div class="detail-topbar-actions">
+            <span class="detail-site-name">physics+AI Collection 随机精选</span>
+            <button id="detail-favorite" class="detail-favorite-button" type="button" aria-pressed="false">☆ 收藏</button>
+            <button class="theme-toggle" type="button" data-theme-toggle aria-label="当前主题：设备，点击切换主题" title="当前主题：设备">
+  <span class="theme-toggle-icons" aria-hidden="true">
+    <svg class="theme-toggle-icon theme-toggle-icon-light" viewBox="0 0 24 24" fill="none">
+      <circle cx="12" cy="12" r="3.5" stroke="currentColor" stroke-width="1.8"/>
+      <path d="M12 2.5v2M12 19.5v2M2.5 12h2M19.5 12h2M5.3 5.3l1.4 1.4M17.3 17.3l1.4 1.4M18.7 5.3l-1.4 1.4M6.7 17.3l-1.4 1.4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+    </svg>
+    <svg class="theme-toggle-icon theme-toggle-icon-dark" viewBox="0 0 24 24" fill="none">
+      <path d="M20 15.2A8.1 8.1 0 0 1 8.8 4a8.2 8.2 0 1 0 11.2 11.2z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>
+    </svg>
+    <svg class="theme-toggle-icon theme-toggle-icon-system" viewBox="0 0 24 24" fill="none">
+      <rect x="3" y="4" width="18" height="13" rx="2.5" stroke="currentColor" stroke-width="1.8"/>
+      <path d="M8 21h8M12 17v4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+    </svg>
+  </span>
+  <span class="theme-toggle-label" data-theme-toggle-label>设备</span>
+</button>
+          </div>
+        </div>
+
+        <div class="detail-hero-grid">
+          <div class="detail-hero-cover"><figure class="paper-figure-card paper-figure-card-detail">
+  <img class="paper-figure-image" src="../../assets/collection-figures/2405.20605/figure-1-symbol-extraction.webp" alt="输入图像经 STCert 选择目标区域，再通过部分 DNN 得到各 channel 的 3×3 activation maps，并展开为九维 activity vectors。" loading="lazy" onclick="window.openPaperFigureImage && window.openPaperFigureImage(this)" />
+  <figcaption class="paper-figure-caption">内部符号抽取的第一步：把分割后的局部特征图转成可聚类 activity vectors。</figcaption>
+</figure></div>
+          <div class="detail-hero-copy">
+            <p class="eyebrow">Collection 全文卡</p>
+            <h1 class="detail-page-title">Searching for internal symbols underlying deep learning</h1>
+            <p class="detail-page-title-zh">寻找深度学习中的内部符号</p>
+            <div class="detail-meta">Paper Collection · Mechanistic Interpretability · <a href="https://arxiv.org/abs/2405.20605" target="_blank" rel="noopener noreferrer">原文</a></div>
+            <p class="detail-summary">Jung H. Lee（Pacific Northwest National Laboratory）与 Sujith Vijayan（Virginia Tech School of Neuroscience）。论文提出用 segmentation、局部 activation vectors 与无监督聚类寻找可用于预测的离散“内部符号”。arXiv:2405.20605v2。</p>
+            <div class="detail-micro-meta">
+              <span class="meta-pill">AI 方法与系统</span>
+              <span class="meta-pill">AI 实证</span>
+              <span class="meta-pill">#Mechanistic Interpretability</span><span class="meta-pill">#机器学习</span><span class="meta-pill">#人工智能</span>
+              <span class="meta-pill">8 分钟读完</span>
+              <span class="meta-pill">7 张阅读卡</span>
+              <span class="meta-pill">Jung H. Lee（Pacific Northwest National Laboratory）与…</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <main class="container detail-layout">
+      <div class="detail-shell">
+        <article id="detail-body" class="reading-flow"><section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 01</span>
+    <span class="reading-step-note">作者信息</span>
+  </div>
+  <h2>作者信息</h2>
+  <div class="reading-card-content"><ul><li>Jung \(H\). Lee（Pacific Northwest National Laboratory）与 Sujith Vijayan（Virginia Tech School of Neuroscience）。论文提出用 segmentation、局部 activation vectors 与无监督聚类寻找可用于预测的离散“内部符号”。arXiv:2405.20605v2。</li></ul></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 02</span>
+    <span class="reading-step-note">研究问题</span>
+  </div>
+  <h2>研究问题</h2>
+  <div class="reading-card-content"><ul><li>概念可视化通常寻找与人类类别对齐的 feature；本文问更弱也更操作化的问题：网络中是否存在重复出现的 activation patterns，可被离散化为 symbols，并能组合起来预测模型答案？</li><li>作者还测试这些符号是否跨类别、层与架构稳定，以及剔除与错误预测相关的 symbols 能否改善后续判断。这里的 symbol 是聚类后的内部代码，不等同于语言学符号或可组合逻辑变量。</li></ul></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 03</span>
+    <span class="reading-step-note">模型与方法</span>
+  </div>
+  <h2>模型与方法</h2>
+  <div class="reading-card-content"><ul><li>STCert 先用 foundation segmentation model 找到输入图像中与 DNN 预测标签对应的 region of interest；把 ROI 送入目标分类器的部分网络，针对每个 channel 取 3×3 activation map，展开成 9 维 activity vector。Figure 1 展示这一流水线。</li><li>对 activity vectors 用 UMAP 降维，再用 \(X\)-means 聚类；每个 cluster ID 被称为 symbol。作者在 ResNet18/50、VGG19、DenseNet121、ViT 等模型与混合图像类别上统计 symbol-class correlation map。</li><li>预测阶段把一张图中出现的 symbols 的 class-score 分布平均，比较 symbol-based label 与真实标签或 DNN 输出；另做固定 cluster 数、合并相近 symbols、训练样本数量与 layer selection 的消融。</li></ul><figure class="evidence-figure">
+  <button class="evidence-figure-image-button" type="button" aria-label="放大查看 Figure 1" onclick="window.openPaperFigureImage && window.openPaperFigureImage(this.querySelector('img'))">
+    <img class="paper-figure-image evidence-figure-image" src="../../assets/collection-figures/2405.20605/figure-1-symbol-extraction.webp" alt="STCert ROI 到多通道 3×3 activation maps 和九维 vectors 的流程图。" loading="lazy" />
+  </button>
+  <figcaption>
+    <strong>Figure 1</strong> · Symbol 并非直接读出，而是由 segmentation、sampling、降维和聚类共同定义。
+    <span class="evidence-figure-reading">物理解读：The pipeline operationalizes symbols as clusters; it does not demonstrate that the network itself uses discrete symbolic variables.</span>
+    <span class="evidence-figure-source">来源：paper.pdf p. 3, Figure 1</span>
+  </figcaption>
+</figure></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 04</span>
+    <span class="reading-step-note">核心结果与证据</span>
+  </div>
+  <h2>核心结果与证据</h2>
+  <div class="reading-card-content"><ul><li>中后层 symbols 与类别的相关图更集中，且某些连续 clusters 可合并。Table 2 显示不同网络/层抽取的 symbol 数量差异很大，说明离散代码不是架构无关的固定字典。</li><li>Figure 5 报告 symbol-based predictions：在若干模型与层上，聚类 symbols 能较高程度预测真实标签或原模型答案；更深层通常更好。后续分析把与误分类相关的 symbols 标为 potentially unreliable，并测试过滤后的结果。</li><li>这些结果说明局部 activations 含有可压缩、与决策相关的信息；它们没有证明网络显式执行符号推理。UMAP/\(X\)-means pipeline 本身会制造离散边界，因此“发现内部符号”应理解为有用的 coarse-graining 假说。</li></ul></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 05</span>
+    <span class="reading-step-note">有效性与局限</span>
+  </div>
+  <h2>有效性与局限</h2>
+  <div class="reading-card-content"><ul><li>ROI 来自外部分割模型并使用预测类别选择区域，会注入额外监督与选择偏差；若 segmentation 失败、背景也参与判断或任务不是 object classification，方法适用性下降。</li><li>UMAP 距离、随机初始化、\(X\)-means criterion 与固定 3×3 sampling 都会改变 clusters。论文没有建立 symbol 的跨种子一一对应、干预因果性或反事实稳定性，也未与 concept bottleneck、TCAV、SAE 等系统比较。</li><li>Symbol-based accuracy 是相关性证据；删除某些 symbols 后性能变化还可能来自 distribution shift。数据集和模型范围有限，所谓 safety improvement 仍是探索性。本卡未独立复现。</li></ul></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 06</span>
+    <span class="reading-step-note">复现与资源</span>
+  </div>
+  <h2>复现与资源</h2>
+  <div class="reading-card-content"><ul><li>原文：https://arxiv.org/abs/2405.20605。官方 \(v_{2}\) PDF SHA-256：b1d17f53ace5a33c42cbbec913c0dabd9d90b82c416733853307ad2f60db45a0。</li><li>复现应保存 segmentation masks、每层 ROI activation vectors、UMAP/\(X\)-means 超参数与随机种子；用 held-out images 建立 correlation map，并额外做 cluster bootstrap、label permutation、background-only 与 causal activation patching controls。Evidence status: full-text verified; no independent reproduction performed.</li></ul></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 07</span>
+    <span class="reading-step-note">阅读指南</span>
+  </div>
+  <h2>阅读指南</h2>
+  <div class="reading-card-content"><ul><li>先看 Figure 1 理解 symbol 是如何构造的，再看 Tables 2–3 与 Figures 2–5 区分“聚类存在”和“可预测标签”。最后读 §4.1 Limitations，避免把统计 cluster 直接称为网络内部的语义变量。</li></ul></div>
+</section></article>
+        <aside id="detail-toc" class="detail-toc hidden" aria-label="内容目录">
+          <p class="detail-toc-title">阅读目录</p>
+          <nav id="detail-toc-nav" class="detail-toc-nav"></nav>
+        </aside>
+      </div>
+      <nav class="paper-nav"><a class="paper-nav-link paper-nav-prev" href="../../collection-papers/2405.20320/"><span class="paper-nav-label">← 上一篇</span><span class="paper-nav-title">Improving the Training of Rectified Flows</span></a>
+      <a class="paper-nav-link paper-nav-next" href="../../collection-papers/2405.20671/"><span class="paper-nav-label">下一篇 →</span><span class="paper-nav-title">Position Coupling: Improving Length Generalization of Arithmetic Transformers Using Task Structure</span></a></nav>
+      <section id="comments" class="comments-panel" aria-labelledby="comments-title">
+        <div class="comments-heading">
+          <div>
+            <p class="eyebrow">Discussion</p>
+            <h2 id="comments-title">评论与讨论</h2>
+          </div>
+          <a href="https://github.com/xixi-cc/xixi-research-comments/discussions" target="_blank" rel="noopener noreferrer">在 GitHub 查看</a>
+        </div>
+        <p class="comments-note">评论公开保存在 GitHub Discussions；阅读无需登录，发表评论需要 GitHub 账号。</p>
+        <script src="https://giscus.app/client.js"
+                data-repo="xixi-cc/xixi-research-comments"
+                data-repo-id="R_kgDOUIl8MQ"
+                data-category="Announcements"
+                data-category-id="DIC_kwDOUIl8Mc4DEftB"
+                data-mapping="specific"
+                data-term="collection:2405.20605"
+                data-strict="1"
+                data-reactions-enabled="1"
+                data-emit-metadata="0"
+                data-input-position="top"
+                data-theme="preferred_color_scheme"
+                data-lang="zh-CN"
+                data-loading="lazy"
+                crossorigin="anonymous"
+                async></script>
+        <noscript><p>请启用 JavaScript，或直接前往 GitHub Discussions 参与讨论。</p></noscript>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <div class="container">
+        <p>内容来自 <a href="https://arxiv.org" target="_blank" rel="noopener noreferrer">arXiv.org</a>；原创解读采用 CC BY-NC 4.0。<a href="../../rights.html">许可与引用</a></p>
+      </div>
+    </footer>
+
+    <script src="../../assets/theme.js"></script>
+    <script src="../../assets/media.js"></script>
+    <script src="../../assets/paper.js"></script>
+    <!-- Cloudflare Web Analytics -->
+<script type="module" src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon='{"token":"73522e5dee9b42b0be84b4847e4dd502"}'></script>
+<!-- End Cloudflare Web Analytics -->
+  </body>
+</html>
