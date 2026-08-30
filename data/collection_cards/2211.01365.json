@@ -1,0 +1,144 @@
+{
+  "arxiv_id": "2211.01365",
+  "source_version": "v3",
+  "source_pdf": "https://arxiv.org/pdf/2211.01365",
+  "title_en": "QuACK: Accelerating Gradient-Based Quantum Optimization with Koopman Operator Learning",
+  "title_zh": "QuACK：用 Koopman 算子学习加速基于梯度的量子优化",
+  "curation_status": "full_text_verified",
+  "card_standard_version": "2.3",
+  "paper_profile": "theory_experiment",
+  "style_reference": "physicist_daily_arxiv",
+  "provenance": {
+    "program": "Collection",
+    "catalog": "Paper Collection",
+    "catalog_record_id": "2211.01365",
+    "catalog_record_ids": [
+      "2211.01365"
+    ],
+    "catalog_topic": "Machine Learning",
+    "collection_date": "2026-08-30",
+    "sampled_at": "2026-08-31",
+    "selected_by": "ziming_mineru_serial_goal",
+    "sampling_seed": "not_applicable_source_complete",
+    "candidate_count": 464
+  },
+  "verified_metadata": {
+    "arxiv_id": "2211.01365",
+    "version": "v3",
+    "title": "QuACK: Accelerating Gradient-Based Quantum Optimization with Koopman Operator Learning",
+    "authors": [
+      "Di Luo",
+      "Jiayu Shen",
+      "Rumen Dangovski",
+      "Marin Soljačić"
+    ],
+    "categories": [
+      "quant-ph",
+      "cs.AI",
+      "cs.LG",
+      "math.OC",
+      "physics.comp-ph"
+    ],
+    "primary_category": "quant-ph",
+    "published": "2022-11-02T17:59:25Z",
+    "updated": "2024-05-04T23:55:49Z",
+    "comment": "NeurIPS 2023 spotlight"
+  },
+  "sections": [
+    {
+      "title": "作者信息",
+      "paragraphs": [
+        "作者：Di Luo、Jiayu Shen、Rumen Dangovski、Marin Soljačić。arXiv:2211.01365v3，NeurIPS 2023 spotlight。工作来自 MIT、Harvard、University of Illinois Urbana-Champaign 与相关量子/AI 研究中心。"
+      ]
+    },
+    {
+      "title": "研究问题",
+      "paragraphs": [
+        "变分量子算法每一步需要在量子线路上估计损失或梯度，参数越多，测量调用成本通常越高。梯度法具有良好优化结构，却可能被反复量子评估拖慢。论文问：能否用少量真实梯度轨迹学习参数更新的低维动力学，并在经典机上外推多步，只偶尔返回量子线路校正？",
+        "QuACK 的目标是降低达到同一目标损失/准确率所需的量子电路评估成本，而不是让每个量子门运行得更快，也不是给出量子复杂度意义上的普适指数加速。"
+      ]
+    },
+    {
+      "title": "模型与方法",
+      "paragraphs": [
+        "算法先执行 n_sim 步常规 VQE/QML 梯度更新，收集参数时间序列 θ(t)。Dynamic Mode Decomposition（DMD）或带非线性 embedding 的变体拟合有限维 Koopman 近似 K，再在经典侧预测 n_DMD 个未来参数。",
+        "预测段不直接接受最后一步，而是用量子线路评价候选参数的损失，从预测窗口中选最低损失 θ(t_opt)，将它作为下一轮真实优化的起点。真实梯度段与 Koopman 预测段交替，避免长时间自由外推失稳；若预测无益，候选集合包含最近真实迭代，可回退。",
+        "理论部分把 quantum natural gradient 在充分表达的波函数流形上联系到近似线性虚时演化，并分析 Koopman 谱稳定性、过参数化收敛与速度上界。实验包含 Ising VQE、H₂/LiH 量子化学、MNIST 二分类 QML、shot/device noise，以及 IBM Lima 真机。"
+      ]
+    },
+    {
+      "title": "核心结果与证据",
+      "paragraphs": [
+        "Figure 1 清楚区分昂贵的量子数据采集与参数数无关的经典 Koopman 预测。作者用达到 1% relative loss（VQE）或距最高测试准确率 0.5%（QML）的计算成本定义 speedup，并以完整 VQE/QML 运行的最小损失作为归一化参照。",
+        "在所测设置中，标准 DMD 对 quantum natural gradient 可用 4 步真实训练预测 40 步，并报告约 20.18×；过参数化平滑区域报告超过 200×，一般平滑区域超过 10×，非光滑/噪声条件约 3×以上。LiH、Ising 和 QML 的交替轨迹显示预测段可跳过部分量子梯度评估。",
+        "速度数字依赖目标阈值、真实/预测步数、DMD embedding、线路参数数和成本模型。它们衡量作者实现中到达目标的相对电路/梯度成本，不等于墙钟时间在所有硬件上同倍缩短，也不证明最终能量低于基线。"
+      ]
+    },
+    {
+      "title": "有效性与局限",
+      "paragraphs": [
+        "Koopman 线性预测只在局部平滑轨迹或合适 embedding 下可靠；跨越曲率变化、非平滑区或噪声漂移时需频繁真实校正。DMD 的伪逆、窗口长度和截断谱会影响稳定性，经典拟合与候选损失评估也有成本。",
+        "主要实验规模为少量至十余 qubit 的模拟和小型 IBM 设备。超过 200×出现在特别有利的过参数化区域，不能外推到容错量子优势或所有 VQA。与完整基线共享初始点和目标仍不排除超参数选择偏差；真实硬件队列、编译、shot 数、通信和误差缓解会改变 wall-clock 收益。"
+      ]
+    },
+    {
+      "title": "复现与资源",
+      "paragraphs": [
+        "原文：https://arxiv.org/abs/2211.01365。官方 PDF SHA-256：dfdd29d20d33cf4c4b5a0008ac387018e6e36441c2b0a50927c5eed61b5fe2e6。论文报告使用 Qiskit、PyTorch、Yao 与 PennyLane；附录给出线路、DMD 网络、噪声和消融细节。",
+        "复现需冻结 ansatz/qubit 数、Hamiltonian、优化器与学习率、梯度/shot 估计方式、n_sim/n_DMD、滑动窗口 d、DMD 秩和 embedding、候选选择、目标阈值及成本计数；同时报告量子电路调用、经典拟合时间、总 wall-clock、最终损失与失败率。Evidence status: full-text verified; no independent reproduction performed."
+      ]
+    },
+    {
+      "title": "阅读指南",
+      "paragraphs": [
+        "先看 Figure 1 的交替闭环，再读 §3 的 VQA/Koopman/DMD 定义和 §4 的候选回退；随后核对 §5 的自然梯度线性化假设与速度公式；最后逐图检查不同 regime 的目标阈值、量子调用与噪声设置，避免只比较摘要中的最大 speedup。"
+      ]
+    }
+  ],
+  "cover": {
+    "mode": "source_figure",
+    "asset_path": "assets/collection-figures/2211.01365/figure-1-quack-loop.webp",
+    "label": "Figure 1",
+    "visual_type": "schematic",
+    "evidence": "paper.pdf p. 3, Figure 1",
+    "alt_text": "量子线路产生参数优化时间序列，经典 Koopman/DMD 学习其动力学并预测多步，再把最低损失候选送回量子优化。",
+    "caption": "QuACK 交替执行昂贵的真实量子梯度段与廉价的经典参数预测段。",
+    "selection_rationale": "Figure 1 完整展示量子—经典闭环、两类成本与回退点，是理解所谓加速究竟节省什么的关键。"
+  },
+  "figure_refs": [
+    {
+      "label": "Figure 1",
+      "asset_path": "assets/collection-figures/2211.01365/figure-1-quack-loop.webp",
+      "section": "模型与方法",
+      "role": "show the alternating quantum data acquisition and classical Koopman prediction loop",
+      "evidence": "paper.pdf p. 3, Figure 1",
+      "alt_text": "从参数化量子线路、时间序列、Koopman embedding 到多步预测并反馈的四阶段流程。",
+      "caption": "真实步骤校准动力学，预测步骤减少随参数数增长的梯度评估。",
+      "interpretation": "The loop reduces quantum evaluations only when local parameter dynamics remain predictably low-dimensional."
+    }
+  ],
+  "equation_refs": [
+    {
+      "label": "DMD Koopman fit",
+      "latex": "K=\\arg\\min_K\\|\\Theta(t_{d+1})-K\\Phi(\\Theta(t_0))\\|_F=\\Theta(t_{d+1})\\Phi(\\Theta(t_0))^+",
+      "role": "fit a linear propagator in the chosen delay-coordinate embedding of optimization parameters",
+      "symbols": {
+        "Theta": "stacked parameter trajectory snapshots",
+        "Phi": "delay or nonlinear embedding of the trajectory",
+        "K": "finite-dimensional Koopman/DMD propagator",
+        "+": "Moore–Penrose pseudoinverse"
+      },
+      "evidence": "paper.pdf pp. 4–5, Eqs. (1)–(2)",
+      "interpretation": "Once K is fitted from true optimization steps, repeated classical multiplication predicts candidate future parameters."
+    }
+  ],
+  "evidence_refs": [
+    "paper.pdf pp. 1–3: VQA cost motivation, related work and Figure 1 workflow",
+    "paper.pdf pp. 3–6: Koopman/DMD background, alternating control and theoretical connections",
+    "paper.pdf pp. 6–7: stability, fallback property and complexity/speedup bounds",
+    "paper.pdf pp. 7–10: Ising, chemistry, QML and noisy-hardware experiments",
+    "paper.pdf appendices: circuit/optimizer details, DMD architectures, ablations, noise and IBM Lima run",
+    "source PDF SHA-256 dfdd29d20d33cf4c4b5a0008ac387018e6e36441c2b0a50927c5eed61b5fe2e6",
+    "Evidence status: full-text verified; no independent reproduction performed."
+  ]
+}

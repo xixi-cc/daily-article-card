@@ -1,0 +1,139 @@
+{
+  "arxiv_id": "2210.13179",
+  "source_version": "v5",
+  "source_pdf": "https://arxiv.org/pdf/2210.13179",
+  "title_en": "A simple probabilistic neural network for machine understanding",
+  "title_zh": "用于机器理解的简单概率神经网络",
+  "curation_status": "full_text_verified",
+  "card_standard_version": "2.3",
+  "paper_profile": "theory_experiment",
+  "style_reference": "physicist_daily_arxiv",
+  "provenance": {
+    "program": "Collection",
+    "catalog": "Paper Collection",
+    "catalog_record_id": "2210.13179",
+    "catalog_record_ids": [
+      "2210.13179"
+    ],
+    "catalog_topic": "Representation Learning",
+    "collection_date": "2026-08-30",
+    "sampled_at": "2026-08-31",
+    "selected_by": "ziming_mineru_serial_goal",
+    "sampling_seed": "not_applicable_source_complete",
+    "candidate_count": 464
+  },
+  "verified_metadata": {
+    "arxiv_id": "2210.13179",
+    "version": "v5",
+    "title": "A simple probabilistic neural network for machine understanding",
+    "authors": [
+      "Rongrong Xie",
+      "Matteo Marsili"
+    ],
+    "categories": [
+      "cond-mat.dis-nn",
+      "cs.LG"
+    ],
+    "primary_category": "cond-mat.dis-nn",
+    "published": "2022-10-24T13:00:15Z",
+    "updated": "2023-12-06T10:54:01Z",
+    "comment": "34 pages, 9 figures. Accepted in JSTAT"
+  },
+  "sections": [
+    {
+      "title": "作者信息",
+      "paragraphs": [
+        "作者：Rongrong Xie、Matteo Marsili。arXiv:2210.13179v5，主分类 cond-mat.dis-nn，论文已被 JSTAT 接收。作者分别来自华中师范大学粒子物理研究所与 ICTP Quantitative Life Sciences Section。"
+      ]
+    },
+    {
+      "title": "研究问题",
+      "paragraphs": [
+        "论文把“理解”限定为：把新数据映射到一个预先存在、可解释其特征组织的内部表示。常规 RBM 会随数据共同学习隐藏分布与条件生成模型，因此表示依赖初始化和训练轨迹；作者问，能否先用信息论原则唯一确定隐藏状态分布，只学习数据到该表示的映射？",
+        "目标不是提出通用认知理论，而是研究一种固定内部表示的单层概率网络，并比较它与可塑内部表示在层级性、压缩、稳定性和生成方式上的差别。"
+      ]
+    },
+    {
+      "title": "模型与方法",
+      "paragraphs": [
+        "可见变量 x 与二值隐藏变量 s 的联合分布分解为 p(x,s|θ)=p(x|s,θ)p(s)。条件分布采用逐像素 Bernoulli 模型，权重向量 w_i 被解释为第 i 个特征；训练时固定 p(s)，只优化偏置与特征权重。",
+        "作者要求内部表示在给定分辨率 H[s] 时最大化 relevance H[E]，并在最高激活特征索引固定时对更低层特征保持最大先验无知。两条原则得到 Hierarchical Feature Model：状态能量只取决于 m_s=max{i:s_i=1}，p(s)∝exp[-g max(m_s-1,0)]，临界点为 g_c=log 2。",
+        "训练采用类似 EM 的交替过程：E 步重新分配样本到固定先验抽出的隐藏状态，M 步最大化条件似然；还可从描述最差的样本开始一次加入一个新特征。实验覆盖合成 12×12 图像、rMNIST、Big Five 问卷，以及 Fashion-MNIST/EMNIST 上的同时学习与 RBM 对照。"
+      ]
+    },
+    {
+      "title": "核心结果与证据",
+      "paragraphs": [
+        "Figure 1 显示 HFM 在 g_c 附近出现随特征数增强的比热峰，同时隐藏变量间互信息总体较低；这支持模型在临界区具有层级组织且近似解耦，但图本身不证明对任意数据都能学得语义特征。",
+        "合成实验中，前四个学习特征恢复生成数据的四个真实结构，继续增加特征后似然下降且新增特征变弱。rMNIST 上，g<g_c 时增加特征会恶化测试联合对数似然并使经验隐藏分布偏离先验；g>g_c 后测试似然趋于平台，综合观察将最优区域定位在临界点附近。",
+        "低阶 HFM 特征随样本数、特征数和 g 的变化较平滑，加入高阶特征时不必重学早期特征；Big Five 数据中，多数国家的前五个特征与五类问卷题组对齐。Fashion-MNIST/EMNIST 对照表明分阶段训练得到更有层级的特征，但与 RBM 的生成比较受不同训练和采样难度影响，不是等成本基准。"
+      ]
+    },
+    {
+      "title": "有效性与局限",
+      "paragraphs": [
+        "“最大 relevance + 最大先验无知”是建模公理，而非从真实认知系统推导出的必要条件；固定先验会降低表示自由度，也可能把错误层级强加给数据。所谓机器理解是作者给出的操作性定义，不能外推为语义、因果或人类可理解性的充分条件。",
+        "实验集中于二值单层概率模型和有限数据集，评价多为联合似然、特征稳定性与可视化，没有现代深层基线、统一计算预算或独立复现。Big Five 的跨国特征差异可能受抽样、测量与文化因素影响，论文也明确不作显著性解释。跨 MNIST 与人格问卷构造的相关性是模型生成的假设关系，不是经验因果证据。"
+      ]
+    },
+    {
+      "title": "复现与资源",
+      "paragraphs": [
+        "原文：https://arxiv.org/abs/2210.13179。官方 PDF SHA-256：e8a723ef5543dcc82611e4608db4f868dba29f729845b72926b2c076b026a714。PDF 共 35 页；附录给出 HFM 热力学量、EM/逐特征算法与实验细节。",
+        "复现应固定 p(s)、g 与 g_c、特征加入顺序、隐藏状态样本/分配、E/M 步收敛阈值、数据二值化和 RBM 的 CD-k/采样步数；分别报告训练与测试联合似然、D_KL(q||p)、特征距离、标签互信息和生成样本。Evidence status: full-text verified; no independent reproduction performed."
+      ]
+    },
+    {
+      "title": "阅读指南",
+      "paragraphs": [
+        "先读 §1 的固定表示分解和 relevance/resolution 定义，再从式 (8)–(12) 推导 HFM 与 g_c；随后读 §2 的确定性 EM 与逐特征算法；用 Figures 2–7 分别核查结构恢复、泛化、稳定性和 Big Five 对齐；最后读 §4，把已展示的单层模型性质与关于大脑、想象和跨域关系的展望严格分开。"
+      ]
+    }
+  ],
+  "cover": {
+    "mode": "source_figure",
+    "asset_path": "assets/collection-figures/2210.13179/figure-1-hfm-criticality.webp",
+    "label": "Figure 1",
+    "visual_type": "comparison",
+    "evidence": "paper.pdf p. 7, Figure 1",
+    "alt_text": "HFM 比热随参数 g 的曲线及临界点处一百个隐藏变量之间的互信息矩阵。",
+    "caption": "HFM 在 g≈log 2 附近出现临界峰，同时多数不同层级特征保持较低互信息。",
+    "selection_rationale": "Figure 1 同时展示控制参数的临界结构与隐藏特征间依赖，是理解后续为何在 g_c 附近训练的理论入口。"
+  },
+  "figure_refs": [
+    {
+      "label": "Figure 1",
+      "asset_path": "assets/collection-figures/2210.13179/figure-1-hfm-criticality.webp",
+      "section": "核心结果与证据",
+      "role": "show HFM criticality and pairwise dependence among hierarchical hidden features",
+      "evidence": "paper.pdf p. 7, Figure 1",
+      "alt_text": "三条不同特征数的比热曲线和隐藏变量互信息热图。",
+      "caption": "临界点附近的比热峰随 n 增强；互信息矩阵显示邻近层级依赖更强。",
+      "interpretation": "The figure characterizes the fixed prior; data-dependent feature quality is tested separately in later experiments."
+    }
+  ],
+  "equation_refs": [
+    {
+      "label": "Hierarchical Feature Model prior",
+      "latex": "p(\\mathbf s)=\\frac{1}{Z}e^{-g\\mathcal H(\\mathbf s)},\\qquad \\mathcal H(\\mathbf s)=\\max\\{m_{\\mathbf s}-1,0\\},\\quad m_{\\mathbf s}=\\max\\{i:s_i=1\\}",
+      "role": "define the unique hierarchical hidden-state prior selected by maximal relevance and maximal ignorance",
+      "symbols": {
+        "s": "binary hidden-state vector",
+        "m_s": "index of the highest active feature",
+        "g": "parameter controlling resolution and compression",
+        "Z": "partition function normalizing the prior"
+      },
+      "evidence": "paper.pdf pp. 6–7, Eqs. (8)–(10)",
+      "interpretation": "Only the highest active index determines the state energy, imposing an a priori hierarchy among features."
+    }
+  ],
+  "evidence_refs": [
+    "paper.pdf pp. 1–8: operational definition of understanding, fixed p(s), maximal relevance and HFM derivation",
+    "paper.pdf pp. 8–12: joint-likelihood objective, EM steps and sequential feature-learning algorithm",
+    "paper.pdf pp. 12–20: synthetic, rMNIST, Big Five and all-at-once experiments",
+    "paper.pdf pp. 20–24: comparison with RBMs, beyond-generalisation construction and outlook",
+    "paper.pdf appendices A–D: thermodynamic properties, relevance derivation, numerical procedure and RBM baseline",
+    "source PDF SHA-256 e8a723ef5543dcc82611e4608db4f868dba29f729845b72926b2c076b026a714",
+    "Evidence status: full-text verified; no independent reproduction performed."
+  ]
+}
