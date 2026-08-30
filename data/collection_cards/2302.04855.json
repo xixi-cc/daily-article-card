@@ -1,0 +1,108 @@
+{
+  "arxiv_id": "2302.04855",
+  "source_version": "v1",
+  "source_pdf": "https://arxiv.org/pdf/2302.04855",
+  "title_en": "Trading Information between Latents in Hierarchical Variational Autoencoders",
+  "title_zh": "在层次变分自编码器的潜变量之间交易信息",
+  "curation_status": "full_text_verified",
+  "card_standard_version": "2.3",
+  "paper_profile": "theory_experiment",
+  "style_reference": "physicist_daily_arxiv",
+  "provenance": {
+    "program": "Collection", "catalog": "Paper Collection", "catalog_record_id": "2302.04855",
+    "catalog_record_ids": ["2302.04855"], "catalog_topic": "Representation Learning",
+    "collection_date": "2026-08-30", "sampled_at": "2026-08-31",
+    "selected_by": "ziming_mineru_serial_goal", "sampling_seed": "not_applicable_source_complete",
+    "candidate_count": 464
+  },
+  "verified_metadata": {
+    "arxiv_id": "2302.04855", "version": "v1",
+    "title": "Trading Information between Latents in Hierarchical Variational Autoencoders",
+    "authors": ["Tim Z. Xiao", "Robert Bamler"],
+    "categories": ["stat.ML", "cs.CV", "cs.IT", "cs.LG"], "primary_category": "stat.ML",
+    "published": "2023-02-09T18:56:11Z", "updated": "2023-02-09T18:56:11Z",
+    "comment": "Accepted for ICLR 2023; 9 pages plus appendix"
+  },
+  "sections": [
+    {
+      "title": "作者信息",
+      "paragraphs": ["作者：Tim Z. Xiao、Robert Bamler（University of Tübingen / IMPRS-IS）。arXiv:2302.04855v1，发表于 ICLR 2023。论文把单层 β-VAE 的 rate–distortion 曲线推广为层次 VAE 的多维 rate space。"]
+    },
+    {
+      "title": "研究问题",
+      "paragraphs": [
+        "单一 β 只控制总信息率 R，无法回答多层潜变量各自应承载多少 bits。重建、下游表示学习和无条件生成可能偏好完全不同的层间分配，即使总 rate 相同。作者问：哪些 inference factorizations 允许把 KL rate 严格分解到每一层，并用独立 β_ℓ 控制？",
+        "目标不是找到一套对所有任务最优的 HVAE，而是绘制 rate allocation 与三类应用性能之间的 landscape，并给出只依赖各层 rate 的信息论性能界，指导任务特定调参。"
+      ]
+    },
+    {
+      "title": "模型与方法",
+      "paragraphs": [
+        "生成模型按 top-down 条件链 p(z_L)p(z_{L-1}|z_L)…p(x|z_{≥1}) 分解；若 inference model 采用对应 backward chain q(z_L|x)q(z_{L-1}|z_L,x)…，总 KL 可用 chain rule 分成 R(z_L)+R(z_{L-1}|z_L)+…+R(z_1|z_{≥2})。",
+        "训练目标把每一层 rate 乘独立 Lagrange multiplier β_ℓ：L_β=E[D+Σ_ℓβ_ℓR_ℓ]。文中推导 reconstruction distortion、任一层 downstream label information，以及 decoder-only generation 与各层 rate 的上下界；界给出必要约束，不保证达到界。",
+        "实验用两层 generalized top-down HVAE 和 ladder VAE，在 SVHN、CIFAR-10、MNIST 上扫描 21×21 个 (β₂,β₁) 组合。指标分别是 reconstruction PSNR、用 frozen latent/RBF classifier 的 representation accuracy，以及 unconditional samples 的 Inception Score；同时测得实际 R(z₂)、R(z₁|z₂)。"
+      ]
+    },
+    {
+      "title": "核心结果与证据",
+      "paragraphs": [
+        "Figure 1 把 441 个 SVHN 模型映射到 reconstruction、representation、generation 三维性能面，并用相同颜色连接 β-space、rate-space 与三个任务的 contour。不同最优区域明显分离，说明同一总 rate 下“bits 放在哪一层”会改变任务表现。",
+        "重建主要受 total rate 控制，但相同 R 的最优点通常不是标准 β-VAE 的 β₁=β₂ 对角线；把更多 rate 分配到靠近输入的 z₁ 可提高 PSNR。表示学习更依赖供下游读取的特定 latent 所含信息，生成质量则偏好另一片 rate region，因此为一个任务调优的模型可能在另一任务很差。",
+        "作者用 constant-total-rate 的 upper convex hull 标出经验最优 allocation，并在 SVHN/CIFAR-10/MNIST 与两种架构上看到相似总体结构。结论来自网格覆盖而非连续全局优化；21×21 β 网格可能漏掉狭窄最优区，Inception Score 也只是不完整的生成质量代理。"
+      ]
+    },
+    {
+      "title": "有效性与局限",
+      "paragraphs": [
+        "rate 分解要求 inference/generative factorization 对齐；任意 skip connections、deterministic paths 或不匹配 posterior family 未必保留同样解释。实验只用 L=2 便于可视化，更多层会使 β/rate space 指数膨胀并增加 posterior collapse 与优化耦合。",
+        "β 只间接控制最终 rate，无法一次精确命中目标 R_ℓ；论文也把 adaptive β schedule 留作未来工作。PSNR、RBF accuracy、Inception Score 分别覆盖有限任务，不能代替 perceptual quality、calibration、compression code length 或 likelihood。数据集均为小型 32×32/28×28 图像。"
+      ]
+    },
+    {
+      "title": "复现与资源",
+      "paragraphs": [
+        "原文：https://arxiv.org/abs/2302.04855。官方 PDF SHA-256：4ab1c4d1e466926f4e42cc2cd4946146aab013b8271aa23b9395c2a91ccf9fa5。",
+        "复现需冻结 HVAE factorization、latent dimensions、Gaussian/Bernoulli likelihood、21×21 β grid、rate estimator、train split/seed、PSNR、RBF classifier protocol 和 Inception Score 实现；公开每点 β、R₁、R₂、总 rate、三任务指标与失败运行。Evidence status: full-text verified; no independent reproduction performed."
+      ]
+    },
+    {
+      "title": "阅读指南",
+      "paragraphs": ["先用 p. 2 Figure 1 看三任务 trade-off；再读 pp. 2–4 的 HVAE factorization、rate chain rule 与 layer-wise β objective；核对 pp. 4–6 的任务界；最后读 pp. 6–9 的 grid protocol、Figures 3–5 和结论，区分理论必要界与经验最优区。"]
+    }
+  ],
+  "cover": {
+    "mode": "source_figure", "asset_path": "assets/collection-figures/2302.04855/figure-1-latent-rate-tradeoffs.webp",
+    "label": "Figure 1", "visual_type": "phase_diagram", "evidence": "paper.pdf p. 2, Figure 1",
+    "alt_text": "441 个层次 VAE 模型形成的三维重建、表示和生成性能面，以及 β-space、rate-space 和任务 contour 小图。",
+    "caption": "各层 rate 的分配把 HVAE 从一条 rate–distortion 曲线扩展为任务相关的多维性能面。",
+    "selection_rationale": "Figure 1 同时连接超参数、实测 layer-wise rates 和三个应用域，是文章全部理论与实验结论的总览。"
+  },
+  "figure_refs": [
+    {
+      "label": "Figure 1", "asset_path": "assets/collection-figures/2302.04855/figure-1-latent-rate-tradeoffs.webp",
+      "section": "核心结果与证据", "role": "map layer-wise rate allocation to reconstruction, representation and generation performance",
+      "evidence": "paper.pdf p. 2, Figure 1", "alt_text": "三任务性能面和对应 β/rate contour maps。",
+      "caption": "同一 HVAE architecture 在不同 β₁、β₂ 下占据不同 rate allocation 与任务最优区域。",
+      "interpretation": "No single allocation is empirically optimal across all three application domains."
+    }
+  ],
+  "equation_refs": [
+    {
+      "label": "Layer-wise rate objective",
+      "latex": "\\mathcal L_{\\boldsymbol\\beta}(\\theta,\\phi)=\\mathbb E_x\\left[D+\\sum_{\\ell=1}^{L}\\beta_\\ell R(z_\\ell\\mid z_{>\\ell})\\right]",
+      "role": "independently price the information passed through each latent layer",
+      "symbols": {"D": "expected reconstruction distortion", "R(z_l|z_>l)": "conditional KL rate contributed by latent layer l", "beta_l": "layer-specific Lagrange multiplier", "L": "number of latent layers"},
+      "evidence": "paper.pdf p. 4, Eq. (8)",
+      "interpretation": "The decomposition is exact for the stated matching backward-chain inference family, but beta values only indirectly determine achieved rates."
+    }
+  ],
+  "evidence_refs": [
+    "paper.pdf pp. 1–3: application domains, Figure 1 and hierarchical model factorizations",
+    "paper.pdf pp. 3–4: total-rate chain rule, layer-wise rates and β-vector objective",
+    "paper.pdf pp. 4–6: information-theoretic bounds for reconstruction, representation and generation",
+    "paper.pdf pp. 6–9: 21×21 sweeps, constant-rate optima, task landscapes and conclusions",
+    "paper.pdf appendix: MNIST/CIFAR and ladder-VAE robustness results",
+    "source PDF SHA-256 4ab1c4d1e466926f4e42cc2cd4946146aab013b8271aa23b9395c2a91ccf9fa5",
+    "Evidence status: full-text verified; no independent reproduction performed."
+  ]
+}
