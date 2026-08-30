@@ -32,6 +32,8 @@ except ModuleNotFoundError:  # Imported as scripts.build_mineru_evidence_packet.
 SECTION_LIMIT = 1_800
 PACKET_TOKEN_TARGET = 8_000
 PACKET_CHARACTER_TARGET = PACKET_TOKEN_TARGET * 4
+MIN_SECTION_CHARACTERS = 600
+SECTION_TRIM_STEP = 200
 SECTION_SIGNALS = (
     "abstract",
     "introduction",
@@ -54,6 +56,26 @@ def compact(value: str) -> str:
 
 def approximate_tokens(value: str) -> int:
     return (len(value) + 3) // 4
+
+
+def fit_packet_to_target(packet: dict[str, object]) -> None:
+    """Trim redundant MinerU section tails until the packet meets its budget."""
+    sections = packet.get("mineru_sections")
+    if not isinstance(sections, list):
+        return
+    while approximate_tokens(json.dumps(packet, ensure_ascii=False)) > PACKET_TOKEN_TARGET:
+        candidates = [
+            section
+            for section in sections
+            if isinstance(section, dict)
+            and isinstance(section.get("text"), str)
+            and len(section["text"]) > MIN_SECTION_CHARACTERS
+        ]
+        if not candidates:
+            return
+        longest = max(candidates, key=lambda section: len(section["text"]))
+        new_length = max(MIN_SECTION_CHARACTERS, len(longest["text"]) - SECTION_TRIM_STEP)
+        longest["text"] = longest["text"][:new_length].rstrip()
 
 
 def markdown_sections(markdown: str) -> list[dict[str, str]]:
@@ -197,6 +219,7 @@ def build_packet(
             "required_boundary": "full-text verified; no independent reproduction performed",
         },
     }
+    fit_packet_to_target(packet)
     serialized = json.dumps(packet, ensure_ascii=False)
     packet["size"] = {
         "characters": len(serialized),

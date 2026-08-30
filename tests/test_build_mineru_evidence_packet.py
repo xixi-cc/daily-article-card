@@ -1,7 +1,10 @@
+import json
 import unittest
 
 from scripts.build_mineru_evidence_packet import (
+    PACKET_TOKEN_TARGET,
     approximate_tokens,
+    fit_packet_to_target,
     markdown_equations,
     markdown_images,
     selected_sections,
@@ -41,6 +44,18 @@ $$E = mc^2$$
 
     def test_approximate_tokens_rounds_up(self) -> None:
         self.assertEqual(approximate_tokens("12345"), 2)
+
+    def test_fits_packet_by_trimming_long_section_tails(self) -> None:
+        packet = {
+            "fixed": "x" * (PACKET_TOKEN_TARGET * 4 - 1_000),
+            "mineru_sections": [{"title": "Results", "text": "y" * 1_800}],
+        }
+        fit_packet_to_target(packet)
+        self.assertLessEqual(
+            approximate_tokens(json.dumps(packet)),
+            PACKET_TOKEN_TARGET,
+        )
+        self.assertGreaterEqual(len(packet["mineru_sections"][0]["text"]), 600)
 
 
 if __name__ == "__main__":
