@@ -1,7 +1,8 @@
 # Ziming Liu Collection MinerU Serial Paper Card Plan
 
-Status: **authorized for local serial execution in Goal mode**  
-Frozen: 2026-08-31 (Asia/Shanghai)  
+Status: **authorized for local serial execution in Goal mode**
+
+Frozen: 2026-08-31 (Asia/Shanghai)
 Catalog SHA-256: `9acb9bd5d88fa12758123eaee075e266f3413913f1fb3ed143fb2e2002fae5ad`
 
 ## Scope and boundaries
