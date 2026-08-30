@@ -13,6 +13,7 @@ Catalog SHA-256: `9acb9bd5d88fa12758123eaee075e266f3413913f1fb3ed143fb2e2002fae5
 - Pending cards: 464, all normalized to arXiv sources.
 - Run on the current local computer only. Do not use `office-ubuntu`.
 - Process exactly one paper at a time. Do not run parallel extraction or card workers.
+- Group five serially processed papers into one micro-batch to amortize builds and validation.
 - Keep Collection provenance. Do not assign Daily dates, grades, or notifications.
 - Upload only official public arXiv PDFs to the configured MinerU Open API.
 - Do not upload local or private documents.
@@ -32,8 +33,10 @@ For each leased campaign item:
 6. Generate one staged Paper Card from that packet.
 7. Reopen the source PDF or arXiv TeX for every published equation, ambiguous symbol, key
    quantitative claim, and selected figure.
-8. Validate the staged card, install it through a single writer, and update the append-only
-   receipt before leasing the next paper.
+8. Run the cheap per-card JSON and evidence checks, then leave the card staged while the next
+   paper in the five-paper micro-batch is processed.
+9. After five staged cards, use the single writer to install them, run the complete strict
+   validation and site build once, and append a receipt for every card plus one batch receipt.
 
 The campaign ledger records `pending`, `extracting`, `packet_ready`, `card_staged`,
 `card_installed`, or `blocked` so an interruption never requires restarting completed papers.
@@ -54,10 +57,12 @@ The campaign ledger records `pending`, `extracting`, `packet_ready`, `card_stage
 
 ## Checkpoints
 
-- Process one paper at a time.
-- Run per-card validation before installation.
-- Run strict Collection validation and save a receipt after every five installed cards.
-- Run the unit tests and local site build after every 15 installed cards.
+- Process one paper at a time; batching does not permit concurrent MinerU or card workers.
+- Run per-card JSON, required-section, evidence-reference, and asset checks before staging.
+- Install at most five staged cards through the single writer.
+- Run Paper Card Standard synchronization, all unit tests, strict Collection validation, the
+  local site build, and `git diff --check` once at the end of every five-card micro-batch.
+- Save one receipt per card, one batch receipt, and one local commit after that batch passes.
 - Stop immediately on ambiguous arXiv identity, corrupt PDF, MinerU authentication/rate-limit
   failure, unresolved formula corruption, or an unexpected tracked-worktree change.
 - Preserve failed evidence and mark the item `blocked`; never silently downgrade a card to an
