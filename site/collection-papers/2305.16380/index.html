@@ -1,0 +1,231 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Scan and Snap: Understanding Training Dynamics and Token Composition in 1-layer Transformer - physics+AI Collection 随机精选</title>
+    <meta name="description" content="作者：Yuandong Tian、Yiping Wang、Beidi Chen、Simon Du。arXiv:2305.16380v4。论文从 SGD 轨迹出发分析一个 self-attention 加 decoder 的单层 transformer，提出 attention 先“扫描”判别性 token、后在相变处近似“冻结”的机制。" />
+    <link rel="canonical" href="https://xixi-cc.github.io/daily-article-card/collection-papers/2305.16380/" />
+    <script type="application/ld+json">{"@context": "https://schema.org", "@type": "Article", "headline": "Scan and Snap: Understanding Training Dynamics and Token Composition in 1-layer Transformer", "description": "作者：Yuandong Tian、Yiping Wang、Beidi Chen、Simon Du。arXiv:2305.16380v4。论文从 SGD 轨迹出发分析一个 self-attention 加 decoder 的单层 transformer，提出 attention 先“扫描”判别性 token、后在相变处近似“冻结”的机制。", "url": "https://xixi-cc.github.io/daily-article-card/collection-papers/2305.16380/", "mainEntityOfPage": "https://xixi-cc.github.io/daily-article-card/collection-papers/2305.16380/", "inLanguage": "zh-CN", "author": {"@type": "Person", "name": "Xineng Cao", "alternateName": ["Xixi Cao", "曹溪能"], "url": "https://xixi-cc.github.io/"}, "isBasedOn": "https://arxiv.org/abs/2305.16380"}</script>
+    <script>
+      (function() {
+        try {
+          var themePreference = window.localStorage.getItem('color-theme') || 'system';
+          var systemUsesDarkTheme = window.matchMedia('(prefers-color-scheme: dark)').matches;
+          var resolvedTheme = themePreference === 'system'
+            ? (systemUsesDarkTheme ? 'dark' : 'light')
+            : themePreference;
+          document.documentElement.dataset.theme = resolvedTheme;
+          document.documentElement.dataset.themePreference = themePreference;
+          document.documentElement.style.colorScheme = resolvedTheme;
+        } catch (error) {
+          document.documentElement.dataset.theme = 'light';
+          document.documentElement.dataset.themePreference = 'system';
+        }
+      })();
+    </script>
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='18' fill='%23111827'/%3E%3Ctext x='50%25' y='55%25' text-anchor='middle' dominant-baseline='middle' font-size='30' font-family='Arial, sans-serif' fill='white'%3EV%3C/text%3E%3C/svg%3E" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700;800&family=Noto+Sans+SC:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <script>document.documentElement.classList.add('math-pending');</script>
+    <script>
+      window.MathJax = {
+        tex: {
+          inlineMath: [['$', '$'], ['\\(', '\\)']],
+          displayMath: [['$$', '$$'], ['\\[', '\\]']],
+          processEscapes: true
+        },
+        options: {
+          skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+        },
+        chtml: {
+          scale: 1,
+          displayAlign: 'center'
+        },
+        startup: {
+          ready: function() {
+            MathJax.startup.defaultReady();
+            MathJax.startup.promise.then(function() {
+              document.documentElement.classList.remove('math-pending');
+              document.documentElement.dataset.mathReady = 'true';
+            });
+          }
+        }
+      };
+    </script>
+    <script defer src="../../assets/vendor/mathjax/tex-chtml.js"></script>
+    <link rel="stylesheet" href="../../assets/style.css" />
+  </head>
+  <body class="detail-page" data-paper-id="2305.16380" data-paper-program="collection">
+    <div class="page-noise"></div>
+    <div class="page-blur page-blur-a"></div>
+    <div class="page-blur page-blur-b"></div>
+
+    <header class="header detail-page-header">
+      <div class="container">
+        <div class="detail-page-topbar">
+          <a class="back-link" href="../../collection.html">返回列表</a>
+          <div class="detail-topbar-actions">
+            <span class="detail-site-name">physics+AI Collection 随机精选</span>
+            <button id="detail-favorite" class="detail-favorite-button" type="button" aria-pressed="false">☆ 收藏</button>
+            <button class="theme-toggle" type="button" data-theme-toggle aria-label="当前主题：设备，点击切换主题" title="当前主题：设备">
+  <span class="theme-toggle-icons" aria-hidden="true">
+    <svg class="theme-toggle-icon theme-toggle-icon-light" viewBox="0 0 24 24" fill="none">
+      <circle cx="12" cy="12" r="3.5" stroke="currentColor" stroke-width="1.8"/>
+      <path d="M12 2.5v2M12 19.5v2M2.5 12h2M19.5 12h2M5.3 5.3l1.4 1.4M17.3 17.3l1.4 1.4M18.7 5.3l-1.4 1.4M6.7 17.3l-1.4 1.4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+    </svg>
+    <svg class="theme-toggle-icon theme-toggle-icon-dark" viewBox="0 0 24 24" fill="none">
+      <path d="M20 15.2A8.1 8.1 0 0 1 8.8 4a8.2 8.2 0 1 0 11.2 11.2z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>
+    </svg>
+    <svg class="theme-toggle-icon theme-toggle-icon-system" viewBox="0 0 24 24" fill="none">
+      <rect x="3" y="4" width="18" height="13" rx="2.5" stroke="currentColor" stroke-width="1.8"/>
+      <path d="M8 21h8M12 17v4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+    </svg>
+  </span>
+  <span class="theme-toggle-label" data-theme-toggle-label>设备</span>
+</button>
+          </div>
+        </div>
+
+        <div class="detail-hero-grid">
+          <div class="detail-hero-cover"><figure class="paper-figure-card paper-figure-card-detail">
+  <img class="paper-figure-image" src="../../assets/collection-figures/2305.16380/figure-2d-attention-frozen.webp" alt="冻结阶段的二维 attention-score 示意：蓝色 distinct tokens 保留多个不同大小的柱，黄色 common tokens 聚集在接近零的位置。" loading="lazy" onclick="window.openPaperFigureImage && window.openPaperFigureImage(this)" />
+  <figcaption class="paper-figure-caption">相变后 attention 不再快速走向 one-hot，而保留近似固定的判别性 token 组合。</figcaption>
+</figure></div>
+          <div class="detail-hero-copy">
+            <p class="eyebrow">Collection 全文卡</p>
+            <h1 class="detail-page-title">Scan and Snap: Understanding Training Dynamics and Token Composition in 1-layer Transformer</h1>
+            <p class="detail-page-title-zh">扫描与冻结：理解单层 Transformer 的训练动力学和 token 组合</p>
+            <div class="detail-meta">Paper Collection · Training Dynamics · <a href="https://arxiv.org/abs/2305.16380" target="_blank" rel="noopener noreferrer">原文</a></div>
+            <p class="detail-summary">作者：Yuandong Tian、Yiping Wang、Beidi Chen、Simon Du。arXiv:2305.16380v4。论文从 SGD 轨迹出发分析一个 self-attention 加 decoder 的单层 transformer，提出 attention 先“扫描”判别性 token、后在相变处近似“冻结”的机制。</p>
+            <div class="detail-micro-meta">
+              <span class="meta-pill">AI 基础理论</span>
+              <span class="meta-pill">理论与实验</span>
+              <span class="meta-pill">#Training Dynamics</span><span class="meta-pill">#语言模型</span><span class="meta-pill">#Transformer</span>
+              <span class="meta-pill">9 分钟读完</span>
+              <span class="meta-pill">7 张阅读卡</span>
+              <span class="meta-pill">作者：Yuandong Tian、Yiping Wang、Beidi Chen、Simon Du。ar…</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <main class="container detail-layout">
+      <div class="detail-shell">
+        <article id="detail-body" class="reading-flow"><section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 01</span>
+    <span class="reading-step-note">作者信息</span>
+  </div>
+  <h2>作者信息</h2>
+  <div class="reading-card-content"><ul><li>作者：Yuandong Tian、Yiping Wang、Beidi Chen、Simon Du。arXiv:2305.16380v4。论文从 SGD 轨迹出发分析一个 self-attention 加 decoder 的单层 transformer，提出 attention 先“扫描”判别性 token、后在相变处近似“冻结”的机制。</li></ul></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 02</span>
+    <span class="reading-step-note">研究问题</span>
+  </div>
+  <h2>研究问题</h2>
+  <div class="reading-card-content"><ul><li>next-token loss 如何从均匀初始化中塑造 token composition？作者关心 attention 是否偏向对某个输出类别独有的 distinct tokens、抑制跨多个输出共有的 common tokens，以及这种稀疏选择是否最终退化为 winner-takes-all。</li><li>分析假设无 positional encoding、序列长度趋于无穷、decoder 学得显著快于 attention，并把 token embeddings 诱导的矩阵重新参数化为可独立研究的 \(Y\)、\(Z\)；它不是对一般多层 LLM 训练的完整定理。</li></ul></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 03</span>
+    <span class="reading-step-note">模型与方法</span>
+  </div>
+  <h2>模型与方法</h2>
+  <div class="reading-card-content"><ul><li>数据由 sequence classes 生成：给定 query token \(m\) 和待预测 token \(n\)，上下文 token l 服从 P(l|\(m\),\(n\))。若 l 只与一个 \(n\) 共现则为 distinct token；若跨多个 \(n\) 出现则为 common token。attention score 是该共现频率与可学习 logit exp(\(z_{\mathrm{ml}}\)) 的乘积再归一化。</li><li>模型用一层 softmax attention、LayerNorm 和线性 decoder，在 cross-entropy 下做 batch-size-one SGD 理论分析。作者先求出快变量 decoder 的反传梯度，再推导慢变量 attention logits 的相对增长率、common-token 抑制与 distinct-token 之间的频率排序。</li><li>理论把轨迹分为两段：早期 decoder 梯度增强，attention 扫描并稀疏化；约在 \(t_{0}\)=O(\(K\) log \(M\)/ηY) 后 decoder 接近高置信度，反传速度下降，attention 只按对数速度变化，视觉上形成固定 token mixture。</li></ul></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 04</span>
+    <span class="reading-step-note">核心结果与证据</span>
+  </div>
+  <h2>核心结果与证据</h2>
+  <div class="reading-card-content"><ul><li>Theorems 1–2 给出 discriminative bias：common tokens 因对多个输出类别贡献相互竞争而被系统性压低，distinct tokens 获得正相对增益。对同一类别的 distinct tokens，共现概率较高者更早占优，形成 frequency bias。</li><li>Theorem 3 描述 scan-and-snap 相变：attention 早期向少数高频 distinct tokens 集中，却在 decoder 学习使梯度衰减后停止快速尖化，而非达到 one-hot stationary point。Figure 2(\(d\)) 显示冻结后蓝色 distinct-token 组合仍保留多个非零成分，黄色 common tokens 接近被抑制。</li><li>Syn-Small/Syn-Medium 实验复现了学习率控制：固定 attention 学习率时，提高 decoder 学习率会更早 snap 并留下更稠密组合；提高 attention 相对学习率则得到更稀疏表示。WikiText2 的一层和三层模型也显示底层 attention 随训练稀疏并近似冻结，但真实语料实验只支持现象，不验证所有生成模型假设。</li><li>Adam 会随学习率选择不同 distinct-token subsets，论文将其视为可调归纳偏置，但没有给出 Adam 对应理论。</li></ul><figure class="evidence-figure">
+  <button class="evidence-figure-image-button" type="button" aria-label="放大查看 Figure 2(d)" onclick="window.openPaperFigureImage && window.openPaperFigureImage(this.querySelector('img'))">
+    <img class="paper-figure-image evidence-figure-image" src="../../assets/collection-figures/2305.16380/figure-2d-attention-frozen.webp" alt="冻结 attention 中 distinct-token 多柱组合与被抑制的 common tokens。" loading="lazy" />
+  </button>
+  <figcaption>
+    <strong>Figure 2(d)</strong> · decoder 梯度衰减使 attention 只剩对数慢变，视觉上近似固定。
+    <span class="evidence-figure-reading">物理解读：This panel is a schematic of the theorem&#x27;s idealized sequence-class dynamics, not a measured WikiText attention map.</span>
+    <span class="evidence-figure-source">来源：paper.pdf p. 5, Figure 2(d)</span>
+  </figcaption>
+</figure></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 05</span>
+    <span class="reading-step-note">有效性与局限</span>
+  </div>
+  <h2>有效性与局限</h2>
+  <div class="reading-card-content"><ul><li>无位置编码与 \(T\)→∞ 使 token 频率等于条件概率，排除了顺序、有限样本涨落和长程结构；ηY≫ηZ 的双时间尺度也不代表常见端到端超参数。\(Y\)/\(Z\) 独立参数化忽略共享 embedding 低秩约束，理论初始化为零而实际只近似均值为零。</li><li>distinct/common 是相对数据分布的标签：小数据可能把偶然 token 误判为 distinct。WikiText 可视化没有建立 token 语义、预测因果贡献或下游性能之间的定量链条；多层模型的层间 token composition 也未被理论覆盖。</li></ul></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 06</span>
+    <span class="reading-step-note">复现与资源</span>
+  </div>
+  <h2>复现与资源</h2>
+  <div class="reading-card-content"><ul><li>原文：https://arxiv.org/abs/2305.16380。官方 PDF SHA-256：2b52dce2d2bef66dbe44ce320af71e5c0f624b7d48b6f78e4228e614b0b89a70。论文未在主文提供专用代码仓库链接。</li><li>复现需固定 sequence-class probabilities、\(M\)/\(K\)/\(T\)、\(Y\)/\(Z\) 参数化、ηY/ηZ、optimizer、batch size 和 zero initialization；报告 distinct/common attention mass、entropy、transition time 与多 seed 误差，并将 synthetic 与 WikiText 结论分开。Evidence status: full-text verified; no independent reproduction performed.</li></ul></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 07</span>
+    <span class="reading-step-note">阅读指南</span>
+  </div>
+  <h2>阅读指南</h2>
+  <div class="reading-card-content"><ul><li>先读 pp. 1–5 的 setting、sequence classes 和 Figure 2；再读 pp. 5–8 的 decoder/attention dynamics 与 snap time；随后看 pp. 9‑0 的 synthetic/WikiText 实验；证明在 Appendices \(C\)–F，优先核对无位置、无限序列、快 decoder 和 reparameterization 假设。</li></ul></div>
+</section></article>
+        <aside id="detail-toc" class="detail-toc hidden" aria-label="内容目录">
+          <p class="detail-toc-title">阅读目录</p>
+          <nav id="detail-toc-nav" class="detail-toc-nav"></nav>
+        </aside>
+      </div>
+      <nav class="paper-nav"><a class="paper-nav-link paper-nav-prev" href="../../collection-papers/2305.13673/"><span class="paper-nav-label">← 上一篇</span><span class="paper-nav-title">Physics of Language Models: Part 1, Learning Hierarchical Language Structures</span></a>
+      <a class="paper-nav-link paper-nav-next" href="../../collection-papers/2306.00204/"><span class="paper-nav-label">下一篇 →</span><span class="paper-nav-title">Toward Understanding Why Adam Converges Faster Than SGD for Transformers</span></a></nav>
+      <section id="comments" class="comments-panel" aria-labelledby="comments-title">
+        <div class="comments-heading">
+          <div>
+            <p class="eyebrow">Discussion</p>
+            <h2 id="comments-title">评论与讨论</h2>
+          </div>
+          <a href="https://github.com/xixi-cc/xixi-research-comments/discussions" target="_blank" rel="noopener noreferrer">在 GitHub 查看</a>
+        </div>
+        <p class="comments-note">评论公开保存在 GitHub Discussions；阅读无需登录，发表评论需要 GitHub 账号。</p>
+        <script src="https://giscus.app/client.js"
+                data-repo="xixi-cc/xixi-research-comments"
+                data-repo-id="R_kgDOUIl8MQ"
+                data-category="Announcements"
+                data-category-id="DIC_kwDOUIl8Mc4DEftB"
+                data-mapping="specific"
+                data-term="collection:2305.16380"
+                data-strict="1"
+                data-reactions-enabled="1"
+                data-emit-metadata="0"
+                data-input-position="top"
+                data-theme="preferred_color_scheme"
+                data-lang="zh-CN"
+                data-loading="lazy"
+                crossorigin="anonymous"
+                async></script>
+        <noscript><p>请启用 JavaScript，或直接前往 GitHub Discussions 参与讨论。</p></noscript>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <div class="container">
+        <p>内容来自 <a href="https://arxiv.org" target="_blank" rel="noopener noreferrer">arXiv.org</a>；原创解读采用 CC BY-NC 4.0。<a href="../../rights.html">许可与引用</a></p>
+      </div>
+    </footer>
+
+    <script src="../../assets/theme.js"></script>
+    <script src="../../assets/media.js"></script>
+    <script src="../../assets/paper.js"></script>
+    <!-- Cloudflare Web Analytics -->
+<script type="module" src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon='{"token":"73522e5dee9b42b0be84b4847e4dd502"}'></script>
+<!-- End Cloudflare Web Analytics -->
+  </body>
+</html>

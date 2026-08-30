@@ -1,0 +1,107 @@
+{
+  "arxiv_id": "2306.00204",
+  "source_version": "v1",
+  "source_pdf": "https://arxiv.org/pdf/2306.00204",
+  "title_en": "Toward Understanding Why Adam Converges Faster Than SGD for Transformers",
+  "title_zh": "理解 Adam 为何在 Transformer 上比 SGD 收敛更快",
+  "curation_status": "full_text_verified",
+  "card_standard_version": "2.3",
+  "paper_profile": "theory_experiment",
+  "style_reference": "physicist_daily_arxiv",
+  "provenance": {
+    "program": "Collection", "catalog": "Paper Collection", "catalog_record_id": "2306.00204",
+    "catalog_record_ids": ["2306.00204"], "catalog_topic": "Optimization",
+    "collection_date": "2026-08-30", "sampled_at": "2026-08-31",
+    "selected_by": "ziming_mineru_serial_goal", "sampling_seed": "not_applicable_source_complete", "candidate_count": 464
+  },
+  "verified_metadata": {
+    "arxiv_id": "2306.00204", "version": "v1",
+    "title": "Toward Understanding Why Adam Converges Faster Than SGD for Transformers",
+    "authors": ["Yan Pan", "Yuanzhi Li"],
+    "categories": ["cs.LG"], "primary_category": "cs.LG",
+    "published": "2023-05-31T00:00:00Z", "updated": "2023-05-31T00:00:00Z",
+    "comment": "37 pages; local-geometry theory and transformer experiments"
+  },
+  "sections": [
+    {
+      "title": "作者信息",
+      "paragraphs": ["作者：Yan Pan、Yuanzhi Li（Carnegie Mellon University）。arXiv:2306.00204v1。论文用“directional sharpness”比较同一局部几何中的优化器更新方向，并提出 coordinate-wise clipping 来降低少数坏坐标对 SGD 的限制。"]
+    },
+    {
+      "title": "研究问题",
+      "paragraphs": [
+        "一般非凸收敛率并不能解释 Adam 在 transformer 训练中常比 SGD 快。作者问：在固定参数点，SGD 和 adaptive optimizers 的更新方向是否面对不同曲率；若高曲率集中在少数坐标，能否仅裁剪这些坐标获得更大稳定步长？",
+        "论文提供一个可能机制，而非证明 Adam 在所有 transformer 上更快的唯一原因。重点是训练损失优化，不讨论 generalization、验证集质量或最终下游性能。"
+      ]
+    },
+    {
+      "title": "模型与方法",
+      "paragraphs": [
+        "对单位更新方向 v，directional sharpness 定义为 v^T H v，其中 H 是当前点 Hessian；它是二阶 Taylor 项沿实际更新方向的曲率，而普通 sharpness 是所有方向中的最坏值。低 directional sharpness 可允许更大 step size，即便方向与负梯度的相关性略弱。",
+        "为公平比较局部几何，作者沿同一真实训练轨迹为 SGD、Adam、Adafactor、Lion、signSGD 和 normalized SGD 计算 pseudo-update directions，用 Hessian-vector products 测 v^T H v，并扫描步长绘制方向上的 loss landscape。",
+        "coordinate-wise clipping 以梯度绝对值分位点作阈值，截断最大的一定比例坐标，再进入各优化器的 momentum/first moment。理论假设只有 ε 比例坐标具有大曲率 L，其余子 Hessian 范数为 ℓ≪L，并要求裁剪后梯度仍保留足够范数。"
+      ]
+    },
+    {
+      "title": "核心结果与证据",
+      "paragraphs": [
+        "在 T5-small 的 English→French 训练局部点，示例表中 SGD directional sharpness 为 8.67；裁剪 top 10% 后降至 0.527，Adam 为 0.253，Adafactor 更低。多个轨迹/迭代的方向扫描一致显示 adaptive updates 可沿更长步长降低局部 loss，而 SGD 很快遇到曲率上升。",
+        "坐标分析显示 sharpness 贡献高度集中；移除不超过约 4% 坐标可令近似 Hessian smoothness 常数下降。形式化定理在专门假设下把 clipped SGD 的 directional-sharpness 上界从 L 改善为 O(√ε L+ℓ)，并给出更大的局部 loss decrement。",
+        "Figure 6 在 T5-small/OPUS Books machine translation 与 GPT-Neo/the-stack-smol autoregressive training 上比较手工调参后的曲线：为 SGD、Adam、Adafactor 等加入 clipping 通常更快降低训练损失。它支持“局部方向几何可预测训练速度”的经验联系，但不是同预算自动调参 benchmark。"
+      ]
+    },
+    {
+      "title": "有效性与局限",
+      "paragraphs": [
+        "实验仅用固定 test batch 评估训练 objective，没有 validation/test metric；各优化器学习率被手工分别调优，裁剪比例对非 adaptive 方法可达 10%、对 adaptive 方法可达 50%。因此曲线不能孤立量化 clipping 的公平通用增益。",
+        "pseudo-update comparison 固定局部 Hessian，却不包含不同优化器长期轨迹会改变曲率的反馈。理论要求坏曲率集中在少数坐标、剩余梯度足够均匀且裁剪方向保留梯度范数；这些是假设而非从 transformer 架构推导。directional sharpness 解释也不排除噪声尺度、moment estimates 或 parameterization 等 Adam 优势。"
+      ]
+    },
+    {
+      "title": "复现与资源",
+      "paragraphs": [
+        "原文：https://arxiv.org/abs/2306.00204。官方 PDF SHA-256：2e42e4fa57c978a9d66a8961f4bf0e627439a43f516640279ccc1c3f49378510。论文主文未给出专用代码仓库链接。",
+        "复现需固定 T5-small/GPT-Neo checkpoint、数据子集和固定 evaluation batch、训练轨迹、moment history、HVP 实现、direction normalization、clipping quantile 与每算法学习率；同时报告多 seed 训练/验证指标和 wall-clock。Evidence status: full-text verified; no independent reproduction performed."
+      ]
+    },
+    {
+      "title": "阅读指南",
+      "paragraphs": ["先读 pp. 1― 的 Taylor 分解与 directional sharpness；再读 pp. 5‘ 的 coordinate clipping、局部 landscape 和 Figure 6；随后看 pp. 8’ 的实验结论；最后核对 Appendices A–D 的定理假设、数据/学习率、HVP 与坏坐标分析。"]
+    }
+  ],
+  "cover": {
+    "mode": "source_figure", "asset_path": "assets/collection-figures/2306.00204/figure-6-clipped-optimizers.webp",
+    "label": "Figure 6", "visual_type": "comparison", "evidence": "paper.pdf p. 8, Figure 6",
+    "alt_text": "左右两幅训练损失曲线分别对应 machine translation 与 autoregressive language modeling，实线/虚线比较原优化器和坐标裁剪版本。",
+    "caption": "在两个 transformer 训练任务中，坐标裁剪版本通常更快降低训练损失。",
+    "selection_rationale": "Figure 6 把局部 directional-sharpness 机制连接到实际训练曲线，同时覆盖两种模型和任务。"
+  },
+  "figure_refs": [
+    {
+      "label": "Figure 6", "asset_path": "assets/collection-figures/2306.00204/figure-6-clipped-optimizers.webp",
+      "section": "核心结果与证据", "role": "compare optimizer convergence with and without coordinate-wise clipping",
+      "evidence": "paper.pdf p. 8, Figure 6", "alt_text": "T5 翻译和 GPT-Neo 自回归训练的 clipped/unclipped loss curves。",
+      "caption": "clipping 通常改善训练 loss，但各算法学习率与裁剪比例经过单独手工调节。",
+      "interpretation": "The curves support the proposed mechanism under tuned settings and do not establish universal optimizer rankings or validation performance."
+    }
+  ],
+  "equation_refs": [
+    {
+      "label": "Directional sharpness",
+      "latex": "s_f(x;v)=v^T\\nabla^2 f(x)v,\\qquad \\lVert v\\rVert_2=1",
+      "role": "measure curvature specifically along an optimizer's proposed update direction",
+      "symbols": {"f": "training objective", "x": "current parameters", "v": "normalized update direction", "nabla^2 f": "local Hessian", "s_f": "directional sharpness"},
+      "evidence": "paper.pdf p. 4, Section 3.1",
+      "interpretation": "This is a local second-order diagnostic; it does not by itself prove a global convergence rate."
+    }
+  ],
+  "evidence_refs": [
+    "paper.pdf pp. 1―: motivation, Taylor decomposition and directional-sharpness definition",
+    "paper.pdf pp. 5‘: update-direction landscapes, coordinate imbalance and clipping",
+    "paper.pdf p. 8: machine-translation and autoregressive convergence curves",
+    "paper.pdf Appendix A: formal clipped-SGD theorem and assumptions",
+    "paper.pdf Appendices B–D: datasets, tuned learning rates, HVP procedure and coordinate concentration",
+    "source PDF SHA-256 2e42e4fa57c978a9d66a8961f4bf0e627439a43f516640279ccc1c3f49378510",
+    "Evidence status: full-text verified; no independent reproduction performed."
+  ]
+}
