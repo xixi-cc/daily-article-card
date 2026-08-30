@@ -1,0 +1,231 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Towards a Theoretical Understanding of the &#x27;Reversal Curse&#x27; via Training Dynamics - physics+AI Collection 随机精选</title>
+    <meta name="description" content="作者 Hanlin Zhu、Baihe Huang、Shaolun Zhang、Michael Jordan、Jiantao Jiao、Yuandong Tian 与 Stuart Russell，来自 UC Berkeley 与 Meta AI。论文从 cross-entropy gradient dynamics 分析 autoregressive model 为何学习 A→B 后不自动获得 B→A。arXiv:2405.04669v2，NeurIPS 2024。" />
+    <link rel="canonical" href="https://xixi-cc.github.io/daily-article-card/collection-papers/2405.04669/" />
+    <script type="application/ld+json">{"@context": "https://schema.org", "@type": "Article", "headline": "Towards a Theoretical Understanding of the 'Reversal Curse' via Training Dynamics", "description": "作者 Hanlin Zhu、Baihe Huang、Shaolun Zhang、Michael Jordan、Jiantao Jiao、Yuandong Tian 与 Stuart Russell，来自 UC Berkeley 与 Meta AI。论文从 cross-entropy gradient dynamics 分析 autoregressive model 为何学习 A→B 后不自动获得 B→A。arXiv:2405.04669v2，NeurIPS 2024。", "url": "https://xixi-cc.github.io/daily-article-card/collection-papers/2405.04669/", "mainEntityOfPage": "https://xixi-cc.github.io/daily-article-card/collection-papers/2405.04669/", "inLanguage": "zh-CN", "author": {"@type": "Person", "name": "Xineng Cao", "alternateName": ["Xixi Cao", "曹溪能"], "url": "https://xixi-cc.github.io/"}, "isBasedOn": "https://arxiv.org/abs/2405.04669"}</script>
+    <script>
+      (function() {
+        try {
+          var themePreference = window.localStorage.getItem('color-theme') || 'system';
+          var systemUsesDarkTheme = window.matchMedia('(prefers-color-scheme: dark)').matches;
+          var resolvedTheme = themePreference === 'system'
+            ? (systemUsesDarkTheme ? 'dark' : 'light')
+            : themePreference;
+          document.documentElement.dataset.theme = resolvedTheme;
+          document.documentElement.dataset.themePreference = themePreference;
+          document.documentElement.style.colorScheme = resolvedTheme;
+        } catch (error) {
+          document.documentElement.dataset.theme = 'light';
+          document.documentElement.dataset.themePreference = 'system';
+        }
+      })();
+    </script>
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='18' fill='%23111827'/%3E%3Ctext x='50%25' y='55%25' text-anchor='middle' dominant-baseline='middle' font-size='30' font-family='Arial, sans-serif' fill='white'%3EV%3C/text%3E%3C/svg%3E" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700;800&family=Noto+Sans+SC:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <script>document.documentElement.classList.add('math-pending');</script>
+    <script>
+      window.MathJax = {
+        tex: {
+          inlineMath: [['$', '$'], ['\\(', '\\)']],
+          displayMath: [['$$', '$$'], ['\\[', '\\]']],
+          processEscapes: true
+        },
+        options: {
+          skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+        },
+        chtml: {
+          scale: 1,
+          displayAlign: 'center'
+        },
+        startup: {
+          ready: function() {
+            MathJax.startup.defaultReady();
+            MathJax.startup.promise.then(function() {
+              document.documentElement.classList.remove('math-pending');
+              document.documentElement.dataset.mathReady = 'true';
+            });
+          }
+        }
+      };
+    </script>
+    <script defer src="../../assets/vendor/mathjax/tex-chtml.js"></script>
+    <link rel="stylesheet" href="../../assets/style.css" />
+  </head>
+  <body class="detail-page" data-paper-id="2405.04669" data-paper-program="collection">
+    <div class="page-noise"></div>
+    <div class="page-blur page-blur-a"></div>
+    <div class="page-blur page-blur-b"></div>
+
+    <header class="header detail-page-header">
+      <div class="container">
+        <div class="detail-page-topbar">
+          <a class="back-link" href="../../collection.html">返回列表</a>
+          <div class="detail-topbar-actions">
+            <span class="detail-site-name">physics+AI Collection 随机精选</span>
+            <button id="detail-favorite" class="detail-favorite-button" type="button" aria-pressed="false">☆ 收藏</button>
+            <button class="theme-toggle" type="button" data-theme-toggle aria-label="当前主题：设备，点击切换主题" title="当前主题：设备">
+  <span class="theme-toggle-icons" aria-hidden="true">
+    <svg class="theme-toggle-icon theme-toggle-icon-light" viewBox="0 0 24 24" fill="none">
+      <circle cx="12" cy="12" r="3.5" stroke="currentColor" stroke-width="1.8"/>
+      <path d="M12 2.5v2M12 19.5v2M2.5 12h2M19.5 12h2M5.3 5.3l1.4 1.4M17.3 17.3l1.4 1.4M18.7 5.3l-1.4 1.4M6.7 17.3l-1.4 1.4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+    </svg>
+    <svg class="theme-toggle-icon theme-toggle-icon-dark" viewBox="0 0 24 24" fill="none">
+      <path d="M20 15.2A8.1 8.1 0 0 1 8.8 4a8.2 8.2 0 1 0 11.2 11.2z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>
+    </svg>
+    <svg class="theme-toggle-icon theme-toggle-icon-system" viewBox="0 0 24 24" fill="none">
+      <rect x="3" y="4" width="18" height="13" rx="2.5" stroke="currentColor" stroke-width="1.8"/>
+      <path d="M8 21h8M12 17v4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+    </svg>
+  </span>
+  <span class="theme-toggle-label" data-theme-toggle-label>设备</span>
+</button>
+          </div>
+        </div>
+
+        <div class="detail-hero-grid">
+          <div class="detail-hero-cover"><figure class="paper-figure-card paper-figure-card-detail">
+  <img class="paper-figure-image" src="../../assets/collection-figures/2405.04669/figure-1-reversal-loss.webp" alt="训练方向的负对数概率在早期降到接近零，未见反向 validation 的负对数概率则快速升高并在 50 至 60 左右波动；阴影为 10 个 seeds。" loading="lazy" onclick="window.openPaperFigureImage && window.openPaperFigureImage(this)" />
+  <figcaption class="paper-figure-caption">模型记住 seen direction 的同时，held-out reverse direction 没有改善，甚至在 softmax competition 下变差。</figcaption>
+</figure></div>
+          <div class="detail-hero-copy">
+            <p class="eyebrow">Collection 全文卡</p>
+            <h1 class="detail-page-title">Towards a Theoretical Understanding of the &#x27;Reversal Curse&#x27; via Training Dynamics</h1>
+            <p class="detail-page-title-zh">从训练动力学理解“逆转诅咒”</p>
+            <div class="detail-meta">Paper Collection · Training Dynamics · <a href="https://arxiv.org/abs/2405.04669" target="_blank" rel="noopener noreferrer">原文</a></div>
+            <p class="detail-summary">作者 Hanlin Zhu、Baihe Huang、Shaolun Zhang、Michael Jordan、Jiantao Jiao、Yuandong Tian 与 Stuart Russell，来自 UC Berkeley 与 Meta AI。论文从 cross-entropy gradient dynamics 分析 autoregressive model 为何学习 A→B 后不自动获得 B→A。arXiv:2405.04669v2，NeurIPS 2024。</p>
+            <div class="detail-micro-meta">
+              <span class="meta-pill">AI 基础理论</span>
+              <span class="meta-pill">理论与实验</span>
+              <span class="meta-pill">#Training Dynamics</span><span class="meta-pill">#机器学习</span><span class="meta-pill">#语言模型</span>
+              <span class="meta-pill">14 分钟读完</span>
+              <span class="meta-pill">7 张阅读卡</span>
+              <span class="meta-pill">作者 Hanlin Zhu、Baihe Huang、Shaolun Zhang、Michael Jor…</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <main class="container detail-layout">
+      <div class="detail-shell">
+        <article id="detail-body" class="reading-flow"><section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 01</span>
+    <span class="reading-step-note">作者信息</span>
+  </div>
+  <h2>作者信息</h2>
+  <div class="reading-card-content"><ul><li>作者 Hanlin Zhu、Baihe Huang、Shaolun Zhang、Michael Jordan、Jiantao Jiao、Yuandong Tian 与 Stuart Russell，来自 UC Berkeley 与 Meta AI。论文从 cross-entropy gradient dynamics 分析 autoregressive model 为何学习 \(A\to B\) 后不自动获得 \(B\to A\)。arXiv:2405.04669v2，NeurIPS 2024。</li></ul></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 02</span>
+    <span class="reading-step-note">研究问题</span>
+  </div>
+  <h2>研究问题</h2>
+  <div class="reading-card-content"><ul><li>Reversal curse 指训练语料包含‘A 的关系对象是 B’后，causal language model 仍不能在反向 prompt 中给出 A，即使自然语言语义上两种表述互逆。Expressivity 只能说明 Transformer 可以表示对称关系，不能解释 SGD/CE 是否会选择它。</li><li>本文问：在 bilinear next-token model 与 one-layer Transformer 中，seen direction 的 logit 增长是否传递到 reverse logit？类似地，分别学会 \(A\to B\) 与 \(B\to C\) 后，为什么模型不会自动把 \(A\to C\) 的 indirect relation 写进 direct next-token weights，从而需要 explicit chain-of-thought/in-context computation？</li></ul></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 03</span>
+    <span class="reading-step-note">模型与方法</span>
+  </div>
+  <h2>模型与方法</h2>
+  <div class="reading-card-content"><ul><li>Bilinear 模型对输入 embedding \(x\) 与候选 \(y\) 定义 logit l_Θ(\(y\)|\(x\))=\(x\)^TΘy，以 softmax cross-entropy 训练。数据对 \(i\ge 2\) 同时给出 (\(x_{i}\),\(y_{i}\)) 与 (\(y_{i}\),\(x_{i}\))，但 held-out pair 只给 forward (\(x_{1}\),\(y_{1}\))，测试 reverse (\(y_{1}\),\(x_{1}\))。Random Gaussian embeddings 在高维近正交。</li><li>One-layer Transformer 用 token embeddings U、attention score reparameterization \(Z=UW_{\mathrm{QW}}_{K}^{\mathrm{TU}}^{T}\)/\(\sqrt d\) 与 decoder/value reparameterization \(Y=UW_{V}^{\mathrm{TU}}^{T}\)。三-token setup 下 attention 只面对一个 contextual token，主要动力学落在 \(Y\)；作者在 step size、vocabulary、batch 与 initialization assumptions 下证明 seen-direction \(Y\) entry 增长，而 transposed unseen entry 基本不更新。</li><li>实验生成 disjoint entity sets A/B、inverse relation tokens 与随机 bijection。Training pairs 含双向序列，validation pairs 只含随机一向并在另一向测试；multi-layer Transformers 扫 12/24/48 layers、12 heads、vocabulary 20–2000、entity length 1–3 与 positional/embedding variants，曲线平均 10 seeds。</li></ul></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 04</span>
+    <span class="reading-step-note">核心结果与证据</span>
+  </div>
+  <h2>核心结果与证据</h2>
+  <div class="reading-card-content"><ul><li>Bilinear Theorem 2 给出 separation：训练 loss 可降到任意小，而 reversal loss 在足够高维、small initialization 等条件下仍有正下界。直观上 \(\Theta_{\mathrm{ij}}\) 与 \(\Theta_{\mathrm{ji}}\) 是不同自由度；训练 \(x=e_{i}\to y=e_{j}\) 直接增加前者，不要求增加后者。</li><li>One-layer Theorem 3 得到相似结论：对 training sequence，正确 next-token probability 随时间趋近 1；对应 validation reverse probability 不优于约 1/\(M\) 的 uniform scale。Figure 1 的 multi-layer 实验中，blue train negative log probability 接近 0，而 red reverse validation curve从约 15 上升到 50–60，10-seed band 保持巨大间隔。</li><li>Figure 2 直接画 logits matrices：seen forward/双向 entries 的 diagonals 很大，held-out reverse matrix diagonal 接近 0。COT 扩展把问题称为 intransitivity：\(A\to B\)、\(B\to C\) weights 变大不强迫 \(A\to C\) weight 变大；附录 multi-layer experiments 复现这一 train/validation separation。</li></ul><figure class="evidence-figure">
+  <button class="evidence-figure-image-button" type="button" aria-label="放大查看 Figure 1" onclick="window.openPaperFigureImage && window.openPaperFigureImage(this.querySelector('img'))">
+    <img class="paper-figure-image evidence-figure-image" src="../../assets/collection-figures/2405.04669/figure-1-reversal-loss.webp" alt="Train 与 reverse-validation negative log probability 随 3000 epochs 的分离曲线。" loading="lazy" />
+  </button>
+  <figcaption>
+    <strong>Figure 1</strong> · 两条曲线平均 10 seeds；具体高度依赖 synthetic vocabulary 与 configuration。
+    <span class="evidence-figure-reading">物理解读：The experiment demonstrates directional generalization failure in the constructed autoregressive task, not a universal natural-language accuracy estimate.</span>
+    <span class="evidence-figure-source">来源：paper.pdf p. 8, Figure 1</span>
+  </figcaption>
+</figure></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 05</span>
+    <span class="reading-step-note">有效性与局限</span>
+  </div>
+  <h2>有效性与局限</h2>
+  <div class="reading-card-content"><ul><li>定理针对 single-token entities、三-token sequences、random/near-orthogonal embeddings 与 one-layer reparameterized dynamics，并依赖大 vocabulary、step-size、initialization 等技术条件。真实语言的 paraphrases、shared subwords、pretraining semantics 和 multiple contexts 会给 reverse direction 提供额外关联。</li><li>Multi-layer experiments 是合成随机 bijection，而不是自然知识问答；它验证该 construction 下的 failure mode，不证明所有 reversal curse 都由同一 \(Y\) asymmetry 唯一造成。论文附录还指出 ICL setting 中 reversal curse 可消失，说明 inference context 能实现不同计算。</li><li>‘COT necessary’是特定 direct-output task 和 model/data assumptions 下的理论表述；外部 memory、bidirectional objectives、data augmentation、planning 或 learned symmetric parameterization 都可能改变结果。Figure 1 的 validation loss 甚至变差与 unconstrained CE competition 有关，不等于模型完全没有语义能力。本卡未独立复现。</li></ul></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 06</span>
+    <span class="reading-step-note">复现与资源</span>
+  </div>
+  <h2>复现与资源</h2>
+  <div class="reading-card-content"><ul><li>原文：https://arxiv.org/abs/2405.04669；代码：https://github.com/marlo-z/reversal_curse_analysis。官方 \(v_{2}\) PDF SHA-256：ec7bf50b847ae41ab7fa3f62bccf414a788aedcaeac00a03b6ead242c7684a2b。</li><li>复现先生成随机 A↔B bijection，将 pairs 固定拆成双向 train 与单向 validation；保存 train/reverse negative log probability、每个 pair 的 forward/reverse logits 和 transposed-weight gap。必须跨 seeds、vocabulary/entity length 和 embedding sharing 报告，并加入 symmetric-parameter/data-augmentation 与 ICL controls，区分 optimization failure 和 information absence。Evidence status: full-text verified; no independent reproduction performed.</li></ul></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 07</span>
+    <span class="reading-step-note">阅读指南</span>
+  </div>
+  <h2>阅读指南</h2>
+  <div class="reading-card-content"><ul><li>先读 bilinear model，one-hot 特例会立刻显示 \(\Theta_{\mathrm{ij}}\ne \Theta_{\mathrm{ji}}\)；再看 one-layer 的 \(Z\)/\(Y\) reparameterization，理解为何三-token task 中 \(Y\) 是关键。Figures 1–2 把 loss failure 与 logit asymmetry 对上。最后读 ICL 与 multi-token appendices，避免把受控 theorem 外推成所有 LLM 的绝对限制。</li></ul></div>
+</section></article>
+        <aside id="detail-toc" class="detail-toc hidden" aria-label="内容目录">
+          <p class="detail-toc-title">阅读目录</p>
+          <nav id="detail-toc-nav" class="detail-toc-nav"></nav>
+        </aside>
+      </div>
+      <nav class="paper-nav"><a class="paper-nav-link paper-nav-prev" href="../../collection-papers/2405.00751/"><span class="paper-nav-label">← 上一篇</span><span class="paper-nav-title">F³low: Frame-to-Frame Coarse-grained Molecular Dynamics with SE(3) Guided Flow Matching</span></a>
+      <a class="paper-nav-link paper-nav-next" href="../../collection-papers/2405.05621/"><span class="paper-nav-label">下一篇 →</span><span class="paper-nav-title">Enhancing (quasi-)long-range order in a two-dimensional driven crystal</span></a></nav>
+      <section id="comments" class="comments-panel" aria-labelledby="comments-title">
+        <div class="comments-heading">
+          <div>
+            <p class="eyebrow">Discussion</p>
+            <h2 id="comments-title">评论与讨论</h2>
+          </div>
+          <a href="https://github.com/xixi-cc/xixi-research-comments/discussions" target="_blank" rel="noopener noreferrer">在 GitHub 查看</a>
+        </div>
+        <p class="comments-note">评论公开保存在 GitHub Discussions；阅读无需登录，发表评论需要 GitHub 账号。</p>
+        <script src="https://giscus.app/client.js"
+                data-repo="xixi-cc/xixi-research-comments"
+                data-repo-id="R_kgDOUIl8MQ"
+                data-category="Announcements"
+                data-category-id="DIC_kwDOUIl8Mc4DEftB"
+                data-mapping="specific"
+                data-term="collection:2405.04669"
+                data-strict="1"
+                data-reactions-enabled="1"
+                data-emit-metadata="0"
+                data-input-position="top"
+                data-theme="preferred_color_scheme"
+                data-lang="zh-CN"
+                data-loading="lazy"
+                crossorigin="anonymous"
+                async></script>
+        <noscript><p>请启用 JavaScript，或直接前往 GitHub Discussions 参与讨论。</p></noscript>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <div class="container">
+        <p>内容来自 <a href="https://arxiv.org" target="_blank" rel="noopener noreferrer">arXiv.org</a>；原创解读采用 CC BY-NC 4.0。<a href="../../rights.html">许可与引用</a></p>
+      </div>
+    </footer>
+
+    <script src="../../assets/theme.js"></script>
+    <script src="../../assets/media.js"></script>
+    <script src="../../assets/paper.js"></script>
+    <!-- Cloudflare Web Analytics -->
+<script type="module" src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon='{"token":"73522e5dee9b42b0be84b4847e4dd502"}'></script>
+<!-- End Cloudflare Web Analytics -->
+  </body>
+</html>
