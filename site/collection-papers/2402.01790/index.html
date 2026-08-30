@@ -1,0 +1,231 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>An introduction to graphical tensor notation for mechanistic interpretability - physics+AI Collection 随机精选</title>
+    <meta name="description" content="作者 Jordan K. Taylor，来自 University of Queensland School of Mathematics and Physics。本文是教学型综述/讲义，不是新 benchmark 或新算法论文；目标是把物理中的 Penrose/tensor-network diagrams 引入 mechanistic interpretability。arXiv:2402.01790v1。" />
+    <link rel="canonical" href="https://xixi-cc.github.io/daily-article-card/collection-papers/2402.01790/" />
+    <script type="application/ld+json">{"@context": "https://schema.org", "@type": "Article", "headline": "An introduction to graphical tensor notation for mechanistic interpretability", "description": "作者 Jordan K. Taylor，来自 University of Queensland School of Mathematics and Physics。本文是教学型综述/讲义，不是新 benchmark 或新算法论文；目标是把物理中的 Penrose/tensor-network diagrams 引入 mechanistic interpretability。arXiv:2402.01790v1。", "url": "https://xixi-cc.github.io/daily-article-card/collection-papers/2402.01790/", "mainEntityOfPage": "https://xixi-cc.github.io/daily-article-card/collection-papers/2402.01790/", "inLanguage": "zh-CN", "author": {"@type": "Person", "name": "Xineng Cao", "alternateName": ["Xixi Cao", "曹溪能"], "url": "https://xixi-cc.github.io/"}, "isBasedOn": "https://arxiv.org/abs/2402.01790"}</script>
+    <script>
+      (function() {
+        try {
+          var themePreference = window.localStorage.getItem('color-theme') || 'system';
+          var systemUsesDarkTheme = window.matchMedia('(prefers-color-scheme: dark)').matches;
+          var resolvedTheme = themePreference === 'system'
+            ? (systemUsesDarkTheme ? 'dark' : 'light')
+            : themePreference;
+          document.documentElement.dataset.theme = resolvedTheme;
+          document.documentElement.dataset.themePreference = themePreference;
+          document.documentElement.style.colorScheme = resolvedTheme;
+        } catch (error) {
+          document.documentElement.dataset.theme = 'light';
+          document.documentElement.dataset.themePreference = 'system';
+        }
+      })();
+    </script>
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='18' fill='%23111827'/%3E%3Ctext x='50%25' y='55%25' text-anchor='middle' dominant-baseline='middle' font-size='30' font-family='Arial, sans-serif' fill='white'%3EV%3C/text%3E%3C/svg%3E" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700;800&family=Noto+Sans+SC:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <script>document.documentElement.classList.add('math-pending');</script>
+    <script>
+      window.MathJax = {
+        tex: {
+          inlineMath: [['$', '$'], ['\\(', '\\)']],
+          displayMath: [['$$', '$$'], ['\\[', '\\]']],
+          processEscapes: true
+        },
+        options: {
+          skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+        },
+        chtml: {
+          scale: 1,
+          displayAlign: 'center'
+        },
+        startup: {
+          ready: function() {
+            MathJax.startup.defaultReady();
+            MathJax.startup.promise.then(function() {
+              document.documentElement.classList.remove('math-pending');
+              document.documentElement.dataset.mathReady = 'true';
+            });
+          }
+        }
+      };
+    </script>
+    <script defer src="../../assets/vendor/mathjax/tex-chtml.js"></script>
+    <link rel="stylesheet" href="../../assets/style.css" />
+  </head>
+  <body class="detail-page" data-paper-id="2402.01790" data-paper-program="collection">
+    <div class="page-noise"></div>
+    <div class="page-blur page-blur-a"></div>
+    <div class="page-blur page-blur-b"></div>
+
+    <header class="header detail-page-header">
+      <div class="container">
+        <div class="detail-page-topbar">
+          <a class="back-link" href="../../collection.html">返回列表</a>
+          <div class="detail-topbar-actions">
+            <span class="detail-site-name">physics+AI Collection 随机精选</span>
+            <button id="detail-favorite" class="detail-favorite-button" type="button" aria-pressed="false">☆ 收藏</button>
+            <button class="theme-toggle" type="button" data-theme-toggle aria-label="当前主题：设备，点击切换主题" title="当前主题：设备">
+  <span class="theme-toggle-icons" aria-hidden="true">
+    <svg class="theme-toggle-icon theme-toggle-icon-light" viewBox="0 0 24 24" fill="none">
+      <circle cx="12" cy="12" r="3.5" stroke="currentColor" stroke-width="1.8"/>
+      <path d="M12 2.5v2M12 19.5v2M2.5 12h2M19.5 12h2M5.3 5.3l1.4 1.4M17.3 17.3l1.4 1.4M18.7 5.3l-1.4 1.4M6.7 17.3l-1.4 1.4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+    </svg>
+    <svg class="theme-toggle-icon theme-toggle-icon-dark" viewBox="0 0 24 24" fill="none">
+      <path d="M20 15.2A8.1 8.1 0 0 1 8.8 4a8.2 8.2 0 1 0 11.2 11.2z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>
+    </svg>
+    <svg class="theme-toggle-icon theme-toggle-icon-system" viewBox="0 0 24 24" fill="none">
+      <rect x="3" y="4" width="18" height="13" rx="2.5" stroke="currentColor" stroke-width="1.8"/>
+      <path d="M8 21h8M12 17v4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+    </svg>
+  </span>
+  <span class="theme-toggle-label" data-theme-toggle-label>设备</span>
+</button>
+          </div>
+        </div>
+
+        <div class="detail-hero-grid">
+          <div class="detail-hero-cover"><figure class="paper-figure-card paper-figure-card-detail">
+  <img class="paper-figure-image" src="../../assets/collection-figures/2402.01790/figure-1-tensor-networks.webp" alt="QUIMB 生成的多种彩色图形张量网络布局，包括平面格、树状、环状和随机网络。" loading="lazy" onclick="window.openPaperFigureImage && window.openPaperFigureImage(this)" />
+  <figcaption class="paper-figure-caption">图形张量记号把 tensors 显示为节点、indices 显示为连线，使收缩结构一眼可见。</figcaption>
+</figure></div>
+          <div class="detail-hero-copy">
+            <p class="eyebrow">Collection 全文卡</p>
+            <h1 class="detail-page-title">An introduction to graphical tensor notation for mechanistic interpretability</h1>
+            <p class="detail-page-title-zh">面向机制可解释性的图形张量记号导论</p>
+            <div class="detail-meta">Paper Collection · Mechanistic Interpretability · <a href="https://arxiv.org/abs/2402.01790" target="_blank" rel="noopener noreferrer">原文</a></div>
+            <p class="detail-summary">作者 Jordan K. Taylor，来自 University of Queensland School of Mathematics and Physics。本文是教学型综述/讲义，不是新 benchmark 或新算法论文；目标是把物理中的 Penrose/tensor-network diagrams 引入 mechanistic interpretability。arXiv:2402.01790v1。</p>
+            <div class="detail-micro-meta">
+              <span class="meta-pill">AI 基础理论</span>
+              <span class="meta-pill">理论</span>
+              <span class="meta-pill">#Mechanistic Interpretability</span><span class="meta-pill">#机器学习</span><span class="meta-pill">#人工智能</span>
+              <span class="meta-pill">10 分钟读完</span>
+              <span class="meta-pill">7 张阅读卡</span>
+              <span class="meta-pill">作者 Jordan K. Taylor，来自 University of Queensland Sch…</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <main class="container detail-layout">
+      <div class="detail-shell">
+        <article id="detail-body" class="reading-flow"><section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 01</span>
+    <span class="reading-step-note">作者信息</span>
+  </div>
+  <h2>作者信息</h2>
+  <div class="reading-card-content"><ul><li>作者 Jordan \(K\). Taylor，来自 University of Queensland School of Mathematics and Physics。本文是教学型综述/讲义，不是新 benchmark 或新算法论文；目标是把物理中的 Penrose/tensor-network diagrams 引入 mechanistic interpretability。arXiv:2402.01790v1。</li></ul></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 02</span>
+    <span class="reading-step-note">研究问题</span>
+  </div>
+  <h2>研究问题</h2>
+  <div class="reading-card-content"><ul><li>Transformer circuit 分析包含大量矩阵乘法、index contraction、reshape 与 path composition，普通下标记号容易隐藏整体结构。图形张量记号能否让维度、收缩和等价重排在视觉上显式，从而降低 reverse-engineering learned algorithms 的认知负担？</li><li>文档同时希望建立从基础 tensor operations 到 SVD、CP、Tucker、tensor networks，再到 embedding、MLP、attention、path expansion 与 toy induction head 的连续教程。</li></ul></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 03</span>
+    <span class="reading-step-note">模型与方法</span>
+  </div>
+  <h2>模型与方法</h2>
+  <div class="reading-card-content"><ul><li>图中每个 node 表示 tensor，每条 leg 表示一个 index；连接两条 legs 表示对该 index 求和，未连接 legs 是输出 indices。outer product、dot product、matrix-vector/matrix multiplication、trace、Hadamard product、copy tensor 与 permutation 都可由拓扑表示。</li><li>低秩分解被画成把一个高阶 node 拆成相连小 nodes：SVD 暴露两个 basis maps 与 singular values，CP/Tucker 分离 factor matrices 与 core，MPS/TT 等 tensor networks 则用 bond dimension 表示压缩。</li><li>Transformer 部分把 residual stream、embedding/unembedding、MLP 和 QK/OV attention circuits 写成 diagrams；线性 path expansion 显示不同组件组合，最后构造 toy induction head，追踪 previous-token 与 matching-token 信息如何沿路径组合。</li></ul><figure class="evidence-figure">
+  <button class="evidence-figure-image-button" type="button" aria-label="放大查看 Figure 1" onclick="window.openPaperFigureImage && window.openPaperFigureImage(this.querySelector('img'))">
+    <img class="paper-figure-image evidence-figure-image" src="../../assets/collection-figures/2402.01790/figure-1-tensor-networks.webp" alt="不同 tensor-network 拓扑的节点与连线示例。" loading="lazy" />
+  </button>
+  <figcaption>
+    <strong>Figure 1</strong> · 连接结构编码 index contraction，布局则用于提升可读性。
+    <span class="evidence-figure-reading">物理解读：The figure illustrates notation and topology; it is not an empirical mechanistic-interpretability result.</span>
+    <span class="evidence-figure-source">来源：paper.pdf p. 1, Figure 1</span>
+  </figcaption>
+</figure></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 04</span>
+    <span class="reading-step-note">核心结果与证据</span>
+  </div>
+  <h2>核心结果与证据</h2>
+  <div class="reading-card-content"><ul><li>主要成果是一个一致的 visual grammar 和 75 幅逐步图解。Figure 1 展示 QUIMB 生成的多种 tensor-network layouts；随后同一规则覆盖标量、向量、矩阵、高阶 tensors 与分解，帮助检查 contraction legality 和输出 shape。</li><li>应用到 transformer circuits 时，diagrams 可把 attention head 分成 QK 与 OV 两个 bilinear maps，并将 composition/path expansion 画成可追踪的网络；toy induction head 例子说明一个已知 mechanism 如何在图中定位复制、匹配和写回路径。</li><li>本文没有比较读者错误率、分析速度或真实模型 circuit discovery success；‘更容易理解’是教学设计与示例支撑的主张，不是受控用户研究结论。</li></ul></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 05</span>
+    <span class="reading-step-note">有效性与局限</span>
+  </div>
+  <h2>有效性与局限</h2>
+  <div class="reading-card-content"><ul><li>图形记号减少 indices clutter，但不会自动解决 basis dependence、superposition、nonlinearity、finite precision 或 causal validation。diagram 的清晰度仍依赖布局、颜色、leg labels 和读者熟悉度。</li><li>将 tensor contraction 画得等价不代表两个模型在训练分布上功能等价；对于 layer norm、softmax、activation functions 与 data-dependent control flow，需要额外节点或文字约定，不能用纯线性拓扑替代。</li><li>toy induction head 基于既有 transformer-circuit framework，是说明性重写而非对新模型的实证发现。文档选择性覆盖 notation variants，不是 tensor category 或 ZX-calculus 的形式完备教材；本卡未做教学效果复现。</li></ul></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 06</span>
+    <span class="reading-step-note">复现与资源</span>
+  </div>
+  <h2>复现与资源</h2>
+  <div class="reading-card-content"><ul><li>原文：https://arxiv.org/abs/2402.01790。官方 PDF SHA-256：a0aed741ba0df830061e13aa2a6eae64799342f525cb179513faece586cc5bea。文中引用 QUIMB、tensornetwork.org、tensors.net 与 transformer-circuits framework，可据此重画示例。</li><li>实践复现可选一个含 einsum 的 attention computation：先列显式 indices 与 shapes，再画 node/legs，验证每条 internal leg 恰收缩两次且 free legs 与输出一致；最后用数值数组检查 diagram rearrangement 保持结果。Evidence status: full-text verified; no independent reproduction performed.</li></ul></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 07</span>
+    <span class="reading-step-note">阅读指南</span>
+  </div>
+  <h2>阅读指南</h2>
+  <div class="reading-card-content"><ul><li>可按作者建议跳读图：先掌握 node、leg、contraction，再看 matrix operations 和 SVD；已有 tensor-network 背景者可直接进入 transformer sections。阅读 toy induction head 时，建议在每条 leg 旁同步写 shape，避免把视觉连通误作因果证据。</li></ul></div>
+</section></article>
+        <aside id="detail-toc" class="detail-toc hidden" aria-label="内容目录">
+          <p class="detail-toc-title">阅读目录</p>
+          <nav id="detail-toc-nav" class="detail-toc-nav"></nav>
+        </aside>
+      </div>
+      <nav class="paper-nav"><a class="paper-nav-link paper-nav-prev" href="../../collection-papers/2402.01092/"><span class="paper-nav-label">← 上一篇</span><span class="paper-nav-title">A Dynamical Model of Neural Scaling Laws</span></a>
+      <a class="paper-nav-link paper-nav-next" href="../../collection-papers/2402.02619/"><span class="paper-nav-label">下一篇 →</span><span class="paper-nav-title">Understanding Addition and Subtraction in Transformers</span></a></nav>
+      <section id="comments" class="comments-panel" aria-labelledby="comments-title">
+        <div class="comments-heading">
+          <div>
+            <p class="eyebrow">Discussion</p>
+            <h2 id="comments-title">评论与讨论</h2>
+          </div>
+          <a href="https://github.com/xixi-cc/xixi-research-comments/discussions" target="_blank" rel="noopener noreferrer">在 GitHub 查看</a>
+        </div>
+        <p class="comments-note">评论公开保存在 GitHub Discussions；阅读无需登录，发表评论需要 GitHub 账号。</p>
+        <script src="https://giscus.app/client.js"
+                data-repo="xixi-cc/xixi-research-comments"
+                data-repo-id="R_kgDOUIl8MQ"
+                data-category="Announcements"
+                data-category-id="DIC_kwDOUIl8Mc4DEftB"
+                data-mapping="specific"
+                data-term="collection:2402.01790"
+                data-strict="1"
+                data-reactions-enabled="1"
+                data-emit-metadata="0"
+                data-input-position="top"
+                data-theme="preferred_color_scheme"
+                data-lang="zh-CN"
+                data-loading="lazy"
+                crossorigin="anonymous"
+                async></script>
+        <noscript><p>请启用 JavaScript，或直接前往 GitHub Discussions 参与讨论。</p></noscript>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <div class="container">
+        <p>内容来自 <a href="https://arxiv.org" target="_blank" rel="noopener noreferrer">arXiv.org</a>；原创解读采用 CC BY-NC 4.0。<a href="../../rights.html">许可与引用</a></p>
+      </div>
+    </footer>
+
+    <script src="../../assets/theme.js"></script>
+    <script src="../../assets/media.js"></script>
+    <script src="../../assets/paper.js"></script>
+    <!-- Cloudflare Web Analytics -->
+<script type="module" src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon='{"token":"73522e5dee9b42b0be84b4847e4dd502"}'></script>
+<!-- End Cloudflare Web Analytics -->
+  </body>
+</html>
