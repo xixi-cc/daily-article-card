@@ -1,0 +1,231 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Data-driven model discovery with Kolmogorov-Arnold networks - physics+AI Collection 随机精选</title>
+    <meta name="description" content="Mohammadamin Moradi、Shirin Panahi 与 Ying-Cheng Lai 来自 Arizona State University，Erik M. Bollt 来自 Clarkson University。论文研究非稀疏动力系统的数据驱动方程发现，arXiv:2409.15167v1。" />
+    <link rel="canonical" href="https://xixi-cc.github.io/daily-article-card/collection-papers/2409.15167/" />
+    <script type="application/ld+json">{"@context": "https://schema.org", "@type": "Article", "headline": "Data-driven model discovery with Kolmogorov-Arnold networks", "description": "Mohammadamin Moradi、Shirin Panahi 与 Ying-Cheng Lai 来自 Arizona State University，Erik M. Bollt 来自 Clarkson University。论文研究非稀疏动力系统的数据驱动方程发现，arXiv:2409.15167v1。", "url": "https://xixi-cc.github.io/daily-article-card/collection-papers/2409.15167/", "mainEntityOfPage": "https://xixi-cc.github.io/daily-article-card/collection-papers/2409.15167/", "inLanguage": "zh-CN", "author": {"@type": "Person", "name": "Xineng Cao", "alternateName": ["Xixi Cao", "曹溪能"], "url": "https://xixi-cc.github.io/"}, "isBasedOn": "https://arxiv.org/abs/2409.15167"}</script>
+    <script>
+      (function() {
+        try {
+          var themePreference = window.localStorage.getItem('color-theme') || 'system';
+          var systemUsesDarkTheme = window.matchMedia('(prefers-color-scheme: dark)').matches;
+          var resolvedTheme = themePreference === 'system'
+            ? (systemUsesDarkTheme ? 'dark' : 'light')
+            : themePreference;
+          document.documentElement.dataset.theme = resolvedTheme;
+          document.documentElement.dataset.themePreference = themePreference;
+          document.documentElement.style.colorScheme = resolvedTheme;
+        } catch (error) {
+          document.documentElement.dataset.theme = 'light';
+          document.documentElement.dataset.themePreference = 'system';
+        }
+      })();
+    </script>
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='18' fill='%23111827'/%3E%3Ctext x='50%25' y='55%25' text-anchor='middle' dominant-baseline='middle' font-size='30' font-family='Arial, sans-serif' fill='white'%3EV%3C/text%3E%3C/svg%3E" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700;800&family=Noto+Sans+SC:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <script>document.documentElement.classList.add('math-pending');</script>
+    <script>
+      window.MathJax = {
+        tex: {
+          inlineMath: [['$', '$'], ['\\(', '\\)']],
+          displayMath: [['$$', '$$'], ['\\[', '\\]']],
+          processEscapes: true
+        },
+        options: {
+          skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+        },
+        chtml: {
+          scale: 1,
+          displayAlign: 'center'
+        },
+        startup: {
+          ready: function() {
+            MathJax.startup.defaultReady();
+            MathJax.startup.promise.then(function() {
+              document.documentElement.classList.remove('math-pending');
+              document.documentElement.dataset.mathReady = 'true';
+            });
+          }
+        }
+      };
+    </script>
+    <script defer src="../../assets/vendor/mathjax/tex-chtml.js"></script>
+    <link rel="stylesheet" href="../../assets/style.css" />
+  </head>
+  <body class="detail-page" data-paper-id="2409.15167" data-paper-program="collection">
+    <div class="page-noise"></div>
+    <div class="page-blur page-blur-a"></div>
+    <div class="page-blur page-blur-b"></div>
+
+    <header class="header detail-page-header">
+      <div class="container">
+        <div class="detail-page-topbar">
+          <a class="back-link" href="../../collection.html">返回列表</a>
+          <div class="detail-topbar-actions">
+            <span class="detail-site-name">physics+AI Collection 随机精选</span>
+            <button id="detail-favorite" class="detail-favorite-button" type="button" aria-pressed="false">☆ 收藏</button>
+            <button class="theme-toggle" type="button" data-theme-toggle aria-label="当前主题：设备，点击切换主题" title="当前主题：设备">
+  <span class="theme-toggle-icons" aria-hidden="true">
+    <svg class="theme-toggle-icon theme-toggle-icon-light" viewBox="0 0 24 24" fill="none">
+      <circle cx="12" cy="12" r="3.5" stroke="currentColor" stroke-width="1.8"/>
+      <path d="M12 2.5v2M12 19.5v2M2.5 12h2M19.5 12h2M5.3 5.3l1.4 1.4M17.3 17.3l1.4 1.4M18.7 5.3l-1.4 1.4M6.7 17.3l-1.4 1.4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+    </svg>
+    <svg class="theme-toggle-icon theme-toggle-icon-dark" viewBox="0 0 24 24" fill="none">
+      <path d="M20 15.2A8.1 8.1 0 0 1 8.8 4a8.2 8.2 0 1 0 11.2 11.2z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>
+    </svg>
+    <svg class="theme-toggle-icon theme-toggle-icon-system" viewBox="0 0 24 24" fill="none">
+      <rect x="3" y="4" width="18" height="13" rx="2.5" stroke="currentColor" stroke-width="1.8"/>
+      <path d="M8 21h8M12 17v4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+    </svg>
+  </span>
+  <span class="theme-toggle-label" data-theme-toggle-label>设备</span>
+</button>
+          </div>
+        </div>
+
+        <div class="detail-hero-grid">
+          <div class="detail-hero-cover"><figure class="paper-figure-card paper-figure-card-detail">
+  <img class="paper-figure-image" src="../../assets/collection-figures/2409.15167/figure-1-kan-model-discovery.webp" alt="上部对比 Kolmogorov–Arnold 定理与神经网络，下部展示两种不同 KAN 结构产生同一相关相空间动力学。" loading="lazy" onclick="window.openPaperFigureImage && window.openPaperFigureImage(this)" />
+  <figcaption class="paper-figure-caption">KAN 模型发现的基本思想与动力学表示的非唯一性。</figcaption>
+</figure></div>
+          <div class="detail-hero-copy">
+            <p class="eyebrow">Collection 全文卡</p>
+            <h1 class="detail-page-title">Data-driven model discovery with Kolmogorov-Arnold networks</h1>
+            <p class="detail-page-title-zh">用 Kolmogorov–Arnold 网络进行数据驱动模型发现</p>
+            <div class="detail-meta">Paper Collection · AI for Science · <a href="https://arxiv.org/abs/2409.15167" target="_blank" rel="noopener noreferrer">原文</a></div>
+            <p class="detail-summary">Mohammadamin Moradi、Shirin Panahi 与 Ying-Cheng Lai 来自 Arizona State University，Erik M. Bollt 来自 Clarkson University。论文研究非稀疏动力系统的数据驱动方程发现，arXiv:2409.15167v1。</p>
+            <div class="detail-micro-meta">
+              <span class="meta-pill">AI for Science</span>
+              <span class="meta-pill">理论与数值</span>
+              <span class="meta-pill">#AI for Science</span><span class="meta-pill">#机器学习</span><span class="meta-pill">#动力系统</span>
+              <span class="meta-pill">6 分钟读完</span>
+              <span class="meta-pill">7 张阅读卡</span>
+              <span class="meta-pill">Mohammadamin Moradi、Shirin Panahi 与 Ying-Cheng Lai…</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <main class="container detail-layout">
+      <div class="detail-shell">
+        <article id="detail-body" class="reading-flow"><section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 01</span>
+    <span class="reading-step-note">作者信息</span>
+  </div>
+  <h2>作者信息</h2>
+  <div class="reading-card-content"><ul><li>Mohammadamin Moradi、Shirin Panahi 与 Ying-Cheng Lai 来自 Arizona State University，Erik \(M\). Bollt 来自 Clarkson University。论文研究非稀疏动力系统的数据驱动方程发现，arXiv:2409.15167v1。</li></ul></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 02</span>
+    <span class="reading-step-note">研究问题</span>
+  </div>
+  <h2>研究问题</h2>
+  <div class="reading-card-content"><ul><li>SINDy 一类稀疏回归方法依赖少量基函数即可表示真实动力学；Ikeda 光学腔映射和含 Holling 型响应的生态系统不满足这一前提。问题是：只凭观测轨迹，能否学习一个不要求稀疏结构、但在相关相空间中保持长期统计性质的近似模型？</li><li>作者同时强调辨识的非唯一性：不同函数表达式可能生成同一个不变集，因此逐点轨迹或符号公式并不是评价发现模型的唯一标准。</li></ul></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 03</span>
+    <span class="reading-step-note">模型与方法</span>
+  </div>
+  <h2>模型与方法</h2>
+  <div class="reading-card-content"><ul><li>方法用 KAN 将多元映射分解为边上的一元可学习函数，直接拟合离散时间映射或连续系统的离散演化。训练/测试轨迹来自 Ikeda map 和三维混沌生态模型，并比较相图、时间序列、Lyapunov 指数和 Kullback–Leibler 散度。</li><li>Figure 1 展示两个不同 KAN 结构可在相关相空间内生成相同动力学；后续实验分别使用 2-4-2、2-10-2 等结构，说明网络结构与真实解析方程不必一一对应。</li></ul><figure class="evidence-figure">
+  <button class="evidence-figure-image-button" type="button" aria-label="放大查看 Figure 1" onclick="window.openPaperFigureImage && window.openPaperFigureImage(this.querySelector('img'))">
+    <img class="paper-figure-image evidence-figure-image" src="../../assets/collection-figures/2409.15167/figure-1-kan-model-discovery.webp" alt="KAN 定理、网络和两个不同动力系统近似结构的组合示意图。" loading="lazy" />
+  </button>
+  <figcaption>
+    <strong>Figure 1</strong> · 不同 KAN 函数表达可在相关相空间生成相同动力学。
+    <span class="evidence-figure-reading">物理解读：The figure supports representational non-uniqueness, not exact recovery of the true governing equations.</span>
+    <span class="evidence-figure-source">来源：paper.pdf p. 2, Figure 1</span>
+  </figcaption>
+</figure></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 04</span>
+    <span class="reading-step-note">核心结果与证据</span>
+  </div>
+  <h2>核心结果与证据</h2>
+  <div class="reading-card-content"><ul><li>Ikeda map 上，KAN 在训练段复现吸引子与短期轨迹；测试时同初值轨迹因混沌迅速分离，但预测吸引子的几何和统计仍与真值一致。另一种更宽 KAN 给出不同函数表示，却获得近似 Lyapunov 指数 [0.5033, -0.7311]。</li><li>三物种生态系统实验同样显示：逐点误差会累积，但学习模型保持吸引子、概率分布与 Lyapunov 统计。作者据此把结果类比为数值轨迹的 shadowing，而不是宣称恢复唯一真实方程。</li><li>论文的评价逻辑值得单独注意：训练损失检验局部一步映射，吸引子叠图检验不变集几何，Lyapunov 指数检验平均稳定性，KL 散度检验经验分布。只有这些证据同时一致时，作者才把网络称为动力学上近似有效。</li></ul></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 05</span>
+    <span class="reading-step-note">有效性与局限</span>
+  </div>
+  <h2>有效性与局限</h2>
+  <div class="reading-card-content"><ul><li>实验只覆盖两个低维合成动力系统，观测基本无噪声，尚未验证高维、部分可观测、非平稳或真实实验数据。KAN 的架构、节点数和正则化会改变得到的表达式，不能据吸引子吻合便断言机制正确。</li><li>长期统计一致也可能掩盖局部向量场、瞬态或因果结构错误；Lyapunov 指数和 KL 散度的估计依赖采样长度与分箱。论文展示的是可行性与非唯一性，不是通用辨识保证。本卡未独立复现。</li><li>若目标是科学发现而非仿真替代，还需要在观测域之外检验外推、干预响应和参数可辨识性，并用已知守恒律或对称性约束候选模型。否则一个统计上合格的 surrogate 仍可能给出错误机制解释。</li></ul></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 06</span>
+    <span class="reading-step-note">复现与资源</span>
+  </div>
+  <h2>复现与资源</h2>
+  <div class="reading-card-content"><ul><li>原文：https://arxiv.org/abs/2409.15167。官方 \(v_{1}\) PDF SHA-256：14e9d867e1ae2c7535e9e9418e420deb821326f76ca6a4e75105c702573b1ff5。</li><li>复现应固定数据长度、训练/测试划分、KAN 结构与初始化，报告多随机种子的短期误差、吸引子覆盖、Lyapunov 谱和分布距离；还应加入噪声、观测稀疏度及结构错配实验。Evidence status: full-text verified; no independent reproduction performed.</li></ul></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 07</span>
+    <span class="reading-step-note">阅读指南</span>
+  </div>
+  <h2>阅读指南</h2>
+  <div class="reading-card-content"><ul><li>先看 Figure 1 理解“不同表示、相同动力学统计”的中心论点，再读 Figures 2–4 的 Ikeda 与生态案例。阅读结果时应区分轨迹预测、长期统计复现和真实方程识别这三个层次。</li></ul></div>
+</section></article>
+        <aside id="detail-toc" class="detail-toc hidden" aria-label="内容目录">
+          <p class="detail-toc-title">阅读目录</p>
+          <nav id="detail-toc-nav" class="detail-toc-nav"></nav>
+        </aside>
+      </div>
+      <nav class="paper-nav"><a class="paper-nav-link paper-nav-prev" href="../../collection-papers/2409.12846/"><span class="paper-nav-label">← 上一篇</span><span class="paper-nav-title">How the (Tensor-) Brain uses Embeddings and Embodiment to Encode Senses and Symbols</span></a>
+      <a class="paper-nav-link paper-nav-next" href="../../collection-papers/2409.17808/"><span class="paper-nav-label">下一篇 →</span><span class="paper-nav-title">Generative Modeling of Molecular Dynamics Trajectories</span></a></nav>
+      <section id="comments" class="comments-panel" aria-labelledby="comments-title">
+        <div class="comments-heading">
+          <div>
+            <p class="eyebrow">Discussion</p>
+            <h2 id="comments-title">评论与讨论</h2>
+          </div>
+          <a href="https://github.com/xixi-cc/xixi-research-comments/discussions" target="_blank" rel="noopener noreferrer">在 GitHub 查看</a>
+        </div>
+        <p class="comments-note">评论公开保存在 GitHub Discussions；阅读无需登录，发表评论需要 GitHub 账号。</p>
+        <script src="https://giscus.app/client.js"
+                data-repo="xixi-cc/xixi-research-comments"
+                data-repo-id="R_kgDOUIl8MQ"
+                data-category="Announcements"
+                data-category-id="DIC_kwDOUIl8Mc4DEftB"
+                data-mapping="specific"
+                data-term="collection:2409.15167"
+                data-strict="1"
+                data-reactions-enabled="1"
+                data-emit-metadata="0"
+                data-input-position="top"
+                data-theme="preferred_color_scheme"
+                data-lang="zh-CN"
+                data-loading="lazy"
+                crossorigin="anonymous"
+                async></script>
+        <noscript><p>请启用 JavaScript，或直接前往 GitHub Discussions 参与讨论。</p></noscript>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <div class="container">
+        <p>内容来自 <a href="https://arxiv.org" target="_blank" rel="noopener noreferrer">arXiv.org</a>；原创解读采用 CC BY-NC 4.0。<a href="../../rights.html">许可与引用</a></p>
+      </div>
+    </footer>
+
+    <script src="../../assets/theme.js"></script>
+    <script src="../../assets/media.js"></script>
+    <script src="../../assets/paper.js"></script>
+    <!-- Cloudflare Web Analytics -->
+<script type="module" src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon='{"token":"73522e5dee9b42b0be84b4847e4dd502"}'></script>
+<!-- End Cloudflare Web Analytics -->
+  </body>
+</html>

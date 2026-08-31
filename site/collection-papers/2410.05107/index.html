@@ -1,0 +1,231 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Hyper-Representations: Learning from Populations of Neural Networks - physics+AI Collection 随机精选</title>
+    <meta name="description" content="Konstantin Schürholt 的 University of St. Gallen 博士论文，系统汇总其关于 neural-network weight spaces、model zoos、hyper-representations 及权重生成的系列工作，arXiv:2410.05107v1，共 192 页。" />
+    <link rel="canonical" href="https://xixi-cc.github.io/daily-article-card/collection-papers/2410.05107/" />
+    <script type="application/ld+json">{"@context": "https://schema.org", "@type": "Article", "headline": "Hyper-Representations: Learning from Populations of Neural Networks", "description": "Konstantin Schürholt 的 University of St. Gallen 博士论文，系统汇总其关于 neural-network weight spaces、model zoos、hyper-representations 及权重生成的系列工作，arXiv:2410.05107v1，共 192 页。", "url": "https://xixi-cc.github.io/daily-article-card/collection-papers/2410.05107/", "mainEntityOfPage": "https://xixi-cc.github.io/daily-article-card/collection-papers/2410.05107/", "inLanguage": "zh-CN", "author": {"@type": "Person", "name": "Xineng Cao", "alternateName": ["Xixi Cao", "曹溪能"], "url": "https://xixi-cc.github.io/"}, "isBasedOn": "https://arxiv.org/abs/2410.05107"}</script>
+    <script>
+      (function() {
+        try {
+          var themePreference = window.localStorage.getItem('color-theme') || 'system';
+          var systemUsesDarkTheme = window.matchMedia('(prefers-color-scheme: dark)').matches;
+          var resolvedTheme = themePreference === 'system'
+            ? (systemUsesDarkTheme ? 'dark' : 'light')
+            : themePreference;
+          document.documentElement.dataset.theme = resolvedTheme;
+          document.documentElement.dataset.themePreference = themePreference;
+          document.documentElement.style.colorScheme = resolvedTheme;
+        } catch (error) {
+          document.documentElement.dataset.theme = 'light';
+          document.documentElement.dataset.themePreference = 'system';
+        }
+      })();
+    </script>
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='18' fill='%23111827'/%3E%3Ctext x='50%25' y='55%25' text-anchor='middle' dominant-baseline='middle' font-size='30' font-family='Arial, sans-serif' fill='white'%3EV%3C/text%3E%3C/svg%3E" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700;800&family=Noto+Sans+SC:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <script>document.documentElement.classList.add('math-pending');</script>
+    <script>
+      window.MathJax = {
+        tex: {
+          inlineMath: [['$', '$'], ['\\(', '\\)']],
+          displayMath: [['$$', '$$'], ['\\[', '\\]']],
+          processEscapes: true
+        },
+        options: {
+          skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+        },
+        chtml: {
+          scale: 1,
+          displayAlign: 'center'
+        },
+        startup: {
+          ready: function() {
+            MathJax.startup.defaultReady();
+            MathJax.startup.promise.then(function() {
+              document.documentElement.classList.remove('math-pending');
+              document.documentElement.dataset.mathReady = 'true';
+            });
+          }
+        }
+      };
+    </script>
+    <script defer src="../../assets/vendor/mathjax/tex-chtml.js"></script>
+    <link rel="stylesheet" href="../../assets/style.css" />
+  </head>
+  <body class="detail-page" data-paper-id="2410.05107" data-paper-program="collection">
+    <div class="page-noise"></div>
+    <div class="page-blur page-blur-a"></div>
+    <div class="page-blur page-blur-b"></div>
+
+    <header class="header detail-page-header">
+      <div class="container">
+        <div class="detail-page-topbar">
+          <a class="back-link" href="../../collection.html">返回列表</a>
+          <div class="detail-topbar-actions">
+            <span class="detail-site-name">physics+AI Collection 随机精选</span>
+            <button id="detail-favorite" class="detail-favorite-button" type="button" aria-pressed="false">☆ 收藏</button>
+            <button class="theme-toggle" type="button" data-theme-toggle aria-label="当前主题：设备，点击切换主题" title="当前主题：设备">
+  <span class="theme-toggle-icons" aria-hidden="true">
+    <svg class="theme-toggle-icon theme-toggle-icon-light" viewBox="0 0 24 24" fill="none">
+      <circle cx="12" cy="12" r="3.5" stroke="currentColor" stroke-width="1.8"/>
+      <path d="M12 2.5v2M12 19.5v2M2.5 12h2M19.5 12h2M5.3 5.3l1.4 1.4M17.3 17.3l1.4 1.4M18.7 5.3l-1.4 1.4M6.7 17.3l-1.4 1.4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+    </svg>
+    <svg class="theme-toggle-icon theme-toggle-icon-dark" viewBox="0 0 24 24" fill="none">
+      <path d="M20 15.2A8.1 8.1 0 0 1 8.8 4a8.2 8.2 0 1 0 11.2 11.2z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>
+    </svg>
+    <svg class="theme-toggle-icon theme-toggle-icon-system" viewBox="0 0 24 24" fill="none">
+      <rect x="3" y="4" width="18" height="13" rx="2.5" stroke="currentColor" stroke-width="1.8"/>
+      <path d="M8 21h8M12 17v4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+    </svg>
+  </span>
+  <span class="theme-toggle-label" data-theme-toggle-label>设备</span>
+</button>
+          </div>
+        </div>
+
+        <div class="detail-hero-grid">
+          <div class="detail-hero-cover"><figure class="paper-figure-card paper-figure-card-detail">
+  <img class="paper-figure-image" src="../../assets/collection-figures/2410.05107/figure-1-2-hyper-representations.webp" alt="从权重空间和 model zoo 出发，经 hyper-representation 进入模型分析、权重生成与跨架构扩展的五联图。" loading="lazy" onclick="window.openPaperFigureImage && window.openPaperFigureImage(this)" />
+  <figcaption class="paper-figure-caption">博士论文关于神经网络权重表征学习的完整贡献路线图。</figcaption>
+</figure></div>
+          <div class="detail-hero-copy">
+            <p class="eyebrow">Collection 全文卡</p>
+            <h1 class="detail-page-title">Hyper-Representations: Learning from Populations of Neural Networks</h1>
+            <p class="detail-page-title-zh">超表示：从神经网络群体中学习</p>
+            <div class="detail-meta">Paper Collection · Model Analysis · <a href="https://arxiv.org/abs/2410.05107" target="_blank" rel="noopener noreferrer">原文</a></div>
+            <p class="detail-summary">Konstantin Schürholt 的 University of St. Gallen 博士论文，系统汇总其关于 neural-network weight spaces、model zoos、hyper-representations 及权重生成的系列工作，arXiv:2410.05107v1，共 192 页。</p>
+            <div class="detail-micro-meta">
+              <span class="meta-pill">AI 基础理论</span>
+              <span class="meta-pill">AI 实证</span>
+              <span class="meta-pill">#Model Analysis</span><span class="meta-pill">#机器学习</span><span class="meta-pill">#表示学习</span>
+              <span class="meta-pill">7 分钟读完</span>
+              <span class="meta-pill">7 张阅读卡</span>
+              <span class="meta-pill">Konstantin Schürholt 的 University of St. Gallen 博士论…</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <main class="container detail-layout">
+      <div class="detail-shell">
+        <article id="detail-body" class="reading-flow"><section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 01</span>
+    <span class="reading-step-note">作者信息</span>
+  </div>
+  <h2>作者信息</h2>
+  <div class="reading-card-content"><ul><li>Konstantin Schürholt 的 University of St. Gallen 博士论文，系统汇总其关于 neural-network weight spaces、model zoos、hyper-representations 及权重生成的系列工作，arXiv:2410.05107v1，共 192 页。</li></ul></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 02</span>
+    <span class="reading-step-note">研究问题</span>
+  </div>
+  <h2>研究问题</h2>
+  <div class="reading-card-content"><ul><li>神经网络权重直接决定模型行为，也编码训练阶段、性能与超参数，但存在维度高、神经元排列对称、跨架构形状不一致等困难。论文的中心问题是：能否从一组已训练模型中学习通用、任务无关的权重表征？</li><li>若这种表征空间具有可用结构，它不仅应预测模型属性，还应允许在目标区域采样并生成具有指定性质的新权重，最终走向聚合多个模型知识的“神经网络基础模型”。</li></ul></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 03</span>
+    <span class="reading-step-note">模型与方法</span>
+  </div>
+  <h2>模型与方法</h2>
+  <div class="reading-card-content"><ul><li>作者先构建 model zoo：用受控超参数、随机种子和训练轨迹形成神经网络群体。对权重做排列对齐、归一化和适合序列建模的 tokenization，再以自监督 autoencoding/contrastive 目标训练 hyper-representation encoder。</li><li>判别评估用线性探针从 embedding 预测 accuracy、epoch、optimizer 或超参数；生成评估则在潜空间采样，经 decoder 还原权重并 fine-tune。后续章节引入置换增强、layer-wise/token-based 表示，以跨模型尺寸、架构和任务扩展。</li><li>Figure 1.2 将论文贡献分成 weight-space 分析、model zoo、判别式 hyper-representation、生成式 hyper-representation 和可扩展表示五个环节。</li></ul><figure class="evidence-figure">
+  <button class="evidence-figure-image-button" type="button" aria-label="放大查看 Figure 1.2" onclick="window.openPaperFigureImage && window.openPaperFigureImage(this.querySelector('img'))">
+    <img class="paper-figure-image evidence-figure-image" src="../../assets/collection-figures/2410.05107/figure-1-2-hyper-representations.webp" alt="五个面板概括 weight spaces、model zoos、hyper-representations、model generation 与 scaling。" loading="lazy" />
+  </button>
+  <figcaption>
+    <strong>Figure 1.2</strong> · Hyper-representation 研究计划的输入、方法与下游用途。
+    <span class="evidence-figure-reading">物理解读：The roadmap summarizes several related studies; it is not evidence that one model solves every stage universally.</span>
+    <span class="evidence-figure-source">来源：paper.pdf p. 27, Figure 1.2</span>
+  </figcaption>
+</figure></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 04</span>
+    <span class="reading-step-note">核心结果与证据</span>
+  </div>
+  <h2>核心结果与证据</h2>
+  <div class="reading-card-content"><ul><li>系列实验表明，受训模型在权重空间并非无结构云团：对齐与合适表示后，hyper-representation 可预测性能、训练进度和生成因素，并优于直接在原始展平权重上操作的若干基线。</li><li>在潜空间选择具有目标属性的区域并解码，可生成可训练权重；这些初始化在 fine-tuning 和 transfer learning 中具竞争力。可扩展方法进一步跨越部分网络宽度、架构和任务，但不是任意模型之间的完全统一。</li><li>博士论文的贡献是多年论文集合和框架综合；不同章节的数据集、架构与评价协议并不完全相同，不能把所有结果理解为一个单一端到端系统上的统一 benchmark。</li></ul></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 05</span>
+    <span class="reading-step-note">有效性与局限</span>
+  </div>
+  <h2>有效性与局限</h2>
+  <div class="reading-card-content"><ul><li>模型群体的覆盖决定可学结构：若 zoo 只改变少数超参数，探针可能读取数据生成捷径而非普适权重语义。排列对齐和同构层假设会限制跨架构泛化，超大模型权重的存储与训练成本也很高。</li><li>从 embedding 预测属性属于相关性证据；生成权重经 fine-tune 成功也不证明潜变量具有因果可控性。需要跨数据集、跨训练配方、架构留出和去除显式规模线索的严格验证。</li><li>本卡基于 192 页全文提取与原 PDF 抽查，未逐一重跑论文中每个子项目，也未独立复现。对“神经网络基础模型”的表述应视作研究方向，而非已经达到的通用能力。</li></ul></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 06</span>
+    <span class="reading-step-note">复现与资源</span>
+  </div>
+  <h2>复现与资源</h2>
+  <div class="reading-card-content"><ul><li>原文：https://arxiv.org/abs/2410.05107。官方 \(v_{1}\) PDF SHA-256：87e556a9cdc8de39b65ac77f19a30b89e901ff373e92b811c6222ae4d34e15d1。各章对应项目、数据和代码需按论文的贡献清单逐项核对。</li><li>复现最小闭环应固定一个 model zoo 与排列处理，比较原始权重、统计特征和 hyper-representation 的留出架构线性探针；生成任务报告零步性能、fine-tuning 曲线、多种子方差和失败解码率。Evidence status: full-text verified; no independent reproduction performed.</li></ul></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 07</span>
+    <span class="reading-step-note">阅读指南</span>
+  </div>
+  <h2>阅读指南</h2>
+  <div class="reading-card-content"><ul><li>先读 Chapter 1 与 Figure 1.2 建立五阶段路线图；Chapter 2–3 解释权重空间与 model zoo，Chapter 4–6 分别对应判别、生成和扩展。阅读每章时记录数据群体、对称性处理与留出边界，避免把同分布探针当作通用性。</li></ul></div>
+</section></article>
+        <aside id="detail-toc" class="detail-toc hidden" aria-label="内容目录">
+          <p class="detail-toc-title">阅读目录</p>
+          <nav id="detail-toc-nav" class="detail-toc-nav"></nav>
+        </aside>
+      </div>
+      <nav class="paper-nav"><a class="paper-nav-link paper-nav-prev" href="../../collection-papers/2410.04642/"><span class="paper-nav-label">← 上一篇</span><span class="paper-nav-title">The Optimization Landscape of SGD Across the Feature Learning Strength</span></a>
+      <a class="paper-nav-link paper-nav-next" href="../../collection-papers/2410.05954/"><span class="paper-nav-label">下一篇 →</span><span class="paper-nav-title">Pyramidal Flow Matching for Efficient Video Generative Modeling</span></a></nav>
+      <section id="comments" class="comments-panel" aria-labelledby="comments-title">
+        <div class="comments-heading">
+          <div>
+            <p class="eyebrow">Discussion</p>
+            <h2 id="comments-title">评论与讨论</h2>
+          </div>
+          <a href="https://github.com/xixi-cc/xixi-research-comments/discussions" target="_blank" rel="noopener noreferrer">在 GitHub 查看</a>
+        </div>
+        <p class="comments-note">评论公开保存在 GitHub Discussions；阅读无需登录，发表评论需要 GitHub 账号。</p>
+        <script src="https://giscus.app/client.js"
+                data-repo="xixi-cc/xixi-research-comments"
+                data-repo-id="R_kgDOUIl8MQ"
+                data-category="Announcements"
+                data-category-id="DIC_kwDOUIl8Mc4DEftB"
+                data-mapping="specific"
+                data-term="collection:2410.05107"
+                data-strict="1"
+                data-reactions-enabled="1"
+                data-emit-metadata="0"
+                data-input-position="top"
+                data-theme="preferred_color_scheme"
+                data-lang="zh-CN"
+                data-loading="lazy"
+                crossorigin="anonymous"
+                async></script>
+        <noscript><p>请启用 JavaScript，或直接前往 GitHub Discussions 参与讨论。</p></noscript>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <div class="container">
+        <p>内容来自 <a href="https://arxiv.org" target="_blank" rel="noopener noreferrer">arXiv.org</a>；原创解读采用 CC BY-NC 4.0。<a href="../../rights.html">许可与引用</a></p>
+      </div>
+    </footer>
+
+    <script src="../../assets/theme.js"></script>
+    <script src="../../assets/media.js"></script>
+    <script src="../../assets/paper.js"></script>
+    <!-- Cloudflare Web Analytics -->
+<script type="module" src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon='{"token":"73522e5dee9b42b0be84b4847e4dd502"}'></script>
+<!-- End Cloudflare Web Analytics -->
+  </body>
+</html>
