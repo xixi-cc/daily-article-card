@@ -1,0 +1,131 @@
+{
+  "arxiv_id": "2502.17941",
+  "source_version": "v2",
+  "source_pdf": "https://arxiv.org/pdf/2502.17941",
+  "title_en": "Optimal Brain Apoptosis",
+  "title_zh": "最优脑凋亡：基于精确二阶信息的神经网络剪枝",
+  "curation_status": "full_text_verified",
+  "card_standard_version": "2.3",
+  "style_reference": "physicist_daily_arxiv",
+  "paper_profile": "theory_experiment",
+  "provenance": {
+    "program": "Collection",
+    "catalog": "Paper Collection",
+    "catalog_record_id": "2502.17941",
+    "catalog_record_ids": [
+      "2502.17941"
+    ],
+    "catalog_topic": "Machine Learning",
+    "collection_date": "2026-08-30",
+    "sampled_at": "2026-08-31",
+    "selected_by": "ziming_mineru_serial_goal",
+    "sampling_seed": "not_applicable_source_complete",
+    "candidate_count": 464
+  },
+  "verified_metadata": {
+    "arxiv_id": "2502.17941",
+    "version": "v2",
+    "title": "Optimal Brain Apoptosis",
+    "authors": [
+      "Mingyuan Sun",
+      "Zheng Fang",
+      "Jiaxu Wang",
+      "Junjie Jiang",
+      "Delei Kong",
+      "Chenming Hu",
+      "Yuetong Fang",
+      "Renjing Xu"
+    ],
+    "categories": [
+      "cs.CV",
+      "cs.AI",
+      "cs.LG"
+    ],
+    "primary_category": "cs.CV",
+    "published": "2025-02-25",
+    "updated": "2025-03-03",
+    "comment": ""
+  },
+  "sections": [
+    {
+      "title": "作者信息",
+      "paragraphs": [
+        "Mingyuan Sun 等八位作者提出 Optimal Brain Apoptosis（OBA），以连接结构分析和 Hessian-vector product 改进 CNN/Transformer 的二阶剪枝重要性估计，arXiv:2502.17941v2。"
+      ]
+    },
+    {
+      "title": "研究问题",
+      "paragraphs": [
+        "经典 Optimal Brain Damage 以二阶 Taylor 近似估计删除参数的损失代价，但常忽略或近似跨层 Hessian。现代含残差、并联和注意力结构的网络中，哪些跨层块非零，能否高效直接计算？",
+        "研究同时关心 structured 与 unstructured pruning：更精确的重要性是否能在相同 FLOPs/参数预算下减少精度损失，而计算代价仍可接受。"
+      ]
+    },
+    {
+      "title": "模型与方法",
+      "paragraphs": [
+        "作者按串联与并联连接推导参数层之间 Hessian 子块非零的条件，避免处理结构上必为零的交互；通过 Jacobian-vector product forward propagation 计算每个参数相关的 Hessian-vector 值，而不显式形成大 Jacobian/Hessian。",
+        "将二阶重要性按耦合的层/通道分组用于 structured pruning，参数级用于 unstructured pruning；在 VGG19、ResNet32/50、ViT-B/16 与 CIFAR10/100、ImageNet 上比较 Weight、Taylor、OBD、CHITA 等，并测试 one-shot、iterative 和运行时间。"
+      ]
+    },
+    {
+      "title": "核心结果与证据",
+      "paragraphs": [
+        "Figure 1 给出非零跨层条件与 JVPF 流程。ImageNet one-shot 报告 ResNet50 约 2× speed-up 时 accuracy 仅降 0.53%，ViT-B/16 约 1.30× 时降 1.43%，优于所列一阶/幅值基线。",
+        "在 ResNet32 iterative structured pruning 中，OBA 随 FLOPs 压缩的 accuracy loss 较低；unstructured 结果与强基线比较也显示二阶信息价值。优势按参数数目衡量不总与 FLOPs 一致。",
+        "实验支持被测 CNN/ViT 上的剪枝准则，不意味着所有硬件都获得同等实际加速；结构稀疏的 FLOPs 下降与墙钟/内存收益应分开。"
+      ]
+    },
+    {
+      "title": "有效性与局限",
+      "paragraphs": [
+        "理论与实现当前覆盖 MLP、CNN 和 Transformer 风格连接；RNN、状态空间模型及时间共享参数需要新的 Hessian 结构分析。二阶 Taylor 仍是局部近似，较大删除后依赖 fine-tuning。",
+        "基线实现、分组与 normalization 会显著影响排序；需在等训练/微调预算和实际部署内核上验证。论文给出的 speed-up 口径不能自动等同于任意设备的 latency。"
+      ]
+    },
+    {
+      "title": "复现与资源",
+      "paragraphs": [
+        "原文：https://arxiv.org/abs/2502.17941；代码：https://github.com/NEU-REAL/OBA 。复现需固定 checkpoint、pruned layers、group dependency、importance normalization、Taylor batch、target FLOPs 与 fine-tuning schedule。",
+        "应同时报告理论 FLOPs、参数数、实际 latency/显存、importance 计算时间和多 seed accuracy，并核对 JVPF 与小网络显式 Hessian 的数值一致性。",
+        "官方 v2 PDF 共 19 页，SHA-256：1e998e15616dd8d971ae98341ed0c045dd065fe71516f143d9203f8843c121bc。Evidence status: full-text verified; no independent reproduction performed."
+      ]
+    },
+    {
+      "title": "阅读指南",
+      "paragraphs": [
+        "先看 Figure 1 理解结构筛选与 JVPF，再读第 4 节定义重要性；结果按 one-shot、iterative、structured、unstructured 四类拆读。Tables 3–5 给精度—压缩，运行时间部分用于判断额外二阶成本。"
+      ]
+    }
+  ],
+  "cover": {
+    "mode": "source_figure",
+    "asset_path": "assets/collection-figures/2502.17941/figure-1-jvpf.webp",
+    "label": "Figure 1",
+    "visual_type": "schematic",
+    "evidence": "paper.pdf p. 5, Figure 1",
+    "alt_text": "串联/并联层间 Hessian 非零条件与 Jacobian-vector product forward propagation 的计算流程。",
+    "caption": "OBA 利用网络连接结构筛出非零跨层 Hessian 项，并以 JVP 前传计算二阶重要性。",
+    "selection_rationale": "Figure 1 同时展示 OBA 的理论筛选规则和计算实现，解释它如何在不显式构造完整 Hessian 的前提下利用跨层二阶项，是理解精度与效率主张的关键。"
+  },
+  "figure_refs": [
+    {
+      "label": "Figure 1",
+      "asset_path": "assets/collection-figures/2502.17941/figure-1-jvpf.webp",
+      "section": "模型与方法",
+      "role": "show how structural Hessian sparsity and JVP forward propagation make second-order scoring tractable",
+      "evidence": "paper.pdf p. 5, Figure 1",
+      "alt_text": "串联/并联层间 Hessian 非零条件与 Jacobian-vector product forward propagation 的计算流程。",
+      "caption": "OBA 利用网络连接结构筛出非零跨层 Hessian 项，并以 JVP 前传计算二阶重要性。",
+      "interpretation": "The diagram explains computational pruning of Hessian interactions; empirical accuracy and real hardware speed must still be validated separately."
+    }
+  ],
+  "equation_refs": [],
+  "evidence_refs": [
+    "paper.pdf pp. 1–5: motivation, Hessian structure and JVPF",
+    "paper.pdf pp. 6–10: pruning strategy and structured results",
+    "paper.pdf pp. 11–14: unstructured and runtime comparisons",
+    "paper.pdf pp. 15–19: details, limitations and proofs",
+    "source PDF SHA-256 1e998e15616dd8d971ae98341ed0c045dd065fe71516f143d9203f8843c121bc",
+    "Evidence status: full-text verified; no independent reproduction performed."
+  ]
+}

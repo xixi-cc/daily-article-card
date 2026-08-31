@@ -1,0 +1,124 @@
+{
+  "arxiv_id": "2502.19611",
+  "source_version": "v2",
+  "source_pdf": "https://arxiv.org/pdf/2502.19611",
+  "title_en": "PRDP: Progressively Refined Differentiable Physics",
+  "title_zh": "PRDP：渐进细化的可微物理",
+  "curation_status": "full_text_verified",
+  "card_standard_version": "2.3",
+  "style_reference": "physicist_daily_arxiv",
+  "paper_profile": "numerical",
+  "provenance": {
+    "program": "Collection",
+    "catalog": "Paper Collection",
+    "catalog_record_id": "2502.19611",
+    "catalog_record_ids": [
+      "2502.19611"
+    ],
+    "catalog_topic": "Training Dynamics",
+    "collection_date": "2026-08-30",
+    "sampled_at": "2026-08-31",
+    "selected_by": "ziming_mineru_serial_goal",
+    "sampling_seed": "not_applicable_source_complete",
+    "candidate_count": 464
+  },
+  "verified_metadata": {
+    "arxiv_id": "2502.19611",
+    "version": "v2",
+    "title": "PRDP: Progressively Refined Differentiable Physics",
+    "authors": [
+      "Kanishk Bhatia",
+      "Felix Koehler",
+      "Nils Thuerey"
+    ],
+    "categories": [
+      "cs.LG"
+    ],
+    "primary_category": "cs.LG",
+    "published": "2025-02-26",
+    "updated": "2025-11-13",
+    "comment": ""
+  },
+  "sections": [
+    {
+      "title": "作者信息",
+      "paragraphs": [
+        "Kanishk Bhatia、Felix Koehler 与 Nils Thuerey。论文提出 Progressively Refined Differentiable Physics（PRDP），在神经网络训练中自适应提高迭代物理求解器精度，arXiv:2502.19611v2。"
+      ]
+    },
+    {
+      "title": "研究问题",
+      "paragraphs": [
+        "可微物理通常在每次网络更新中运行并反传迭代线性求解器；若始终收敛到严格容差，训练成本很高。随机梯度训练是否真的需要每一步都使用完全收敛的物理与 Jacobian？",
+        "需要自动决定何时增加 inner iterations、在何种精度停止，并同时适配 unrolled 与 implicit differentiation，而不牺牲最终验证精度。"
+      ]
+    },
+    {
+      "title": "模型与方法",
+      "paragraphs": [
+        "PRDP 从很小的求解器迭代数 K 开始，平滑监控验证指标；当指标进入平台时按 ΔK 细化，并在达到足以支撑网络训练的 Kmax 后停止，而不是追求物理解的机器精度。",
+        "作者在 Poisson 逆问题、热扩散/Burgers 自回归 emulator 及 Navier–Stokes neural-hybrid correction 上测试 Jacobi、steepest descent、GMRES 等，覆盖 unrolled/implicit VJP，并以十个网络初始化聚合 nMSE、累计 inner iterations 与墙钟。"
+      ]
+    },
+    {
+      "title": "核心结果与证据",
+      "paragraphs": [
+        "Figure 1 标出 K 同时放大前向与反向成本；实验表明网络可在明显未完全收敛的物理梯度下达到与 full-fidelity 训练相同的验证误差。",
+        "PRDP 同时获得早期渐进细化节省和最终 incomplete-convergence 节省；论文总结最高减少 86% 累计 solver iterations、78% 训练时间。Navier–Stokes 案例减少 81% iterations，并带来 62% wall-clock training reduction。",
+        "收益依赖问题、求解器和平台检测；相同网络精度不表示训练期间的中间物理解满足严格容差，推理/验证仍使用收敛求解器。"
+      ]
+    },
+    {
+      "title": "有效性与局限",
+      "paragraphs": [
+        "当前范围是离散微分算子产生的迭代线性系统；纯显式求解、谱方法、复杂非线性内迭代、非结构网格和多物理尚未充分验证。validation plateau 的噪声与频率会影响触发。",
+        "墙钟收益取决于求解器占总训练成本的比例和硬件实现；若网络本身主导，iteration 节省不会线性转化为时间。需要与固定低 K、容差 schedule 和等算力调参比较。"
+      ]
+    },
+    {
+      "title": "复现与资源",
+      "paragraphs": [
+        "原文：https://arxiv.org/abs/2502.19611；代码：https://github.com/tum-pbs/PRDP 。复现需固定 PDE、网格、边界、线性化、solver/tolerance、VJP 方式、K0/ΔK/Kmax、平滑窗口、plateau 阈值、网络与 seeds。",
+        "同时保存每 epoch 的 K、validation metric、primal/adjoint residual、累计 iterations、GPU 时间和最终 rollout；用完全收敛与最佳固定 K 两个基线区分 PR 与 incomplete-convergence 两类节省。",
+        "官方 v2 PDF 共 40 页，SHA-256：a2dfc12f0582265a7c2e071d7ecea595adb27cee5c883a7e2592a44be23197bb。Evidence status: full-text verified; no independent reproduction performed."
+      ]
+    },
+    {
+      "title": "阅读指南",
+      "paragraphs": [
+        "先看 Figure 1 定位成本，再看 Figure 2 理解两类节省；第 3 节是 plateau-trigger 算法。实验应依次看可解 Poisson、emulator 和 Navier–Stokes，附录 F 给复现参数与 metric 定义。"
+      ]
+    }
+  ],
+  "cover": {
+    "mode": "source_figure",
+    "asset_path": "assets/collection-figures/2502.19611/figure-1-differentiable-physics.webp",
+    "label": "Figure 1",
+    "visual_type": "schematic",
+    "evidence": "paper.pdf p. 1, Figure 1",
+    "alt_text": "神经网络与迭代物理求解器交替组成训练图，黑色前向和红色反向箭头穿过含 K 次迭代的求解器。",
+    "caption": "可微物理训练的主要成本来自前向和反向都要穿过 K 次迭代求解器。",
+    "selection_rationale": "Figure 1 清楚定位 PRDP 要削减的计算瓶颈：网络训练环中反复调用并微分迭代求解器。它为后续按验证平台自适应增加 K 的算法提供最直观的系统图。"
+  },
+  "figure_refs": [
+    {
+      "label": "Figure 1",
+      "asset_path": "assets/collection-figures/2502.19611/figure-1-differentiable-physics.webp",
+      "section": "模型与方法",
+      "role": "locate the iterative physics solver as the repeated forward/backward training bottleneck",
+      "evidence": "paper.pdf p. 1, Figure 1",
+      "alt_text": "神经网络与迭代物理求解器交替组成训练图，黑色前向和红色反向箭头穿过含 K 次迭代的求解器。",
+      "caption": "可微物理训练的主要成本来自前向和反向都要穿过 K 次迭代求解器。",
+      "interpretation": "Reducing K can lower training cost, but PRDP must validate that coarse physics still supports the outer learning objective and should not be confused with an accurate forward solve at every step."
+    }
+  ],
+  "equation_refs": [],
+  "evidence_refs": [
+    "paper.pdf pp. 1–4: differentiable-solver bottleneck and PRDP overview",
+    "paper.pdf pp. 5–10: VJPs, incomplete convergence and refinement controller",
+    "paper.pdf pp. 11–18: inverse, emulator and Navier-Stokes results",
+    "paper.pdf pp. 19–40: limitations, reproducibility and numerical details",
+    "source PDF SHA-256 a2dfc12f0582265a7c2e071d7ecea595adb27cee5c883a7e2592a44be23197bb",
+    "Evidence status: full-text verified; no independent reproduction performed."
+  ]
+}
