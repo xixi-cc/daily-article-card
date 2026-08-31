@@ -1,0 +1,231 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>A solvable model of learning generative diffusion: theory and insights - physics+AI Collection 随机精选</title>
+    <meta name="description" content="Hugo Cui、Cengiz Pehlevan 与 Yue M. Lu。论文分析一个浅层 denoising autoencoder 在高维极限下通过 online SGD 学习 diffusion score 的可解模型，并由低维 order parameters 预测生成分布，arXiv:2501.03937v2。" />
+    <link rel="canonical" href="https://xixi-cc.github.io/daily-article-card/collection-papers/2501.03937/" />
+    <script type="application/ld+json">{"@context": "https://schema.org", "@type": "Article", "headline": "A solvable model of learning generative diffusion: theory and insights", "description": "Hugo Cui、Cengiz Pehlevan 与 Yue M. Lu。论文分析一个浅层 denoising autoencoder 在高维极限下通过 online SGD 学习 diffusion score 的可解模型，并由低维 order parameters 预测生成分布，arXiv:2501.03937v2。", "url": "https://xixi-cc.github.io/daily-article-card/collection-papers/2501.03937/", "mainEntityOfPage": "https://xixi-cc.github.io/daily-article-card/collection-papers/2501.03937/", "inLanguage": "zh-CN", "author": {"@type": "Person", "name": "Xineng Cao", "alternateName": ["Xixi Cao", "曹溪能"], "url": "https://xixi-cc.github.io/"}, "isBasedOn": "https://arxiv.org/abs/2501.03937"}</script>
+    <script>
+      (function() {
+        try {
+          var themePreference = window.localStorage.getItem('color-theme') || 'system';
+          var systemUsesDarkTheme = window.matchMedia('(prefers-color-scheme: dark)').matches;
+          var resolvedTheme = themePreference === 'system'
+            ? (systemUsesDarkTheme ? 'dark' : 'light')
+            : themePreference;
+          document.documentElement.dataset.theme = resolvedTheme;
+          document.documentElement.dataset.themePreference = themePreference;
+          document.documentElement.style.colorScheme = resolvedTheme;
+        } catch (error) {
+          document.documentElement.dataset.theme = 'light';
+          document.documentElement.dataset.themePreference = 'system';
+        }
+      })();
+    </script>
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='18' fill='%23111827'/%3E%3Ctext x='50%25' y='55%25' text-anchor='middle' dominant-baseline='middle' font-size='30' font-family='Arial, sans-serif' fill='white'%3EV%3C/text%3E%3C/svg%3E" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700;800&family=Noto+Sans+SC:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <script>document.documentElement.classList.add('math-pending');</script>
+    <script>
+      window.MathJax = {
+        tex: {
+          inlineMath: [['$', '$'], ['\\(', '\\)']],
+          displayMath: [['$$', '$$'], ['\\[', '\\]']],
+          processEscapes: true
+        },
+        options: {
+          skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+        },
+        chtml: {
+          scale: 1,
+          displayAlign: 'center'
+        },
+        startup: {
+          ready: function() {
+            MathJax.startup.defaultReady();
+            MathJax.startup.promise.then(function() {
+              document.documentElement.classList.remove('math-pending');
+              document.documentElement.dataset.mathReady = 'true';
+            });
+          }
+        }
+      };
+    </script>
+    <script defer src="../../assets/vendor/mathjax/tex-chtml.js"></script>
+    <link rel="stylesheet" href="../../assets/style.css" />
+  </head>
+  <body class="detail-page" data-paper-id="2501.03937" data-paper-program="collection">
+    <div class="page-noise"></div>
+    <div class="page-blur page-blur-a"></div>
+    <div class="page-blur page-blur-b"></div>
+
+    <header class="header detail-page-header">
+      <div class="container">
+        <div class="detail-page-topbar">
+          <a class="back-link" href="../../collection.html">返回列表</a>
+          <div class="detail-topbar-actions">
+            <span class="detail-site-name">physics+AI Collection 随机精选</span>
+            <button id="detail-favorite" class="detail-favorite-button" type="button" aria-pressed="false">☆ 收藏</button>
+            <button class="theme-toggle" type="button" data-theme-toggle aria-label="当前主题：设备，点击切换主题" title="当前主题：设备">
+  <span class="theme-toggle-icons" aria-hidden="true">
+    <svg class="theme-toggle-icon theme-toggle-icon-light" viewBox="0 0 24 24" fill="none">
+      <circle cx="12" cy="12" r="3.5" stroke="currentColor" stroke-width="1.8"/>
+      <path d="M12 2.5v2M12 19.5v2M2.5 12h2M19.5 12h2M5.3 5.3l1.4 1.4M17.3 17.3l1.4 1.4M18.7 5.3l-1.4 1.4M6.7 17.3l-1.4 1.4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+    </svg>
+    <svg class="theme-toggle-icon theme-toggle-icon-dark" viewBox="0 0 24 24" fill="none">
+      <path d="M20 15.2A8.1 8.1 0 0 1 8.8 4a8.2 8.2 0 1 0 11.2 11.2z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>
+    </svg>
+    <svg class="theme-toggle-icon theme-toggle-icon-system" viewBox="0 0 24 24" fill="none">
+      <rect x="3" y="4" width="18" height="13" rx="2.5" stroke="currentColor" stroke-width="1.8"/>
+      <path d="M8 21h8M12 17v4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+    </svg>
+  </span>
+  <span class="theme-toggle-label" data-theme-toggle-label>设备</span>
+</button>
+          </div>
+        </div>
+
+        <div class="detail-hero-grid">
+          <div class="detail-hero-cover"><figure class="paper-figure-card paper-figure-card-detail">
+  <img class="paper-figure-image" src="../../assets/collection-figures/2501.03937/figure-1-order-parameters.webp" alt="多个彩色 overlap M、Gram 量 Ω 和 skip strength b 随训练时间 τ 的理论实线与数值虚线。" loading="lazy" onclick="window.openPaperFigureImage && window.openPaperFigureImage(this)" />
+  <figcaption class="paper-figure-caption">可解 DAE 的低维 order parameters 训练动力学。</figcaption>
+</figure></div>
+          <div class="detail-hero-copy">
+            <p class="eyebrow">Collection 全文卡</p>
+            <h1 class="detail-page-title">A solvable model of learning generative diffusion: theory and insights</h1>
+            <p class="detail-page-title-zh">生成扩散学习的可解模型：理论与洞见</p>
+            <div class="detail-meta">Paper Collection · Generative Models · <a href="https://arxiv.org/abs/2501.03937" target="_blank" rel="noopener noreferrer">原文</a></div>
+            <p class="detail-summary">Hugo Cui、Cengiz Pehlevan 与 Yue M. Lu。论文分析一个浅层 denoising autoencoder 在高维极限下通过 online SGD 学习 diffusion score 的可解模型，并由低维 order parameters 预测生成分布，arXiv:2501.03937v2。</p>
+            <div class="detail-micro-meta">
+              <span class="meta-pill">AI 基础理论</span>
+              <span class="meta-pill">理论与数值</span>
+              <span class="meta-pill">#Generative Models</span><span class="meta-pill">#机器学习</span><span class="meta-pill">#Transformer</span>
+              <span class="meta-pill">7 分钟读完</span>
+              <span class="meta-pill">7 张阅读卡</span>
+              <span class="meta-pill">Hugo Cui、Cengiz Pehlevan 与 Yue M. Lu。论文分析一个浅层 denoi…</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <main class="container detail-layout">
+      <div class="detail-shell">
+        <article id="detail-body" class="reading-flow"><section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 01</span>
+    <span class="reading-step-note">作者信息</span>
+  </div>
+  <h2>作者信息</h2>
+  <div class="reading-card-content"><ul><li>Hugo Cui、Cengiz Pehlevan 与 Yue \(M\). Lu。论文分析一个浅层 denoising autoencoder 在高维极限下通过 online SGD 学习 diffusion score 的可解模型，并由低维 order parameters 预测生成分布，arXiv:2501.03937v2。</li></ul></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 02</span>
+    <span class="reading-step-note">研究问题</span>
+  </div>
+  <h2>研究问题</h2>
+  <div class="reading-card-content"><ul><li>扩散理论通常假设 score 已知，却少有可精确跟踪“有限网络如何从数据学 score、参数如何演化、生成分布何时逼近目标”的模型。</li><li>对于低秩非线性 DAE 和 Gaussian mixture/结构化高维数据，能否闭合 SGD 动力学，预测 mode learning、skip connection、样本质量和 recursive self-consumption？</li></ul></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 03</span>
+    <span class="reading-step-note">模型与方法</span>
+  </div>
+  <h2>模型与方法</h2>
+  <div class="reading-card-content"><ul><li>模型是带 \(r\) 个隐藏单元、非线性 \(\sigma\) 和 skip coefficient b 的浅层 DAE，在不同 noise time \(t\) 上用 denoising loss online SGD 训练；生成阶段把学得 denoiser 嵌入 reverse SDE。</li><li>高维 \(d\)、样本率与学习率按比例取极限，参数动力学由 teacher means/covariance 子空间上的 overlaps \(M\)、Gram matrix \(Q\)/\(\Omega\) 和 b 等有限 order parameters 闭合。</li><li>理论 ODE 与有限 \(d\) 数值实验比较；目标包括双/三模 Gaussian mixtures，以及具有 MNIST sevens covariance 的 Gaussian proxy。Figure 1 展示 summary statistics 随训练时间。</li></ul></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 04</span>
+    <span class="reading-step-note">核心结果与证据</span>
+  </div>
+  <h2>核心结果与证据</h2>
+  <div class="reading-card-content"><ul><li>理论预测 mode-aligned overlaps 从随机初始化增长、隐藏单元发生 specialization，skip connection 与 covariance directions 同步演化；有限维实验总体跟随 order-parameter ODE。</li><li>训练进程中生成分布从近 Gaussian 逐步形成 mixture modes，模型宽度 \(r\) 限制可表达方向/模式。Figures 2–3 将解析预测与生成 density 的演化对应。</li><li>对真实 MNIST covariance proxy，理论仍抓住主要趋势但出现有限维偏差。反复用模型生成样本再训练会改变 covariance/模式，Figure 4 讨论 model collapse 的可解版本。</li></ul><figure class="evidence-figure">
+  <button class="evidence-figure-image-button" type="button" aria-label="放大查看 Figure 1" onclick="window.openPaperFigureImage && window.openPaperFigureImage(this.querySelector('img'))">
+    <img class="paper-figure-image evidence-figure-image" src="../../assets/collection-figures/2501.03937/figure-1-order-parameters.webp" alt="M、Ω、Q 与 b 的训练时间曲线。" loading="lazy" />
+  </button>
+  <figcaption>
+    <strong>Figure 1</strong> · 宏观 overlaps 与 skip connection 预测隐藏单元学习。
+    <span class="evidence-figure-reading">物理解读：Agreement is tied to the studied high-dimensional shallow model and target distributions.</span>
+    <span class="evidence-figure-source">来源：paper.pdf p. 5, Figure 1</span>
+  </figcaption>
+</figure></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 05</span>
+    <span class="reading-step-note">有效性与局限</span>
+  </div>
+  <h2>有效性与局限</h2>
+  <div class="reading-card-content"><ul><li>网络浅、hidden rank 固定，数据主要是 Gaussian/mixture 或 covariance proxy；现代 UNet/Transformer 的层级特征、非 Gaussian 图像统计和条件生成不在证明内。</li><li>结果依赖高维比例极限、online SGD 和特定 noise schedule；有限 \(d=784\) 已出现差异。闭合 order parameters 捕获宏观统计，不保证逐样本 reverse trajectories。</li><li>“insights”是可解 toy model 的机制线索，不能直接给大型 diffusion 的定量 scaling law。recursive collapse 实验也简化了数据过滤与再训练。本卡未独立重推。</li></ul></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 06</span>
+    <span class="reading-step-note">复现与资源</span>
+  </div>
+  <h2>复现与资源</h2>
+  <div class="reading-card-content"><ul><li>原文：https://arxiv.org/abs/2501.03937。官方 \(v_{2}\) PDF SHA-256：ab24e83345077cd85ad5aa5ccf35634b09158c7c6b156cbda145751c899dcaff。</li><li>复现应同时积分 order-parameter ODE 与训练有限 \(d\) DAE，按 \(d\)、\(r\)、学习率、regularization 和 noise schedule 扫描；比较 \(M\)/\(Q\)/\(\Omega\)/b、生成 density、mode coverage 与 recursive generations。Evidence status: full-text verified; no independent reproduction performed.</li></ul></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 07</span>
+    <span class="reading-step-note">阅读指南</span>
+  </div>
+  <h2>阅读指南</h2>
+  <div class="reading-card-content"><ul><li>先读模型与 Result 2.1 的 order parameters，再看 Figure 1 的动力学闭合；Figures 2–3 对应生成分布，Figure 4 是 recursive training。附录推导较长，应先明确高维缩放和符号约定。</li></ul></div>
+</section></article>
+        <aside id="detail-toc" class="detail-toc hidden" aria-label="内容目录">
+          <p class="detail-toc-title">阅读目录</p>
+          <nav id="detail-toc-nav" class="detail-toc-nav"></nav>
+        </aside>
+      </div>
+      <nav class="paper-nav"><a class="paper-nav-link paper-nav-prev" href="../../collection-papers/2501.03575/"><span class="paper-nav-label">← 上一篇</span><span class="paper-nav-title">Cosmos World Foundation Model Platform for Physical AI</span></a>
+      <a class="paper-nav-link paper-nav-next" href="../../collection-papers/2501.03948/"><span class="paper-nav-label">下一篇 →</span><span class="paper-nav-title">Kinetic theory of decentralized learning for smart active matter</span></a></nav>
+      <section id="comments" class="comments-panel" aria-labelledby="comments-title">
+        <div class="comments-heading">
+          <div>
+            <p class="eyebrow">Discussion</p>
+            <h2 id="comments-title">评论与讨论</h2>
+          </div>
+          <a href="https://github.com/xixi-cc/xixi-research-comments/discussions" target="_blank" rel="noopener noreferrer">在 GitHub 查看</a>
+        </div>
+        <p class="comments-note">评论公开保存在 GitHub Discussions；阅读无需登录，发表评论需要 GitHub 账号。</p>
+        <script src="https://giscus.app/client.js"
+                data-repo="xixi-cc/xixi-research-comments"
+                data-repo-id="R_kgDOUIl8MQ"
+                data-category="Announcements"
+                data-category-id="DIC_kwDOUIl8Mc4DEftB"
+                data-mapping="specific"
+                data-term="collection:2501.03937"
+                data-strict="1"
+                data-reactions-enabled="1"
+                data-emit-metadata="0"
+                data-input-position="top"
+                data-theme="preferred_color_scheme"
+                data-lang="zh-CN"
+                data-loading="lazy"
+                crossorigin="anonymous"
+                async></script>
+        <noscript><p>请启用 JavaScript，或直接前往 GitHub Discussions 参与讨论。</p></noscript>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <div class="container">
+        <p>内容来自 <a href="https://arxiv.org" target="_blank" rel="noopener noreferrer">arXiv.org</a>；原创解读采用 CC BY-NC 4.0。<a href="../../rights.html">许可与引用</a></p>
+      </div>
+    </footer>
+
+    <script src="../../assets/theme.js"></script>
+    <script src="../../assets/media.js"></script>
+    <script src="../../assets/paper.js"></script>
+    <!-- Cloudflare Web Analytics -->
+<script type="module" src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon='{"token":"73522e5dee9b42b0be84b4847e4dd502"}'></script>
+<!-- End Cloudflare Web Analytics -->
+  </body>
+</html>
