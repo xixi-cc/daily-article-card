@@ -7,6 +7,7 @@ import argparse
 import hashlib
 import json
 import re
+import subprocess
 from pathlib import Path
 
 try:
@@ -14,7 +15,6 @@ try:
         captions,
         first_matching_excerpt,
         headings,
-        pdf_pages,
         quantitative_lines,
         urls,
     )
@@ -23,7 +23,6 @@ except ModuleNotFoundError:  # Imported as scripts.build_mineru_evidence_packet.
         captions,
         first_matching_excerpt,
         headings,
-        pdf_pages,
         quantitative_lines,
         urls,
     )
@@ -56,6 +55,45 @@ def compact(value: str) -> str:
 
 def approximate_tokens(value: str) -> int:
     return (len(value) + 3) // 4
+
+
+def authoritative_pdf_pages(pdf: Path) -> list[str]:
+    """Extract exactly one text item per rendered PDF page.
+
+    A whole-document ``pdftotext`` stream can contain embedded form-feed
+    characters, so splitting that stream is not a reliable page-count source.
+    ``pdfinfo`` supplies the authoritative count and page-bounded extraction
+    preserves stable one-based evidence addresses.
+    """
+    info = subprocess.run(
+        ["pdfinfo", str(pdf)],
+        check=True,
+        capture_output=True,
+        text=True,
+    )
+    match = re.search(r"(?m)^Pages:\s+(\d+)\s*$", info.stdout)
+    if match is None:
+        raise ValueError(f"pdfinfo did not report a page count for {pdf}")
+    page_count = int(match.group(1))
+    pages: list[str] = []
+    for page_number in range(1, page_count + 1):
+        result = subprocess.run(
+            [
+                "pdftotext",
+                "-layout",
+                "-f",
+                str(page_number),
+                "-l",
+                str(page_number),
+                str(pdf),
+                "-",
+            ],
+            check=True,
+            capture_output=True,
+            text=True,
+        )
+        pages.append(result.stdout.rstrip("\f"))
+    return pages
 
 
 def fit_packet_to_target(packet: dict[str, object]) -> None:
@@ -193,7 +231,7 @@ def build_packet(
     item: dict[str, object], pdf: Path, markdown_path: Path
 ) -> dict[str, object]:
     markdown = markdown_path.read_text(encoding="utf-8")
-    pages = pdf_pages(pdf)
+    pages = authoritative_pdf_pages(pdf)
     packet: dict[str, object] = {
         "schema": "mineru-paper-card-evidence-v1",
         "campaign_item": item,
@@ -201,7 +239,7 @@ def build_packet(
             "pdf_path": str(pdf),
             "pdf_sha256": hashlib.sha256(pdf.read_bytes()).hexdigest(),
             "pdf_bytes": pdf.stat().st_size,
-            "pdf_page_count": len([page for page in pages if page.strip()]),
+            "pdf_page_count": len(pages),
             "mineru_markdown_path": str(markdown_path),
             "mineru_markdown_characters": len(markdown),
             "mineru_engine": "open-api",

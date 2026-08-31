@@ -1,9 +1,13 @@
 import json
+import subprocess
 import unittest
+from pathlib import Path
+from unittest.mock import patch
 
 from scripts.build_mineru_evidence_packet import (
     PACKET_TOKEN_TARGET,
     approximate_tokens,
+    authoritative_pdf_pages,
     fit_packet_to_target,
     markdown_equations,
     markdown_images,
@@ -12,6 +16,21 @@ from scripts.build_mineru_evidence_packet import (
 
 
 class MineruEvidencePacketTests(unittest.TestCase):
+    @patch("scripts.build_mineru_evidence_packet.subprocess.run")
+    def test_uses_pdfinfo_and_page_bounded_text_extraction(self, run) -> None:
+        run.side_effect = [
+            subprocess.CompletedProcess([], 0, "Pages:           2\n", ""),
+            subprocess.CompletedProcess([], 0, "first page\fembedded\f", ""),
+            subprocess.CompletedProcess([], 0, "second page\f", ""),
+        ]
+
+        self.assertEqual(
+            authoritative_pdf_pages(Path("paper.pdf")),
+            ["first page\fembedded", "second page"],
+        )
+        self.assertEqual(run.call_count, 3)
+        self.assertEqual(run.call_args_list[1].args[0][3:7], ["1", "-l", "1", "paper.pdf"])
+
     def test_selects_relevant_sections(self) -> None:
         markdown = """# Title
 front matter
