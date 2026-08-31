@@ -1,0 +1,231 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Language Models Are Implicitly Continuous - physics+AI Collection 随机精选</title>
+    <meta name="description" content="Samuele Marro 等六位作者研究 Transformer 是否在离散 token 之间形成平滑、连续的隐式函数表示，并给出时空连续扩展，arXiv:2504.03933v1。" />
+    <link rel="canonical" href="https://xixi-cc.github.io/daily-article-card/collection-papers/2504.03933/" />
+    <script type="application/ld+json">{"@context": "https://schema.org", "@type": "Article", "headline": "Language Models Are Implicitly Continuous", "description": "Samuele Marro 等六位作者研究 Transformer 是否在离散 token 之间形成平滑、连续的隐式函数表示，并给出时空连续扩展，arXiv:2504.03933v1。", "url": "https://xixi-cc.github.io/daily-article-card/collection-papers/2504.03933/", "mainEntityOfPage": "https://xixi-cc.github.io/daily-article-card/collection-papers/2504.03933/", "inLanguage": "zh-CN", "author": {"@type": "Person", "name": "Xineng Cao", "alternateName": ["Xixi Cao", "曹溪能"], "url": "https://xixi-cc.github.io/"}, "isBasedOn": "https://arxiv.org/abs/2504.03933"}</script>
+    <script>
+      (function() {
+        try {
+          var themePreference = window.localStorage.getItem('color-theme') || 'system';
+          var systemUsesDarkTheme = window.matchMedia('(prefers-color-scheme: dark)').matches;
+          var resolvedTheme = themePreference === 'system'
+            ? (systemUsesDarkTheme ? 'dark' : 'light')
+            : themePreference;
+          document.documentElement.dataset.theme = resolvedTheme;
+          document.documentElement.dataset.themePreference = themePreference;
+          document.documentElement.style.colorScheme = resolvedTheme;
+        } catch (error) {
+          document.documentElement.dataset.theme = 'light';
+          document.documentElement.dataset.themePreference = 'system';
+        }
+      })();
+    </script>
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='18' fill='%23111827'/%3E%3Ctext x='50%25' y='55%25' text-anchor='middle' dominant-baseline='middle' font-size='30' font-family='Arial, sans-serif' fill='white'%3EV%3C/text%3E%3C/svg%3E" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700;800&family=Noto+Sans+SC:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <script>document.documentElement.classList.add('math-pending');</script>
+    <script>
+      window.MathJax = {
+        tex: {
+          inlineMath: [['$', '$'], ['\\(', '\\)']],
+          displayMath: [['$$', '$$'], ['\\[', '\\]']],
+          processEscapes: true
+        },
+        options: {
+          skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+        },
+        chtml: {
+          scale: 1,
+          displayAlign: 'center'
+        },
+        startup: {
+          ready: function() {
+            MathJax.startup.defaultReady();
+            MathJax.startup.promise.then(function() {
+              document.documentElement.classList.remove('math-pending');
+              document.documentElement.dataset.mathReady = 'true';
+            });
+          }
+        }
+      };
+    </script>
+    <script defer src="../../assets/vendor/mathjax/tex-chtml.js"></script>
+    <link rel="stylesheet" href="../../assets/style.css" />
+  </head>
+  <body class="detail-page" data-paper-id="2504.03933" data-paper-program="collection">
+    <div class="page-noise"></div>
+    <div class="page-blur page-blur-a"></div>
+    <div class="page-blur page-blur-b"></div>
+
+    <header class="header detail-page-header">
+      <div class="container">
+        <div class="detail-page-topbar">
+          <a class="back-link" href="../../collection.html">返回列表</a>
+          <div class="detail-topbar-actions">
+            <span class="detail-site-name">physics+AI Collection 随机精选</span>
+            <button id="detail-favorite" class="detail-favorite-button" type="button" aria-pressed="false">☆ 收藏</button>
+            <button class="theme-toggle" type="button" data-theme-toggle aria-label="当前主题：设备，点击切换主题" title="当前主题：设备">
+  <span class="theme-toggle-icons" aria-hidden="true">
+    <svg class="theme-toggle-icon theme-toggle-icon-light" viewBox="0 0 24 24" fill="none">
+      <circle cx="12" cy="12" r="3.5" stroke="currentColor" stroke-width="1.8"/>
+      <path d="M12 2.5v2M12 19.5v2M2.5 12h2M19.5 12h2M5.3 5.3l1.4 1.4M17.3 17.3l1.4 1.4M18.7 5.3l-1.4 1.4M6.7 17.3l-1.4 1.4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+    </svg>
+    <svg class="theme-toggle-icon theme-toggle-icon-dark" viewBox="0 0 24 24" fill="none">
+      <path d="M20 15.2A8.1 8.1 0 0 1 8.8 4a8.2 8.2 0 1 0 11.2 11.2z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>
+    </svg>
+    <svg class="theme-toggle-icon theme-toggle-icon-system" viewBox="0 0 24 24" fill="none">
+      <rect x="3" y="4" width="18" height="13" rx="2.5" stroke="currentColor" stroke-width="1.8"/>
+      <path d="M8 21h8M12 17v4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+    </svg>
+  </span>
+  <span class="theme-toggle-label" data-theme-toggle-label>设备</span>
+</button>
+          </div>
+        </div>
+
+        <div class="detail-hero-grid">
+          <div class="detail-hero-cover"><figure class="paper-figure-card paper-figure-card-detail">
+  <img class="paper-figure-image" src="../../assets/collection-figures/2504.03933/figure-1-continuous-language.webp" alt="离散 token 被视为连续时间区间上的阶梯函数，并扩展到连续输入值轨迹。" loading="lazy" onclick="window.openPaperFigureImage && window.openPaperFigureImage(this)" />
+  <figcaption class="paper-figure-caption">句子可嵌入连续时间与连续空间函数，整数采样恢复离散 token。</figcaption>
+</figure></div>
+          <div class="detail-hero-copy">
+            <p class="eyebrow">Collection 全文卡</p>
+            <h1 class="detail-page-title">Language Models Are Implicitly Continuous</h1>
+            <p class="detail-page-title-zh">语言模型在隐式上是连续的</p>
+            <div class="detail-meta">Paper Collection · Learning Theory · <a href="https://arxiv.org/abs/2504.03933" target="_blank" rel="noopener noreferrer">原文</a></div>
+            <p class="detail-summary">Samuele Marro 等六位作者研究 Transformer 是否在离散 token 之间形成平滑、连续的隐式函数表示，并给出时空连续扩展，arXiv:2504.03933v1。</p>
+            <div class="detail-micro-meta">
+              <span class="meta-pill">AI 基础理论</span>
+              <span class="meta-pill">理论与实验</span>
+              <span class="meta-pill">#Learning Theory</span><span class="meta-pill">#语言模型</span><span class="meta-pill">#机器学习</span>
+              <span class="meta-pill">6 分钟读完</span>
+              <span class="meta-pill">7 张阅读卡</span>
+              <span class="meta-pill">Samuele Marro 等六位作者研究 Transformer 是否在离散 token 之间形成平…</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <main class="container detail-layout">
+      <div class="detail-shell">
+        <article id="detail-body" class="reading-flow"><section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 01</span>
+    <span class="reading-step-note">作者信息</span>
+  </div>
+  <h2>作者信息</h2>
+  <div class="reading-card-content"><ul><li>Samuele Marro 等六位作者研究 Transformer 是否在离散 token 之间形成平滑、连续的隐式函数表示，并给出时空连续扩展，arXiv:2504.03933v1。</li></ul></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 02</span>
+    <span class="reading-step-note">研究问题</span>
+  </div>
+  <h2>研究问题</h2>
+  <div class="reading-card-content"><ul><li>语言数据以 token 序列离散呈现，但神经网络是连续函数逼近器。模型在 token 位置之间或 embedding 邻域中是否定义出有结构的连续插值？</li><li>作者区分时间连续：token 持续区间与非整数位置；空间连续：embedding/句子输入可取中间值，并问多个现代 LLM 是否共享。</li></ul></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 03</span>
+    <span class="reading-step-note">模型与方法</span>
+  </div>
+  <h2>模型与方法</h2>
+  <div class="reading-card-content"><ul><li>把离散句子嵌入连续时间阶梯函数，再定义输入和输出的连续 extension；在位置/embedding 间插值，观察 logits、hidden states 和语言行为的平滑性。</li><li>在 Llama2/3、Phi3、Gemma/2、Mistral 等模型上测试连续采样与理论性质，并形式化扩展 Transformer 的 attention/position 机制。</li></ul><figure class="evidence-figure">
+  <button class="evidence-figure-image-button" type="button" aria-label="放大查看 Figure 1" onclick="window.openPaperFigureImage && window.openPaperFigureImage(this.querySelector('img'))">
+    <img class="paper-figure-image evidence-figure-image" src="../../assets/collection-figures/2504.03933/figure-1-continuous-language.webp" alt="离散 token 被视为连续时间区间上的阶梯函数，并扩展到连续输入值轨迹。" loading="lazy" />
+  </button>
+  <figcaption>
+    <strong>Figure 1</strong> · 句子可嵌入连续时间与连续空间函数，整数采样恢复离散 token。
+    <span class="evidence-figure-reading">物理解读：The construction makes interpolation measurable; semantic interpretation of off-token points is a separate empirical question.</span>
+    <span class="evidence-figure-source">来源：paper.pdf p. 3, Figure 1</span>
+  </figcaption>
+</figure></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 04</span>
+    <span class="reading-step-note">核心结果与证据</span>
+  </div>
+  <h2>核心结果与证据</h2>
+  <div class="reading-card-content"><ul><li>多模型在所测插值上呈系统性平滑变化，支持其隐式表示连续函数而非只在离散点任意取值。</li><li>Figure 1 给出连续化构造；实验展示非整数时间或空间中间输入仍产生结构化输出，并讨论语言/工程应用。</li><li>连续性主要来自模型映射与选定插值路径；embedding 空间中间点未必对应人类可解释句子，平滑也不等于“像人一样推理”。</li></ul></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 05</span>
+    <span class="reading-step-note">有效性与局限</span>
+  </div>
+  <h2>有效性与局限</h2>
+  <div class="reading-card-content"><ul><li>不同 tokenizer、position encoding、normalization 与插值路径会定义不同连续扩展；数学上网络连续可能是架构平凡性质，语义意义需额外证明。</li><li>局部平滑不能保证全局语义拓扑，跨 token 边界或远距离插值可能穿越分布外区域。</li><li>论文给出的图形、相关性或有限规模干预只支持其明示范围；跨数据、架构、模型规模与训练制度时需要重新验证。本卡未独立复现，不能把受控实验直接提升为普适机制。</li><li>对结论做强审计时，应设置能产生相似表面指标的替代机制、匹配参数量与计算预算、报告失败案例和置信区间，并检查阈值、归一化、样本选择及评价器是否预先偏向作者假说。</li><li>若论文声称发现机制，还应要求前向预测新的干预结果，而不只事后解释已有曲线；至少应在未用于选择假说的数据、不同随机种子和合理替代基线上保持。</li><li>此外应明确负结果的含义：未观察到效应可能来自统计功效、测量误差或实现差异，不能自动当作理论反证；观察到效应也需排除共同原因。</li></ul></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 06</span>
+    <span class="reading-step-note">复现与资源</span>
+  </div>
+  <h2>复现与资源</h2>
+  <div class="reading-card-content"><ul><li>原文：https://arxiv.org/abs/2504.03933。官方 \(v_{1}\) PDF 共 41 页，SHA-256：75268428ded9528dbefb80df087b461495a52d4751c8676ffaac8d0ea26ce2a1。</li><li>复现需固定模型/tokenizer revision、时间/空间插值定义、position handling、采样步长、temperature 与连续性指标；同时测 hidden/logit 和可读输出。</li><li>建议保存所有随机种子、逐样本指标、完整训练/干预轨迹、代码与模型版本，并区分静态拟合、因果干预和独立复现。Evidence status: full-text verified; no independent reproduction performed.</li></ul></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 07</span>
+    <span class="reading-step-note">阅读指南</span>
+  </div>
+  <h2>阅读指南</h2>
+  <div class="reading-card-content"><ul><li>先看 Figure 1 确认连续域定义，再区分形式连续、数值平滑和语义连续；跨模型结果需按 tokenizer/position scheme 分组。</li><li>先核对 Figure 1 中被测对象、坐标和控制条件，再追到正文定义、评价指标、消融和限制；理论、数值、解释与外推四类陈述应分别标记。</li></ul></div>
+</section></article>
+        <aside id="detail-toc" class="detail-toc hidden" aria-label="内容目录">
+          <p class="detail-toc-title">阅读目录</p>
+          <nav id="detail-toc-nav" class="detail-toc-nav"></nav>
+        </aside>
+      </div>
+      <nav class="paper-nav"><a class="paper-nav-link paper-nav-prev" href="../../collection-papers/2504.03889/"><span class="paper-nav-label">← 上一篇</span><span class="paper-nav-title">Identifying and Evaluating Inactive Heads in Pretrained LLMs</span></a>
+      <a class="paper-nav-link paper-nav-next" href="../../collection-papers/2504.05646/"><span class="paper-nav-label">下一篇 →</span><span class="paper-nav-title">Lattice: Learning to Efficiently Compress the Memory</span></a></nav>
+      <section id="comments" class="comments-panel" aria-labelledby="comments-title">
+        <div class="comments-heading">
+          <div>
+            <p class="eyebrow">Discussion</p>
+            <h2 id="comments-title">评论与讨论</h2>
+          </div>
+          <a href="https://github.com/xixi-cc/xixi-research-comments/discussions" target="_blank" rel="noopener noreferrer">在 GitHub 查看</a>
+        </div>
+        <p class="comments-note">评论公开保存在 GitHub Discussions；阅读无需登录，发表评论需要 GitHub 账号。</p>
+        <script src="https://giscus.app/client.js"
+                data-repo="xixi-cc/xixi-research-comments"
+                data-repo-id="R_kgDOUIl8MQ"
+                data-category="Announcements"
+                data-category-id="DIC_kwDOUIl8Mc4DEftB"
+                data-mapping="specific"
+                data-term="collection:2504.03933"
+                data-strict="1"
+                data-reactions-enabled="1"
+                data-emit-metadata="0"
+                data-input-position="top"
+                data-theme="preferred_color_scheme"
+                data-lang="zh-CN"
+                data-loading="lazy"
+                crossorigin="anonymous"
+                async></script>
+        <noscript><p>请启用 JavaScript，或直接前往 GitHub Discussions 参与讨论。</p></noscript>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <div class="container">
+        <p>内容来自 <a href="https://arxiv.org" target="_blank" rel="noopener noreferrer">arXiv.org</a>；原创解读采用 CC BY-NC 4.0。<a href="../../rights.html">许可与引用</a></p>
+      </div>
+    </footer>
+
+    <script src="../../assets/theme.js"></script>
+    <script src="../../assets/media.js"></script>
+    <script src="../../assets/paper.js"></script>
+    <!-- Cloudflare Web Analytics -->
+<script type="module" src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon='{"token":"73522e5dee9b42b0be84b4847e4dd502"}'></script>
+<!-- End Cloudflare Web Analytics -->
+  </body>
+</html>

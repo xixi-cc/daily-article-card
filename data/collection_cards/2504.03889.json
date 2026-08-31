@@ -1,0 +1,133 @@
+{
+  "arxiv_id": "2504.03889",
+  "source_version": "v4",
+  "source_pdf": "https://arxiv.org/pdf/2504.03889",
+  "title_en": "Identifying and Evaluating Inactive Heads in Pretrained LLMs",
+  "title_zh": "识别并评价预训练 LLM 中的不活跃注意力头",
+  "curation_status": "full_text_verified",
+  "card_standard_version": "2.3",
+  "paper_profile": "ai_empirical",
+  "style_reference": "physicist_daily_arxiv",
+  "provenance": {
+    "program": "Collection",
+    "catalog": "Paper Collection",
+    "catalog_record_id": "2504.03889",
+    "catalog_record_ids": [
+      "2504.03889"
+    ],
+    "catalog_topic": "Learning Theory",
+    "collection_date": "2026-08-30",
+    "sampled_at": "2026-08-31",
+    "selected_by": "ziming_mineru_serial_goal",
+    "sampling_seed": "not_applicable_source_complete",
+    "candidate_count": 464
+  },
+  "verified_metadata": {
+    "arxiv_id": "2504.03889",
+    "version": "v4",
+    "title": "Identifying and Evaluating Inactive Heads in Pretrained LLMs",
+    "authors": [
+      "Pedro Sandoval-Segura",
+      "Xijun Wang",
+      "Ashwinee Panda",
+      "Micah Goldblum",
+      "Ronen Basri",
+      "Tom Goldstein",
+      "David Jacobs"
+    ],
+    "categories": [
+      "cs.LG"
+    ],
+    "primary_category": "cs.LG",
+    "published": "2025-04-04",
+    "updated": "2026-03-01",
+    "comment": ""
+  },
+  "sections": [
+    {
+      "title": "作者信息",
+      "paragraphs": [
+        "Pedro Sandoval-Segura 等七位作者系统比较 12 种 inactive-head score，并用消融验证预训练 LLM 中的计算冗余，arXiv:2504.03889v4。"
+      ]
+    },
+    {
+      "title": "研究问题",
+      "paragraphs": [
+        "高 attention weight 不等于有大输出：某个头可能关注 sink，却因 value/output 很小而几乎不影响模型。怎样定义和验证“不活跃”？",
+        "作者比较权重、entropy、value norm 与 head-output norm 等指标，要求 threshold 选出的头在特定 context 中可被消融而不显著损失能力。"
+      ]
+    },
+    {
+      "title": "模型与方法",
+      "paragraphs": [
+        "在三个模型家族上计算六类原始及标准化评分，共 12 项；按分布阈值选候选 inactive heads，并比较集合重叠与尺度变化。",
+        "对选中 heads 做 context-specific/批量 ablation，以 MMLU 等任务测性能；比较 pretraining/fine-tuning 和模型规模间 score distributions。"
+      ]
+    },
+    {
+      "title": "核心结果与证据",
+      "paragraphs": [
+        "平均超过 12% heads 在所测 context 可消融且 MMLU 下降保持 1% 内；head output norm 指标跨模型最稳定地找到这类头。",
+        "仅使用 first-token attention sink 会平均漏掉超过 7% inactive heads。Figure 1 说明权重指标忽略 value 与输出，因而功能判定不完整。",
+        "不活跃是数据/上下文/任务相关状态，不一定是全局可永久剪枝；MMLU 保持也不证明生成、安全或稀有能力不受影响。"
+      ]
+    },
+    {
+      "title": "有效性与局限",
+      "paragraphs": [
+        "阈值与干预粒度决定比例，head 之间有补偿和协同；单头消融无害不表示同时删除集合仍无害。",
+        "三个模型家族和有限任务不足以支持普适剪枝，fine-tuning 行为“变化小”也可能被聚合分布掩盖。",
+        "论文给出的图形、相关性或有限规模干预只支持其明示范围；跨数据、架构、模型规模与训练制度时需要重新验证。本卡未独立复现，不能把受控实验直接提升为普适机制。",
+        "对结论做强审计时，应设置能产生相似表面指标的替代机制、匹配参数量与计算预算、报告失败案例和置信区间，并检查阈值、归一化、样本选择及评价器是否预先偏向作者假说。",
+        "若论文声称发现机制，还应要求前向预测新的干预结果，而不只事后解释已有曲线；至少应在未用于选择假说的数据、不同随机种子和合理替代基线上保持。",
+        "此外应明确负结果的含义：未观察到效应可能来自统计功效、测量误差或实现差异，不能自动当作理论反证；观察到效应也需排除共同原因。"
+      ]
+    },
+    {
+      "title": "复现与资源",
+      "paragraphs": [
+        "原文：https://arxiv.org/abs/2504.03889。官方 v4 PDF 共 28 页，SHA-256：164c6cc4dd0c2564f64f1c133323a60eabb2af62987ac5f14a100ce2a67d3969。",
+        "复现需固定模型 revision、attention implementation、prompt/data、12 score 定义与阈值、ablation 方式、MMLU harness 和 seeds；报告单头与联合删除。",
+        "建议保存所有随机种子、逐样本指标、完整训练/干预轨迹、代码与模型版本，并区分静态拟合、因果干预和独立复现。Evidence status: full-text verified; no independent reproduction performed."
+      ]
+    },
+    {
+      "title": "阅读指南",
+      "paragraphs": [
+        "先看 Figure 1 区分权重/value/output，再检查 inactive 的因果操作定义；把 context-specific redundancy 与部署级 pruning 分开。",
+        "先核对 Figure 1 中被测对象、坐标和控制条件，再追到正文定义、评价指标、消融和限制；理论、数值、解释与外推四类陈述应分别标记。"
+      ]
+    }
+  ],
+  "cover": {
+    "mode": "source_figure",
+    "asset_path": "assets/collection-figures/2504.03889/figure-1-inactive-head-scores.webp",
+    "label": "Figure 1",
+    "visual_type": "schematic",
+    "evidence": "paper.pdf p. 2, Figure 1",
+    "alt_text": "基于注意力权重、value vector 和 head output 的六类指标及其标准化版本。",
+    "caption": "只看 attention sink 会漏掉 value 或输出幅度很小的不活跃头。",
+    "selection_rationale": "Figure 1 将 12 个评分函数按 attention、value 和实际 head output 三个组件组织，直接解释为何输出范数比单看第一 token 权重更可靠。"
+  },
+  "figure_refs": [
+    {
+      "label": "Figure 1",
+      "asset_path": "assets/collection-figures/2504.03889/figure-1-inactive-head-scores.webp",
+      "section": "模型与方法",
+      "role": "organize inactive-head scores by the attention component they actually measure",
+      "evidence": "paper.pdf p. 2, Figure 1",
+      "alt_text": "基于注意力权重、value vector 和 head output 的六类指标及其标准化版本。",
+      "caption": "只看 attention sink 会漏掉 value 或输出幅度很小的不活跃头。",
+      "interpretation": "Output-aware scores better predict local ablation tolerance; global redundancy requires broader joint-intervention testing."
+    }
+  ],
+  "equation_refs": [],
+  "evidence_refs": [
+    "paper.pdf pp. 1–5: score taxonomy and inactivity definition",
+    "paper.pdf pp. 6–13: interventions and MMLU results",
+    "paper.pdf pp. 14–20: model/fine-tuning comparisons",
+    "paper.pdf pp. 21–28: details and limitations",
+    "source PDF SHA-256 164c6cc4dd0c2564f64f1c133323a60eabb2af62987ac5f14a100ce2a67d3969",
+    "Evidence status: full-text verified; no independent reproduction performed."
+  ]
+}
