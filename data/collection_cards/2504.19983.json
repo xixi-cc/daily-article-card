@@ -1,0 +1,141 @@
+{
+  "arxiv_id": "2504.19983",
+  "source_version": "v2",
+  "source_pdf": "https://arxiv.org/pdf/2504.19983",
+  "title_en": "Emergence and scaling laws in SGD learning of shallow neural networks",
+  "title_zh": "浅层神经网络 SGD 学习中的涌现与标度律",
+  "curation_status": "full_text_verified",
+  "card_standard_version": "2.3",
+  "paper_profile": "theory_numerics",
+  "style_reference": "physicist_daily_arxiv",
+  "provenance": {
+    "program": "Collection",
+    "catalog": "Paper Collection",
+    "catalog_record_id": "2504.19983",
+    "catalog_record_ids": ["2504.19983"],
+    "catalog_topic": "Representation Learning",
+    "collection_date": "2026-08-30",
+    "sampled_at": "2026-08-31",
+    "selected_by": "ziming_mineru_serial_goal",
+    "sampling_seed": "not_applicable_source_complete",
+    "candidate_count": 464
+  },
+  "verified_metadata": {
+    "arxiv_id": "2504.19983",
+    "version": "v2",
+    "title": "Emergence and scaling laws in SGD learning of shallow neural networks",
+    "authors": ["Yunwei Ren", "Eshaan Nichani", "Denny Wu", "Jason D. Lee"],
+    "affiliations": ["Princeton University", "New York University", "Flatiron Institute"],
+    "categories": ["cs.LG"],
+    "primary_category": "cs.LG",
+    "updated": "2025-11-04",
+    "comment": "PDF title page states arXiv:2504.19983v2 [cs.LG], dated 2025-11-05; the first two authors are marked equal contribution."
+  },
+  "sections": [
+    {
+      "title": "作者信息",
+      "paragraphs": [
+        "作者为 Yunwei Ren、Eshaan Nichani（共同第一作者）、Denny Wu 与 Jason D. Lee。PDF 首页列出 Princeton University、New York University 与 Flatiron Institute；对应公开版本为 arXiv:2504.19983v2，主分类为 cs.LG。本文讨论的是受控浅层网络训练理论，不是对通用大语言模型经验曲线的直接拟合。"
+      ]
+    },
+    {
+      "title": "研究问题",
+      "paragraphs": [
+        "单个低维特征在在线 SGD 中可经历很长的平台期，随后在短时间内被恢复；这看似与整体损失随算力平滑幂律下降相冲突。论文问：若教师网络含有许多正交方向、其二层信号强度跨尺度变化，能否用同一套在线 SGD 动力学严格解释逐方向的突变恢复与总 MSE 的标度律？",
+        "作者的答案限定在各向同性高斯输入、偶激活和高 information exponent 的 two-layer 模型。主张不是“任何网络都有此律”，而是在该受控模型中给出单阶段 SGD 的多项式复杂度、每个方向的恢复时间及由它们叠加得到的损失界。"
+      ]
+    },
+    {
+      "title": "背景",
+      "paragraphs": [
+        "这是 physics of AI 风格的学习动力学问题：状态变量是学生神经元与教师方向的重叠和范数，控制量包括维数 $d$、教师宽度 $P$、学生宽度 $m$、步长 $\\eta$、信号谱 $a_p$ 与激活的信息指数。逐模的 plateau--transition 类似多时间尺度过程；但这里没有引入热力学相或把经验 scaling law 当作普适定律。",
+        "已有 multi-index 分析常把一层的相关性学习与二层凸优化分阶段进行。本文改为同时训练两层，并把已学方向从剩余误差中自动削弱；这一 automatic deflation 是其能处理 large condition number 与 extensive-width 情形的关键技术对象。"
+      ]
+    },
+    {
+      "title": "模型与方法",
+      "paragraphs": [
+        "教师函数定义为 $f_*(x)=\\sum_{p=1}^{P}a_p\\sigma(\\langle v_p^*,x\\rangle)$，其中 $x\\sim\\mathcal N(0,I_d)$、$\\{v_p^*\\}$ 正交、$\\sum_p a_p^2=1$，且 $P\\gg1$。激活 $\\sigma$ 为偶函数，最低非零 Hermite 阶满足 $\\mathrm{IE}(\\sigma)=2I>2$；这正是单个方向出现长 search plateau 的受控条件（p. 4, Eq. (1) 与 Assumption 2.1）。",
+        "学生是 $m$ 宽的二层、逐神经元 2-homogeneous 参数化网络 $f(x)=\\sum_{k=1}^{m}\\|v_k\\|^2\\sigma(\\bar v_k\\!\\cdot\\!x)$，以每个新高斯样本的 MSE 做 vanilla online SGD。该参数化把二层幅度同一层方向耦合，使方向已对齐时范数增长，同时减弱其对剩余误差的竞争（p. 5, Eqs. (2)--(4)）。",
+        "证明链条先写理想化、近乎逐方向解耦的动力学，再证明 population gradient flow 跟随它，最后控制 SGD 的离散化与采样噪声；数值部分用 $d=2048$、$P=1024$、$\\sigma=h_4$ 的 population-loss GD 比较有限宽度曲线与理想标度（pp. 8--9, Figure 2）。"
+      ]
+    },
+    {
+      "title": "核心结果与证据",
+      "paragraphs": [
+        "Theorem 2.1（pp. 6--7）在列出的维数、初始化、步长和精度条件下，给出高概率的神经元--教师方向匹配：在 $T_p$ 之前，重叠与范数保持很小；在一个相对很窄的时间窗内，第 $p$ 个匹配方向同时完成方向和范数恢复。其结论是一个带条件的解析保证，不是对有限数据深网训练轨迹的经验断言。",
+        "若 $a_p\\asymp p^{-\\beta}$ 且 $\\beta>1/2$，Proposition 2.2（pp. 7--8）给出第 $p$ 个方向的恢复时间随 $p^\\beta d^{I-1}\\eta^{-1}$ 增长，并将 population loss 分成由学生宽度控制的 approximation bottleneck 与由 SGD 步数控制的 optimization bottleneck。因而总损失的平滑幂律来自大量不同转变时间的阶梯曲线相加，而不是每一个方向本身平滑学习。",
+        "Figure 2(b)（p. 9）是最直接的数值核对：横轴为 width $\\times$ GD steps、纵轴为 population loss；多条有限宽曲线在各自阶梯下降之后接近虚线 compute-optimal slope。图中 $\\beta=0.8$，理论在该设定预测 $\\mathcal L\\sim(mt)^{-1/3}$；作者同时说明实测斜率略陡可来自对无限幂律和有限宽度的截断。它支持受控模型中的趋势一致性，并不单独验证一般网络的指数。"
+      ]
+    },
+    {
+      "title": "有效性与局限",
+      "paragraphs": [
+        "结论依赖各向同性 $\\mathcal N(0,I_d)$ 输入、正交教师方向、偶且高信息指数的激活、2-homogeneous 学生参数化与小初始化。作者在结论中明确把 anisotropic covariance、学习率衰减和 $\\mathrm{IE}(\\sigma)=2$ 留作未来方向（p. 15）；因此不能把 theorem 外推到相关数据、任意 ReLU/Transformer 或自适应优化器。",
+        "Figure 2 的经验部分训练的是 population loss 的 GD，不是有限样本 online SGD 的大型基准；有限 $d$ 和无限幂律截断已经使 empirical slope 与理论值有偏离。所谓 automatic deflation 是在本文模型和证明控制下的机制，尚不是跨架构的实证因果结论。"
+      ]
+    },
+    {
+      "title": "复现与资源",
+      "paragraphs": [
+        "原文：https://arxiv.org/abs/2504.19983；PDF：https://arxiv.org/pdf/2504.19983。所核对 PDF 为 97 页，SHA-256 为 cae2da41e6c5ac8deac0e1cc7e0d0612481875ba768ec05b0ac0b3cad95cf745。全文未在所核对页中给出可验证的公开代码链接，因此不把代码可用性当作已证实事实。",
+        "复现 Figure 2 应固定教师谱的 $\\beta=0.8$、$d=2048$、$P=1024$、$h_4$ 激活、学生 width 网格、常数步长、population-loss GD、初始化分布、总步数与 compute 定义；还应分开保存每方向的 recovery time 和 cumulative MSE，避免仅用最终曲线掩盖阶梯机制。Evidence status: full-text verified; no independent reproduction performed."
+      ]
+    },
+    {
+      "title": "阅读指南",
+      "paragraphs": [
+        "快速路径：读 pp. 1--3 的问题与两个 informal 结论，随后读 pp. 7--9 的 Proposition 2.2、compute-optimal 公式和 Figure 2。深入路径：回到 pp. 4--6 的教师/学生定义、MSE 与 Theorem 2.1，确认每个 $T_p$ 的条件；再读 p. 15 的结论，检查各向同性、high-IE 与单阶段参数化这些适用边界。最关键的可视证据是 Figure 2(b)，最关键的数学对象是 Proposition 2.2 的宽度--时间 loss bottleneck。"
+      ]
+    }
+  ],
+  "cover": {
+    "mode": "source_figure",
+    "asset_path": "assets/collection-figures/2504.19983/figure-2b-compute-optimal-frontier.webp",
+    "label": "Figure 2(b)",
+    "visual_type": "data_plot",
+    "evidence": "paper.pdf p. 9, Figure 2(b)",
+    "alt_text": "对数坐标下 population loss 随学生宽度乘 GD steps 变化的多条有限宽曲线；黑色虚线给出 optimal slope。",
+    "caption": "在 $\\beta=0.8$、$d=2048$、$P=1024$ 的 population-loss GD 中，不同宽度曲线由阶梯式方向恢复汇成近似 compute-optimal 斜率；该图只检验该有限模型设定。",
+    "selection_rationale": "Figure 2(b) 是论文主张中理论标度与有限宽经验曲线的直接对照；虽为数据图而非实空间图，但比概念示意图更能承载可核对的 scaling-law 证据。"
+  },
+  "figure_refs": [
+    {
+      "label": "Figure 2(b)",
+      "asset_path": "assets/collection-figures/2504.19983/figure-2b-compute-optimal-frontier.webp",
+      "section": "核心结果与证据",
+      "role": "compare the predicted compute-optimal scaling trend with finite-width population-loss GD curves",
+      "evidence": "paper.pdf p. 9, Figure 2(b); MinerU image 0b8bdc53f7b360d354a26a50d52ffd8aae1cbcb33f757bb624a90af42b453bca.jpg",
+      "alt_text": "蓝至黄色的多条 population-loss 曲线对应不同学生宽度，横轴为 width times GD steps，黑色虚线标记 optimal slope。",
+      "caption": "曲线在不同时间出现下降台阶，尾部与虚线 compute-optimal trend 接近；有限宽度和无限幂律截断会改变可见斜率。",
+      "interpretation": "This author-generated plot is a numerical consistency check for the controlled population-loss GD setup, not an independent verification of the theorem or a universal scaling exponent."
+    }
+  ],
+  "equation_refs": [
+    {
+      "label": "Teacher additive model",
+      "latex": "f_*(x)=\\sum_{p=1}^{P}a_p\\sigma(\\langle v_p^*,x\\rangle),\\qquad x\\sim\\mathcal N(0,I_d),\\qquad \\sum_{p=1}^{P}a_p^2=1",
+      "role": "define the orthogonal multi-index target whose heterogeneous signal strengths generate separated learning times",
+      "symbols": {"x": "isotropic Gaussian input", "P": "teacher width", "a_p": "non-negative second-layer signal strength", "v_p^*": "orthonormal teacher direction", "sigma": "even link function"},
+      "evidence": "paper.pdf p. 4, Eq. (1) and Assumption 2.1",
+      "interpretation": "This is the model definition; the scaling-law specialization later assumes a power-law sequence for $a_p$."
+    },
+    {
+      "label": "Compute-optimal scaling",
+      "latex": "\\mathcal L\\sim T^{(1-2\\beta)/(1+\\beta)},\\qquad m\\sim T^{1/(1+\\beta)},\\qquad T\\asymp mt",
+      "role": "state the fixed-compute prediction tested in Figure 2",
+      "symbols": {"mathcal L": "population mean-squared error", "T": "compute proxy", "m": "student width", "t": "gradient-descent steps", "beta": "teacher signal-spectrum exponent"},
+      "evidence": "paper.pdf p. 8, Section 2.4; Figure 2 on p. 9",
+      "interpretation": "This is a controlled asymptotic prediction under the stated power-law teacher spectrum and constant-learning-rate setup, not a generic empirical fit."
+    }
+  ],
+  "evidence_refs": [
+    "paper.pdf p. 1: abstract, model scope, authors, affiliations and arXiv v2 metadata",
+    "paper.pdf pp. 3--5: informal theorem, additive teacher model, student parameterization and online-SGD protocol",
+    "paper.pdf pp. 6--8: Theorem 2.1, Proposition 2.2, width/time bottlenecks and compute-optimal relation",
+    "paper.pdf p. 9: Figure 2(a,b), d=2048, P=1024, beta=0.8 and finite-width caveat",
+    "paper.pdf p. 15: anisotropic input, decaying learning rate and IE(sigma)=2 limitations",
+    "source PDF SHA-256 cae2da41e6c5ac8deac0e1cc7e0d0612481875ba768ec05b0ac0b3cad95cf745",
+    "Evidence status: full-text verified; no independent reproduction performed."
+  ]
+}
