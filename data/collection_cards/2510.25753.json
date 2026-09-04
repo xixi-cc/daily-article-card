@@ -1,0 +1,132 @@
+{
+  "arxiv_id": "2510.25753",
+  "source_version": "v2",
+  "source_pdf": "https://arxiv.org/pdf/2510.25753v2",
+  "title_en": "How Data Mixing Shapes In-Context Learning: Asymptotic Equivalence for Transformers with MLPs",
+  "title_zh": "数据混合如何塑造上下文学习：带 MLP 的 Transformer 的渐近等价",
+  "curation_status": "full_text_verified",
+  "card_standard_version": "2.4",
+  "audience_profile": "physics_ai_literate_physicist",
+  "paper_profile": "theory_numerics",
+  "style_reference": "physicist_daily_arxiv",
+  "provenance": {
+    "program": "Collection", "catalog": "Paper Collection", "catalog_record_id": "2510.25753",
+    "catalog_record_ids": ["2510.25753"], "catalog_topic": "Learning Theory",
+    "collection_date": "2026-08-30", "sampled_at": "2026-08-31",
+    "selected_by": "ziming_mineru_serial_goal", "sampling_seed": "not_applicable_source_complete", "candidate_count": 464
+  },
+  "verified_metadata": {
+    "arxiv_id": "2510.25753", "version": "v2",
+    "title": "How Data Mixing Shapes In-Context Learning: Asymptotic Equivalence for Transformers with MLPs",
+    "authors": ["Samet Demir", "Zafer Dogan"],
+    "categories": ["stat.ML", "cs.LG"], "primary_category": "stat.ML",
+    "published": "2025-10-29T17:51:57Z", "updated": "2026-02-05T14:46:08Z",
+    "abstract": "For a one-block linear-attention Transformer followed by a two-layer nonlinear MLP trained in two stages, the paper proves high-dimensional equivalence in ICL error to a finite-degree Hermite-polynomial surrogate. Synthetic mixtures and a multilingual sentiment example then probe how noise, input covariance, task covariance, and mixture ratio affect error and one-step feature learning."
+  },
+  "equation_refs": [
+    {
+      "label": "Heterogeneous nonlinear task source",
+      "latex": "x_i\\mid s\\sim\\mathcal N(\\mu_{x,s},\\Sigma_{x,s}),\\qquad y_i\\mid s=\\phi_s\\!\\left(\\frac{\\xi_s^{\\top}x_i}{\\|\\xi_s\\|_2\\|\\Sigma_{x,s}\\|_2^{1/2}}\\right)+\\epsilon_i\\mid s",
+      "role": "separate source-dependent input geometry, task geometry, target nonlinearity, and noise",
+      "symbols": {"s": "data-source index", "xi_s": "context-specific task vector", "phi_s": "source-specific target function", "epsilon_i": "target noise"},
+      "evidence": "paper.pdf p. 3, Eq. (1)",
+      "interpretation": "Changing a mixture weight alters several possible channels of data quality; the experiments vary them one at a time to identify which channel drives the effect."
+    },
+    {
+      "label": "Nonlinear MLP prediction after attention",
+      "latex": "\\hat y_{\\mathrm{nonlinear}}=k^{-1/2}w^{\\top}\\sigma\\!\\left(F\\,\\operatorname{vec}(H_Z)\\right),\\qquad \\hat F=F+\\eta G",
+      "role": "attach a trainable nonlinear feature map to the sufficient statistics produced by linear attention",
+      "symbols": {"H_Z": "attention-derived context/query statistic", "F": "first MLP layer including attention parameters", "w": "second-layer readout", "eta": "single feature-learning step size"},
+      "evidence": "paper.pdf p. 4, Eqs. (5)–(7)",
+      "interpretation": "Only one gradient step updates F and a fresh sample set fits w by ridge regression; this controlled two-stage protocol is narrower than ordinary end-to-end Transformer pretraining."
+    },
+    {
+      "label": "Equivalent polynomial surrogate",
+      "latex": "\\hat\\sigma_p(x)=\\sum_{i=0}^{p}\\frac{c_i}{i!}H_i(x)+c_p^*z,\\quad z\\sim\\mathcal N(0,1),\\quad \\mathbb E[\\hat\\sigma_p(x)^2]=\\mathbb E[\\sigma(x)^2]",
+      "role": "replace the nonlinear activation by finitely many Hermite channels plus variance-matched residual noise",
+      "symbols": {"H_i": "probabilists' Hermite polynomial", "c_i": "Hermite coefficient of the activation", "p": "finite degree sufficient for equivalence", "c_p_star": "residual variance amplitude"},
+      "evidence": "paper.pdf p. 7, Theorem 4.12 and Eq. (14)",
+      "interpretation": "Equivalence means the two separately trained readouts have the same asymptotic ICL error under the stated scaling; it does not assert identical predictions, parameters, or finite-dimensional representations."
+    }
+  ],
+  "figure_refs": [{
+    "label": "Figure 3", "asset_path": "assets/collection-figures/2510.25753/figure-3-feature-learning-mixtures.webp",
+    "section": "核心结果与证据", "role": "separate the effect of first-layer feature learning for structured inputs, structured tasks, and multilingual review mixtures",
+    "evidence": "paper.pdf p. 10, Figure 3",
+    "alt_text": "三幅 ICL error 随 log10(η) 的曲线：仅输入 covariance 有结构时近乎不变，task covariance 有结构及英德评论混合时随步长增大而下降。",
+    "caption": "一步特征学习主要利用任务方向的可重复结构；仅输入几何有尖峰，并不自动产生同样收益。",
+    "interpretation": "The synthetic panels average 20 trials and the multilingual panel 100 trials; the latter is an illustrative transformed regression task, not a benchmark of a pretrained language model's natural ICL."
+  }],
+  "cover": {
+    "mode": "source_figure", "asset_path": "assets/collection-figures/2510.25753/figure-3-feature-learning-mixtures.webp",
+    "label": "Figure 3", "visual_type": "comparison", "evidence": "paper.pdf p. 10, Figure 3",
+    "alt_text": "不同数据混合比例下，结构化输入、结构化任务和多语言评论的特征学习曲线。",
+    "caption": "数据有结构还不够：结构必须落在更新能够对齐的任务方向上，特征学习才明显降低 ICL 误差。",
+    "selection_rationale": "It visualizes the paper's most useful distinction for data curation: source quality and learnable task structure are not interchangeable."
+  },
+  "sections": [
+    {"title": "作者信息", "paragraphs": [
+      "Samet Demir、Zafer Dogan；作者来自 Koç University 的 MLIP Research Group、KUIS AI Center 与电子电气工程系。",
+      "本站核验 arXiv:2510.25753v2：初版提交于 2025-10-29，v2 更新于 2026-02-05；主分类 stat.ML，另含 cs.LG，共 24 页；论文标注 NeurIPS 2025。",
+      "Collection 来源为刘子鸣网站的 Learning Theory 条目。"
+    ]},
+    {"title": "研究问题", "paragraphs": [
+      "上下文学习理论常把 Transformer 简化成线性 attention、线性任务和单一各向同性数据源；这无法解释实际预训练中的 MLP 非线性与多源数据混合。",
+      "论文问：在一个仍可解析但更丰富的模型中，非线性 MLP 对 ICL 能增加什么函数类；不同来源的输入 covariance、任务 covariance、噪声和混合比例又如何改变误差。",
+      "核心结论分两层：严格部分是在高维假设下的 ICL-error 渐近等价；关于“好数据”和 feature learning 的方向性判断主要来自该代理模型上的有限维模拟与一个多语言回归式示例。"
+    ]},
+    {"title": "背景", "paragraphs": [
+      "每个 context 先抽取来源 s，再抽取任务向量 ξ_s；同一 context 内的示例共享 ξ_s，模型需从示例估计当前任务，而不是更新参数。这正是 ICL 与普通监督学习的区别。",
+      "线性 attention 把 context 压成 H_Z，线性读出只能访问其一阶组合。MLP 对 vec(H_Z) 施加 σ，Hermite 展开把非线性拆成正交多项式通道，使 Gaussian universality 可把原激活替换为有限阶代理。",
+      "数据混合的效果不是一个标量“质量分数”：低标签噪声、输入空间尖峰和任务分布尖峰进入不同统计通道，对预测误差和可学习特征的作用也不同。"
+    ]},
+    {"title": "给物理学家的 AI 导读", "paragraphs": [
+      "把各数据源看成不同 disorder ensembles。混合比例 ρ 改变训练时看到的 ensemble 权重，而测试误差按各源平均；因此最优 ρ 是训练分布与评估目标共同定义的，不能脱离测试权重谈“越多高质量数据越好”。",
+      "Hermite 多项式是 Gaussian 测度下的正交模。渐近等价相当于：对当前观测量 ICL error，只有有限个低阶模和剩余总方差可见，高阶微观细节被 universality 压缩。",
+      "rank-one task covariance 尖峰提供跨 context 重复的优选方向；一次梯度更新可沿该方向形成对齐。只有 input covariance 有尖峰而 ξ 各向同性时，更新看不到稳定的任务方向，所以增大 η 几乎无益。",
+      "类比边界是：这里的 universality 只针对特定误差与联合极限，不表示真实 Transformer 内部表示处处 Gaussian，也不保证任意数据分布都只由 covariance 决定。"
+    ]},
+    {"title": "模型与方法", "paragraphs": [
+      "架构是单个 linear-attention block 加两层 MLP head。先用一批 contexts 对第一层 F 做一步平方损失 GD，再用独立的新样本对第二层 w 做 ridge regression；数据不复用以保持理论独立性。",
+      "每个来源 s 有 Gaussian input、Gaussian task vector、非线性 φ_s 与 Gaussian noise。ICL error 是在均匀测试来源上平均的平方误差；训练混合比例可单独改变。",
+      "高维极限要求 d、context length ℓ、训练 contexts n、hidden width k 同时发散，并固定 ℓ/d、n/d²、k/n；另要求 attention-output covariance 为 identity 加有限秩 spikes，以及 η 与谱范数满足特定缩放。",
+      "证明先建立 Fvec(H_Z) 及其与 ξᵀx_query 的条件 Gaussian 极限，再把一步梯度分成主导 rank-one 项与可忽略残差，最后用 Hermite 正交性和条件 Gaussian equivalence 得到有限阶多项式代理。"
+    ]},
+    {"title": "核心结果与证据", "paragraphs": [
+      "Theorem 4.12：在 Assumptions 4.1–4.8 及附录的扰动/凸性条件下，原 MLP 与方差匹配的有限阶 Hermite 代理在 ICL error 上渐近等价；两者的第二层 readout 分别训练。",
+      "Figure 1 中，非线性 MLP 优于 linear Transformer，并在样本数、context length 与 hidden width 扫描上贴合 p=4 代理；曲线还显示样本数和宽度方向的 double descent。",
+      "Figure 2 的 d=80、ℓ=d、n=k=0.5d²、20 次 Monte Carlo 模拟表明：提高结构化输入源或结构化任务源的占比、或降低第二源噪声，均可降低按源平均的 ICL error；p=5 代理跟随 MLP。",
+      "Figure 3 揭示机制差异：只有 input covariance 带 rank-one 结构时，增大一步更新 η 几乎不改善误差；task covariance 带结构时则明显改善，支持“feature update 对齐任务方向”的解释。",
+      "多语言例把 Amazon 英文/德文评论经 multilingual-e5-small 嵌入、PCA 到 d=64，星级变成 [−1,1] 回归标签；n=k=0.25d²、100 次试验下，代理与 MLP 接近，η 增大时误差下降，英文占比更高时总体更好。"
+    ]},
+    {"title": "有效性与局限", "paragraphs": [
+      "定理不是一般 Transformer 定理：只有一层线性 attention、一个两层 MLP、第一层恰好一步 GD、第二层独立数据 ridge fit；标准端到端多层预训练不满足这些条件。",
+      "Assumptions 4.3–4.5 对 η 与 attention-output covariance 的联合缩放，以及 identity 加有限秩 spike 的结构，是作者明确承认的理论限制。附录还引入正则化扰动下目标强凸等条件以把训练误差等价扩展到 ICL error。",
+      "等价只匹配渐近 ICL error，不保证逐样本预测、内部表示、训练动力学或公平性指标相同；有限 p 的最小值依赖联合分布和激活，实验直接选 p=4 或 5。",
+      "“task covariance 结构是 feature learning 所必需”应读作本文模型与实验中的结论；Figure 3(a) 只测试一种 input spike，不排除其他输入结构或多步优化产生特征学习。",
+      "多语言实验仍是固定嵌入后的低维回归：没有训练语言模型，也没有测试自然语言 few-shot prompting；英文优势还可能来自 multilingual-e5-small 的既有表示质量。",
+      "训练混合与均匀测试平均不同；per-source 附录曲线有助识别 trade-off，单一平均值不保证每个来源都改善。"
+    ]},
+    {"title": "复现与资源", "paragraphs": [
+      "代码链接由论文给出：https://github.com/KU-MLIP/Data-Mixing-Shapes-ICL-by-Transformers。复现须固定两批独立训练 contexts、初始化归一化、η 缩放、ridge λ、Hermite degree 与 residual variance。",
+      "Figure 2 应一次只改 Σx,1、Σξ,1 或 Δ1，并保存总体与 per-source error；同时跑 nonlinear MLP、linear baseline 和 polynomial surrogate，避免把 mixture gain 与 feature-learning gain混为一谈。",
+      "多语言示例还需锁定语种采样、multilingual-e5-small 版本、384→64 PCA fit 集、归一化与标签缩放；这些预处理都可能制造或放大 covariance spike。",
+      "本站核验 v2 PDF SHA-256：dd90c755f9da9704798e298b43474b83462ab3c737c5449b64f3582676308c81。Evidence status: full-text verified; no independent reproduction performed."
+    ]},
+    {"title": "阅读指南", "paragraphs": [
+      "最短路径：data model Eq. (1) → two-stage training Eqs. (5)–(7) → Assumptions 4.1–4.8 → Theorem 4.12 → Figures 2–3。",
+      "物理路径：把 Hermite components 当正交模、source mixing 当 disorder mixture、task covariance spike 当可凝聚方向，再逐条核对 universality 的观测量与极限。",
+      "AI 路径：牢记“ICL 时不更新参数”与“预训练阶段用一步更新塑造 ICL 表示”是两个时间尺度；本文研究后者如何改变前者。"
+    ]}
+  ],
+  "evidence_refs": [
+    "paper.pdf pp. 3–5: heterogeneous data model, Transformer architecture, two-stage training and ICL metric",
+    "paper.pdf pp. 5–8: scaling assumptions, Gaussian lemmas and polynomial-equivalence theorem",
+    "paper.pdf pp. 8–10: dimensional, mixture, feature-learning and multilingual experiments",
+    "paper.pdf pp. 11–23: proofs, conditional Gaussian equivalence and stated auxiliary assumptions",
+    "paper.pdf p. 24: per-source mixture results",
+    "source PDF SHA-256 dd90c755f9da9704798e298b43474b83462ab3c737c5449b64f3582676308c81",
+    "Evidence packet SHA-256 dbac300535e35d0533210aee01cfcdd76f4df0aeedc53dcdbcce84e0cb3d2737",
+    "Evidence status: full-text verified; no independent reproduction performed."
+  ]
+}

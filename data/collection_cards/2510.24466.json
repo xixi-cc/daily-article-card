@@ -1,0 +1,130 @@
+{
+  "arxiv_id": "2510.24466",
+  "source_version": "v1",
+  "source_pdf": "https://arxiv.org/pdf/2510.24466v1",
+  "title_en": "Non-Singularity of the Gradient Descent Map for Neural Networks with Piecewise Analytic Activations",
+  "title_zh": "分段解析激活神经网络中梯度下降映射的非奇异性",
+  "curation_status": "full_text_verified",
+  "card_standard_version": "2.4",
+  "audience_profile": "physics_ai_literate_physicist",
+  "paper_profile": "theory",
+  "style_reference": "physicist_daily_arxiv",
+  "provenance": {
+    "program": "Collection", "catalog": "Paper Collection", "catalog_record_id": "2510.24466",
+    "catalog_record_ids": ["2510.24466"], "catalog_topic": "Training Dynamics",
+    "collection_date": "2026-08-30", "sampled_at": "2026-08-31",
+    "selected_by": "ziming_mineru_serial_goal", "sampling_seed": "not_applicable_source_complete", "candidate_count": 464
+  },
+  "verified_metadata": {
+    "arxiv_id": "2510.24466", "version": "v1",
+    "title": "Non-Singularity of the Gradient Descent map for Neural Networks with Piecewise Analytic Activations",
+    "authors": ["Alexandru Crăciun", "Debarghya Ghoshdastidar"],
+    "categories": ["math.OC", "cs.LG"], "primary_category": "math.OC",
+    "published": "2025-10-28T14:34:33Z", "updated": "2025-10-28T14:34:33Z",
+    "abstract": "For fully connected, convolutional, and softmax-attention networks with piecewise analytic activations and an analytic loss, the paper proves that the GD or mini-batch SGD update map is non-singular for almost every step size. The result supplies a measure-theoretic premise used by earlier saddle-avoidance and stability analyses, without requiring global Lipschitz smoothness or uniformly small steps."
+  },
+  "equation_refs": [
+    {
+      "label": "Gradient-descent map",
+      "latex": "G_\\eta(\\theta)=\\theta-\\eta\\nabla L(\\theta)",
+      "role": "treat one optimizer step as a deterministic map on parameter space",
+      "symbols": {"theta": "all trainable parameters", "eta": "positive step size", "L": "empirical loss"},
+      "evidence": "paper.pdf p. 4, Section 2",
+      "interpretation": "The theorem concerns the geometry of this one-step map and finite compositions of such maps; it is not itself a convergence-rate statement."
+    },
+    {
+      "label": "Non-singularity criterion",
+      "latex": "|B|=0\\quad\\Longrightarrow\\quad |G_\\eta^{-1}(B)|=0",
+      "role": "state the measure-theoretic property needed to keep exceptional target sets exceptional under backward iteration",
+      "symbols": {"B": "Lebesgue-null subset of parameter space", "vertical_bars": "Lebesgue measure", "G_eta_inverse": "preimage, not necessarily a global inverse"},
+      "evidence": "paper.pdf p. 2, definition below Figure 1",
+      "interpretation": "Unlike injectivity, non-singularity permits many-to-one behavior; it only forbids a null set from having a positive-measure preimage."
+    },
+    {
+      "label": "Jacobian determinant of a GD step",
+      "latex": "\\det DG_\\eta(\\theta)=\\det\\!\\left(I-\\eta H_L(\\theta)\\right)=\\prod_i\\left(1-\\eta\\lambda_i(\\theta)\\right)",
+      "role": "connect exceptional step sizes to Hessian eigenvalues and local invertibility",
+      "symbols": {"H_L": "loss Hessian on an analytic region", "lambda_i": "its eigenvalues", "I": "identity matrix"},
+      "evidence": "paper.pdf p. 7, Proposition 11",
+      "interpretation": "Analyticity makes the zero set of this determinant negligible unless it vanishes identically; the proof excludes only a measure-zero set of step sizes."
+    }
+  ],
+  "figure_refs": [{
+    "label": "Figure 1", "asset_path": "assets/collection-figures/2510.24466/figure-1-singular-map.webp",
+    "section": "核心结果与证据", "role": "contrast a GD map that collapses an interval with one that preserves positive-dimensional extent",
+    "evidence": "paper.pdf p. 2, Figure 1",
+    "alt_text": "同一一维损失上两种步长的梯度下降映射：η=0.5 把红色区间压到一点，η=0.25 把它映成另一区间。",
+    "caption": "非奇异性不是要求更新可逆，而是排除把一片正测度初值整体压进零测集的情形。",
+    "interpretation": "The toy loss visualizes the property, not evidence that every non-exceptional step size yields stable or convergent training."
+  }],
+  "cover": {
+    "mode": "source_figure", "asset_path": "assets/collection-figures/2510.24466/figure-1-singular-map.webp",
+    "label": "Figure 1", "visual_type": "schematic", "evidence": "paper.pdf p. 2, Figure 1",
+    "alt_text": "奇异与非奇异梯度下降映射对区间作用的示意图。",
+    "caption": "一个更新若把整段参数压成一点，零测集的逆像便不再是零测集。",
+    "selection_rationale": "It gives non-specialists the shortest geometric route to the theorem's exact notion of non-singularity."
+  },
+  "sections": [
+    {"title": "作者信息", "paragraphs": [
+      "Alexandru Crăciun、Debarghya Ghoshdastidar；作者来自慕尼黑工业大学、Munich Data Science Institute 与 Munich Center for Machine Learning。",
+      "本站核验 arXiv:2510.24466v1：提交于 2025-10-28；主分类 math.OC，另含 cs.LG，共 17 页。",
+      "Collection 来源为刘子鸣网站的 Training Dynamics 条目。"
+    ]},
+    {"title": "研究问题", "paragraphs": [
+      "许多优化定理先假设 GD 更新不会把一大片初值压进鞍点、极大值或不稳定极小值组成的零测集。对含 ReLU 的深网，这个非奇异性此前常被假定，或只能在全局 Lipschitz 光滑、步长足够小等条件下证明。",
+      "论文问的是：把网络视为参数 θ 的函数时，分段解析激活造成的折面是否仍足够温和，使 GD/SGD 的一步映射对几乎所有步长保持非奇异？",
+      "答案是肯定的，但结论精确地停在测度论层面：它补齐后续避鞍与稳定性定理的一项前提，不单独证明训练收敛、找到全局最优或具有良好泛化。"
+    ]},
+    {"title": "背景", "paragraphs": [
+      "若 G 是局部微分同胚，零测集的逆像仍为零测集；对光滑损失，关键量是 det(I−ηH_L)。困难在于 ReLU 等激活只在分区内部解析，跨分区时普通复合函数的链式规则不足以保证“几乎处处解析”。",
+      "作者沿网络层次归纳，把上一层参数空间分成非解析边界、内部零点和解析非零点，证明坏集合仍为零测集。由此得到固定输入下网络输出关于权重几乎处处解析，再借解析损失得到经验损失同样如此。",
+      "所谓“几乎所有步长”是 Lebesgue 意义：允许一个零测度的 η 集合失败，不代表可以为某个具体浮点步长无条件出具证书。"
+    ]},
+    {"title": "给物理学家的 AI 导读", "paragraphs": [
+      "可以把参数更新看成离散时间动力系统。非奇异性类似相空间映射不把有限体积压扁到低维吸引集合；它比哈密顿流的体积保持弱得多，只要求零体积集合的逆像仍为零体积。",
+      "ReLU 的折点像分片光滑势能面的接缝。作者并未把接缝抹平，而是证明接缝及其层间传播在参数空间中仍是可忽略集合，然后在每个解析区域使用 Jacobian 与逆函数定理。",
+      "det(I−ηH)=0 表示某个局部曲率模满足 ηλ=1，该方向的一步线性响应被压到零；这解释了为何特殊步长可能奇异。",
+      "类比边界是：这里没有 Liouville 定理、辛结构或能量守恒；非奇异也不排除强收缩、混沌、周期轨道或落入次优极小值。"
+    ]},
+    {"title": "模型与方法", "paragraphs": [
+      "模型覆盖由全连接、卷积或 softmax attention 层构成的有限深网络；逐点非线性须分段解析，包括 sigmoid、tanh、ReLU 与 leaky ReLU。正文为简洁先置零 bias，附录说明 bias 可直接纳入。",
+      "训练数据固定且有限，经验损失 l(y,F(θ,x)) 对网络输出须解析；因此常见平方损失与交叉熵可覆盖，但非解析目标函数需另行检查。",
+      "证明链为：层级结构保证 θ↦F(θ,x) 几乎处处解析且零集边界可控；解析损失的有限和给出 a.e.-analytic L；在每个解析连通区，解析 Jacobian 的零集要么全域为零，要么为零测集；最后并回非解析集合。",
+      "SGD 的每个 mini-batch 更新等价于相应经验损失上的 GD；有限步学习率日程是这些非奇异映射的复合。"
+    ]},
+    {"title": "核心结果与证据", "paragraphs": [
+      "Theorem 1：对上述架构、分段解析激活、任意固定数据和解析损失，几乎所有 η>0 下任意 GD 或 mini-batch SGD 映射均非奇异。结论不依赖样本数，也不要求 η 小。",
+      "Propositions 6–7 解决核心技术障碍：尽管一般两个 a.e.-analytic 函数的复合未必 a.e.-analytic，网络的矩阵乘法与逐层结构仍让参数到输出的映射在零测集外解析。",
+      "Proposition 11 将解析 L 的问题化为 det(I−ηH_L) 的零集；Corollary 12 再把结果扩展到 a.e.-analytic L，并允许在不可微集合上任意定义更新映射。",
+      "Figure 1 给出反例直觉：η=0.5 时一段区间被压到一点而奇异，η=0.25 时同一区间仍映成区间。",
+      "论文用二维两层 ReLU 玩具模型展示周期倍增以及 GD/SGD 稳定极小值可不同；这些是理论应用示例，不是大模型训练实验。"
+    ]},
+    {"title": "有效性与局限", "paragraphs": [
+      "非奇异性只负责“坏初值集合不会因逆迭代膨胀”；要推出几乎必然避开鞍点，还需另外证明目标鞍点或不稳定极小值本身为零测集。论文脚注明确指出，过参数化情形需要额外论证。",
+      "“几乎所有 η”不识别每个网络的具体异常步长；η=1/λ_i 的直觉只有在相应曲率条件下适用，实际 Hessian 随 θ 变化。",
+      "架构不覆盖所有循环网络；作者认为残差与图网络或可延伸，但这不是已证明结论。优化器结论直接覆盖 GD/SGD，Adam、momentum、proximal 或 mirror descent 仍需重做更新映射分析。",
+      "解析 loss 是实质假设；若损失、正则项、裁剪或离散训练操作不满足条件，不能直接套用。",
+      "论文没有独立大规模数值验证，也没有给出速度、泛化或全局最优保证；“现实架构”指层类型进入定理，而非完整工业训练栈得到认证。"
+    ]},
+    {"title": "复现与资源", "paragraphs": [
+      "数学复核应先逐项验证激活的分段解析性、loss 的解析性与网络层是否属于已覆盖类别，再沿 Proposition 6、7、11 和 Corollary 12 检查零测集论证。",
+      "数值演示可复现正文二维 ReLU loss，对 η 扫描 Gη 的 Jacobian、周期轨道与吸引域；有限网格只能作示意，不能证明测度为零。",
+      "若把定理用于具体训练结论，应另列目标坏集合的测度条件、初始化是否对 Lebesgue 测度绝对连续，以及有限步复合中每一步的步长条件。",
+      "本站核验 v1 PDF SHA-256：635f9fb8794374e51b42577cf8f7c171d2fbf1d8ceb0e81d6dec2f45ca0b9a7c。Evidence status: full-text verified; no independent reproduction performed."
+    ]},
+    {"title": "阅读指南", "paragraphs": [
+      "最短路径：Figure 1 与 Theorem 1 → Proposition 6 的分区归纳 → Proposition 11 的 Jacobian 论证 → Discussion 的适用边界。",
+      "物理路径：先把 Gη 当离散动力系统，区分 non-singular、volume-preserving 与 stable，再读周期轨道和 GD/SGD 稳定集示例。",
+      "AI 路径：最重要的防误读是把“验证避鞍定理的一项假设”与“证明深网训练成功”严格分开。"
+    ]}
+  ],
+  "evidence_refs": [
+    "paper.pdf pp. 2–3: definition, Theorem 1, scope and relationship to prior saddle-avoidance results",
+    "paper.pdf pp. 4–7: supervised setting, a.e. analyticity and non-singularity proof chain",
+    "paper.pdf pp. 8–10: implications, toy dynamics, architecture and optimizer limitations",
+    "paper.pdf pp. 13–17: full proofs, bias extension and experimental details",
+    "source PDF SHA-256 635f9fb8794374e51b42577cf8f7c171d2fbf1d8ceb0e81d6dec2f45ca0b9a7c",
+    "Evidence packet SHA-256 16152e56fc68fb16cac4e2d9a7d8de05127fef647782f6c88cd7021492ea6657",
+    "Evidence status: full-text verified; no independent reproduction performed."
+  ]
+}
