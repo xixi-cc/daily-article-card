@@ -1,0 +1,186 @@
+{
+  "arxiv_id": "2510.14095",
+  "source_version": "v1",
+  "source_pdf": "https://arxiv.org/pdf/2510.14095v1",
+  "title_en": "Mechanisms for Robust Generalization in Recursive Reasoning Models",
+  "title_zh": "递归推理模型稳健泛化的机制",
+  "curation_status": "full_text_verified",
+  "card_standard_version": "2.4",
+  "audience_profile": "physics_ai_literate_physicist",
+  "paper_profile": "ai_empirical",
+  "style_reference": "physicist_daily_arxiv",
+  "provenance": {
+    "program": "Collection",
+    "catalog": "Paper Collection",
+    "catalog_record_id": "2510.14095",
+    "catalog_record_ids": ["2510.14095"],
+    "catalog_topic": "Mechanistic Interpretability",
+    "collection_date": "2026-08-30",
+    "sampled_at": "2026-08-31",
+    "selected_by": "ziming_mineru_serial_goal",
+    "sampling_seed": "not_applicable_source_complete",
+    "candidate_count": 464
+  },
+  "verified_metadata": {
+    "arxiv_id": "2510.14095",
+    "version": "v1",
+    "title": "Mechanisms for Robust Generalization in Recursive Reasoning Models",
+    "authors": ["Awni Altabaa", "Siyu Chen", "John Lafferty", "Zhuoran Yang"],
+    "categories": ["cs.LG", "cs.AI"],
+    "primary_category": "cs.LG",
+    "published": "2025-10-15T21:03:59Z",
+    "updated": "2025-10-15T21:03:59Z",
+    "abstract": "On a synthetic modular-arithmetic DAG task, the paper combines a recurrent Transformer block, supervised intermediate algorithm states, a discrete latent bottleneck, and corruption-based self-correction. Models trained only on graphs with at most 32 nodes can then solve much larger graphs, while mechanistic analysis of one selected two-layer model identifies variable lookup and modular-addition circuits."
+  },
+  "equation_refs": [
+    {
+      "label": "Shared recurrent computation (Eq. 2)",
+      "latex": "Z^{(t+1)}=f_\\theta\\!\\left(Z^{(t)},X\\right),\\qquad t=0,\\ldots,T-1",
+      "role": "reuse one Transformer block as an iterative latent-state update whose iteration count can grow with problem depth",
+      "symbols": {
+        "Z_t": "latent state after t recurrent updates",
+        "X": "encoded problem instance retained as input context",
+        "T": "number of updates, set from the generated graph depth"
+      },
+      "evidence": "paper.pdf p. 5, Eq. (2) and Section 3.1",
+      "interpretation": "Weight sharing makes the update rule depth-invariant, but the experiment supplies the required number of iterations from known graph structure rather than learning an autonomous stopping rule."
+    },
+    {
+      "label": "Algorithm-alignment loss (Eq. 3)",
+      "latex": "\\mathcal L_{\\mathrm{align}}=\\sum_{t=1}^{T}\\operatorname{CE}\\!\\left(g_\\phi(Z^{(t)}),S^{(t)}\\right)",
+      "role": "supervise every latent step with the corresponding state of the known graph-evaluation algorithm",
+      "symbols": {
+        "S_t": "ground-truth intermediate algorithm state",
+        "g_phi": "decoder from the latent representation to state tokens",
+        "CE": "token-level cross-entropy"
+      },
+      "evidence": "paper.pdf pp. 5–6, Eq. (3) and Section 3.2",
+      "interpretation": "The supervision provides much more information than final answers alone. Generalization therefore tests whether an explicitly taught local algorithm composes to greater depth, not whether the algorithm is discovered from input-output examples."
+    },
+    {
+      "label": "Discrete latent projection (Eq. 4)",
+      "latex": "\\widehat s_i^{(t)}=\\arg\\max_k p_\\phi(k\\mid Z_i^{(t)}),\\qquad \\widetilde Z_i^{(t)}=E(\\widehat s_i^{(t)})",
+      "role": "project each predicted intermediate token back onto a finite codebook before the next recurrent update",
+      "symbols": {
+        "p_phi": "distribution over factorized syntax, variable, operation and value tokens",
+        "E": "embedding map used to re-enter the recurrent network",
+        "argmax": "non-differentiable discrete choice handled by the paper's training construction"
+      },
+      "evidence": "paper.pdf p. 6, Eq. (4) and Section 3.3",
+      "interpretation": "Projection suppresses small continuous-state drift, much like returning a noisy state to a finite symbolic manifold; it can also erase useful uncertainty and depends on the hand-designed codebook."
+    }
+  ],
+  "figure_refs": [
+    {
+      "label": "Figure 4",
+      "asset_path": "assets/collection-figures/2510.14095/figure-4-ood-generalization.webp",
+      "section": "核心结果与证据",
+      "role": "compare which combinations of recurrence, intermediate supervision, discretization and self-correction extrapolate beyond the training graph sizes",
+      "evidence": "paper.pdf p. 13, Figure 4",
+      "alt_text": "完全解出比例随节点数变化：训练最多 32 节点；离散潜空间监督加自纠在 128 节点仍接近 1，连续潜空间降至约 0.55，思维链和端到端模型在更大图上趋近 0。",
+      "caption": "在这个精确可生成的模 23 DAG 任务上，递归、算法步骤监督、离散投影与扰动自纠共同带来长度外推；曲线不是自然语言推理或通用 LLM 的证据。",
+      "interpretation": "The ablation pattern supports the four ingredients on this benchmark, but the plot reports selected configurations and does not isolate a unique necessary internal mechanism."
+    }
+  ],
+  "cover": {
+    "mode": "source_figure",
+    "asset_path": "assets/collection-figures/2510.14095/figure-4-ood-generalization.webp",
+    "label": "Figure 4",
+    "visual_type": "data_plot",
+    "evidence": "paper.pdf p. 13, Figure 4",
+    "alt_text": "六类 Transformer 方法在训练范围外更大计算图上的完全求解率对比。",
+    "caption": "训练只到 32 个节点，完整离散递归方案外推到 128；关键是已知算法状态与已知图深度提供了强监督和计算预算。",
+    "selection_rationale": "It displays both the striking extrapolation and the failure modes of weaker baselines, while the caption keeps the synthetic-task boundary explicit."
+  },
+  "sections": [
+    {
+      "title": "作者信息",
+      "paragraphs": [
+        "Awni Altabaa、Siyu Chen、John Lafferty、Zhuoran Yang。",
+        "本站核验 arXiv:2510.14095v1：提交并更新于 2025-10-15；主分类 cs.LG，另含 cs.AI，共 58 页。",
+        "Collection 来源为刘子鸣网站的 Mechanistic Interpretability 条目。"
+      ]
+    },
+    {
+      "title": "研究问题",
+      "paragraphs": [
+        "神经网络常在训练分布附近插值良好，却不能把同一算法可靠地执行更多步。论文问：什么架构与训练机制能让 Transformer 从较小计算图外推到更深、更长的同类图？",
+        "作者没有直接挑战开放式语言推理，而是构造可完全控制的有向无环图：变量取 0–22，节点按加、减、乘模 23 计算。训练图最多 32 个节点，测试扩展到 128 个节点。",
+        "核心假设是四个机制要协同：共享参数的自适应递归、逐步算法监督、离散潜状态，以及对受扰中间状态的自纠训练。"
+      ]
+    },
+    {
+      "title": "背景",
+      "paragraphs": [
+        "普通 fixed-depth Transformer 的计算深度不会随题目增长；chain-of-thought 可以增加 token 级计算，但长序列的早期错误会进入后续上下文。共享 recurrent block 则让同一局部更新规则反复作用。",
+        "只给最终答案时，模型可能学到训练尺寸特有的捷径。论文把拓扑排序后的真实中间变量值作为 latent algorithmic targets，相当于告诉模型每一步应执行什么局部算法。",
+        "连续潜状态每轮都可能积累小偏差。将 syntax、变量名、运算符和值分别分类后重新嵌入，可把状态投影回有限符号集合；再随机破坏一部分 latent tokens，训练下一步修复错误。"
+      ]
+    },
+    {
+      "title": "给物理学家的 AI 导读",
+      "paragraphs": [
+        "可把共享 recurrent block 看成离散时间演化算子：系统尺寸增加时不换定律，只延长演化时间。与固定深度网络相比，这更接近用同一个 transfer operator 迭代穿过更长链。",
+        "离散 bottleneck 像每一步都投影回有限状态流形或吸引子集合，避免连续误差沿迭代放大；corruption training 则让该动力学具有局部误差校正能力。这个类比解释稳健性，但不证明网络真的优化了某个能量函数。",
+        "这里的“自适应计算”仍有外部教师：生成器知道 DAG 深度，并据此给 recurrent iterations。模型没有从残差、置信度或收敛性自行决定何时停止，所以不能直接类比为 learned adaptive integrator。",
+        "与 XNN 的轴置换对称不同，本工作追求的是 depth invariance：更新规则对计算步数共享，而不是对空间坐标变换协变。它解决算法长度外推，不自动带来几何或物理守恒。"
+      ]
+    },
+    {
+      "title": "模型与方法",
+      "paragraphs": [
+        "数据是 tokenized DAG 程序：叶节点给变量值，内部节点执行模 23 的 +、−、×。严格指标要求实例中所有查询都正确；一个局部错误即可把整题记为失败。",
+        "训练和比较包括端到端 feedforward、端到端 recurrent、chain-of-thought，以及连续或离散 latent supervision。完整模型在离散 latent 状态上额外做随机 corruption，再预测正确的下一状态。",
+        "factorized state representation 把 syntax、variable、operation、value 分成不同 heads，argmax 后重新 embedding；这种表示直接利用了任务的已知语法和有限代数结构。",
+        "训练只含 N≤32，OOD 测试到 N=128。递归次数 T 随生成图的依赖深度设置；论文从头训练小型 causal Transformer，而非在通用预训练 LLM 上微调。"
+      ]
+    },
+    {
+      "title": "核心结果与证据",
+      "paragraphs": [
+        "Figure 4 中，完整的离散 latent supervision + self-correction 在 N=128 仍接近 100% fully solved；不带自纠的离散模型略低但仍接近 1。continuous latent 模型随 N 增长降到约 0.55。",
+        "chain-of-thought 在 N≈40 后快速下降，到约 56 节点后接近 0；端到端 feedforward/recurrent 更早失败。该结果说明仅增加循环或可见推理链不足以复制完整方案。",
+        "Figure 5 显示更大图需要更多 recurrent iterations 才达到高求解率，且足够迭代后的性能曲线随图尺寸平移。这支持“共享局部规则 + 随深度增加计算”的解释。",
+        "对一个 2-layer、16-head、hidden size 256 的高性能模型，作者识别出第一层注意力复制变量名、第二层检索对应值、MLP 实现模加法的回路；模加法表示在离散 Fourier 基底中出现预期频率结构。",
+        "该机制模型是跨 seeds 挑出的 99.98% OOD 模型：在 N=128 的约 23,000 个实例中错 40 个，错误主要来自 MLP。它说明某个成功解怎样工作，不代表普通 seed 都形成同一回路。"
+      ]
+    },
+    {
+      "title": "有效性与局限",
+      "paragraphs": [
+        "任务语法、拓扑结构、中间算法状态、有限值域和正确计算深度都由生成器提供，远比自然语言数学、科研 agent 或真实 PDE 推理干净；不能把 N=128 外推表述为通用 reasoning scaling。",
+        "主结果使用超参数搜索后的最佳配置，机制分析又挑选一个接近完美的 seed。缺少主图中的多 seed 置信区间会让稳定性和选择效应难以分离。",
+        "离散 codebook 与 factorized heads 是按任务手工设计；对状态不可枚举、多个算法路径同样正确或中间监督不可得的问题，方法怎样扩展尚未展示。",
+        "已知 graph depth 控制迭代数，没有 learned halting、compute-quality Pareto、wall-clock 或长序列 memory 成本。更多 recurrence 是否在未知结构上稳定，也未测试。",
+        "mechanistic analysis 是对一个选定模型的事后解释，支持 copy/retrieve/add 回路的存在，但没有通过完整因果干预证明其必要性、唯一性或跨 seed 普遍性。本站未独立复现实验。"
+      ]
+    },
+    {
+      "title": "复现与资源",
+      "paragraphs": [
+        "代码：https://github.com/Awni00/algorithmic-generalization-transformer-architectures 。先固定 p=23、训练 N≤32、数据生成器与 strict fully-solved metric，复现 Figure 4 的所有 ablations。",
+        "至少报告多 seed 中位数与区间，并区分 best validation configuration、best seed 和预注册默认设置；将 learned halting 与 oracle depth schedule 比较。",
+        "做逐机制干预：连续状态加噪、去掉 argmax projection、改变 codebook、在特定 attention head/MLP frequency 上 patch 或 ablate，检验机制是否因果控制 OOD 成功。",
+        "本站核验 v1 PDF SHA-256：a8a7a6c742fdb0fd5c6bf58f7055477d8fe317544b9c9143716ecde7bef19a9d。Evidence status: full-text verified; no independent reproduction performed; reported accuracies and circuits were not independently reproduced."
+      ]
+    },
+    {
+      "title": "阅读指南",
+      "paragraphs": [
+        "最短路径：task definition → four mechanisms → Table 1/Figure 4 → Figure 5 → selected-model circuit analysis → limitations。",
+        "物理路径：用共享演化算子、投影与误差校正理解 inductive bias，同时追问迭代次数由谁决定、扰动是否收缩。",
+        "AI 路径：严格区分 algorithmic supervision、discrete bottleneck 与 recurrence 的贡献，并留意 best-configuration 与 cherry-picked-seed 边界。"
+      ]
+    }
+  ],
+  "evidence_refs": [
+    "paper.pdf pp. 3–7: synthetic DAG task and four proposed mechanisms",
+    "paper.pdf pp. 12–14: implementation matrix, Figures 4–5 and OOD results",
+    "paper.pdf pp. 15–22: selected two-layer model and copy/retrieve/modular-addition circuit analysis",
+    "paper.pdf appendices: data generation, hyperparameter search and additional ablations",
+    "https://github.com/Awni00/algorithmic-generalization-transformer-architectures",
+    "source PDF SHA-256 a8a7a6c742fdb0fd5c6bf58f7055477d8fe317544b9c9143716ecde7bef19a9d",
+    "Evidence packet SHA-256 85ac777dc99108d8d632a1ddd09d0b1d63cd5dd8dede604ea3887f0ff2b66ccd",
+    "Evidence status: full-text verified; no independent reproduction performed."
+  ]
+}

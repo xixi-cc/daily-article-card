@@ -1,0 +1,185 @@
+{
+  "arxiv_id": "2510.13665",
+  "source_version": "v2",
+  "source_pdf": "https://arxiv.org/pdf/2510.13665v2",
+  "title_en": "Axial Neural Networks for Dimension-Free Foundation Models",
+  "title_zh": "面向维度无关基础模型的轴神经网络",
+  "curation_status": "full_text_verified",
+  "card_standard_version": "2.4",
+  "audience_profile": "physics_ai_literate_physicist",
+  "paper_profile": "ai_empirical",
+  "style_reference": "physicist_daily_arxiv",
+  "provenance": {
+    "program": "Collection",
+    "catalog": "Paper Collection",
+    "catalog_record_id": "2510.13665",
+    "catalog_record_ids": ["2510.13665"],
+    "catalog_topic": "AI for Science",
+    "collection_date": "2026-08-30",
+    "sampled_at": "2026-08-31",
+    "selected_by": "ziming_mineru_serial_goal",
+    "sampling_seed": "not_applicable_source_complete",
+    "candidate_count": 464
+  },
+  "verified_metadata": {
+    "arxiv_id": "2510.13665",
+    "version": "v2",
+    "title": "Axial Neural Networks for Dimension-Free Foundation Models",
+    "authors": ["Hyunsu Kim", "Jonggeon Park", "Joan Bruna", "Hongseok Yang", "Juho Lee"],
+    "categories": ["cs.LG", "cs.AI"],
+    "primary_category": "cs.LG",
+    "published": "2025-10-15T15:25:20Z",
+    "updated": "2025-10-24T12:06:35Z",
+    "abstract": "Axial Neural Networks share transformations across tensor axes and aggregate aligned outputs to process tensors of different rank. Set-based and graph-based variants are axis-permutation equivariant; XNN conversions of CViT/MPP are competitive on 2D PDEs and often fine-tune better from 2D pretraining to 1D/3D data, but dimension freedom assumes interchangeable spatial axes and does not remove high-rank computational growth."
+  },
+  "equation_refs": [
+    {
+      "label": "Axis-permutation equivariance (Eq. 6)",
+      "latex": "\\phi(\\Pi(\\mathbf x))=\\Pi(\\phi(\\mathbf x)),\\qquad \\forall\\Pi\\in S_K",
+      "role": "require the same network response after reordering a rank-K tensor's spatial axes",
+      "symbols": {
+        "Pi": "permutation of tensor axes",
+        "S_K": "permutation group on K axes",
+        "phi": "dimension-agnostic tensor map"
+      },
+      "evidence": "paper.pdf p. 3, Eq. (6)",
+      "interpretation": "The symmetry concerns exchanging axes, not translation/rotation in physical space or changing grid resolution. It is suitable only when the selected axes should be treated as interchangeable."
+    },
+    {
+      "label": "Set-based axial aggregation (Eq. 9)",
+      "latex": "\\mathbf y=\\phi\\!\\left(\\bigoplus_{\\Pi\\in S_K}\\Pi^{-1}\\psi(\\Pi\\mathbf x)\\right)",
+      "role": "apply one shared operator to permuted axis views, realign them, and aggregate invariantly",
+      "symbols": {
+        "psi": "shared axis-wise transformation",
+        "oplus": "sum, mean, max, or another permutation-invariant aggregator",
+        "Pi_inverse": "restore each output to the reference axis order"
+      },
+      "evidence": "paper.pdf p. 4, Eq. (9) and Theorem 3.1",
+      "interpretation": "Weight sharing permits variable tensor rank, but symmetric aggregation restricts expressivity; the paper shows an axial convolution produces a constrained symmetric kernel unless width is increased."
+    },
+    {
+      "label": "Axial self-attention complexity (Eq. 12 discussion)",
+      "latex": "\\mathcal O((HWD)^2)\\;\\longrightarrow\\;\\mathcal O(H^2+W^2+D^2)",
+      "role": "replace attention over every grid point pair with separate shared attention along axes",
+      "symbols": {
+        "H_W_D": "grid lengths along three spatial axes",
+        "K": "number of spatial axes"
+      },
+      "evidence": "paper.pdf p. 5, Eq. (12) discussion",
+      "interpretation": "This comparison describes attention interaction count for a 3D tensor; full runtime also includes K branches, reshaping, pooling, channels and the graph-based pairwise axis messages."
+    }
+  ],
+  "figure_refs": [
+    {
+      "label": "Figure 5",
+      "asset_path": "assets/collection-figures/2510.13665/figure-5-unseen-dimensions.webp",
+      "section": "核心结果与证据",
+      "role": "compare 2D-pretrained MPP and X-MPP while fine-tuning on unseen 1D and 3D PDEs",
+      "evidence": "paper.pdf p. 10, Figure 5",
+      "alt_text": "五个面板给出 Burgers 1D、advection 1D、compressible flow 1D、diffusion-sorption 1D 和 compressible flow 3D 的 NRMSE 随微调数据量变化，比较 MPP 与 X-MPP。",
+      "caption": "X-MPP 在四个 unseen-dimension 任务上用少量数据下降更快，但 Burgers 1D 并非始终优于原 MPP。",
+      "interpretation": "The curves support easier adaptation in selected tasks; they do not demonstrate zero-shot equation solving or arbitrary-dimensional physical generalization."
+    }
+  ],
+  "cover": {
+    "mode": "source_figure",
+    "asset_path": "assets/collection-figures/2510.13665/figure-5-unseen-dimensions.webp",
+    "label": "Figure 5",
+    "visual_type": "data_plot",
+    "evidence": "paper.pdf p. 10, Figure 5",
+    "alt_text": "从二维 PDE 预训练迁移到一维和三维时，轴模型与维度固定 MPP 的少样本 NRMSE 对比。",
+    "caption": "共享轴操作让同一组权重能接收 1D、2D、3D 网格；收益主要体现在跨维度微调，而非所有方程都获胜。",
+    "selection_rationale": "The figure directly tests the dimension-transfer claim on physical data and visibly includes a counterexample instead of showing architecture alone."
+  },
+  "sections": [
+    {
+      "title": "作者信息",
+      "paragraphs": [
+        "Hyunsu Kim、Jonggeon Park、Joan Bruna、Hongseok Yang、Juho Lee；单位为 KAIST 与 New York University。",
+        "本站核验 arXiv:2510.13665v2：初版提交于 2025-10-15，v2 更新于 2025-10-24；主分类 cs.LG，另含 cs.AI，共 34 页；journal reference 为 NeurIPS 2025。",
+        "Collection 来源为刘子鸣网站的 AI for Science 条目。"
+      ]
+    },
+    {
+      "title": "研究问题",
+      "paragraphs": [
+        "PDE 数据天然混合空间维度：Burgers 常用 1D 网格，Navier–Stokes 用 2D/3D。普通卷积 patch embedder 的 kernel rank 固定，不能让同一组权重直接在不同维数间复用。",
+        "能否像 Deep Sets 对元素、GNN 对节点那样，把 tensor axes 当作可变数量的对象，对每个轴共享变换并做 permutation-equivariant aggregation，从而构建 rank-agnostic 网络？",
+        "这里的 dimension-free 指输入 tensor 的轴数可变，不是参数量、误差或计算量与维数无关，也不是自动适配任意物理变量和边界条件。"
+      ]
+    },
+    {
+      "title": "背景",
+      "paragraphs": [
+        "把 1D 数据 zero-pad 到 2D/3D，或为每个维度训练独立 encoder，都会浪费容量并破坏共享表示。2D convolution inflation 到 3D 也需要手工复制 kernel。",
+        "axis-permutation equivariance 要求交换 H、W、D 后，输出按同样方式交换。通过对每种轴排列应用同一个 operator，再 inverse-permute 和聚合，可从结构上保证这一性质。",
+        "论文给出 set-based SXNN 与 graph-based GXNN。SXNN 简单但对称约束强；GXNN 把每个轴当 graph node，用轴对之间的共享 message passing 提升表达能力。"
+      ]
+    },
+    {
+      "title": "给物理学家的 AI 导读",
+      "paragraphs": [
+        "这类似要求 constitutive law 对坐标轴重标号协变，但比真实旋转/张量协变弱：它只处理离散轴置换，不编码 metric、orientation、units、vector/tensor components 或 boundary geometry。",
+        "如果 x、y、z 的物理角色等价，共享轴算子是合理 inductive bias；若一个轴是时间、纬度或具有各向异性边界，强制交换对称可能错误。论文只对 spatial axes 应用构造，channel 和 PDE-specific handling 仍由 baseline 决定。",
+        "SXNN 把所有轴视图相加，像对 permutation orbit 做 group averaging；保证对称性的代价是只能表达对称 kernel。GXNN 保留每个轴的特征并交换消息，更像在“轴图”上做多体相互作用。",
+        "计算并非真正维度无关：SXNN 分支数随 K 增长，朴素全排列可到 K!，文中借 pooling 对称性对线性例降到 K；GXNN 的轴对 messages 至少带 K^2 结构，高维实用性仍是作者承认的限制。"
+      ]
+    },
+    {
+      "title": "模型与方法",
+      "paragraphs": [
+        "理论部分证明在指定共享函数、对齐变换与 invariant aggregator 假设下，SXNN、GXNN lifting 和 subsequent layers 对 rank-K axis permutations equivariant。",
+        "toy task 区分 RBF 与 periodic Gaussian-process samples，输入 2D–5D。XCNN 用 2D graph-based axial convolutions；3D CNN 对 2D zero-pad，对 4D/5D flatten 后比较。",
+        "PDE 部分把 CViT-S 和 MPP-Ti 的 patch embedding/de-embedding、attention 改为 axial 版本 X-CViT/X-MPP；数据来自 PDEBench/PDEArena，输入若干时间步预测下一步，metric 为 NRMSE。",
+        "跨维度实验先在 2D PDE 上预训练，再用不同数据量微调到 Burgers/advection/CFD/diffusion-sorption 1D 和 CFD 3D；MPP 需 inflation/augmentation，X-MPP 直接扩展/约化轴。"
+      ]
+    },
+    {
+      "title": "核心结果与证据",
+      "paragraphs": [
+        "GP kernel classification 中 XCNN 在 2D/3D/4D/5D 的 accuracy 为 95.83/81.09/72.94/68.37%，3D CNN 为 97.78/67.35/65.93/66.39%。高维优势存在，但 baseline 的 flatten/zero-pad 并不强。",
+        "Table 1 显示 SXCNN 150K 参数、80 ms，SXCNN-L 791K/98 ms，GXCNN 899K/101 ms；高维 accuracy 则 GXCNN 最好。正文却写“GXCNN has 6× fewer parameters and 80% reduced wall clock”，与表格数值相反，疑似把 SXCNN/80 ms 写错，应以表为准。",
+        "2D PDE 单任务训练中 axial variants 多数与或优于 baseline，例如 MPP→X-MPP：DR 0.0157→0.0118、SWE 0.0015→0.0012、CFD M1.0 0.0181→0.0163。CViT 在 NS/SWE 则 X-CViT 略差。",
+        "多维预训练再微调时 X-MPP 对 2D DR/SWE/CFD 达 0.0058/0.0011/0.0209–0.0294，优于 2D-pretrained MPP 对应的 0.0516/0.0022/0.0319–0.0422；但训练集和 architecture handling 不完全对称。",
+        "Figure 5 的 unseen-dimension fine-tuning 在 ADV/CFD/DS 1D 与 CFD 3D 多数数据量下支持 X-MPP，BG 1D 的高数据端则 MPP 更低。"
+      ]
+    },
+    {
+      "title": "有效性与局限",
+      "paragraphs": [
+        "axis permutation 是架构对称性，不保证 PDE 解算所需的平移、旋转、守恒、causality 或 boundary equivariance；不同物理轴不一定可交换。",
+        "GP toy baseline 被迫把 4D/5D flatten 成 3D，比较同时混入不合适输入表示；它证明 XNN 能运行，不足以量化对强 dimension-agnostic baseline 的优势。",
+        "PDE 实验修改了原 MPP：输入时间步从 16 改为 4、InstanceNorm 换成 LayerNorm，并排除 incompressible flow；虽然 axial/non-axial 尽量同设，不能直接沿用原论文性能结论。",
+        "多维预训练 X-MPP 看到了 1D/2D/3D，而某些 MPP 比较只看 2D 或靠 padding/inflation，收益同时来自更多维度数据与架构。需要 matched-data ablation 分离二者。",
+        "没有跨 mesh resolution、irregular grids、anisotropic coordinates、长期 rollout、守恒误差或大 K scaling；作者也承认 cross-attention 与 GXNN 高维效率尚未解决。"
+      ]
+    },
+    {
+      "title": "复现与资源",
+      "paragraphs": [
+        "代码：https://github.com/kim-hyunsu/XNN 。先复现 Table 1，并核对正文“6× fewer/80% reduced”与实际 150K/80 ms 对 899K/101 ms 的不一致。",
+        "做四因素矩阵：相同数据 vs 多维数据、标准 vs axial architecture；固定 parameter/FLOP budget，分别测 seen dimension、unseen dimension、resolution transfer 和 long rollout。",
+        "物理验证应加入守恒量、谱误差、shock/transition location、boundary-condition shift；对 anisotropic PDE 显式测试交换轴是否应为对称。",
+        "本站核验 v2 PDF SHA-256：ba35ae1521fa9b6aa91ba3c509cab2f82307e8bd9ecacc7890d8a2a3cd974df9。Evidence status: full-text verified; no independent reproduction performed; reported NRMSE and runtime were not independently reproduced."
+      ]
+    },
+    {
+      "title": "阅读指南",
+      "paragraphs": [
+        "最短路径：Eq. (6) → SXNN Eq. (9)/Theorem 3.1 → GXNN lifting → Figure 3 → Tables 1–2 → Figure 5 → limitations。",
+        "物理路径：先判断哪些 axes 真应交换，再看该对称是否与 PDE tensor 类型、边界和单位一致。",
+        "AI 路径：区分 variable rank、variable grid size 和 multimodal inputs；重点审查 matched-data baseline 与计算复杂度。"
+      ]
+    }
+  ],
+  "evidence_refs": [
+    "paper.pdf pp. 3–5: axis-permutation equivariance and SXNN construction",
+    "paper.pdf pp. 5–7: GXNN axis graph and equivariance claims",
+    "paper.pdf pp. 8–10: GP/PDE experiments, Tables 1–2 and Figure 5",
+    "paper.pdf pp. 12–26: architectural details and proofs",
+    "https://github.com/kim-hyunsu/XNN",
+    "source PDF SHA-256 ba35ae1521fa9b6aa91ba3c509cab2f82307e8bd9ecacc7890d8a2a3cd974df9",
+    "Evidence packet SHA-256 ec81baddd2b84a0751cffaf2d3f9114c4df97cc4f0d3525e69565642d7efdf49",
+    "Evidence status: full-text verified; no independent reproduction performed."
+  ]
+}

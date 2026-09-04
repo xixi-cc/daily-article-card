@@ -1,0 +1,185 @@
+{
+  "arxiv_id": "2510.12773",
+  "source_version": "v2",
+  "source_pdf": "https://arxiv.org/pdf/2510.12773v2",
+  "title_en": "Dr.LLM: Dynamic Layer Routing in LLMs",
+  "title_zh": "Dr.LLM：大语言模型中的动态层路由",
+  "curation_status": "full_text_verified",
+  "card_standard_version": "2.4",
+  "audience_profile": "physics_ai_literate_physicist",
+  "paper_profile": "ai_empirical",
+  "style_reference": "physicist_daily_arxiv",
+  "provenance": {
+    "program": "Collection",
+    "catalog": "Paper Collection",
+    "catalog_record_id": "2510.12773",
+    "catalog_record_ids": ["2510.12773"],
+    "catalog_topic": "AI Agents",
+    "collection_date": "2026-08-30",
+    "sampled_at": "2026-08-31",
+    "selected_by": "ziming_mineru_serial_goal",
+    "sampling_seed": "not_applicable_source_complete",
+    "candidate_count": 464
+  },
+  "verified_metadata": {
+    "arxiv_id": "2510.12773",
+    "version": "v2",
+    "title": "Dr.LLM: Dynamic Layer Routing in LLMs",
+    "authors": ["Ahmed Heakl", "Martin Gubri", "Salman Khan", "Sangdoo Yun", "Seong Joon Oh"],
+    "categories": ["cs.CL", "cs.AI", "cs.LG"],
+    "primary_category": "cs.CL",
+    "published": "2025-10-14T17:51:26Z",
+    "updated": "2026-05-18T21:02:06Z",
+    "abstract": "Dr.LLM freezes a pretrained LLaMA/Qwen backbone and trains one lightweight router per block to skip, execute, or repeat that block. Offline MCTS uses gold answers to create 4,000 route labels; learned routers remove search at inference, improve ARC/DART accuracy, and reduce measured 1,000-token wall time by 15.3%, at the cost of 961,000 offline forward passes and modest OOD accuracy loss."
+  },
+  "equation_refs": [
+    {
+      "label": "Per-layer action policy",
+      "latex": "y_\\ell\\in\\{\\mathrm{skip},\\mathrm{execute},\\mathrm{repeat}\\}",
+      "role": "replace the fixed once-per-block Transformer path with an input-dependent discrete path",
+      "symbols": {
+        "ell": "pretrained Transformer block index",
+        "skip": "bypass the block",
+        "repeat": "apply the same frozen block twice"
+      },
+      "evidence": "paper.pdf p. 3, Section 3",
+      "interpretation": "The block weights remain frozen; compute changes through a discrete sequence-level execution path. Repeating a block is not equivalent to adding an independently trained deeper layer."
+    },
+    {
+      "label": "Window-pooled router",
+      "latex": "m_w=|S_w|^{-1}\\sum_{t\\in S_w}H_t^{(\\ell-1)},\\quad z_\\ell=W^{-1}\\sum_{w=1}^W r_\\ell(m_w),\\quad \\widehat y_\\ell=\\arg\\max_c\\operatorname{softmax}(z_\\ell)_c",
+      "role": "summarize a long sequence and vote on one action for each layer",
+      "symbols": {
+        "S_w": "one of W contiguous token windows",
+        "r_l": "small Linear-GELU-Linear router",
+        "H": "hidden states entering a frozen block"
+      },
+      "evidence": "paper.pdf pp. 3–4, Section 3.1",
+      "interpretation": "Mean pooling makes the router cheap and KV-cache compatible, but it discards token-local structure and produces a block action shared across the sequence."
+    },
+    {
+      "label": "Length-aware MCTS score",
+      "latex": "\\operatorname{UCB}(\\pi)=\\frac{Q(\\pi)}{v(\\pi)}+c\\sqrt{\\frac{\\ln V}{v(\\pi)}}-\\lambda\\frac{|\\pi|}{L}",
+      "role": "search offline for short layer paths that retain or improve answer correctness",
+      "symbols": {
+        "pi": "edited ordered path of skipped/executed/repeated layers",
+        "Q_v": "cumulative reward and visit count",
+        "lambda": "path-length penalty, set to 3.0"
+      },
+      "evidence": "paper.pdf p. 5, Section 4.2 and Algorithm 1",
+      "interpretation": "Gold answers enter path evaluation during data generation. MCTS is removed at deployment, but its expensive supervised search is transferred into the routers."
+    }
+  ],
+  "figure_refs": [
+    {
+      "label": "Figure 3",
+      "asset_path": "assets/collection-figures/2510.12773/figure-3-mcts-routing.webp",
+      "section": "模型与方法",
+      "role": "show how gold-labeled ARC/DART examples are searched into skip/execute/repeat supervision",
+      "evidence": "paper.pdf p. 4, Figure 3 and Algorithm 1",
+      "alt_text": "从 ARC/DART 问答与每层三种动作出发，MCTS 依次选择、扩展、按答案正确性评价并回传，最后输出最高奖励的层配置。",
+      "caption": "Dr.LLM 把昂贵的逐题路径搜索放在离线数据制作阶段，再训练轻量 router 模仿搜索结果。",
+      "interpretation": "The figure explains where supervision and compute enter; it does not show that the learned greedy router recovers the globally optimal route."
+    }
+  ],
+  "cover": {
+    "mode": "source_figure",
+    "asset_path": "assets/collection-figures/2510.12773/figure-3-mcts-routing.webp",
+    "label": "Figure 3",
+    "visual_type": "schematic",
+    "evidence": "paper.pdf p. 4, Figure 3",
+    "alt_text": "用离线 Monte Carlo Tree Search 为每个 Transformer 层选择跳过、执行或重复，并生成 router 标签的流程图。",
+    "caption": "推理时省掉搜索，代价是先用近百万次带标准答案的前向计算蒸馏路由策略。",
+    "selection_rationale": "It makes the central trade-off—offline labeled search for online cheap control—more transparent than an accuracy-only plot."
+  },
+  "sections": [
+    {
+      "title": "作者信息",
+      "paragraphs": [
+        "Ahmed Heakl、Martin Gubri、Salman Khan、Sangdoo Yun、Seong Joon Oh；单位包括 Parameter Lab、MBZUAI、NAVER AI Lab、University of Tübingen 与 Tübingen AI Center。",
+        "本站核验 arXiv:2510.12773v2：初版提交于 2025-10-14，v2 更新于 2026-05-18；主分类 cs.CL，另含 cs.AI、cs.LG，共 18 页；论文标注 ICLR 2026。",
+        "Collection 来源为刘子鸣网站的 AI Agents 条目。"
+      ]
+    },
+    {
+      "title": "研究问题",
+      "paragraphs": [
+        "标准 decoder-only Transformer 对每个输入都按相同顺序执行全部层。简单问题可能浪费深度，困难问题又可能受益于重复某些 block；能否不改 backbone，仅训练小控制器，为每个输入选择更合适的路径？",
+        "已有动态深度方法常在精度与计算间直接交换，或推理时仍要搜索。Dr.LLM 的目标是把搜索前移到离线监督生成，让部署时只做一次廉价的 greedy routing。",
+        "关键科学问题不只是“少执行几层”，还包括 route 标签是否依赖标准答案、节省的 block FLOPs 是否变成真实 latency、以及 ARC/DART 学到的路由能否迁移到其他任务。"
+      ]
+    },
+    {
+      "title": "背景",
+      "paragraphs": [
+        "early exit 在中间层直接读答案；Mixture-of-Depth 通常按 token 选择计算；looped Transformer 重复共享模块。Dr.LLM 则在原有层序上做 sequence-level skip/execute/repeat，最多连续跳两层，每层最多重复一次。",
+        "只训练每层一个 bottleneck MLP router，3B backbone 增加约 11M 参数，8B 增加 16.8M；base weights 不动，因此属于 parameter-efficient retrofit。",
+        "监督标签不是人工指定。对每个有 gold answer 的题，MCTS 实际跑多个编辑路径，以正确性和长度筛出一个目标 route，再把每层出现次数变成 0/1/2 分类标签。"
+      ]
+    },
+    {
+      "title": "给物理学家的 AI 导读",
+      "paragraphs": [
+        "可把 32 层网络看成固定时间步的离散流，router 像自适应积分器：局部判断某一步可省略、正常走或再走一次。但每个 block 对应不同参数和表示坐标，skip/repeat 并不满足同一连续生成元的严格时间步解释。",
+        "MCTS 相当于先用昂贵 shooting 搜索满足终端边界条件的离散轨迹，再训练一个 policy 近似这些轨迹。推理快来自 amortization，不是消除了求优成本。",
+        "router 的 macro F1 只有 61%，而 per-layer accuracy 96.8%，因为 execute 占绝大多数；类别比例 skip 7.6%、repeat 2.3%。高 accuracy 主要反映多数类，论文依赖 focal loss 和 class balancing 学稀有动作。",
+        "实际效率取决于生成长度与硬件 kernel。论文在 1000-token generation 上测到 34.49 s→29.21 s，router 本身 0.27 s；这是比“平均省 5 层”更接近部署的证据，但仍需多 batch size、prefill/decode 和 serving stack 测试。"
+      ]
+    },
+    {
+      "title": "模型与方法",
+      "paragraphs": [
+        "骨干覆盖 LLaMA-3.2 3B/8B base 与 instruct、Qwen-2.5 3B/7B instruct。router 对 W=8 个 token windows 分别平均 hidden states，再平均 logits，输出三类动作。",
+        "离线 MCTS 每题最多 50 simulations，UCB 使用 c=1.8、length penalty lambda=3.0、10% random exploration；路径长度不超过 2L，并缓存重复路径。",
+        "从 ARC-Easy/Challenge 与 DART 1–5 共收集 4,000 route examples。搜索访问 24,330 条路径、累计 961,000 次 forward passes；约 30% 编辑路径修正原模型错误，其余保持正确且缩短路径。",
+        "router 用 teacher-forced target path 训练，focal gamma=2、effective-number beta=0.999；A100 40GB、25 epochs、约 4 小时、bf16。推理时不搜索，逐层 greedy 决策。"
+      ]
+    },
+    {
+      "title": "核心结果与证据",
+      "paragraphs": [
+        "ARC/DART in-domain 上，instruct 模型通常提升约 0.9–3.4 percentage points，并减少总执行层计数；例如 LLaMA-3B-Instruct 的总 accuracy 46.1→48.9、总层计数 331.1→323.7。base 模型也报告提升，但绝对表现较低。",
+        "8 个 OOD benchmarks 的四个 instruct backbone 平均下降约 0.85 percentage points；单项有升有降，例如 LLaMA-3B 的 GPQA Diamond 27.2→29.8，但 PIQA 75.6→71.9。迁移并非严格无损。",
+        "论文报告 1000-token end-to-end latency 降低 15.3%，29.21 s 对 34.49 s；router overhead 0.27 s。该实测支持工程收益，但没有给出误差条、batch/硬件多样性或吞吐率。",
+        "层频率分析显示任务难度改变 early/middle/late block 的 skip/repeat 分布，说明 policy 并非固定剪枝；不过相关性不能证明特定重复层承担了额外推理步骤。"
+      ]
+    },
+    {
+      "title": "有效性与局限",
+      "paragraphs": [
+        "在线不需要 gold answer，但标签制作需要它；因此方法适合有可验证训练题的域，不能直接为没有反馈的开放任务生成 route supervision。",
+        "961k forward passes 是显著的一次性离线成本。若模型、prompt 分布或 quantization/serving backend 改变，旧 router 是否仍有效没有测试，amortization break-even 也未报告。",
+        "比较表中的 Num Layers 是生成过程累计/平均计数而非简单 backbone depth，读者不能直接把 -5 层解释成每 token 少 5 个 block；15.3% wall-time 是更可靠但单一的系统测量。",
+        "OOD 平均只覆盖 benchmark accuracy，未测安全、校准、长上下文、tool use、batch serving 或 distribution drift；部分任务下降约数个百分点。",
+        "未报告多 seed router 训练的最终任务方差、显著性检验、能耗或 memory bandwidth。本站未独立复现 MCTS、路由正确性和 latency。"
+      ]
+    },
+    {
+      "title": "复现与资源",
+      "paragraphs": [
+        "代码：https://github.com/parameterlab/dr-llm 。先固定一个 LLaMA-3.2-3B checkpoint 和 ARC/DART split，核对 MCTS path cache、early stop、gold scoring 与 per-layer label distribution。",
+        "部署评测应拆成 prefill/decode，扫描生成长度、batch size、KV-cache、quantization 和不同 GPU；同时报告 tokens/s、p50/p95 latency、energy/token 与实际执行 block 次数。",
+        "加入 static pruning、random route、only-skip、only-repeat、same-compute reranking 和无 MCTS 监督的 router 基线；用未见任务重新计算精度—延迟 Pareto front。",
+        "本站核验 v2 PDF SHA-256：4d1229d57c27642d8e4adbc181c620a17ea87c90fbb33b773d7487d94d0fab69。Evidence status: full-text verified; no independent reproduction performed; accuracy and latency were not independently reproduced."
+      ]
+    },
+    {
+      "title": "阅读指南",
+      "paragraphs": [
+        "最短路径：Figure 2 → router equations → Algorithm 1/Figure 3 → Table 2 offline cost → Tables 3–4 → latency paragraph → ablations。",
+        "物理路径：把 route 当离散控制轨迹，区分 offline optimal-control search、distilled policy 与在线实现开销。",
+        "AI 路径：重点看 gold-label dependence、class imbalance、OOD per-task changes 和真实 wall-clock，而非只看“frozen backbone”。"
+      ]
+    }
+  ],
+  "evidence_refs": [
+    "paper.pdf pp. 3–4: routing actions, windowed router and teacher-forced training",
+    "paper.pdf pp. 4–6: MCTS algorithm, 961k-forward-pass data generation and setup",
+    "paper.pdf pp. 6–8: in-domain/OOD tables and latency measurement",
+    "paper.pdf pp. 8–10: routing analysis, comparisons and ablations",
+    "https://github.com/parameterlab/dr-llm",
+    "source PDF SHA-256 4d1229d57c27642d8e4adbc181c620a17ea87c90fbb33b773d7487d94d0fab69",
+    "Evidence packet SHA-256 809cdea93906d1bd23fb4aafe47a5b1e58e27a6cd298a2353971ed413b0d6d67",
+    "Evidence status: full-text verified; no independent reproduction performed."
+  ]
+}
