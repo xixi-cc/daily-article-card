@@ -1,0 +1,196 @@
+{
+  "arxiv_id": "2603.02069",
+  "source_version": "v1",
+  "source_pdf": "https://arxiv.org/pdf/2603.02069v1",
+  "title_en": "Scaling Laws of SignSGD in Linear Regression: When Does It Outperform SGD?",
+  "title_zh": "线性回归中 SignSGD 的标度律：何时优于 SGD？",
+  "curation_status": "full_text_verified",
+  "card_standard_version": "2.4",
+  "audience_profile": "physics_ai_literate_physicist",
+  "paper_profile": "theory_numerics",
+  "style_reference": "physicist_daily_arxiv",
+  "provenance": {
+    "program": "Collection",
+    "catalog": "Paper Collection",
+    "catalog_record_id": "2603.02069",
+    "catalog_record_ids": ["2603.02069"],
+    "catalog_topic": "Representation Learning",
+    "collection_date": "2026-08-30",
+    "sampled_at": "2026-08-31",
+    "selected_by": "ziming_mineru_serial_goal",
+    "sampling_seed": "not_applicable_source_complete",
+    "candidate_count": 464
+  },
+  "verified_metadata": {
+    "arxiv_id": "2603.02069",
+    "version": "v1",
+    "title": "Scaling Laws of SignSGD in Linear Regression: When Does It Outperform SGD?",
+    "authors": ["Jihwan Kim", "Dogyoon Song", "Chulhee Yun"],
+    "categories": ["cs.LG", "cs.AI", "math.OC", "stat.ML"],
+    "primary_category": "cs.LG",
+    "published": "2026-03-02",
+    "updated": "2026-03-02",
+    "abstract": "Within a Gaussian power-law random-features linear-regression model, a four-term asymptotic risk proxy is optimized over model size, steps, and learning-rate powers to identify regions where signSGD has a steeper compute-risk exponent than a cited SGD law."
+  },
+  "equation_refs": [
+    {
+      "label": "one-pass batch-one signSGD",
+      "latex": "g_k=2(\\langle Sx_k,\\theta_k\\rangle-y_k)Sx_k,\\qquad \\theta_{k+1}=\\theta_k-\\gamma_k\\operatorname{sign}(g_k)",
+      "role": "define the optimizer whose fresh-sample dynamics are analyzed",
+      "symbols": {
+        "S": "single Gaussian random sketch from ambient features to M model coordinates",
+        "x_k_y_k": "fresh noiseless regression sample at step k",
+        "theta_k": "linear predictor parameters",
+        "gamma_k": "learning-rate schedule"
+      },
+      "evidence": "paper.pdf p. 5, Equations (2)–(3)",
+      "interpretation": "理论是 online one-pass、batch 1、fresh samples，不是反复扫描有限 dataset 的 empirical-risk training；practical minibatch 只在附录做有限经验检查。"
+    },
+    {
+      "label": "compute-optimal scaling definition",
+      "latex": "F=MN,\\qquad M^\\star\\asymp F^\\xi,\\qquad R(M^\\star,F/M^\\star,\\gamma_0^\\star)\\asymp F^{-\\eta}",
+      "role": "allocate idealized compute between model dimension and number of online samples/steps and compare asymptotic risk exponents",
+      "symbols": {
+        "F": "idealized multiply-scale compute, ignoring constants",
+        "M": "random-feature model dimension",
+        "N": "number of fresh samples and optimization steps",
+        "xi": "optimal model-size exponent",
+        "eta": "compute-optimal risk exponent"
+      },
+      "evidence": "paper.pdf pp. 5–8, compute-optimal definition and phase tables",
+      "interpretation": "outperform 指 selected $(\\alpha,\\beta)$ regions 中 $\\eta$ 更大，不等于固定 M/LR 下 loss 更小，也不比较 wall-clock、communication、memory traffic 或 energy。"
+    },
+    {
+      "label": "signSGD drift-noise recursion",
+      "latex": "\\mathbb E[\\Delta r_i\\mid\\mathcal F_k]=-\\frac{4\\gamma_k}{\\pi\\sqrt{L(k)}}\\lambda_i(\\bar K)r_i+\\frac{2\\gamma_k^2}{\\pi}w_i^\\top K_\\sigma Ku_i",
+      "role": "separate loss-normalized drift from a quadratic noise term in each spectral mode",
+      "symbols": {
+        "r_i": "error energy in spectral mode i",
+        "L_k": "current population risk",
+        "K_bar": "diagonally normalized sketched covariance",
+        "K_sigma": "arcsine-transformed sign-covariance matrix"
+      },
+      "evidence": "paper.pdf pp. 5–6, Equations (4)–(6)",
+      "interpretation": "$1/\\sqrt L$ 加速 drift，而 sign noise 不再乘 current loss；两者改变幂次，但结果依赖 deterministic approximation、未知常数和 phase-specific optimized learning rate。"
+    }
+  ],
+  "figure_refs": [
+    {
+      "label": "Figure 1 signSGD versus SGD compute-optimal scaling",
+      "asset_path": "assets/collection-figures/2603.02069/figure-1-signsgd-vs-sgd-compute-optimal.webp",
+      "section": "核心结果与证据",
+      "role": "compare finite synthetic trajectories, compute-optimal envelopes, predicted exponents, and fitted slopes for one PLRF configuration",
+      "evidence": "paper.pdf p. 2, Figure 1 left; official source asset p4th.png",
+      "alt_text": "Log-log synthetic risk curves compare signSGD and SGD across compute, with predicted and fitted compute-optimal slopes.",
+      "caption": "Figure 1 左：$(\\alpha,\\beta)=(0.4,0.8)$ 的 PLRF 合成实验，20 runs；理论 exponent 为 signSGD 0.483、SGD 0.418，图上拟合 slopes 为 0.446、0.378。",
+      "interpretation": "图支持特定配置下 exponent ordering，与理论尚有约 0.04 差异；它不证明有限 compute 常数优势、真实网络 loss 或硬件时间上的普遍胜出。"
+    }
+  ],
+  "cover": {
+    "mode": "source_figure",
+    "asset_path": "assets/collection-figures/2603.02069/figure-1-signsgd-vs-sgd-compute-optimal.webp",
+    "label": "Figure 1 signSGD versus SGD compute-optimal scaling",
+    "visual_type": "data_plot",
+    "evidence": "paper.pdf p. 2, Figure 1 left; official source asset p4th.png",
+    "alt_text": "Synthetic compute-risk curves show a steeper optimized envelope for signSGD than SGD in one power-law random-features regime.",
+    "caption": "一个 PLRF regime 中 signSGD/SGD 的 synthetic compute-optimal exponent 对比；斜率胜出不等于真实训练普遍更快。",
+    "selection_rationale": "The official panel most directly answers the title while visibly retaining the finite fitted slopes and their difference from asymptotic predictions."
+  },
+  "sections": [
+    {
+      "title": "作者信息",
+      "paragraphs": [
+        "作者为 Jihwan Kim、Dogyoon Song 与 Chulhee Yun，来自 Seoul National University/KAIST InnoCORE LLM、UC Davis 与 KAIST；论文发表于 ICLR 2026。",
+        "本站核验 arXiv:2603.02069v1：2026-03-02 提交，主分类 cs.LG，交叉分类 cs.AI、math.OC、stat.ML，PDF 89 页；这是唯一官方版本。",
+        "Collection 来源为刘子鸣网站的 Representation Learning 条目。"
+      ]
+    },
+    {
+      "title": "研究问题",
+      "paragraphs": [
+        "signSGD 丢弃 gradient magnitude、只保留逐坐标符号。它如何改变高维谱模式的 drift 与 noise，从而在固定理想 compute 下选择不同的模型宽度、训练步数和 learning rate？",
+        "论文在 power-law random-features（PLRF）线性回归中推导四项 risk proxy，构造 $(\\alpha,\\beta)$ phase diagram，并与既有 SGD scaling law 比较 optimized exponent。",
+        "标题中的 outperform 有窄定义：在某些 noise-bottleneck phases，signSGD 的 asymptotic risk-versus-$F=MN$ exponent 更陡；不保证有限预算常数、wall-clock 或真实任务表现更好。"
+      ]
+    },
+    {
+      "title": "背景",
+      "paragraphs": [
+        "covariance eigenvalues 取 $i^{-2\\alpha}$，target coefficients 取 $i^{-\\beta}$；$\\alpha$ 控制数据谱衰减，$\\beta$ 控制目标与低频 modes 的对齐。Gaussian sketch 把 ambient d 压到 M。",
+        "population risk 可分 approximation、aligned drift、distorted drift 与 stochastic noise。compute optimization 令 $M=F^x,N=F^{1-x},\\gamma_0=M^{-e}$，平衡主导 power laws。",
+        "sign normalization 的 drift 带 $1/\\sqrt L$，而 quadratic noise 不乘 current loss：前者在小 loss 时相对加速，后者在 constant LR 下形成不随 N 消失的 noise floor。",
+        "scaling exponent 是渐近斜率，未知 multiplicative constants 决定实际 crossover。两方法 exponent 相差并不告诉有限 F 哪条 curve 更低。"
+      ]
+    },
+    {
+      "title": "给物理学家的 AI 导读",
+      "paragraphs": [
+        "可把谱 index i 看作 modes、$\\alpha,\\beta$ 看作两个临界指数；不同 risk terms 是 competing relevant operators。phase boundaries 来自哪一项在 optimized asymptotic balance 中主导，而非算法发生热力学相变。",
+        "compute $F=MN$ 把每个 signSGD 与 SGD step 当同成本，只保留幂次；communication compression、memory bandwidth、kernel constants 与 optimizer state 全部被积分掉，所以不能回答硬件效率。",
+        "signSGD advantage 依赖 learning rate 随 M 缩小。若 $\\gamma_0=O(1)$ 或取 maximal stable rate，noise term 使 optimized slope 为零；脱离 $e^*$ 谈胜出会改变结论。",
+        "Figure 1 的多 runs 测量 finite-size effective exponent，可检验 ordering；但没有统一 sampling distribution/CI/test 时，theory-fit 差值只能作描述性有限尺寸修正。"
+      ]
+    },
+    {
+      "title": "模型与方法",
+      "paragraphs": [
+        "主模型为 noiseless Gaussian linear regression：$x$ covariance 谱 $i^{-2\\alpha}$、target $w_i^*=i^{-\\beta}$；一次性 $S_{ji}\\sim N(0,1/M)$，且 $M\\le d$。",
+        "joint limit 要求 $d/M\\to r$；$2\\alpha>1$ 可含 $r=\\infty$，$2\\alpha<1$ 要有限 r，边界 $2\\alpha=1$ 未含。compute derivation还用 $\\alpha+\\beta>1/2$ 等 regime assumptions。",
+        "每步 fresh sample、batch 1、one-pass signSGD；constant $\\gamma_0$ 的主 proxy 在 $-\\alpha+1/2<\\beta<\\alpha+1/2$ 给四项，不同 beta 区间 aligned term 另变。",
+        "compute-optimal table 联合优化 model exponent x 与 LR exponent e。WSD 只在 Phase Aa 的窄区域得到 improved upper-bound exponent，其他区域因上下 noise bounds 不紧仍开放。"
+      ]
+    },
+    {
+      "title": "核心结果与证据",
+      "paragraphs": [
+        "论文给出六个 constant-LR signSGD subphases；部分与 SGD exponent 相同，指定 SGD noise-bottleneck Phases III–IV 中 signSGD 更陡并选更大 optimal M。所有比较均为 up-to-constants asymptotics。",
+        "Figure 1 左用 $(0.4,0.8),\\gamma_0=0.006$、20 runs；predicted exponents 0.483/0.418，fitted 0.446/0.378。ordering 一致，但有限斜率均比预测小约 0.04。",
+        "右图用 $(1,0),\\gamma_0=0.002$、10 runs；constant/WSD predictions 0.333/0.353，fitted 0.330/0.376。正文说误差 within 0.01 不能概括图上 WSD 的约 0.023 差值。",
+        "batch theory 为 1；batch 10/128 的选定图与 predicted exponents 差不超过 0.042，只支持 constant-order minibatch 的经验 conjecture，不覆盖 batch 随 M/N scaling。",
+        "Adam 联系要求 $\\beta_1=0$、$\\beta_2$ 足够接近 1 的 heuristic。五个小 Transformer/OpenWebText architectures 给 AdamW/SGD fitted slopes -0.021/-0.005，是 exploratory evidence，无 Transformer scaling derivation。",
+        "主分析无 observation noise；附录只在 restricted phase 处理 independent mean-zero label noise，不能与 headline noiseless phase plane 混用。"
+      ]
+    },
+    {
+      "title": "有效性与局限",
+      "paragraphs": [
+        "风险式是 deterministic approximation 后隐式方程的 proxy，等价只到未知常数；非 uniform finite-$M,N,d$ theorem。常数与 crossover 未普遍给出，steeper exponent 不保证当前预算更低 risk。",
+        "Gaussian exact power-law spectrum/target、single random sketch、noiseless labels、fresh samples 与 linear predictor 高度结构化，不是 LLM pretraining 的一般性质。",
+        "比较把 signSGD 新 proxy 与 prior SGD law 在各自 jointly optimized M/N/LR 下对照，不是 matched finite-dataset benchmark；$F=MN$ 也忽略所有硬件常数。",
+        "WSD 只是 Phase Aa 窄区 upper bound，bounds 在其他区不匹配；不能写成区外无效或精确改善。beneficial-region 的部分机制解释仍是 conjectural。",
+        "Adam bridge 去掉 momentum 且假设 near-one second moment；标准 AdamW 的 bias correction、epsilon、decay、minibatch、nonstationary gradients 均在外。OpenWebText 五点不建立 population scaling law。",
+        "plots 有 5/10/20/100 runs 不等，但无统一 experimental unit、CI construction、multiplicity 或 tests。fitted slopes 与理论差异不是校准统计验证。",
+        "batch-one theory、主 noiseless setting 与真实大 batch/noisy labels 有断层；实际 model scale、data reuse 与 optimizer schedules 同时变化时 phase diagram 未被验证。"
+      ]
+    },
+    {
+      "title": "复现与资源",
+      "paragraphs": [
+        "严格复现需固定 $\\alpha,\\beta,r,d/M$、sketch seeds、fresh-sample generator、M/N grids、LR power search 与 envelope-fitting protocol；报告 raw curves 而不只 fitted slope。",
+        "用更宽 F、多个 aspect ratios 与 controlled constants 估 crossover；对 fitted exponents 做 run-level bootstrap/finite-size correction，并预注册 comparison regions。",
+        "把 batch size 当随 M/N scaling 的变量，分别测 fresh streaming 与 finite dataset reuse；加入 controlled label noise，验证四项 proxy 和 phase boundary 的漂移。",
+        "硬件结论需把 FLOPs、memory traffic、communication bits、optimizer state、kernel throughput 与 tuning compute 纳入，而不是只用 $MN$。",
+        "Adam/Transformer bridge 应逐步加入 $\\beta_1,\\beta_2,\\epsilon$, bias correction、decay 与 nonstationarity，在 matched architectures/data/LR optimization 下检查 spectral drift/noise formula。"
+      ]
+    },
+    {
+      "title": "阅读指南",
+      "paragraphs": [
+        "快速路线：pp. 1–3 看 Figure 1 与 claim；pp. 4–8 看 PLRF、risk proxy 和 phase table；pp. 8–9 看 WSD；其余长附录看 proofs/experiments。",
+        "物理路线：把 risk terms 当 competing power laws，先核对 regime inequalities、unknown constants 与 finite-size correction，再解释 phase。",
+        "AI 路线：区分 signSGD、Adam heuristic 与 AdamW experiment；区分 streaming fresh samples 与 finite-data epochs。",
+        "批判路线：重点检查 learning-rate optimum、$F=MN$ cost model、theory-fit slope 差、batch/noise assumptions 和五点 Transformer 外推。"
+      ]
+    }
+  ],
+  "evidence_refs": [
+    "paper.pdf pp. 4–8, PLRF assumptions, one-pass signSGD, four-term proxy, drift/noise mechanism and compute-optimal phase tables",
+    "paper.pdf pp. 2–3 and experiment appendix, Figure 1: finite synthetic runs, predicted exponents, fitted slopes, WSD and finite-size discrepancies",
+    "paper.pdf limitations and appendices: batch-size conjecture, label-noise scope, Adam heuristic and exploratory five-architecture OpenWebText comparison",
+    "source PDF SHA-256 6cdeb4704242f58c8599618a69a2578606856ff1172f1589484172fe81a02e07",
+    "official arXiv v1 source archive SHA-256 32826902aa3a3a9fb00a12469f2753e19f3410c838474d11d9e5fdbde1fb00dc",
+    "MinerU Markdown SHA-256 e8deaa26d52f19002b28b0ac8dd83e63516d010a390d806a88b2439b2b8d3581",
+    "Evidence packet SHA-256 f047146e874d791a9e785a6f05e6993fd27def1de1e3755928cb0094edc36fd1",
+    "Evidence status: full text, rendered pages and official TeX verified against latest arXiv v1; PLRF assumptions, joint asymptotics, proxy and unknown constants, phase/LR dependence, finite compute, WSD bound, run-level statistics, batch/noise, cost model, Adam heuristic and Transformer extrapolation boundaries recorded; no independent reproduction performed."
+  ]
+}
