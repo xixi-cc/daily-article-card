@@ -38,15 +38,30 @@ def page_excerpt(page: str, match: re.Match[str], limit: int = 3000) -> str:
 def first_matching_excerpt(
     pages: list[str], patterns: tuple[str, ...], limit: int = 3000
 ) -> dict[str, object] | None:
-    combined = re.compile("|".join(f"(?:{pattern})" for pattern in patterns), re.I | re.M)
+    # These patterns describe section-heading lines. Searching them against an
+    # entire PDF page can trigger catastrophic backtracking when the PDF text
+    # layer contains a multi-megabyte line (typically an embedded vector
+    # figure). Scan bounded individual lines instead, while retaining the
+    # original page offset used for the returned excerpt.
+    compiled = tuple(re.compile(pattern, re.I) for pattern in patterns)
     for page_number, page in enumerate(pages, start=1):
-        match = combined.search(page)
-        if match:
-            return {
-                "page": page_number,
-                "matched": compact(match.group(0)),
-                "text": page_excerpt(page, match, limit),
-            }
+        offset = 0
+        for raw_line in page.splitlines(keepends=True):
+            line = raw_line.rstrip("\r\n")
+            if len(line) <= 500:
+                for pattern in compiled:
+                    match = pattern.search(line)
+                    if match:
+                        absolute_start = offset + match.start()
+                        excerpt_start = max(0, absolute_start - 200)
+                        return {
+                            "page": page_number,
+                            "matched": compact(match.group(0)),
+                            "text": compact(
+                                page[excerpt_start : absolute_start + limit]
+                            ),
+                        }
+            offset += len(raw_line)
     return None
 
 

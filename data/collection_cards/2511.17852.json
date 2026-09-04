@@ -1,0 +1,196 @@
+{
+  "arxiv_id": "2511.17852",
+  "source_version": "v3",
+  "source_pdf": "https://arxiv.org/pdf/2511.17852v3",
+  "title_en": "Transformers with RL or SFT Provably Learn Sparse Boolean Functions, But Differently",
+  "title_zh": "Transformer 用 RL 或 SFT 都可学习稀疏布尔函数，但动力学不同",
+  "curation_status": "full_text_verified",
+  "card_standard_version": "2.4",
+  "audience_profile": "physics_ai_literate_physicist",
+  "paper_profile": "theory_experiment",
+  "style_reference": "physicist_daily_arxiv",
+  "provenance": {
+    "program": "Collection",
+    "catalog": "Paper Collection",
+    "catalog_record_id": "2511.17852",
+    "catalog_record_ids": [
+      "2511.17852"
+    ],
+    "catalog_topic": "Transformer Theory",
+    "collection_date": "2026-08-30",
+    "sampled_at": "2026-08-31",
+    "selected_by": "ziming_mineru_serial_goal",
+    "sampling_seed": "not_applicable_source_complete",
+    "candidate_count": 464
+  },
+  "verified_metadata": {
+    "arxiv_id": "2511.17852",
+    "version": "v3",
+    "title": "Transformers with RL or SFT Provably Learn Sparse Boolean Functions, But Differently",
+    "authors": [
+      "Bochen Lyu",
+      "Yiyang Jia",
+      "Xiaohao Cai",
+      "Zhanxing Zhu"
+    ],
+    "categories": [
+      "cs.LG",
+      "stat.ML"
+    ],
+    "primary_category": "cs.LG",
+    "published": "2025-11-22T00:38:43Z",
+    "updated": "2026-08-06T09:30:47Z",
+    "abstract": "In a stylized one-layer transformer, the paper derives a gradient-separation condition under which process-reward RL learns a recursively decomposable sparse Boolean reasoning chain simultaneously, while SFT without teacher forcing learns it step by step."
+  },
+  "equation_refs": [
+    {
+      "label": "递归 CoT 分解",
+      "latex": "y_j^{(t)}=\\phi_2\\!\\left(y_{i_1^j}^{(t-1)},y_{i_2^j}^{(t-1)}\\right),\\qquad y_1^{(T)}=\\Phi_k(x)",
+      "role": "turn a k-variable Boolean target into a chain or tree of fixed two-input subproblems",
+      "symbols": {
+        "Phi_k": "k-sparse Boolean target over d input bits",
+        "phi_2": "fixed two-input Boolean operation",
+        "y_j^(t)": "intermediate token at level t",
+        "i_1^j,i_2^j": "the two relevant child positions"
+      },
+      "evidence": "paper.pdf pp. 3–4, Definition 2.1 and Eq. (1)",
+      "interpretation": "The proof applies only when the target admits this known recursive structure; PARITY, AND and OR are worked examples, not a representation theorem for general reasoning tasks."
+    },
+    {
+      "label": "关键梯度分离条件",
+      "latex": "\\mathbb E\\!\\left[\\gamma_{l^{(t)}}^{p}(y^{(t-1)})-\\gamma_{l^{(t)}}^{p'}(y^{(t-1)})\\right]>0,\\quad p\\in\\{i_1^{l^{(t)}},i_2^{l^{(t)}}\\},\\ p'\\notin\\{i_1^{l^{(t)}},i_2^{l^{(t)}}\\}",
+      "role": "require the population update to favor every causally relevant attention position over every irrelevant one",
+      "symbols": {
+        "gamma": "critical gradient component defined from the activation, Boolean operation and current trajectory",
+        "p": "relevant child position",
+        "p'": "irrelevant position",
+        "l^(t)": "token being generated at reasoning level t"
+      },
+      "evidence": "paper.pdf p. 6, Eqs. (7)–(8) and Theorem 3.1",
+      "interpretation": "This strict expected-gradient gap is a sufficient identifiability condition. The theorem assumes population expectations and sign-gradient updates; it does not show that ordinary LLM post-training automatically satisfies the gap."
+    },
+    {
+      "label": "终局奖励的梯度信号界",
+      "latex": "\\operatorname{Var}_{H;W}\\leq\\frac{M}{|H|}",
+      "role": "show that outcome-only policy gradients can contain exponentially little target-specific information for a large orthogonal parity family",
+      "symbols": {
+        "H": "orthogonal family of candidate Boolean targets",
+        "M": "bound on the squared gradient of the expected final output",
+        "Var_H;W": "variation of target-conditioned policy gradients across H"
+      },
+      "evidence": "paper.pdf p. 7, Proposition 3.2 and Eq. (9)",
+      "interpretation": "For the paper's sparse-parity construction, a large target family drowns the useful direction in noise. This is not a proof that final-answer RL is always hard or that process reward always wins on realistic tasks."
+    }
+  ],
+  "figure_refs": [
+    {
+      "label": "Figure 1",
+      "asset_path": "assets/collection-figures/2511.17852/figure-1-supervision-dynamics.webp",
+      "section": "核心结果与证据",
+      "role": "compare which reasoning steps receive informative supervision under four RL/SFT configurations",
+      "evidence": "paper.pdf p. 2, Figure 1",
+      "alt_text": "上方是真实推理链；左侧比较带逐步可验证奖励和只给终局奖励的 RL，右侧比较有无 teacher forcing 的 SFT，并标出同时学习、逐步学习和 parity 困难三种动力学。",
+      "caption": "决定动力学的不只是“RL 还是 SFT”，还包括奖励落在哪一步，以及训练前缀来自真值还是模型自身轨迹。",
+      "interpretation": "The arrows summarize theorems in a one-layer Boolean model. They should not be read as a measured speed ranking for modern multi-layer LLMs."
+    }
+  ],
+  "cover": {
+    "mode": "source_figure",
+    "asset_path": "assets/collection-figures/2511.17852/figure-1-supervision-dynamics.webp",
+    "label": "Figure 1",
+    "visual_type": "comparison",
+    "evidence": "paper.pdf p. 2, Figure 1",
+    "alt_text": "四种 RL/SFT 监督配置对应同时学习、逐步学习或 parity 学习困难的示意比较。",
+    "caption": "优化器名称不是唯一控制变量：逐步反馈与训练轨迹共同决定 credit assignment。",
+    "selection_rationale": "It exposes the paper's main controlled comparison and keeps the negative final-reward result beside the two positive supervision regimes."
+  },
+  "sections": [
+    {
+      "title": "作者信息",
+      "paragraphs": [
+        "Bochen Lyu、Yiyang Jia、Xiaohao Cai、Zhanxing Zhu；University of Southampton、DataCanvas 与独立研究者。",
+        "本站核验 arXiv:2511.17852v3：初稿提交于 2025-11-22，当前版本更新于 2026-08-06；分类 cs.LG、stat.ML；ICML 2026 / PMLR 306，共 50 页。",
+        "Collection 来源为刘子鸣网站的 Transformer Theory 条目。"
+      ]
+    },
+    {
+      "title": "研究问题",
+      "paragraphs": [
+        "同一个 Transformer 学习多步推理时，为什么带逐步奖励的 RL、只给最终答案奖励的 RL，以及有无 teacher forcing 的 SFT 会呈现不同学习顺序？",
+        "作者不直接分析通用语言推理，而构造可证明的代理问题：从 d 个输入位中选择 k 个，用同一个二元布尔操作递归计算 PARITY、AND 或 OR，并把每层中间值当成 CoT token。",
+        "核心问题由“RL 对 SFT”改写为 credit assignment：在模型实际访问的每个状态上，监督是否仍能让相关 attention 位置获得比无关位置更强的期望梯度？"
+      ]
+    },
+    {
+      "title": "背景",
+      "paragraphs": [
+        "Teacher forcing 在训练第 t 个 token 时喂入正确前缀；free-running SFT 则用模型自己生成的前缀。后者更接近推理时分布，却会让早期错误污染后续 token 的监督关系。",
+        "Process reward 对每个中间步骤给可验证反馈，outcome reward 只评价最终答案。前者提供局部 credit，后者必须从一个全局标量反推出哪一步、哪个位置应被修改。",
+        "论文把 attention 学习化成从无关位置中识别两颗正确子节点：若相关位置和无关位置的关键梯度分量始终有严格正间隙，sign gradient 会把 softmax 权重推向两颗子节点各 1/2。"
+      ]
+    },
+    {
+      "title": "给物理学家的 AI 导读",
+      "paragraphs": [
+        "可把关键梯度间隙看成区分相关与无关自由度的“谱隙”：只要期望更新方向有正间隙，一次理想化的大步长更新就能选出正确耦合；间隙消失时，噪声会淹没可辨识方向。",
+        "RL 的 process reward 像在链上每个局部约束处放探针，因此所有层可并行获得信号；无 teacher forcing 的 SFT 更像逐层建立有序相，上一层尚未稳定时，下一层看到的有效边界条件就是错的。",
+        "这里的“一次更新”是 population sign-gradient 定理中的迭代次数，不是一次样本、一个 mini-batch 或现实训练的一步墙钟时间；学习率还按 ln(d/ε) 取足够大。",
+        "Figure 1 最重要的读法是控制变量：SFT 加 teacher forcing 后也同时学习，RL 改成仅终局奖励后 parity 又变难，所以实验中观察到的差异不能仅归因于优化器标签。"
+      ]
+    },
+    {
+      "title": "模型与方法",
+      "paragraphs": [
+        "模型只有一层 self-attention 加 feedforward，并用专门的因果/树结构 mask；同一模型反复作用于自己的输出。位置编码、初始化 W=1、激活 ψ 和二元函数 φ₂ 都被显式指定。",
+        "RL 部分最大化逐步可验证奖励的期望，用 vanilla policy gradient 的符号更新；Theorem 3.1 在关键梯度分离成立时给出一次更新后 attention 接近理想矩阵的 L1 界。",
+        "SFT 主分析不使用 teacher forcing：模型先生成整条链，再以逐步 hinge loss 对照真值。Theorem 3.3 用归纳法说明每次只能可靠学会下一层，长度 T 的链需要 T 次 sign-gradient 更新。",
+        "作者分别为 k-PARITY、k-AND、k-OR 选择 ψ 与 φ₂ 并验证分离条件；附录还把平衡二叉树推广到串行递归，但仍要求已知的固定二元分解。"
+      ]
+    },
+    {
+      "title": "核心结果与证据",
+      "paragraphs": [
+        "在分离条件下，带 verifiable process rewards 的 RL 同时收到各步可用梯度，理论上一轮 population sign-policy-gradient 更新即可使全链 attention 接近目标。",
+        "无 teacher forcing 的 SFT 依赖自身前缀：第 1 次更新只可靠学第一步，正确前缀随后解锁第二步，依此类推共需 T 次；有 teacher forcing 时每步都看到真前缀，作者说明可恢复同时学习。",
+        "对于只给最终奖励的 RL，Proposition 3.2 证明在正交 parity 目标族中，目标相关 policy-gradient 变化受 M/|H| 控制；目标族指数增长时，信号会被噪声淹没。",
+        "PARITY、AND 与 OR 均满足相应分离条件，因而在该模型中对 RL 和 SFT 可学；这是充分性结果，并未证明满足条件是唯一途径。",
+        "数值实验只测试 d=20、k=16 的 parity，使用 50,000 个均匀样本与 4 层推理链。Figure 5–6 显示 RL 初始梯度同时区分所有层，而 SFT 的非零有用梯度逐层出现，支持解析符号结构。"
+      ]
+    },
+    {
+      "title": "有效性与局限",
+      "paragraphs": [
+        "定理对象是一层、单头式的简化 Transformer，带特殊 mask、固定初始化、指定激活、population expectation、sign gradient 和充分训练样本；不能直接外推到多层大模型的 PPO、GRPO 或常规 Adam 训练。",
+        "目标函数只覆盖能递归分解为同一 2-sparse 操作的布尔函数。即使串行附录放宽树拓扑，也不包含自然语言中未知子目标、连续状态、工具调用或不可验证中间步骤。",
+        "“RL 一步、SFT T 步”比较的是理想化更新轮数；单步所需样本复杂度、梯度估计方差、有限 batch、奖励噪声和计算成本没有给出对应优势保证。",
+        "终局奖励的负面结论专门针对 parity/正交函数族和有界梯度条件，不等价于所有 outcome-based RL 都失败；process reward 还假设每步真值可验证。",
+        "实验验证梯度图样而非现代 LLM 的推理准确率，只有一个小型合成设置。作者也把多层模型、现实任务、有限样本、噪声优化和不完美奖励列为开放问题。"
+      ]
+    },
+    {
+      "title": "复现与资源",
+      "paragraphs": [
+        "最低成本复核可先实现 d=20、k=16、T=4 的 parity：固定 W=1，分别计算 process-reward policy gradient 与无 teacher-forcing SFT gradient，复现 Figures 5–6 的正负位置结构。",
+        "数值复现应同时扫描 d、k、学习率、batch size 与随机子集 B，报告相关/无关梯度间隙、梯度方差、attention L1 误差和最终链准确率，不只展示符号热图。",
+        "向现实任务迁移时，应做 2×2 对照：process/final supervision × true/model-generated prefixes，并匹配模型、数据、token 与优化预算，才能分离奖励设计、trajectory distribution 和算法本身。",
+        "本站核验 v3 PDF SHA-256：e8add95e7a64d2ac7cde6e551013c6fc1365d90b04a7e9b72489ded1b89f85ff。Evidence status: full-text verified; no independent reproduction performed."
+      ]
+    },
+    {
+      "title": "阅读指南",
+      "paragraphs": [
+        "最短路径：Figure 1 → Definition 2.1 / Figure 2 → Theorems 3.1、3.3 → Proposition 3.2 → Section 5 与 Appendix A。",
+        "物理路径：把梯度分离当谱隙，把推理层级当逐层松弛；随后检查有限样本噪声是否会闭合这个间隙。",
+        "AI 路径：始终区分 optimizer、reward granularity、teacher forcing 和 sampled trajectory 四个变量，不把结果简化成“RL 优于 SFT”。"
+      ]
+    }
+  ],
+  "evidence_refs": [
+    "paper.pdf pp. 1–5: problem setup, recursive Boolean decomposition, one-layer transformer and Figure 1",
+    "paper.pdf pp. 5–9: RL/SFT objectives, gradient-separation theorems, final-reward hardness and worked functions",
+    "paper.pdf pp. 12–15 and appendices D–I: limitations, FAQ, numerical gradient checks, proofs and serial extension",
+    "source PDF SHA-256 e8add95e7a64d2ac7cde6e551013c6fc1365d90b04a7e9b72489ded1b89f85ff",
+    "Evidence packet SHA-256 0f99487caac064118781f9f8a0399f1ef93731aff5f370c6af89e57411cd524c",
+    "Evidence status: full-text verified; no independent reproduction performed."
+  ]
+}

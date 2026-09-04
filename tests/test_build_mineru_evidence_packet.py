@@ -13,6 +13,7 @@ from scripts.build_mineru_evidence_packet import (
     markdown_images,
     selected_sections,
 )
+from scripts.build_fulltext_evidence_packets import first_matching_excerpt
 
 
 class MineruEvidencePacketTests(unittest.TestCase):
@@ -75,6 +76,19 @@ $$E = mc^2$$
             PACKET_TOKEN_TARGET,
         )
         self.assertGreaterEqual(len(packet["mineru_sections"][0]["text"]), 600)
+
+    def test_heading_excerpt_skips_pathological_oversized_pdf_line(self) -> None:
+        pages = ["x" * 2_000_000 + "\n2 METHODS\nThe method follows here."]
+
+        excerpt = first_matching_excerpt(
+            pages,
+            (r"^\s*\d+\s+METHODS\s*$",),
+        )
+
+        self.assertIsNotNone(excerpt)
+        self.assertEqual(excerpt["page"], 1)
+        self.assertEqual(excerpt["matched"], "2 METHODS")
+        self.assertIn("The method follows here.", excerpt["text"])
 
 
 if __name__ == "__main__":
