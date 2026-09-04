@@ -1,0 +1,193 @@
+{
+  "arxiv_id": "2602.04931",
+  "source_version": "v2",
+  "source_pdf": "https://arxiv.org/pdf/2602.04931v2",
+  "title_en": "Emergent Causal-Geometric Dynamics Across Depth in Large Language Models",
+  "title_zh": "大语言模型深度方向上涌现的因果—几何动力学",
+  "curation_status": "full_text_verified",
+  "card_standard_version": "2.4",
+  "audience_profile": "physics_ai_literate_physicist",
+  "paper_profile": "ai_empirical",
+  "style_reference": "physicist_daily_arxiv",
+  "provenance": {
+    "program": "Collection",
+    "catalog": "Paper Collection",
+    "catalog_record_id": "2602.04931",
+    "catalog_record_ids": ["2602.04931"],
+    "catalog_topic": "Representation Learning",
+    "collection_date": "2026-08-30",
+    "sampled_at": "2026-08-31",
+    "selected_by": "ziming_mineru_serial_goal",
+    "sampling_seed": "not_applicable_source_complete",
+    "candidate_count": 464
+  },
+  "verified_metadata": {
+    "arxiv_id": "2602.04931",
+    "version": "v2",
+    "title": "Emergent Causal-Geometric Dynamics Across Depth in Large Language Models",
+    "authors": ["Shahar Haim", "Daniel C. McNamee"],
+    "categories": ["cs.LG"],
+    "primary_category": "cs.LG",
+    "published": "2026-02-04",
+    "updated": "2026-05-26",
+    "abstract": "The paper combines layer-wise activation interventions with representation geometry and reports an early context-sensitive regime followed by a late prediction-centric regime in three 7B–8B decoder-only language models."
+  },
+  "equation_refs": [
+    {
+      "label": "以 centroid difference 构造逐层 steering vector",
+      "latex": "V_L(\\alpha,\\alpha')=\\frac{1}{|T_{\\alpha'}|}\\sum_{t\\in T_{\\alpha'}}h_L(t)-\\frac{1}{|T_{\\alpha}|}\\sum_{t\\in T_{\\alpha}}h_L(t)",
+      "role": "define the direction used to perturb either an input token or the final-token prediction representation at layer L",
+      "symbols": {
+        "h_L_t": "token t 在第 L 层的 hidden representation",
+        "T_alpha": "与 source identity alpha 对应的 token occurrences 或 prompts",
+        "V_L": "由 source centroid 指向 target centroid 的 activation steering vector"
+      },
+      "evidence": "paper.pdf p. 3, Eq. (1) and Section 2.1",
+      "interpretation": "input-centric 与 output-centric interventions 使用同一种向量差形式，但前者改写上下文 token，后者改写产生 readout 的最后 token；两者的作用对象不可混同。"
+    },
+    {
+      "label": "用 logit preference change 定义干预效应",
+      "latex": "\\Delta_{\\mathrm{int}}=[z_{\\gamma'}-z_{\\gamma}]_{\\mathrm{after}}-[z_{\\gamma'}-z_{\\gamma}]_{\\mathrm{before}}",
+      "role": "measure whether an intervention shifts model preference from the original prediction gamma toward target gamma prime",
+      "symbols": {
+        "z_gamma": "候选输出 gamma 的 logit",
+        "gamma": "原始预测或 source output",
+        "gamma_prime": "干预希望得到的 target output",
+        "Delta_int": "正值表示 target 相对 original 的 preference 增加"
+      },
+      "evidence": "paper.pdf p. 3, Eq. (2)",
+      "interpretation": "这是干预后的行为响应量，不是准确率，也不是对某个隐变量的因果效应估计；曲线大小还受 steering-vector 尺度和候选词集合影响。"
+    },
+    {
+      "label": "Participation Ratio 衡量表征变异的有效维数",
+      "latex": "\\mathrm{PR}=\\frac{(\\sum_{i=1}^{d}\\lambda_i)^2}{\\sum_{i=1}^{d}\\lambda_i^2},\\qquad \\lambda_i=\\sigma_i^2",
+      "role": "compress the singular-value spectrum of token representations into an effective dimensionality",
+      "symbols": {
+        "sigma_i": "representation matrix 的 singular values",
+        "lambda_i": "对应 variance eigenvalues",
+        "d": "ambient hidden dimension",
+        "PR": "variance 均匀分布时增大、集中于少数方向时减小的有效维数"
+      },
+      "evidence": "paper.pdf p. 4, Section 2.2",
+      "interpretation": "作者先逐 token 归一化再计算主文 PR，并用 ordered 减 shuffled 作为 coherence baseline；因此它描述的是样本间方向变异，不等同于网络真正使用的自由度数。"
+    }
+  ],
+  "figure_refs": [
+    {
+      "label": "Figure 1",
+      "asset_path": "assets/collection-figures/2602.04931/figure-1-layer-wise-interventions.webp",
+      "section": "核心结果与证据",
+      "role": "compare input-centric and output-centric intervention efficacy layer by layer across Llama, Mistral and Qwen",
+      "evidence": "paper.pdf p. 4, Figure 1",
+      "alt_text": "Three panels plot average logit preference change versus layer for Llama 3.1 8B, Mistral 0.3 7B and Qwen 2.5 7B; blue input-centric curves dominate early layers and the red output-centric curve dominates late layers.",
+      "caption": "Figure 1 的交叉结构给出本文最直接的因果证据：改写输入表征主要在前段有效，改写输出中心表征主要在后段有效；虚线 change point 在三个模型中的相对位置并不完全相同。",
+      "interpretation": "曲线来自 Months modular task，效应量是受限 12-token readout 的 logit preference change。Days 与 Clock Math 的定性复现位于附录；图本身不能证明自然语言任务也存在同一 sharp transition。"
+    }
+  ],
+  "cover": {
+    "mode": "source_figure",
+    "asset_path": "assets/collection-figures/2602.04931/figure-1-layer-wise-interventions.webp",
+    "label": "Figure 1",
+    "visual_type": "comparison",
+    "evidence": "paper.pdf p. 4, Figure 1",
+    "alt_text": "Llama、Mistral 与 Qwen 中 input-centric 和 output-centric activation interventions 随层深变化的对比。",
+    "caption": "同一 transformer 深度方向上，控制输入上下文与控制输出预测的有效窗口发生交接。",
+    "selection_rationale": "Figure 1 directly exposes the cross-model intervention result underlying the paper's strongest causal claim and makes the depth dependence legible without relying on geometric correlations alone."
+  },
+  "sections": [
+    {
+      "title": "作者信息",
+      "paragraphs": [
+        "Shahar Haim 与 Daniel C. McNamee 来自葡萄牙 Champalimaud Centre for the Unknown、Champalimaud Foundation。",
+        "本站核验 arXiv:2602.04931v2：v1 于 2026-02-04 提交，当前 v2 标注 2026-05-26；主分类 cs.LG，共 18 页。",
+        "Collection 来源为刘子鸣网站的 Representation Learning 条目。"
+      ]
+    },
+    {
+      "title": "研究问题",
+      "paragraphs": [
+        "中间层能线性解码某种信息，并不表示模型真的用它形成输出。本文问的是：transformer 从输入上下文走向 next-token prediction 时，哪些表征几何不仅可观察，而且对预测具有可干预的功能作用？",
+        "作者沿网络深度并列两类实验：在 modular arithmetic prompts 上逐层改变 input-token 或 final-token activations；在 WikiText sequences 上测 token geometry 与最终预测分布之间的关系。",
+        "中心主张是两阶段组织：约前段更易被 input-centric steering 改变，后段更易被 output-centric steering 改变；后段又出现 prediction-aligned angular geometry。‘sharp functional transition’来自干预曲线交接，几何重组则更渐进。"
+      ]
+    },
+    {
+      "title": "背景",
+      "paragraphs": [
+        "probe 或聚类回答‘信息是否存在/可读出’，activation intervention 回答‘沿某个指定方向改动状态会不会改变行为’。后者更接近因果检验，但结论仍绑定于干预方向、幅度、位置和任务。",
+        "decoder-only transformer 的 residual stream 可看成随 layer 离散演化的高维状态。每一层同时改变 token identity、context 与未来 readout 所需的信息，因此只画 embedding geometry 容易把相关结构误当成计算机制。",
+        "作者把向量拆成 norm 与 direction。angular distance 只比较方向；Euclidean distance 同时混入范数。对 final unembedding 而言，方向改变 vocabulary logits 的相对结构，范数则可像 inverse temperature 一样整体缩放 sharpness，但这一解释忽略 bias 且只直接适用于 readout 形式。"
+      ]
+    },
+    {
+      "title": "给物理学家的 AI 导读",
+      "paragraphs": [
+        "可把 layer index 当作离散‘时间’，residual representation 当作状态变量。Figure 1 像响应函数随时间的 crossover：对输入自由度施加扰动的 susceptibility 先大后小，对输出有序变量施加扰动的 susceptibility 后来上升。",
+        "但这里没有热力学极限、order parameter 或临界指数。change point 被定义为 output-centric 与 input-centric interval curves 差值最小的中间层，所以‘phase change’是操作性 crossover 名称，不是已证明的相变。",
+        "Participation Ratio 类似谱的有效模数：若 variance 均匀铺在 k 个方向，PR 约为 k；少数主方向占优时 PR 下降。它适合描述 latent cloud，却不能单独告诉我们哪些方向控制输出。",
+        "真正把 geometry 与 function 接起来的是 paired perturbation：后层只改 direction 能改变预测 identity，而只改 norm 几乎无效。这里的‘因果’是对特定 hidden-state intervention 的局部/操作性因果，不是对训练形成该几何的因果解释。"
+      ]
+    },
+    {
+      "title": "模型与方法",
+      "paragraphs": [
+        "模型为 Llama 3.1 8B、Mistral 0.3 7B、Qwen 2.5 7B，均为 decoder-only open-weight LLM。干预任务是 Months、Days、Clock Math：输入与输出空间有限，可枚举 target centroid；Months 有 144 prompts，受限候选读出准确率分别为 95%、85%、70%。",
+        "input-centric intervention 在 month 或 interval token 的第 L 层表示上加入 centroid-difference vector；output-centric intervention 在最后 token 上加入按 baseline prediction 分组得到的 vector。响应是 target 与 original logits 的相对变化。",
+        "几何数据来自 WikiText-103：各 1000 条 short 15-token 与 long 500–600-token sequences，比较 ordered 与 word-shuffled contexts；pilot tokens 包括相同的句末句点和邻近的非相同 token。",
+        "作者对归一化 representations 计算 PR，并用 ordered-minus-shuffled 隔离 context coherence；另以 Spearman correlation 比较 pairwise angular/Euclidean distances 与输出分布的 symmetric KL divergence。",
+        "最后把 centroid direction 替换到目标方向同时保持原 norm，构造 pure-angular intervention；pure-norm control 只匹配 centroid mean norm。它们用于检验后层预测控制究竟主要来自方向还是长度。"
+      ]
+    },
+    {
+      "title": "核心结果与证据",
+      "paragraphs": [
+        "Figure 1 中，三个模型的 month/interval input-centric steering 在早层有较大正效应，output-centric steering 在早层近零、后层上升；交接大致发生在 Llama 约 18/32、Mistral 约 20/32、Qwen 约 23/28 层。数值是按图读出的近似位置，不是跨模型统一比例定律。",
+        "Days 与 Clock Math 附录实验出现同样的定性双阶段曲线；作者称两种 change-point criteria 在不同任务中相差不超过 model depth 的 2.5%。这些仍是三种结构相近的 modular arithmetic tasks。",
+        "WikiText 几何显示 identical-token PR 在早层先扩张再收缩，non-identical tokens 更宽且常多峰；ordered context 通常比 shuffled context 有更高 effective dimensionality。untrained controls 的 profile 不同，支持这种结构是训练后形成的。",
+        "对 non-identical tokens，angular distance 与 prediction-distribution symmetric KL 的 Spearman correlation 在后段转为正；Euclidean relation 较不稳定并从 anti-correlation 趋向 decorrelation。这里是观测相关，不是 intervention result。",
+        "Figure 4 的 pure-angular output-centric intervention 在后段仍有效，而 input-centric angular intervention 多数层无效；pure-norm interventions 基本无效。Days 与 Clock Math 也定性复现，因此方向对这些 target identities 的控制比 norm 更直接。",
+        "证据强度应分层读取：逐层 steering 与 pure-angular/norm controls 支持 task-specific causal sensitivity；geometry–KL curves 支持相关配准；RMSNorm、attention 或 residual connections为何产生 angular code 仍只是待检验解释。"
+      ]
+    },
+    {
+      "title": "有效性与局限",
+      "paragraphs": [
+        "干预证据限于 Months/Days/Clock Math、三个 7B–8B decoder-only models，以及受限候选 token logits；不能直接外推到开放式 generation、reasoning、multilingual 或 multimodal tasks。",
+        "change point 是两条效应曲线的交接估计，图中没有 finite-size scaling、显著性检验或层连续极限；‘phase’应理解为深度区间，不应物理化为真正相变。",
+        "centroid-difference steering 可能同时改变多个纠缠属性，且各层 vector norm、activation scale 与 downstream amplification 未被统一成无量纲 perturbation strength。效应曲线不等于每层内在 susceptibility 的严格可比测量。",
+        "几何分析使用作者选择的 pilot-token construction、normalization、ordered-minus-shuffled baseline 和 pairwise Spearman correlation。相关增强与干预窗口对齐很有启发，但没有证明同一 angular degrees of freedom 同时造成两种现象。",
+        "pure-norm intervention 只把 norm 调到对应 centroid mean；‘无效’不能推出 norm 不编码信息，也不能排除别的幅度扰动会改变 entropy、calibration 或生成行为。",
+        "三模型规模接近且都采用现代 decoder design，缺少跨规模、架构、训练阶段和随机种子的系统比较。作者也明确说早层 context geometry 如何生成后层 angular code、以及 context-dependent within-sequence dynamics 尚未解决。"
+      ]
+    },
+    {
+      "title": "复现与资源",
+      "paragraphs": [
+        "最小干预复现应固定模型 revision、tokenizer 与 prompt templates，枚举 Months 的 144 inputs，保存每层 source/target centroids、steering-vector norms、baseline logits 和逐 target 的 $\\Delta_{\\mathrm{int}}$；同时报告受限候选准确率。",
+        "change point 应同时实现原文的 minimum-absolute-difference 与 lightly smoothed zero crossing，并对 prompts bootstrap，给出层位置区间而非只画一条虚线。",
+        "几何复现需保存 WikiText split、1000 sequences 的抽样 seed、token lengths、shuffle seed 与 pilot positions；分别画 raw/normalized PR、ordered/shuffled curves 和差分结果，避免 baseline subtraction 隐藏绝对尺度。",
+        "更强因果测试可在相同 layer、相同 perturbation norm 下，比较 prediction-aligned angular direction、随机正交方向和 matched-norm controls；再对 open-ended perplexity、entropy 与 generated token identity 盲测。",
+        "论文正文可核验方法和图，但本站未运行模型实验，也未独立确认作者实现。MinerU 仅作结构化阅读辅助，公式和页码以 source PDF 为准。"
+      ]
+    },
+    {
+      "title": "阅读指南",
+      "paragraphs": [
+        "快速路线：pp. 2–4 读 intervention definitions 与 Figure 1；pp. 6–8 看 Figure 3 的几何相关和 Figure 4 的 angular/norm controls；p. 8 读 limitations。",
+        "物理路线：先把 layer 当离散演化坐标，把两类干预曲线视作响应函数；随后核查 PR 是描述统计、change point 是 crossover definition，避免把 phase language 当成临界现象。",
+        "机制解释路线：最强证据不是‘角度和输出相关’，而是保 norm 的角度干预仍能在后层选择性改变预测。下一步关键是 matched-strength controls、自然语言任务和跨架构/规模验证。"
+      ]
+    }
+  ],
+  "evidence_refs": [
+    "paper.pdf pp. 1–4, Sections 1–2, Eqs. (1)–(2) and Figure 1: causal-versus-correlational motivation, intervention construction, task setup and layer-wise response",
+    "paper.pdf pp. 4–6, Section 3 and Figure 2: participation-ratio analysis, pilot-token construction, normalization and context controls",
+    "paper.pdf pp. 6–8, Figures 3–4: angular/Euclidean geometry, prediction-distribution correlations and pure-angular/pure-norm interventions",
+    "paper.pdf pp. 8–9, Conclusion and Limitations: claim boundary, architectural hypotheses and unresolved generalization",
+    "paper.pdf pp. 13–18, Appendices A–B: Days and Clock Math replications, change-point criterion and additional geometry controls",
+    "source PDF SHA-256 1dba1da0a99667455d3dab151fd3cce61913d5da23f0ad2485ac069aae776b65",
+    "MinerU Markdown SHA-256 1128d2e820c9b287d039808fd847378031a45281be4d096deb330e461df35202",
+    "Evidence packet SHA-256 4d0f1c807de83db6c3774aa6fc48cf257ff74ccd7aead0bfbc5b0caa06986b57",
+    "Evidence status: full-text verified; no independent reproduction performed."
+  ]
+}

@@ -1,0 +1,196 @@
+{
+  "arxiv_id": "2602.05065",
+  "source_version": "v1",
+  "source_pdf": "https://arxiv.org/pdf/2602.05065v1",
+  "title_en": "Does SGD Seek Flatness or Sharpness? An Exactly Solvable Model",
+  "title_zh": "SGD 寻找平坦还是尖锐极小值？一个可精确求解的模型",
+  "curation_status": "full_text_verified",
+  "card_standard_version": "2.4",
+  "audience_profile": "physics_ai_literate_physicist",
+  "paper_profile": "theory_experiment",
+  "style_reference": "physicist_daily_arxiv",
+  "provenance": {
+    "program": "Collection",
+    "catalog": "Paper Collection",
+    "catalog_record_id": "2602.05065",
+    "catalog_record_ids": ["2602.05065"],
+    "catalog_topic": "Machine Learning",
+    "collection_date": "2026-08-30",
+    "sampled_at": "2026-08-31",
+    "selected_by": "ziming_mineru_serial_goal",
+    "sampling_seed": "not_applicable_source_complete",
+    "candidate_count": 464
+  },
+  "verified_metadata": {
+    "arxiv_id": "2602.05065",
+    "version": "v1",
+    "title": "Does SGD Seek Flatness or Sharpness? An Exactly Solvable Model",
+    "authors": ["Yizhou Xu", "Pierfrancesco Beneventano", "Isaac Chuang", "Liu Ziyin"],
+    "categories": ["cs.LG"],
+    "primary_category": "cs.LG",
+    "published": "2026-02-04",
+    "updated": "2026-02-04",
+    "abstract": "In an effective small-learning-rate theory for noisy-label deep linear networks, SGD selects minima of gradient fluctuation; isotropic output noise aligns that objective with flatness, whereas anisotropic noise can select progressively sharper solutions."
+  },
+  "equation_refs": [
+    {
+      "label": "有限学习率 SGD 的 entropic effective objective",
+      "latex": "F_\\eta(\\theta)=\\mathbb E_{x,y}\\ell(x,y,\\theta)+\\frac{\\eta}{4}\\mathbb E_{\\mathcal B}\\left\\|\\mathbb E_{(x,y)\\in\\mathcal B}\\nabla\\ell(x,y,\\theta)\\right\\|^2",
+      "role": "separate ordinary risk minimization from the leading finite-step, mini-batch fluctuation penalty",
+      "symbols": {
+        "eta": "small but finite learning rate",
+        "B": "mini-batch random variable",
+        "F_eta": "authors' effective or entropic loss",
+        "S_theta": "second term without its eta over four prefactor, interpreted as gradient fluctuation"
+      },
+      "evidence": "paper.pdf p. 5, Eq. (12) and Lemma 2",
+      "interpretation": "当 $\\eta\\to0^+$ 时先最小化 population loss，再在其 global-minimum manifold 上最小化 $S$。这是 leading-order effective selection principle，不是对完整 SGD trajectory 的精确解。"
+    },
+    {
+      "label": "深线性模型中噪声各向异性控制所选 sharpness",
+      "latex": "c_1D\\sqrt{\\kappa(\\Sigma_\\epsilon)}\\le T(\\theta)\\le c_2D\\kappa(\\Sigma_\\epsilon),\\qquad \\kappa(\\Sigma_\\epsilon)=\\frac{\\lambda_{\\max}}{\\lambda_{\\min}}",
+      "role": "bound Hessian-trace sharpness of the fluctuation-minimizing global solution by the label-noise condition number",
+      "symbols": {
+        "T_theta": "expected Hessian trace used as sharpness",
+        "Sigma_epsilon": "output-space label-noise covariance",
+        "kappa": "noise covariance condition number",
+        "D": "linear-network depth",
+        "c_1_c_2": "depend on teacher and input/output geometry, not on noise condition number"
+      },
+      "evidence": "paper.pdf p. 6, Corollary 1 and Eq. (16)",
+      "interpretation": "在 full-rank assumptions 下，噪声谱越不均衡，允许的 selected sharpness 越高；这与摘要中‘inversely proportional’的措辞相反，按定理、特例与图应理解为随 imbalance 增长。"
+    },
+    {
+      "label": "sharpness 与 gradient fluctuation 的正确谱比较",
+      "latex": "\\lambda_{\\min}(\\Sigma_\\epsilon)T\\le S\\le\\lambda_{\\max}(\\Sigma_\\epsilon)T,\\quad T=\\mathrm{Tr}(A),\\ S=\\mathrm{Tr}(\\Sigma_\\epsilon A),\\ A\\succeq0",
+      "role": "show why fluctuation and curvature coincide up to a scalar only for isotropic output noise",
+      "symbols": {
+        "A": "expected Jacobian Gram matrix",
+        "T": "near-minimum Hessian-trace sharpness",
+        "S": "gradient fluctuation under residual covariance Sigma epsilon",
+        "lambda_min_max": "extreme eigenvalues of the label-noise covariance"
+      },
+      "evidence": "paper.pdf pp. 9–10, Eqs. (27), (29)–(30) and Theorem 2; Eq. (28) printed in the source appears internally inconsistent",
+      "interpretation": "由 $S=\\mathrm{Tr}(\\Sigma_\\epsilon A)$ 直接得到这里写出的界。原文 Eq. (28) 印作 $\\lambda_{min}S\\le T\\le\\lambda_{max}S$，一般并不能由其 proof definitions 推出，疑为 $S,T$ 对调的排印错误。"
+    }
+  ],
+  "figure_refs": [
+    {
+      "label": "Figure 1",
+      "asset_path": "assets/collection-figures/2602.05065/figure-1-initialization-sharpness.webp",
+      "section": "核心结果与证据",
+      "role": "show convergence from sharply different initial Hessian traces toward the theorem-predicted selected sharpness",
+      "evidence": "paper.pdf p. 2, Figure 1",
+      "alt_text": "Hessian-trace sharpness versus epoch for small, Xavier and Kaiming initialization; trajectories begin near 0, 20 and 80 and approach a dashed theoretical value near 28 by epoch 10000.",
+      "caption": "Figure 1：相同 deep matrix-factorization problem 中，small initialization 对应 progressive sharpening，Kaiming initialization 对应 flattening；三条有限时轨迹均朝同一理论 sharpness 靠近。",
+      "interpretation": "图支持 final selection 与 initialization 解耦的受控线性案例，但 10,000 epochs 时 small/Kaiming curves 尚未完全重合，不能把虚线当作所有有限训练 run 已达到的经验终值。"
+    }
+  ],
+  "cover": {
+    "mode": "source_figure",
+    "asset_path": "assets/collection-figures/2602.05065/figure-1-initialization-sharpness.webp",
+    "label": "Figure 1",
+    "visual_type": "data_plot",
+    "evidence": "paper.pdf p. 2, Figure 1",
+    "alt_text": "三种初始化尺度下 Hessian trace 随训练趋近同一理论值的曲线。",
+    "caption": "同一个 SGD-selected sharpness，可以从更平坦处变尖，也可以从更尖锐处变平。",
+    "selection_rationale": "Figure 1 visually removes initialization as the explanation for the direction of sharpness change and directly frames the distinction between trajectory and selected endpoint."
+  },
+  "sections": [
+    {
+      "title": "作者信息",
+      "paragraphs": [
+        "Yizhou Xu 来自 EPFL；Pierfrancesco Beneventano 与 Isaac Chuang 来自 MIT；Liu Ziyin 同时隶属 MIT 与 NTT Research。",
+        "本站核验 arXiv:2602.05065v1，提交于 2026-02-04；首页稿件日期为 2026-02-06，主分类 cs.LG，共 25 页。",
+        "Collection 来源为刘子鸣网站的 Machine Learning 条目。"
+      ]
+    },
+    {
+      "title": "研究问题",
+      "paragraphs": [
+        "深网训练中既能看到 progressive sharpening/edge of stability，也常说 SGD 偏好 flat minima。二者并不一定矛盾：轨迹是变尖还是变平取决于起点，而隐式偏置的问题是，在一族等损失 minima 中 SGD 最终选择哪一个。",
+        "论文构造 deep linear teacher–student regression：参数 rescaling symmetry 让同一函数对应从有限到任意尖锐的 Hessian；然后在 small-learning-rate effective theory 中精确求出 minimal-gradient-fluctuation solution 的 sharpness。",
+        "答案不是‘SGD 总找平坦’或‘总找尖锐’，而是 SGD 先偏好较小 gradient fluctuation。只有 output-label noise isotropic 时，这个目标才与 minimum sharpness 对齐；anisotropy 会把选择推向更尖锐的 parameterization。"
+      ]
+    },
+    {
+      "title": "背景",
+      "paragraphs": [
+        "sharpness 不是坐标不变量。对两层线性网络，$W_2W_1$ 保持不变时可作 $W_2\\to\\lambda W_2, W_1\\to\\lambda^{-1}W_1$；预测函数和 loss 相同，parameter-space Hessian trace 却可发散。本文正是在这个已知 gauge-like symmetry 内研究 SGD 如何选 representative。",
+        "文中主要 sharpness 是 expected Hessian trace $T=\\mathrm{Tr}\\,\\mathbb E[\\nabla^2\\ell]$；最大特征值另有附加 commutation assumptions 的结果。它们与 basin volume、PAC-Bayes complexity 或 function-space robustness 不是同一个量。",
+        "gradient fluctuation 测单样本/mini-batch gradients 在 optimum 附近仍有多大。若 residual noise covariance 为 $\\Sigma_\\epsilon$, fluctuation 对不同 output directions 加权，而 Hessian trace 不作这种加权；各向同性时权重才退化为共同常数。"
+      ]
+    },
+    {
+      "title": "给物理学家的 AI 导读",
+      "paragraphs": [
+        "可把 global-minimum manifold 看成有连续简并的基态流形，matrix rescaling 是沿流形移动的零能方向。有限步长和 mini-batch noise 产生一个 $O(\\eta)$ 的 effective potential，在简并流形上选择特定点。",
+        "这个 effective potential 不是曲率本身，而是 noise-weighted Jacobian metric。$\\Sigma_\\epsilon\\propto I$ 时权重各向同性，最小 fluctuation 与最小 Hessian trace 对齐；谱不均匀时二者的主轴权重不同。",
+        "‘progressive sharpening’只说明 $T(t)$ 增大，类似从低曲率初态驰豫到较高曲率稳态；它不等于 edge of stability。后者牵涉 learning-rate stability boundary，本文 leading-order stable regime 明确解释不了 EoS。",
+        "noise condition number 是控制旋钮，但不是单独的 universal scaling variable：定理中的常数还依赖 teacher map、input covariance 和 dimensions；完整 closed form 也依赖这些矩阵的相对奇异方向。"
+      ]
+    },
+    {
+      "title": "模型与方法",
+      "paragraphs": [
+        "理论模型为 $D$ 层 deep linear network $f_\\theta(x)=W_D\\cdots W_1x$，MSE teacher $y=Vx+\\epsilon$，$\\mathbb E x=\\mathbb E\\epsilon=0$，input/noise covariances 分别为 $\\Sigma_x,\\Sigma_\\epsilon$。global fit 满足矩阵乘积实现 $V$。",
+        "作者用 entropic loss 表示 finite-learning-rate SGD 的 leading correction。Minimal Fluctuation Lemma 称 $\\eta\\to0^+$ 时，$F_\\eta$ 的 minima 先落在 ordinary-risk global-minimum manifold，再选择其中 $S(\\theta)$ 最小者；full-batch GD 在 optimum 没有同一 selection term。",
+        "Theorem 1 在 hidden width 至少覆盖相应 rank 条件、global optimum 和 covariance assumptions 下，给出所选 Hessian spectrum/sharpness 的 closed form；另给所有 global parameterizations 的 minimum possible sharpness。",
+        "实验含三层 linear network、two-layer ReLU teacher–student、MNIST MLP，以及小型 RNN/Transformer teacher–student。nonlinear experiments 比较 isotropic 与不同 condition number 的 synthetic label noise；Figure 2 的三组曲线各为 5 trials。",
+        "Transformer 只有 two-head self-attention 加 residual MLP，input dimension 8、sequence length 4、teacher/student MLP hidden widths 100/4；它是受控架构实验，不是语言模型预训练。"
+      ]
+    },
+    {
+      "title": "核心结果与证据",
+      "paragraphs": [
+        "Lemma 1 说明 exponential parameter symmetries 可沿等损失轨道产生无界 Hessian trace。因而‘存在 arbitrarily sharp global minima’是模型几何性质，尚不说明 SGD 会选择它们。",
+        "Theorem 1 给 minimal-fluctuation global minima 唯一的 Hessian spectrum 与 sharpness，尽管具体 weights 可因内部 orthogonal rotations 不唯一。Figure 1 中三种初始 sharpness 从上下两侧向同一理论值演化，支持 initialization-independent endpoint。",
+        "Corollary 2 称在该 deep-linear setting 中，所选 global solution 当且仅当 $\\Sigma_\\epsilon=I$ 时达到全文定义的 minimum sharpness。更一般的 isotropic covariance $cI$ 是否只差标度，应结合作者 normalization 阅读，不能把字面 $I$ 无条件泛化。",
+        "Corollary 1 给 $T$ 随 $\\kappa(\\Sigma_\\epsilon)$ 至少如平方根、至多线性增长的 bounds；在 $V=\\Sigma_x=I$、二维噪声 $\\mathrm{diag}(1,\\sigma^2)$ 特例，大深度且强失衡时 $T/T_{min}\\approx\\max(\\sigma,1/\\sigma)=\\sqrt\\kappa$。",
+        "Figure 2 在 linear、two-layer ReLU teacher–student 与 MNIST 中显示 anisotropic label noise 带来更高/持续上升的 Hessian trace；Figure 3 在 MLP、RNN、Transformer 的 regression/classification 中显示 relative sharpness 随 noise anisotropy 增长，高 condition number 平台被归因于 finite horizon。",
+        "Figure 4 在 linear setting 中途把 SGD 切为 full-batch GD 后 sharpening 停止，构成比单纯相关曲线更直接的算法干预证据；但 exact theorem 仍只覆盖 effective deep-linear objective，非线性结果是定性外推。"
+      ]
+    },
+    {
+      "title": "有效性与局限",
+      "paragraphs": [
+        "理论精确求解的是 $\\eta\\to0^+$ leading-order entropic objective 及其 selected endpoint，不是 SGD 随时间的 exact stochastic dynamics。论文结论也承认 reaching time、较大 learning rate 和 higher-order terms 未解决。",
+        "exact result 限于 deep linear MSE teacher–student、独立零均值 label noise、global convergence、rank/width 条件。ReLU、MNIST、RNN 和 Transformer 只提供受控经验一致性，不能升级为相同 theorem。",
+        "parameter-space Hessian sharpness 会受 reparameterization 影响。论文利用而非消除了这种依赖，因此结论是指定 matrix-factorized coordinates 下的 SGD implicit bias，不是函数空间中唯一的‘平坦度真理’。",
+        "论文不解释 edge of stability：推导 entropic loss 需要相对稳定和小学习率，而 EoS 正处在有限步长 stability boundary。把本机制解释成所有 progressive sharpening 会超出适用域。",
+        "摘要和 contribution 2(b) 写 selected sharpness 与 noise condition number ‘inversely proportional’，但 Corollary 1、Eqs. (16)–(19)、Figures 2–3 与正文解释均表明 imbalance 增大使 sharpness 增大；卡片将前者视为措辞错误。",
+        "Theorem 2 的 Eq. (28) 印作 $\\lambda_{min}(\\Sigma_\\epsilon)S\\le T\\le\\lambda_{max}(\\Sigma_\\epsilon)S$；按紧邻的 $T=\\mathrm{Tr}A$、$S=\\mathrm{Tr}(\\Sigma_\\epsilon A)$ 应为 $\\lambda_{min}T\\le S\\le\\lambda_{max}T$。这处内部不一致需要作者勘误。",
+        "多数 nonlinear settings 极小且 label noise 人工注入；没有自然大模型、真实 conditional-label covariance 或 generalization error 对照。因此论文回答的是 curvature selection，不证明更尖或更平必然泛化更好。"
+      ]
+    },
+    {
+      "title": "复现与资源",
+      "paragraphs": [
+        "最小 exact-case 复现使用 $D=3,d_x=d_y=2,V=I,\\Sigma_x=I$；isotropic noise scale $\\sqrt{\\Sigma_\\epsilon}=\\mathrm{diag}(10,10)$，anisotropic 为 $\\mathrm{diag}(10,0.1)$，online SGD 约 $10^5$ epochs、LR 0.01、batch 10。",
+        "每个 run 应保存 product error $\\|W_D\\cdots W_1-V\\|$、各层 condition numbers、Hessian trace、largest eigenvalue、gradient fluctuation 与 $F_\\eta$ 两项；只画 train loss 无法区分等函数 parameterizations。",
+        "复现 Figure 1 要并列 small、Xavier、Kaiming initializations，并把 Theorem 1 closed form 作为预先计算的 horizontal prediction；需延长训练或拟合收敛时间，量化有限 horizon 下是否真正共享 endpoint。",
+        "检验 anisotropy mechanism 时应固定 $\\mathrm{Tr}\\Sigma_\\epsilon$ 或总噪声功率，只改变谱条件数，并与 full-batch GD、matched scalar noise 和不同 batch sizes 对照；否则 noise amplitude 与 anisotropy 混杂。",
+        "原文未给可核验代码仓库 URL。本站未重跑实验；公式以 source PDF 为准，并已标出正文两处疑似排印错误。"
+      ]
+    },
+    {
+      "title": "阅读指南",
+      "paragraphs": [
+        "快速路线：pp. 1–3 区分 trajectory 与 endpoint；pp. 4–6 读 rescaling symmetry、entropic loss、Theorem 1 和 Corollaries 1–2；pp. 9–10 读 general fluctuation–sharpness relation与 limitations。",
+        "物理路线：把 rescaling symmetry 看成简并流形，把 $O(\\eta)$ fluctuation term 看成选态势；随后检查选择量是 noise-weighted metric 而非 bare Hessian trace。",
+        "深读时优先重推 Eq. (16) 的 condition-number dependence，并自行从 Eqs. (29)–(30) 校验谱界。最强结论是受控 deep-linear effective model 的 endpoint selection；对自然深网和 EoS 的解释仍是开放问题。"
+      ]
+    }
+  ],
+  "evidence_refs": [
+    "paper.pdf pp. 1–3, Abstract, Introduction and Figure 1: sharpness paradox, endpoint-versus-initialization distinction and controlled convergence plot",
+    "paper.pdf pp. 4–6, Sections 3.1–3.4, Eqs. (2)–(16): deep-linear model, symmetry, entropic objective, Theorem 1 and condition-number bound",
+    "paper.pdf pp. 6–9, Section 4 and Figures 2–4: isotropic special case, anisotropic-noise predictions and nonlinear/algorithm controls",
+    "paper.pdf pp. 9–11, Section 5, Theorem 2 and Conclusion: general fluctuation relation, internal equation check and stated limitations",
+    "paper.pdf pp. 21–25, Appendices A.8–B: initialization sharpness, power-law example and experimental configurations",
+    "source PDF SHA-256 3ebd1c2fa78fad97a2cb05259db67044316f6a0ee8f73088f9aeeb8c60915634",
+    "MinerU Markdown SHA-256 eba8e2d9eb807199d5a462fc89a60334b9ba9490611ac14fd5d66f6adfaa42e2",
+    "Evidence packet SHA-256 f35a29a9e84f47220c5011177f38def74c0e5f5098d03b221ac161625f6a4bfb",
+    "Evidence status: full-text verified; no independent reproduction performed."
+  ]
+}

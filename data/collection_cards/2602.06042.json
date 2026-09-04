@@ -1,0 +1,195 @@
+{
+  "arxiv_id": "2602.06042",
+  "source_version": "v1",
+  "source_pdf": "https://arxiv.org/pdf/2602.06042v1",
+  "title_en": "Pseudo-Invertible Neural Networks",
+  "title_zh": "伪可逆神经网络",
+  "curation_status": "full_text_verified",
+  "card_standard_version": "2.4",
+  "audience_profile": "physics_ai_literate_physicist",
+  "paper_profile": "theory_experiment",
+  "style_reference": "physicist_daily_arxiv",
+  "provenance": {
+    "program": "Collection",
+    "catalog": "Paper Collection",
+    "catalog_record_id": "2602.06042",
+    "catalog_record_ids": ["2602.06042"],
+    "catalog_topic": "Generative Models",
+    "collection_date": "2026-08-30",
+    "sampled_at": "2026-08-31",
+    "selected_by": "ziming_mineru_serial_goal",
+    "sampling_seed": "not_applicable_source_complete",
+    "candidate_count": 464
+  },
+  "verified_metadata": {
+    "arxiv_id": "2602.06042",
+    "version": "v1",
+    "title": "Pseudo-Invertible Neural Networks",
+    "authors": ["Yamit Ehrlich", "Nimrod Berman", "Assaf Shocher"],
+    "categories": ["cs.LG"],
+    "primary_category": "cs.LG",
+    "published": "2026-02-05",
+    "updated": "2026-02-05",
+    "abstract": "The paper defines a completion-dependent nonlinear pseudo-inverse, implements a structurally surjective neural block with an exact right-inverse, and uses nonlinear back-projection to guide a diffusion prior under semantic constraints."
+  },
+  "equation_refs": [
+    {
+      "label": "completion metric 定义的 nonlinear pseudo-inverse",
+      "latex": "g^\\dagger(y)=\\underset{x\\in g^{-1}(y)}{\\operatorname{argmin}}\\,\\|G(x)-G(0)\\|_2,\\qquad G(x)=[g(x)\\mid q(x)]^{\\mathsf T}",
+      "role": "choose one representative from each preimage using the Euclidean metric induced by a fixed bijective completion",
+      "symbols": {
+        "g": "surjective forward map from high- to low-dimensional space",
+        "q": "coordinates completing g into a bijection",
+        "G": "diffeomorphic completion from X to Y times Z",
+        "g_dagger": "completion-dependent section of the fibers of g"
+      },
+      "evidence": "paper.pdf p. 3, Definitions 4.1–4.2 and Eqs. (9)–(10)",
+      "interpretation": "minimality is measured in $G$-coordinates, not necessarily in the original input norm. The inverse is therefore canonical only after choosing the completion/metric; different valid completions can select different preimages."
+    },
+    {
+      "label": "Non-Linear Back-Projection 保持 completion null coordinate",
+      "latex": "x'=G^{-1}\\!\\left(G(x)-G(g^\\dagger(g(x)))+G(g^\\dagger(y))\\right)",
+      "role": "move an estimate to the target fiber while preserving its q-coordinate in the completed space",
+      "symbols": {
+        "x": "current estimate",
+        "y": "desired measurement or semantic code",
+        "x_prime": "updated consistent estimate",
+        "q_coordinate": "information along the solution fiber, held fixed by the ideal update"
+      },
+      "evidence": "paper.pdf p. 4, Definition 4.3, Eq. (11), Claims 1–2",
+      "interpretation": "在 reflexive/right-inverse assumptions 下有 $g(x')=y$；所谓 orthogonal projection 是相对于 $G$ 拉回的 metric，而不是原像素空间 Euclidean closest point。"
+    },
+    {
+      "label": "Affine surjective coupling 的显式右逆",
+      "latex": "y=x_0\\odot s(x_1)+t(x_1),\\quad \\hat x_1=r(y),\\quad \\hat x_0=\\frac{y-t(\\hat x_1)}{s(\\hat x_1)}",
+      "role": "construct a dimension-reducing forward block whose selected preimage can be computed without iterative optimization",
+      "symbols": {
+        "x_0": "retained coordinates",
+        "x_1": "discarded or fiber coordinates",
+        "s_t": "learned scale and translation maps",
+        "r": "auxiliary predictor selecting missing fiber coordinates"
+      },
+      "evidence": "paper.pdf pp. 4–5, Eqs. (17)–(20), Theorems 5.1–5.2",
+      "interpretation": "若 $s$ 逐元素非零，代回即得 $g(g^\\dagger(y))=y$，于是前两个 reflexive Penrose identities 成立。实现用 exponentiated bounded scale 保证可除；这不是任意 neural network 的逆。"
+    }
+  ],
+  "figure_refs": [
+    {
+      "label": "Figure 1",
+      "asset_path": "assets/collection-figures/2602.06042/figure-1-spnn-block-architecture.webp",
+      "section": "模型与方法",
+      "role": "show the dimension-reducing affine coupling and its explicit selected right-inverse",
+      "evidence": "paper.pdf p. 4, Figure 1",
+      "alt_text": "Top: an orthogonal mixing u splits x into x0 and x1, and x1 modulates x0 through scale s and translation t to form lower-dimensional y. Bottom: r predicts missing x1 from y and the coupling is algebraically reversed to reconstruct x hat.",
+      "caption": "Figure 1：forward path 丢弃一个坐标块却让它调制输出；inverse path 用 $r(y)$ 选择被丢弃坐标，再精确解回另一块，因此保证 output consistency 而非恢复原输入。",
+      "interpretation": "$g(g^\\dagger(y))=y$ 由 block algebra 保证；$g^\\dagger(g(x))=x$ 一般不成立，因为降维映射的同一 fiber 上有多个输入，$r$ 只能选其中一个。"
+    }
+  ],
+  "cover": {
+    "mode": "source_figure",
+    "asset_path": "assets/collection-figures/2602.06042/figure-1-spnn-block-architecture.webp",
+    "label": "Figure 1",
+    "visual_type": "schematic",
+    "evidence": "paper.pdf p. 4, Figure 1",
+    "alt_text": "SPNN 的降维 forward coupling 与通过辅助网络补全 missing coordinates 的 pseudo-inverse。",
+    "caption": "降维后无法找回唯一原像；SPNN 做的是选择一个可计算且语义一致的原像。",
+    "selection_rationale": "Figure 1 makes the algebraic guarantee and the irrecoverable degree of freedom visible, preventing the selected right-inverse from being mistaken for ordinary bijective inversion."
+  },
+  "sections": [
+    {
+      "title": "作者信息",
+      "paragraphs": [
+        "Yamit Ehrlich 与 Assaf Shocher 来自 Reichman University；Nimrod Berman 来自 Tel Aviv University。",
+        "本站核验 arXiv:2602.06042v1，提交于 2026-02-05；主分类 cs.LG，共 12 页。",
+        "Collection 来源为刘子鸣网站的 Generative Models 条目。"
+      ]
+    },
+    {
+      "title": "研究问题",
+      "paragraphs": [
+        "线性欠定系统有 Moore–Penrose inverse：在所有一致解中选 minimum-norm solution，还能把任意估计投到 measurement-consistent affine subspace。对 nonlinear、dimension-reducing neural operator，怎样构造类似但可计算的 selected inverse？",
+        "论文先承认 nonlinear map 没有自动给定的 adjoint 和 canonical metric，再用 bijective completion $G=[g,q]$ 选定 fiber coordinates；随后设计 SPNN，让 forward map 本身具有可解析 right-inverse。",
+        "应用是把 linear diffusion null-space correction 推广到 semantic degradation：给定 40-dimensional face-attribute code，用 unconditional diffusion prior 生成一个满足这些 attributes 的 plausible face，而不是恢复唯一原身份。"
+      ]
+    },
+    {
+      "title": "背景",
+      "paragraphs": [
+        "surjective map 把许多 $x$ 映到同一 $y$，因此不存在双边 inverse；right-inverse 只是从每个 fiber $g^{-1}(y)$ 选一个 representative。$gg^\\dagger=I_Y$ 保证重投影一致，$g^\\dagger g=I_X$ 在信息丢失时不可能。",
+        "normalizing flow 保持维数并要求 bijection；autoencoder learned decoder 通常没有严格 $g(g^{-1}(y))=y$ 保证；经典 inverse-problem guidance 则常在每一步用 gradient 或 linear pseudoinverse 逼近 measurement consistency。",
+        "这篇论文的 completion 把输入空间重参数化为 measurement coordinate $g(x)$ 与 fiber coordinate $q(x)$。一旦 $G$ 是 diffeomorphism，固定 $y$、保留 $q$ 就像在直角坐标中横向移动，但这种正交性由 $G$ 诱导，非原空间先验事实。"
+      ]
+    },
+    {
+      "title": "给物理学家的 AI 导读",
+      "paragraphs": [
+        "可把 $g:X\\to Y$ 看成 coarse-graining：$y$ 是可观测量，fiber $g^{-1}(y)$ 是所有微观态的等价类。伪逆不是逆转熵增，而是补充一个 gauge fixing rule，从等价类中挑一个微观态。",
+        "$G=(g,q)$ 类似选取适配于纤维化的坐标图。NLBP 改变 observable coordinate 而保持 $q$ 不变，所以在 $G$-metric 中法向于目标 fiber；若换 completion，距离、法向与 selected representative 都会变。",
+        "auxiliary network $r(y)$ 不可能从 40 个 attributes 推断测试图像丢失的全部像素。它学习的是训练分布上哪类 fiber coordinate 较自然；剩余细节由 diffusion prior 随机补全。",
+        "因此 algebraic consistency 与 perceptual realism 是两道独立门：SPNN block 可严格满足 $gg^\\dagger=I$，但 $r$ 或 diffusion prior 仍可能给不真实、有偏或与原 identity 无关的 preimage。"
+      ]
+    },
+    {
+      "title": "模型与方法",
+      "paragraphs": [
+        "Definition 4.2 对固定 bijective completion $G:X\\to Y\\times Z$，在每个 fiber 上最小化到 $G(0)$ 的距离；Definition 4.3 用三个 completed coordinates 的差构造 NLBP。Claims 1–2 分别证明 target consistency 和 $G$-metric orthogonality。",
+        "SPNN block 先作 learnable orthogonal mixing，再拆成 $x_0,x_1$，用 affine coupling $x_0\\odot s(x_1)+t(x_1)$ 输出较低维 $y$。$r(y)$ 预测 selected $x_1$，然后显式除以 $s$ 求回 $x_0$。",
+        "两阶段训练先学习 forward task 的 $s,t,U$，冻结后再优化 $r$ 使 selected inverses 落到 learned natural section；另加 surjectivity-consistency 和 reconstruction/stability losses 处理数值漂移与数据流形偏好。",
+        "生成实验在 CelebA-HQ 256×256 上训练一个输出 40 attribute logits 的 SPNN，并使用在同一数据集训练的 unconditional DDPM。每个 reverse step 的 clean estimate 经 gentle NLBP correction 后再采样。",
+        "语义重建固定完整 40-dimensional target；单属性/多属性编辑只替换目标 indices，并以 $\\lambda_t=\\alpha\\tanh(\\gamma\\delta)$ 自适应 guidance。实现对 covariance 作额外调整，并只在部分后期 diffusion steps 开启 editing guidance。"
+      ]
+    },
+    {
+      "title": "核心结果与证据",
+      "paragraphs": [
+        "Theorem 5.1 的核心是代数代回：只要 scale 非零，Eqs. (19)–(20) 对任何 $r(y)$ 都给 $g(g^\\dagger(y))=y$；Theorem 5.2 随即得到前两个 Penrose composition identities。严格性来自架构约束，不来自训练精度。",
+        "Claim 1 表明 NLBP 把当前 estimate 移到 $g^{-1}(y)$；Claim 2 表明 displacement 与目标 fiber tangent 在 $G$-coordinates 中正交。后者没有宣称 pixel-space Euclidean nearest solution。",
+        "Figure 1 清楚区分 forward 的 discarded coordinate 与 inverse 的 learned choice。它也暴露保证边界：right-inverse consistency 对任意 $r$ 成立，但选出的 preimage 是否 natural 完全取决于 $r$、completion 和训练数据。",
+        "CelebA-HQ 的 100 个随机 test samples 上，作者报告 40 attributes 的 mean binary agreement 92.3%；Eyeglasses、Hats、Neckties 等超过 97%，High Cheekbones、Arched Eyebrows 等主观 attributes 较差。agreement 由同一 forward SPNN 再评估，主要检验自洽性。",
+        "Figures 4–5 展示 single-/multi-attribute conditional generation 的作者精选结果；Figure 6 中 random/min-norm $r$ 与 naive/gentle back-projection 的组合出现 high-frequency failures。该 ablation 是视觉证据，未给 FID、identity、diversity 或外部 attribute classifier 的系统量化。",
+        "实验说明 nonlinear consistency guidance 可与 diffusion prior 协同工作；它没有表明从 semantic code 重建原 face。Figure 2 的输出是同 fiber 中的生成样本，纹理和身份由 prior 补全。"
+      ]
+    },
+    {
+      "title": "有效性与局限",
+      "paragraphs": [
+        "定义需要 surjective continuous $g$ 和全局 bijective/diffeomorphic completion $G$。普通 classifier 未必满射，也未必存在可学习的全局 completion；SPNN 是重新训练的受约束 surrogate，并非对任意 black-box operator 的通用 pseudoinverse。",
+        "‘Natural’不是 completion-independent uniqueness。固定 $G$ 后 minimizer 可唯一，但不同 $q$ 或坐标尺度改变 induced metric 和 selected section；论文给 coordinate-consistency 动机，没有证明所有合理 completions 导出同一 inverse。",
+        "SPNN 的 surjectivity 还要求 affine scale 每个分量非零；实现以 $\\exp(2\\tanh(\\cdot))$ 保证这一点。若把公式脱离该约束用于任意 $s$，Theorem 5.1 不成立。",
+        "right-inverse/reflexive identities 是 exact algebra；realistic preimage 不是。作者自己指出 $r$ expressivity 不足时仍可 $gg^\\dagger=I$，但生成不真实；out-of-range target 与 non-surjective operator 的 canonical choice 尚未解决。",
+        "实验只覆盖 CelebA-HQ semantic attributes，forward evaluator 与 constraint operator 相同，且只抽 100 samples；缺少独立 classifier、人评、identity leakage、uncertainty calibration、强 inverse-problem baselines 与多 seeds。",
+        "‘zero-shot inverse problem’意为 sampling 时不针对每个 $y$ 重训 DDPM，并不意味着无训练：SPNN、auxiliary $r$ 与 unconditional diffusion prior 都预先在目标域数据上训练。",
+        "面部属性编辑带来 deepfake 和 demographic bias 风险；所谓 canonical/natural preimage 会继承 CelebA-HQ 与 attribute annotations 的相关偏差。"
+      ]
+    },
+    {
+      "title": "复现与资源",
+      "paragraphs": [
+        "先做 block-level property test：随机 $y$ 检查 $\\|g(g^\\dagger(y))-y\\|$ 到 FP32 tolerance；随机 $x,y$ 检查 NLBP 后 consistency，并在 autograd 得到的 fiber tangents 上测 $G$-metric inner product。",
+        "架构复现需固定 5 个 SPNN blocks、Cayley 1×1 orthogonal mixing、channel splits、scale $\\exp(2\\tanh)$、CelebA-HQ 256×256、40 logits、Adam LR $2\\times10^{-4}$、15 epochs、seed 556；再单独训练 $r$ 50 epochs、LR $10^{-4}$。",
+        "生成复现应保存 DDPM checkpoint/hash、1000-step noise schedule、开始施加 NLBP 的 timestep、adaptive-$\\lambda$ 参数、covariance adjustment、每个 target 的 random seed 和所有 intermediate consistency errors。",
+        "评估必须把 self-consistency 与 semantic validity 分开：除 $g(x)$ agreement 外，用独立 attribute model、人工盲评、FID/KID、LPIPS diversity；语义重建还应明确报告 original-identity similarity 不应被当作目标。",
+        "要检验 completion dependence，可固定同一 forward $g$，训练多个维度缩放/旋转不同的 $q$ 或 $r$，比较 selected preimages 与 NLBP paths。论文当前未提供可核验代码 URL；本站未运行实验。"
+      ]
+    },
+    {
+      "title": "阅读指南",
+      "paragraphs": [
+        "快速路线：pp. 3–4 读 Definitions 4.1–4.3 与 Claims 1–2；pp. 4–5 看 Figure 1 和 Eqs. (17)–(20)；pp. 7–8 看 92.3% 指标、编辑图与 limitations。",
+        "物理路线：把 $g$ 当 coarse-graining，把 fiber 当等测量值微观态，把 completion 当 gauge/metric choice；重点判断哪些结论随坐标选择不变。",
+        "应用路线：先确认任务能训练为 surjective SPNN，再把 algebraic consistency、prior realism 和 inverse identifiability 分开验收。本文最强结果是受约束 block 的 exact right-inverse，不是任意 nonlinear measurement 的唯一恢复。"
+      ]
+    }
+  ],
+  "evidence_refs": [
+    "paper.pdf pp. 1–3, Introduction and Preliminaries: problem framing, Penrose identities, linear back-projection and nonlinear ambiguity",
+    "paper.pdf pp. 3–4, Definitions 4.1–4.3, Eqs. (9)–(16), Claims 1–2: completion-dependent inverse and G-metric projection",
+    "paper.pdf pp. 4–6, Figure 1, Eqs. (17)–(21), Theorems 5.1–5.2: SPNN coupling, explicit right-inverse and training",
+    "paper.pdf pp. 6–8, Eqs. (22)–(25), Figures 2–6: diffusion integration, semantic reconstruction, editing and ablations",
+    "paper.pdf pp. 8–12, Discussion and Appendices A–B: stated limitations, risks, guidance schedule and hyperparameters",
+    "source PDF SHA-256 6c97ae4b05e12662880bbdfca477301fde332d76d2bd9aa6198adce1b29298e0",
+    "MinerU Markdown SHA-256 1b223a15f4137da0ddb5f3604dcd9a700a11e98539af2ef3999881b58352ca75",
+    "Evidence packet SHA-256 108de33614c3b3a128bf267c2b871a20ab5e5dba0d7dff81b9f935244b95104e",
+    "Evidence status: full-text verified; no independent reproduction performed."
+  ]
+}
