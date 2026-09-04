@@ -1,0 +1,128 @@
+{
+  "arxiv_id": "2510.21693",
+  "source_version": "v1",
+  "source_pdf": "https://arxiv.org/pdf/2510.21693v1",
+  "title_en": "Mechanistic Interpretability for Neural TSP Solvers",
+  "title_zh": "神经旅行商求解器的机制可解释性",
+  "curation_status": "full_text_verified",
+  "card_standard_version": "2.4",
+  "audience_profile": "physics_ai_literate_physicist",
+  "paper_profile": "ai_empirical",
+  "style_reference": "physicist_daily_arxiv",
+  "provenance": {
+    "program": "Collection", "catalog": "Paper Collection", "catalog_record_id": "2510.21693",
+    "catalog_record_ids": ["2510.21693"], "catalog_topic": "Machine Learning",
+    "collection_date": "2026-08-30", "sampled_at": "2026-08-31",
+    "selected_by": "ziming_mineru_serial_goal", "sampling_seed": "not_applicable_source_complete", "candidate_count": 464
+  },
+  "verified_metadata": {
+    "arxiv_id": "2510.21693", "version": "v1",
+    "title": "Mechanistic Interpretability for Neural TSP Solvers",
+    "authors": ["Reuben Narad", "Leonard Boussioux", "Michael Wagner"],
+    "categories": ["cs.LG"], "primary_category": "cs.LG",
+    "published": "2025-10-24T17:54:19Z", "updated": "2025-10-24T17:54:19Z",
+    "abstract": "The paper attaches a top-k sparse autoencoder to the final encoder residual stream of an RL-trained neural TSP solver. On 100-node uniform-square instances it finds qualitatively interpretable latent directions associated with boundaries, local clusters, and linear separators, while explicitly leaving causal circuit tests and distributional robustness to future work."
+  },
+  "equation_refs": [
+    {
+      "label": "SAE encoder",
+      "latex": "z=xW_{\\mathrm{enc}}^{\\top}+b",
+      "role": "project each node's solver activation into an overcomplete feature dictionary",
+      "symbols": {"x": "node embedding from the solver's final encoder residual stream", "z": "dense SAE latent activations", "W_enc": "learned feature directions"},
+      "evidence": "paper.pdf p. 5, SAE forward pass",
+      "interpretation": "A coordinate z_i is a response to one learned direction, not automatically a semantic concept; meaning is assigned only after inspecting activation patterns."
+    },
+    {
+      "label": "Top-k sparse bottleneck",
+      "latex": "z_{\\mathrm{sparse}}=\\operatorname{TopK}(z)=\\operatorname{ReLU}(z-\\tau)",
+      "role": "retain only the k largest feature activations for each node token",
+      "symbols": {"tau": "k-th largest entry of z", "k": "number of active latent features", "z_sparse": "sparsified feature vector"},
+      "evidence": "paper.pdf p. 5, SAE forward pass",
+      "interpretation": "Competition for a small active set encourages separated directions, but sparsity alone does not prove monosemanticity or causal relevance."
+    },
+    {
+      "label": "SAE reconstruction",
+      "latex": "\\hat{x}=z_{\\mathrm{sparse}}^{\\top}W_{\\mathrm{dec}}+b_{\\mathrm{dec}}",
+      "role": "test whether the sparse dictionary preserves the original solver activation",
+      "symbols": {"x_hat": "reconstructed node activation", "W_dec": "decoder dictionary", "b_dec": "decoder bias"},
+      "evidence": "paper.pdf p. 5, SAE forward pass",
+      "interpretation": "Low reconstruction error establishes information retention, not that the chosen basis is unique, stable across seeds, or the basis used by the solver."
+    }
+  ],
+  "figure_refs": [{
+    "label": "Figure 3", "asset_path": "assets/collection-figures/2510.21693/figure-3-sae-pipeline.webp",
+    "section": "模型与方法", "role": "explain the overcomplete sparse projection and reconstruction used to probe solver activations",
+    "evidence": "paper.pdf p. 5, Figure 3",
+    "alt_text": "节点激活 x 经编码器变为更宽的 z，只保留 top-k 激活得到 z_sparse，再由解码器重建 x-hat。",
+    "caption": "SAE 不是 TSP 求解器本身，而是训练后附着在其内部激活上的第二个模型。",
+    "interpretation": "The diagram identifies the measurement apparatus. Interpretability claims additionally depend on feature visualizations and cannot be inferred from the architecture alone."
+  }],
+  "cover": {
+    "mode": "source_figure", "asset_path": "assets/collection-figures/2510.21693/figure-3-sae-pipeline.webp",
+    "label": "Figure 3", "visual_type": "schematic", "evidence": "paper.pdf p. 5, Figure 3",
+    "alt_text": "稀疏自编码器把求解器激活投影到过完备字典、执行 top-k 稀疏化并重建。",
+    "caption": "先把求解器内部状态分解为少量活跃方向，再询问这些方向是否对应人能识别的几何结构。",
+    "selection_rationale": "It gives non-specialists the essential distinction between the trained TSP policy and the post-hoc SAE probe before presenting qualitative features."
+  },
+  "sections": [
+    {"title": "作者信息", "paragraphs": [
+      "Reuben Narad、Leonard Boussioux、Michael Wagner；作者来自 University of Washington Foster School of Business 与 Paul G. Allen School of Computer Science & Engineering。",
+      "本站核验 arXiv:2510.21693v1：提交并更新于 2025-10-24；主分类 cs.LG，共 11 页。",
+      "Collection 来源为刘子鸣网站的 Machine Learning 条目。"
+    ]},
+    {"title": "研究问题", "paragraphs": [
+      "神经 TSP 求解器能快速构造短路线，但当它在分布外几何上失败时，我们通常不知道编码器看见了什么。论文问：内部表示是否自发形成凸包边界、局部密度或几何分割等经典 TSP 结构？",
+      "作者不直接解释每一步选点，而是先做 feature discovery：用 sparse autoencoder 把 encoder residual stream 分解成稀疏方向，再把各方向的激活映射回平面坐标。",
+      "论文得到的是可解释候选特征，不是完整机制。它明确把 feature-to-logit、activation patching、ablation 和跨层 circuit reconstruction 留作后续。"
+    ]},
+    {"title": "背景", "paragraphs": [
+      "基础求解器是 Graph Transformer encoder-decoder：输入节点坐标及 current/terminal/visited 标记，encoder 联合表示全图，decoder 自回归地产生下一节点 logits。",
+      "策略用改造的 REINFORCE 训练，reward 为负的闭合 tour length；训练先做 1000 次 greedy rollout 初始化 baseline，再用 temperature-controlled sampling 与 Adam 更新。",
+      "机制可解释性区分 feature 与 circuit：feature 是激活空间中的候选变量方向，circuit 才是这些变量如何因果组合并改变输出。本文只完成前者。"
+    ]},
+    {"title": "给物理学家的 AI 导读", "paragraphs": [
+      "可把 residual stream 看成高维微观态，SAE 学习一组过完备的候选模态；top-k 约束让每个样本只激发少数模态，类似稀疏序参量展开。",
+      "但这不是本征模分解：字典非正交、由损失和超参数共同决定，也可能存在多组同样能重建数据的基。一个漂亮的空间图样不自动成为真实 normal mode。",
+      "作者把十个 TSP 实例叠加，以颜色显示同一 feature 的激活。跨实例重复出现边界、spot 或线性分割图样，说明该方向与几何变量相关。",
+      "从相关序参量到动力学机制还缺 response experiment：人为增强/抹除该方向后，下一节点概率或 tour length 是否按预测变化。论文尚未做这一步。"
+    ]},
+    {"title": "模型与方法", "paragraphs": [
+      "主分析对象是在单位正方形均匀分布、N=100 节点上训练的自回归 TSP policy；SAE 接在所有 Transformer blocks 之后、decoder 之前的 final encoder residual stream。",
+      "作者从 100,000 次同分布推理收集 node embeddings，对 expansion factor∈{1,4,16}、k-ratio∈{0.01,0.10}、L1 coefficient∈{10^-4,10^-3,10^-2,10^-1} 做网格搜索。",
+      "最终选择 expansion factor=4、k-ratio=0.1、L1=0.001；标准兼顾近乎完整重建、目标稀疏度与人工判断的 feature interpretability。",
+      "每个 feature 在每个节点产生激活；可用 N 个节点上的平均激活排序，再把十个 100-node 实例叠加成二维 activation map，寻找跨实例稳定图样。"
+    ]},
+    {"title": "核心结果与证据", "paragraphs": [
+      "Appendix Figure 4 展示多类重复方向：靠近单位方形边缘增强的 boundary detector、集中在一个局域 spot 的 cluster-sensitive feature、以及沿近似直线把平面分区的 separator feature。",
+      "这些图样与 TSP 中常见的几何启发式相呼应，而且模型没有接收“凸包”“簇”或“分割线”的显式监督。它们因此是值得做因果检验的候选内部变量。",
+      "SAE 在选定配置下保持目标 sparsity 并近乎重建原 residual activations；这说明稀疏字典没有明显丢失该层信息，但论文未给出跨 seed 的完整量化稳定性表。",
+      "论文声称的是 first model-internal account / feature discovery。没有证据表明某个 feature 必然驱动某次选点，也没有证明它对应经典 heuristic 的可执行子程序。"
+    ]},
+    {"title": "有效性与局限", "paragraphs": [
+      "分析主要是相关性和定性可视化；缺少 feature→logit regression、activation patching、steering、head/MLP ablation，不能把激活图样升级为因果机制。",
+      "主结果来自 N=100、uniform unit square，其他 cluster/ring 几何只作示例；尺寸外推、train/test distribution shift 与 road-network-like 数据尚未系统检验。",
+      "字典依赖 tap layer、expansion、k-ratio、L1、优化器与随机种子；作者的最终超参数还包含人工可解释性选择，可能引入 selection bias。",
+      "SAE 可能重现输入分布的简单几何统计，而不是求解策略使用的算法变量；需与 PCA/ICA/NMF、weight-centric 方法和随机策略基线比较。",
+      "结论针对一种 RL 训练的 autoregressive policy；即使 tour quality 相近，不同 reward、temperature 或 decoder 架构也可能形成不同内部表示。"
+    ]},
+    {"title": "复现与资源", "paragraphs": [
+      "论文给出交互式 feature explorer：https://reubennarad.github.io/TSP_interp/；基础 policy 使用 RL4CO 实现：https://github.com/ai4co/rl4co。",
+      "复现应冻结 policy checkpoint，保存 100,000 次推理的实例 ID、节点顺序、tap layer 和 activation normalization；否则 SAE seed 间无法逐点比较。",
+      "除 reconstruction error/sparsity 外，应报告 feature stability across seeds、与凸包/密度/分割标签的定量关联，以及 patch/ablation 后 next-node logits 和 tour gap。",
+      "本站核验 v1 PDF SHA-256：4b846d4067f1fc01a28883c67bebdc8e3a92344cc2ce9b8d0d616efa27f73dbc。Evidence status: full-text verified; no independent reproduction performed."
+    ]},
+    {"title": "阅读指南", "paragraphs": [
+      "最短路径：Figure 1 → Figure 3 与 SAE 三式 → §5 feature visualization → Appendix Figure 4 → §6 limitations。",
+      "物理路径：把 SAE 当非正交稀疏模态分解，再问模态的可重复性、响应函数和干预因果性。",
+      "AI 路径：牢记 policy 与 SAE 是两个模型；SAE 能重建 policy activation，不等于它发现了 policy 自己显式使用的变量。"
+    ]}
+  ],
+  "evidence_refs": [
+    "paper.pdf pp. 3–4: neural TSP architecture, RL training and interpretability target",
+    "paper.pdf pp. 5–6: SAE equations, hyperparameter sweep and feature-analysis procedure",
+    "paper.pdf p. 7 and p. 11: limitations and qualitative feature families",
+    "source PDF SHA-256 4b846d4067f1fc01a28883c67bebdc8e3a92344cc2ce9b8d0d616efa27f73dbc",
+    "Evidence packet SHA-256 c4fa2d215fba2354d29a5a61470a9f3cac8766f786019ad58a91e5fd7cf8ff00",
+    "Evidence status: full-text verified; no independent reproduction performed."
+  ]
+}

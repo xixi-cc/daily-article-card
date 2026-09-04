@@ -1,0 +1,129 @@
+{
+  "arxiv_id": "2510.19093",
+  "source_version": "v2",
+  "source_pdf": "https://arxiv.org/pdf/2510.19093v2",
+  "title_en": "Weight Decay may matter more than muP for Learning Rate Transfer in Practice",
+  "title_zh": "实践中的学习率迁移：权重衰减可能比 μP 更关键",
+  "curation_status": "full_text_verified",
+  "card_standard_version": "2.4",
+  "audience_profile": "physics_ai_literate_physicist",
+  "paper_profile": "theory_numerics",
+  "style_reference": "physicist_daily_arxiv",
+  "provenance": {
+    "program": "Collection", "catalog": "Paper Collection", "catalog_record_id": "2510.19093",
+    "catalog_record_ids": ["2510.19093"], "catalog_topic": "Machine Learning",
+    "collection_date": "2026-08-30", "sampled_at": "2026-08-31",
+    "selected_by": "ziming_mineru_serial_goal", "sampling_seed": "not_applicable_source_complete", "candidate_count": 464
+  },
+  "verified_metadata": {
+    "arxiv_id": "2510.19093", "version": "v2",
+    "title": "Weight Decay may matter more than muP for Learning Rate Transfer in Practice",
+    "authors": ["Atli Kosson", "Jeremy Welborn", "Yang Liu", "Martin Jaggi", "Xi Chen"],
+    "categories": ["cs.LG"], "primary_category": "cs.LG",
+    "published": "2025-10-21T21:36:14Z", "updated": "2026-02-13T17:48:03Z",
+    "abstract": "The paper studies why optimal learning rates sometimes transfer across network widths. In finite-width LLaMA pre-training with AdamW, it finds that μP's alignment assumptions decay early, while independently scaled weight decay stabilizes relative representation changes later in training; modified nonlinear warmup can reproduce much, but not all, of this practical benefit."
+  },
+  "equation_refs": [
+    {
+      "label": "Alignment coefficient",
+      "latex": "\\alpha_{\\Delta W}=\\frac{\\|\\Delta W X\\|}{\\|\\Delta W\\|\\,\\|X\\|}\\in[0,1]",
+      "role": "measure how efficiently a weight-space update moves the layer representation",
+      "symbols": {"X": "batch of layer inputs", "Delta_W": "one weight update", "alpha": "cosine-weighted update-input alignment"},
+      "evidence": "paper.pdf p. 2, Eq. (2)",
+      "interpretation": "An update can be large in parameter norm yet nearly invisible in activation space. This dimensionless factor separates update size from geometric effectiveness."
+    },
+    {
+      "label": "Relative representation change",
+      "latex": "\\frac{\\|\\Delta Y\\|}{\\|Y\\|}=\\frac{\\alpha_{\\Delta W}}{\\alpha_W}\\frac{\\|\\Delta W\\|}{\\|W\\|}",
+      "role": "factor feature motion into an alignment ratio and a relative parameter update",
+      "symbols": {"Y": "layer output on the same batch", "alpha_W": "weight-input alignment", "alpha_Delta_W": "update-input alignment"},
+      "evidence": "paper.pdf p. 3, Eq. (4)",
+      "interpretation": "μP can transfer a learning rate only if its width scaling compensates the alignment ratio actually realized during training; initialization asymptotics alone are insufficient."
+    },
+    {
+      "label": "AdamW equilibrium scaling",
+      "latex": "\\|W\\|\\propto\\sqrt{KC\\eta/\\lambda},\\qquad \\frac{\\|\\Delta W\\|}{\\|W\\|}\\propto\\sqrt{\\eta\\lambda}",
+      "role": "show why weight decay becomes a second control knob for relative update size",
+      "symbols": {"K_C": "output and input widths K and C", "eta": "AdamW learning rate", "lambda": "PyTorch-style weight-decay coefficient"},
+      "evidence": "paper.pdf p. 3, Eq. (3); scaling choices on p. 4, Eqs. (7)–(8)",
+      "interpretation": "Keeping ηλ fixed with independent decay scaling preserves the late-time relative-update scale, whereas standard μP scaling reduces it with width. The relation is an equilibrium model, not an exact transient law."
+    }
+  ],
+  "figure_refs": [{
+    "label": "Figure 1", "asset_path": "assets/collection-figures/2510.19093/figure-1-learning-rate-transfer.webp",
+    "section": "核心结果与证据", "role": "compare learning-rate transfer under independent, standard, and absent weight decay",
+    "evidence": "paper.pdf p. 1, Figure 1",
+    "alt_text": "三组验证损失对基础学习率曲线；独立权重衰减下不同宽度的最优点最接近，标准权重衰减下最优学习率随宽度明显漂移。",
+    "caption": "在 20B-token LLaMA 预训练扫描中，μP 配合独立权重衰减的跨宽度最优学习率最稳定。",
+    "interpretation": "This is direct empirical support in the tested AdamW/LLaMA setup; it does not establish a universal optimizer-independent scaling law."
+  }],
+  "cover": {
+    "mode": "source_figure", "asset_path": "assets/collection-figures/2510.19093/figure-1-learning-rate-transfer.webp",
+    "label": "Figure 1", "visual_type": "data_plot", "evidence": "paper.pdf p. 1, Figure 1",
+    "alt_text": "独立、标准和无权重衰减三种设置的 LLaMA 跨宽度学习率迁移曲线。",
+    "caption": "决定可迁移性的，不只是 μP 的名义学习率标度，还有权重衰减塑造的相对更新动力学。",
+    "selection_rationale": "It exposes the practical puzzle immediately: the same μP scaling succeeds or fails depending on how weight decay is coupled to width."
+  },
+  "sections": [
+    {"title": "作者信息", "paragraphs": [
+      "Atli Kosson、Jeremy Welborn、Yang Liu、Martin Jaggi、Xi Chen；作者来自 Amazon Frontier AI & Robotics 与 EPFL。",
+      "本站核验 arXiv:2510.19093v2：初版提交于 2025-10-21，v2 更新于 2026-02-13；主分类 cs.LG，共 37 页，论文首页标注发表于 ICLR 2026。",
+      "Collection 来源为刘子鸣网站的 Machine Learning 条目。"
+    ]},
+    {"title": "研究问题", "paragraphs": [
+      "大模型最昂贵的超参数之一是学习率：理想做法是在小模型上找最优值，再按规则迁移到大模型。μP 试图通过宽度相关参数化，让不同宽度具有相似的特征更新。",
+      "但实践中 μP 往往只有配合 independent weight decay 才能良好迁移。论文追问：真正保持跨宽度动力学相似的，是 μP 的初始化标度，还是训练过程中由权重衰减建立的相对更新尺度？",
+      "作者的答案有时间结构：μP 的缩放在训练早期像额外 warmup；其几何假设很快破坏后，独立权重衰减接管并抵消 μP 的晚期缩放。"
+    ]},
+    {"title": "背景", "paragraphs": [
+      "学习率迁移不是要求两个网络的参数逐项相同，而是希望同一 base learning rate 引起相近的内部表示相对变化。Eq. (4) 表明这取决于相对权重更新与 alignment ratio 的乘积。",
+      "PyTorch AdamW 每步把权重乘以 1−ηλ。标准 μP 令 η→η/m 而 λ 不变；independent scaling 同时令 λ→mλ，使乘积 ηλ 保持不变。",
+      "μP 常用假设是更新与输入强对齐、权重与输入近随机对齐，从而 alignment ratio 随宽度按 √C 增长。论文发现这只在训练最初短暂成立。"
+    ]},
+    {"title": "给物理学家的 AI 导读", "paragraphs": [
+      "先把参数重标度看成一种 gauge freedom：若 W 与相邻层反向缩放而函数不变，绝对步长不是物理可观测量；相对表示变化才更接近无量纲响应。",
+      "Eq. (4) 类似把响应拆成 susceptibility（alignment ratio）与 driving amplitude（relative update）。μP 固定的是对 susceptibility 的初始标度估计，而数据相关梯度会让 susceptibility 随时间流动。",
+      "权重衰减给出松弛时间与稳态范数。independent scaling 通过固定 ηλ 固定晚期相对更新，同时较小初始 η 形成 transient suppression；这正是论文所说的隐式 warmup。",
+      "类比的边界是：这里没有热平衡分布，AdamW 的动量和相关梯度使简单指数松弛模型并不精确；作者也明确观察到 Eq. (11) 高估达到稳态所需时间。"
+    ]},
+    {"title": "模型与方法", "paragraphs": [
+      "理论入口是单层 Y=WX，把 Frobenius 范数变化写成 alignment 与 relative update。作者随后分析 AdamW 范数平衡、μP 宽度缩放，以及单神经元 SGD 中同批样本的干扰项。",
+      "主要实验在 DCLM next-token prediction 上预训练 LLaMA：宽度从 128 到 2048，最大约 1B 参数，最长 20B tokens；扫描 base LR，并比较 standard、independent 和 no weight decay。",
+      "诊断量包括每层 relative representation change、weight/update alignment、relative weight update；另在 ImageNet ResNet 上检查架构外推。",
+      "warmup 替代实验比较 10%/50% 线性 warmup 与随 width ratio m 起始于 1/m、再趋近 1 的 exponential/decay-away 因子。"
+    ]},
+    {"title": "核心结果与证据", "paragraphs": [
+      "Figure 1 中 independent WD 使宽度 128–2048 的验证损失谷底大体对齐；standard WD 的最佳 base LR 随宽度漂移，无 WD 介于两者之间。",
+      "Figure 3 直接测得：训练后期 alignment ratio 在不同宽度间都接近 1。此时应保持 relative weight update 相近，恰由 independent WD 实现；继续沿用 μP 的 1/m 学习率缩放反而使宽模型更新过小。",
+      "Figure 4 显示 update alignment 会显著演化并获得宽度依赖，使初始化的 αΔW=Θ(1)、αW=Θ(1/√C) 关系失效。单神经元分析把转变联系到 batch 内样本梯度相关与干扰项。",
+      "Figure 5 将 independent μP 的早期作用解释为 warmup：相同 ηλ 的低 η、高 λ 组合起初更新较小，随后趋于相同稳态尺度。",
+      "Figure 6 表明专门设计的 nonlinear warmup 在部分 LLaMA 设置中可恢复良好迁移，但需要调节且高学习率处略不稳定；单纯延长线性 warmup 并不等价。"
+    ]},
+    {"title": "有效性与局限", "paragraphs": [
+      "核心结论针对 AdamW；SGD 的 μP 规则不同，Muon/Scion 等矩阵级优化器还可能保持另一种 alignment 动力学，不能直接套用。",
+      "主要语言模型证据来自特定 LLaMA、DCLM、宽度和 token budget。它支持机制解释，不是所有深度、数据规模和模型族的普适定律。",
+      "ResNet/ImageNet 大体重复 independent WD 优势，但验证损失受到大 LR 正则化效应混杂，且额外 warmup 在该架构上不再必要。",
+      "保持 relative representation change 是经验性目标，不等于保证最终最优损失；替代 warmup 也没有消除调参，只改变了控制参数。",
+      "论文分析局部层变化；跨层反馈、normalization、momentum 与时序梯度相关让简单单层/稳态公式只能作为诊断框架。"
+    ]},
+    {"title": "复现与资源", "paragraphs": [
+      "论文未提供该项目的专用代码仓库。最小复现应固定数据顺序与初始化，对 widths 128/256/512/1024/2048 分别扫描 base LR，并同时记录 validation loss 与每层 RRC。",
+      "必须区分 PyTorch-style standard WD（1−ηλ）和 independent WD（保持 ηλ 不随 μP 缩放）；只报告配置名而不报告实际乘子会导致不可比。",
+      "机制复现还需保存 αW、αΔW、两者比值和 weight RMS 的完整时间序列，而非只看最终 loss；warmup 对照应匹配总 token budget 与 decay schedule。",
+      "本站核验 v2 PDF SHA-256：118cbc002fae58276dcee7ad95ab3fcfdcb52542d7f51658fda2c96adda21f77。Evidence status: full-text verified; no independent reproduction performed."
+    ]},
+    {"title": "阅读指南", "paragraphs": [
+      "最短路径：Figure 1 → Eqs. (3)–(8) → Figures 3–6 → Discussion；先抓住 transient 与 equilibrium 的分工。",
+      "物理路径：从重标度不变量、响应系数和松弛时间读起，再看 correlated-gradient 如何破坏初始 scaling assumption。",
+      "AI 路径：不要把结论简化为“μP 无用”；论文认可 μP+independent WD 是有效方案，争论的是其实际作用机制与可替代部分。"
+    ]}
+  ],
+  "evidence_refs": [
+    "paper.pdf pp. 2–4: alignment framework, AdamW equilibrium and μP/weight-decay scaling",
+    "paper.pdf pp. 5–8: representation-change, alignment and warmup experiments",
+    "paper.pdf p. 9 and pp. 13–37: discussion, ResNet controls, training details and derivations",
+    "source PDF SHA-256 118cbc002fae58276dcee7ad95ab3fcfdcb52542d7f51658fda2c96adda21f77",
+    "Evidence packet SHA-256 80b216de25b5fb7d46f2b4b9c9ec5e5ebb58c559624747487af627c0679b376b",
+    "Evidence status: full-text verified; no independent reproduction performed."
+  ]
+}

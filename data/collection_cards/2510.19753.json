@@ -1,0 +1,130 @@
+{
+  "arxiv_id": "2510.19753",
+  "source_version": "v2",
+  "source_pdf": "https://arxiv.org/pdf/2510.19753v2",
+  "title_en": "Transformers Provably Learn Algorithmic Solutions for Graph Connectivity, But Only with the Right Data",
+  "title_zh": "Transformer 可证明地学会图连通算法，但前提是训练数据选对了",
+  "curation_status": "full_text_verified",
+  "card_standard_version": "2.4",
+  "audience_profile": "physics_ai_literate_physicist",
+  "paper_profile": "theory_numerics",
+  "style_reference": "physicist_daily_arxiv",
+  "provenance": {
+    "program": "Collection", "catalog": "Paper Collection", "catalog_record_id": "2510.19753",
+    "catalog_record_ids": ["2510.19753"], "catalog_topic": "Machine Learning",
+    "collection_date": "2026-08-30", "sampled_at": "2026-08-31",
+    "selected_by": "ziming_mineru_serial_goal", "sampling_seed": "not_applicable_source_complete", "candidate_count": 464
+  },
+  "verified_metadata": {
+    "arxiv_id": "2510.19753", "version": "v2",
+    "title": "Transformers Provably Learn Algorithmic Solutions for Graph Connectivity, But Only with the Right Data",
+    "authors": ["Qilin Ye", "Deqing Fu", "Robin Jia", "Vatsal Sharan"],
+    "categories": ["cs.LG"], "primary_category": "cs.LG",
+    "published": "2025-10-22T16:43:32Z", "updated": "2026-02-17T22:26:09Z",
+    "abstract": "Using graph connectivity as a controlled task, the paper proves an exact diameter capacity of 3^L for an L-layer nonnegative Disentangled Transformer, decomposes permutation-equivariant weights into local algorithmic and global heuristic channels, and shows theoretically and empirically that capacity-aware training data can select the algorithmic channel."
+  },
+  "equation_refs": [
+    {
+      "label": "Matrix-powering connectivity rule",
+      "latex": "R_{uv}=1\\quad\\Longleftrightarrow\\quad\\sum_{j=0}^{\\operatorname{diam}(G)}\\alpha_j(A^j)_{uv}>0,\\qquad \\alpha_j>0",
+      "role": "express reachability as positive weighted powers of the self-loop-augmented adjacency matrix",
+      "symbols": {"A": "adjacency matrix with self-loops", "R": "binary connectivity matrix", "diam_G": "maximum finite component diameter"},
+      "evidence": "paper.pdf pp. 3–4, Definition 3.2 and Theorem 4.3 proof sketch",
+      "interpretation": "Powers of A propagate local reachability. The transformer construction realizes this algebra only for the paper's simplified architecture and weight choice."
+    },
+    {
+      "label": "Exact depth–diameter capacity",
+      "latex": "\\operatorname{Cap}(L)=3^L",
+      "role": "separate graphs whose required communication distance is representable from those beyond model capacity",
+      "symbols": {"L": "number of Disentangled Transformer layers", "Cap": "largest graph diameter solved perfectly for all graphs"},
+      "evidence": "paper.pdf p. 4, Theorems 4.3 and 4.5",
+      "interpretation": "One layer expands the effective information radius by a factor of three. The matching impossibility uses nonnegative weights and sufficiently many nodes; it is not a universal bound for every transformer variant."
+    },
+    {
+      "label": "Symmetry-channel decomposition",
+      "latex": "W_\\ell=A_\\ell\\otimes I_n+B_\\ell\\otimes J_n",
+      "role": "split learned computation into a local matrix-powering channel and a global degree-statistics channel",
+      "symbols": {"I_n": "identity over vertex labels", "J_n": "all-ones matrix", "A_l_B_l": "feature-space channel coefficients"},
+      "evidence": "paper.pdf pp. 5–6, Theorem 4.7 and channel interpretation",
+      "interpretation": "Permutation equivariance restricts the allowed operator form. The I channel preserves node identity/locality; the J channel broadcasts global statistics and supports a degree shortcut."
+    }
+  ],
+  "figure_refs": [{
+    "label": "Figure 4", "asset_path": "assets/collection-figures/2510.19753/figure-4-channel-dynamics.webp",
+    "section": "核心结果与证据", "role": "show that restricting training to within-capacity graphs shifts weight energy toward the algorithmic channel",
+    "evidence": "paper.pdf p. 8, Figure 4",
+    "alt_text": "通道能量随训练步数变化；限制图直径不超过 3 的实线使蓝色算法通道趋近 1，并把紫色启发式通道压到接近 0。",
+    "caption": "同一一层模型只改变训练图的直径分布，就从混合通道转向几乎纯算法通道。",
+    "interpretation": "The projected channel shares support the proposed mechanism in this experiment; they do not by themselves prove causal channel use in standard Transformers."
+  }],
+  "cover": {
+    "mode": "source_figure", "asset_path": "assets/collection-figures/2510.19753/figure-4-channel-dynamics.webp",
+    "label": "Figure 4", "visual_type": "data_plot", "evidence": "paper.pdf p. 8, Figure 4",
+    "alt_text": "受限与不受限训练数据下，算法 I 通道和启发式 J 通道的能量份额动力学。",
+    "caption": "数据分布不只是抽样噪声，它能选择模型落入算法通道还是捷径通道。",
+    "selection_rationale": "It directly visualizes the central training-dynamics claim and the effect of the proposed capacity-aware data lever."
+  },
+  "sections": [
+    {"title": "作者信息", "paragraphs": [
+      "Qilin Ye、Deqing Fu、Robin Jia、Vatsal Sharan；作者来自 Duke University 与 University of Southern California。",
+      "本站核验 arXiv:2510.19753v2：初版提交于 2025-10-22，v2 更新于 2026-02-17；主分类 cs.LG，共 33 页。",
+      "Collection 来源为刘子鸣网站的 Machine Learning 条目。"
+    ]},
+    {"title": "研究问题", "paragraphs": [
+      "Transformer 在随机图训练集上可达到近乎完美准确率，却在两个长链或两个 clique 组成的分布外图上几乎全错。失败来自表达能力不足，还是优化选择了更容易的统计捷径？",
+      "论文把问题拆成三层：架构最多能传播多远、对称性允许哪些计算通道、训练分布的梯度会放大哪条通道。",
+      "核心主张不是“更多简单样本总是更好”，而是训练集要与模型可表达的通信尺度匹配，并保留恰好接近容量边界的样本。"
+    ]},
+    {"title": "背景", "paragraphs": [
+      "图连通性有明确算法：带自环邻接矩阵 A 的幂记录定长 walk，足够多阶的正系数组合即可判断两点是否连通。它比自然语言推理更容易定义真正的 algorithmic solution。",
+      "Erdős–Rényi 随机图中，高度节点往往更可能连通，因此只统计 degree 也能在分布内取得高分；两个稀疏长链则把这个相关性打破。",
+      "Disentangled Transformer 是为证明而设计的简化模型：它保留 attention 的多跳组合，但把 vertex 与 feature 维度显式分开，并约束非负权重。"
+    ]},
+    {"title": "给物理学家的 AI 导读", "paragraphs": [
+      "3^L 可理解为离散 light cone：每层允许信息传播半径乘三，L 层外的节点对在该模型中彼此不可见。这里的 light cone 是计算图支持集，不是连续时空因果锥。",
+      "顶点重标号相当于系统对置换群的对称性。Theorem 4.7 对对称算符做表示分解，只剩 I_n 的局域通道和 J_n 的全局均匀通道。",
+      "训练数据像外场：within-capacity 样本对局域通道给出一致梯度，beyond-capacity 样本因局域算法无法解释而奖励全局捷径。改变样本质量比例会改变最终通道能量。",
+      "这不是热力学相变定理；图中的通道份额是权重投影，理论给的是特定 population-gradient/KKT 条件，不能直接解释任意大语言模型的内部相。"
+    ]},
+    {"title": "模型与方法", "paragraphs": [
+      "输入是 n×n 带自环邻接矩阵，输出为每对节点的连通标签。diam(G) 定义为各连通分量有限直径的最大值，避免把 disconnected graph 直接记为无穷直径。",
+      "Theorem 4.3 构造权重实现 adjacency-matrix powering；Theorem 4.5 对非负权重给出直径 3^L+1 的失败图，从而闭合精确容量界。",
+      "在逐层 permutation-equivariant 假设下，权重分为 A⊗I 与 B⊗J；作者对 projected gradient descent 的 KKT 极限和 population gradient 分析何时 B 通道被压到零。",
+      "实验先在 Disentangled Transformer 验证容量/通道动力学，再以 2-layer、hidden size 512 的标准 Transformer 做迁移测试；训练 ER(n=20) 时使用约 10^9 个图、10^6 steps。"
+    ]},
+    {"title": "核心结果与证据", "paragraphs": [
+      "上下界一致给出 Cap(L)=3^L：存在 L 层构造解决所有直径不超过 3^L 的图；同时存在直径 3^L+1 的反例使任意满足条件的模型失败。",
+      "对称分解赋予两条通道明确语义：I 通道逐层组合 A 的幂，J 通道丢失局域结构、以全局 degree statistics 作预测。",
+      "Figure 4 中，只用 diam(G)≤3 的图训练一层模型，I 通道能量份额趋近 1，J 通道趋近 0；不限制时 I 约停在 0.8，J 保留约 0.16。数值为图上近似读数。",
+      "Figure 5 给出反直觉补充：若训练图都远低于容量，模型仍可能不学长度泛化；保留 at-capacity 样本才能同时覆盖不同 chain length。",
+      "Figure 6 显示少量 beyond-capacity 噪声可容忍；Figure 7 中限制 diam≤9 的标准两层 Transformer 在 OOD 2Chain 上达到近完美 exact-match，而未限制模型接近零。"
+    ]},
+    {"title": "有效性与局限", "paragraphs": [
+      "严格的 3^L 容量、通道分解和训练动力学定理属于 nonnegative Disentangled Transformer；标准 Transformer 部分是实验转移，不享有同一证明。",
+      "KKT/gradient 结论依赖对称训练分布、逐层等变状态、损失和正则等条件；随机初始化模型虽经验上快速接近该子空间，但这不是无条件保证。",
+      "图连通性是干净的布尔任务，没有自然语言歧义、tokenization 或 chain-of-thought。不能由此推出通用 LLM 只要过滤难样本就会学会算法。",
+      "data lever 需要知道模型容量并计算训练图直径；删掉所有难例会牺牲覆盖范围，而只给过易样本也会导致长度外推失败。",
+      "所谓“learn exact algorithm”对简化模型有构造与通道证据；对标准模型，OOD exact-match 支持算法化行为，但未做完整因果电路鉴定。"
+    ]},
+    {"title": "复现与资源", "paragraphs": [
+      "论文未提供可核验的专用代码链接。复现可先生成 ER(n,p)、2Chain 和 2Clique，严格按 node-pair distance≤3^L 划分 within/beyond capacity。",
+      "除 accuracy 外，应保存每层 W 到 A⊗I+B⊗J 子空间的投影误差、两通道 Frobenius energy share，以及 beyond-capacity pair fraction ρ(G)。",
+      "关键消融要同时包含 unrestricted、diam≤Cap、diam<Cap 三组；否则无法区分“移除不可解样本”与“保留容量边界样本”的作用。",
+      "本站核验 v2 PDF SHA-256：2dcdf96dfd16c425738cdbcc44af8b62db334fa2df6abb795100d8a06b30f644。Evidence status: full-text verified; no independent reproduction performed."
+    ]},
+    {"title": "阅读指南", "paragraphs": [
+      "最短路径：Figure 1 → Theorems 4.3/4.5 → Theorem 4.7 → Figures 4–7 → Discussion。",
+      "物理路径：先把 3^L 当传播锥，再把置换等变性当群对称约束，最后看数据分布如何选择两个允许通道。",
+      "AI 路径：严格区分 expressivity、capacity、optimization 三个问题；训练集准确率只回答第三者的一小部分。"
+    ]}
+  ],
+  "evidence_refs": [
+    "paper.pdf pp. 1–4: OOD failure, connectivity setup and exact 3^L capacity theorems",
+    "paper.pdf pp. 5–7: permutation-equivariant channel decomposition and training dynamics",
+    "paper.pdf pp. 8–9: capacity-aware data experiments and standard-Transformer transfer",
+    "paper.pdf pp. 10–33: related work, formal proofs and additional experiment details",
+    "source PDF SHA-256 2dcdf96dfd16c425738cdbcc44af8b62db334fa2df6abb795100d8a06b30f644",
+    "Evidence packet SHA-256 10b2ae2d67a8ab986bd98c00a63284ca194d725060847678f605019dc4ce0f9c",
+    "Evidence status: full-text verified; no independent reproduction performed."
+  ]
+}
