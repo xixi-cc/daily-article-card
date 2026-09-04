@@ -1,0 +1,125 @@
+{
+  "arxiv_id": "2511.00958",
+  "source_version": "v2",
+  "source_pdf": "https://arxiv.org/pdf/2511.00958v2",
+  "title_en": "The Hidden Power of Normalization Layers in Neural Networks: Exponential Capacity Control",
+  "title_zh": "神经网络归一化层的隐藏力量：指数级容量控制",
+  "curation_status": "full_text_verified",
+  "card_standard_version": "2.4",
+  "audience_profile": "physics_ai_literate_physicist",
+  "paper_profile": "theory_numerics",
+  "style_reference": "physicist_daily_arxiv",
+  "provenance": {
+    "program": "Collection", "catalog": "Paper Collection", "catalog_record_id": "2511.00958",
+    "catalog_record_ids": ["2511.00958"], "catalog_topic": "Training Dynamics",
+    "collection_date": "2026-08-30", "sampled_at": "2026-08-31",
+    "selected_by": "ziming_mineru_serial_goal", "sampling_seed": "not_applicable_source_complete", "candidate_count": 464
+  },
+  "verified_metadata": {
+    "arxiv_id": "2511.00958", "version": "v2",
+    "title": "The Hidden Power of Normalization Layers in Neural Networks: Exponential Capacity Control",
+    "authors": ["Khoat Than"], "categories": ["cs.LG", "cs.AI", "stat.ML"], "primary_category": "cs.LG",
+    "published": "2025-11-02T14:38:20Z", "updated": "2026-02-22T10:15:56Z",
+    "abstract": "The paper bounds the input- and parameter-Lipschitz constants of deep feedforward networks and shows how repeated normalizers can multiply those bounds by variance-dependent factors smaller than one."
+  },
+  "equation_refs": [
+    {
+      "label": "Batch and layer normalization",
+      "latex": "\\mathrm{BN}(x^{(i)},\\epsilon)=\\frac{x^{(i)}-\\mu_x}{\\sqrt{\\sigma_x^2+\\epsilon}},\\qquad \\mathrm{LN}(x,\\epsilon)=\\frac{x-\\mu}{\\sqrt{\\sigma_n^2+\\epsilon}}",
+      "role": "make the inverse-standard-deviation contraction factor explicit",
+      "symbols": {"mu": "batch or feature mean", "sigma_squared": "corresponding variance", "epsilon": "numerical stabilizer"},
+      "evidence": "paper.pdf pp. 5–7, Eqs. (1)–(2)",
+      "interpretation": "The normalizer can be contractive only in the relevant regime; small variance or a learnable affine scale can change this conclusion."
+    },
+    {
+      "label": "Normalized-network input bound",
+      "latex": "\\|h_{\\mathrm{no},x}\\|_{\\mathrm{Lip}}\\le P_w(h_{\\mathrm{no}})\\prod_{k=1}^{L_{\\mathrm{no}}}\\|\\mathrm{NO}_k\\|_{\\mathrm{Lip}}",
+      "role": "factor the network sensitivity into weight norms and one multiplier per normalizer",
+      "symbols": {"P_w": "product of relevant weight/operator norms", "NO_k": "k-th normalization map", "L_no": "number of normalizers"},
+      "evidence": "paper.pdf pp. 10–11, Theorem 13 and Corollary 14",
+      "interpretation": "Exponential suppression follows when the typical normalization factors stay below one; this is an upper bound, not the measured sensitivity of every trained network."
+    },
+    {
+      "label": "Generalization-gap control",
+      "latex": "|L(h)-\\widehat L_S(h)|\\lesssim \\frac{\\|h\\|_{\\mathrm{Lip}}}{\\sqrt n}",
+      "role": "connect a smaller Lipschitz capacity proxy to a tighter finite-sample generalization estimate",
+      "symbols": {"L": "population risk", "L_hat_S": "empirical risk", "n": "sample count"},
+      "evidence": "paper.pdf pp. 15–17, local-Lipschitz generalization results",
+      "interpretation": "The displayed scaling is schematic: constants and assumptions matter, and a tighter bound does not guarantee lower test error for a particular optimizer run."
+    }
+  ],
+  "figure_refs": [{
+    "label": "Figure 2", "asset_path": "assets/collection-figures/2511.00958/figure-2-layer-variance-products.webp",
+    "section": "核心结果与证据", "role": "show how pre-normalization variances evolve across depth during CIFAR-10 training",
+    "evidence": "paper.pdf p. 12, Figure 2",
+    "alt_text": "10 层 ReLU 网络与 ResNet18 在 CIFAR-10 训练过程中，不同层输入方差及其沿层乘积的变化曲线。",
+    "caption": "训练中若多层方差持续大于一，其倒数标准差因子会沿深度相乘；图中趋势支持论文所讨论的参数区间，但不是定理条件在所有架构中的普适验证。",
+    "interpretation": "The measurements illustrate the multiplicative mechanism in two networks; they do not isolate normalization from residual paths or other training effects."
+  }],
+  "cover": {
+    "mode": "source_figure", "asset_path": "assets/collection-figures/2511.00958/figure-2-layer-variance-products.webp",
+    "label": "Figure 2", "visual_type": "comparison", "evidence": "paper.pdf p. 12, Figure 2",
+    "alt_text": "沿网络深度和训练时间变化的层输入方差。",
+    "caption": "归一化的指数效应来自许多逐层收缩因子的连乘。",
+    "selection_rationale": "It exposes the empirical quantity that decides whether the theorem's per-layer factors actually contract."
+  },
+  "sections": [
+    {"title": "作者信息", "paragraphs": [
+      "Khoat Than；Hanoi University of Science and Technology 信息与通信技术学院。",
+      "本站核验 arXiv:2511.00958v2：初稿提交于 2025-11-02，更新于 2026-02-22；主分类 cs.LG，另含 cs.AI 与 stat.ML，共 32 页。",
+      "Collection 来源为刘子鸣网站的 Training Dynamics 条目。"
+    ]},
+    {"title": "研究问题", "paragraphs": [
+      "BatchNorm、LayerNorm 等为何能同时让深网更容易训练、又常常改善泛化？论文试图用一个共同量回答：网络关于输入或参数的 Lipschitz 常数，也就是微小扰动能被放大的最大倍率。",
+      "核心命题是：不归一化时，逐层权重范数的乘积可随深度指数增大或减小；插入归一化后，每一层再乘一个与方差有关的因子，若这些因子持续小于一，就能指数压低敏感度上界。",
+      "这是一套容量控制解释，不是对 BatchNorm 全部训练动力学的完整理论，也没有证明真实大模型总处在收缩区间。"
+    ]},
+    {"title": "背景", "paragraphs": [
+      "Lipschitz 常数 K 满足 ||f(x)-f(x')||≤K||x-x'||。K 大意味着存在方向可强烈放大扰动；它控制最坏情况斜率，而不是平均响应或常见样本上的响应。",
+      "深度网络是函数复合，复合映射的 Lipschitz 常数至多是各层常数的乘积。这正是指数随深度出现的来源，类似传递矩阵特征值反复相乘。",
+      "BN/LN 把激活除以标准差；在忽略可学习仿射参数时，其局部尺度因子大致与 1/σ 成正比。σ>1 时它倾向收缩，σ<1 时则未必。"
+    ]},
+    {"title": "给物理学家的 AI 导读", "paragraphs": [
+      "最贴切的物理类比是乘法传播：每层像一段有增益或衰减的介质，Lyapunov 指数由对数增益累加。归一化为传播链加入可依状态变化的逆增益。",
+      "但 Lipschitz 上界不是自由能，也不是实际训练轨迹的 Lyapunov 指数。多个松弛不等式相乘后可能很松，因而“指数控制”首先是关于界的结构结论。",
+      "所谓平滑损失景观，是参数改变引起输出与损失改变的最坏斜率受到约束；它不等价于消除非凸极小值、鞍点或保证梯度下降找到更好解。",
+      "容量受限与泛化改善的关系类似用响应上界约束可允许的函数族；它给出统计复杂度控制，却不能替代对测试误差和优化偏差的实验测量。"
+    ]},
+    {"title": "模型与方法", "paragraphs": [
+      "理论对象主要是带 ReLU 等 Lipschitz 激活的前馈深网，分别研究输出对输入、单层权重和全部权重的敏感度，并覆盖 BN、LN、GN 等归一化形式。",
+      "作者先构造无归一化网络，证明可出现指数大或指数小的 Lipschitz 常数，且此类参数配置不可数；再把 normalizer 的 Lipschitz 常数逐个插入乘积界。",
+      "数值部分在 CIFAR-10 上训练 ResNet18 与 10 层 ReLU MLP：Adam、学习率 0.001、batch size 128、100 epochs、weight decay 10^-4，并在附录补充 EfficientNet-B3。"
+    ]},
+    {"title": "核心结果与证据", "paragraphs": [
+      "对输入的界可写成权重范数乘积再乘所有归一化层常数；对参数扰动的界同样包含其后各层的归一化因子。因此当平均因子 q<1 时，L 个 normalizer 带来 q^L 型指数压低。",
+      "理论还把较小的局部 Lipschitz 常数接到损失平滑度、迭代复杂度与有限样本泛化界。这里最可靠的结论是同一套乘法因子进入多个上界，而非每项实际性能都必然指数改善。",
+      "Figure 1 显示两种网络的层权重范数及其乘积会在训练中增长；Figure 2 显示若干层的归一化前方差大于一并随训练增大，提供了收缩因子可能小于一的实测背景。",
+      "实验是机制示例而非性能基准：没有用有/无归一化的受控消融直接测量实际 Lipschitz 常数、收敛率和测试误差之间的定量链条。"
+    ]},
+    {"title": "有效性与局限", "paragraphs": [
+      "指数降低需要逐层归一化常数在足够多层中小于一；当方差很小、ε 主导或常数大于一时，乘积不提供同样结论。",
+      "主推导省略归一化层常见的可学习 scale 与 shift，尤其 γ 可重新放大响应；论文也明确把它列为限制。",
+      "理论以普通前馈结构为主。残差旁路会把纯乘积改成和与乘积的组合，Transformer 的注意力、RMSNorm 与残差结构需要额外分析。",
+      "“不可数多个坏网络”是参数空间中的存在性和基数陈述，不说明随机初始化或 SGD 多大概率到达这些区域。",
+      "Lipschitz 常数是容量代理和最坏情况界；本文没有独立复现，也没有证明界在现代大模型上足够紧。"
+    ]},
+    {"title": "复现与资源", "paragraphs": [
+      "最小理论复核应逐一检查 normalizer Jacobian 的范数、复合映射乘积界以及局部 Lipschitz 泛化定理的假设；加入 γ 后重新计算每层因子。",
+      "数值复现可先记录每个 batch、每层的 σ²、权重谱范数与其对数累加，再用自动微分或谱范数估计器测实际 Jacobian，比较上界松弛程度。",
+      "本站核验 v2 PDF SHA-256：aef483a9ec0b3aadbe6dcba9458d881cc9d69dbb9d1159e039f6230fbb49541c。Evidence status: full-text verified; no independent reproduction performed."
+    ]},
+    {"title": "阅读指南", "paragraphs": [
+      "最短路径：归一化的 Lipschitz 常数 → Theorem 13 的乘积结构 → Figure 2 的方差 → generalization 结果 → Conclusion 的限制。",
+      "物理路径：把对数层增益视作可加量，重点检查平均对数因子是否为负；不要把松的最坏情况上界当真实响应谱。",
+      "AI 路径：区分训练稳定、损失平滑、函数容量和测试泛化四个命题；论文用共同的 Lipschitz 框架连接它们，但实验尚未逐项闭环。"
+    ]}
+  ],
+  "evidence_refs": [
+    "paper.pdf pp. 5–11: normalizer Lipschitz constants and network product bounds",
+    "paper.pdf pp. 9–18: CIFAR-10 measurements, optimization and generalization consequences",
+    "paper.pdf p. 19: conclusion and explicit limitations",
+    "source PDF SHA-256 aef483a9ec0b3aadbe6dcba9458d881cc9d69dbb9d1159e039f6230fbb49541c",
+    "Evidence packet SHA-256 1c09ebf7b9ac3d1324df39fa9827dff1d4575678589fd4a54e3f03217d7f90cf",
+    "Evidence status: full-text verified; no independent reproduction performed."
+  ]
+}
