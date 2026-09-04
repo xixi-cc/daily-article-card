@@ -1,0 +1,173 @@
+{
+  "arxiv_id": "2506.22049",
+  "source_version": "v2",
+  "source_pdf": "https://arxiv.org/pdf/2506.22049v2",
+  "title_en": "GPAS: Accelerating Convergence of LLM Pretraining via Gradient-Preserving Activation Scaling",
+  "title_zh": "GPAS：用保梯度激活缩放加速大语言模型预训练收敛",
+  "curation_status": "full_text_verified",
+  "card_standard_version": "2.4",
+  "audience_profile": "physics_ai_literate_physicist",
+  "paper_profile": "ai_empirical",
+  "style_reference": "physicist_daily_arxiv",
+  "provenance": {
+    "program": "Collection",
+    "catalog": "Paper Collection",
+    "catalog_record_id": "2506.22049",
+    "catalog_record_ids": ["2506.22049"],
+    "catalog_topic": "Machine Learning",
+    "collection_date": "2026-08-30",
+    "sampled_at": "2026-08-31",
+    "selected_by": "ziming_mineru_serial_goal",
+    "sampling_seed": "not_applicable_source_complete",
+    "candidate_count": 464
+  },
+  "verified_metadata": {
+    "arxiv_id": "2506.22049",
+    "version": "v2",
+    "title": "GPAS: Accelerating Convergence of LLM Pretraining via Gradient-Preserving Activation Scaling",
+    "authors": ["Tianhao Chen", "Xin Xu", "Zijing Liu", "Pengxiang Li", "Xinyuan Song", "Ajay Kumar Jaiswal", "Fan Zhang", "Jishan Hu", "Yang Wang", "Hao Chen", "Shizhe Diao", "Shiwei Liu", "Yu Li", "Lu Yin", "Can Yang"],
+    "categories": ["cs.LG", "cs.CL"],
+    "primary_category": "cs.LG",
+    "published": "2025-06-27T09:45:15Z",
+    "abstract": "Modern Large Language Models, such as the LLaMA, Qwen and DeepSeek series, predominantly adopt the Pre-LayerNorm (Pre-LN) Transformer architecture. While being stable during pretraining and scalable to large model sizes, Pre-LN suffers from an exponential growth in activation variance across layers, causing the shortcut to dominate over sub-layer outputs in the residual connection and limiting the learning capacity of deeper layers. To mitigate this issue, we propose Gradient-Preserving Activation Scaling (GPAS), a simple technique that can be used in combination with existing approaches. GPAS works by scaling down the intermediate activations while keeping their gradients unchanged. This leaves information in the activations intact, and avoids the gradient vanishing problem associated with gradient downscaling. Extensive experiments across various model sizes from 71M to 1B show that GPAS achieves consistent performance gains. Beyond enhancing Pre-LN Transformers, GPAS also shows promise in improving alternative architectures such as Sandwich-LN and DeepNorm, demonstrating its versatility and potential for improving training dynamics in a wide range of settings. Our code is available at https://github.com/dandingsky/GPAS.",
+    "comment": "19 pages; v2 submitted 2025-07-03; preprint under review"
+  },
+  "equation_refs": [
+    {
+      "label": "Pre-LN residual update (Eq. 1)",
+      "latex": "x'_{l+1}=x_l+f(\\mathrm{LN}(x_l)),\\qquad f\\in\\{\\mathrm{Attn},\\mathrm{FFN}\\}",
+      "role": "define the residual stream whose variance accumulates with depth",
+      "symbols": {"x_l": "layer-l residual-stream activation", "f": "attention or feed-forward sublayer", "LN": "layer or RMS normalization used before the sublayer"},
+      "evidence": "paper.pdf p. 3, Eq. (1)",
+      "interpretation": "The unnormalized shortcut repeatedly adds to the state; if sublayer outputs are weak relative to the accumulated stream, later blocks can have little effect."
+    },
+    {
+      "label": "Gradient-preserving activation scaling (Eq. 2)",
+      "latex": "x_{l+1}=x'_{l+1}-\\mathrm{SiLU}(\\alpha_l)\\,\\mathrm{sg}(x'_{l+1})",
+      "role": "scale the forward activation while leaving its local backward Jacobian equal to the identity",
+      "symbols": {"alpha_l": "one learnable scalar gate per layer", "sg": "stop-gradient: identity in the forward pass and zero derivative in backpropagation", "1-SiLU(alpha_l)": "effective forward scaling factor"},
+      "evidence": "paper.pdf p. 3, Eq. (2)",
+      "interpretation": "Numerically the forward value is [1-SiLU(alpha_l)]x', but autodiff uses partial x/partial x'=I. This is a deliberately modified adjoint rule, not the derivative of ordinary scalar multiplication."
+    },
+    {
+      "label": "Naive scaling versus GPAS backpropagation",
+      "latex": "\\frac{\\partial\\mathcal L}{\\partial x_1}=\\frac{\\partial\\mathcal L}{\\partial x_L}\\prod_{l=1}^{L-1}\\frac{\\partial x'_{l+1}}{\\partial x_l}\\times\\begin{cases}\\prod_{l=1}^{L-1}\\beta_l,&\\text{naive scaling}\\\\1,&\\text{GPAS}\\end{cases}",
+      "role": "show why repeated forward damping need not multiply away early-layer gradients",
+      "symbols": {"beta_l": "1-SiLU(alpha_l)", "L": "number of Transformer layers", "mathcal_L": "training loss"},
+      "evidence": "paper.pdf pp. 3–4, unnumbered equations following Eq. (2)",
+      "interpretation": "The stop-gradient removes the product of beta factors from this path. Other Jacobians and optimization effects remain, so this identity alone is not a full convergence proof."
+    }
+  ],
+  "figure_refs": [
+    {
+      "label": "Figure 1",
+      "asset_path": "assets/collection-figures/2506.22049/figure-1-gpas-gradient-preserving-scaling.webp",
+      "section": "模型与方法",
+      "role": "contrast the Pre-LN block, the inserted GPAS gate, and forward/backward paths",
+      "evidence": "paper.pdf p. 2, Figure 1",
+      "alt_text": "四联图依次展示 Pre-LN、加入 GPAS 的 Pre-LN、由缩放与 stop-gradient 构成的 GPAS 模块，以及红色反向梯度绕过 stop-gradient 的路径。",
+      "caption": "GPAS 放在每个 residual sublayer 之后：前向值经过可学习标量缩放，反向梯度则沿恒等旁路传播。",
+      "interpretation": "图中的红线表达的是自定义 autodiff 路径；它不表示物理信号在前向传播中另有一条未缩放通道。"
+    }
+  ],
+  "cover": {
+    "mode": "source_figure",
+    "asset_path": "assets/collection-figures/2506.22049/figure-1-gpas-gradient-preserving-scaling.webp",
+    "label": "Figure 1",
+    "visual_type": "schematic",
+    "evidence": "paper.pdf p. 2, Figure 1",
+    "alt_text": "Pre-LN、Pre-LN 加 GPAS，以及 GPAS 前向缩放和反向梯度路径示意。",
+    "caption": "同一个模块对前向激活与反向梯度采用不同作用：缩小状态幅度，但不在这条局部路径上缩小梯度。",
+    "selection_rationale": "Figure 1 直接给出论文唯一的关键结构变化和 stop-gradient 路径，是读懂实验结果与适用边界的最短入口。"
+  },
+  "sections": [
+    {
+      "title": "作者信息",
+      "paragraphs": [
+        "Tianhao Chen 与 Xin Xu 为共同第一作者，Lu Yin 与 Can Yang 为通讯作者；团队来自香港科技大学、IDEA 研究院、大连理工、Emory、UT Austin、NVIDIA、Oxford 与 Surrey。",
+        "本文使用 arXiv:2506.22049v2，主分类 cs.LG，另属 cs.CL；初版提交于 2025-06-27，v2 更新于 2025-07-03，PDF 共 19 页。",
+        "Collection 来源为刘子鸣网站的 Machine Learning 条目；论文公开了代码仓库，并在 PDF 中标为 preprint / under review。"
+      ]
+    },
+    {
+      "title": "研究问题",
+      "paragraphs": [
+        "Pre-LN Transformer 容易训练，但 residual stream 的方差会随深度增长，使 shortcut 相对压过 attention/FFN 的新贡献。能否压低前向激活幅度，同时避免普通缩放把反向梯度也逐层衰减？",
+        "作者提出每层一个标量门控 GPAS，并检验它能否跨 71M–1B 模型和多种 normalization scheme 降低固定训练预算后的 perplexity、改善下游零样本准确率，并让深层参数更有效。"
+      ]
+    },
+    {
+      "title": "背景",
+      "paragraphs": [
+        "Pre-LN 在 attention/FFN 之前归一化输入，却让 residual shortcut 不经归一化地累加。它改善了优化稳定性，但随层数增长，新增 sublayer output 相对于已累积状态可能越来越小。",
+        "直接把每层激活乘 beta<1 会同时把链式法则中的梯度乘上 beta；许多层相乘后可能形成指数衰减。stop-gradient 在前向返回原值、反向导数置零，常用于把前向计算与训练时采用的 surrogate gradient 分开。",
+        "本文所谓“加速收敛”主要指相同训练步数或 token 预算下更低的训练/验证 loss 与 perplexity，并非完整的 wall-clock、FLOP 或达到同等质量所需能耗比较。"
+      ]
+    },
+    {
+      "title": "给物理学家的 AI 导读",
+      "paragraphs": [
+        "输入–状态–输出链为：token embedding 形成 residual state x_l，经 RMSNorm 后进入 attention 或 FFN，得到 x'_{l+1}；GPAS 再产生缩放后的 x_{l+1}，最终用 next-token loss 训练。观测量包括 perplexity、层间激活方差、梯度 norm、weight norm、移除单层后的准确率下降和下游任务 accuracy。",
+        "可以把 residual stream 看成逐层累积的场，而 attention/FFN 是每一步注入的增量。若背景幅度持续增长，固定尺度的增量在相对意义上被淹没；GPAS 的前向门控试图调节这一动态范围。这个类比只帮助理解量级竞争，并不是连续时间守恒律。",
+        "最不寻常之处是前向传播与反向传播不再互为通常意义上的同一局部线性化：前向状态乘以 beta_l，反向对 x' 的 Jacobian 却设为 I。它更接近 straight-through estimator 或自定义 adjoint，而不是普通变量重参数化；因此训练动力学不必对应字面前向映射的真实梯度流。",
+        "alpha_l=0 时 SiLU(0)=0，所以首次 forward/backward 与基线相同。随后数据学习门值；正 gate 缩小激活，负 gate 放大激活。作者观察第一层常取负值，并把它解释为补偿 embedding 的低方差，但这仍是经验性解释。"
+      ]
+    },
+    {
+      "title": "模型与方法",
+      "paragraphs": [
+        "GPAS 在每个 residual sublayer 后应用 Eq. (2)，同一 Transformer layer 的 attention 与 FFN 共用一个 alpha_l。对 LNS、Sandwich-LN、DeepNorm 和 Mix-LN，作者按各自 Pre-/Post-LN 拓扑调整插入位置；没有做 Post-LN+GPAS。",
+        "系统预训练采用 LLaMA-like attention/MLP、RMSNorm、SwiGLU 与 Scaled Embed，在 C4 上用 T5 tokenizer 和 Adam；规模为 71M、130M、250M、350M、1B，对应 1B、2B、4B、6B、10B tokens，batch size 均为 512。",
+        "所有主实验使用 4 张 NVIDIA H800；350M 以下单次约 1–8 小时，1B 单次约 2–3 天。1B checkpoint 再在 Commonsense170K 上用 LISA、学习率 3e-4 训练 4 epochs，SFT 时冻结 GPAS gates，并在 7 个任务上零样本评估。",
+        "附录另比较 7B Pre-LN 与 Pre+GPAS：计划 150K steps/60B tokens，但因算力只完成 40K steps/16B tokens，且 gate gradient clip 为 0.01；这是一条部分规模证据，不等同于完成的 7B 训练。"
+      ]
+    },
+    {
+      "title": "核心结果与证据",
+      "paragraphs": [
+        "Table 2 的主对照中，1B Pre-LN perplexity 由 16.92 降至 16.25，1B LNS 由 15.65 降至 14.88；350M Sandwich-LN 由 21.54 降至 19.79。几乎所有已测试架构与规模都改善，但约 1386 的 DeepNorm 差值来自 1B 基线 perplexity 1404.22 的发散，不能与正常范围内的小幅增益等量解读。",
+        "Table 3 中，Pre+GPAS 的七任务平均零样本准确率为 44.32%，基线为 41.83%，即 +2.49 percentage points；LNS+GPAS 为 45.83%，相对 LNS 的 44.65% 提升 1.18 points。各任务变化不均匀，因此平均值不能解释为普遍推理能力同比提升。",
+        "Figure 4 报告 1B Pre+GPAS 的峰值 activation variance 约降低一半且层间更均匀；Figure 5 中 Pre-LN 多数层 gradient norm 约 0.05–0.1，GPAS 约 0.05–0.5。约 10K step 的 gate/gradient spike 曾让 GPAS loss 暂时反超基线，1B Sandwich+GPAS 还需要 0.01 的 gate clipping 才避免崩溃。",
+        "关键机制消融在 350M Pre-LN 上给出：有 stop-gradient 时 perplexity 20.35，无 stop-gradient 为 21.34，基线 21.35。两种缩放都把方差降约 50%，但只有保留梯度的版本改善 perplexity，支持“不是前向缩放本身，而是前后向解耦”这一解释。",
+        "learnable gate 为 20.35，把已训练模型的 gate 值固定后从头训练则为 22.46，差于无 GPAS 的 21.35；它说明固定这一组选值不够，但不能排除其他预设 schedule。附录的部分 7B 运行在 16B tokens 后得到 13.82 对 15.27 perplexity。"
+      ]
+    },
+    {
+      "title": "有效性与局限",
+      "paragraphs": [
+        "系统 sweep 的最大规模为 1B；7B 只跑到计划 token 的约 27%，且只比较 Pre-LN。结论尚未覆盖现代数十亿至数百亿参数模型的完整训练稳定性、最终质量和 scaling behavior。",
+        "实验集中于 C4、T5 tokenizer、LLaMA-like block 和一套训练 recipe。论文表格未报告多随机种子均值、误差条或显著性检验，因此较小 perplexity 差值的 run-to-run 稳健性无法从本文确定。",
+        "作者给出的梯度分析是 preliminary：依赖层间变量与权重相互独立、零均值 Gaussian、alpha 有界且随层缓慢变化等假设。它给 gradient-norm bound 的行为，不等于证明实际非凸优化必然更快收敛。",
+        "stop-gradient 使用 surrogate derivative；它能改变优化轨迹，也可能引入 gate spikes。论文只在一个主实验和 7B 附录中采用特定 clipping，没有给出跨规模稳定区间或带保证的 gate schedule。",
+        "“信息保持完整”不宜作字面理解：前向状态仍被一个标量改变，只有在缩放因子非零时才可逆；真正被明确保持的是对 x' 的局部反向 Jacobian。方法面向从头训练，作者认为直接改装不带 GPAS 的 pretrained model 很可能次优。",
+        "论文没有提供 matched-quality wall-clock、总训练 FLOPs 或能耗比较；额外标量的参数开销很小，但仅凭固定预算 loss 曲线还不能量化实际训练成本节省。"
+      ]
+    },
+    {
+      "title": "复现与资源",
+      "paragraphs": [
+        "代码仓库为 https://github.com/dandingsky/GPAS。最小复现实验应先在同一 350M Pre-LN recipe 下比较 baseline、Eq. (2) 和去掉 stop-gradient 的 Eq. (12)，记录 train/eval loss、每层 activation variance、gradient norm 与 wall-clock。",
+        "为判断小差值是否可靠，应至少增加多个随机种子，并报告达到同一 perplexity 所需 tokens、FLOPs 与时间；同时保留约 10K step 附近的 gate trajectory 和 loss spike，不能只比较终点。",
+        "实现核对重点是 sg(x') 前向值等于 x'、对 x' 的导数为零，而 alpha 分支仍接收梯度；alpha=0 初始化、每层共享 gate、SFT 冻结 gate 和特定 clipping 条件都应进入配置与日志。",
+        "本站核验的 v2 PDF SHA-256：a048fe8fdd6ce29b5669d12d481a03ce4abff0a2aabfa22c0e5f2220ec914e6f。Evidence status: full-text verified; no independent reproduction performed; numerical results not independently reproduced."
+      ]
+    },
+    {
+      "title": "阅读指南",
+      "paragraphs": [
+        "最短路径：Figure 1 → Eqs. (1)–(2) → Table 2 → Table 5 → Limitations。先确认 stop-gradient 改了什么，再判断 perplexity 改善是否支持论文标题。",
+        "机制路径：推导 naive scaling 与 GPAS 的链式法则差别，再读 Figures 3–5 的 gates、activation variance 和 gradient norm；把第 10K step 的不稳定性视为机制的一部分。",
+        "规模路径：主文 71M–1B sweep 与 Appendix A 的 7B partial run 必须分开；若关心工程价值，应优先复现多 seed、matched-quality time-to-target 和更大规模训练。"
+      ]
+    }
+  ],
+  "evidence_refs": [
+    "paper.pdf pp. 1–4: motivation, Figure 1, Pre-LN and GPAS equations, stop-gradient chain rule",
+    "paper.pdf pp. 4–6: model families, C4 training setup, Tables 1–3 and 71M–1B results",
+    "paper.pdf pp. 6–9: learned gates, activation variance, gradient norm, layer importance and preliminary theory",
+    "paper.pdf pp. 10–11: activation/position/stop-gradient/gate ablations and limitations",
+    "paper.pdf pp. 12–13: partial 7B run at 40K steps and 16B tokens",
+    "source PDF SHA-256 a048fe8fdd6ce29b5669d12d481a03ce4abff0a2aabfa22c0e5f2220ec914e6f",
+    "Evidence status: full-text verified; no independent reproduction performed; numerical results not independently reproduced."
+  ]
+}
