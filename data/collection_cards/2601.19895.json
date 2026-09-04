@@ -1,0 +1,184 @@
+{
+  "arxiv_id": "2601.19895",
+  "source_version": "v2",
+  "source_pdf": "https://arxiv.org/pdf/2601.19895v2",
+  "title_en": "Post-LayerNorm Is Back: Stable, ExpressivE, and Deep",
+  "title_zh": "后置层归一化回归：稳定、富表达且超深",
+  "curation_status": "full_text_verified",
+  "card_standard_version": "2.4",
+  "audience_profile": "physics_ai_literate_physicist",
+  "paper_profile": "theory_numerics",
+  "style_reference": "physicist_daily_arxiv",
+  "provenance": {
+    "program": "Collection",
+    "catalog": "Paper Collection",
+    "catalog_record_id": "2601.19895",
+    "catalog_record_ids": [
+      "2601.19895"
+    ],
+    "catalog_topic": "Machine Learning",
+    "collection_date": "2026-08-30",
+    "sampled_at": "2026-08-31",
+    "selected_by": "ziming_mineru_serial_goal",
+    "sampling_seed": "not_applicable_source_complete",
+    "candidate_count": 464
+  },
+  "verified_metadata": {
+    "arxiv_id": "2601.19895",
+    "version": "v2",
+    "title": "Post-LayerNorm Is Back: Stable, ExpressivE, and Deep",
+    "authors": [
+      "Chen Chen",
+      "Lai Wei"
+    ],
+    "categories": [
+      "cs.LG",
+      "cs.CL"
+    ],
+    "primary_category": "cs.LG",
+    "published": "2026-01-27T18:58:46Z",
+    "updated": "2026-01-30T03:44:40Z",
+    "abstract": "The paper analyzes vanishing gradients in very deep Post-LayerNorm Transformers and introduces Keel, which scales the normalized shortcut and normalizes the transformation branch to stabilize depth scaling."
+  },
+  "equation_refs": [
+    {
+      "label": "Keel 子层更新",
+      "latex": "\\mathbf{x}_{l+1}=\\operatorname{LN}_{l,1}\\!\\left(\\alpha\\mathbf{x}_l+\\mathcal F_l\\!\\left(\\operatorname{LN}_{l,2}(\\mathbf{x}_l)\\right)\\right)",
+      "role": "define the shortcut scaling and branch normalization that distinguish Keel from standard Post-LN and Pre-LN",
+      "symbols": {
+        "x_l": "第 l 个 Transformer 子层的 residual-stream 状态",
+        "F_l": "该子层的 attention 或 feed-forward transformation",
+        "LN_l_1": "对 shortcut 与 transformation 之和施加的外层归一化",
+        "LN_l_2": "进入 transformation branch 前的附加归一化",
+        "alpha": "shortcut branch 的深度相关放大因子，论文取 alpha=L",
+        "L": "所分析网络中的子层深度"
+      },
+      "evidence": "paper.pdf p. 6, Eq. (16); implementation qualifications p. 5",
+      "interpretation": "输入 token 先成为 residual-stream 向量；训练改变 attention/FFN 与归一化参数。Keel 不让 transformation 直接与单位 shortcut 相加，而以 $\\alpha$ 放大 shortcut、在 branch 内再归一化，随后做 Post-LN。首个 attention/FFN block 是论文明确列出的例外。"
+    },
+    {
+      "label": "跨深度 shortcut 梯度极限",
+      "latex": "\\lim_{L\\to\\infty}\\prod_{l=1}^{L}J^*_{\\operatorname{LN}_{l,1}}(\\mathbf z_l)=\\lim_{L\\to\\infty}\\left(\\frac{\\alpha}{\\sqrt{\\alpha^2+1}}\\right)^L=\\lim_{L\\to\\infty}\\left(1+\\frac{1}{L^2}\\right)^{-L/2}=1,\\quad \\alpha=L",
+      "role": "state the paper's asymptotic argument that the shortcut contribution does not exponentially vanish with depth",
+      "symbols": {
+        "J_star": "作者用于跟踪 residual shortcut 的 LayerNorm Jacobian magnitude estimate",
+        "z_l": "第 l 层外层归一化之前的状态",
+        "alpha": "shortcut scale",
+        "L": "乘积跨越的深度"
+      },
+      "evidence": "paper.pdf p. 6, Eqs. (18)–(19)",
+      "interpretation": "标准 Post-LN 的相应 shortcut 估计随深度指数衰减；令 $\\alpha=L$ 后，作者的量级分析给出极限 1。它追踪的是选定路径的 Jacobian 量级，不是整个非线性、随机训练动力学的严格谱界。"
+    }
+  ],
+  "figure_refs": [
+    {
+      "label": "Figure 2",
+      "asset_path": "assets/collection-figures/2601.19895/figure-2-keel-highway-post-layernorm.webp",
+      "section": "模型与方法",
+      "role": "show the scaled normalized shortcut, the extra branch normalization, and the special first layer in the Keel stack",
+      "evidence": "paper.pdf p. 5, Figure 2",
+      "alt_text": "Keel 架构图：每个深层 block 的归一化 shortcut 乘以 alpha，attention 或 FFN branch 前另有归一化；首层单独处理。",
+      "caption": "Figure 2 把 Keel 的改动压缩成两条路径：左侧 shortcut 乘 $\\alpha$，右侧 attention/FFN branch 先归一化，再在输出端做 Post-LN；中间虚线框重复到深度 $L$。",
+      "interpretation": "The schematic identifies the proposed signal path; it does not by itself demonstrate stable optimization or benchmark gains, which come from the Jacobian argument and controlled training comparisons."
+    }
+  ],
+  "cover": {
+    "mode": "source_figure",
+    "asset_path": "assets/collection-figures/2601.19895/figure-2-keel-highway-post-layernorm.webp",
+    "label": "Figure 2",
+    "visual_type": "schematic",
+    "evidence": "paper.pdf p. 5, Figure 2",
+    "alt_text": "Keel 的 Highway-style Post-LayerNorm residual block 示意。",
+    "caption": "Keel 以放大的归一化 shortcut 和额外 branch normalization 重写超深 Transformer 的信号路径。",
+    "selection_rationale": "Figure 2 is the only compact author-created visualization that exposes the architectural mechanism; the quantitative plots show consequences but do not explain what changed."
+  },
+  "sections": [
+    {
+      "title": "作者信息",
+      "paragraphs": [
+        "Chen Chen、Lai Wei；两位作者均来自 ByteDance Seed，论文标注二者 equal contribution，Lai Wei 为通信作者。",
+        "本站核验 arXiv:2601.19895v2：初次提交于 2026-01-27，v2 更新于 2026-01-30；分类 cs.LG、cs.CL；共 23 页。",
+        "Collection 来源为刘子鸣网站的 Machine Learning 条目。"
+      ]
+    },
+    {
+      "title": "研究问题",
+      "paragraphs": [
+        "Transformer 若只增加宽度，单位参数的收益会变小；增加深度原则上可反复组合非线性映射，却会让数百层模型难以优化。论文问：Post-LayerNorm 的失败究竟来自归一化位置，还是来自归一化之前那条 ResNet-style shortcut？",
+        "作者把反向梯度沿 shortcut 的传播写成逐层 Jacobian 乘积，并据此提出 Keel：保留 Post-LN 输出拓扑，但把 shortcut 乘以深度相关 $\\alpha$，同时在 attention/FFN branch 输入处再归一化。",
+        "结论由量级分析、64–1024 层训练压力测试、固定参数量的深宽比较以及 1T-token 预训练组成；本站未独立训练这些模型。"
+      ]
+    },
+    {
+      "title": "背景",
+      "paragraphs": [
+        "Pre-LN 在每个 attention/FFN 之前归一化，保留近似恒等 shortcut，通常更容易训练；但深层新增 block 的有效贡献可能被 residual stream 稀释。原始 Post-LN 在相加之后归一化，表达层更直接参与输出，却长期受深度不稳定限制。",
+        "Highway network 的思路是显式调节 carry path 与 transformation path。Keel 借用这种信号通道设计，但没有学习一个逐元素 gate，而是用固定的深度尺度 $\\alpha=L$ 配合两次 LayerNorm。",
+        "这是一篇 physics of AI 风格的优化动力学工作：核心对象是 residual state 与 backward Jacobian，而不是把 loss 当作能量或把 depth scaling 当作普适物理标度律。"
+      ]
+    },
+    {
+      "title": "给物理学家的 AI 导读",
+      "paragraphs": [
+        "具体图景是：输入 token 被编码成向量 $\\mathbf x_0$；每个 attention/FFN block 产生修正 $\\mathcal F_l$；cross-entropy 的梯度反向更新这些 block；最终 observable 是训练 loss、最大可承受 learning rate 和任务准确率。所谓 residual stream 就是沿深度传递、不断被修正的状态变量。",
+        "LayerNorm 不是耗散或守恒律，而是把单个 token 的特征向量重标度后再乘可学习系数。它的 Jacobian 会旋转并缩放反向信号；许多层的 Jacobian 相乘，才产生类似 transfer-matrix 连乘的深度效应。类比只到乘积敏感性为止，因为每层算子随数据和参数变化。",
+        "Max LR 是 warm-up 中尚未出现停滞、不可恢复 spike 或异常慢收敛的最高峰值学习率；越高表示该训练配方对步长更宽容，不等价于最终模型一定更准。本文的 benchmark 增益还混入了 Keel 使用更高学习率这一可利用优势。",
+        "最低前置知识是 residual connection、gradient descent 与归一化。先看 Figure 2 找到两条路径，再看 Eq. (19) 的连乘极限，最后用 Table 1 判断理论机制是否对应可测的稳定性。"
+      ]
+    },
+    {
+      "title": "模型与方法",
+      "paragraphs": [
+        "标准 Post-LN 更新为 $\\mathbf x_{l+1}=\\operatorname{LN}(\\mathbf x_l+\\mathcal F_l(\\mathbf x_l))$。作者以 RMS-style LayerNorm $\\operatorname{LN}(\\mathbf x)=\\mathbf x/\\|\\mathbf x\\|_2\\odot\\boldsymbol\\gamma$ 估算 shortcut Jacobian；在 $\\gamma$ 近似为 1 时，标准 Post-LN 的跨层量级按约 $2^{-L/2}$ 衰减。",
+        "Keel 改为 equation_refs 中的双归一化更新并取 $\\alpha=L$。第一 attention layer 和第一 FFN layer 去掉其 Post-LN 与 $\\alpha$，以避免 embedding 输入处的不稳定；所有 LayerNorm 保留可学习 $\\gamma$、去掉 bias $\\beta$。",
+        "稳定性压力测试比较 Post-LN、DeepNorm、HybridNorm、Mix-LN、Pre-LN 与 Keel，用线性 warm-up 把峰值学习率推到 $5\\times10^{-2}$，在出现 loss 停滞、不可恢复 spike 或优化退化前记录 Max LR。",
+        "扩展实验覆盖 64、128、512、1024 层；固定 3B 参数时比较 512×1024 的深窄结构与 128×2048 的浅宽结构。最大实验把 512 层、约 3B 参数模型在内部 1T-token 语料上训练，其中前 750B 为通用预训练、后 250B 为继续预训练。"
+      ]
+    },
+    {
+      "title": "核心结果与证据",
+      "paragraphs": [
+        "在作者的 shortcut-Jacobian 量级模型中，标准 Post-LN 连乘指数衰减；Keel 取 $\\alpha=L$ 后，Eq. (19) 的连乘随 $L\\to\\infty$ 趋于 1。这个结果解释为何修改 carry path 可能比只控制 forward activation magnitude 更直接。",
+        "Table 1 的 64 层压力测试中，Keel 的 Max LR 为 $1.01\\times10^{-2}$，Pre-LN 为 $7.65\\times10^{-3}$，原始 Post-LN 为 $3.0\\times10^{-4}$；512 层时分别为 $6.31\\times10^{-3}$、$4.67\\times10^{-3}$ 与 $2.8\\times10^{-4}$。这是同一 warm-up 判据下的经验稳定区间。",
+        "Table 3 从 64 增到 1024 层时，Keel 的平均 benchmark score 分别为 39.6、46.5、58.1、60.9，对应 Pre-LN 为 37.9、45.3、54.3、57.9。并非每个任务都单调胜出，例如 64/128 层 ARC-Easy 与 128 层 HumanEval 有小幅反例。",
+        "固定 3B 参数的 Table 5 中，512 层 Keel 平均 55.5，512 层 Pre-LN 为 52.3，128 层宽 Pre-LN 为 52.2；GSM-8K 分别为 43.8、38.1、35.3。它支持“训练稳定后深度可带来收益”，但只覆盖作者选择的三种拓扑与训练预算。",
+        "1T-token Table 6 允许 Keel 用 $4.5\\times10^{-3}$、Pre-LN 用 $3.0\\times10^{-3}$ 峰值学习率，平均分为 62.5 对 58.7；GSM-8K 为 60.9 对 51.0。结果证明整套架构加优化配方有效，不能单独归因于 Eq. (19) 的梯度机制。"
+      ]
+    },
+    {
+      "title": "有效性与局限",
+      "paragraphs": [
+        "理论部分是沿 residual shortcut 的 Jacobian magnitude 与大 $L$ 渐近量级分析，不是全网络 Jacobian 的严格奇异值界；attention/FFN 的导数、数据相关性、optimizer state 与有限精度可产生额外不稳定。",
+        "实验主要比较特定 decoder-only、3B 级模型和作者配方。Table 1 caption 写“256 layers”而表内 configuration B 写 512 layers，卡片按表格与正文的一致值 512 记录，并保留这一源文不一致。",
+        "最强 250B/1T-token 结果使用内部数据，SFT instruction mix 也未公开；不同架构使用各自可承受的 learning rate，因此是实用系统比较而非只改变一个结构变量的严格消融。",
+        "作者明确指出宽度增加时可能需要更大 $\\alpha$ 或额外稳定化；高 width-to-depth ratio 下 Pre-LN 的 effective-depth 问题较弱，Keel 增益可能缩小；低数据区间不推荐使用 Keel。",
+        "“infinite depth”是未来方向。有限 1024 层的稳定训练和渐近 shortcut 极限，都不能证明无限深网络存在良定极限、可训练或在能力上继续增长。"
+      ]
+    },
+    {
+      "title": "复现与资源",
+      "paragraphs": [
+        "论文未给出可核验的代码仓库、模型 checkpoint 或完整内部训练数据。FineWeb-EDU 只用于 10B/40B-token 对比，不覆盖最强 1T-token 结果。",
+        "最小复现应先用同宽同初始化的 64/512 层模型扫描 peak LR，保存每层 activation、gradient norm 与 loss failure category；再用 matched learning rate 和各自最优 learning rate 两套对照，拆开结构稳定性与更大步长带来的收益。",
+        "进一步需要对 $\\alpha$ 做深度和宽度二维扫描，并用 full-Jacobian spectral diagnostics、多个随机种子和置信区间检验 Eq. (19) 的 proxy 是否预测真实优化。本站只完成全文与图文证据核验，未运行训练。"
+      ]
+    },
+    {
+      "title": "阅读指南",
+      "paragraphs": [
+        "快速阅读：先看 p. 5 Figure 2，把 shortcut、branch 和两次 LN 标出来；再看 pp. 5–6 Eqs. (14)–(19)，确认从指数衰减到极限 1 的假设；最后看 p. 10 Table 1 的 Max LR。",
+        "深入阅读：将 Tables 3、5、6 分开——它们分别测试随深度变化、固定参数的深宽分配、以及大规模训练；注意数据、学习率和任务集合并不相同，不能横向拼成一个 scaling law。",
+        "最关键的下一步不是再堆一项平均分，而是公开训练配方并做 matched-LR、matched-compute、matched-data 的多种子对照，同时验证 lower-layer gradient preservation 是否与具体能力提升有因果联系。"
+      ]
+    }
+  ],
+  "evidence_refs": [
+    "paper.pdf pp. 5–7, Figure 2 and Eqs. (9)–(23): Keel architecture, shortcut-Jacobian estimate, asymptotic gradient argument and implementation exceptions",
+    "paper.pdf pp. 9–12, Figure 3 and Tables 1–2: divergence criteria, maximum-tolerable-learning-rate protocol and controlled learning-rate sweep",
+    "paper.pdf pp. 13–17, Tables 3–7: depth scaling, fixed-parameter deep-versus-wide comparison, 1T-token pre-training, SFT results and stated limitations",
+    "source PDF SHA-256 27e510a5504d458828270fc9b310ca88b4212f4da5249a14e696f0b9fec1bc07",
+    "MinerU Markdown SHA-256 13d42b8aac9db2fc2bf402abf000cc37cc709a4041582bb85cf2e1ff6f0c7ce3",
+    "Evidence packet SHA-256 17dabecd6345bafa869c9bae8cbb2bac9ec5e2a576476a8ff0abc1b53da8932a",
+    "Evidence status: full-text verified; no independent reproduction performed."
+  ]
+}

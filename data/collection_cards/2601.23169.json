@@ -1,0 +1,202 @@
+{
+  "arxiv_id": "2601.23169",
+  "source_version": "v2",
+  "source_pdf": "https://arxiv.org/pdf/2601.23169v2",
+  "title_en": "Names Don't Matter: Symbol-Invariant Transformer for Open-Vocabulary Learning",
+  "title_zh": "名字无关：面向开放符号表学习的符号不变 Transformer",
+  "curation_status": "full_text_verified",
+  "card_standard_version": "2.4",
+  "audience_profile": "physics_ai_literate_physicist",
+  "paper_profile": "theory_numerics",
+  "style_reference": "physicist_daily_arxiv",
+  "provenance": {
+    "program": "Collection",
+    "catalog": "Paper Collection",
+    "catalog_record_id": "2601.23169",
+    "catalog_record_ids": [
+      "2601.23169"
+    ],
+    "catalog_topic": "Representation Learning",
+    "collection_date": "2026-08-30",
+    "sampled_at": "2026-08-31",
+    "selected_by": "ziming_mineru_serial_goal",
+    "sampling_seed": "not_applicable_source_complete",
+    "candidate_count": 464
+  },
+  "verified_metadata": {
+    "arxiv_id": "2601.23169",
+    "version": "v2",
+    "title": "Names Don't Matter: Symbol-Invariant Transformer for Open-Vocabulary Learning",
+    "authors": [
+      "İlker Işık",
+      "Wenchao Li"
+    ],
+    "categories": [
+      "cs.LG",
+      "cs.LO",
+      "cs.SC"
+    ],
+    "primary_category": "cs.LG",
+    "published": "2026-01-30T16:53:01Z",
+    "updated": "2026-06-02T13:42:55Z",
+    "abstract": "The ICML 2026 paper replaces identity-specific symbol embeddings with shared parallel streams and permutation-invariant aggregation, proving consistency under alpha-renaming and testing vocabulary expansion on copying and logic tasks."
+  },
+  "equation_refs": [
+    {
+      "label": "alpha-renaming 输出一致性",
+      "latex": "f^{-1}\\!\\left(\\widehat{\\mathbf y}'\\right)=\\widehat{\\mathbf y},\\qquad \\widehat{\\mathbf y}=M(\\mathbf x),\\quad \\widehat{\\mathbf y}'=M(f(\\mathbf x))",
+      "role": "state the theorem-level guarantee that renaming interchangeable input symbols only renames the corresponding output symbols",
+      "symbols": {
+        "V_i": "可互换符号集合，例如逻辑中的 atomic propositions",
+        "V_n": "名称具有固定意义、不可重命名的 base-token 集合",
+        "f": "固定 V_n 并置换 V_i 的双射 alpha-renaming",
+        "M": "Symbol-Invariant Transformer",
+        "x": "输入符号序列",
+        "y_hat": "模型输出序列"
+      },
+      "evidence": "paper.pdf p. 4, Theorem 4.1 and Eq. (1); full proof pp. 12, 15",
+      "interpretation": "若把公式中的 $a,b$ 同时换名，撤销同一换名后预测必须完全一致。论文称其为 invariance；对含可互换符号的原始输出，更精确地说是对 $f$ equivariant，而内部聚合是 permutation-invariant。"
+    },
+    {
+      "label": "stream 聚合的置换不变性",
+      "latex": "\\mathbf G=\\frac{1}{k}\\sum_{i=0}^{k-1}\\mathbf H_i,\\qquad \\operatorname{Aggregate}(\\pi(\\mathbf H),\\pi(\\mathbf A))=\\operatorname{Aggregate}(\\mathbf H,\\mathbf A)",
+      "role": "show why shared per-stream computation and commutative aggregation eliminate dependence on symbol names",
+      "symbols": {
+        "k": "输入中不同 interchangeable tokens 的数量，也即 stream 数",
+        "H_i": "第 i 个 stream 的 length-by-hidden-dimension state",
+        "A_i": "标出第 i 个真实符号出现位置的 binary mask",
+        "G": "平均各 stream 后，在符号位置恢复对应真实 stream 的 fused view",
+        "pi": "由 alpha-renaming 诱导的 stream permutation"
+      },
+      "evidence": "paper.pdf p. 15, Eqs. (4)–(6); Algorithms 1–2 pp. 12–13",
+      "interpretation": "重命名只重排 stream；共享算子与求和不感知顺序，mask 又把每个符号位置恢复到其对应 stream。保证来自架构对称性，而不是靠数据增强把不同名字训练得相似。"
+    },
+    {
+      "label": "alpha-covariance 经验指标",
+      "latex": "C_\\alpha=1-\\frac{|\\mathbb U|-1}{|\\mathbb P|-1},\\qquad \\mathbb U=\\left\\{\\alpha_i^{-1}(\\widehat{\\mathbf y}^{\\,i})\\right\\}_{i=1}^{|\\mathbb P|}",
+      "role": "measure whether predictions over alpha-equivalent test permutations collapse after undoing each renaming",
+      "symbols": {
+        "P": "同一 input-output pair 的 alpha-equivalent permutation 集",
+        "U": "撤销各自 renaming 后得到的不同预测集合",
+        "C_alpha": "1 表示全部撤销后相同，0 表示每个预测都不同"
+      },
+      "evidence": "paper.pdf p. 5, Eq. (2)",
+      "interpretation": "该指标只测命名一致性，不测答案是否正确；因此必须与 correct/exact-match accuracy 同时读。一个始终输出同一错误答案的模型也可能有高 $C_\\alpha$。"
+    }
+  ],
+  "figure_refs": [
+    {
+      "label": "Figure 1",
+      "asset_path": "assets/collection-figures/2601.23169/figure-1-symbol-invariant-streams.webp",
+      "section": "模型与方法",
+      "role": "trace actual/placeholder symbol streams through shared attention, invariant aggregation and symbol-aware projection",
+      "evidence": "paper.pdf p. 4, Figure 1",
+      "alt_text": "输入 a&b|c 被拆为分别聚焦 a、b、c 的三个 stream，经过共享 self-attention、聚合 attention、cross-attention 与逐流 FFN，最后合成为 logits。",
+      "caption": "Figure 1：每个不同符号获得一个“自身用 actual、其余符号用 placeholder”的视图；所有 stream 共享权重，聚合 base-token 信息，而 interchangeable-token logit 从其专属 stream 取出。",
+      "interpretation": "The diagram exposes the symmetry construction. It does not imply constant cost: each additional distinct input symbol adds another activation stream."
+    }
+  ],
+  "cover": {
+    "mode": "source_figure",
+    "asset_path": "assets/collection-figures/2601.23169/figure-1-symbol-invariant-streams.webp",
+    "label": "Figure 1",
+    "visual_type": "schematic",
+    "evidence": "paper.pdf p. 4, Figure 1",
+    "alt_text": "符号不变 Transformer 的 parallel-stream 与 aggregation 架构。",
+    "caption": "把符号身份变成 stream 标签，再用共享运算与置换不变聚合，使换名只重排计算通道。",
+    "selection_rationale": "Figure 1 is the only figure that makes both the proof mechanism and the linear-in-symbol-count cost visible; benchmark heatmaps show consequences without explaining the construction."
+  },
+  "sections": [
+    {
+      "title": "作者信息",
+      "paragraphs": [
+        "İlker Işık、Wenchao Li；Boston University Department of Electrical & Computer Engineering。两位作者均列为通信联系人。",
+        "本站核验 arXiv:2601.23169v2：初次提交于 2026-01-30，camera-ready v2 更新于 2026-06-02；分类 cs.LG、cs.LO、cs.SC；ICML 2026 Poster，PMLR 306；共 34 页。",
+        "Collection 来源为刘子鸣网站的 Representation Learning 条目。"
+      ]
+    },
+    {
+      "title": "研究问题",
+      "paragraphs": [
+        "在逻辑、程序和数学中，$\\lambda x.x+1$ 与 $\\lambda y.y+1$ 只差 bound-variable 名称。普通 embedding table 却把 $x,y$ 当成不同语义向量，既可能记住名字，也无法处理训练后出现的新符号。",
+        "论文要同时满足两件事：不同符号在同一表达式里仍可区分；对所有一致重命名，模型行为又严格相同。作者不用随机 embedding 或无限数据增强，而把每个 interchangeable token 分配到一个 parallel stream。",
+        "Theorem 4.1 给出精确架构保证；copying、propositional logic assignment 和 Linear Temporal Logic（LTL）witness generation 检验换名、减数据和超出训练符号数/长度的泛化。"
+      ]
+    },
+    {
+      "title": "背景",
+      "paragraphs": [
+        "Alpha-equivalence 是语法对象的商结构：名称不同的表达式属于同一等价类。学习器若在任意代表元上给出不一致结果，就是破坏了问题本身的对称性。",
+        "固定 vocabulary baseline 可用更多训练 token 覆盖测试符号，却不是真正 post-training expansion；random embedding 给每个新符号一个随机可区分部分，经验上有效但不同随机种子没有严格一致性保证。",
+        "这里的“open vocabulary”只指测试时 interchangeable-token set 比训练时更大。它不同于自然语言 open-vocabulary recognition，也不表示可在有限内存中处理任意多符号。"
+      ]
+    },
+    {
+      "title": "给物理学家的 AI 导读",
+      "paragraphs": [
+        "输入是逻辑公式或符号序列；表示不是每个名字一条永久 embedding，而是 $S$ 个视图组成的张量 $\\mathbf H\\in\\mathbb R^{S\\times L\\times d}$；训练更新所有 stream 共用的 attention/FFN 参数；输出是 assignment、LTL witness 或复制序列；observable 是 correctness、exact match 与 alpha-covariance。",
+        "可把 alpha-renaming 看作对内部 stream 标签施加离散置换群作用。共享的逐流算子是 equivariant，平均/恢复算子对同步置换不变，输出投影再把 symbol logits 放回对应表示。类比群对称性是精确的；但这些 stream 不是粒子种类，也没有由 Noether 定理导出的守恒量。",
+        "Actual/placeholder embedding 解决“相同地对待”与“仍能区分”的张力：第 $i$ 个 stream 只把符号 $i$ 标成 actual，其他可换名符号统一为 placeholder；base tokens 如逻辑运算符保持原样。去掉或重排名字只重排这些视图。",
+        "先看 Figure 1 追踪 a、b、c 三条 stream，再看 Theorem 4.1。读实验时把 $C_\\alpha=1$ 与 accuracy 分开：前者是对称性检查，后者才是任务是否做对。"
+      ]
+    },
+    {
+      "title": "模型与方法",
+      "paragraphs": [
+        "Vocabulary 分为 interchangeable $V_i$ 与 fixed $V_n$。对输入中 $k$ 个不同的 $V_i$ token 建 $k$ 条 stream；每条用同一 actual index 表示其焦点 token、同一 placeholder 表示其余 $V_i$ token，$V_n$ 保持原 embedding，并保存位置 mask。",
+        "每条 stream 独立做 shared-parameter self-attention 与 FFN；aggregated attention 让其 query 读取跨 stream 平均并在符号位置恢复真实 stream 的 fused view。Encoder、decoder 和 cross-attention 可分别启用 per-stream/aggregated 模式。",
+        "Projection 对 base-token logits 跨 stream 平均，而 interchangeable token $i$ 的 logit 取自 stream $i$。因此新增输入符号只需实例化额外 stream，不需要新增训练过的 name embedding。",
+        "实验使用 encoder-decoder Transformer、三向 weight tying、RoPE；logic encoder 另用 tree positional encoding，beam width 为 3。Propositional 与 LTL 模型分别为 6/8 层，作者模型 embedding dimension 96/64；完整配置与训练步数见 p. 17 Table 5。",
+        "Training formula 最长 35、最多 5 个 atomic propositions（APs）；heatmap test 扩到长度 50、10 APs，每个网格至多 100 samples。数据扰动还包括统一 first-appearance ordering 的 renaming，以及把训练集从 800k 减到 80k。"
+      ]
+    },
+    {
+      "title": "核心定理与证据",
+      "paragraphs": [
+        "Theorem 4.1：任一固定 $V_n$、置换 $V_i$ 的双射 $f$ 只会置换 parallel streams。逐流共享运算与置换对易，聚合对同步置换不变，symbol-specific projection 再把输出随 $f$ 重命名，故撤销 $f$ 后预测完全相同。",
+        "Table 1 的 renamed propositional-logic set 上，proposed model correct/exact 为 98.03%/60.96%，full-vocabulary baseline 为 41.57%/9.04%，random embedding 为 93.25%/56.45%；proposed 的 3/4/5-AP alpha-covariance 均为 100%。",
+        "Renamed LTL 上 proposed 为 98.24% correct、79.65% exact，alpha-covariance 同样 100%；alpha-renaming baseline 为 97.96%/77.66%，所以这里主要增益不是巨大 accuracy jump，而是精确的名称一致性与可扩展构造。",
+        "Figure 2 的 OOD heatmap 中，propositional logic 平均 accuracy 为 95.05%，高于 full vocabulary 84.41%、alpha-renaming 68.96%、random embedding 77.70%；LTL 则为 90.47%，略低于 full vocabulary 92.82%，说明 relational-symbol bias 在 temporal reasoning 主导时不是通用优势。",
+        "Ablation 把 per-stream cross-attention 换成 aggregated cross-attention 后，propositional/LTL accuracy 降到 28.51%/20.93%；去掉 decoder per-stream attention 也明显退化。它表明 decoder 必须保留“当前输出属于哪条符号 stream”的信息。",
+        "计算代价随 $S$ 个符号 stream 从标准 attention 的 $O(L^2)$ 变为 $O(SL^2)$，activation memory 为 $O(SLd)$。在 batch 64 的 LTL heatmap 上，5→10 AP 时作者报告 1.9→3.9 GB，而 full-vocabulary baseline 为 3.1→3.2 GB。"
+      ]
+    },
+    {
+      "title": "有效性与局限",
+      "paragraphs": [
+        "定理对模型定义内的 alpha-renaming 是精确的，但前提是用户正确给出 $V_i/V_n$ 分区，所有 stream 真正共享参数，sparsification/selection 不依赖 token identity，并同步置换 masks 与输出。",
+        "“Open”受 $S$ 线性时间和 activation memory 限制；实验只到 $S\\le10$。程序合成或定理证明可能同时含数百局部变量，直接复制 streams 会不可承受。",
+        "Stream 由输入里的符号实例化，因此模型不能生成输入中从未出现、又需被视为 interchangeable 的新名字。本文 assignment 与 LTL witness 的输出符号都来自输入，未测试 fresh-variable invention。",
+        "OOD test 扩展符号数与长度，但 operator distribution 保持与训练一致；结果不能外推到新语法、新运算符、真实代码库、长证明或自然语言中并非完全可互换的实体名称。",
+        "Full-vocabulary、random-embedding 与 proposed 模型的 embedding/FFN size 并非处处相同，配置经各自调优；表中 accuracy 是系统比较，不是单一模块的等参数因果效应。论文未为所有训练结果给出多随机种子均值与误差条。",
+        "GPT-5.2 比较每个 heatmap cell 仅 10 samples，使用 four-shot prompt、medium reasoning 和特定结构化输出；它是成本/延迟语境，不是对通用模型能力的全面排名。"
+      ]
+    },
+    {
+      "title": "复现与资源",
+      "paragraphs": [
+        "项目页：https://bu-depend-lab.github.io/Symbol-Invariant-Transformer/；代码：https://github.com/BU-DEPEND-Lab/Symbol-Invariant-Transformer 。仓库给出 LTL/logic 分支、conda/PyTorch/Spot 环境、训练评估命令、Slurm 脚本与 model-conversion notebook。",
+        "数据：https://huggingface.co/datasets/necrashter/interchangeable-token-embeddings-datasets；模型：https://huggingface.co/necrashter/symbol-invariant-transformer 。README 提醒硬件或 package version 不同未必复现完全相同结果。",
+        "最小验证先枚举一个样本的全部 AP permutations，检查撤销换名后 token-by-token prediction 相同；再复现 5→10 AP、35→50 length heatmap，并同时报告 exact correctness 与 $C_\\alpha$。性能复现还应固定 seed、beam、dataset augmentation 和 branch/commit。本站未运行代码或 checkpoint。"
+      ]
+    },
+    {
+      "title": "阅读指南",
+      "paragraphs": [
+        "快速路径：p. 2 定义 $V_i,V_n$ 与 alpha-equivalence；p. 4 Figure 1 和 Theorem 4.1；p. 6 Table 1 分开看 correctness 与 covariance；pp. 8–9 看复杂度和 fresh-symbol 限制。",
+        "证明路径：先确认 renaming 只产生 stream permutation，再读 p. 15 Eqs. (3)–(6) 的逐流对易与聚合不变，最后检查 projection 如何使输出 equivariant。Appendix A 的 pseudocode 是实现审计入口。",
+        "后续关键问题是能否把显式 $S$ 条 stream 压缩成 sublinear/sparse representation，同时让选择规则保持 permutation symmetry，并在真实代码与证明任务上处理新引入变量。"
+      ]
+    }
+  ],
+  "evidence_refs": [
+    "paper.pdf pp. 2–5, Figure 1, Theorem 4.1 and Eqs. (1)–(2): alpha-equivalence problem, parallel-stream architecture, invariance guarantee and metric",
+    "paper.pdf pp. 6–8, Tables 1–3 and Figure 2: renamed/reduced datasets, vocabulary-length OOD results, ablations and computational cost",
+    "paper.pdf p. 9, Table 4 and Sections 6–7: pre-trained-model conversion, O(SL^2) scope, memory, inability to invent fresh interchangeable symbols and conclusion",
+    "paper.pdf pp. 12–15, Algorithms 1–5 and Eqs. (3)–(6): implementation and full symmetry proof; p. 17 Table 5 and dataset details",
+    "source PDF SHA-256 6fc25bcb5975cc3e11e8d67c5e2aedb9470eadccc0f8a8a288252ce3fa422c1d",
+    "MinerU Markdown SHA-256 68fb4482c9c3c45ed6f944139a910bd1fd1f9a9c7366f5dc147a05ec238b7c58",
+    "Evidence packet SHA-256 ed9fe409dd2652255b7e56c1f215234d7c5b139e43f58c90661284f6d766060e",
+    "Evidence status: full-text verified; no independent reproduction performed."
+  ]
+}
