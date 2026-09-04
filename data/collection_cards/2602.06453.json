@@ -1,0 +1,194 @@
+{
+  "arxiv_id": "2602.06453",
+  "source_version": "v1",
+  "source_pdf": "https://arxiv.org/pdf/2602.06453v1",
+  "title_en": "On the Plasticity and Stability for Post-Training Large Language Models",
+  "title_zh": "大语言模型后训练中的可塑性与稳定性",
+  "curation_status": "full_text_verified",
+  "card_standard_version": "2.4",
+  "audience_profile": "physics_ai_literate_physicist",
+  "paper_profile": "theory_experiment",
+  "style_reference": "physicist_daily_arxiv",
+  "provenance": {
+    "program": "Collection",
+    "catalog": "Paper Collection",
+    "catalog_record_id": "2602.06453",
+    "catalog_record_ids": ["2602.06453"],
+    "catalog_topic": "Machine Learning",
+    "collection_date": "2026-08-30",
+    "sampled_at": "2026-08-31",
+    "selected_by": "ziming_mineru_serial_goal",
+    "sampling_seed": "not_applicable_source_complete",
+    "candidate_count": 464
+  },
+  "verified_metadata": {
+    "arxiv_id": "2602.06453",
+    "version": "v1",
+    "title": "On the Plasticity and Stability for Post-Training Large Language Models",
+    "authors": ["Wenwen Qiang", "Ziyin Gu", "Jiahuan Zhou", "Jie Hu", "Jingyao Wang", "Changwen Zheng", "Hui Xiong"],
+    "categories": ["cs.LG"],
+    "primary_category": "cs.LG",
+    "published": "2026-02-06",
+    "updated": "2026-02-06",
+    "abstract": "The paper decomposes GRPO into plasticity and KL-stability gradients and proposes a variance-weighted soft projection, reporting smoother updates and improved math/code benchmark scores."
+  },
+  "equation_refs": [
+    {
+      "label": "plasticity gradient 对 stability axis 的冲突分量",
+      "latex": "\\mu_{\\mathrm{pla}}^{\\parallel}=\\frac{\\mu_{\\mathrm{pla}}\\cdot\\mu_{\\mathrm{sta}}}{\\|\\mu_{\\mathrm{sta}}\\|^2}\\mu_{\\mathrm{sta}},\\qquad \\mu_{\\mathrm{pla}}^{\\perp}=\\mu_{\\mathrm{pla}}-\\mu_{\\mathrm{pla}}^{\\parallel}",
+      "role": "isolate the first-order component of the task gradient that opposes the KL-reference gradient",
+      "symbols": {
+        "mu_pla": "population or approximated reasoning-reward gradient",
+        "mu_sta": "population or approximated KL-stability gradient",
+        "parallel": "component along the stability-gradient line",
+        "perp": "Euclidean-orthogonal component"
+      },
+      "evidence": "paper.pdf p. 4, Eqs. (11)–(12)",
+      "interpretation": "$\\mu_{pla}^{\\perp}$ 对 stability loss 只在当前点的一阶微分为零；有限步、曲率和 optimizer preconditioning 后不保证 general capability 完全不变。"
+    },
+    {
+      "label": "Gaussian scalar model 给出的 soft-projection coefficient",
+      "latex": "k=\\frac{\\lambda_{\\mathrm{pla}}}{\\lambda_{\\mathrm{pla}}+\\lambda_{\\mathrm{sta}}},\\qquad \\alpha=1-k=\\frac{\\lambda_{\\mathrm{sta}}}{\\lambda_{\\mathrm{pla}}+\\lambda_{\\mathrm{sta}}},\\qquad \\lambda=\\sigma^{-2}",
+      "role": "convert estimated plasticity and stability uncertainties into retained and removed fractions of the conflicting component",
+      "symbols": {
+        "sigma_pla_sq": "assumed observation-noise variance along the conflict axis",
+        "sigma_sta_sq": "assumed zero-centered prior variance for allowed motion",
+        "lambda_pla_sta": "corresponding precisions",
+        "k_alpha": "conflict retention and projection strengths"
+      },
+      "evidence": "paper.pdf p. 5, Proposition 4.1 and Eq. (13)",
+      "interpretation": "这是 conjugate Gaussian posterior mean 的 shrinkage factor。所谓 optimal 只对作者设定的 zero-mean scalar prior、independent Gaussian noise 和 squared-error risk 成立。"
+    },
+    {
+      "label": "PCR 的冲突条件下更新",
+      "latex": "g_{\\mathrm{final}}=\\mu_{\\mathrm{pla}}-\\alpha\\frac{\\mu_{\\mathrm{pla}}\\cdot\\mu_{\\mathrm{sta}}}{\\|\\mu_{\\mathrm{sta}}\\|^2}\\mu_{\\mathrm{sta}}",
+      "role": "interpolate between keeping the full plasticity gradient and removing its stability-opposing projection",
+      "symbols": {
+        "g_final": "PCR-corrected update before the outer optimizer",
+        "alpha_zero": "no projection, retaining the plasticity gradient",
+        "alpha_one": "PCGrad-like removal of the parallel conflict component",
+        "mu_sta": "direction used as the local constraint normal"
+      },
+      "evidence": "paper.pdf p. 5, Eqs. (14)–(15)",
+      "interpretation": "公式本身没有把 $\\beta g_{sta}$ 加回 MLP update，而 non-MLP parameters 使用 $g_{pla}+\\beta g_{sta}$。因此它是 layer-selective gradient surgery，不是原 GRPO objective 的无偏梯度估计。"
+    }
+  ],
+  "figure_refs": [
+    {
+      "label": "Figure 1",
+      "asset_path": "assets/collection-figures/2602.06453/figure-1-plasticity-stability.webp",
+      "section": "核心结果与证据",
+      "role": "motivate PCR using KL-weight sensitivity, an empirical performance frontier and layer-wise gradient cosine similarities",
+      "evidence": "paper.pdf p. 4, Figure 1",
+      "alt_text": "Three panels show AIME, MMLU and WikiText-2 perplexity versus KL weight beta; a plasticity-stability frontier comparing standard GRPO and PCR; and a layer-by-training-step heatmap of cosine similarity between plasticity and stability gradients.",
+      "caption": "Figure 1：调节 KL 权重会在 AIME、MMLU 与 PPL 间产生敏感权衡；PCR 的曲线位于标准 GRPO 之上；梯度 cosine heatmap 中可见层依赖的正负区域。",
+      "interpretation": "图建立动机和相关性，但没有单独证明 gradient conflict 是训练振荡的 root cause；heatmap 的重复 runs、误差条与统计检验未在可获得 PDF 中交代。"
+    }
+  ],
+  "cover": {
+    "mode": "source_figure",
+    "asset_path": "assets/collection-figures/2602.06453/figure-1-plasticity-stability.webp",
+    "label": "Figure 1",
+    "visual_type": "comparison",
+    "evidence": "paper.pdf p. 4, Figure 1",
+    "alt_text": "GRPO 的 KL 权衡、PCR/GRPO frontier 与逐层梯度冲突热图。",
+    "caption": "后训练的难点不只是 loss 大小，而是 reward 与 reference gradients 在高维空间中怎样相遇。",
+    "selection_rationale": "Figure 1 places the claimed plasticity-stability trade-off, PCR improvement and measured gradient geometry together while exposing that the causal story remains an interpretation."
+  },
+  "sections": [
+    {
+      "title": "作者信息",
+      "paragraphs": [
+        "Wenwen Qiang、Ziyin Gu、Jingyao Wang、Changwen Zheng 来自中国科学院软件研究所与中国科学院大学；Jiahuan Zhou 来自北京大学；Jie Hu 来自美团；Hui Xiong 来自香港科技大学（广州）及香港科技大学。",
+        "本站核验 arXiv:2602.06453v1，提交于 2026-02-06；首页稿件日期为 2026-02-09，主分类 cs.LG，官方 PDF 只有 10 页。",
+        "Collection 来源为刘子鸣网站的 Machine Learning 条目。"
+      ]
+    },
+    {
+      "title": "研究问题",
+      "paragraphs": [
+        "GRPO 后训练同时追求高 reward 与接近 reference policy。较小 KL weight 可能学到更多 reasoning 却损伤 language/general scores，较大 KL weight 又会压住学习；能否根据 gradient estimate 的不确定性自适应处理冲突？",
+        "论文把 reward surrogate 的 gradient 称为 plasticity force，把 KL penalty gradient 称为 stability force；两者 dot product 为负时，将 plasticity gradient 沿 stability axis 的分量做 partial removal。",
+        "PCR 的核心不是一般 Bayesian RL，而是一维 Gaussian shrinkage：把冲突轴上的 task update 看成 noisy observation，把“不沿该轴移动”看成 zero-centered prior，用两种估计方差决定 projection strength。"
+      ]
+    },
+    {
+      "title": "背景",
+      "paragraphs": [
+        "GRPO 用同一 query 的一组 sampled completions 做 relative reward normalization，无需单独 value model。常见 objective 包含 clipped policy-ratio gain 与对 reference policy 的 KL penalty；本文把这两项拆开求梯度。",
+        "PCGrad 等 gradient surgery 在两个 task gradients 冲突时删除一个 gradient 的反向投影。它是局部一阶多目标折中，不等同于求完整 Pareto optimum，也不自动保持被保护任务在有限训练后的性能。",
+        "Bayesian posterior mean 可以在已知 Gaussian prior/noise 下最小化 squared error。PCR 借用这一结构，但 prior variance、gradient variance 和 independence 都是算法建模选择，不是由 GRPO objective 唯一推出。"
+      ]
+    },
+    {
+      "title": "给物理学家的 AI 导读",
+      "paragraphs": [
+        "把参数空间当前点附近线性化，$g_{sta}$ 像 constraint surface 的法向，$g_{pla}$ 分成切向与法向分量。删除法向反向分量相当于局部投影动力学；保留一部分则像有限 compliance 的软壁。",
+        "precisions $\\lambda=1/\\sigma^2$ 类似弹簧刚度：stability prior 越窄，$\\alpha$ 越接近 1；plasticity observation 越可靠，retention $k$ 越接近 1。这是直观滤波器，但“噪声”来自 group gradients 的经验估计。",
+        "正交只依赖选定的 Euclidean parameter metric。Adam 等 optimizer 会逐坐标预条件，实际 parameter displacement 不再与原 $g_{sta}$ 正交；reparameterization 也会改变 cosine 和 projection。",
+        "梯度范数更平滑不是 thermodynamic stability，也不充分代表训练不崩溃。真正的 stability observables 应包括 KL drift、held-out PPL/general benchmarks、reward collapse 和跨 seed failure rate。"
+      ]
+    },
+    {
+      "title": "模型与方法",
+      "paragraphs": [
+        "作者将 GRPO loss 写成 plasticity surrogate 与 $\\beta$ 加权 KL stability term，按 layer 计算 $g_{pla}$、$g_{sta}$；只有 cosine 为负时才触发冲突处理。",
+        "概率模型假设两个 sample gradients 分别近似 multivariate Gaussian，以观察 gradient 代替未知 mean，以 isotropic $\\sigma^2I$ 代替 covariance，并假设两者 estimation errors 条件独立；scalar variance 据称由 intra-group gradients 的 trace 估计。",
+        "在冲突轴上，PCR 使用 Gaussian prior $z^*\\sim\\mathcal N(0,\\sigma_{sta}^2)$ 与 observation $z_{obs}=z^*+\\epsilon$，得到 posterior-mean shrinkage。MLP layers 使用 PCR，attention、LayerNorm 等仍用标准 $g_{pla}+\\beta g_{sta}$。",
+        "训练模型包括 DeepScaleR-1.5B-Preview、DeepSeek-R1-Distill-Qwen-1.5B/7B，以及 HumanEval 上的 Qwen2-7B-Instruct；默认 LR $10^{-6}$、weight decay 0.01、batch 256、max generation 16,384 tokens，在 A100 clusters 上运行。",
+        "math training 分别使用 919 个 1989–2023 AIME problems 或 4,000 个 NuminaMath QA；评估 AIME 2024/2025、AMC 2023、MATH500、MinervaMATH，另用 MMLU 与 WikiText-2 PPL 观察 retention。"
+      ]
+    },
+    {
+      "title": "核心结果与证据",
+      "paragraphs": [
+        "Figure 1a 显示随 $\\beta$ 增大，WikiText-2 PPL 明显改善、MMLU 上升趋于饱和，而 AIME Pass@1 下降；Figure 1c 给逐层 cosine heatmap。它支持 trade-off 与存在负 cosine，不足以判定负 cosine 是所有 instability 的 root cause。",
+        "Theorem 5.1 证明在作者预设的一维 independent Gaussian prior/noise 模型和 linear estimator family 中，$\\alpha^*=\\lambda_{sta}/(\\lambda_{pla}+\\lambda_{sta})$ 最小化 MMSE；这是标准 shrinkage 结论，不是 PCR 对非凸 LLM training 的 convergence theorem。",
+        "Table 1 中 PCR 在三个 math base models 的五项平均分为 57.7、48.5、67.6，分别比 base 高 3.2、3.6、3.5 points；相对表中最强 GCPO 高 0.9、1.1、1.1 points。PDF 未提供误差条、seeds 或显著性。",
+        "作者报告 Qwen2-7B-Instruct HumanEval 约比 baselines 高 1.2 points；Figure 3 的 gradient norm curve 更平滑，Figure 4 比较 auto-$\\alpha$、固定 $\\alpha$ 和 layer subsets，Figure 5 展示 learned projection strengths。多数数值细节被指向缺失附录。",
+        "Figure 4b 称只在 MLP 上用 PCR 与 all-layer performance 相近且更快；这支持工程折中，但不能验证“MLP 存储绝大多数知识、attention 只是 routing”这一强机制叙述。",
+        "Figure 1b 报告 PCR 相对标准 GRPO 的更优 AIME–MMLU frontier；要证明真正突破 scalarization frontier，需要相同 compute、完整 $\\beta$ sweep、多个 seeds 和可比 checkpoint selection，当前 PDF 未给齐。"
+      ]
+    },
+    {
+      "title": "有效性与局限",
+      "paragraphs": [
+        "最严重的证据缺口是官方 v1 PDF 只有 10 页，却把证明、算法、实验细节与更多结果指向 Appendices B、C、D、E、F、G、J、K、L；这些附录并不存在于文件中。variance estimator、完整伪代码、seeds/compute 和额外 tables 因而无法核验。",
+        "将 batch gradient mean 近似 Gaussian 不保证小 group、heavy-tailed rewards 或 correlated tokens 下成立；plasticity 与 KL gradients 来自同一 model/samples，其误差条件独立假设尤其需要经验检验。",
+        "作者同时说用 observed $g$ 近似 latent mean，又用同批 intra-group variability 估 uncertainty。plug-in direction、isotropic covariance 和 scalar-axis reduction 的估计误差没有进入 MMSE theorem。",
+        "“perpendicular component 对 stability 无影响”只是一阶局部说法；有限 step、loss curvature、Adam preconditioning 和后续 gradient drift 都会破坏它。PCR 也没有直接优化 MMLU/PPL retention。",
+        "MMSE optimality 只在 chosen zero-mean Gaussian prior、independent noise、known variances、linear shrinkage 和 squared error 下成立，不能推出优于 PCGrad/naive sum 的实际 convergence stability。",
+        "实验表没有 repeated-run uncertainty；AIME 等小样本 pass@1 的 1-point 差距可能受 sampling、decoding 和 checkpoint selection 影响。训练数据、evaluation contamination、reward model 与 exact decoding settings 未在可用 PDF 中完整给出。",
+        "Figure 1 文中把 heatmap 误指为 panel (b)，caption 则为 (c)；Figure 2 正文称 0-shot/5-shot，caption 写 1-shot/5-shot。此类内部不一致进一步要求谨慎复现。"
+      ]
+    },
+    {
+      "title": "复现与资源",
+      "paragraphs": [
+        "当前不能做完整忠实复现，因为官方 PDF 缺失所引 Appendices B–L，且正文没有可核验代码 URL。应先取得完整 appendix/code revision，并固定 training/evaluation commits。",
+        "最低算法复现需明确每个 query/group 如何形成 per-sample $g_{pla},g_{sta}$，variance trace 在 token、completion、query 与 batch 哪一层聚合，precision 如何正则化，以及 $\\|g_{sta}\\|\\approx0$ 时如何处理。",
+        "统计检验应直接画 conflict-axis projection 的 standardized residuals、QQ plots、cross-covariance 和 anisotropy spectrum，比较 Gaussian/isotropic/independent assumptions；同时记录 plug-in $\\alpha$ 的 sampling error。",
+        "训练对照至少包含 GRPO、PCGrad、固定 $\\alpha$、all-layer PCR、MLP-only PCR，严格匹配 tokens、wall-clock、GPU-hours、$\\beta$ sweep 和 checkpoint rule；每项使用多 seeds，报告均值、区间与 collapse rate。",
+        "稳定性应同时报告 gradient norm、policy/reference KL、WikiText-2 PPL、MMLU、reward、entropy 与 output length；benchmark 采用冻结 decoding parameters 和未参与 model selection 的 test set。本站未运行训练。"
+      ]
+    },
+    {
+      "title": "阅读指南",
+      "paragraphs": [
+        "快速路线：pp. 3–4 读 gradient decomposition 与 Figure 1；pp. 4–6 推 Eqs. (12)–(15) 和 Theorem 5.1；pp. 6–8 看 Table 1 与 Figures 2–5；随后确认 PDF 在 p. 10 references 结束。",
+        "物理路线：把 $g_{sta}$ 看作局部 constraint normal、$\\alpha$ 看作 stochastic compliance；紧接着检查 metric、finite-step curvature 与 noise covariance assumptions，避免把几何比喻当全局守恒。",
+        "工程路线：目前最可信的是 variance-weighted soft projection 作为可测试启发式；“root cause”“Bayesian optimal training”“break Pareto frontier”都需要完整附录、多 seed 与 matched-compute reproduction 才能确认。"
+      ]
+    }
+  ],
+  "evidence_refs": [
+    "paper.pdf pp. 1–4, Sections 1–3 and Figure 1: GRPO decomposition, KL trade-off and observed gradient cosines",
+    "paper.pdf pp. 4–6, Sections 4–5, Eqs. (10)–(16) and Theorem 5.1: Gaussian assumptions, soft projection and conditional MMSE result",
+    "paper.pdf pp. 6–8, Table 1 and Figures 2–5: benchmark scores, stability plots, layer ablations and projection-strength visualization",
+    "paper.pdf pp. 8–10, Conclusion and References: claim boundary and confirmation that the cited Appendices B–L are absent from the official v1 PDF",
+    "source PDF SHA-256 578f10f9724c19141444eff0cb32ee04b48837b22cd7bb6076e74a843f571acb",
+    "MinerU Markdown SHA-256 7c564daab93bc91862a998527b2dc5e39747c2ef298abd9dae4890711c433c09",
+    "Evidence packet SHA-256 3ab831648e0e8aec37852387e4b7c311d9c94c524298adf01a65eb257f3afd16",
+    "Evidence status: full-text verified for the supplied 10-page official PDF; referenced Appendices B–L are absent; no independent reproduction performed."
+  ]
+}

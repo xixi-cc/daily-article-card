@@ -1,0 +1,193 @@
+{
+  "arxiv_id": "2602.07488",
+  "source_version": "v3",
+  "source_pdf": "https://arxiv.org/pdf/2602.07488v3",
+  "title_en": "Deriving Neural Scaling Laws from the statistics of natural language",
+  "title_zh": "从自然语言统计推导神经缩放定律",
+  "curation_status": "full_text_verified",
+  "card_standard_version": "2.4",
+  "audience_profile": "physics_ai_literate_physicist",
+  "paper_profile": "theory_experiment",
+  "style_reference": "physicist_daily_arxiv",
+  "provenance": {
+    "program": "Collection",
+    "catalog": "Paper Collection",
+    "catalog_record_id": "2602.07488",
+    "catalog_record_ids": ["2602.07488"],
+    "catalog_topic": "Learning Theory",
+    "collection_date": "2026-08-30",
+    "sampled_at": "2026-08-31",
+    "selected_by": "ziming_mineru_serial_goal",
+    "sampling_seed": "not_applicable_source_complete",
+    "candidate_count": 464
+  },
+  "verified_metadata": {
+    "arxiv_id": "2602.07488",
+    "version": "v3",
+    "title": "Deriving Neural Scaling Laws from the statistics of natural language",
+    "authors": ["Francesco Cagnetta", "Allan Raventós", "Surya Ganguli", "Matthieu Wyart"],
+    "categories": ["cs.LG", "cs.AI", "stat.ML"],
+    "primary_category": "cs.LG",
+    "published": "2026-02-07",
+    "updated": "2026-07-03",
+    "abstract": "A horizon-limited theory relates data-scaling exponents of autoregressive language models to the decay of conditional entropy and lagged token correlations, and tests the prediction on TinyStories and WikiText."
+  },
+  "equation_refs": [
+    {
+      "label": "data-dependent prediction horizon",
+      "latex": "\\|C(n)\\|_{\\mathrm{op}}\\asymp n^{-\\beta},\\qquad P_n^*\\asymp n^{2\\beta},\\qquad n^*(P)\\asymp P^{1/(2\\beta)}",
+      "role": "turn decay of lagged token correlations into a sample-size threshold and then an effective usable context horizon",
+      "symbols": {
+        "C_n": "vocabulary-by-vocabulary covariance matrix for token pairs separated by lag n",
+        "beta": "power-law exponent of the operator-norm correlation decay",
+        "P_n_star": "training-token count at which the strongest lag-n correlation rises above sampling noise",
+        "n_star_P": "largest lag considered statistically usable at data size P"
+      },
+      "evidence": "paper.pdf pp. 3–4, Eqs. (3), (4) and (7); Appendix A, Eqs. (29)–(31)",
+      "interpretation": "核心桥梁是 signal-to-noise：经验 covariance 的噪声按 $P^{-1/2}$ 缩小。把“看见最强二点相关”当作模型开始利用 lag-$n$ token 的最低条件，才得到 $P_n^*\\sim\\|C(n)\\|_{op}^{-2}$；这是一条机制假设，不是任意网络的定理。"
+    },
+    {
+      "label": "language-statistics scaling exponent",
+      "latex": "H_n-H_\\infty\\asymp n^{-\\gamma},\\qquad \\mathcal L_{\\mathrm{AR}}(P)-H_\\infty\\asymp P^{-\\gamma/(2\\beta)},\\qquad \\alpha_D=\\frac{\\gamma}{2\\beta}",
+      "role": "predict the data-limited autoregressive loss exponent from two independently estimated corpus statistics",
+      "symbols": {
+        "H_n": "true next-token conditional entropy given n preceding tokens",
+        "gamma": "decay exponent of the residual conditional entropy",
+        "L_AR": "autoregressive test cross-entropy",
+        "alpha_D": "positive exponent of excess loss versus training-token count"
+      },
+      "evidence": "paper.pdf pp. 3–4, Eqs. (5)–(8); Appendix A, Eqs. (34)–(40)",
+      "interpretation": "该指数只在 within-horizon excess error 衰减不比 horizon boundary term 更慢、且 $n^*(P)\\ll T$ 时由语料统计控制。更一般的附录结果是 $\\alpha_D=\\min\\{\\delta,\\gamma/(2\\beta)\\}$，慢的网络学习动力学仍会主导。"
+    },
+    {
+      "label": "n-gram learning-curve collapse",
+      "latex": "\\mathcal L_n(P)-H_\\infty\\asymp n^{-\\gamma}\\,\\ell\\!\\left(P/n^{2\\beta}\\right)",
+      "role": "provide a stronger joint test than fitting only one aggregate scaling-law slope",
+      "symbols": {
+        "L_n": "test loss for predicting the next token from a horizon-n context",
+        "ell": "shared dimensionless master curve",
+        "P_over_n_2beta": "data size measured in units of the lag-dependent threshold"
+      },
+      "evidence": "paper.pdf pp. 4 and 6–8, Eq. (9), Figures 1 and 4; Appendix A, Eqs. (41)–(43)",
+      "interpretation": "若理论正确，不同 $n$ 的整族曲线在横轴除以 $n^{2\\beta}$、纵轴乘以 $n^\\gamma$ 后应重合。collapse 比单一斜率吻合更有约束力，但图示质量和可选拟合窗口仍不是独立的统计检验。"
+    }
+  ],
+  "figure_refs": [
+    {
+      "label": "Figure 1",
+      "asset_path": "assets/collection-figures/2602.07488/figure-1-language-statistics-scaling.webp",
+      "section": "核心结果与证据",
+      "role": "connect raw horizon-resolved losses, rescaled curve collapse and the predicted aggregate data-scaling slope",
+      "evidence": "paper.pdf p. 1, Figure 1",
+      "alt_text": "Top panels show TinyStories n-gram losses before and after rescaling by horizon-dependent entropy and data scales; bottom panel compares autoregressive loss curves at contexts 128, 256 and 512 with a predicted power-law slope.",
+      "caption": "Figure 1：TinyStories 上，不同 horizon 的 learning curves 经 $n^\\gamma$ 与 $P/n^{2\\beta}$ 重标度后近似塌缩；底图把由语料统计得到的 $P^{-\\gamma/(2\\beta)}$ 斜率与多个 context length 的实测 loss 对比。",
+      "interpretation": "图同时展示理论的两级证据。它支持当前模型、数据量与上下文窗口内的 horizon-limited 描述，但不能单凭视觉平行或 collapse 外推到万亿 token、$10^5$ context 或任意架构。"
+    }
+  ],
+  "cover": {
+    "mode": "source_figure",
+    "asset_path": "assets/collection-figures/2602.07488/figure-1-language-statistics-scaling.webp",
+    "label": "Figure 1",
+    "visual_type": "data_plot",
+    "evidence": "paper.pdf p. 1, Figure 1",
+    "alt_text": "语言模型 n-gram loss 的原始曲线、重标度塌缩和 autoregressive loss scaling slope。",
+    "caption": "两个可测语言统计指数，把一族 horizon-resolved learning curves 映射到同一 scaling 描述。",
+    "selection_rationale": "Figure 1 directly exposes both the predicted exponent and the more discriminating curve-collapse test, making the theory's logic visible without substituting a decorative image."
+  },
+  "sections": [
+    {
+      "title": "作者信息",
+      "paragraphs": [
+        "Francesco Cagnetta、Allan Raventós、Surya Ganguli 与 Matthieu Wyart 来自 SISSA、Stanford、Johns Hopkins 和 EPFL；前两位为共同第一作者，后两位为共同资深作者。",
+        "本站核验 arXiv:2602.07488v3：首版提交于 2026-02-07，当前版更新于 2026-07-03，主分类 cs.LG；PDF 为 ICML 2026 / PMLR 306 版本，共 31 页。",
+        "Collection 来源为刘子鸣网站的 Learning Theory 条目。"
+      ]
+    },
+    {
+      "title": "研究问题",
+      "paragraphs": [
+        "LLM 的 test loss 常随训练 token 数 $P$ 呈幂律下降，但经验曲线通常只告诉我们指数是多少，不告诉我们为什么是这个指数。能否不用拟合模型学习曲线，而从自然语言本身的统计结构预言 data-limited exponent？",
+        "论文提出两项数据统计量：条件上下文从 $n$ 增长时剩余 entropy 按 $n^{-\\gamma}$ 衰减；相隔 $n$ 的 token covariance 强度按 $n^{-\\beta}$ 衰减。若增加数据的主要作用是解锁更长的有效预测 horizon，则 $\\alpha_D=\\gamma/(2\\beta)$。",
+        "作者在 TinyStories 和 WikiText 上从头训练 GPT-2/LLaMA-style transformers，既检验 aggregate loss slope，也检验不同 horizon 的 n-gram curves 是否按同一组 $\\gamma,\\beta$ collapse。"
+      ]
+    },
+    {
+      "title": "背景",
+      "paragraphs": [
+        "neural scaling law 通常写成 excess loss $L(P)-L_\\infty\\propto P^{-\\alpha_D}$。这里研究的是固定为足够大模型后、主要受训练数据量限制的 exponent，不是同时优化参数量和 compute 的 Chinchilla-style allocation law。",
+        "$H_n=H(X_{t+1}|X_{t-n+1:t})$ 是数据分布的性质；模型 test cross-entropy $\\mathcal L_n$ 只是其上界。真实词表下直接计数长 contexts 会遭遇指数增长的稀疏性，因此作者用最大 $P$ 的充分表达模型之 loss 来近似 $H_n$。",
+        "二点 covariance 只捕捉 pairwise token dependence，而语言还包含高阶、语义和文档层结构。论文的论证不是说二点函数包含全部语言，而是把其最强奇异值当作“lag-$n$ signal 能否从有限样本中分辨”的最低门槛。"
+      ]
+    },
+    {
+      "title": "给物理学家的 AI 导读",
+      "paragraphs": [
+        "最接近统计物理的读法是 finite-size scaling。数据量 $P$ 像 system size，最大可利用 horizon $n^*(P)$ 像随尺度增长的 correlation length；$\\beta$ 把采样噪声和 temporal correlations 联系起来，$\\gamma$ 再把 horizon 转成 irreducible prediction loss。",
+        "curve collapse 是关键，而不只是 log-log 直线。已知 $\\gamma,\\beta$ 后，横轴 $P/n^{2\\beta}$ 与纵轴 $n^\\gamma(\\mathcal L_n-H_\\infty)$ 没有为每条曲线单独调 exponent；若整族曲线重合，约束强于恰好拟合一条 slope。",
+        "这里所谓 universality class 指一批深层 architectures 可能共享 horizon-limited mechanism、因而在同一 dataset 上共享 exponent；它尚不是由 RG fixed point、symmetry 或 thermodynamic limit 推导出的 universality。",
+        "最重要的隐藏变量是 $\\delta$，即固定 horizon 内 prediction error 随数据改善的速率。只有 $\\delta>\\gamma/(2\\beta)$ 时，语言统计决定 exponent；若网络学习局部结构很慢，真正指数是 $\\delta$。"
+      ]
+    },
+    {
+      "title": "模型与方法",
+      "paragraphs": [
+        "数据为 GPT-3.5/4 生成短故事的 TinyStories 与 Wikipedia 文章的 WikiText-103；均以 whitespace pretokenization 加 8192-vocabulary BPE，文档间加入 EOS。",
+        "主实验用约 98M 参数 GPT-2-style model：embedding 768、12 layers、12 heads；并比较 APE、RoPE、LLaMA-style、不同深度/宽度。WikiText 还训练约 274M 和 672M 参数模型，以检查 capacity saturation。",
+        "对每个训练 token 数 $P$ 分别训练模型，记录各 context position 的 $n$-gram loss。$\\gamma$ 从最大数据模型的小-$n$ limiting loss curve 拟合；$\\beta$ 从经验 token covariance operator norm 对 lag 的 log-log slope 拟合。",
+        "TinyStories 的 correlation fit 用 $n=1$ 到 200 的 15 个 logarithmically spaced points；WikiText 因长程结构更复杂，只用 $n=1$ 到 32 的 6 个点。作者以 slope standard error / bootstrap 估计不确定度，再传播到 $\\alpha_D$。",
+        "经验 $\\hat\\alpha_D$ 不是任取一条曲线：作者取不同 maximum context $T$ 的 lower envelope，并改变前 $m$ 个点的 fit window，以避开小-$P$ optimization 困难和大-$P$ 时 $n^*(P)$ 碰到 $T$ 的 crossover。"
+      ]
+    },
+    {
+      "title": "核心结果与证据",
+      "paragraphs": [
+        "TinyStories 得到 $\\gamma=0.325\\pm0.003$、$\\beta=0.88\\pm0.06$，预言 $\\alpha_D=0.185\\pm0.013$；WikiText 得到 $\\gamma=0.265\\pm0.016$、$\\beta=0.94\\pm0.16$，预言 $0.141\\pm0.025$。这些 exponent 由 language-statistics fits 给出，而非用 aggregate learning curve 回归后再解释。",
+        "Figure 1 的 TinyStories n-gram curves 经横轴 $P/n^{2\\beta}$、纵轴 $n^\\gamma$ 重标度后近似塌缩；Figure 4 在 WikiText 重复该检验。多个 context lengths 的 aggregate loss slopes 与上述预测区间相容。",
+        "对 lower-envelope 的 bootstrap comparison，TinyStories 在前 12 点的多数 fit windows 与预测区间重叠，WikiText 的 5–8 点 windows 全部重叠；这说明结果并非只依赖一个展示窗口，但也不是对任意 window 都精确吻合。",
+        "固定小 horizon 的 $\\mathcal L_n-H_n$ 比 $P^{-\\gamma/(2\\beta)}$ 衰减更快，支持 within-horizon learning 不是瓶颈。作者因此把观测 regime 解释为：更多数据主要让模型可靠利用更远 token，而非缓慢修正早已可见的近邻信息。",
+        "跨 APE、RoPE 和 LLaMA-style models 的 $\\gamma$ estimates 接近，支持它主要属于 dataset；但 TinyStories LLaMA 的视觉 collapse 在 $\\beta\\simeq0.6$–0.7 时反而更锐利，低于独立统计估计 $0.88\\pm0.06$，作者将其作为有限范围或架构相关异常保留。"
+      ]
+    },
+    {
+      "title": "有效性与局限",
+      "paragraphs": [
+        "理论的关键不是无条件等式，而是 horizon-limited regime：$T\\gg n^*(P)$，并且 fixed-horizon excess losses 足够快地消失。浅层网络、kernel methods、n-gram models 或 optimization-limited training 可落在 $\\delta$ 主导的另一 regime。",
+        "$H_n$ 没有由 corpus counts 直接测得，而由 finite-capacity trained models 的最低 loss 近似。跨 architecture convergence 提供支持，却不能严格排除所有模型仍共享相似 bias 或尚未达到真正 entropy floor。",
+        "将 top singular value 超过 $P^{-1/2}$ noise floor 视为 token 可被模型有益利用，是必要条件式的启发，不是充分条件：gradient descent 是否发现该 mode、nonlinear higher-order dependencies 是否先被利用，都不由二点 signal-to-noise 保证。",
+        "幂律只在有限 lag 和 data range 拟合。WikiText 的 $\\beta$ 只取 $n\\le32$；TinyStories 的故事长度限制在约 200 token。作者明确指出实验中的 $n^*(P_{max})$ 仅为几十 tokens。",
+        "训练规模是学术级 TinyStories/WikiText、约 98M–672M 参数；没有测试 trillion-token corpora、$T\\gtrsim10^5$ contexts、instruction tuning、mixture-of-experts 或真实 frontier LLM。因此不能把数值 exponent 直接用于工业 scaling 预算。",
+        "collapse 的优劣部分靠视觉判断，且 $\\gamma$ fit window、$H_\\infty$ subtraction、lower-envelope selection 都会引入系统误差。预测区间与 empirical interval overlap 表示相容，不等于理论被唯一确认。",
+        "本站核验论文全文与公式/图表，但未重跑训练、covariance SVD、bootstrap 或 curve fits；卡片所称验证均指作者报告的实验。"
+      ]
+    },
+    {
+      "title": "复现与资源",
+      "paragraphs": [
+        "作者在 Appendix E 给出训练设置，并提供 `fracagnetta/small-language-modelling` 代码仓库。复现时应锁定 exact commit、TinyStories/WikiText snapshots、8192 BPE tokenizer、EOS concatenation、seed 与每个 $P,T$ 的 optimization budget。",
+        "先独立计算 $C(n)$ 的 operator norm，保存 covariance construction、vocabulary ordering、lags 和 SVD tolerance；再按论文窗口拟合 $\\beta$，同时画 local slopes 检查 power-law range。",
+        "估计 $\\gamma$ 时应按 architecture 分开报告 $\\mathcal L_n(P)$ 是否随 $P$ 饱和，不能先假定最大模型已达到 $H_n$；建议将 fit-window variation 作为 systematic error，而不只给 regression standard error。",
+        "最终检验需预先冻结 $\\gamma,\\beta$，再画 collapse 与 aggregate loss，报告 prediction/empirical confidence intervals、所有 $m$ windows、finite-$T$ crossover 和失败 architectures。本站未执行独立复现。"
+      ]
+    },
+    {
+      "title": "阅读指南",
+      "paragraphs": [
+        "快速路线：p. 1 Figure 1 看完整主张；pp. 3–4 读 $C(n)\\to n^*(P)\\to\\alpha_D$ 三步；pp. 6–8 看两个 datasets 的数值检验；p. 9 读 Limitations。",
+        "物理路线：Appendix A 先看一般式 $\\min\\{\\delta,\\gamma/(2\\beta)\\}$，再判断何时可称 horizon-limited universality；Appendix C 核对 uncertainty propagation、fit windows 与 LLaMA collapse anomaly。",
+        "AI 实践路线：区分 data exponent、parameter exponent 和 compute-optimal scaling；本论文只处理第一项。若要用于训练计划，下一步必须在目标 tokenizer、domain corpus、model family 和实际 data range 上重新测 $\\gamma,\\beta$ 与 regime。"
+      ]
+    }
+  ],
+  "evidence_refs": [
+    "paper.pdf pp. 1–4, Figure 1 and Eqs. (1)–(9): horizon-limited mechanism, language-statistics exponents and curve-collapse prediction",
+    "paper.pdf pp. 4–8, Figures 2–5 and Eqs. (10)–(16): entropy/correlation fits and TinyStories/WikiText empirical comparisons",
+    "paper.pdf pp. 8–9, Figure 6, Conclusions and Limitations: within-horizon error test, universality proposal and finite-range boundary",
+    "paper.pdf pp. 14–20, Appendix A, Eqs. (17)–(55): general min-delta exponent, signal-to-noise threshold and scaling derivation",
+    "paper.pdf pp. 21–25, Appendix C, Figures 7–12 and Table 1: uncertainty, fit-window sensitivity and LLaMA collapse exception",
+    "paper.pdf pp. 27–31, Appendix E and Table 2: datasets, tokenization, model sizes and training protocol",
+    "source PDF SHA-256 8376e1178844d5f4aa9f49e224a188d8e2ce5ef8e5c1377d1fbd718e1240f831",
+    "MinerU Markdown SHA-256 6c047b9d5684912f2be20b31bc33f43c7b28cd76146d0b3e854fae405da4a95e",
+    "Evidence packet SHA-256 da3da26116eb1ac3962ccd6afa130980e285d72047c222700af2f0e74f4e82ca",
+    "Evidence status: full-text verified; no independent reproduction performed."
+  ]
+}

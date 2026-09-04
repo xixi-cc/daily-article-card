@@ -1,0 +1,195 @@
+{
+  "arxiv_id": "2602.07050",
+  "source_version": "v1",
+  "source_pdf": "https://arxiv.org/pdf/2602.07050v1",
+  "title_en": "Interpreting Physics in Video World Models",
+  "title_zh": "解释视频世界模型中的物理表征",
+  "curation_status": "full_text_verified",
+  "card_standard_version": "2.4",
+  "audience_profile": "physics_ai_literate_physicist",
+  "paper_profile": "ai_empirical",
+  "style_reference": "physicist_daily_arxiv",
+  "provenance": {
+    "program": "Collection",
+    "catalog": "Paper Collection",
+    "catalog_record_id": "2602.07050",
+    "catalog_record_ids": ["2602.07050"],
+    "catalog_topic": "Representation Learning",
+    "collection_date": "2026-08-30",
+    "sampled_at": "2026-08-31",
+    "selected_by": "ziming_mineru_serial_goal",
+    "sampling_seed": "not_applicable_source_complete",
+    "candidate_count": 464
+  },
+  "verified_metadata": {
+    "arxiv_id": "2602.07050",
+    "version": "v1",
+    "title": "Interpreting Physics in Video World Models",
+    "authors": ["Sonia Joseph", "Quentin Garrido", "Randall Balestriero", "Matthew Kowal", "Thomas Fel", "Shahab Bakhtiari", "Blake Richards", "Mike Rabbat"],
+    "categories": ["cs.CV", "cs.AI", "cs.LG"],
+    "primary_category": "cs.CV",
+    "published": "2026-02-09",
+    "updated": "2026-02-09",
+    "abstract": "Layer-wise probes, subspace comparisons, attention ablations and activation steering are used to study motion and intuitive-physics information in frozen V-JEPA 2 and VideoMAE-v2 video encoders."
+  },
+  "equation_refs": [
+    {
+      "label": "用 circular target 避免方向角的不连续",
+      "latex": "u(\\theta)=(\\sin\\theta,\\cos\\theta),\\qquad \\hat\\theta=\\operatorname{atan2}(\\hat u_1,\\hat u_2)",
+      "role": "represent motion direction for linear probing without treating zero and 360 degrees as far apart",
+      "symbols": {
+        "theta": "ground-truth motion direction",
+        "u_theta": "two-component circular regression target",
+        "hat_theta": "direction decoded from probe outputs",
+        "atan2": "quadrant-aware inverse mapping"
+      },
+      "evidence": "paper.pdf Sections 5.3 and 7.1; Appendix C.4 and C.7",
+      "interpretation": "一个 probe 需要一对 sine/cosine weights；圆形 tuning 并不意味着网络内部只有二维变量，因为许多近正交的 weight pairs 都能携带相同方向信息。"
+    },
+    {
+      "label": "probe-weight subspaces 的有向 overlap",
+      "latex": "\\operatorname{Overlap}(A\\leftarrow B)=\\frac{\\|Q_A^{\\mathsf T}Q_B\\|_F^2}{\\dim(B)},\\qquad \\mathbb E_{\\mathrm{random}}[\\operatorname{Overlap}(A\\leftarrow B)]=\\frac{k_A}{d}",
+      "role": "compare motion and IntPhys decoding subspaces against the overlap expected from random subspaces of the same dimensions",
+      "symbols": {
+        "Q_A_Q_B": "orthonormal bases built from stacked probe weights",
+        "k_A": "dimension of subspace A",
+        "d": "ambient embedding dimension",
+        "Overlap": "fraction of B captured by projection onto A"
+      },
+      "evidence": "paper.pdf Appendix C.4, Eqs. (1) and (3), Table 3",
+      "interpretation": "direction→IntPhys overlap 约 7–13%，与相同维数随机基线 6–13% 接近；这反驳简单 linear-subspace reuse，却不能排除 nonlinear、distributed 或未被 probes 捕获的共享变量。"
+    },
+    {
+      "label": "多方向 activation steering",
+      "latex": "V=\\operatorname{QR}([W_1^{\\mathsf T},\\ldots,W_K^{\\mathsf T}]),\\quad c=V^{\\mathsf T}x,\\quad x^*=Vc^*+(x-Vc)",
+      "role": "replace coordinates in the learned direction subspace while preserving the orthogonal residual",
+      "symbols": {
+        "W_k": "successive circular-probe weight matrices",
+        "V": "orthonormal basis of the estimated direction subspace",
+        "c_star": "least-squares coordinates making probes predict the target angle",
+        "x_star": "steered layer activation"
+      },
+      "evidence": "paper.pdf Appendix C.12, Eq. (8) and steering procedure",
+      "interpretation": "20 probe pairs reduce a separately trained held-out probe's target-angle MAE from 82.9° to 11.9° at V-JEPA 2-L layer 8。它验证跨数据 probe readout 的可控性，没有展示 encoder predictor 或生成视频的物理行为被改写。"
+    }
+  ],
+  "figure_refs": [
+    {
+      "label": "Figure 1",
+      "asset_path": "assets/collection-figures/2602.07050/figure-1-physics-emergence-zone.webp",
+      "section": "核心结果与证据",
+      "role": "compare possible-versus-impossible physics probe accuracy across normalized depth and model families",
+      "evidence": "paper.pdf p. 4, Figure 1",
+      "alt_text": "Linear and attentive-MLP probe test accuracy versus layer fraction for V-JEPA 2 Large, Huge and Giant and VideoMAE-v2 Giant; curves rise from near chance around one-third depth, peak in middle layers and some decline near the output.",
+      "caption": "Figure 1：IntPhys 可解码性在归一化深度约 0.2–0.4 内快速上升；V-JEPA 2 三种尺度和 VideoMAE-v2-G 都出现类似中层窗口，但 probe 类型改变饱和程度。",
+      "interpretation": "阴影 Physics Emergence Zone 是作者根据 probe curves 命名的 crossover。它显示 frozen representations 何时允许外部分类器读出标签，不直接证明 encoder 自己使用同一变量完成预测。"
+    }
+  ],
+  "cover": {
+    "mode": "source_figure",
+    "asset_path": "assets/collection-figures/2602.07050/figure-1-physics-emergence-zone.webp",
+    "label": "Figure 1",
+    "visual_type": "comparison",
+    "evidence": "paper.pdf p. 4, Figure 1",
+    "alt_text": "四个大型视频 encoder 中 IntPhys linear/attentive-MLP probe accuracy 随归一化层深的变化。",
+    "caption": "物理标签不是从第一层就全局可读：中间深度出现一个快速的可解码性转折。",
+    "selection_rationale": "Figure 1 is the cleanest cross-architecture evidence for the named emergence zone and also makes its probe-based, non-behavioral status visible."
+  },
+  "sections": [
+    {
+      "title": "作者信息",
+      "paragraphs": [
+        "Sonia Joseph、Quentin Garrido、Randall Balestriero、Matthew Kowal、Thomas Fel、Shahab Bakhtiari、Blake Richards 与 Mike Rabbat 来自 FAIR/Meta Superintelligence Labs、Mila、McGill、Université Paris-Saclay 等机构；Blake Richards 与 Mike Rabbat 为共同末位作者。",
+        "本站核验 arXiv:2602.07050v1：arXiv 元数据提交于 2026-02-09，PDF 首页印有 2026-02-04；主分类 cs.CV，共 33 页。",
+        "Collection 来源为刘子鸣网站的 Representation Learning 条目。"
+      ]
+    },
+    {
+      "title": "研究问题",
+      "paragraphs": [
+        "视频模型若能判断物体消失、轨迹反转或形状突变“不可能”，内部是否先形成速度、加速度等紧凑状态，再像物理引擎一样复用？还是用高维、任务专属特征直接完成判断？",
+        "论文不只看最终 benchmark，而是沿 frozen video encoder 深度问：IntPhys 标签、速度/加速度大小和方向何时可解码，彼此的 linear subspaces 是否重合，哪些 attention patterns 对读出有影响。",
+        "作者把约三分之一深度处 probe accuracy 的快速上升命名 Physics Emergence Zone，并据 subspace、ablation 与 steering 结果倾向 distributed task-specific representation，而非 compact reusable physics state。"
+      ]
+    },
+    {
+      "title": "背景",
+      "paragraphs": [
+        "V-JEPA 2 预测 masked/future patches 的 latent representations；VideoMAE-v2 从 masked video 重建 pixels。本文只分析 pretrained frozen encoders，不直接研究 V-JEPA predictor、planning policy 或 diffusion/autoregressive video generator。",
+        "linear probe 回答某变量能否由线性读出，attentive-MLP probe 允许跨 patch 聚合。高 probe accuracy 可能来自模型计算出的变量，也可能来自足以让 probe 重建变量的相关线索。",
+        "circuit evidence 强度更高：对 attention weights 做定向 masking，再看 probe/task accuracy 是否下降；但 ablation 也制造 off-distribution activation，因此需要 matched controls 才能把下降定位到特定计算。"
+      ]
+    },
+    {
+      "title": "给物理学家的 AI 导读",
+      "paragraphs": [
+        "把 layer fraction 当作 coarse-graining flow，probe accuracy 像某个 observable 的 susceptibility。约三分之一深度出现 crossover，但这里没有 thermodynamic limit、order parameter 或 critical exponent，不能把“emergence zone”理解成严格相变。",
+        "speed 是标量，direction 位于圆 $S^1$；用 $(\\sin\\theta,\\cos\\theta)$ 做 regression 避免角度切口。多组近正交 probe pairs 都能读出同一 $S^1$，对应冗余 population code，而不是一对显式 $(v_x,v_y)$ registers。",
+        "principal angle 只比较两个线性子空间。随机高维子空间本来就近正交，作者因此用同维随机 overlap 作基线；观察值接近随机说明没有额外线性重叠，不等于数学上排除了所有 shared latent variables。",
+        "local-attention ablation 类似切断一个传播通道；combined spatiotemporal masking 使 direction $R^2$ 从 0.97 降至 0.14，而 ImageNet accuracy 33.7% 到 33.1%。这是选择性影响 temporal readout 的证据，不是守恒律或动力方程的发现。"
+      ]
+    },
+    {
+      "title": "模型与方法",
+      "paragraphs": [
+        "模型包括 V-JEPA 2 Large/Huge/Giant 与 VideoMAE-v2 Giant，主要以 mean-pooled per-layer activations 训练 linear probes，并用 patch-preserving attentive-MLP probes 补充；20 组 LR/weight-decay configurations，5-fold grouped cross-validation。",
+        "IntPhys 用 matched possible/impossible videos，违例覆盖 object permanence、shape constancy 和 spatiotemporal continuity；authors 另测 CLEVRER、ImageNet、SSv2、object counting 与 shuffled-video controls。",
+        "Kubric velocity set 有 392 段 16-frame videos：8 directions×7 speeds×7 starts；acceleration set 有 280 段：8 directions×5 accelerations×7 starts。固定球、相机、光照和无摩擦条件，PyBullet 240 Hz、render 24 fps。",
+        "representation geometry 从 successive orthogonal probes 构造 direction/speed/IntPhys subspaces，计算 principal angles、projection overlap 与 Grassmann distance；停止阈值决定所谓 effective dimension。",
+        "causal tests 一是只在 emergence-zone heads 抑制邻近 spatial/temporal attention 并 renormalize，二是用多组 probe bases 改写 layer-8 direction coordinates，再由独立数据训练的 probe 评估 target angle。"
+      ]
+    },
+    {
+      "title": "核心结果与证据",
+      "paragraphs": [
+        "Figure 1 中四个大型 encoders 的 IntPhys linear probe 从约 chance 50% 快速升到约 85–100%，最强信息在中间层，部分模型到输出层下降。小型 VideoMAE variants 未稳定出现同一模式，故不是所有视频 encoder 的普遍定律。",
+        "polar decomposition 后，speed 与 acceleration magnitude 在早层已可读，direction 到 emergence zone 才明显上升；CLEVRER 多对象 probes 也出现类似 direction transition。‘acceleration 不依赖 velocity intermediate’仍只是未见分阶段 decodability，不是 causal mediation test。",
+        "direction–IntPhys mean principal angles 约 69°–75°、有向 overlap 7–13%；speed–IntPhys 为 80°–83%、低于 3%，均接近同维随机基线。结论限于 probe-weight linear subspaces。",
+        "Table 2 中 spatial-only、temporal-only、combined local-attention suppression 分别把 IntPhys 78.3% 降到 62.2%、51.9%、61.7%；combined 将 direction $R^2$ 从 0.97 降到 0.14，ImageNet 仅降 0.6 point。它支持 emergence-zone local attention 对 temporal variables 有选择性功能作用。",
+        "direction units 的 preferred angles 覆盖 360° 且呈 sinusoidal tuning；successive orthogonalization 显示 direction 需要数十维。维数是按 probes 直到 performance threshold 统计，并非 intrinsic dimension 的唯一估计。",
+        "held-out steering 中，20 probe pairs 把 target-angle MAE 从 82.9° 降至 11.9°，同时离 true angle 变远。主文另报用全部 probe directions 对原读出可低于 0.5°；后者不应与真正独立 probe 的 11.9°混写，也没有下游行为验证。"
+      ]
+    },
+    {
+      "title": "有效性与局限",
+      "paragraphs": [
+        "对象是 encoder representations，而“world model”还可要求 prediction、imagination 或 planning。卡片不把中层 probe accuracy 等同于模型具有可调用的 symbolic physics engine。",
+        "IntPhys possible/impossible labels 混合 permanence、shape 与 continuity；高 accuracy 可利用 synthetic artifacts 或 breakpoint cues。matched pairs 与 subtask checks 有帮助，但自然视频和 causal/counterfactual physical reasoning 未覆盖。",
+        "probe emergence 是 accessibility。早层 non-linear/patch-aware readout 可能已能提取 direction；不同 probe capacity、pooling 与 hyperparameter selection 会移动 apparent transition。",
+        "subspace near-orthogonality不能“rule out”一般 shared latent-variable explanation，只能反对当前 probe family 下额外的 linear reuse。后层 direction dimension 达 400 的估计也暴露 stopping-threshold/decodability degradation 对维数指标的敏感性。",
+        "attention masking 删除近邻 weights 并重新归一化，会同时改变 activation scale/distribution；需要随机 head、matched removed mass、远程 attention 和同等扰动 norm controls 才能唯一归因于 local processing。",
+        "steering 终点由 probes 定义，held-out evaluator 仍是同类线性 probe。没有展示 V-JEPA future-latent prediction、IntPhys model decision、生成轨迹或 planning action 随 target direction 改变。",
+        "作者明确限制于 masked-objective encoder transformers、少数任务和 simple ball motion；接触、力推断、碰撞、长时间相互作用、autoregressive/diffusion video models 均未检验。"
+      ]
+    },
+    {
+      "title": "复现与资源",
+      "paragraphs": [
+        "先固定各 V-JEPA/VideoMAE checkpoint、layer indexing、video preprocessing 和 activation pooling；对每层独立做 grouped 5-fold CV，所有 20 组 probe hyperparameters 只用 validation fold 选择。",
+        "Kubric 复现要保存 Blender 2.93、PyBullet 3.2.5、球半径 0.3 m、质量 1 kg、8×8 m floor、无摩擦/恢复、camera/light、240 Hz simulation、24 fps rendering 与 672 个场景 seeds。",
+        "emergence zone 应预注册 changepoint definition，并同时报告 layer number 和 normalized depth、fold uncertainty、small-model failures；仅目测灰色阴影不够。",
+        "ablation 应加入 random-head、remote-attention、matched attention-mass 与 sham renormalization controls，并测 encoder predictor loss/behavior而不只 probe accuracy。",
+        "steering 需保持 train/test probes 真正独立，报告 subspace rank、condition number、activation norm drift、target/true angular MAE；进一步把修改后的 states 接入 predictor 或 downstream task，判断物理行为是否改变。本站未运行实验。"
+      ]
+    },
+    {
+      "title": "阅读指南",
+      "paragraphs": [
+        "快速路线：p. 2 Table 1 看五个 physics-engine predictions；p. 4 Figure 1 看 probe transition；pp. 6–8 读 subspace、Table 2 ablation、population code；Appendix C.12 看 held-out steering。",
+        "物理路线：先区分 scalar magnitude 与 $S^1$ direction，再核对 random-subspace baseline 和 attention-ablation controls；“phase/emergence”在此是层深 crossover 的命名。",
+        "机制路线：证据由弱到强是 probe decodability、linear subspace geometry、attention ablation、held-out probe steering。最关键的下一步是把 intervention 连接到模型自身 prediction/rollout，而非只改变另一个 probe。"
+      ]
+    }
+  ],
+  "evidence_refs": [
+    "paper.pdf pp. 1–4, Table 1, Sections 1–4 and Figure 1: model scope, representation hypotheses, probing setup and emergence-zone result",
+    "paper.pdf pp. 4–8, Sections 5–7, Figures 2–4 and Table 2: motion decomposition, subspace claims, attention suppression and population code",
+    "paper.pdf pp. 8–10, Sections 8–10: cognitive-science interpretation, video-encoder scope and stated limitations",
+    "paper.pdf pp. 15–16, Appendices A–B: controlled datasets, physical parameters and 5-fold probe training",
+    "paper.pdf pp. 20–33, Appendices C.4–C.12, Tables 3–4 and Figures 18–24: overlap baselines, patch globalization, attention sweeps, dimension estimator and held-out steering",
+    "source PDF SHA-256 4d67a8c153154f3b854a6f1a4aeac5b874809c603bcd43e1c840564343105c8b",
+    "MinerU Markdown SHA-256 3300c54e97b5ec42e9091c7e8e5b358afa0d8cc11c22373b3b46292ee3ab7014",
+    "Evidence packet SHA-256 4b201de2789492a51c0e239430188a24fc619ead94195b97738237d2e3c59d7d",
+    "Evidence status: full-text verified; no independent reproduction performed."
+  ]
+}
