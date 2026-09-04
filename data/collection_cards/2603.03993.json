@@ -1,0 +1,197 @@
+{
+  "arxiv_id": "2603.03993",
+  "source_version": "v2",
+  "source_pdf": "https://arxiv.org/pdf/2603.03993v2",
+  "title_en": "Specialization of softmax attention heads: insights from the high-dimensional single-location model",
+  "title_zh": "Softmax 注意力头的专门化：高维单位置模型的启示",
+  "curation_status": "full_text_verified",
+  "card_standard_version": "2.4",
+  "audience_profile": "physics_ai_literate_physicist",
+  "paper_profile": "theory_numerics",
+  "style_reference": "physicist_daily_arxiv",
+  "provenance": {
+    "program": "Collection",
+    "catalog": "Paper Collection",
+    "catalog_record_id": "2603.03993",
+    "catalog_record_ids": ["2603.03993"],
+    "catalog_topic": "Mechanistic Interpretability",
+    "collection_date": "2026-08-30",
+    "sampled_at": "2026-08-31",
+    "selected_by": "ziming_mineru_serial_goal",
+    "sampling_seed": "not_applicable_source_complete",
+    "candidate_count": 464
+  },
+  "verified_metadata": {
+    "arxiv_id": "2603.03993",
+    "version": "v2",
+    "title": "Specialization of softmax attention heads: insights from the high-dimensional single-location model",
+    "authors": ["Margarita Sagitova", "O. Duranthon", "Lenka Zdeborová"],
+    "categories": ["cs.LG", "cond-mat.dis-nn"],
+    "primary_category": "cs.LG",
+    "published": "2026-03-04",
+    "updated": "2026-06-04",
+    "abstract": "A planted high-dimensional sequence-to-token model reduces multi-head attention learning to a few order parameters, revealing collective alignment followed by symmetry-breaking specialization and motivating a jointly normalized Bayes-softmax activation."
+  },
+  "equation_refs": [
+    {
+      "label": "planted single-location task",
+      "latex": "k_f^*\\sim\\mathcal N(0,D^{-1}I_D),\\quad \\hat k=\\sum_{f=1}^F\\theta_f k_f^*,\\quad X_\\ell\\sim\\mathcal N(\\delta_{\\ell\\epsilon}\\hat k,I_D),\\quad y=X_\\epsilon",
+      "role": "define one relevant token carrying a sequence-specific combination of global latent directions",
+      "symbols": {
+        "epsilon": "uniformly hidden relevant position",
+        "k_f_star": "global planted feature direction",
+        "theta": "sequence-specific latent coefficients",
+        "L_D_F": "sequence length, token dimension and fixed latent-feature count"
+      },
+      "evidence": "paper.pdf pp. 2–3, Equations (1)–(2)",
+      "interpretation": "这是可解的 teacher distribution：目标就是取回 planted token；它不是语言建模、分类或真实语义 circuit。"
+    },
+    {
+      "label": "high-dimensional order parameters",
+      "latex": "m_{hf}=k_h^\\top k_f^*,\\quad q_{hh'}=k_h^\\top k_{h'},\\quad p_{ff'}=(k_f^*)^\\top k_{f'}^*,\\quad r=(q-mp^{-1}m^\\top)^{1/2}",
+      "role": "separate learned feature alignment, head overlap and the component orthogonal to the planted feature span",
+      "symbols": {
+        "m": "head-to-feature magnetizations",
+        "q": "head Gram matrix",
+        "p": "teacher-feature Gram matrix",
+        "r": "matrix amplitude of directions outside the teacher span"
+      },
+      "evidence": "paper.pdf p. 4, Equation (8)",
+      "interpretation": "在 fixed H,F,L、D→∞ 且特定步长缩放下，宏观变量闭合；r 的正文矩阵平方根与附录个别 shorthand 不应混读。"
+    },
+    {
+      "label": "reduced population gradient flow",
+      "latex": "\\partial_\\tau m=-\\nabla_m\\widetilde{\\mathcal E}_\\sigma(m,r,b,v),\\qquad \\partial_\\tau r=-\\nabla_r\\widetilde{\\mathcal E}_\\sigma(m,r,b,v)",
+      "role": "replace high-dimensional key-vector learning by deterministic dynamics of a finite set of observables",
+      "symbols": {
+        "tau": "effective sample time proportional to N/D",
+        "E_tilde": "Gaussian-reduced population prediction error",
+        "b_v": "activation-dependent head bias and scale parameters",
+        "sigma": "standard softmax, softmax-1 or Bayes-softmax normalization"
+      },
+      "evidence": "paper.pdf pp. 4–5, Equations (9)–(10) and Proposition III.1",
+      "interpretation": "闭合要求 $\\gamma/N_b=o(D^{-1})$；它不是有限学习率、固定训练集 SGD 的普适动力学，也不自行描述触发破缺的有限维噪声分布。"
+    }
+  ],
+  "figure_refs": [
+    {
+      "label": "Figure 1 finite-SGD versus reduced dynamics",
+      "asset_path": "assets/collection-figures/2603.03993/figure-1-specialization-dynamics.webp",
+      "section": "核心结果与证据",
+      "role": "show the separated timescales of collective alignment and opposite-sign head specialization, alongside loss and orthogonal-norm dynamics",
+      "evidence": "paper.pdf p. 5, Figure 1; official source asset figures/compVsFlot_D10000_softmax_L10.pdf",
+      "alt_text": "Four panels compare finite-dimensional SGD dots with reduced-theory curves for loss, mean-feature alignment, symmetry-breaking specialization and orthogonal norm.",
+      "caption": "Figure 1：$D=10^4$ 的单个合成设置中，有限维 SGD 点与降维曲线吻合；约 $\\tau\\sim1$ 先集体对齐，约 $\\tau\\sim10$ 才沿第二特征分裂。无误差条，不能据此宣称真实 Transformer 中存在同一相变。",
+      "interpretation": "图直接支持该 toy model 的时间尺度分离与渐近轨迹，但不证明相变猜想、跨参数普适性或真实模型的功能性 head specialization。"
+    }
+  ],
+  "cover": {
+    "mode": "source_figure",
+    "asset_path": "assets/collection-figures/2603.03993/figure-1-specialization-dynamics.webp",
+    "label": "Figure 1 specialization dynamics",
+    "visual_type": "trajectory",
+    "evidence": "paper.pdf p. 5, Figure 1; official source vector figure",
+    "alt_text": "Theory curves and finite-SGD measurements reveal collective alignment followed by delayed head splitting.",
+    "caption": "序参量动力学中的集体对齐与延迟对称性破缺；这是 planted 单层模型，不是实网机制测量。",
+    "selection_rationale": "The four-panel source figure is the clearest quantitative bridge between high-dimensional order-parameter theory and the claimed staged specialization."
+  },
+  "sections": [
+    {
+      "title": "作者信息",
+      "paragraphs": [
+        "作者为 Margarita Sagitova、O. Duranthon 与 Lenka Zdeborová，来自 EPFL Statistical Physics of Computation Laboratory。",
+        "本站核验 arXiv:2603.03993v2：v1 提交于 2026-03-04，v2 更新于 2026-06-04；主分类 cs.LG、交叉分类 cond-mat.dis-nn，PDF 34 页。",
+        "Collection 来源为刘子鸣网站的 Mechanistic Interpretability 条目。"
+      ]
+    },
+    {
+      "title": "研究问题",
+      "paragraphs": [
+        "多头注意力为何先表现得几乎相同，随后才分工？冗余头为何持续存在？不同 normalization 能否让无用头真正“关掉”？论文在一个可解的高维 single-location regression 中研究这些问题。",
+        "作者把每个 head 当作 committee machine 的一个可交换单元，用 feature magnetization、head overlap 和正交幅度描述 SGD；专门化对应 head-permutation symmetry 的自发破缺。",
+        "主要结论是先有 $\\Theta(D)$ 样本尺度的共同平均方向学习，再在附加条件下出现更慢的 specialization；Bayes-softmax 在有限离散 latent support 上具有表达 Bayes estimator 的构造。真实 Transformer 的机制解释仍是待检验类比。"
+      ]
+    },
+    {
+      "title": "背景",
+      "paragraphs": [
+        "任务包含 L 个 D 维 Gaussian tokens，只有随机位置 $\\epsilon$ 的 token 带有 planted mean，监督目标就是恢复该 token。attention 因而承担全部预测功能。",
+        "所谓 multi-head attention 只有一层、identity values 和各头 uniform averaging；没有 learned query/output projection、residual、MLP、normalization block、depth 或真正 token-to-token self-attention。",
+        "统计物理语言中，$m_{hf}$ 是 head 对 planted direction 的序参量。所有 heads 同方向运动是 permutation-symmetric manifold；不同 heads 获得相反或不同投影才是 symmetry breaking。",
+        "“phase transition”必须同时说明控制极限与 order parameter。本文的 sharp onset 是关于 D→∞ 后 escape time 的 conjecture，而非已证明 free-energy nonanalyticity。"
+      ]
+    },
+    {
+      "title": "给物理学家的 AI 导读",
+      "paragraphs": [
+        "可以把 H 个 heads 看成具有置换对称性的 committee units。初期 population drift 只看见 $\\mathbb E\\theta$，故 heads 集体对齐；协方差在与均值正交的方向造成不稳定模，有限 D 初始化/SGD 噪声提供微小扰动，随后被放大。",
+        "$m,q,r$ 的闭合类似用少量宏观量替代 D 维微观自由度。好处是可解析；代价是极限固定 H、F、L，并把训练推到近 population gradient flow，不能覆盖宽度同时增长、长上下文或有限步长噪声。",
+        "sequential specialization 类似从一个 saddle 逃到另一个 saddle，但论文只对初始 Hessian 排序给出解析支撑；后期 head allocation 依赖 landscape intuition、数值积分与初值。",
+        "Bayes-softmax 用所有 heads 和 positions 的联合分母，让低置信头贡献趋近零。它在该 architecture 中修正 uniform head averaging 强制注入噪声的问题；真实 Transformer 的 learned output projection 已可能重新加权或消除这类冗余。"
+      ]
+    },
+    {
+      "title": "模型与方法",
+      "paragraphs": [
+        "每个 sequence 先从 F 个全局 Gaussian spikes 形成 $\\hat k=\\sum_f\\theta_f k_f^*$，再把它植入随机 relevant token；其余 tokens 为 isotropic Gaussian noise，label 为 relevant token 本身。",
+        "预测器对每个 head 用 key $k_h$ 产生位置 scores，再平均 H 个 head outputs。作者比较 headwise standard softmax、可降低总质量的 softmax-1，以及跨 heads/positions 联合归一化的 B-softmax。",
+        "SGD 每步使用 fresh iid batch；随机 keys 的尺度为 $D^{-1/2}$。在 fixed H,F,L 和 $\\gamma/N_b=o(D^{-1})$ 下，$m,r,b,v$ 收敛到 reduced population-loss gradient flow。",
+        "实验包括 finite-D SGD 与 reduced flow、若干 planted coefficient distributions、activation/head-count sweeps、100-run onset scaling，以及把 centered MNIST digits 当 planted spike 的 detection variant。"
+      ]
+    },
+    {
+      "title": "核心结果与证据",
+      "paragraphs": [
+        "非零 $\\mathbb E\\theta$ 时，heads 在 effective time $\\Theta(1)$ 共同对齐平均信号，正文对应总样本超过 $\\Theta(D)$；若均值为零，deterministic flow 会留在零 magnetization，需 finite-D asymmetry 才能离开。",
+        "在正交协方差非退化、均值与初始化足够小等条件下，projected alignments 在 $\\Theta(\\log D)$ 时间变为 O(1)，至少两个 heads 相差 O(1)；正文把 onset 关联到 $\\Theta(D\\log D)$ 样本以上。附录更弱的 escape bound 只给常数概率和 $O(D^{1+2\\zeta}\\log D)$ 上界，不能替代 sharper claim。",
+        "Figure 1 使用 $D=10^4,L=10,H=2,F=2,\\nu_1=\\nu_2=2,\\eta=1$：loss、均值对齐、第二方向 head splitting 与 orthogonal norm 的 dots/curves 一致，是 reduced dynamics 的有限维 sanity check。",
+        "局部 Hessian 预测协方差较大 eigenmode 先增长，head-space 中与 all-ones 向量正交的 modes 负责分裂。later saddle-to-saddle 顺序与最终分配不是同等级 theorem。",
+        "作者 conjecture：用 $\\log(\\sqrt D/\\eta)$ 重标 specialization time 后，threshold onset 随 D 增大集中；附录用 100 runs 支持趋势，但 threshold、有限 D 和局部线性区都会影响分布。",
+        "离散 $P_\\theta$ 有 H 个 support points 时，把每个 support point 配给一个 B-softmax head 可代入得到 Bayes estimator；图中 trained loss 在 H 足够大时接近 Bayes risk。该构造证明 expressivity，不是任意初始化 SGD 全局收敛定理。",
+        "standard softmax 在 latent law 同时给相反区域有限概率的特定条件下不能把无关 heads 关闭；softmax-1/B-softmax 在 tested synthetic settings 与 MNIST-spike detection 中误差更低。MNIST 仍是 Gaussian distractors 中找 digit patch，不是分类或 ViT。"
+      ]
+    },
+    {
+      "title": "有效性与局限",
+      "paragraphs": [
+        "理论极限固定 H、F、L 而 D→∞；现代模型的 head 数、sequence length、latent complexity 与 depth 可能随 width 改变，结论不覆盖这些联合极限。",
+        "SGD closure 需要 vanishing effective step；恰恰是 finite-D initialization/batch noise 触发 symmetry breaking。deterministic flow 与 stochastic escape/sample complexity 是两个层次，不能混成一个证明。",
+        "相变是明示 conjecture。弱恢复 lemma 标题称 high probability，但证明得到 $\\Theta(1)$ probability；正文 $D\\log D$ 叙述也强于附录通用上界，因此应保留 claim ceiling。",
+        "后期 sequential specialization 依赖 heuristic landscape 与 numerical integration，且 final head split 随 initialization 变化；“anisotropy alone”在例子中常由刻意分离 eigenvalues 实现，简并时可同时专门化。",
+        "B-softmax 最优构造假定 latent support/probabilities 可被表示。Bayes integrand 暗示 $b_h=\\log P_\\theta(\\theta^h)-\\|\\theta^h\\|^2/2$，但 Proposition IV.1 打印成乘积形式；源文内部不一致，卡片不采用精确 bias 公式。",
+        "representational equality 不保证 SGD 找到构造参数；五次运行的曲线不构成全局优化保证。continuous $P_\\theta$ 的 discretization error、所需 H 与维数 scaling 也未界定。",
+        "多数数值是对 reduced population loss 的 Monte Carlo integration，并复用 $10^5$ samples；主图通常无 error bars。它验证内部渐近描述，不是对真实数据 head emergence 的独立验证。",
+        "uniform head averaging 使冗余头必然注入 variance；真实 attention 有 learned values/output projection、residual mixing 与多层补偿。故不能由此推出标准 softmax 在实际 Transformer 中普遍次优或应直接剪头。"
+      ]
+    },
+    {
+      "title": "复现与资源",
+      "paragraphs": [
+        "复现 Figure 1 时固定 D/L/H/F、coefficient law、$\\eta$、$N_b=D$、$\\gamma=0.02$，用 empirical initial $m,r$ 启动 reduced flow；报告多 seeds 的 trajectory residual 与 onset distribution，而非只叠一条曲线。",
+        "分别检验三条链：population ODE closure、finite-D stochastic escape、threshold-defined transition concentration；对 D、batch、step、threshold 与 initialization 做 scaling collapse 和 sensitivity analysis。",
+        "Bayes-softmax 实验先按 Bayes-estimator integrand 独立推导 bias，并向作者核实 Proposition IV.1 排印；对 discrete/continuous supports 报 approximation error、H scaling 和 optimization failure rate。",
+        "bundled code 提升可审计性，但 README 写 att_comparison.py，archive 实为 att_comparaison.py；MNIST NumPy 数据需另取，也缺完整 environment lock、hardware 与全图 seed ledger。",
+        "若研究真实模型，应预注册 operational specialization：对 head permutation、output projection 与 downstream causal effect 均稳健，并用 ablation/path patching 验证功能，而不只比较 attention maps。"
+      ]
+    },
+    {
+      "title": "阅读指南",
+      "paragraphs": [
+        "快速路线：pp. 2–4 看 planted task、minimal attention 与 order parameters；pp. 5–7 看两阶段动力学；pp. 7–9 看 B-softmax 与 activation comparisons。",
+        "物理路线：把 Proposition III.1、局部 Hessian、stochastic escape 与 phase-transition conjecture 分开阅读；关注 fixed-parameter high-D limit 与对称性破缺触发源。",
+        "AI 路线：持续对照真实 Transformer 缺失的 query/value/output projection、residual、MLP、norm 与 depth；MNIST 图是 detection spike，不是 vision model。",
+        "批判路线：重点核对附录 escape 概率、$D\\log D$ claim、late-stage heuristic、B-softmax bias 矛盾与 expressivity/optimization 混淆。"
+      ]
+    }
+  ],
+  "evidence_refs": [
+    "paper.pdf pp. 2–5 and appendix pp. 11–17: planted single-location model, minimal attention, order parameters, reduced population dynamics and stochastic-escape assumptions",
+    "paper.pdf pp. 5–7 and appendix pp. 26–28: unspecialized/specialization timescales, local Hessian ordering, transition conjecture and finite-D simulations",
+    "paper.pdf pp. 7–9 and appendix: Bayes-softmax expressivity, softmax misspecification conditions, activation comparisons, pruning and MNIST-spike detection",
+    "source PDF SHA-256 abb72368fd959f0b2c5b5032d21688280c62405b2d04b81cd82b04a9c8a32147",
+    "official arXiv v2 source archive SHA-256 0424ea058ce2d30be96942fcbc2d09a8d6d44418b8896b715907fd4a754434fd",
+    "MinerU Markdown SHA-256 89f2bdccc1e073517c3cbea83db9586bb183425f01afcb72315a6a5f33457303",
+    "Evidence packet SHA-256 6b77c292f5f7860942663abf1aafa267a1f7edb6bb01b9854c9d4f253ab26677",
+    "Evidence status: full text, rendered pages, official TeX, figure and bundled code verified against latest arXiv v2; high-D/fixed-size, vanishing-step, stochastic-escape probability, conjectured transition, heuristic late specialization, Bayes-bias inconsistency, expressivity-versus-optimization, simulation-statistics and real-transformer extrapolation boundaries recorded; no independent reproduction performed."
+  ]
+}

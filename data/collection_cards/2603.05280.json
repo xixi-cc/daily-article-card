@@ -1,0 +1,184 @@
+{
+  "arxiv_id": "2603.05280",
+  "source_version": "v1",
+  "source_pdf": "https://arxiv.org/pdf/2603.05280v1",
+  "title_en": "Layer by layer, module by module: Choose both for optimal OOD probing of ViT",
+  "title_zh": "逐层、逐模块：为 ViT 的 OOD 探测同时选择层与模块",
+  "curation_status": "full_text_verified",
+  "card_standard_version": "2.4",
+  "audience_profile": "physics_ai_literate_physicist",
+  "paper_profile": "ai_empirical",
+  "style_reference": "physicist_daily_arxiv",
+  "provenance": {
+    "program": "Collection",
+    "catalog": "Paper Collection",
+    "catalog_record_id": "2603.05280",
+    "catalog_record_ids": ["2603.05280"],
+    "catalog_topic": "Mechanistic Interpretability",
+    "collection_date": "2026-08-30",
+    "sampled_at": "2026-08-31",
+    "selected_by": "ziming_mineru_serial_goal",
+    "sampling_seed": "not_applicable_source_complete",
+    "candidate_count": 464
+  },
+  "verified_metadata": {
+    "arxiv_id": "2603.05280",
+    "version": "v1",
+    "title": "Layer by layer, module by module: Choose both for optimal OOD probing of ViT",
+    "authors": ["Ambroise Odonnat", "Vasilii Feofanov", "Laetitia Chapel", "Romain Tavenard", "Ievgen Redko"],
+    "categories": ["cs.CV", "cs.LG", "stat.ML"],
+    "primary_category": "cs.CV",
+    "published": "2026-03-05",
+    "updated": "2026-03-05",
+    "abstract": "Across layers and eight internal locations of one ImageNet-21k-pretrained ViT-Base, linear-probe accuracy often peaks before the final block and frequently at the feedforward activation on selected downstream shifts."
+  },
+  "equation_refs": [
+    {
+      "label": "ViT block probe locations",
+      "latex": "x'_{\\ell}=x_{\\ell-1}+\\operatorname{MHA}(\\operatorname{LN1}(x_{\\ell-1})),\\qquad x_{\\ell}=x'_{\\ell}+\\operatorname{FC2}(\\operatorname{GeLU}(\\operatorname{FC1}(\\operatorname{LN2}(x'_{\\ell}))))",
+      "role": "locate LN1, MHA, RC1, LN2, FC1, Act, FC2 and RC2 within each pre-norm transformer block",
+      "symbols": {
+        "x_l": "residual-stream output RC2 of block l",
+        "FC1": "feedforward expansion from d to 4d",
+        "Act": "GeLU output in 4d",
+        "FC2": "compression from 4d back to d"
+      },
+      "evidence": "paper.pdf p. 2 and appendix p. 8, architecture description and Figure 2",
+      "interpretation": "Act/FC1 probes see 4d coordinates while most other sites see d；相同 logistic-regression family 因而并非等容量比较。"
+    },
+    {
+      "label": "oracle layer-module summary",
+      "latex": "A^*_{s,c}=\\max_{\\ell\\in\\{1,\\ldots,12\\}} A_{s,c,\\ell}",
+      "role": "formalize Table 1 as the best reported accuracy over layers for each dataset and module",
+      "symbols": {
+        "s": "downstream dataset or domain/corruption row",
+        "c": "one of eight internal module locations",
+        "l": "ViT block index",
+        "A": "CLS-token L-BFGS linear-probe top-1 accuracy"
+      },
+      "evidence": "paper.pdf p. 3, Table 1 and its stated aggregation rule",
+      "interpretation": "如果 layer/module 用同一 test accuracy 选取，$A^*$ 是跨 12 depths 的 oracle maximum；论文未给独立 validation-only selection rule。"
+    }
+  ],
+  "figure_refs": [
+    {
+      "label": "Figure 3 layer-by-module OOD probing",
+      "asset_path": "assets/collection-figures/2603.05280/figure-3-layer-module-ood-probing.webp",
+      "section": "核心结果与证据",
+      "role": "compare RC2, FC2, Act and LN2 accuracy profiles across depth for four downstream datasets",
+      "evidence": "paper.pdf p. 4, Figure 3; official source asset figures/linear_probing_components.pdf",
+      "alt_text": "Four panels plot ViT linear-probe accuracy versus layer for RC2, FC2, feedforward activation and LN2 on Flowers102, Cifar10, Contrast and Speckle Noise.",
+      "caption": "Figure 3：在四个下游数据上同时扫描 depth 与 module。两个选定 corruption 中 Act 在中间层达峰、末层下降，FC2 下降更明显；无 uncertainty bands，横向“shift 增强”顺序不是独立测量。",
+      "interpretation": "图支持 dataset-conditioned probing pattern；它不能区分 shift、task difficulty、pretraining overlap、feature dimension 或 fine-tuning efficacy 的作用。"
+    }
+  ],
+  "cover": {
+    "mode": "source_figure",
+    "asset_path": "assets/collection-figures/2603.05280/figure-3-layer-module-ood-probing.webp",
+    "label": "Figure 3 layer-module profiles",
+    "visual_type": "comparison",
+    "evidence": "paper.pdf p. 4, Figure 3; official source vector figure",
+    "alt_text": "Layerwise linear-probe curves differ strongly by ViT module and downstream dataset.",
+    "caption": "ViT 内部不同层与模块的线性可读出性；这是 probe association，不是 causal circuit 证据。",
+    "selection_rationale": "The source figure directly combines the two decision axes in the title and exposes both intermediate-layer peaks and module-dependent declines."
+  },
+  "sections": [
+    {
+      "title": "作者信息",
+      "paragraphs": [
+        "作者为 Ambroise Odonnat、Vasilii Feofanov、Laetitia Chapel、Romain Tavenard 与 Ievgen Redko，来自 Noah's Ark Lab、Inria、42.com、L'Institut Agro/IRISA 与 Univ. Rennes 2/IRISA。",
+        "本站核验 arXiv:2603.05280v1：提交于 2026-03-05；分类 cs.CV、cs.LG、stat.ML，PDF 11 页；论文注明接收于 ICLR 2026 CAO Workshop。",
+        "Collection 来源为刘子鸣网站的 Mechanistic Interpretability 条目。"
+      ]
+    },
+    {
+      "title": "研究问题",
+      "paragraphs": [
+        "冻结 pretrained ViT 后，线性分类器应读最终 block，还是较早 layer？同一 block 内又应读 residual、LayerNorm、attention，还是 FFN activation？",
+        "作者对一个 ImageNet-21k pretrained ViT-Base 的 12 blocks×8 locations 做 CLS-token logistic probes，在 11 个 downstream rows 上观察：许多较“shifted-looking”的数据在中间层和 Act 输出上更高。",
+        "结果是 probe-selection empirical study：证明某处 label information 线性可访问，不证明 ViT 实际用它、该 module 导致预测，或找到了 mechanistic circuit。"
+      ]
+    },
+    {
+      "title": "背景",
+      "paragraphs": [
+        "linear probing 固定 encoder，只拟合浅线性 readout，用来比较 representation 的 task-specific linear separability。它不等于 information richness，更不等于 causal usage。",
+        "ViT block 的 RC2 是常见输出；但 FFN 内部先由 FC1 把 d=768 扩到 4d=3072，经 GeLU，再由 FC2 压回 d。不同位置的维度、归一化与 residual mixing 都不同。",
+        "OOD/ID 应明确“相对什么分布”。论文把 frozen ImageNet-21k encoder 用于 target data 称 OOD，又把对每个 target fine-tuned 的另一 encoder 曲线称 ID sanity check；两曲线同时改变 representation。",
+        "robustness 通常比较同一系统在 matched ID/OOD 下的性能下降并报告 uncertainty。这里的高 OOD accuracy 是 separability，不足以独立界定 robustness。"
+      ]
+    },
+    {
+      "title": "给物理学家的 AI 导读",
+      "paragraphs": [
+        "把每个 layer/module 的 representation 当作不同 coarse-graining map，linear probe 测某 label direction 是否仍可由一个 hyperplane 分开。它类似 susceptibility measurement，而不是系统真实动力学中的 response channel。",
+        "沿 depth 的峰值可以来自 feature specialization 与信息丢失，也可以来自 readout dimension、normalization、finite-sample regularization 或 target/pretraining overlap；单条 accuracy profile 无法反演唯一机制。",
+        "作者把 frozen–fine-tuned gap 作为 shift proxy，同时用该 gap 支持 shift 导致最终层退化，形成部分 circularity。需要独立 divergence、controlled corruption severity 或固定 encoder 的 matched distributions 才能识别原因。",
+        "Table 1 对每个 dataset/module 取 12 layers 最大值，相当于 many-body scan 后报告 ground-state energy；若没有 held-out selection，极值会因 multiple comparisons 乐观偏移。"
+      ]
+    },
+    {
+      "title": "模型与方法",
+      "paragraphs": [
+        "唯一 backbone 是 86M 参数 ViT-Base：12 blocks、width 768、FFN width 3072，supervised pretraining on ImageNet-21k。未比较其他规模、patch size、self-supervised objectives 或 architectures。",
+        "每 block 记录 LN1、MHA、RC1、LN2、FC1、Act、FC2、RC2；pool CLS token 后以 L-BFGS logistic regression 训练 linear probe。probe regularization、tolerance、feature normalization 与选择规则未报告。",
+        "11 rows 包括 Cifar10/100、五种 severity-5 Cifar10-C corruptions、DomainNet Clipart/Sketch、Flowers102 与 Pets；其中多个 rows 共享 source images 或 dataset family。",
+        "部分数据使用 deterministic 80/20 split；fine-tuning 有 20% validation、四 learning rates、三 seeds，并用 validation-best checkpoint。central probe curves/Table 1 则未给 repeats 或 uncertainty。"
+      ]
+    },
+    {
+      "title": "核心结果与证据",
+      "paragraphs": [
+        "RC2 在 Table 1 的 11 rows 中有 10 行低于某个其他 module，只在 Flowers102 与最佳值并列；但这是各 module 跨 layers 的 oracle maximum，不是预先固定 probe point 的结果。",
+        "按可见表复算，Act 在 7/11 行最高：Contrast 80.20%、Gaussian Noise 61.85%、Motion Blur 71.15%、Snow 69.30%、Speckle Noise 63.35%、Clipart 49.34%、Sketch 34.90%。",
+        "Act 并非总优：Cifar100/Pets 由 LN2 以 69.97%/89.51% 领先，Flowers102 的 LN2/RC2 并列 96.62%，Cifar10 由 FC1 以 92.28% 领先。",
+        "Figure 3 中 Contrast 与 Speckle Noise 的 Act 在中后段峰值后下跌，FC2 下跌更强；LN2/RC2 更平缓但未必最佳。图无 error bars，不能判断小 gap 的 ranking stability。",
+        "正文称 FC2 在“12 datasets 中 10 个”最低；但 Table 1 只有 11 rows，复算 FC2 unique-lowest 为 8/11，Act 在 Cifar10、Flowers102、Pets 最低。这是可复现的 source contradiction。",
+        "fine-tuned target reference 的 test accuracy 从 Flowers102 99.15±0.05%、Cifar10 99.02±0.02% 到 DomainNet Sketch 71.30±0.26%；这些衡量 target adaptation，不是 distribution-shift magnitude。"
+      ]
+    },
+    {
+      "title": "有效性与局限",
+      "paragraphs": [
+        "“distribution shift 是 culprit”不由设计识别：dataset identity、task difficulty、ImageNet-21k overlap、augmentation、target sample size、corruption type 与 fine-tuning efficacy 同时变化。",
+        "所谓 ID curve 来自 target-fine-tuned encoder，不是同一 encoder 上的 in-distribution evaluation；把两者之差当 shift strength 又用于解释曲线，存在 circular proxy。",
+        "best layer/module 若用 reported test accuracy 选择就是 oracle；实际 unlabeled deployment 不知道 shift，也没有本文提供的 label-free selector。建议“Act provided correct layer is known”保留了核心选择难题。",
+        "11 rows 非独立 task replicates：五个 Cifar10-C severity-5 variants 共享 CIFAR source，Clipart/Sketch 同属 DomainNet。按 wins 计数会高估证据广度。",
+        "central probe results 无 CIs、paired tests 或 repeated split/seeds；fine-tuning 的三 seed uncertainty 不会自动传递到 frozen probe rankings。小至百分之零点几的差异不能判显著。",
+        "Act/FC1 是 4d representation，其他多数是 d；线性分类器参数数增至四倍，若 regularization/sample complexity 不匹配，会产生 capacity/fairness advantage。",
+        "FC1 expansion、GeLU filtering、FC2 compression 和 FFN key-value memory 都是 post-hoc hypotheses。没有 intervention、geometry/information metric 或 mediation test 区分这些解释。",
+        "只有一个 checkpoint/backbone。结论未覆盖 scale、patch size、pretraining objective、pooling token、LayerNorm placement、residual design、其他 modalities 或 nonlinear probes。"
+      ]
+    },
+    {
+      "title": "复现与资源",
+      "paragraphs": [
+        "锁定 ImageNet-21k ViT-Base checkpoint、代码 commit、all splits/preprocessing；补齐 probe C/regularization、feature standardization、L-BFGS tolerance、class weighting 与 convergence criteria。",
+        "为每个 dataset×layer×module 用相同 repeated splits/seeds，保存 logits；用 nested validation 选择 layer/module，最终只在 held-out test 评一次，并与 oracle maximum 分开报告。",
+        "公平比较 d 与 4d sites：匹配 probe parameter budget、PCA/random projection 到同维数、regularization sweep 与 sample-size curves，检验 Act win 是否来自宽度。",
+        "对 shift 做 controlled axis：同一 CIFAR10 corruption 类型扫描 severity 0–5，固定 encoder/readout protocol；另用独立 feature-distribution distance，而非 fine-tuning gap 排序。",
+        "机制验证需干预：交换/消融 Act dimensions、用等范数 random subspaces、测 CKA/information/invariance，并检查变化是否中介 frozen OOD accuracy，而非只看 decodability。",
+        "论文给出 GitHub URL 但未 pin commit；arXiv bundle 仅含 TeX/figures。复现应记录 commit SHA、environment lock、hardware、dataset checksums 与 seed ledger。"
+      ]
+    },
+    {
+      "title": "阅读指南",
+      "paragraphs": [
+        "快速路线：p. 2 看 ViT locations/probe setup；p. 3 看 Figure 1 与 Table 1；p. 4 看 Figure 3 和作者机制解释；appendix pp. 8–9 看 splits/fine-tuning。",
+        "物理路线：把 depth/module profile 看成 observable，不把 correlation 反演成 microscopic mechanism；关注独立 control parameter 与 matched reference 是否存在。",
+        "AI 路线：区分 linear accessibility、model usage、causal circuit 与 robustness；注意 RC2/Act 的维数和 residual context 不同。",
+        "批判路线：重点检查 shift proxy circularity、target-adapted ID reference、oracle maxima、unknown probe hyperparameters、4d confound、uncertainty absence 与 10/12 source error。"
+      ]
+    }
+  ],
+  "evidence_refs": [
+    "paper.pdf pp. 2–4: one ViT-Base setup, eight internal module locations, L-BFGS linear probing, layerwise curves, Table 1 oracle maxima and Figure 3",
+    "paper.pdf appendix pp. 8–9: ViT architecture, dataset splits, preprocessing, target fine-tuning grid, three-run reference results and checkpoint selection",
+    "official TeX core: explicit 11-dataset list and conflicting sentence claiming FC2 is lowest on 10 of 12; visible Table 1 recomputed as 8 of 11",
+    "source PDF SHA-256 9828fc896cadf9b68023daf4347de99cb633408853e102b11b2e2423bd66d71a",
+    "official arXiv v1 source archive SHA-256 3eb46719194727f682e9cc477d57b27516ffc4cd8cdf63ff9ffbf72b93c64046",
+    "MinerU Markdown SHA-256 1b59eda6f9cd9b21b8b1093c1fe7f96ed574e1bcdfb4f7f13b8cced8fcfd4b84",
+    "Evidence packet SHA-256 0bb42d6da069f22137bc7e28ac325f3ef53f78561627136acde56e12bfbca316",
+    "Evidence status: full text, rendered pages and official TeX verified against latest arXiv v1; decodability-versus-causality, unmeasured shift, target-adapted ID proxy, oracle selection, correlated rows, unknown probe uncertainty/hyperparameters, 4d capacity, post-hoc mechanism and source-count contradiction boundaries recorded; no independent reproduction performed."
+  ]
+}

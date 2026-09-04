@@ -1,0 +1,198 @@
+{
+  "arxiv_id": "2603.05143",
+  "source_version": "v3",
+  "source_pdf": "https://arxiv.org/pdf/2603.05143v3",
+  "title_en": "Feature Resemblance: Towards a Theoretical Understanding of Analogical Reasoning in Transformers",
+  "title_zh": "特征相似性：迈向 Transformer 类比推理的理论理解",
+  "curation_status": "full_text_verified",
+  "card_standard_version": "2.4",
+  "audience_profile": "physics_ai_literate_physicist",
+  "paper_profile": "theory_experiment",
+  "style_reference": "physicist_daily_arxiv",
+  "provenance": {
+    "program": "Collection",
+    "catalog": "Paper Collection",
+    "catalog_record_id": "2603.05143",
+    "catalog_record_ids": ["2603.05143"],
+    "catalog_topic": "Representation Learning",
+    "collection_date": "2026-08-30",
+    "sampled_at": "2026-08-31",
+    "selected_by": "ziming_mineru_serial_goal",
+    "sampling_seed": "not_applicable_source_complete",
+    "candidate_count": 464
+  },
+  "verified_metadata": {
+    "arxiv_id": "2603.05143",
+    "version": "v3",
+    "title": "Feature Resemblance: Towards a Theoretical Understanding of Analogical Reasoning in Transformers",
+    "authors": ["Ruichen Xu", "Wenjing Yan", "Ying-Jun Angela Zhang"],
+    "categories": ["cs.CL", "cs.LG"],
+    "primary_category": "cs.CL",
+    "published": "2026-03-05",
+    "updated": "2026-05-25",
+    "abstract": "In a controlled orthogonal-token task, the paper connects analogical property transfer to alignment of value-transformed entity features, analyzes curriculum and bridge effects, and compares the predicted ordering with synthetic and templated language experiments."
+  },
+  "equation_refs": [
+    {
+      "label": "constructed analogical transfer",
+      "latex": "(a_i,r_1)\\mapsto b_i,\\quad (a_i',r_1)\\mapsto b_i,\\quad (a_i',r_2)\\mapsto c_i\\quad\\Longrightarrow\\quad (a_i,r_2)\\mapsto c_i",
+      "role": "define the held-out property-transfer conclusion from three families of premises",
+      "symbols": {
+        "a_i_a_i_prime": "paired entities intended to acquire similar learned features",
+        "r_1_r_2": "two categorical relations",
+        "b_i_c_i": "categorical attributes or output labels",
+        "N": "number of independent constructed entity tuples"
+      },
+      "evidence": "paper.pdf pp. 2–3, task and dataset definition",
+      "interpretation": "这里的 analogy 是有限标签上的 property transfer；论文明确指出类比结论可能事实错误，因此 zero error 不是 factuality 或通用 reasoning 指标。"
+    },
+    {
+      "label": "minimal transformer-style predictor",
+      "latex": "\\alpha(Z,X)=\\operatorname{softmax}\\!\\left(\\frac{X^\\top Z X_{-1}}{\\sqrt d}\\right),\\quad o_1=VX\\alpha,\\quad f_k=\\frac{\\lambda}{m}\\sum_{l=1}^m\\langle w_{k,l},o_1\\rangle",
+      "role": "combine two-token attention, a learned value map and a linear feature/readout layer",
+      "symbols": {
+        "Z": "merged query-key matrix",
+        "V": "learned value transformation whose geometry is analyzed",
+        "W": "class-specific linear feature/readout weights",
+        "d_m": "embedding dimension and readout width"
+      },
+      "evidence": "paper.pdf pp. 3–4, Equations (1)–(3)",
+      "interpretation": "定理中的 model 是二 token、正交符号与单层 abstraction；不能把 V-space cosine 直接等同 pretrained LLM 的语义表征。"
+    },
+    {
+      "label": "feature resemblance order parameter",
+      "latex": "R_i=\\cos(Va_i,Va_i')=\\frac{\\langle Va_i,Va_i'\\rangle}{{\\|Va_i\\|\\,\\|Va_i'\\|}}",
+      "role": "measure whether entities sharing a training label become aligned after the value map",
+      "symbols": {
+        "R_i": "feature-resemblance cosine for one entity pair",
+        "V_a": "value-space representation of an entity token",
+        "one_minus_o_one": "asymptotic near-perfect alignment claimed in successful regimes",
+        "o_one": "asymptotically vanishing alignment claimed in failure regimes"
+      },
+      "evidence": "paper.pdf pp. 4–7, feature-alignment propositions and sequential/two-hop theorems",
+      "interpretation": "R 与 test success 在构造中共同变化，但相关性不证明在真实模型中必要、充分或因果；不同实验还使用了不同 representation slices。"
+    }
+  ],
+  "figure_refs": [
+    {
+      "label": "Figure 1 layerwise feature resemblance",
+      "asset_path": "assets/collection-figures/2603.05143/figure-1-layerwise-feature-resemblance.webp",
+      "section": "核心结果与证据",
+      "role": "visualize increasing same-label penultimate representation cosine across depth in a deep linear model and an orthogonal-data GPT-2 experiment",
+      "evidence": "paper.pdf physical p. 13, Figure 1; official source asset Figure/linear_multi.png",
+      "alt_text": "Two curves show same-label feature cosine increasing over layers for a deep linear network and GPT-2 trained on orthogonal synthetic data.",
+      "caption": "Figure 1：在 deep linear network 与 orthogonal-data GPT-2 中，同标签表示的 cosine 随深度上升。图无 error bars、seed 数和曲线协议；它不证明 deep-linear theorem 适用于 Transformer 或自然语言。",
+      "interpretation": "该图支持“深度可能积累同标签对齐”的定性 motif，但不是跨架构定理验证，也没有建立对齐对推理成功的因果效应。"
+    }
+  ],
+  "cover": {
+    "mode": "source_figure",
+    "asset_path": "assets/collection-figures/2603.05143/figure-1-layerwise-feature-resemblance.webp",
+    "label": "Figure 1 layerwise feature resemblance",
+    "visual_type": "data_plot",
+    "evidence": "paper.pdf physical p. 13, Figure 1; official source PNG",
+    "alt_text": "Layerwise cosine similarity rises for examples with the same label in two controlled models.",
+    "caption": "同标签表示随深度靠近的定性曲线；缺少不确定度，不能当作普适深度定律。",
+    "selection_rationale": "The only bundled author figure directly displays the paper's central representation-geometry motif and its cross-model empirical analogy."
+  },
+  "sections": [
+    {
+      "title": "作者信息",
+      "paragraphs": [
+        "作者为 Ruichen Xu、Wenjing Yan 与 Ying-Jun Angela Zhang，来自香港中文大学信息工程系。",
+        "本站核验 arXiv:2603.05143v3：v1 提交于 2026-03-05，v3 更新于 2026-05-25；主分类 cs.CL、交叉分类 cs.LG，PDF 46 页。",
+        "Collection 来源为刘子鸣网站的 Representation Learning 条目。"
+      ]
+    },
+    {
+      "title": "研究问题",
+      "paragraphs": [
+        "若两个实体在某关系下共享同一标签，训练能否让它们的内部表示靠近，从而把另一个关系的属性从一个实体迁移到另一个？论文把这种几何机制称为 feature resemblance。",
+        "作者在 random orthonormal symbols 的二 token task 中证明：特定 joint 或 similarity-first 训练可使 $Va_i$ 与 $Va_i'$ 对齐并在构造测试集上零错误；reverse curriculum 或缺少 identity bridge 的 two-hop 设置保持随机水平。",
+        "controlled GPT-2、end-to-end one-layer 与 templated pretrained-model 实验显示相似排序，但没有证明 feature resemblance 是真实 LLM 一般类比、事实推理或多跳推理的唯一机制。"
+      ]
+    },
+    {
+      "title": "背景",
+      "paragraphs": [
+        "representation similarity 常用 cosine、CKA 或 probing 描述，但几何共变不自动提供 causality。这里最关键的是：训练数据如何同时约束 representation geometry 与 readout。",
+        "所有 entity/relation/attribute embeddings 在定理中组成随机正交系；输入只有 entity 与 relation 两个 tokens，输出是单个 categorical label。这消除了语言歧义，也切掉了自然语义的大部分难点。",
+        "joint training 中 similarity premises 被重复 $\\kappa$ 次，故改变的不只是 curriculum，还改变样本权重。有限时证明需要 $\\kappa$ 随参数增长；$\\kappa=1$ 的解释诉诸 infinite-time max-margin bias，并非同一定理。",
+        "sequential theorem 采用 layerwise freezing：先训练 Z,V 时固定 W，再固定 Z,V 训练 W。第二阶段因此不能修复 V-space geometry，这会结构性放大“先学什么”的效应。"
+      ]
+    },
+    {
+      "title": "给物理学家的 AI 导读",
+      "paragraphs": [
+        "把 $R_i=\\cos(Va_i,Va_i')$ 看作 order parameter：shared-label constraints 像 ferromagnetic coupling，使两个 entity representations 朝同一方向排列；readout 再利用这个低能几何完成 transfer。",
+        "但这里没有自然产生的 phase：orthogonal tokens、重复权重、初始化和冻结 schedule 都是外部指定。改变 schedule 等于改变 Hamiltonian/可动自由度，而不只是改变退火路径。",
+        "deep-linear theorem 给出同标签 cosine 随层数近似不减，但允许 $\\widetilde O(d^{-0.1})$ 误差，并依赖 identity initialization、随机正交输入、每标签 O(1) 样本与独立的维数条件。",
+        "在真实 LLM 中 residual stream、attention 与 MLP 多路径共同编码信息。同一个 cosine 上升可能来自共享频率、模板或 label，而非执行 analogy 的 causal subspace；需 activation intervention 才能区分。"
+      ]
+    },
+    {
+      "title": "模型与方法",
+      "paragraphs": [
+        "训练集含 similarity premises、attribution premises 与可选 identity bridge；测试只包含未见的 $(a_i,r_2)\\mapsto c_i$。two-hop variant 额外使用 $(b_i,r_3)\\mapsto b_i$ bridge。",
+        "minimal model 用 $Z=K^\\top Q$ 做两 token attention，V 变换 attended representation，宽度 m 的线性 features W 产生 class logits，以 cross-entropy 训练。",
+        "理论要求 $d\\ge C\\max\\{\\log(4md/\\delta),m^3nN^2/\\lambda^6\\}$，并有很小初始化、学习率及多项式 iteration 条件；这些不是 pretrained LMs 已测量满足的属性。",
+        "实验从 N=100 的 synthetic setup 扩展到 12-layer/12-head GPT-2、ReLU end-to-end controls，以及 Gemini 3 Pro 按六个关系模板生成的自然语言 data 上微调 Llama/Qwen。"
+      ]
+    },
+    {
+      "title": "核心结果与证据",
+      "paragraphs": [
+        "joint training 在足够大 $\\kappa$ 下给 low loss、$R_i=1-o(1)$ 和 constructed analogical set 零错误。similarity→attribution 顺序同样成功；attribution→similarity 得 $R_i=o(1)$ 与 error $1-1/N$。",
+        "two-hop theorem 中，显式 identity relation bridge 带来 $Va_i,Vb_i$ 对齐与零错误；无 bridge 时 cosine 为 o(1)、error 为 $1-1/N$。这证明的是该 encoding/architecture/training rule 的可识别性缺口，不是所有 multi-hop reasoning 都必需 identity examples。",
+        "controlled GPT-2 主表中 joint 的 loss/similarity/success 为 0.0077±0.0001、0.995±0.0006、100%；late-attribution 为 0.7983±0.027、100%；late-similarity 为 0.4326±0.012、0.7%±0.471%。源文未报告这些均值标准差的 run 数。",
+        "GPT-2 two-hop 有/无 bridge 的 feature similarity 为 0.9642±0.0007/0.016±0.006，success 为 99.7%±0.5%/0%；仍是 synthetic orthogonal-token evidence。",
+        "appendix 的 end-to-end one-layer、ReLU、$\\kappa=1$ control 得 joint/late-attribution/late-similarity success 100%/100%/0.67%±0.47%，说明排序不只由主定理 freezing 产生，但不能消除理论混杂或建立普适规律。",
+        "templated natural-language 中，Llama-3-1B 三种 schedule 的 similarity/success 为 0.8174/73%、0.7990/86%、0.6431/53%；Qwen-2.5-1.5B 为 0.8488/85%、0.7971/72%、0.7455/33%。均无不确定度。",
+        "Qwen-3-8B 的 raw full-representation cosine 分离不佳，作者转而保留 relation-token MLP top 20% activations，得到 0.3785/84%、0.3757/75%、0.2704/34%；该 post-hoc statistic 与小模型 cosine 不可直接横比。"
+      ]
+    },
+    {
+      "title": "有效性与局限",
+      "paragraphs": [
+        "zero/random error 是有限构造测试集在强 large-d、small-init、small-step 和 iteration assumptions 下的结论，不是任意数据与优化器的普遍行为。",
+        "joint regime 同时改变 presentation 与 $\\kappa$ weighting，不能归因于“同时看见”本身；小 $\\kappa$ finite-time guarantee 尚缺。",
+        "reverse curriculum 时 Z,V 冻结，后来的 similarity data 无权改变所测 representation；end-to-end control 是有价值的经验补充，但未给对应机制证明。",
+        "A→S failure theorem 在 TeX 中缺 label，后文引用的 label 实际落在 no-alignment proposition，且 statement 自指为 theorem；应按可见内容引用，不机械写 theorem number。",
+        "feature cosine 与 success 的共变不证明 causal necessity/sufficiency。identity bridge 的必要性也只对该 minimal architecture 成立，真实模型还可借 residual paths、多层、tied embeddings 或 retrieval 组合。",
+        "自然语言数据由单一模型按六个模板生成；论文未给 dataset size、split independence、duplicate/leakage audit、人类事实核验、generation variability 或精确 checkpoint revisions。",
+        "synthetic 表缺 run/seed 数，自然语言表无 error bars。entity tuples 不是独立训练复现实验；Figure 1 也缺 sample/seed/uncertainty 与完整协议。",
+        "8B 结果在 raw metric 不理想后换成 top-20% MLP statistic，存在 researcher degree of freedom；必须用 held-out metric definition 和多个 sparsity thresholds 复核。"
+      ]
+    },
+    {
+      "title": "复现与资源",
+      "paragraphs": [
+        "先复现 orthogonal synthetic task：固定 tuple split、embedding basis、$\\kappa$、freeze/unfreeze schedule、initialization 与所有 seeds，逐阶段保存 Z/V/W、cosine 与 logits。",
+        "做 matched factorial controls：joint versus sequential、相同累计 exposure、$\\kappa=1$ versus theorem scaling、frozen versus end-to-end；这样把 curriculum、sample weighting 与 trainable-parameter set 分开。",
+        "对 feature resemblance 做 causal test：在保持 logits norm 的条件下旋转/交换 aligned subspace，或 patch Va_i' 到 Va_i；同时报告 success 的变化和不相关 control pairs。",
+        "自然语言实验需发布 prompts、generated corpus、dedup/leakage checks、train/test entity separation、exact model revisions、tokenization、seeds、per-example predictions 与 bootstrap CIs。",
+        "预注册 representation metric、layer/token/module 与 top-k fraction；报告 raw cosine、CKA、centered controls 和随机-label baseline，避免只保留最能分 schedule 的后验统计。",
+        "arXiv v3 source 只有 TeX 和一张图，无 executable code、dataset、environment lock、checkpoint hashes 或 seed ledger，当前只能重建论文逻辑，不能按文档一键复现。"
+      ]
+    },
+    {
+      "title": "阅读指南",
+      "paragraphs": [
+        "快速路线：pp. 2–4 看 task/model；pp. 4–7 看 joint、curriculum 与 two-hop theorems；pp. 8–9 看 controlled/natural-language tables；physical p. 13 看 Figure 1。",
+        "物理路线：把 feature cosine 当 order parameter，同时追踪哪些 degrees of freedom 在每阶段被冻结；另读 pp. 7–8 的 deep-linear theorem，不与 Transformer theorem 合并。",
+        "AI 路线：区分 synthetic perfect analogy、natural-language templated transfer、factuality 与 open-ended reasoning；区分 V-space、final hidden state 与 top-20% MLP activation。",
+        "批判路线：重点检查 $\\kappa$ weighting、layer-freezing confound、A→S label error、unknown run counts、data/checkpoint absence 与 post-hoc metric switch。"
+      ]
+    }
+  ],
+  "evidence_refs": [
+    "paper.pdf pp. 2–7: constructed analogical-transfer data, minimal transformer abstraction, strong asymptotic assumptions, joint/sequential/two-hop results and feature-alignment claims",
+    "paper.pdf pp. 7–9 and physical p. 13: separate deep-linear theorem, controlled GPT-2 and templated-language experiments, main quantitative tables and Figure 1",
+    "paper.pdf appendices pp. 11–12 and 44–45: end-to-end kappa=1 controls, finite-time weighting boundary, hyperparameters and natural-language templates",
+    "source PDF SHA-256 958c29165ff0e45909a79137d128a513996ee6a468973ba75c61392c95a437f0",
+    "official arXiv v3 source archive SHA-256 d92666fbc392ed06baa4a616d6159b1138bd8413dedfea1751fe5f7531f73156",
+    "MinerU Markdown SHA-256 c1f712041a543d9b27de4c773b553efb53bed013f27212e10067dede6a261506",
+    "Evidence packet SHA-256 174f303c24f8224d0380e280ba2b469d522796ffe70a62e2ca51e3c897873e3f",
+    "Evidence status: full text, rendered pages and official TeX verified against latest arXiv v3; orthogonal-task scope, kappa weighting, layer-freezing confound, deep-linear separation, A-to-S label ambiguity, run/seed uncertainty, templated-data limits, checkpoint absence, post-hoc top-20% statistic and causal/general-reasoning boundaries recorded; no independent reproduction performed."
+  ]
+}
