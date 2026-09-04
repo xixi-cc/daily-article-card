@@ -1,0 +1,130 @@
+{
+  "arxiv_id": "2510.18315",
+  "source_version": "v2",
+  "source_pdf": "https://arxiv.org/pdf/2510.18315v2",
+  "title_en": "Higher Embedding Dimension Creates a Stronger World Model for a Simple Sorting Task",
+  "title_zh": "更高嵌入维数为简单排序任务形成更强的世界模型",
+  "curation_status": "full_text_verified",
+  "card_standard_version": "2.4",
+  "audience_profile": "physics_ai_literate_physicist",
+  "paper_profile": "ai_empirical",
+  "style_reference": "physicist_daily_arxiv",
+  "provenance": {
+    "program": "Collection", "catalog": "Paper Collection", "catalog_record_id": "2510.18315",
+    "catalog_record_ids": ["2510.18315"], "catalog_topic": "Machine Learning",
+    "collection_date": "2026-08-30", "sampled_at": "2026-08-31",
+    "selected_by": "ziming_mineru_serial_goal", "sampling_seed": "not_applicable_source_complete", "candidate_count": 464
+  },
+  "verified_metadata": {
+    "arxiv_id": "2510.18315", "version": "v2",
+    "title": "Higher Embedding Dimension Creates a Stronger World Model for a Simple Sorting Task",
+    "authors": ["Brady Bhalla", "Honglu Fan", "Nancy Chen", "Tony Yue YU"],
+    "categories": ["cs.LG", "cs.AI"], "primary_category": "cs.LG",
+    "published": "2025-10-21T05:51:02Z", "updated": "2026-07-14T04:39:37Z",
+    "abstract": "Across 475 small PPO-trained Transformers performing adjacent swaps, task accuracy often saturates at low embedding dimension while an attention-based global-order metric continues improving until roughly dimension 30. High-accuracy agents also choose swaps aligned with the largest adjacent attention-score gaps, offering a toy mechanistic pattern but not evidence for general-purpose world models."
+  },
+  "equation_refs": [
+    {
+      "label": "Pre-softmax attention score",
+      "latex": "W=QK^{\\top}/\\sqrt{d_k}",
+      "role": "define the matrix whose final row is tested for a monotonic encoding of token order",
+      "symbols": {"Q": "queries", "K": "keys", "d_k": "query/key dimension", "W": "pre-softmax attention logits as named in the paper"},
+      "evidence": "paper.pdf p. 3, Section 3.3",
+      "interpretation": "The analysis concerns pre-softmax scores, not normalized attention probabilities. Their ordering can encode token rank even though the agent was trained only to choose a swap."
+    },
+    {
+      "label": "Normalized non-inversion score",
+      "latex": "S_{\\mathrm{ord}}=1-\\frac{\\#\\{(i,j):i<j,\\ (\\pi_i-\\pi_j)(W_{\\ell i}-W_{\\ell j})<0\\}}{\\binom{n}{2}}",
+      "role": "measure agreement between the input token ordering and the final attention-score row",
+      "symbols": {"pi": "numeric rank of input tokens", "W_ell": "last row of attention scores", "n": "sequence length"},
+      "evidence": "paper.pdf pp. 4–5, metric 2",
+      "interpretation": "One means perfect rank agreement and one-half is random-order expectation. This reconstructed compact formula expresses the paper's verbal metric definition."
+    },
+    {
+      "label": "Difference-based swap predictor",
+      "latex": "\\widehat i\\in\\operatorname{TopK}_i\\,|W_{\\ell,i+1}-W_{\\ell,i}|",
+      "role": "test whether the actor selects an adjacent swap at one of the largest score discontinuities",
+      "symbols": {"i": "adjacent transposition index", "TopK": "indices of the k largest signed/extreme adjacent gaps", "W_ell": "global-order score row"},
+      "evidence": "paper.pdf p. 5, metric 3; pp. 7–8, Table 2 and Figure 3",
+      "interpretation": "Top-1/top-2 agreement is a behavioral signature of the proposed circuit, not a causal ablation of the value projection and actor head."
+    }
+  ],
+  "figure_refs": [{
+    "label": "Figure 2", "asset_path": "assets/collection-figures/2510.18315/figure-2-order-encoding.webp",
+    "section": "核心结果与证据", "role": "show internal order fidelity continuing to improve after task accuracy has largely saturated",
+    "evidence": "paper.pdf p. 6, Figure 2",
+    "alt_text": "长度 6 和 8 的近满分 agent 中，attention 最后一行与 token 全局次序的 non-inversion 比例随 embedding dimension 上升，在约 30 维后趋于平台。",
+    "caption": "更高 embedding dimension 未必继续提高最终准确率，却使 attention 中的全局排序表征更一致。",
+    "interpretation": "The plot conditions on near-perfect agents, especially excluding many failed length-8 runs, so it characterizes successful solutions rather than the full training distribution."
+  }],
+  "cover": {
+    "mode": "source_figure", "asset_path": "assets/collection-figures/2510.18315/figure-2-order-encoding.webp",
+    "label": "Figure 2", "visual_type": "data_plot", "evidence": "paper.pdf p. 6, Figure 2",
+    "alt_text": "全局次序编码指标随嵌入维数增长并在约 30 维饱和。",
+    "caption": "相同任务分数可由内部几何质量不同的策略实现；只看 accuracy 会漏掉这种差别。",
+    "selection_rationale": "It captures the paper's strongest nontrivial claim: representation quality keeps changing after observable task performance plateaus."
+  },
+  "sections": [
+    {"title": "作者信息", "paragraphs": [
+      "Brady Bhalla、Honglu Fan、Nancy Chen、Tony Yue YU；作者来自 Caltech、Google DeepMind 与 Cornell University。",
+      "本站核验 arXiv:2510.18315v2：初版提交于 2025-10-21，v2 更新于 2026-07-14；主分类 cs.LG，另含 cs.AI，共 14 页。",
+      "Collection 来源为刘子鸣网站的 Machine Learning 条目。"
+    ]},
+    {"title": "研究问题", "paragraphs": [
+      "如果很小的 Transformer 已能完成排序，继续增加 embedding dimension 还改变什么？论文不只看成功率，而是追踪网络是否形成一种可解释、跨整个序列的内部排序坐标。",
+      "环境只允许相邻交换，agent 每步选一个 transposition。作者观察到成功网络常用 attention 最后一行给 token 排序，再根据相邻 score gap 选择交换位置。",
+      "主要结论是 performance plateau 与 representation plateau 不同：准确率较早饱和，内部 order fidelity 和 decision-rule consistency 继续改善到约 30 维。"
+    ]},
+    {"title": "背景", "paragraphs": [
+      "toy algorithmic task 的价值是 ground truth 清楚：所有 permutation 可枚举，正确 swap 与全局顺序都有严格定义，便于把内部变量和已知算法结构比较。",
+      "PPO 是 clipped policy-gradient 方法。这里 actor 选交换，critic 估计回报；reward 只在完全排好时为 +1，否则每步 −0.001，并未直接监督全局排序表示。",
+      "论文称该内部表示为 minimalist world model。更保守的术语是 task-sufficient latent coordinate：它编码当前 permutation 的一个结构属性，但没有预测环境转移或多种未来。"
+    ]},
+    {"title": "给物理学家的 AI 导读", "paragraphs": [
+      "可把最后一行 attention logits 看成每个 token 的标量势。若它随数值 rank 单调，局部离散梯度 W_{i+1}−W_i 就标出最值得交换的键。",
+      "non-inversion score 像序参量：0.5 对应随机排列，1 对应完全有序。embedding dimension 增加时序参量上升，即使宏观 observable——accuracy——已接近平台。",
+      "这说明相同 reward 可对应多个 microscopic policies：低维策略可能靠局部 heuristic，高维策略更常落入规则整齐的 basin。论文没有测 basin volume 或因果稳定性，因此这仍是经验图景。",
+      "所谓“更强 world model”只在长度 6/8、确定性完整可观测排序中成立；不能外推为更大语言模型一定拥有更真实的世界表征。"
+    ]},
+    {"title": "模型与方法", "paragraphs": [
+      "模型是 decoder-only GPT-style 的极简 Transformer：learned token/position embeddings、1–2 layers、single-head self-attention、无复杂 MLP，最后连接 actor/critic heads。",
+      "embedding dimension 从 2 到 128，sequence length 为 6 或 8，共训练 475 agents、多 seeds；状态空间分别为 6!=720 与 8!=40,320。",
+      "PPO learning rate 2.5×10^-4、discount 0.99，训练 1M/2M/10M timesteps，H100 GPU；episode 在排好或 1000 次交换后结束。",
+      "三个指标为所有 permutation 上 correct-swap accuracy、attention-last-row 的 normalized non-inversion，以及实际动作落在相邻 gap top-k 的比例。"
+    ]},
+    {"title": "核心结果与证据", "paragraphs": [
+      "embedding dimension>16 时，长度 6 有 99.2% agents 达到 100% accuracy；长度 8 只有 37.4%。Table 1 的平均 accuracy 也受 training steps 影响：10M 时 95.5%/90.7%。",
+      "在近满分 agents 中，order score 随维数升高，到约 30 维平台：长度 6 约 87%，长度 8 约 78%。低准确率 length-8 agents 仅约 57%，接近随机 50%。",
+      "高准确率 agents 的实际动作与最大 gap 的 top-1 匹配为 76.2%/76.8%，top-2 为 94.0%/92.5%；失败的 length-8 agents top-2 仅 54.1%。",
+      "order score 与 top-1 score 的线性关系 R²=0.56，说明两种 signature 中等相关。没有 intervention 破坏该行或 gap computation，因此尚不能确认这是唯一或必要 circuit。",
+      "Figure 2 的 95% confidence intervals 展示 successful agents 的均值变化；由于先按 near-perfect accuracy 筛选，它不能回答高维是否提高所有随机初始化的 circuit-emergence 概率。"
+    ]},
+    {"title": "有效性与局限", "paragraphs": [
+      "只研究长度 6/8、adjacent swaps、确定性 reward 和 1–2 layer single-head 模型；模型和任务都与现代 LLM 相距很大。",
+      "多数机制分析条件化于 perfect/near-perfect agents，尤其排除了大量 length-8 failures，产生 survivor selection；总体训练成功率与成功解内部结构必须分开。",
+      "attention logits 的单调性和动作 gap 对齐是 observational signatures。缺少 causal scrubbing、activation patching、projection ablation 或替代等价 circuit 搜索。",
+      "embedding dimension 同时改变参数数、优化 landscape 与表示自由度；未做 matched-parameter control，不能单独归因于“世界模型容量”。",
+      "更整齐的 latent representation 是否带来 OOD 长度泛化、噪声 robustness 或 transfer 只是 discussion 中的推测，本文未测。"
+    ]},
+    {"title": "复现与资源", "paragraphs": [
+      "论文未给代码 URL。复现需枚举所有 720/40,320 permutations，公开每个 embedding dimension、seed、timesteps 的成功与失败 runs，而非只保留 near-perfect subset。",
+      "对最后一行 attention logits 做置乱、投影移除与小扰动，检查 accuracy/top-k 是否因果下降；再寻找不同内部表示但同样满分的 counterexample agents。",
+      "加入 length extrapolation（train 6, test 8/10）、noisy tokens、arbitrary swaps 和 supervised imitation，对比是否仍出现同一 order coordinate。",
+      "本站核验 v2 PDF SHA-256：e472f60f9bfe430a02c6b2e2e52efa0a35a9a0c5d4a818740927c6c40f9dd930。Evidence status: full-text verified; no independent reproduction performed."
+    ]},
+    {"title": "阅读指南", "paragraphs": [
+      "最短路径：model setup → three metrics → Figures 1–4 → failure modes → limitations。",
+      "物理路径：把 attention score 当势、adjacent gap 当离散梯度、non-inversion 当序参量，并检查 conditioning bias。",
+      "AI 路径：区分 task success、circuit signature 和 causal mechanism；重点查看 length-8 failed runs 被如何处理。"
+    ]}
+  ],
+  "evidence_refs": [
+    "paper.pdf pp. 3–5: model, PPO environment, dimensions and three evaluation metrics",
+    "paper.pdf pp. 5–8: accuracy, order encoding, swap-rule consistency and correlations",
+    "paper.pdf pp. 8–9: interpretation, applicability and stated limitations",
+    "paper.pdf pp. 12–14: PPO parameters and example attention/loss visualizations",
+    "source PDF SHA-256 e472f60f9bfe430a02c6b2e2e52efa0a35a9a0c5d4a818740927c6c40f9dd930",
+    "Evidence packet SHA-256 7bd76fb58d0a5bdd3ae3ff6579c282515809f92a3e9133d29e2e9e42d01aabdb",
+    "Evidence status: full-text verified; no independent reproduction performed."
+  ]
+}

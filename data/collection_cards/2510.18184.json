@@ -1,0 +1,131 @@
+{
+  "arxiv_id": "2510.18184",
+  "source_version": "v3",
+  "source_pdf": "https://arxiv.org/pdf/2510.18184v3",
+  "title_en": "ActivationReasoning: Logical Reasoning in Latent Activation Spaces",
+  "title_zh": "ActivationReasoning：在潜在激活空间中进行逻辑推理",
+  "curation_status": "full_text_verified",
+  "card_standard_version": "2.4",
+  "audience_profile": "physics_ai_literate_physicist",
+  "paper_profile": "ai_empirical",
+  "style_reference": "physicist_daily_arxiv",
+  "provenance": {
+    "program": "Collection", "catalog": "Paper Collection", "catalog_record_id": "2510.18184",
+    "catalog_record_ids": ["2510.18184"], "catalog_topic": "Machine Learning",
+    "collection_date": "2026-08-30", "sampled_at": "2026-08-31",
+    "selected_by": "ziming_mineru_serial_goal", "sampling_seed": "not_applicable_source_complete", "candidate_count": 464
+  },
+  "verified_metadata": {
+    "arxiv_id": "2510.18184", "version": "v3",
+    "title": "ActivationReasoning: Logical Reasoning in Latent Activation Spaces",
+    "authors": ["Lukas Helff", "Ruben Härle", "Wolfgang Stammer", "Felix Friedrich", "Manuel Brack", "Antonia Wüst", "Hikaru Shindo", "Patrick Schramowski", "Kristian Kersting"],
+    "categories": ["cs.LG", "cs.AI"], "primary_category": "cs.LG",
+    "published": "2025-10-21T00:21:04Z", "updated": "2026-05-11T08:31:20Z",
+    "abstract": "ActivationReasoning maps sparse-autoencoder features to thresholded concepts, applies user-defined propositional rules with forward chaining, and steers LLM hidden activations using inferred concepts. Experiments on two 8B/9B backbones report large gains on logical, abstraction and safety tasks, but the system receives explicit rule structures and depends on curated concept labels, thresholds and SAE quality."
+  },
+  "equation_refs": [
+    {
+      "label": "Concept representation",
+      "latex": "c=(n_c,r_c,\\tau_c),\\qquad a(c,t)=r_c(E(h_t))",
+      "role": "turn a semantic name into a measurable activation score and decision threshold",
+      "symbols": {"n_c": "human-readable concept name", "r_c": "single-, multi- or relational SAE-feature detector", "tau_c": "soft activation threshold", "h_t": "LLM hidden state at token t"},
+      "evidence": "paper.pdf p. 4, Section 3.1",
+      "interpretation": "The discrete proposition is not native to the LLM; it is supplied by a detector learned or curated from labeled activations."
+    },
+    {
+      "label": "Thresholded activation matrix",
+      "latex": "A_{\\mathrm{local}}[c,t]=[a(c,t)-\\tau_c]_+,\\qquad A_{\\mathrm{global}}[c]=[\\operatorname{Agg}_t a(c,t)-\\tau_c]_+",
+      "role": "convert token- or sequence-level SAE evidence into propositions for the rule engine",
+      "symbols": {"A_local": "token-level evidence", "A_global": "aggregated sequence evidence", "Agg": "mean by default", "bracket_plus": "positive part"},
+      "evidence": "paper.pdf p. 5, Eq. (4)",
+      "interpretation": "Thresholding creates an auditable interface, but false detections propagate through deductive rules and aggregation can erase positional context."
+    },
+    {
+      "label": "Latent steering update",
+      "latex": "h'=h+\\alpha\\,\\frac{(\\mathrm{SAE}_D[r_c]\\odot w)\\lVert h\\rVert_2}{\\lVert\\mathrm{SAE}_D[r_c]\\rVert_2}",
+      "role": "feed inferred propositions back into generation by promoting or suppressing decoder directions",
+      "symbols": {"alpha": "steering strength", "SAE_D": "SAE decoder directions", "w": "feature weighting vector", "h": "current model activation"},
+      "evidence": "paper.pdf p. 6, Eq. (5)",
+      "interpretation": "The final answer reflects both the base model and an external intervention; improved exact match is not evidence that the unmodified model internally executed the same proof."
+    }
+  ],
+  "figure_refs": [{
+    "label": "Figure 1", "asset_path": "assets/collection-figures/2510.18184/figure-1-activationreasoning-pipeline.webp",
+    "section": "模型与方法", "role": "show the complete detect–reason–steer computation path",
+    "evidence": "paper.pdf p. 2, Figure 1",
+    "alt_text": "上半部由标注序列提取 SAE 概念字典；下半部在推理序列中检测激活、执行预定义逻辑规则、生成扩展命题矩阵并送往下游任务。",
+    "caption": "AR 是显式 neuro-symbolic pipeline：LLM/SAE 提供感知命题，logic solver 做前向链，随后再以 latent steering 改变生成。",
+    "interpretation": "The diagram makes clear that reasoning is partly external symbolic computation and that rules and concept definitions are inputs to the system."
+  }],
+  "cover": {
+    "mode": "source_figure", "asset_path": "assets/collection-figures/2510.18184/figure-1-activationreasoning-pipeline.webp",
+    "label": "Figure 1", "visual_type": "schematic", "evidence": "paper.pdf p. 2, Figure 1",
+    "alt_text": "ActivationReasoning 从 SAE 概念检测到符号规则求解再到 steering 的三阶段流程。",
+    "caption": "连续激活先被离散为命题，再由显式规则组合；可审计性来自接口显式化，而非模型内部自动涌现。",
+    "selection_rationale": "It exposes every added component and prevents headline benchmark gains from being misread as a pure backbone-model improvement."
+  },
+  "sections": [
+    {"title": "作者信息", "paragraphs": [
+      "Lukas Helff、Ruben Härle、Wolfgang Stammer、Felix Friedrich、Manuel Brack、Antonia Wüst、Hikaru Shindo、Patrick Schramowski、Kristian Kersting；单位包括 TU Darmstadt、hessian.AI、MPI-Inf、Meta FAIR、Adobe Applied Research、DFKI 等。",
+      "本站核验 arXiv:2510.18184v3：初版提交于 2025-10-21，v3 更新于 2026-05-11；主分类 cs.LG，另含 cs.AI，共 24 页；已发表于 ICLR 2026。",
+      "Collection 来源为刘子鸣网站的 Machine Learning 条目。"
+    ]},
+    {"title": "研究问题", "paragraphs": [
+      "Sparse autoencoder 能从 LLM activation 中找出看似对应“桥”“红色”“仇恨”的 feature，但单个 feature 被动、可能 polysemous，也不会自动执行 A∧B→C。如何把这些连续信号变成可组合、可审计的推理接口？",
+      "ActivationReasoning（AR）先构造 concept dictionary，再将运行时 activation 阈值化为命题，交给 user-defined logic rules 做 forward chaining，最后用推得的概念 steering 原 LLM。",
+      "论文报告两个 backbone 上多任务大幅提升。正确读法是一个 neuro-symbolic system 的 end-to-end 效果，而不是未经外部规则的 LLM 自发形成了形式逻辑。"
+    ]},
+    {"title": "背景", "paragraphs": [
+      "SAE 用过完备稀疏字典重构 hidden states，希望每个 latent 更接近单一语义方向；现实中 feature 仍会多义、依赖上下文或漏掉高层概念。",
+      "symbolic forward chaining 从已激活事实反复应用 implication/conjunction/disjunction/negation，直到 fixed point。推导链清楚，但正确性受 proposition detection 和 rule base 完整性限制。",
+      "activation steering 沿 SAE decoder direction 加减 hidden state。它是干预而非只读解释：既可验证概念方向，也会改变模型后续生成分布。"
+    ]},
+    {"title": "给物理学家的 AI 导读", "paragraphs": [
+      "把 SAE 看成测量基：原始高维场 h 投影为稀疏 observables。阈值 τ_c 把连续读数 coarse-grain 成布尔变量；误报/漏报就是测量噪声。",
+      "logic solver 类似在这些 coarse variables 上施加确定的 constraint propagation。它不从 LLM dynamics 中自然导出，因此规则 provenance 与 concept calibration 和模型权重同样重要。",
+      "steering 更新像向状态加入外场。若输出改善，只说明 detector–solver–intervention 闭环有效；不能由此反推未受扰动系统本来就编码了完整 proof trajectory。",
+      "AR 的可审计优势是真实的：可以检查哪条 proposition 触发哪条 rule。但 audit trail 只在字典语义稳定、threshold 校准且规则无冲突时可靠。"
+    ]},
+    {"title": "模型与方法", "paragraphs": [
+      "concept c=(name, representation, threshold)。representation 可为单 SAE feature、多 feature 加权和，或浅 decision tree 表达 feature relations；自动提取使用 token labels 比较正负条件均值。",
+      "推理时生成 A_local 和 A_global，离散后交给命题逻辑引擎迭代到 fixed point 得 A′；再从 inferred concept 的 SAE decoder row 构造 steering vector。",
+      "backbone 为 Llama-3.1-8B + EleutherAI SAE（layer 23）和 Gemma-2-9B + Gemma Scope SAE（layer 20），均 greedy decoding。",
+      "任务为 PrOntoQA 1/3/5-hop、作者新建 Rail2Country explicit/simile、ProverQA easy/medium/hard，以及 BeaverTails 14 类 safety；规则、概念表示、阈值和 steering α 按任务配置。"
+    ]},
+    {"title": "核心结果与证据", "paragraphs": [
+      "PrOntoQA 上 AR-Llama 为 95.0/95.6/95.3%，AR-Gemma 三档均 93.5%；base 约 48–51%。5-hop 时 GPT-4o 66.4%、DeepSeek-R1-8B 64.4%。",
+      "Rail2Country Meta 用 simile 替代显式颜色：AR-Llama/Gemma 为 62.7/86.0%，base 为 29.7/25.7%。附录称 vanilla SAE 对这些 implicit color 的 detection 为 0%，AR 的复合表示恢复多数概念。",
+      "ProverQA hard 上 AR-Llama/Gemma 为 70.8/69.6%，列出的其他模型均低于 50%。但 AR 接收形式化 rule context，而普通 baseline 多从自然语言 context 自行解析。",
+      "BeaverTails overall balanced accuracy 从 base SAE 57.9% 提到 single 73.4%、multi 79.2%、relational 83.0%；某些 misinformation/unethical 类仍较弱。",
+      "Appendix E 的 normed instruct baseline 获得相同结构化规则的字符串版本，但没有同一个外部 solver/steering。它缩小 information mismatch，却仍不是 matched-compute/component-equivalent ablation。"
+    ]},
+    {"title": "有效性与局限", "paragraphs": [
+      "AR 的规则由人工或半自动定义，concept detector 需 token/sentence labels，多个任务使用验证集选择 features、threshold 与 steering α；这不是 zero-supervision reasoning。",
+      "与大模型/CoT 的比较改变了 information channel 和 computation graph：AR 获得规则形式、符号 solver 与 latent intervention，baseline 常需从 prose 自行抽取规则。",
+      "SAE feature 可能 polysemous、context-dependent 或缺失抽象概念；硬离散后，早期 detection error 会在 forward chaining 中级联，论文未给概率校准或 proof-level error propagation。",
+      "主要是 exact-match benchmark 与安全分类；Rail2Country 为作者构造，ProverQA 为 LLM-generated。开放知识、长上下文、矛盾规则、abduction/uncertainty 尚未测试。",
+      "系统在两个特定 8B/9B backbone 和预训练 SAE 上验证；所谓 model-agnostic 是接口设计主张，不是跨模态/大规模模型的实证结论。"
+    ]},
+    {"title": "复现与资源", "paragraphs": [
+      "代码与数据：https://github.com/ml-research/ActivationReasoning 。复现需锁定 backbone/SAE revision、attachment layer、top-k、threshold、representation type、rule base 与 steering α。",
+      "应分开报告 concept detection、logical proof validity、steering success 和 final exact match；只看末端答案无法定位收益来自哪一层。",
+      "增加 matched controls：相同 formal rules + external solver 但不 steering、oracle propositions、random SAE directions、natural-language rules + tool solver，以及不使用验证集手调。",
+      "本站核验 v3 PDF SHA-256：9c770ea5413d31a425d4b9e4d69d5361732d177a3fc8d00764fdea771b18b699。Evidence status: full-text verified; no independent reproduction performed."
+    ]},
+    {"title": "阅读指南", "paragraphs": [
+      "最短路径：Figure 1 → Eqs. (1)–(5) → Table 1 → Table 2 → Appendix A/E/H。",
+      "物理路径：按 measurement–coarse graining–constraint propagation–external field 四步检查误差流。",
+      "AI 路径：先画出 system boundary，区分 SAE detection、symbolic reasoning 和 LLM steering，再比较公平 baseline。"
+    ]}
+  ],
+  "evidence_refs": [
+    "paper.pdf pp. 2–6: pipeline, concept representations, activation matrices, rules and steering",
+    "paper.pdf pp. 7–10: reasoning and safety results in Tables 1–2",
+    "paper.pdf pp. 11–12: discussion and stated limitations",
+    "paper.pdf pp. 13–24: task-specific settings, runtime, normalized baselines and ablations",
+    "https://github.com/ml-research/ActivationReasoning",
+    "source PDF SHA-256 9c770ea5413d31a425d4b9e4d69d5361732d177a3fc8d00764fdea771b18b699",
+    "Evidence packet SHA-256 fa155085194c58fe0e293146511934ba750e5fce19015daa76dbf146b8e9ac40",
+    "Evidence status: full-text verified; no independent reproduction performed."
+  ]
+}
