@@ -28,7 +28,11 @@ def file_record(path: Path) -> dict[str, object]:
     }
 
 
-def valid_transition(current: str, destination: str) -> bool:
+def valid_transition(
+    current: str, destination: str, retry_blocked: bool = False
+) -> bool:
+    if retry_blocked:
+        return current == "blocked" and destination == "extracting"
     if destination == "blocked":
         return current not in {"card_installed", "blocked"}
     if current not in STATUS_ORDER or destination not in STATUS_ORDER:
@@ -43,6 +47,7 @@ def update_campaign(
     destination: str,
     artifacts: dict[str, Path],
     note: str,
+    retry_blocked: bool = False,
 ) -> dict[str, object]:
     campaign = json.loads(campaign_path.read_text(encoding="utf-8"))
     selection = campaign.get("selection")
@@ -53,7 +58,7 @@ def update_campaign(
         raise ValueError(f"expected one item for {card_id}, found {len(matches)}")
     item = matches[0]
     current = str(item.get("status", ""))
-    if not valid_transition(current, destination):
+    if not valid_transition(current, destination, retry_blocked):
         raise ValueError(f"invalid status transition {current!r} -> {destination!r}")
 
     timestamp = datetime.now(timezone.utc).isoformat()
@@ -107,6 +112,11 @@ def main() -> int:
     )
     parser.add_argument("--artifact", action="append", default=[])
     parser.add_argument("--note", default="")
+    parser.add_argument(
+        "--retry-blocked",
+        action="store_true",
+        help="allow only the explicit recovery transition blocked -> extracting",
+    )
     args = parser.parse_args()
 
     artifacts: dict[str, Path] = {}
@@ -126,6 +136,7 @@ def main() -> int:
         args.status,
         artifacts,
         args.note,
+        args.retry_blocked,
     )
     print(json.dumps(event, ensure_ascii=False))
     return 0

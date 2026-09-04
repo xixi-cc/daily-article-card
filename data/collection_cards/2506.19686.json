@@ -1,0 +1,150 @@
+{
+  "arxiv_id": "2506.19686",
+  "source_version": "v3",
+  "source_pdf": "https://arxiv.org/pdf/2506.19686v3",
+  "title_en": "From Memories to Maps: Mechanisms of In-Context Reinforcement Learning in Transformers",
+  "title_zh": "从记忆到地图：Transformer 上下文强化学习的机制",
+  "curation_status": "full_text_verified",
+  "card_standard_version": "2.4",
+  "audience_profile": "physics_ai_literate_physicist",
+  "paper_profile": "ai_empirical",
+  "style_reference": "physicist_daily_arxiv",
+  "provenance": {
+    "program": "Collection",
+    "catalog": "Paper Collection",
+    "catalog_record_id": "2506.19686",
+    "catalog_record_ids": ["2506.19686"],
+    "catalog_topic": "Machine Learning",
+    "collection_date": "2026-08-30",
+    "sampled_at": "2026-08-31",
+    "selected_by": "ziming_mineru_serial_goal",
+    "sampling_seed": "not_applicable_source_complete",
+    "candidate_count": 464
+  },
+  "verified_metadata": {
+    "arxiv_id": "2506.19686",
+    "version": "v3",
+    "title": "From Memories to Maps: Mechanisms of In-Context Reinforcement Learning in Transformers",
+    "authors": ["Ching Fang", "Kanaka Rajan"],
+    "categories": ["cs.AI"],
+    "primary_category": "cs.AI",
+    "published": "2025-12-01T21:56:32Z",
+    "abstract": "Humans and animals show remarkable learning efficiency, adapting to new environments with minimal experience. This capability is not well captured by standard reinforcement learning algorithms that rely on incremental value updates. Rapid adaptation likely depends on episodic memory—the ability to retrieve specific past experiences to guide decisions in novel contexts. Transformers provide a useful setting for studying these questions because of their ability to learn rapidly in-context and because their key-value architecture resembles episodic memory systems in the brain. We train a transformer to in-context reinforcement learn in a distribution of planning tasks inspired by rodent behavior. We then characterize the learning algorithms that emerge in the model. We first find that representation learning is supported by in-context structure learning and cross-context alignment. We next demonstrate that the reinforcement learning strategies developed by the model are not interpretable as standard model-free or model-based planning. Instead, in-context reinforcement learning is supported by caching intermediate computations within the model’s memory tokens, which are then accessed at decision time.",
+    "comment": "36 pages; v3 dated 2025-12-01"
+  },
+  "equation_refs": [],
+  "figure_refs": [
+    {
+      "label": "Figure 1",
+      "asset_path": "assets/collection-figures/2506.19686/figure-1-memory-map-tasks.webp",
+      "section": "模型与方法",
+      "role": "define the decision-pretraining interface and the two navigation task families",
+      "evidence": "paper.pdf p. 2, Figure 1",
+      "alt_text": "左侧展示由状态、动作、下一状态、奖励组成的上下文记忆进入 Transformer，并由查询状态产生动作；右侧展示不同随机感知编码和奖励位置的 5×5 网格与树迷宫训练、测试任务。",
+      "caption": "模型从离线探索轨迹的 transition tuples 和一个 query state 预测 oracle action；测试环境保留任务族结构，但换用未见的感知向量、奖励位置，树迷宫还使用未见的完整七层二叉树。",
+      "interpretation": "训练标签来自 oracle policy，因此这是 supervised decision pretraining / meta-RL，而不是模型在测试时通过梯度或在线 reward update 学习。"
+    }
+  ],
+  "cover": {
+    "mode": "source_figure",
+    "asset_path": "assets/collection-figures/2506.19686/figure-1-memory-map-tasks.webp",
+    "label": "Figure 1",
+    "visual_type": "schematic",
+    "evidence": "paper.pdf p. 2, Figure 1",
+    "alt_text": "上下文转移记忆、查询状态以及网格和树迷宫任务族的实验总览。",
+    "caption": "同一拓扑在不同任务中被随机感知向量重新标记；模型必须从当前上下文恢复结构、定位奖励并给出动作。",
+    "selection_rationale": "Figure 1 清楚交代输入、训练目标、任务间变化量和真正的测试分布，是理解后续表征与干预证据的必要入口。"
+  },
+  "sections": [
+    {
+      "title": "作者信息",
+      "paragraphs": [
+        "Ching Fang 与 Kanaka Rajan 来自 Harvard Medical School Department of Neurobiology 和 Harvard University Kempner Institute；Kanaka Rajan 为通讯作者。",
+        "本文使用 arXiv:2506.19686v3（PDF 标注 2025-12-01），主分类 cs.AI；全文 36 页。",
+        "Collection 来源为刘子鸣网站的 Machine Learning 条目；卡片依据 v3 PDF 核验实验条件、图号、干预逻辑和神经科学外推边界。"
+      ]
+    },
+    {
+      "title": "研究问题",
+      "paragraphs": [
+        "一个经过 meta-training 的 Transformer 能否只凭上下文中的探索轨迹，在感知编码与奖励位置都变化的新环境中快速形成导航策略？如果能，它使用的是 Q-learning 式 value propagation、显式 model-based rollout，还是其他记忆计算？",
+        "作者进一步问表征是否在上下文内恢复环境的潜在几何，并在不同随机感知编码的环境间对齐；这使人工模型成为提出 hippocampal–entorhinal computation 假设的受控对象。"
+      ]
+    },
+    {
+      "title": "背景",
+      "paragraphs": [
+        "标准 model-free RL 通过反复 temporal-difference update 缓慢传播 value；model-based planning 通常在决策时沿状态转移图搜索或 rollout。动物和 in-context learners 的少样本适应提示还可能存在把过去经历作为工作记忆直接计算的策略。",
+        "这里的 Transformer key–value cache 被当作 episodic-memory analogy：每个 context token 表示一个 transition (s,a,s',r)，query token 表示当前状态。层间更新不仅检索原始事件，还可把新计算的标签写回 memory-token representation。",
+        "论文区分 sensory code 与 latent structure。不同任务给同一或相关拓扑节点分配新的 10 维随机向量；若内部表征仍按网格坐标或树层级组织，就说明模型从经验中恢复了关系结构，而非记住像素或固定 state ID。"
+      ]
+    },
+    {
+      "title": "给物理学家的 AI 导读",
+      "paragraphs": [
+        "输入–状态–输出链为：随机探索得到的 transition sequence D 与 query state 进入一个 3 层 causal GPT-2-style Transformer；隐藏态分别驻留在 query token 和 memory tokens；输出是四个动作的概率。外部可观测量包括 normalized return、shortcut success、表征 kernel alignment、linear-decoding error、integrated-gradient attribution 和 attention-ablation 后的 loss 变化。",
+        "可把随机 sensory vectors 看作每个环境重新选择的微观坐标标签，而共享 maze topology 是待恢复的几何。随着 context 增长，不同 gauge-like 标签下对应节点的 hidden representations 对齐；但这里没有严格 gauge symmetry，相关性对齐只是经验表征指标。",
+        "“memory as computation” 的关键不是缓存保存了历史，而是 memory-token hidden states 跨层发生变化并携带派生量。网格中它们参与拼接局部转移、形成 Euclidean map；树中它们被逐层标记是否位于 root-to-reward critical path，query 最终只需读取相关标记。",
+        "机制证据有层级：linear probe 只说明信息可读；integrated gradients 提供相关归因；定向 attention masking 检验特定 token 对输出的必要性；限制最后一层只能看某类 token 是 sufficiency test。即便组合使用，它们仍不能唯一排除所有等价算法。"
+      ]
+    },
+    {
+      "title": "模型与方法",
+      "paragraphs": [
+        "decision-pretraining 把每个 task 写成 MDP。模型接收随机 policy 收集的离线 transitions，并以 supervised learning 预测 oracle policy 对 query state 的最优动作；测试时不更新参数，只改变 context。",
+        "第一类任务是 5×5 gridworld：transition graph 固定，感知编码 S 与 reward location R 跨任务变化。第二类是概率分支的 binary tree mazes：训练时 topology、编码与奖励都变化，测试使用完整 7-layer binary tree。两类 state 均用 10 维随机向量表示。",
+        "基础网络是 3 层、embedding dimension 512 的 causal GPT-2-style Transformer。context memory 排在 query 之前，符合因果读取；附录另测完全不相关感知编码、更宽 1024 维和 6 层模型。",
+        "行为基线为 tabular Q-learning 和 4 隐层 DQN，它们使用与模型同一 replay buffer 并训练到 TD error 收敛。表征分析包括 PCA、centered kernel alignment、跨环境同节点 Pearson correlation 与 ridge linear probes；机制分析用 20 步 integrated gradients 和逐层 attention masking。"
+      ]
+    },
+    {
+      "title": "核心结果与证据",
+      "paragraphs": [
+        "Figure 2：held-out gridworld 中，模型见到一次 reward 后已接近最大 return；即使 context 只展示绕路，超过 60% 的测试模拟会选择未直接经历的 shortcut。tree maze 中也在少量 reward exposure 后快速提升，并优于在同一 buffer 上训练至收敛的 Q-learning 与 DQN。",
+        "Figure 3：context 增长时，query-token hidden states 从无序点云变成与 grid geometry 或 tree hierarchy 相符的结构；对 latent graph kernel 的 alignment 增强。gridworld 的结构对 reward ablation 较稳健，tree maze 则受 reward 更强调制。",
+        "Figure 4：跨环境感知向量不同，但相同 latent node 的 representation correlation 随 context 上升并超过不同节点；gridworld 的对应位置和 tree 的 root/leaves 对齐最强。这支持共享结构抽象，而非固定 sensory memorization。",
+        "Figure 5 与附录干预：决策时高 attribution 主要位于 query 附近和 goal 附近的 memories，中间路径 token 的 attention ablation 对 loss 影响很小；同时长期有用的 value gradient 难以从表征中可靠解码。因此作者反对标准 value propagation 或决策时完整 rollout。",
+        "Figure 6：网格 query representation 到第二层已可把 XY 位置解码到 error<1，并能解码 query-to-goal angle；屏蔽靠近 query 或 goal 的 memories 会在关键层损害输出。作者据此提出“恢复欧氏地图—计算方向—选动作”的机制。",
+        "Figure 7：树迷宫 memory tokens 可解码是否位于 root-to-reward path 及 inverse action；path 标签随层数从 goal/leaf 附近向中间传播。最后层只保留包含 query 且已标记为 critical path 的 tokens 仍可维持输出，符合“先写标签、后检索”的缓存计算。"
+      ]
+    },
+    {
+      "title": "有效性与局限",
+      "paragraphs": [
+        "模型通过 oracle-action supervision 在许多相关任务上预训练，其快速测试表现包含强 meta-learned prior；与从零在单个环境中训练的 Q-learning/DQN 比较衡量的是适应范式差异，不是相同先验和计算预算下的算法优越性。",
+        "任务规模小且结构化：固定 5×5 网格、训练概率树和一个完整 7 层测试树，state 为随机向量，action space 为 4。结论不能直接外推到连续控制、自然视觉、长时程语言 agent 或非平稳奖励。",
+        "“neither model-free nor model-based”是针对所测 hallmark：未发现可用全局 value gradient，也未发现决策时沿完整路径检索。模型仍可能实现隐式 successor-like、压缩模型或与作者描述行为等价的混合计算。",
+        "linear decodability 不证明变量被模型因果使用；attention weight 也不等于解释。论文用 ablation 和 sufficiency restriction 加强证据，但干预可能有分布偏移，且并未重建一个完整可执行的最小电路。",
+        "与 hippocampus/entorhinal cortex 的联系是功能类比和可检验预测，例如 recall 偏向当前位置与目标附近；论文没有神经记录数据，也没有证明生物回路使用 Transformer 式 key–value computation。",
+        "PDF 文本提取出现一个非致命字符警告，但关键页面、图注和页码已对渲染 PDF 复核；这不影响论文内容，提醒复现者不要把自动抽取文本当作公式或版面权威。"
+      ]
+    },
+    {
+      "title": "复现与资源",
+      "paragraphs": [
+        "最小行为复现应先构建 5×5 gridworld task distribution：固定 topology，跨任务重采样 10 维 state encodings 与 reward location，用 random exploration 生成 (s,a,s',r) contexts，并以 oracle actions 监督训练 3-layer、512-dimensional causal model。",
+        "测试必须使用未见 sensory encodings 与 reward location，按 context length 和 reward exposures 报告 max-normalized return；shortcut test 要固定经历的绕路、可行的最短路径、100 个编码实例和 chance level，而非只展示成功轨迹。",
+        "机制复现应分层保存 query 与 memory hidden states，独立做 CKA/cross-context correlation、cross-validated ridge probes、20-step integrated gradients，并复现逐层 query-to-memory attention masking。probe train/test environments 必须分开。",
+        "关键对照包括 reward ablation、uncorrelated sensory encoding、3/6-layer 与 512/1024 embedding、tabular Q-learning 和 DQN 收敛检查；同时报告未解码到全局 value、Cauchy 式失败之外的负结果，而非只保留正探针。论文正文未提供明确公共代码仓库链接。",
+        "本站核验的 v3 PDF SHA-256：e94457ff48d3f2be2b009e3fec64ee3f19b366e57eab22a61f8d936c0fff7fea。Evidence status: full-text verified; no independent reproduction performed."
+      ]
+    },
+    {
+      "title": "阅读指南",
+      "paragraphs": [
+        "快速路径：Figure 1 明确 meta-learning 设置，Figure 2 看快速适应，Figures 3–4 看结构表征，最后用 Figures 5–7 判断作者为何提出缓存中间计算。",
+        "机制路径：先列出每个 probe 能证明什么，再按 attribution → necessity ablation → sufficiency restriction 增强证据；特别检查 query-token 与 memory-token 两条计算流不要混淆。",
+        "跨学科路径：把 hippocampal analogy 留到最后。先确认人工网络中的 task、表示和干预结果，再把“跨环境地图对齐”和“当前位置/目标附近记忆检索”转写成生物实验可检验预测。"
+      ]
+    }
+  ],
+  "evidence_refs": [
+    "paper.pdf pp. 1–3: motivation, decision-pretraining interface, gridworld and tree-maze task distributions",
+    "paper.pdf pp. 4–6: rapid adaptation, Q-learning baselines, shortcuts, in-context structure and cross-environment alignment",
+    "paper.pdf pp. 7–10: value/planning tests, attribution and ablation evidence, cached-computation mechanisms",
+    "paper.pdf pp. 14–24: training/task details, model-size and sensory-encoding controls, behavior and representation analyses",
+    "paper.pdf pp. 25–36: decoder protocol, integrated gradients, value tests and additional necessity/sufficiency interventions",
+    "source PDF SHA-256 e94457ff48d3f2be2b009e3fec64ee3f19b366e57eab22a61f8d936c0fff7fea",
+    "Evidence status: full-text verified; no independent reproduction performed."
+  ]
+}

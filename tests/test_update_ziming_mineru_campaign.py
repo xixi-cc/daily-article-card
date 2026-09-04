@@ -13,6 +13,9 @@ class UpdateZimingMineruCampaignTests(unittest.TestCase):
         self.assertTrue(valid_transition("packet_ready", "blocked"))
         self.assertFalse(valid_transition("pending", "card_installed"))
         self.assertFalse(valid_transition("card_installed", "blocked"))
+        self.assertFalse(valid_transition("blocked", "extracting"))
+        self.assertTrue(valid_transition("blocked", "extracting", retry_blocked=True))
+        self.assertFalse(valid_transition("blocked", "packet_ready", retry_blocked=True))
 
     def test_updates_atomically_and_appends_hashed_event(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
@@ -47,6 +50,31 @@ class UpdateZimingMineruCampaignTests(unittest.TestCase):
             self.assertEqual(updated["pending_cards"], 1)
             self.assertEqual(event["artifacts"]["pdf"]["bytes"], 9)
             self.assertEqual(len(events.read_text(encoding="utf-8").splitlines()), 1)
+
+    def test_explicit_blocked_retry_is_auditable(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            campaign = root / "campaign.json"
+            events = root / "events.jsonl"
+            campaign.write_text(
+                json.dumps({"selection": [{"card_id": "one", "status": "blocked"}]}),
+                encoding="utf-8",
+            )
+
+            event = update_campaign(
+                campaign,
+                events,
+                "one",
+                "extracting",
+                {},
+                "transient transport failure cleared",
+                retry_blocked=True,
+            )
+
+            updated = json.loads(campaign.read_text(encoding="utf-8"))
+            self.assertEqual(updated["selection"][0]["status"], "extracting")
+            self.assertEqual(event["from"], "blocked")
+            self.assertEqual(event["to"], "extracting")
 
 
 if __name__ == "__main__":

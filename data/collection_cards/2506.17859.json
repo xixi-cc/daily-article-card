@@ -1,0 +1,175 @@
+{
+  "arxiv_id": "2506.17859",
+  "source_version": "v2",
+  "source_pdf": "https://arxiv.org/pdf/2506.17859v2",
+  "title_en": "In-Context Learning Strategies Emerge Rationally",
+  "title_zh": "上下文学习策略如何从理性权衡中涌现",
+  "curation_status": "full_text_verified",
+  "card_standard_version": "2.4",
+  "audience_profile": "physics_ai_literate_physicist",
+  "paper_profile": "theory_numerics",
+  "style_reference": "physicist_daily_arxiv",
+  "provenance": {
+    "program": "Collection",
+    "catalog": "Paper Collection",
+    "catalog_record_id": "2506.17859",
+    "catalog_record_ids": ["2506.17859"],
+    "catalog_topic": "Scaling Laws",
+    "collection_date": "2026-08-30",
+    "sampled_at": "2026-08-31",
+    "selected_by": "ziming_mineru_serial_goal",
+    "sampling_seed": "not_applicable_source_complete",
+    "candidate_count": 464
+  },
+  "verified_metadata": {
+    "arxiv_id": "2506.17859",
+    "version": "v2",
+    "title": "In-Context Learning Strategies Emerge Rationally",
+    "authors": ["Daniel Wurgaft", "Ekdeep Singh Lubana", "Core Francisco Park", "Hidenori Tanaka", "Gautam Reddy", "Noah D. Goodman"],
+    "categories": ["cs.LG", "cs.AI"],
+    "primary_category": "cs.LG",
+    "published": "2025-06-26T16:54:57Z",
+    "abstract": "Recent work analyzing in-context learning (ICL) has identified a broad set of strategies that describe model behavior in different experimental conditions. We aim to unify these findings by asking why a model learns these disparate strategies in the first place. Specifically, we start with the observation that when trained to learn a mixture of tasks, the strategies learned by a model for performing ICL can be captured by a family of Bayesian predictors: a memorizing predictor, which assumes a discrete prior on the set of seen tasks, and a generalizing predictor, where the prior matches the underlying task distribution. Adopting the normative lens of rational analysis, we develop a hierarchical Bayesian framework that almost perfectly predicts Transformer next-token predictions throughout training—without assuming access to its weights. Under this framework, pretraining is viewed as a process of updating the posterior probability of different strategies, and inference-time behavior as a posterior-weighted average over these strategies’ predictions.",
+    "comment": "52 pages; v2 dated 2025-06-26; preprint under review"
+  },
+  "equation_refs": [
+    {
+      "label": "Hierarchical predictor mixture (Eq. 3)",
+      "latex": "h^{\\mathrm{pred}}(s_i\\mid s_{1:i-1},S)=p(M\\mid S)M(s_i\\mid s_{1:i-1})+p(G\\mid S)G(s_i\\mid s_{1:i-1})",
+      "role": "model Transformer behavior as interpolation between memorizing and generalizing Bayesian strategies",
+      "symbols": {"M": "memorizing predictor with a discrete prior on training tasks", "G": "generalizing predictor with a continuous prior on the task-generating distribution", "S": "pretraining dataset", "h_pred": "framework prediction for Transformer next-token probabilities"},
+      "evidence": "paper.pdf p. 6, Eq. (3)",
+      "interpretation": "Both M and G already perform Bayesian inference within a prompt; the outer posterior weights describe which strategy training conditions make easier to learn. This is a behavioral model, not a measurement of literal internal Bayesian variables."
+    },
+    {
+      "label": "Loss–complexity log odds (Eq. 4)",
+      "latex": "\\eta(N,D)=\\gamma N^{1-\\alpha}\\Delta L(D)-\\Delta K(D)^\\beta",
+      "role": "predict the boundary between generalization and memorization across training time and task diversity",
+      "symbols": {"N": "number of training steps or samples", "D": "number of distinct training tasks", "Delta_L": "generalizing-minus-memorizing average training loss", "Delta_K": "memorizing-minus-generalizing estimated description complexity", "alpha": "power-law loss exponent", "beta": "Transformer-specific complexity exponent", "gamma": "evidence-rate scale"},
+      "evidence": "paper.pdf p. 7, Eq. (4)",
+      "interpretation": "Positive eta favors memorization: its better training fit accumulates as N^(1-alpha), while its larger implementation complexity imposes an opposing offset that generally grows with task diversity."
+    },
+    {
+      "label": "Closed-form behavioral prediction (Eq. 5)",
+      "latex": "h^{\\mathrm{pred}}=\\sigma(\\eta(N,D))M+[1-\\sigma(\\eta(N,D))]G",
+      "role": "turn the strategy log odds into a quantitative next-token predictor",
+      "symbols": {"sigma": "logistic sigmoid", "eta": "loss–complexity log-odds difference", "M,G": "task-specific memorizing and generalizing predictors"},
+      "evidence": "paper.pdf p. 7, Eq. (5)",
+      "interpretation": "Only three global parameters alpha, beta and gamma are fitted across checkpoints and conditions in each problem setting; task-specific M, G, losses and compressed complexities are otherwise computed."
+    }
+  ],
+  "figure_refs": [
+    {
+      "label": "Figure 1",
+      "asset_path": "assets/collection-figures/2506.17859/figure-1-strategy-phase-diagram.webp",
+      "section": "核心结果与证据",
+      "role": "summarize strategy transitions and the proposed loss–complexity phase diagram",
+      "evidence": "paper.pdf p. 2, Figure 1",
+      "alt_text": "左侧三行曲线展示 balls-and-urns、线性回归、分类任务中随任务多样性或训练步数从泛化到记忆策略的变化；右侧相图展示 prior favors simplicity 与 likelihood favors memorization 的竞争，并比较 Transformer 和贝叶斯模型热图。",
+      "caption": "低复杂度先验使 generalizing strategy 更早出现；随着训练证据积累，memorizing strategy 的更低训练损失可反超。提高 task diversity 会增加记忆策略的描述成本并推迟转变。",
+      "interpretation": "右上相图是拟合后的规范性解释，不是从 Transformer 权重直接推导出的热力学相图；颜色表示两种策略对输出的相对支配。"
+    }
+  ],
+  "cover": {
+    "mode": "source_figure",
+    "asset_path": "assets/collection-figures/2506.17859/figure-1-strategy-phase-diagram.webp",
+    "label": "Figure 1",
+    "visual_type": "phase_diagram",
+    "evidence": "paper.pdf p. 2, Figure 1",
+    "alt_text": "ICL 在泛化与记忆预测器间切换的实验曲线和损失–复杂度相图。",
+    "caption": "“先泛化、后记忆”被建模为复杂度先验与训练损失证据在不同时间尺度上的竞争。",
+    "selection_rationale": "Figure 1 把三类实验现象、两种策略和理论相图放在同一画面，是全文最有效的跨领域入口。"
+  },
+  "sections": [
+    {
+      "title": "作者信息",
+      "paragraphs": [
+        "Daniel Wurgaft 与 Noah D. Goodman 来自 Stanford University；Ekdeep Singh Lubana、Core Francisco Park、Hidenori Tanaka 来自 Harvard University 的 CBS-NTT Program in Physics of Intelligence；Gautam Reddy 来自 Princeton University 的 Joseph Henry Laboratories of Physics。Wurgaft 与 Lubana 为共同第一作者。",
+        "本文使用 arXiv:2506.17859v2（PDF 标注 2025-06-26），主分类 cs.LG；全文 52 页，状态为 preprint / under review。",
+        "Collection 来源为刘子鸣网站的 Scaling Laws 条目；卡片将收录来源与论文证据分开，所有页码、方程与数值按 v2 PDF 核验。"
+      ]
+    },
+    {
+      "title": "研究问题",
+      "paragraphs": [
+        "合成 ICL 实验中，Transformer 有时像在训练任务表中检索和记忆，有时却能对未见任务执行通用推断；同一模型甚至会先泛化、训练更久后又退回记忆。为什么这些策略随 task diversity 和 training time 系统切换？",
+        "作者不读取网络权重，而是建立一个 normative model：把 Transformer 输出视为 memorizing predictor M 与 generalizing predictor G 的混合，并用训练损失收益和策略实现复杂度的竞争来预测混合权重。"
+      ]
+    },
+    {
+      "title": "背景",
+      "paragraphs": [
+        "训练分布包含 D 个具体 tasks，它们是从更广的真实 task distribution 抽样得到的。M 把这 D 个已见任务作为离散先验，善于训练分布内检索；G 使用真实生成分布的连续先验，可对新任务做 Bayesian updating。",
+        "当 D 很小时，存储每个 task 很便宜且训练误差低，记忆占优；D 增大时，记忆表的描述长度增长，通用算法更经济。这解释 task-diversity threshold。",
+        "transient generalization 则沿时间轴发生：简单的 G 因 inductive bias 较早学会，但 M 通常具有更低训练 loss；训练证据持续积累后，后者可能最终覆盖复杂度先验。"
+      ]
+    },
+    {
+      "title": "给物理学家的 AI 导读",
+      "paragraphs": [
+        "输入是一串由某个 latent task 生成的 context，固定权重的 Transformer 输出下一 token 或标签分布。研究者计算输出到 M、G 的 KL 或 Euclidean distance，并在横轴 training steps N、纵轴 task diversity D 上画相对距离热图。",
+        "Eq. (4) 是最接近有效自由能竞争的对象：gamma N^(1-alpha) Delta L 是随训练积累的拟合优势，Delta K^beta 是实现复杂策略的先验代价；eta=0 给出两种宏观策略的 crossover line。这里没有热力学极限证明，所谓 phase 只是连续 sigmoid crossover。",
+        "N_eff=gamma N^(1-alpha) 表示训练样本并非等量增加独立证据，原因由经验 scaling law 假设封装。复杂度 K 原本是不可计算的 Kolmogorov complexity，论文以 predictor 的代码和数据经多种无损压缩后的最小长度做代理。",
+        "需要区分三个层级：M 与 G 是推理时的 Bayesian predictors；外层 posterior 描述预训练更可能实现哪种 predictor；实际 Transformer 只通过 next-token 输出被拟合。高 R^2 说明低维有效模型预测强，不等于神经网络内部存在显式 M/G 开关。"
+      ]
+    },
+    {
+      "title": "模型与方法",
+      "paragraphs": [
+        "作者统一三个有限任务混合：Balls & Urns、in-context linear regression、classification。每次训练从 D 个已见 functions 中抽一个生成长度 C 的序列，使用 GPT-NeoX Transformer 从零训练 N 步，并分别在 ID tasks 与底层连续分布抽取的 OOD tasks 上评估。",
+        "对每种任务解析或计算 M 与 G 的预测。例如 balls-and-urns 中，M 对已见 urns 做离散 posterior average，G 对未知 urn probability 使用连续 Dirichlet prior；线性回归中 G 对应 ridge/Bayesian regression，M 对已见 weight vectors 做离散混合。",
+        "模型–策略相对距离定义为到 M 与 G 的距离归一化组合；不同任务使用 symmetrized KL 或 Euclidean distance。随后以 Eq. (5) 同时拟合多个 D、N、模型 checkpoint 的 next-token predictions。",
+        "理论假设包括 loss 随有效样本数的 power law，以及神经网络偏好较低描述复杂度的 universal prior。K 用代码与 predictor 所需数据的无损压缩长度估计；每个问题设置只拟合 alpha、beta、gamma 三个参数。"
+      ]
+    },
+    {
+      "title": "核心结果与证据",
+      "paragraphs": [
+        "Figure 4：三类任务中，改变 D 与 N 后，Transformer 输出主要落在 M 或 G 两端并在二者间过渡。任务越多越靠近 generalizing predictor；训练足够久则可能向 memorizing predictor 回迁。",
+        "Figure 5：三参数 hierarchical Bayesian model 在用于拟合及未见条件上都能预测 Transformer 热图。跨 72 张 map，线性回归 next-token prediction 的平均 R^2=0.97，分类 mean agreement=0.92，Balls & Urns mean Spearman correlation=0.97。",
+        "模型 posterior 与 Transformer relative distance 的相关系数在三类任务中分别为 0.99、0.98、0.99。这是强行为一致性，但两个量都围绕预先选定的 M/G 基线构造。",
+        "Eq. (4) 解释 transient generalization：早期 complexity term 支持较简单的 G，随后 M 的较低 training loss 以 N^(1-alpha) 累积并反超。随 D 增大，memorizing predictor 需要编码更多 tasks，transition time 呈超线性增长。",
+        "Figure 8：增大 MLP width 会把边界推向更偏记忆的一侧；拟合中 beta 降低，对应更大容量降低复杂策略的有效实现代价。这是参数化解释，不是从宽度解析推导出的复杂度定律。",
+        "学习率退火使实验轨迹更接近预测的 generalization-to-memorization 路径，但最晚的转变点仍偏离模型曲线，提示优化细节没有完全被三个参数吸收。"
+      ]
+    },
+    {
+      "title": "有效性与局限",
+      "paragraphs": [
+        "框架是 rational/normative account：它问在给定 objective 与 computational constraints 下哪种策略合理，而不是由 SGD 方程或已学权重推导策略。因而“解释”主要是压缩多个行为现象的有效理论。",
+        "只考虑 M 与 G 两个候选 predictor。中间或其他算法若在输出空间接近其凸组合，也可能被 Eq. (5) 吸收；相对距离热图不能单独证明模型内部切换了两套离散电路。",
+        "Kolmogorov complexity 不可计算，压缩后的代码长度依赖实现语言、序列化、compressor 和哪些数据计入。beta 进一步作为自由参数修正 Transformer 的实现成本，因此复杂度数值不是架构无关常数。",
+        "power-law evidence accumulation、simplicity prior 与 sigmoid mixture 是建模假设。论文的 ablation 支持其必要性，但不能保证外推到自然语言、超大预训练模型或训练范围以外的 N、D。",
+        "超线性 transience prediction 在受控 Balls & Urns 等范围内验证；当 Delta L 接近零时预测 N* 可趋于无穷，但论文明确把超出已测设置的持久泛化视为条件性推论。",
+        "高预测相关不等于因果确认。要区分三参数模型对已有轨迹的插值、对 held-out D/N 的预测，以及改变优化器或架构后的真正干预测试。"
+      ]
+    },
+    {
+      "title": "复现与资源",
+      "paragraphs": [
+        "最小复现建议从 Balls & Urns 开始：固定 urn dimension、context length、D、训练步数与 GPT-NeoX 尺寸，生成 ID/OOD 序列；同时实现离散任务先验 M 和连续 Dirichlet prior G，并保存每个 checkpoint 的完整概率向量。",
+        "必须先复现 raw behavior：训练误差、OOD 指标以及模型到 M/G 的绝对距离；之后再计算 relative distance。只画归一化热图可能隐藏两种基线都拟合不好的区域。",
+        "理论复现应独立计算 Delta L(D)，对 M/G 的代码和所需 task data 使用同一组无损压缩器估计 K，再只用部分 D、N 条件拟合 alpha、beta、gamma；其余条件作为真正 held-out test。",
+        "稳健性检查包括更换 compressor、加入第三种候选策略、改变 width/context length/learning-rate schedule，并报告 72-map 汇总而非挑选热图。论文正文未给出明确公共代码 URL，复现需依照附录 F–K 重建。",
+        "本站核验的 v2 PDF SHA-256：04d27899f0dfb29dcaac5b8853b97795eaca3d1b5e28f72a5e42399431d6d941。Evidence status: full-text verified; no independent reproduction performed."
+      ]
+    },
+    {
+      "title": "阅读指南",
+      "paragraphs": [
+        "快速路径：Figure 1 看两种策略与相图，Figure 4 确认行为确实在 M/G 之间变化，Figure 5 查看三参数模型的定量拟合，再读 Discussion 的 normative boundary。",
+        "公式路径：先理解 Eqs. (1)–(2) 中离散 prior 与连续 prior 的区别，再读 Eq. (3) 的层级混合、Eq. (4) 的 log odds，最后检查 Eq. (5) 如何落到可比较的 next-token distribution。",
+        "审慎路径：重点读 complexity estimation、functional-form ablation 和 late-time deviations。最重要的问题不是“贝叶斯模型拟合得多好”，而是替代策略、压缩方案或优化变化是否能区分因果解释。"
+      ]
+    }
+  ],
+  "evidence_refs": [
+    "paper.pdf pp. 1–4: problem, finite-task mixtures, memorizing and generalizing predictors",
+    "paper.pdf pp. 5–7: behavioral transitions, hierarchical mixture, assumptions and loss–complexity log odds",
+    "paper.pdf pp. 7–10: 72-map validation, novel scaling predictions, model-size effects and interpretation",
+    "paper.pdf pp. 10–13: normative scope, alternative Bayesian accounts and mechanistic limitations",
+    "paper.pdf pp. 14–52: task definitions, complexity estimation, derivations, ablations and full result grids",
+    "source PDF SHA-256 04d27899f0dfb29dcaac5b8853b97795eaca3d1b5e28f72a5e42399431d6d941",
+    "Evidence status: full-text verified; no independent reproduction performed."
+  ]
+}
