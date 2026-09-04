@@ -1,0 +1,192 @@
+{
+  "arxiv_id": "2602.04832",
+  "source_version": "v2",
+  "source_pdf": "https://arxiv.org/pdf/2602.04832v2",
+  "title_en": "It's Not a Lottery, It's a Race: Understanding How Gradient Descent Adapts the Network's Capacity to the Task",
+  "title_zh": "不是彩票，而是一场竞赛：梯度下降如何让网络容量适配任务",
+  "curation_status": "full_text_verified",
+  "card_standard_version": "2.4",
+  "audience_profile": "physics_ai_literate_physicist",
+  "paper_profile": "theory_experiment",
+  "style_reference": "physicist_daily_arxiv",
+  "provenance": {
+    "program": "Collection",
+    "catalog": "Paper Collection",
+    "catalog_record_id": "2602.04832",
+    "catalog_record_ids": ["2602.04832"],
+    "catalog_topic": "Training Dynamics",
+    "collection_date": "2026-08-30",
+    "sampled_at": "2026-08-31",
+    "selected_by": "ziming_mineru_serial_goal",
+    "sampling_seed": "not_applicable_source_complete",
+    "candidate_count": 464
+  },
+  "verified_metadata": {
+    "arxiv_id": "2602.04832",
+    "version": "v2",
+    "title": "It's Not a Lottery, It's a Race: Understanding How Gradient Descent Adapts the Network's Capacity to the Task",
+    "authors": ["Hannah Pinson"],
+    "categories": ["cs.LG"],
+    "primary_category": "cs.LG",
+    "published": "2026-02-04T18:22:40Z",
+    "updated": "2026-05-07T15:32:42Z",
+    "abstract": "The paper analyzes early individual-neuron dynamics in shallow ReLU classifiers and proposes mutual alignment, unlocking and racing as a mechanism connecting small initialization to effective capacity reduction and magnitude pruning."
+  },
+  "equation_refs": [
+    {
+      "label": "ReLU gate 定义的 neuron-specific effective dataset",
+      "latex": "g_\\alpha^s=\\mathbf 1[(w_\\alpha^{(1)})^{\\mathsf T}x^s+b_\\alpha>0],\\qquad \\langle p_\\alpha\\rangle=\\frac1N\\sum_{s=1}^{N}g_\\alpha^s p_\\alpha^s",
+      "role": "express that each hidden neuron receives gradients only from samples on the active side of its ReLU hyperplane",
+      "symbols": {
+        "g_alpha_s": "sample s 是否通过 neuron alpha 的 binary ReLU gate",
+        "w_alpha_1": "neuron alpha 的 incoming weight vector",
+        "p_alpha": "任意按有效样本平均的 neuron-level quantity",
+        "effective_dataset": "当前 $g_\\alpha^s=1$ 的 samples 集合"
+      },
+      "evidence": "paper.pdf pp. 3–5, Section 2 and Eqs. (2)–(6)",
+      "interpretation": "weight direction space 被各样本的超平面分成 gating 不变的 conic cells；同一 cell 内 neuron 面对同一个局部二分类问题，因此可出现共同的 dataset-dependent target direction。"
+    },
+    {
+      "label": "alignment 控制 unlocking 的指数增长率",
+      "latex": "a_\\alpha(t)=\\lVert w_\\alpha^{(1)}\\rVert\\lVert w_\\alpha^{(2)}\\rVert\\sim\\exp[\\lambda\\lVert\\gamma_{c(\\alpha),k}^*\\rVert\\cos(\\delta_\\alpha)t]",
+      "role": "show how a small angular advantage within one target-direction group becomes a large norm advantage",
+      "symbols": {
+        "a_alpha": "incoming 与 outgoing weight norms 的乘积",
+        "delta_alpha": "incoming direction 到共享 target direction 的剩余角距",
+        "gamma_star": "当前 stable gating cell 的 class-mean target vector",
+        "lambda": "gradient-flow learning-rate factor"
+      },
+      "evidence": "paper.pdf pp. 8–9, Theorem 3.11 and Eq. (7)",
+      "interpretation": "较小 $\\delta$ 给更大 $\\cos\\delta$，因而更快增长；这个结论只在 small norms、近固定方向、zero bias、outgoing weights 已对齐的 unlocking approximation 中成立。正文随后一处把 well-aligned 写成 $\\delta_\\alpha>\\delta_\\beta$，与公式和语义相反，应读作排印方向错误。"
+    },
+    {
+      "label": "共享误差信号产生 race-like lateral inhibition",
+      "latex": "\\frac{d a_\\beta}{dt}\\approx\\lambda\\lVert\\langle\\gamma^s\\rangle(t)\\rVert\\cos(\\delta_\\beta)a_\\beta",
+      "role": "formalize the conjectured late coupling in which early winners reduce the error signal available to peers",
+      "symbols": {
+        "beta": "同一 target-direction cluster 内的 neuron",
+        "mean_gamma_t": "该 effective dataset 共享、随 prediction error 下降的 gradient-driving vector",
+        "delta_beta": "neuron beta 的 alignment error",
+        "a_beta": "neuron beta 的 norm product"
+      },
+      "evidence": "paper.pdf p. 9, Conjecture 3.12 and Eq. (8)",
+      "interpretation": "赢家先增大 norm、降低 group error，继而让所有同组 neurons 的共享驱动力减弱。作者把这一阶段明确列为 conjecture，因为 biases、gates、directions 与 errors 此时已完全耦合。"
+    }
+  ],
+  "figure_refs": [
+    {
+      "label": "Figure 1",
+      "asset_path": "assets/collection-figures/2602.04832/figure-1-capacity-race.webp",
+      "section": "核心结果与证据",
+      "role": "combine loss, neuron clustering, early alignment-to-final-norm relation and iterative-magnitude-pruning outcome",
+      "evidence": "paper.pdf p. 1, Figure 1",
+      "alt_text": "300-neuron shallow ReLU network on 200 CIFAR-10-derived samples: loss curve, cosine-similarity cluster matrices, early alignment versus norm-product plots, and early alignment versus number of pruned parameters.",
+      "caption": "Figure 1 展示作者的完整机制链：loss 明显下降前 neurons 已形成方向簇；同簇中越早对齐者最终 norm 越大，也越少被 IMP 删除权重。",
+      "interpretation": "四组 panels 构成相关且时序一致的证据；它们没有直接比较按 early alignment 干预过的网络，因此对 race causality 的支持仍有限。"
+    }
+  ],
+  "cover": {
+    "mode": "source_figure",
+    "asset_path": "assets/collection-figures/2602.04832/figure-1-capacity-race.webp",
+    "label": "Figure 1",
+    "visual_type": "comparison",
+    "evidence": "paper.pdf p. 1, Figure 1",
+    "alt_text": "loss、neuron mutual alignment、早期角距、最终 norm 与 pruning outcome 的组合图。",
+    "caption": "先对齐、再放大、最后由早到者压低共同误差信号。",
+    "selection_rationale": "Figure 1 is the only source figure that puts all links of the proposed alignment-to-pruning mechanism on one page while exposing the small-network experimental scope."
+  },
+  "sections": [
+    {
+      "title": "作者信息",
+      "paragraphs": [
+        "Hannah Pinson 来自 Eindhoven University of Technology 的 Data and AI cluster、EAISI。",
+        "本站核验 arXiv:2602.04832v2：v1 于 2026-02-04 提交，v2 于 2026-05-07 更新；主分类 cs.LG，共 22 页。",
+        "Collection 来源为刘子鸣网站的 Training Dynamics 条目。"
+      ]
+    },
+    {
+      "title": "研究问题",
+      "paragraphs": [
+        "过参数网络训练后常可合并 neurons 或按 magnitude 大量剪枝。梯度下降怎样把 nominal width 转成适合任务的 effective capacity？某些 winning-ticket initializations 为什么会在训练中获得更大 norm？",
+        "论文把 shallow ReLU classifier 拆到单个 neuron：ReLU gate 决定它看到的 effective dataset；早期方向更新快于 norm 更新，使多个 neurons 向相同局部 target 对齐；随后微小的 alignment 差异转为指数 norm 差异。",
+        "作者把三段机制称为 mutual alignment、unlocking 与 racing。前两段在简化 gradient-flow assumptions 下有 lemma/theorem；loss 已下降后的 race 是一条明确标为 Conjecture 3.12 的动力学解释。"
+      ]
+    },
+    {
+      "title": "背景",
+      "paragraphs": [
+        "lottery-ticket hypothesis 是‘初始化网络中存在可从原初始化训练到相同性能的稀疏子网’；lottery-ticket conjecture 则关心 gradient descent 如何把这些参数放大到可由 magnitude pruning 找出。本文主要解释后者的一个 shallow-network 机制。",
+        "positive-homogeneous ReLU neuron 的功能同时依赖 incoming direction 与 incoming/outgoing scales。small initialization 下，角变量的相对更新可远快于 norm，形成 loss 尚未明显变化的 silent alignment。",
+        "effective capacity 在本文有两个 operational proxies：高 cosine-similarity neurons 可合并为较少功能单元；低 norm neurons/weights 更可能被 magnitude pruning。它不是 VC dimension、information dimension 或通用压缩率的同义词。"
+      ]
+    },
+    {
+      "title": "给物理学家的 AI 导读",
+      "paragraphs": [
+        "weight-direction space 被 ReLU gating hyperplanes 划分成分片线性 cells。每个 cell 有固定 active samples，因而早期 gradient 指向由两类样本均值差构成的局部 target；这类似分段定义势场中的吸引方向。",
+        "small-norm 极限先产生快角向驰豫、后产生慢径向增长。到 unlocking phase，径向增长率含 $\\cos\\delta$；同一 basin 中初始或早期更靠近 target 的 neuron 具有指数优势。",
+        "当赢家开始显著降低 prediction error，共享的 gradient-driving magnitude 也下降，落后者失去继续增长的驱动力。这个‘竞争资源’不是固定总 norm，而是同一 effective task 剩余的误差信号。",
+        "从这一图景到 IMP 还有尺度错位：理论比较的是同组 neuron norm，IMP 跨全网逐个 weight 剪枝并多轮 rewind/retrain。论文用相关实验搭桥，但没有把两种算法证明等价。"
+      ]
+    },
+    {
+      "title": "模型与方法",
+      "paragraphs": [
+        "理论对象是 binary softmax classifier：single hidden layer ReLU，incoming weights、two-component outgoing weights 与 biases 全部用 full-batch/small-step gradient flow 分析，cross-entropy loss，从 small Gaussian weights 和 zero biases 开始。",
+        "phase 1 假设 norms 小且近似固定、bias 为零、outgoing direction 已先对齐；输入方向在 gating-invariant conic cell 内朝 class-mean target 转动，并可能跨 cell，直至进入 target 位于其中的 stable cell。",
+        "phase 2 假设方向近固定而 norms 仍小，推得 $a_\\alpha$ 的 alignment-dependent exponential growth。phase 3 恢复 error、bias 与 gates 的耦合，只提出同组共享误差信号导致 winner-takes-all 的近似方程。",
+        "实验把 CIFAR-10 灰度、展平为 1024 dimensions，并构造二分类 subsets；默认 hidden width 300、samples $N=200,800,4000$、Gaussian init std $10^{-5}$ 或 $10^{-3}$、batch 4、SGD momentum 0.9、learning rate 0.001。IMP 用 3 rounds，目标 sparsity 20%、50%、70%。"
+      ]
+    },
+    {
+      "title": "核心结果与证据",
+      "paragraphs": [
+        "Theorem 3.6 在 simplified early dynamics 下指出：neurons 最终进入 stable cells，同 cell 且 outgoing class orientation 相同者向同一 target direction 收敛；但‘一定在有限 cell hopping 后到达 stable cell’依赖作者的简化动力学论证与结构假设。",
+        "Figure 1 的 300-neuron、200-sample small-init run 中，loss 约在 batch 300 附近开始明显下降；而 cosine-similarity matrices 已显示 neurons 逐渐形成高相似度 blocks。最终 $\\cos>0.99$ groups 被解释为可合并单元。",
+        "Theorem 3.11 给 unlocking exponent；Figure 1c/4 显示在若干非常早 checkpoints，较大的 $\\cos\\bar\\delta_\\alpha$ 与后续更大 final norm 相关，而且几次 gradient updates 后关系比 initialization 更清晰。",
+        "dataset size 增加时 detected cluster count 增加，最终受 nominal width 限制；论文对 cluster threshold 0.95 报告 5 runs，并在附录称这些 clusters 可 merge 而不损失 performance。结果依赖阈值，未给出压缩后的完整精度—参数曲线。",
+        "IMP 实验显示，在 20% 和 50% target sparsity 时，early alignment 能较好区分哪些 neurons 会被删去更多 individual weights；70% 时关系较弱。它支持共同动力学来源，但不是由 alignment 直接构造 ticket 的 prospective test。",
+        "Figure 1d 只显示最大 cluster 的 50%-sparsity结果；全网络、多 dataset sizes 与两个 initialization scales 的扩展见 Figures 3–5。论文承认不同 groups 有 asynchronous learning speeds，过早按 norm 剪枝可能错杀尚未 unlocking 的慢 group。"
+      ]
+    },
+    {
+      "title": "有效性与局限",
+      "paragraphs": [
+        "严格推导局限于 shallow binary ReLU、small initialization、zero/neglected biases、aligned outgoing directions 与 early gradient-flow phases。更深网络、convolution、attention、large initialization 和 late nonlinear coupling不在理论内。",
+        "mutual-alignment theorem使用 simplified dynamics；stable-cell 数远小于全部 cells、basin 大小不均，以及 phase-3 racing 分别是 Conjectures 3.7、3.8、3.12，不能与 Theorem 3.11 的 unlocking 指数混写成同等强度。",
+        "正文比较两 neurons 时写‘well-aligned $\\alpha$ 与 less-aligned $\\beta$’却给 $\\delta_\\alpha>\\delta_\\beta$；按角距定义、Eq. (7) 与后文解释，应为 $\\delta_\\alpha<\\delta_\\beta$。卡片不沿用该符号矛盾。",
+        "cluster count 依赖 cosine threshold 0.95/0.99；neuron directions 接近不保证在 biases、outgoing signs/scales 与 downstream nonlinearities 存在时可无损合并。本文单隐层配方使合并较容易。",
+        "实验只有 CIFAR-10-derived binary shallow networks；未验证 standard deep lottery-ticket benchmarks。early alignment、final norm 与 IMP pruning count 是观测关联，没有 alignment perturbation 或 matched-initialization causal test。",
+        "代码位置仍写‘will be added upon acceptance’，当前论文没有可核验仓库链接；这显著限制对 cell detection、merging tolerance、runs 和 pruning rewind protocol 的复核。"
+      ]
+    },
+    {
+      "title": "复现与资源",
+      "paragraphs": [
+        "论文尚未提供公开代码 URL。最小复现应先使用 $N=200,d=300$, init std $10^{-5}$、batch 4、SGD momentum 0.9、LR 0.001 的二分类配方，逐 step 保存 gates、incoming/outgoing directions、norms、loss 与 sample identities。",
+        "对每个 neuron 应重算当前 gating cell 的 target vector、$\\bar\\delta_\\alpha(t)$ 与 $a_\\alpha(t)$；在同一最终 cluster 内拟合 $d\\log a/dt$ 对 $\\cos\\delta$，检验只在 phase-2 window 是否线性。",
+        "capacity test 应扫描 cluster threshold、合并顺序与两种 initialization scales，并报告 merge 后 train/test accuracy 与 parameter count，而非仅说无性能损失。不同 dataset sizes 至少复现论文的 5 seeds。",
+        "lottery-ticket test 需完整记录 3-round IMP 的 per-round mask、rewind checkpoint 和 accuracy；再增加 prospective baseline：仅用 early alignment 排序进行 neuron/weight pruning，与 magnitude IMP 在相同 sparsity 下盲测。",
+        "因果检验可在相同 cell 内旋转某些 neurons 使 $\\delta$ 改变但 norm 不变，观察增长率排序是否按 Eq. (7) 翻转；还可人为保护慢 clusters，验证 race/shared-error 解释。本站未运行实验。"
+      ]
+    },
+    {
+      "title": "阅读指南",
+      "paragraphs": [
+        "快速阅读：p. 1 Figure 1 看完整证据链；pp. 3–5 读 gates/cells；pp. 5–9 依次读 Theorem 3.6、Lemma 3.9、Theorem 3.11 与 Conjecture 3.12。",
+        "物理路线：把 neuron direction 视为分片势场中的慢/快坐标，先看 phase-1 attractor，再推 Eq. (7) 的径向 instability；最后检查 winner 降低共享 error drive 是否真能由 late coupled dynamics推出。",
+        "应用路线：pp. 9–12 的 merging、asynchronous groups 与 Figures 3–5。最强结论是 early shallow-network unlocking exponent；把它解释成深网 lottery tickets 的完整机制仍需跨架构、causal pruning 与 late-dynamics 验证。"
+      ]
+    }
+  ],
+  "evidence_refs": [
+    "paper.pdf pp. 1–5, Figure 1 and Sections 1–2: capacity question, neuron-level notation, ReLU gating and effective datasets",
+    "paper.pdf pp. 5–9, Lemmas 3.1–3.9, Theorems 3.6 and 3.11, Conjectures 3.7–3.12, Eqs. (7)–(8): alignment, unlocking and race claims",
+    "paper.pdf pp. 9–12, Figures 3–5 and Section 5: effective-capacity, cluster, norm-growth and IMP experiments",
+    "paper.pdf pp. 13–22, Appendices A–G: gradient equations, stable-cell estimation, unlocking derivation and merging checks",
+    "source PDF SHA-256 3591711585fb70d98dee2224dfb62571a59ed2fb6ed6e51ca7dd966ab2983ae0",
+    "MinerU Markdown SHA-256 a4aa4ca9fc0e5aa645235d9a1edfbb0507477afa65b988c54b036c315f776756",
+    "Evidence packet SHA-256 8bb47475f41d8f2d8499722a0982be32b3e1b5a62b1c5a5c757c550310f29453",
+    "Evidence status: full-text verified; no independent reproduction performed."
+  ]
+}

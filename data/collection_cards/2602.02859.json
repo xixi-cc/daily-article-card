@@ -1,0 +1,194 @@
+{
+  "arxiv_id": "2602.02859",
+  "source_version": "v1",
+  "source_pdf": "https://arxiv.org/pdf/2602.02859v1",
+  "title_en": "Late-Stage Generalization Collapse in Grokking: Detecting anti-grokking with Weightwatcher",
+  "title_zh": "Grokking 的晚期泛化坍缩：用 WeightWatcher 检测 anti-grokking",
+  "curation_status": "full_text_verified",
+  "card_standard_version": "2.4",
+  "audience_profile": "physics_ai_literate_physicist",
+  "paper_profile": "ai_empirical",
+  "style_reference": "physicist_daily_arxiv",
+  "provenance": {
+    "program": "Collection",
+    "catalog": "Paper Collection",
+    "catalog_record_id": "2602.02859",
+    "catalog_record_ids": ["2602.02859"],
+    "catalog_topic": "Scaling Laws",
+    "collection_date": "2026-08-30",
+    "sampled_at": "2026-08-31",
+    "selected_by": "ziming_mineru_serial_goal",
+    "sampling_seed": "not_applicable_source_complete",
+    "candidate_count": 464
+  },
+  "verified_metadata": {
+    "arxiv_id": "2602.02859",
+    "version": "v1",
+    "title": "Late-Stage Generalization Collapse in Grokking: Detecting anti-grokking with Weightwatcher",
+    "authors": ["Hari K. Prakash", "Charles H. Martin"],
+    "categories": ["cs.LG"],
+    "primary_category": "cs.LG",
+    "published": "2026-02-02T00:00:00Z",
+    "updated": "2026-02-02T00:00:00Z",
+    "abstract": "The paper reports a late loss of test accuracy after grokking in long-trained MNIST and modular-addition models and associates it with spectral diagnostics computed from layer weights."
+  },
+  "equation_refs": [
+    {
+      "label": "层权重的经验谱密度",
+      "latex": "X=\\frac{1}{N}W^{\\mathsf T}W,\\qquad \\rho_{\\mathrm{emp}}(\\lambda)=\\frac{1}{M}\\sum_{i=1}^{M}\\delta(\\lambda-\\lambda_i)",
+      "role": "turn each layer weight matrix into a Gram spectrum that can be compared across training checkpoints",
+      "symbols": {
+        "W": "形状为 N by M 的层权重矩阵",
+        "X": "M by M normalized Gram matrix",
+        "lambda_i": "X 的 eigenvalues",
+        "rho_emp": "该层的 empirical spectral density"
+      },
+      "evidence": "paper.pdf p. 3, Eqs. (1)–(2)",
+      "interpretation": "这是把高维权重压缩成谱统计的第一步；谱只能看到 singular values，不能单独确定 network function、data geometry 或 eigenvector 所编码的具体特征。"
+    },
+    {
+      "label": "Marchenko–Pastur 零模型与 trap 条件",
+      "latex": "\\lambda_{\\pm}=\\sigma^2(1\\pm Q^{-1/2})^2,\\qquad \\lambda_{\\mathrm{trap}}>\\lambda_{\\mathrm{rand}}^{+}+\\text{Tracy--Widom allowance}",
+      "role": "define the random-matrix bulk edge used to flag large eigenvalue outliers after entry-wise shuffling",
+      "symbols": {
+        "Q": "matrix aspect ratio N/M",
+        "sigma_squared": "best-fit variance of the shuffled-weight null model",
+        "lambda_rand_plus": "fitted MP bulk upper edge",
+        "lambda_trap": "WeightWatcher 标记的超出 bulk 与有限尺寸波动的 eigenvalue"
+      },
+      "evidence": "paper.pdf pp. 3–5, Eqs. (3)–(6) and Figures 2–4",
+      "interpretation": "entry-wise shuffling 破坏位置相关性但保留 weight-value marginal。因而超边缘 eigenvalue 是相对特定 shuffled-MP null 的异常，不等同于已经证明的功能性相关结构或泛化坍缩原因。"
+    },
+    {
+      "label": "HTSR power-law tail 指标",
+      "latex": "\\rho_{\\mathrm{emp}}(\\lambda)\\propto\\lambda^{-\\alpha},\\qquad \\widehat\\lambda_{\\min}=\\arg\\min_{\\lambda_{\\min}}D_{\\mathrm{KS}}(\\rho_{\\mathrm{tail}},\\rho_{\\mathrm{PL}})",
+      "role": "fit a power-law tail and use its exponent as a secondary layer-quality diagnostic",
+      "symbols": {
+        "alpha": "maximum-likelihood fitted tail exponent",
+        "lambda_min": "power-law fit 起点，由 KS distance 自动选择",
+        "D_KS": "empirical tail 与 fitted power law 的 Kolmogorov–Smirnov distance",
+        "rho_PL": "normalized power-law tail model"
+      },
+      "evidence": "paper.pdf pp. 3–4, Eq. (5), Section 3.1 and Figure 5",
+      "interpretation": "作者框架把 $\\alpha\\approx2$ 视为最佳泛化附近、$\\alpha<2$ 视为过强相关；但论文自己承认该映射并非保证，modular-addition 的 full-spectrum heavy tail 还会使 tail fit 难以解释。"
+    }
+  ],
+  "figure_refs": [
+    {
+      "label": "Figure 1",
+      "asset_path": "assets/collection-figures/2602.02859/figure-1-anti-grokking-curve.webp",
+      "section": "核心结果与证据",
+      "role": "show the operational three-phase claim in the main MNIST experiment",
+      "evidence": "paper.pdf p. 2, Figure 1",
+      "alt_text": "深度 3、宽度 200 的 MNIST MLP 训练与测试准确率随 1 到一千万步变化：训练准确率保持接近 1，测试准确率先从约 0.1 升至约 0.84，再下降至约 0.47。",
+      "caption": "Figure 1 给出 anti-grokking 的操作性定义：同一数据继续训练，test accuracy 在 grokking 峰值后回落，而 train accuracy 仍饱和。",
+      "interpretation": "曲线建立现象存在于这一配方中；它本身不能判定后续谱异常是原因、预警信号还是共同结果。"
+    }
+  ],
+  "cover": {
+    "mode": "source_figure",
+    "asset_path": "assets/collection-figures/2602.02859/figure-1-anti-grokking-curve.webp",
+    "label": "Figure 1",
+    "visual_type": "data_plot",
+    "evidence": "paper.pdf p. 2, Figure 1",
+    "alt_text": "MNIST MLP 的 pre-grokking、grokking 与 anti-grokking 三阶段训练曲线。",
+    "caption": "泛化并非到达后永久保持：继续训练可使测试准确率再次坍缩。",
+    "selection_rationale": "Figure 1 is the direct behavioral evidence for the new phenomenon and lets readers separate that observation from the paper's subsequent spectral interpretation."
+  },
+  "sections": [
+    {
+      "title": "作者信息",
+      "paragraphs": [
+        "Hari K. Prakash 来自 University of California San Diego Data Science and Engineering；Charles H. Martin 来自 Calculation Consulting。",
+        "本站核验 arXiv:2602.02859v1：2026-02-02 提交，主分类 cs.LG，共 27 页；作者说明它是此前 ICML workshop paper 的大幅扩展版本。",
+        "Collection 来源为刘子鸣网站的 Scaling Laws 条目。"
+      ]
+    },
+    {
+      "title": "研究问题",
+      "paragraphs": [
+        "grokking 通常指 train accuracy 早已饱和、test accuracy 却在很久以后突然上升。若继续训练再多一个数量级，这个泛化状态会稳定保留，还是会重新退化？能否只看 model weights、无需 train/test data 就发现退化？",
+        "作者把同一训练集上继续优化后出现的‘训练正确而测试退回近 chance’称为 anti-grokking，并与换小数据集再训练导致的 ungrokking 区分。",
+        "核心实证是两套受控任务的长时间轨迹；核心诊断是 WeightWatcher 对每层 weight spectrum 的两个量：shuffled-weight MP bulk 外的 Correlation Traps，以及 power-law tail exponent $\\alpha$。"
+      ]
+    },
+    {
+      "title": "背景",
+      "paragraphs": [
+        "Marchenko–Pastur law 是独立同分布大随机矩阵 Gram eigenvalues 的基线。训练会使权重产生结构，真实 ESD 常偏离 MP bulk；本文还把权重 entries 打乱后再拟合 MP，用残存的大 outliers 标记异常 weight-value statistics。",
+        "Heavy-Tailed Self-Regularization 以真实 weight ESD 尾部的 power-law exponent 描述层内相关结构。论文采用的经验分类是：$\\alpha\\gtrsim5$ 接近 random-like，$2\\lesssim\\alpha\\lesssim5$ 为较好训练区，$\\alpha\\approx2$ 接近最佳，$\\alpha<2$ 可能过相关。",
+        "这些标签属于 HTSR/SETOL 框架，不是普遍成立的统计力学相定理。尤其‘Correlation Trap’是工具中的诊断名；shuffling 后的谱 outlier 不自动给出原网络中的 causal circuit。"
+      ]
+    },
+    {
+      "title": "给物理学家的 AI 导读",
+      "paragraphs": [
+        "把 checkpoint 视作随 training time 演化的非平衡态：accuracy 是宏观 observable，weight ESD 是粗粒化谱，MP law 是无结构 null model。anti-grokking 是 test observable 的晚期突变，而不是由论文证明的热力学 phase transition。",
+        "测量链路是：保存长训练 checkpoints → 计算 train/test accuracy → 对每层 $W^TW$ 求谱并拟合 power-law tail → entry-wise shuffle $W$ 后拟合 MP bulk → 数超过 bulk edge 的 outliers → 比较这些谱量是否在 collapse 附近变化。",
+        "MLP 中 $\\alpha$ 从偏大下降，在最佳泛化附近接近 2，坍缩后部分层低于 2；modular addition 中整个 ESD 已很重尾，anti-grokking 反而常使 fitted $\\alpha$ 上升，因此作者把 trap count 当主信号、$\\alpha$ 当次信号。",
+        "‘不需要数据’只表示诊断输入可限于 weights；建立和校准它与泛化的关系仍使用了 test curves。对新模型若没有先验阈值验证，不能由 trap count 单独推断具体 accuracy。"
+      ]
+    },
+    {
+      "title": "模型与方法",
+      "paragraphs": [
+        "主实验从 MNIST 每类随机取 100 张，共 1,000 training points；standard test set 有 10,000 张。三层 fully connected ReLU MLP 有两个 200-unit hidden layers，Kaiming initialization 后 parameters 乘 8，MSE one-hot loss、batch 200、AdamW、learning rate $5\\times10^{-4}$、float64，训练 $10^7$ steps。",
+        "主曲线 weight decay 为 0，Appendix D 对照 WD=0.01。论文报告主运行 seed 0，并以多 checkpoint/重复运行给部分均值和标准差；在 Quadro P2000 上约 11 小时，其中保存 diagnostics 占较多时间。",
+        "第二任务是 $p=113$ modular addition，单层 decoder-only Transformer：$d_{model}=128$、MLP 512、4 heads、head dimension 32、context 3、ReLU、无 LayerNorm。论文比较 pre/grok/anti checkpoints 的 ESD、trap counts 与 Fourier rule structure。",
+        "WeightWatcher v0.7.5.5 自动选择 power-law $\\lambda_{min}$、拟合 $\\alpha$，并在 shuffled matrices 的 MP edge 与 Tracy–Widom finite-size allowance 外识别 traps。作者另比较 $\\ell_2$ norm、activation sparsity、absolute-weight entropy 与 local-circuit complexity。"
+      ]
+    },
+    {
+      "title": "核心结果与证据",
+      "paragraphs": [
+        "Figure 1 的 MNIST MLP 中，train accuracy 约在 $10^5$ steps 前后达到 1；test accuracy 约在 $10^5$ 后快速上升，于 $10^6$ 附近达到约 0.84，继续到 $10^7$ 后降至约 0.47。这是本文最直接、与谱理论无关的 anti-grokking 证据。",
+        "WD=0 的 FC1/FC2 在 pre-grokking 与 peak grokking 的 reported trap counts 均为 0；anti-grokking 右端分别为 $7.5\\pm5.6$ 与 $1\\pm0$。FC1 的 shuffled-MP KS test 从 peak 时 statistic 0.0212、$p\\approx1$ 变为 final 0.3044、$p=1.877\\times10^{-5}$，并检测到 9 traps。",
+        "Table 1 报告 FC1/FC2 的 $\\alpha$ 从 pre 阶段 $5.0\\pm0.7/2.9\\pm0.7$，到 grokking $3.6\\pm0.5/2.3\\pm0.2$，再到 anti 阶段 $0.9\\pm0.4/1.3\\pm0.3$；平均值为 $4.0\\to2.9\\to1.1$。这与 collapse 同步，但并未展示严格 lead-time 预测评估。",
+        "WD=0.01 对照中 test accuracy 在小幅回落后长期接近峰值，$\\alpha$ 也在约 2 附近形成 plateau；anti-grokking 和 trap 数都较弱。它支持 regularization 能抑制该配方的晚期坍缩，但只有一个 weight-decay setting。",
+        "modular-addition Transformer 也出现 train accuracy 保持而 test accuracy 晚期下降，traps 增多；不过 $\\alpha$ 在 anti 阶段因 catastrophic-forgetting/rank-collapse 型 ESD 而上升，显示单一方向阈值不跨任务稳定。",
+        "MNIST FC1 顶 singular vector 在 anti checkpoint 呈类似数字 8 的模板，作者称 prototype memorization；这是有启发性的 eigenvector visualization，但从形似 digit 到‘trap 导致误分类’仍缺少消融或删除该 mode 后恢复 accuracy 的干预。",
+        "对 gpt-oss-20b/120b，论文只展示许多层 $\\alpha<2$ 的分布并称为类似 pathology；没有对应训练轨迹、test collapse 或 causal intervention，不能算 anti-grokking 的复现。"
+      ]
+    },
+    {
+      "title": "有效性与局限",
+      "paragraphs": [
+        "晚期 test collapse 在两个小型任务中是可观测结果，但泛化范围有限：一个 1,000-sample MNIST MLP 和一个 $p=113$ modular-addition Transformer，均使用特殊初始化/超长训练。没有大规模任务的纵向 anti-grokking 数据。",
+        "trap emergence、$\\alpha$ deviation 与 accuracy collapse 主要是 checkpoint correlation。论文附录给出大 weight entries 可在 shuffled Gram spectrum 制造 outlier 的充分条件，却未证明这些 outliers 导致网络 function 退化。",
+        "entry-wise shuffling 同时改变结构并保留极端 marginal values；因此所谓 Correlation Trap 可能反映 heavy-tailed entries、scale heterogeneity 或 rank effects。MP i.i.d. null 的适切性与 multiple-layer/multiple-checkpoint testing 需要更系统校准。",
+        "‘$\\alpha=2$ 普适 cutoff’与文中限制存在张力：作者明确承认良好模型可能 $\\alpha\\gg2$，$\\alpha\\le2$ 也不保证绝对性能；modular addition 的 tail fit 还被 full-spectrum VHT、rank collapse 和少量 spikes 扭曲。",
+        "MLP 主配置只明确给出 seed 0，而 tables 的方差来源与独立 runs/checkpoint sampling 没有全部说清；Figure 1 的 phase boundaries、文本中的 $10^5$/$10^6$ 描述也有不完全一致之处。读者应以原始 curves 和 released logs 为准，但论文未给实验代码/日志链接。",
+        "gpt-oss 分析是横截面 warning，不含 accuracy ground truth，不能据此声称这些模型正在遗忘或性能将不可预测地下降。"
+      ]
+    },
+    {
+      "title": "复现与资源",
+      "paragraphs": [
+        "WeightWatcher 项目公开于 https://github.com/CalculatedContent/WeightWatcher ，论文使用 v0.7.5.5；本文未提供可核验的 MNIST/modular-addition training code 或完整 checkpoint archive。",
+        "最小复现应严格采用 Table 3 的 1,000-point stratified MNIST、parameter ×8 initialization、float64、MSE、AdamW 与 $10^7$ steps，并以多个 independent seeds 同时保存 accuracy、weights、optimizer state；否则不能区分 seed-specific collapse。",
+        "谱分析需预注册 layer inclusion、shuffle repeats、MP fitting range、Tracy–Widom threshold 与 tail-fit goodness；应对 trap count 给 null false-positive rate 和 confidence interval，而不只报告自动工具输出。",
+        "因果检验可在 collapse 前后删除/缩放 trap-associated singular modes，观察 test accuracy 是否恢复且 train accuracy 保持；另需用 matched weight-norm、entry-distribution-preserving controls 区分谱 outlier 与一般 scale growth。",
+        "更实用的 early-warning benchmark 应只用时刻 $t$ 的 weights 预测未来 $t+\\Delta t$ collapse，在未参与阈值选择的 tasks/seeds 上报告 AUROC、lead time 与 false alarms。本站未运行这些实验。"
+      ]
+    },
+    {
+      "title": "阅读指南",
+      "paragraphs": [
+        "快速阅读：p. 2 Figure 1 确认现象；pp. 3–5 Eqs. (1)–(6) 与 Figures 2–4 理解两个谱诊断；pp. 5–9 Tables 1–2、Figures 5–10 比较 MLP、modular addition 与 LLM 外推。",
+        "物理路线：把 MP law 当 null ensemble、把 ESD/alpha/trap count 当 observables；随后读 Appendix E 的 KS numbers 与 Appendix F 的 outlier sufficient condition，检查‘异常谱’到‘功能坍缩’之间还缺哪一步。",
+        "最稳妥的结论是‘超长训练可在两个 grokking 配方中破坏已获得的泛化，weight-only spectral statistics 与之相关’；‘Correlation Traps 是普适原因或可靠预测器’仍需要跨 seed、跨任务与因果干预。"
+      ]
+    }
+  ],
+  "evidence_refs": [
+    "paper.pdf pp. 1–2, Abstract, Figure 1 and contributions: operational anti-grokking phenomenon and three-phase behavior",
+    "paper.pdf pp. 3–5, Eqs. (1)–(6), Figures 2–4: Gram ESD, MP null, HTSR alpha and Correlation Trap definitions",
+    "paper.pdf pp. 5–9, Tables 1–2 and Figures 5–10: MLP diagnostics, controls, modular addition and gpt-oss observations",
+    "paper.pdf pp. 12–27, Tables 3–15 and Appendices A–I: hyperparameters, WD control, KS tests, outlier condition, eigenvectors and modular-addition details",
+    "WeightWatcher code: https://github.com/CalculatedContent/WeightWatcher",
+    "source PDF SHA-256 8913e09603508d71808654360981e0c4b56b728033cc9248b35b2980bcdf0c61",
+    "MinerU Markdown SHA-256 2bd3213f5a52953c30ab7f93ba3e8c59bb619b64db65186c3b4de8cdbae8b797",
+    "Evidence packet SHA-256 13dca5b3f012aa7cfa6d728b31895ad3cee30ded71619323311e2b01254b76b7",
+    "Evidence status: full-text verified; no independent reproduction performed."
+  ]
+}

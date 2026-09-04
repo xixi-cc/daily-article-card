@@ -1,0 +1,192 @@
+{
+  "arxiv_id": "2602.04774",
+  "source_version": "v2",
+  "source_pdf": "https://arxiv.org/pdf/2602.04774v2",
+  "title_en": "Theory of Optimal Learning Rate Schedules and Scaling Laws for a Random Feature Model",
+  "title_zh": "随机特征模型中最优学习率日程与缩放律理论",
+  "curation_status": "full_text_verified",
+  "card_standard_version": "2.4",
+  "audience_profile": "physics_ai_literate_physicist",
+  "paper_profile": "theory_numerics",
+  "style_reference": "physicist_daily_arxiv",
+  "provenance": {
+    "program": "Collection",
+    "catalog": "Paper Collection",
+    "catalog_record_id": "2602.04774",
+    "catalog_record_ids": ["2602.04774"],
+    "catalog_topic": "Training Dynamics",
+    "collection_date": "2026-08-30",
+    "sampled_at": "2026-08-31",
+    "selected_by": "ziming_mineru_serial_goal",
+    "sampling_seed": "not_applicable_source_complete",
+    "candidate_count": 464
+  },
+  "verified_metadata": {
+    "arxiv_id": "2602.04774",
+    "version": "v2",
+    "title": "Theory of Optimal Learning Rate Schedules and Scaling Laws for a Random Feature Model",
+    "authors": ["Blake Bordelon", "Francesco Mori"],
+    "categories": ["cs.LG"],
+    "primary_category": "cs.LG",
+    "published": "2026-02-04T17:11:36Z",
+    "updated": "2026-05-08T16:24:57Z",
+    "abstract": "The paper solves a finite-horizon learning-rate optimal-control problem in a noisy power-law random-feature model, derives easy and hard regimes, and compares their horizon-transfer signatures with ResNet and language-model experiments."
+  },
+  "equation_refs": [
+    {
+      "label": "power-law feature spectrum 与 task alignment",
+      "latex": "\\lambda_k\\sim k^{-b},\\qquad (w_k^*)^2\\lambda_k\\sim k^{-a},\\qquad a,b>1",
+      "role": "parameterize how quickly feature variance and target energy decay across covariance eigenmodes",
+      "symbols": {
+        "lambda_k": "feature covariance 的第 k 个 eigenvalue",
+        "w_k_star": "teacher function 在 eigenmode k 上的 coefficient",
+        "b": "feature spectrum decay exponent",
+        "a": "target-weighted spectral energy decay exponent"
+      },
+      "evidence": "paper.pdf p. 3, Eq. (6)",
+      "interpretation": "$b$ 控制慢模的时间尺度分布，$a$ 控制 target 在这些模上还剩多少能量；$a>b$ 时目标相对集中于易学强模，$a<b$ 时弱模中的 bias 消除成为瓶颈。"
+    },
+    {
+      "label": "最优日程的 easy/hard 两相",
+      "latex": "\\eta_T^*(t)\\sim\\begin{cases}c(a,b)T^{b/a-1}(1-t/T)^{2b-1},&a>b,\\\\ \\eta_{\\max},&a<b,\\ t<t_s,\\\\ \\eta_{\\max}[(1-t/T)/(1-t_s/T)]^{2b-1},&a<b,\\ t>t_s,\\end{cases}",
+      "role": "show when the unconstrained polynomial solution stays below the stability ceiling and when it clips into a plateau-then-decay schedule",
+      "symbols": {
+        "T": "预先给定的 training horizon",
+        "eta_max": "SGD stability constraint 的最大允许 learning rate",
+        "t_s": "hard phase 中从 plateau 切换到 annealing 的时间",
+        "c_a_b": "由谱指数、noise 与 batch 条件决定的 prefactor"
+      },
+      "evidence": "paper.pdf pp. 4–6, Eqs. (9)–(11), Result 2",
+      "interpretation": "easy phase 从一开始共同压低 bias 与 variance；hard phase 先以稳定上限尽快消除慢 bias，再把 variance reduction 压到末端的次线性窗口。这里没有显式 warmup，因此更准确是 stable-decay-like，而非完整 WSD 配方。"
+    },
+    {
+      "label": "最优终端 excess-loss 缩放",
+      "latex": "L_T-\\sigma^2\\sim T^{-\\zeta_T},\\qquad \\zeta_T=\\frac{a-1}{\\max(a,b)}",
+      "role": "give the horizon scaling achieved by optimizing the full learning-rate trajectory at fixed batch size",
+      "symbols": {
+        "L_T": "step T 的 expected test square loss",
+        "sigma_squared": "label noise 加上 student cutoff 未表示 modes 形成的 irreducible effective noise",
+        "zeta_T": "最优 schedule 的 training-horizon exponent",
+        "max_a_b": "easy phase 取 a，hard phase 取 b"
+      },
+      "evidence": "paper.pdf p. 6, Eq. (12) and Corollary 1",
+      "interpretation": "它优于同一模型内优化过的 constant-LR exponent $(a-1)/(a+b-1)$；这是渐近指数比较，不保证有限算力下 prefactor 更小，也不直接等于深网 scaling law。"
+    }
+  ],
+  "figure_refs": [
+    {
+      "label": "Figure 1",
+      "asset_path": "assets/collection-figures/2602.04774/figure-1-horizon-learning-rate-transfer.webp",
+      "section": "核心结果与证据",
+      "role": "show that the loss-minimizing fixed learning rate shifts with the training horizon in three systems",
+      "evidence": "paper.pdf p. 2, Figure 1",
+      "alt_text": "ResNet/CIFAR-5M、Transformer/C4 和随机特征模型的终端 loss 随固定 learning rate 变化；不同 training horizon 的最佳点沿 learning-rate 轴移动。",
+      "caption": "Figure 1 展示 horizon transfer 的问题：模型宽度上的超参数可迁移，不代表把训练步数改变后同一 learning rate 仍最优。",
+      "interpretation": "三组曲线支持‘固定 LR 不自动跨 horizon 迁移’；它们尚未证明随机特征模型的指数就是两种深网的机制参数。"
+    }
+  ],
+  "cover": {
+    "mode": "source_figure",
+    "asset_path": "assets/collection-figures/2602.04774/figure-1-horizon-learning-rate-transfer.webp",
+    "label": "Figure 1",
+    "visual_type": "comparison",
+    "evidence": "paper.pdf p. 2, Figure 1",
+    "alt_text": "三个模型中不同训练 horizon 的 loss-learning-rate 曲线及其移动的最优点。",
+    "caption": "训练预算改变时，最佳学习率也可能系统移动。",
+    "selection_rationale": "Figure 1 connects the practical tuning failure to the solvable model without hiding that the deep-network evidence is phenomenological rather than theorem-level."
+  },
+  "sections": [
+    {
+      "title": "作者信息",
+      "paragraphs": [
+        "Blake Bordelon 与 Francesco Mori 来自 Harvard University Center for Mathematical Sciences and Applications；Bordelon 还关联 UT Austin Oden Institute 与 Department of Neuroscience。",
+        "本站核验 arXiv:2602.04774v2：v1 于 2026-02-04 提交，v2 于 2026-05-08 更新；主分类 cs.LG，共 23 页。",
+        "Collection 来源为刘子鸣网站的 Training Dynamics 条目。"
+      ]
+    },
+    {
+      "title": "研究问题",
+      "paragraphs": [
+        "给定总训练步数 $T$，怎样选择整条 learning-rate trajectory $\\eta(t)$，使最后一步 test loss 最小？当 $T$ 改变时，最佳 base LR 是否可以直接迁移，还是必须按 task spectrum 重标度？",
+        "论文把 noisy online SGD 的 random-feature regression 化成每个 covariance eigenmode 的闭合误差递推，再把 $\\{\\eta_t\\}_{t=1}^T$ 当 optimal-control variables。这样可以比较最优 constant LR、预设 power laws 与自由 schedule。",
+        "解的形状由两个 power-law exponents 的次序决定：easy task $a>b$ 得到从起点开始的 polynomial decay；hard task $a<b$ 触及 stability ceiling，先长 plateau、后在越来越小的相对时间窗口退火。"
+      ]
+    },
+    {
+      "title": "背景",
+      "paragraphs": [
+        "SGD 的 learning rate 同时控制两件相反的事：大 $\\eta$ 加速消除低 eigenvalue directions 中的 bias，却放大 minibatch noise 引入的 variance；小 $\\eta$ 降低 variance，但可能在 horizon 结束前学不完慢模。schedule 是在时间上分配这两个目标。",
+        "random-feature model 固定 feature map、只学习线性 readout，因此等价于 lazy/kernel regime 的简化模型。它保留 mode-dependent relaxation 与 stochastic noise，却没有 representation learning、feature evolution 或深网非凸几何。",
+        "文中的 easy/hard ‘phase’由 $a$ 与 $b$ 的不等式以及 stability constraint 是否 active 定义，是渐近最优控制的 regime change，不是训练 loss 中直接测得的热力学奇点。"
+      ]
+    },
+    {
+      "title": "给物理学家的 AI 导读",
+      "paragraphs": [
+        "可把每个 covariance eigenmode 看成不同 relaxation time 的线性自由度。强谱模先平衡，弱谱模慢；target spectrum 决定需要真正驰豫到多深。$a$ 与 $b$ 的竞争类似 density of states 与 observable coupling 的竞争。",
+        "Theorem 1 给每个 mode error $c_{t,k}$ 一个线性但由总 loss 耦合的 recurrence。连续时间、长 horizon 下，引入未来累计 learning rate $\\chi(t)=\\int_t^T\\eta(s)ds$，terminal loss 分成 bias functional 与 noise-variance functional。",
+        "optimal control 的边界条件知道终点 $T$，因此最优策略是 horizon-dependent；所谓 anytime schedule 不知道何时结束，无法把 variance suppression 精确推迟到最后。这是为什么跨 horizon 迁移失败的核心逻辑。",
+        "hard phase 的最佳形状只有 stable + decay，没有论文从模型中推导的 warmup。把它称作 WSD-like 有助于联系实践，但不应误读为证明现代 LLM 的 warmup、plateau 和 decay 三段都由同一理论最优性产生。"
+      ]
+    },
+    {
+      "title": "模型与方法",
+      "paragraphs": [
+        "teacher 为 $y(x)=w^*\\cdot\\psi(x)+\\sigma_0z$；student 只取前 $N$ 个 eigenfeatures 并在线接收独立 minibatches，用 square-loss SGD 更新。被截去 modes 的 target energy 与 label noise 合成 effective floor $\\sigma^2$。",
+        "在 Gaussian features 或满足相应 fourth-moment 条件时，Theorem 1 精确闭合 expected mode errors；作者既用该 recurrence 通过 CasADi single shooting 数值优化有限 $T$ schedule，也在 nonzero noise、constant batch、power-law spectra、$\\eta\\le\\eta_{max}$ 下做连续时间渐近分析。",
+        "joint LR-batch 优化固定总样本预算 $B_{tot}=\\sum_tm_t$，再以最短 wall-clock steps 选择退化解；momentum 部分同时优化 $\\eta_t$ 与 $\\beta_t$，数值上研究三个 mode correlations 的线性动力学。",
+        "深网对照包括 SGD 训练 CIFAR-5M 的 deep ResNet，以及约 125M non-embedding parameters、12 layers、12 heads、$d_{model}=768$ 的 GPT-style model 在 C4 上用 Adam 训练；后者基于 OLMo scripts、weight decay 0.1，每次用 3 张 A100。"
+      ]
+    },
+    {
+      "title": "核心结果与证据",
+      "paragraphs": [
+        "constant LR 的 bias-variance balance 给 $\\eta^*\\sim T^{-(a-1)/(a+b-1)}$ 和 excess loss exponent $(a-1)/(a+b-1)$。优化完整 schedule 后变成 $(a-1)/\\max(a,b)$，在理论模型的两相都严格改善渐近指数。",
+        "Figure 2 的 $a=3.5,b=5$ hard example：constant/power-law exponent 为 $1/3$，最优 schedule 为 0.5；$a=3.5,b=2$ easy example则从约 0.56 提升到约 0.71。有限-$T$ CasADi 解与渐近形状、拟合 exponent 相符。",
+        "hard phase 的 annealing fraction 满足 $1-t_s/T\\sim T^{-(b-a)/(2b-1)}$，因此总 annealing steps 仍增加，但占训练的比例趋于零；主体保持 $\\eta_{max}$ 用于 bias removal。",
+        "固定 sample budget 下，easy phase 可把 LR 固定在 $\\eta_{max}$ 并增大 batch，达到与最优 LR schedule 相同的 sample exponent，同时减少 wall-clock steps；Figure 8 的示例报告约 33 倍更少 steps。这是模型内结果，不含现实并行效率与 communication cost。",
+        "数值优化 momentum 在 hard phase 得到优于 SGD 的 horizon exponent，但作者尚未解析推导新 exponent；easy phase 没有改变最优指数。",
+        "ResNet/CIFAR-5M 的 annealed base LR 随 horizon 近似不变，符合 hard signature；Transformer/C4 即便 cosine annealing，最佳 base LR 仍随 token horizon 降低，符合 easy signature。Figure 1/4 是行为类比，没有直接从深网测出 $a,b$。"
+      ]
+    },
+    {
+      "title": "有效性与局限",
+      "paragraphs": [
+        "解析结论针对 fixed random features、linear readout、square loss、online independent samples 与 SGD；深网的 feature learning、有限数据重复、cross-entropy、Adam/preconditioning 和 nonstationary spectra 均不在定理中。",
+        "Result 2 使用 long-time continuous approximation、power-law tails、nonzero effective noise、constant batch 和 hard stability cap；finite horizon 的 prefactors、边界层与离散 stability 可能改变具体 schedule。$a=b$ 的 crossover 也不由两条纯渐近式完整描述。",
+        "‘optimal’严格指已知终点 $T$ 时最小化 terminal expected test loss，不优化训练中间质量、robustness、energy、wall-clock communication 或不知道何时停止的场景。",
+        "ResNet 和 C4 实验只检验 optimal base LR 随 horizon 的方向及 annealing 效果；没有从数据/NTK 统一估计 $a,b$ 后无调参预测完整 schedule，也没有证明两种深网分别属于理论相。",
+        "batch ramp 的 33× 是递推模型中的 step count；大 batch 的 hardware saturation、memory、throughput 与 generalization differences 会削弱现实收益。momentum 的 hard-phase improvement 仍是 numerical observation。",
+        "论文未给出专属代码仓库链接；C4 使用 OLMo 基础 scripts，但复现还需要精确 horizons、LR grids、seeds 与 data order。"
+      ]
+    },
+    {
+      "title": "复现与资源",
+      "paragraphs": [
+        "理论最小复现可用 $N=500,a=3.5,\\sigma=0.5,m=5$，分别取 $b=2$ 与 5；实现 Eq. (5) 的 mode-error recurrence，对每个 $T$ 以 CasADi 优化全体 $\\eta_t$，比较 constant、$T$-dependent power law 与 free schedule 的 terminal loss。",
+        "必须同时做离散 recurrence 与连续渐近式：画 $T^{1-b/a}\\eta_T(t)$ 对 $t/T$ 的 collapse、hard phase 的 $1-t_s/T$ scaling，并对 $N$、noise、$\\eta_{max}$ 和 schedule discretization 做收敛检查。",
+        "深网验证应先用小 horizon grid 拟合最优 base LR，再 blind-predict 新 horizons；ResNet 用 SGD 与相同 polynomial endpoint decay，C4 Transformer 用论文的 OLMo-based 125M setup 和 cosine control。需报告 seeds 与 LR-grid uncertainty。",
+        "更强测试是从训练中可访问的 kernel/feature spectrum 与 target alignment 估计 $a,b$，在不看目标 horizon sweep 结果时预测 easy/hard regime 和 schedule shape；这正是论文承认尚未解决的桥梁。",
+        "论文没有列出可核验的专属代码 URL。本站未运行 optimal-control solver 或深网训练。"
+      ]
+    },
+    {
+      "title": "阅读指南",
+      "paragraphs": [
+        "快速阅读：p. 2 Figure 1 看 horizon transfer failure；pp. 2–3 Eqs. (1)–(6) 看可解动力学；pp. 4–7 Result 1/2、Figure 2 与 Corollary 1 看两相 schedule 和 exponents。",
+        "物理路线：从 mode recurrence 做 bias/variance 分解，再读 Appendix A–B 的 $\\chi(t)$ functional、Noether first integral 与 active constraint；最后读 Figure 5 理解为何 hard phase 把 variance cleaning 推迟到末端。",
+        "实践路线：pp. 8–11 的 batch/momentum 扩展和 deep-network comparisons。最可信的是 random-feature model 内的 schedule theorem；对 ResNet/Transformer，应读作可检验的 regime analogy，而不是现成的无调参训练配方。"
+      ]
+    }
+  ],
+  "evidence_refs": [
+    "paper.pdf pp. 1–3, Figure 1 and Eqs. (1)–(6): horizon-transfer problem, random-feature teacher-student model and exact mode-error recurrence",
+    "paper.pdf pp. 4–7, Eqs. (7)–(12), Figure 2, Results 1–2 and Corollary 1: optimal-control schedules and scaling exponents",
+    "paper.pdf pp. 7–11, Figures 3–4 and Table 1: constant/power-law baselines, batch and momentum extensions, and deep-network comparisons",
+    "paper.pdf pp. 12–23, Appendices A–G and Figures 5–9: asymptotic derivations, compute allocation, controls and experiment details",
+    "source PDF SHA-256 3c7b8d4b2c1984ca5040ffb3e1a31a008e50bb3b64b48e85502f98dda377410e",
+    "MinerU Markdown SHA-256 4c16ac17196e2c498ae50ac67c36964bc27490057df9b84e3d176a4aab9e59e7",
+    "Evidence packet SHA-256 9f68d1f79a893a3db25178a30a911a44d8ff24bd928ca8611416bec60816cc41",
+    "Evidence status: full-text verified; no independent reproduction performed."
+  ]
+}
