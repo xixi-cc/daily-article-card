@@ -1,0 +1,197 @@
+{
+  "arxiv_id": "2602.22424",
+  "source_version": "v1",
+  "source_pdf": "https://arxiv.org/pdf/2602.22424v1",
+  "title_en": "Causality ≠ Invariance: Function and Concept Vectors in LLMs",
+  "title_zh": "因果性不等于不变性：大语言模型中的功能向量与概念向量",
+  "curation_status": "full_text_verified",
+  "card_standard_version": "2.4",
+  "audience_profile": "physics_ai_literate_physicist",
+  "paper_profile": "ai_empirical",
+  "style_reference": "physicist_daily_arxiv",
+  "provenance": {
+    "program": "Collection",
+    "catalog": "Paper Collection",
+    "catalog_record_id": "2602.22424",
+    "catalog_record_ids": ["2602.22424"],
+    "catalog_topic": "Mechanistic Interpretability",
+    "collection_date": "2026-08-30",
+    "sampled_at": "2026-08-31",
+    "selected_by": "ziming_mineru_serial_goal",
+    "sampling_seed": "not_applicable_source_complete",
+    "candidate_count": 464
+  },
+  "verified_metadata": {
+    "arxiv_id": "2602.22424",
+    "version": "v1",
+    "title": "Causality ≠ Invariance: Function and Concept Vectors in LLMs",
+    "authors": ["Gustaw Opiełka", "Hannes Rosenbusch", "Claire E. Stevenson"],
+    "categories": ["cs.CL", "cs.LG"],
+    "primary_category": "cs.CL",
+    "published": "2026-02-25",
+    "updated": "2026-02-25",
+    "abstract": "Attention heads selected by restorative activation patching and by representational similarity analysis are compared as function vectors and concept vectors across relational tasks, prompt formats, and additive steering interventions."
+  },
+  "equation_refs": [
+    {
+      "label": "restorative causal indirect effect",
+      "latex": "\\operatorname{CIE}(a_{\\ell j})=f(\\widetilde p\\mid\\mathbf a_{\\ell j}:=\\overline{\\mathbf a}_{\\ell j})[y]-f(\\widetilde p)[y]",
+      "role": "measure how much inserting a clean mean head activation restores the expected token probability on a corrupted prompt",
+      "symbols": {
+        "a_lj": "output of head j in layer l",
+        "p_tilde": "corrupted relational prompt",
+        "a_bar_lj": "mean clean activation used for patching",
+        "y": "expected next token"
+      },
+      "evidence": "paper.pdf pp. 3–4, Equations (1)–(2)",
+      "interpretation": "这是针对 chosen corruption 的 restorative sufficiency-type intervention；它不证明该 head 在 intact run 中必要、独占 mediation，或 patch 后 activation 仍在自然分布上。"
+    },
+    {
+      "label": "concept representational similarity score",
+      "latex": "\\operatorname{ConceptRSA}(a_{\\ell j})=\\rho_S(\\operatorname{vec}_\\triangle\\mathrm{RSM}_{\\ell j},\\operatorname{vec}_\\triangle\\mathrm{DM}_{concept})",
+      "role": "rank heads whose pairwise activation similarities align with a hand-defined shared-concept design matrix",
+      "symbols": {
+        "RSM": "cosine-similarity matrix of last-token head activations",
+        "DM_concept": "binary matrix indicating whether two prompts share a relation",
+        "rho_S": "Spearman rank correlation",
+        "vec_triangle": "lower-triangle vectorization"
+      },
+      "evidence": "paper.pdf pp. 4–5, Equations (3)–(4)",
+      "interpretation": "RSA 描述表征组织而不施加干预；同一 prompts 用于选 heads 和展示结构会产生 selection circularity，约 55 万 pairwise entries 也因共享 prompts 而非独立。"
+    },
+    {
+      "label": "additive residual-stream steering",
+      "latex": "\\mathbf h_\\ell\\leftarrow\\mathbf h_\\ell+\\alpha\\mathbf v,\\qquad \\mathbf v=\\sum_{a_{\\ell j}\\in\\mathcal A}\\overline{\\mathbf a}_{\\ell j}",
+      "role": "test whether a constructed sum of selected head activations can shift next-token preference toward a relation already present in context",
+      "symbols": {
+        "h_l": "last-token residual stream at intervention layer l",
+        "v": "function or concept vector built from selected heads",
+        "alpha": "swept intervention strength",
+        "A": "top-K AIE-selected or RSA-selected head set"
+      },
+      "evidence": "paper.pdf pp. 6–8, Equations (5)–(6)",
+      "interpretation": "additive steering 证明工程方向在该 prompt 上具备干预充分性；它不证明完整模型自然计算、读取或需要这一精确向量，更不等于 intact-run necessity。"
+    }
+  ],
+  "figure_refs": [
+    {
+      "label": "Figure 1 function versus concept vectors",
+      "asset_path": "assets/collection-figures/2602.22424/figure-1-function-vs-concept-vectors.webp",
+      "section": "核心结果与证据",
+      "role": "contrast format-clustered function-vector similarities with more concept-aligned concept-vector similarities and summarize the two head-selection procedures",
+      "evidence": "paper.pdf p. 1, Figure 1; official source asset plots_pdf/main_2.pdf",
+      "alt_text": "Two similarity matrices compare function and concept vectors beside schematics of AIE-based and RSA-based head selection.",
+      "caption": "Figure 1：FV/CV similarity matrices 与 AIE/RSA 选 head 流程。Llama 70B 中 FV 的 within-format mean cosine 为 0.90，CV 为 0.55；CV 只是更少受格式影响，并非完美 invariant。",
+      "interpretation": "图概括 operational invariance 与 head-selection 差异，但 RSA 面板本身不是因果证据；activation-patching 与 steering 的作用域需分别核对。"
+    }
+  ],
+  "cover": {
+    "mode": "source_figure",
+    "asset_path": "assets/collection-figures/2602.22424/figure-1-function-vs-concept-vectors.webp",
+    "label": "Figure 1 function versus concept vectors",
+    "visual_type": "comparison",
+    "evidence": "paper.pdf p. 1, Figure 1; official source asset plots_pdf/main_2.pdf",
+    "alt_text": "Similarity matrices and intervention schematics contrast format-sensitive function vectors with more concept-aligned concept vectors.",
+    "caption": "FV 更随 prompt format 聚类，CV 更随 concept 对齐；表征不变性、patching 因果效应与 steering 效应是三个不同命题。",
+    "selection_rationale": "The official overview makes the paper's central distinction legible while visually separating the descriptive RSA route from the intervention-based AIE route."
+  },
+  "sections": [
+    {
+      "title": "作者信息",
+      "paragraphs": [
+        "作者为 Gustaw Opiełka、Hannes Rosenbusch 与 Claire E. Stevenson，来自 University of Amsterdam；论文发表于 ICLR 2026。",
+        "本站核验 arXiv:2602.22424v1：2026-02-25 提交，主分类 cs.CL、交叉分类 cs.LG，PDF 25 页；这是当前唯一官方版本。",
+        "Collection 来源为刘子鸣网站的 Mechanistic Interpretability 条目。"
+      ]
+    },
+    {
+      "title": "研究问题",
+      "paragraphs": [
+        "LLM 中对 in-context relational task 有强 activation-patching 效应的 heads，是否也携带跨 prompt format 稳定的抽象 concept geometry？反过来，RSA 找到的 format-invariant heads 是否就是主要因果执行单元？",
+        "论文将 AIE 排名前列的 heads 求和定义为 Function Vectors（FV），将 concept-RSA 排名前列的 heads 求和定义为 Concept Vectors（CV），比较 head overlap、表征相似性、cross-format steering 与 patching。",
+        "标题给出的答案是一个重要边界：因果干预得分与表征不变性不必落在同一 heads。但“不重合”不等于两个独立 circuits，也不等于 CV 没有因果贡献。"
+      ]
+    },
+    {
+      "title": "背景",
+      "paragraphs": [
+        "activation patching 把 clean run 的内部量注入 corrupted run，并测输出恢复，属于局部干预。效应取决于 corruption、patch value、location 与 output metric，和在原始 intact computation 中删除该量的 necessity test 不同。",
+        "RSA 比较样本间 hidden-state 相似矩阵与概念/格式 design matrix；它像检查 order parameter 是否随某个标签组织，但标签由分析者提供，高相关只表示 decodable organization，不表示模型使用该方向。",
+        "activation steering 向 residual stream 加向量，显示一个工程扰动能改变行为。sufficiency、necessity、natural mediation 与 invariance 是四个不同问题，不能由一次成功 steering 相互替代。",
+        "invariance 也必须指定变换群。本文覆盖七种 word-level relations、三种 prompt formats 与少量语言；这不是对任意 paraphrase、syntax、domain、tokenizer 或任务的 universal invariance。"
+      ]
+    },
+    {
+      "title": "给物理学家的 AI 导读",
+      "paragraphs": [
+        "可以把 prompt format 看作 nuisance coordinate、relation concept 看作希望保留的 state label。CV 的目标是让表示对前者变化较小、对后者可分；但 within-format cosine 仍为 0.55，说明只是相对 disentanglement。",
+        "AIE 像响应函数，但不是平衡涨落关系：它测一次 finite intervention 在 corrupted background 上的输出变化。不同 background 或 patch amplitude 可给不同 ranking，因此不能把 head AIE 当固有耦合常数。",
+        "RSM 的 $1050^2$ pairs 看似样本巨大，实则每个 prompt 被重复使用，pair entries 强相关。可靠 uncertainty 应在 prompt/dataset level bootstrap，而不是把矩阵下三角当约 55 万独立观测。",
+        "top-K 集合零 overlap 只说明两个 ranking 的阈值区域不交；在连续 residual stream 中，heads 可通过 superposition 与 downstream nonlinearities 相互作用，不构成正交子系统或独立守恒量。"
+      ]
+    },
+    {
+      "title": "模型与方法",
+      "paragraphs": [
+        "模型为 Llama 3.1 8B/70B 与 Qwen 2.5 7B/72B。七类 mappings 包括 antonym、category、cause-effect、synonym、translation、present-past 和 singular-plural。",
+        "每个 relation 有三种 formats、每格 50 prompts，共 21 datasets、1,050 extraction/RSA prompts；open-ended 用 5-shot，multiple-choice 用 3-shot，因此格式比较同时改变 demonstrations 与输出约束。",
+        "AIE 对 corrupted relational prompts 做 mean clean head-output patching，再跨 prompts、concepts 与 formats 平均；top-K AIE heads 构成 FV。concept-RSA 对 head-output RSM 与 concept design matrix 做 Spearman correlation；top-K 构成 CV。",
+        "AmbiguousICL 混合三条第一 relation demonstrations 与两条 English→French examples，使 unsteered model 倾向后者；将从独立 50 extraction prompts 得到的 FV/CV 加到 last-token residual，在每 concept 100 steering prompts 上测 target-token $\\Delta P$。",
+        "steering sweep 为 $K\\in\\{1,3,5,10,20,50\\}$、$\\alpha\\in\\{1,3,5,10,15\\}$，在 antonym 上跨 formats 最大化；KL 分析又选 in-distribution $\\Delta P$ 最高的五 layers。"
+      ]
+    },
+    {
+      "title": "核心结果与证据",
+      "paragraphs": [
+        "四模型各 $K=3,5$ 时 RSA 与 AIE top-K overlap 都为 0；$K=10$ 只有 Llama 8B overlap 1。更大 K 的部分重合在 hypergeometric uniform-subset null 下 nominal $p<0.05$，但无 model/K multiplicity correction。",
+        "CVs 的 concept-RSA 高于 FVs、question-type RSA 更低。Llama 70B 主矩阵中 FV within-format cosine 0.90、CV 0.55，支持“CV 更 format-robust”，不支持“CV 完全 format-free”。",
+        "Llama 70B 的 FV 通常有更大 in-distribution $\\Delta P$，CV 效应较小但在 French open/MC extraction 后更稳定。主图只展示四 concepts，附录扩展到更多 concepts 与四模型。",
+        "在 salty→ 示例，unsteered French token 49%、English sweet 2%；English FV 给 sweet +56%，French/MC FV 分别偏向 French subwords 或 opening bracket；三种 CV 分别给 sweet +49%、+54%、+35%。单 token case 说明现象，不是 population interval。",
+        "CV-steered distributions 与 ID-steered distribution 的汇总 KL 低于 FV，尤其 multiple choice；但 layers 按最高 ID $\\Delta P$ 事后选择、没有 uncertainty，比较存在 outcome-selection bias。",
+        "zero-shot CV effect 很小，而 AmbiguousICL 已含目标 relation；因此最稳妥的说法是 CV addition 可放大 context 中竞争概念，不是独立 instantiate task。",
+        "Llama 70B cross-format patching 的 max AIE 为 0.01–0.41；各 top-five 与标准 FV heads overlap 1–4、与 CV overlap 0。top-five 不入选不等于 effect 为零，也不检验 CV removal necessity。"
+      ]
+    },
+    {
+      "title": "有效性与局限",
+      "paragraphs": [
+        "CV heads 在同一 1,050 prompts 上由 RSA 选择并展示 RSA/相似结构，未见独立 selection set；same-data feature selection 会放大 apparent invariance。pairwise entries 又共享 prompts，不能作为独立 n。",
+        "AIE 是 chosen corruption 上的 mean-activation restorative effect；平均跨 datasets 可隐藏负效应/异质性。它不证明 intact-run necessity、exclusive mediation 或 absence of redundant nonlinear paths。",
+        "steering 是 additive sufficiency，不证明自然机制；论文讨论 FV 似乎 necessary，却没有 removal/ablation necessity experiment。CV top-five 不出现也不能证明 causal absence。",
+        "hypergeometric null 把两 top-K sets 当从全部 heads 独立均匀抽样，忽略 layer structure、score correlation 和 data-driven ranking；多模型、多 K 未校正，nominal significance 证据有限。",
+        "steering hyperparameters 用 antonym outcome 选择，KL layers 用 ID outcome 选择，没有 nested validation。Qwen 72B 的两个异常 CIE datasets 被 post hoc 排除；top-five identity 不变不能覆盖 magnitudes、larger K 或其他异常。",
+        "中心图多为 means 或单 token examples，无 seed distributions、confidence intervals 或 general steering tests。四个模型共享 prompts 且只来自 Llama/Qwen，不是统计意义的独立 replicates。",
+        "七种 word relations、English/French/Spanish 与三 formats 很窄；formats 同时改变 shot count、token length、output vocabulary 与 templates。GPT-4o 生成的部分 pairs 也可能含歧义/语料先验。"
+      ]
+    },
+    {
+      "title": "复现与资源",
+      "paragraphs": [
+        "复现应 pin model/tokenizer revisions、全部 prompts/pairs、generation seeds、corruption rule、patch activation、layers/heads 与 exact target-token scoring；单独审计 GPT-4o-generated category/causality pairs。",
+        "把 prompts 分成 selection/validation/test：只在 selection 排 RSA/AIE heads 和调 $K,\\alpha$/layers，在 held-out formats、languages、concepts 上报告固定配置。",
+        "uncertainty 以 prompt/dataset 为 block bootstrap，报告逐 concept/format effects 与 negative tails；top-K overlap 使用 layer/score-structure-preserving permutation，并校正 models×K。",
+        "补 intact-run necessity：对 FV/CV directions 做 matched projection/removal、causal scrubbing 或 mediation，并与随机同 norm、同 layer、同 covariance directions 比较；测试 FV-CV joint/interacting interventions。",
+        "扩展 invariance group 到 paraphrase、shot count、option permutation、unrelated languages/tokenizers 和 natural tasks；将 additive steering 的 target-token shift 与完整行为正确性、side effects 和 KL drift 一起测。"
+      ]
+    },
+    {
+      "title": "阅读指南",
+      "paragraphs": [
+        "快速路线：pp. 3–5 看 datasets、AIE/RSA 与 Figure 1；pp. 5–8 看 overlap 与 steering；pp. 8–10 看 KL、cross-format claims 与 discussion；pp. 17–25 看 hyperparameters、tests 和 appendices。",
+        "物理路线：把 RSA 当 label-conditioned order parameter、patching 当有限响应实验，但先确认 nuisance transformations、样本相关和 intervention background。",
+        "AI 路线：始终分开 representation organization、restorative patching、additive steering、intact necessity 与 behavioral correctness。",
+        "批判路线：重点检查 same-data RSA selection、pairwise dependence、top-K null、outcome-selected hyperparameters/layers、post-hoc exclusion 与“not selected”到“not causal”的逻辑跳跃。"
+      ]
+    }
+  ],
+  "evidence_refs": [
+    "paper.pdf pp. 3–5, Equations (1)–(5) and Figure 1: four-model dataset, restorative AIE, RSA head selection, FV/CV construction and operational invariance",
+    "paper.pdf pp. 5–8: top-K overlap, AmbiguousICL, additive steering, token examples and sufficiency-versus-necessity boundary",
+    "paper.pdf pp. 8–10 and pp. 17–25: outcome-selected KL layers/hyperparameters, hypergeometric null, cross-format patching, Qwen exclusion and alternative mechanisms",
+    "source PDF SHA-256 9b4658d2b8053a004062f0a7c949df76e59d73cb39e4669feec1e789ab0ddc4d",
+    "official arXiv v1 source archive SHA-256 2774a1485ec6c526d57e740b5fdedff58825d93068f4eabfcf881910b9d3473f",
+    "MinerU Markdown SHA-256 897bb4fcbe9945f458e1ba947beff38058b5cfce8496592e959c6f21f2ba6964",
+    "Evidence packet SHA-256 6c159f93ec0c70ff247339989e2f84292e766ddc6e495cbdd7193029183ff780",
+    "Evidence status: full text, rendered pages and official TeX verified against latest arXiv v1; operational invariance, format/language confounding, RSA selection and pair dependence, restorative patching, additive sufficiency, intact necessity, top-K null and multiplicity, outcome selection, post-hoc exclusion, model/concept coverage and alternative-mechanism boundaries recorded; no independent reproduction performed."
+  ]
+}

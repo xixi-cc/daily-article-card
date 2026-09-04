@@ -1,0 +1,197 @@
+{
+  "arxiv_id": "2602.22122",
+  "source_version": "v1",
+  "source_pdf": "https://arxiv.org/pdf/2602.22122v1",
+  "title_en": "Probing the Geometry of Diffusion Models with the String Method",
+  "title_zh": "用弦方法探测扩散模型的几何",
+  "curation_status": "full_text_verified",
+  "card_standard_version": "2.4",
+  "audience_profile": "physics_ai_literate_physicist",
+  "paper_profile": "theory_experiment",
+  "style_reference": "physicist_daily_arxiv",
+  "provenance": {
+    "program": "Collection",
+    "catalog": "Paper Collection",
+    "catalog_record_id": "2602.22122",
+    "catalog_record_ids": ["2602.22122"],
+    "catalog_topic": "Representation Learning",
+    "collection_date": "2026-08-30",
+    "sampled_at": "2026-08-31",
+    "selected_by": "ziming_mineru_serial_goal",
+    "sampling_seed": "not_applicable_source_complete",
+    "candidate_count": 464
+  },
+  "verified_metadata": {
+    "arxiv_id": "2602.22122",
+    "version": "v1",
+    "title": "Probing the Geometry of Diffusion Models with the String Method",
+    "authors": ["Elio Moreau", "Florentin Coeurdoux", "Grégoire Ferre", "Eric Vanden-Eijnden"],
+    "categories": ["stat.ML", "cs.LG"],
+    "primary_category": "stat.ML",
+    "published": "2026-02-25",
+    "updated": "2026-02-25",
+    "abstract": "String-method dynamics built from a pretrained diffusion model's velocity and score fields are used to construct transported curves, minimum-energy-path approximations, and finite-temperature principal curves between selected endpoints."
+  },
+  "equation_refs": [
+    {
+      "label": "marginal-preserving score-corrected SDE",
+      "latex": "dX_t=\\bigl[b_t(X_t)+\\gamma_t^2s_t(X_t)\\bigr]dt+\\sqrt2\\,\\gamma_t dW_t,\\qquad s_t=\\nabla\\log\\rho_t",
+      "role": "add Langevin exploration to the transport flow while preserving the target marginal density in the exact-field continuum limit",
+      "symbols": {
+        "rho_t": "time-dependent density learned by the diffusion or flow model",
+        "b_t": "probability-flow transport velocity",
+        "s_t": "score field of rho_t",
+        "gamma_t": "user-chosen exploration or relaxation strength"
+      },
+      "evidence": "paper.pdf pp. 3 and 14, Equations (1), (8)–(10)",
+      "interpretation": "边缘分布保持依赖 exact $b_t,s_t$、连续时间与正确关系；learned score、离散积分、quench 和重参数化都会引入本文未界定的误差。"
+    },
+    {
+      "label": "reparametrized string evolution",
+      "latex": "\\dot\\phi_t(s)=v_t(\\phi_t(s))+\\lambda_t(s)\\,\\partial_s\\phi_t(s)",
+      "role": "evolve every image of a connecting curve and use tangential motion to maintain approximately uniform arc-length spacing",
+      "symbols": {
+        "phi_t_s": "point at curve coordinate s and diffusion time t",
+        "v_t": "chosen transport, score-relaxed, or finite-temperature effective velocity",
+        "lambda_t": "Lagrange multiplier controlling tangential reparametrization",
+        "s": "string coordinate between the two endpoints"
+      },
+      "evidence": "paper.pdf pp. 3–4, Equations (2)–(3)",
+      "interpretation": "$\\lambda_t$ 只改变曲线参数化而非理想连续几何形状；实际算法用有限 images、Euler step 和 interpolation，需 convergence/discretization study 才能量化偏差。"
+    },
+    {
+      "label": "quasi-static minimum-energy condition",
+      "latex": "v_t=b_t-\\gamma_t^2\\nabla V_t,\\qquad [\\nabla V(\\phi^\\star(s))]^\\perp=-[s(\\phi^\\star(s))]^\\perp=0",
+      "role": "identify a relaxed string with a path tangent to the score in the formal score-dominated quasi-static limit",
+      "symbols": {
+        "V_t": "negative log model density up to a constant",
+        "gamma_t": "score-relaxation strength",
+        "perp": "component normal to the current string",
+        "phi_star": "limiting relaxed curve"
+      },
+      "evidence": "paper.pdf pp. 4–5, Equation (6) and MEP discussion",
+      "interpretation": "MEP 对应是 $\\gamma\\gg1$ 且 landscape 变化慢的形式极限；有限 $\\gamma$ 的图像路径是数值近似，不是已有误差界的真实数据 manifold geodesic。"
+    }
+  ],
+  "figure_refs": [
+    {
+      "label": "Figure 4 score-weight and likelihood sweep",
+      "asset_path": "assets/collection-figures/2602.22122/figure-4-score-weight-likelihood-realism.webp",
+      "section": "核心结果与证据",
+      "role": "compare displayed beaver interpolation strings and their model likelihoods as the score-relaxation weight changes",
+      "evidence": "paper.pdf p. 7, Figure 4; official source asset Images_arxiv/beaver_intensity_graph_with_dos.pdf",
+      "alt_text": "Rows of beaver interpolation images at three score strengths are paired with log-likelihood curves over an ImageNet validation density.",
+      "caption": "Figure 4：同一 beaver endpoint pair 在 $\\gamma=15,2,10^{-2}$ 下的路径与 model log-likelihood。每条完整 string 据称 71 点但只显示 11 张；realistic/cartoon-like 是视觉判断，未报告 endpoints、seeds 或不确定性。",
+      "interpretation": "图展示 score relaxation 会把中间态推向高 likelihood、甚至单色/卡通样模式；它不能区分 concentration-of-measure、score/VAE 偏差与算法选择，也不是总体 realism benchmark。"
+    }
+  ],
+  "cover": {
+    "mode": "source_figure",
+    "asset_path": "assets/collection-figures/2602.22122/figure-4-score-weight-likelihood-realism.webp",
+    "label": "Figure 4 score-weight and likelihood sweep",
+    "visual_type": "comparison",
+    "evidence": "paper.pdf p. 7, Figure 4; official source asset Images_arxiv/beaver_intensity_graph_with_dos.pdf",
+    "alt_text": "A score-weight sweep contrasts high-likelihood cartoon-like strings with visually recognizable beaver intermediates.",
+    "caption": "score weight 改变 string 的 model likelihood 与视觉中间态；单个 endpoint pair、无量化 realism 评价。",
+    "selection_rationale": "The official figure most directly exposes the method's central likelihood-versus-visual-typicality tradeoff and the limits of interpreting model density as perceptual geometry."
+  },
+  "sections": [
+    {
+      "title": "作者信息",
+      "paragraphs": [
+        "作者为 Elio Moreau、Florentin Coeurdoux、Grégoire Ferre 与 Eric Vanden-Eijnden；单位包括 Capital Fund Management ML Lab 与 NYU Courant Institute。",
+        "本站核验 arXiv:2602.22122v1：2026-02-25 提交，主分类 stat.ML、交叉分类 cs.LG，PDF 25 页；这是当前唯一官方版本。",
+        "Collection 来源为刘子鸣网站的 Representation Learning 条目。"
+      ]
+    },
+    {
+      "title": "研究问题",
+      "paragraphs": [
+        "给定两个图像或蛋白构象 endpoints，能否只利用 pretrained diffusion model 的 transport/score field，构造一条连续路径，揭示模型分布中的高概率过渡区域？",
+        "论文把 rare-event sampling 中的 string method 移植到 diffusion time：pure transport 搬运初始曲线；强 score relaxation 寻找 minimum-energy-like path；有限 temperature 加 walkers 与 EMA，近似 principal curve。",
+        "这里探测的是 learned density 的、且依赖算法的几何，不是真实数据流形或物理 transition ensemble 的直接测量；端点、初始化、score 误差与数值参数都可能改变路径。"
+      ]
+    },
+    {
+      "title": "背景",
+      "paragraphs": [
+        "diffusion/flow model 定义随时间从 noise 到 data 的密度 $\\rho_t$。velocity $b_t$ 推动概率质量，score $s_t=\\nabla\\log\\rho_t$ 指向局部高密度方向；两者可组合成保持理想 marginals 的随机动力学。",
+        "string method 用一列 images 离散连接两端的曲线，让每个 image 沿场演化，并反复重参数化避免点堆积。传统 MEP 要求能量梯度的法向分量为零，而切向只改变参数化。",
+        "principal curve 是自洽条件 $\\phi(s)=\\mathbb E[X\\mid s^\\star(X)=s]$ 的条件均值曲线。本文以 Voronoi cell 内 walkers 的时间平均和 EMA 逼近它，依赖足够快的 cell mixing。",
+        "算法 temperature 满足 tempered density $\\rho_T\\propto\\rho_1^{1/T}$；它不是 ImageNet 的热力学温度。蛋白案例中的 model free energy 也未自动校准为分子真实势能面。"
+      ]
+    },
+    {
+      "title": "给物理学家的 AI 导读",
+      "paragraphs": [
+        "最接近物理的读法是把 pretrained score 当有效力场、string images 当 reaction-coordinate discretization。但该力场由有限数据与神经网络拟合；得到的是 model landscape 上的路径，而非 force field 或实验自由能上的 minimum-action path。",
+        "强 $\\gamma$ 极限需要 relaxation 快于 $\\rho_t$ 的变化，类似绝热/准静态消元。有限 $\\gamma$、有限 $\\Delta t$ 与末端 score quench 会破坏这一极限；没有随 $\\gamma,\\Delta t,N$ 的收敛图时，MEP 名称应理解为目标而非已证精度。",
+        "图像高 likelihood 不等于 perceptual typicality：高维分布的 mode 可落在典型集之外。但 concentration of measure 不是排除模型偏差的证据，VAE、score calibration 和 training distribution 仍可能造成卡通化。",
+        "蛋白的 TICA 投影像 reaction-coordinate 图，但二维重叠可隐藏高维分离；若没有 committor、kinetics、force-field energy 或实验 intermediate，不能把一条平滑 model path 叫真实折叠/构象转换机制。"
+      ]
+    },
+    {
+      "title": "模型与方法",
+      "paragraphs": [
+        "pure transport 取两个 endpoints 的 backward-encoded noises，在 noise sphere 上以球面 geodesic 初始化 string，再随 probability-flow ODE 推到 data；结果连续但显式依赖初始化。",
+        "gradient-dominated string 取 $v_t=b_t+\\gamma_t^2s_t$；形式上 $\\gamma\\to\\infty$ 时法向 score 消失。实现对 interior images 做 Euler-like update、插值重参数化，endpoints 仍随 flow。",
+        "finite-temperature 版本让每个 cell 的 walker 以噪声 $\\sqrt{2T}\\gamma_t$ 演化，拒绝越出 Voronoi cell 的 move，再用 rate $\\eta$ 的 EMA 拖动 string；假设 walker equilibration 比 landscape evolution 快。",
+        "图像实验用 pretrained SiT-XL-2-256 与 ImageNet 256×256，VAE latent 为 4×32×32；SiT depth 28、hidden 1152、16 heads。正文描述 string 为 71 points，但一般算法写 $N+1$ images。",
+        "蛋白实验使用 DiG/SE(3) 做 adenylate kinase 4AKE→1AKE，ScoreMD/$\\mathbb R^3$ 做 BBA 与 Chignolin，并在附录用 ConfDiff/$SO(3)$ 做 WW domain。"
+      ]
+    },
+    {
+      "title": "核心结果与证据",
+      "paragraphs": [
+        "作者建议 principal-curve 约 50–70 images、$\\eta=0.1$–0.5；稳定性要求 $\\Delta t=O(\\gamma^{-2})$，因此 MEP/principal curve 显著贵于 pure transport，但未给 wall-clock、memory、tolerance 或 scaling benchmark。",
+        "Figure 4 在 $T=0$ 比较 $\\gamma=15,2,10^{-2}$：大 $\\gamma$ 的中段 likelihood 高、视觉趋于单色/卡通；小 $\\gamma$ 更保留 beaver-like 中间态。右侧把路径 log-likelihood 叠在 ImageNet-validation likelihood density 上。",
+        "固定 $\\gamma=7$ 时，$T=0.1,0.5,0.9$ 的 sweep 随温度升高把路径 likelihood 推近 validation distribution，视觉上更自然；goose 例给一条 EMA principal curve 与三个 walker realizations。",
+        "Figure 6 汇总 validation、MEP 与不同 temperature strings 的 likelihood histograms，但未给 validation images、strings、endpoint pairs、seeds 或检验；同一 string 上的 images 也非独立样本。",
+        "Gaussian-mixture score diagnostic 每维训练 10 个三隐层 MLP，并显示 $t\\to1$ 时相对 score error 上升，支持末端 quench 的动机；它不测 SiT、DiG、ScoreMD 或 ConfDiff 沿展示路径的 score error。",
+        "AdK 路径视觉上保持 secondary structure、避免明显 steric clashes；ScoreMD 的 BBA/Chignolin relaxed paths 在同一模型采样估出的 TICA/free-energy 图上比初始 strings 能量低。这是模型内一致性，不是独立 MD/实验验证。"
+      ]
+    },
+    {
+      "title": "有效性与局限",
+      "paragraphs": [
+        "MEP 对应只在 score-dominated quasi-static 极限给出；principal curve 又依赖 Voronoi 内快混合、walker conditional expectation 与 EMA。论文没有 finite-$\\gamma$ theorem、mixing diagnostic、discretization study 或 convergence error。",
+        "ImageNet 设置印刷为 $0.1\\ge t\\ge0.95$，区间不可能成立；上下文似乎想写 $0.1\\le t\\le0.95$，但复现者应向作者确认，不能静默修正。$N$、$N+1$ 与“71 points”也有 convention 歧义。",
+        "Figure 4 只有一个展示的 beaver endpoint pair；realistic/cartoon-like 没有 human study、perceptual metric、blind comparison 或专用 morphing baseline。附录多类别不能替代 endpoint selection、失败率和跨 seed 统计。",
+        "histogram 使用 dependent path images 却无 n、independence unit、test、p-value 或 interval；文中的 significantly 不具有可核验的统计含义。likelihood gap 也不是像素/latent/Riemannian metric 的 manifold diameter。",
+        "learned-score SDE 的精确 marginal identity 不保证离散近似保持；路径不能经过 pretrained model 赋予低概率的真实过渡态。初始化与 endpoints 可选择不同 local paths，唯一性未检验。",
+        "protein plausibility 仅定性：无 molecular-dynamics baseline、force-field energy、RMSD/clash metric、solvent、committor、transition rate、kinetics 或 experimental intermediate。TICA 二维投影还可能隐藏高维 crossing。",
+        "改变 $\\gamma,T$ 是 post-hoc path-search intervention，不改变 pretrained representation 或识别 causal circuit。覆盖一个 ImageNet generator 和少数 protein models/examples，不能外推到所有 diffusion models 或 OOD endpoints。"
+      ]
+    },
+    {
+      "title": "复现与资源",
+      "paragraphs": [
+        "先 pin pretrained checkpoints、VAE、score conversion、endpoints、backward noises、string initialization、all random seeds、$N$ convention、$\\gamma_t/T/\\eta$ schedules、integrator 与 rejection/EMA code。",
+        "对 $N,\\Delta t,\\gamma,\\eta$ 做 convergence grid，报告法向 score residual、arc-length error、walker autocorrelation/effective sample size、cell acceptance 与 path-to-path distance。",
+        "图像上预注册 endpoint sampling，报告成功/失败率与跨 seeds 分布；加入 LPIPS/FID-like conditional metrics、blind human comparison、latent interpolation 和 task-specific morphing baselines，但不要把单一 metric 等同 realism。",
+        "likelihood histogram 以 string/endpoint pair 为 cluster 做区间与检验，公开样本数；分别估计 exact-density toy problems 与 learned-score bias，验证末端 quench 的 sensitivity。",
+        "蛋白路径需与 enhanced-sampling MD/force field 比较，检查 energy barrier、clashes、RMSD/contact maps、committor 与 known intermediates；模型-derived landscape 和外部 physical validation 必须分开报告。"
+      ]
+    },
+    {
+      "title": "阅读指南",
+      "paragraphs": [
+        "快速路线：pp. 3–6 看三种 string regime 与算法；pp. 7–9 看 ImageNet likelihood/temperature；pp. 9–11 看 proteins 与 limitations；pp. 14–18 看 score identity、diagnostic 和模型设置。",
+        "物理路线：重点核对准静态 MEP 极限、walker mixing、反应坐标、temperature 的算法含义，以及 model energy 与 physical free energy 的区别。",
+        "AI 路线：区分 probability-flow transport、score relaxation、tempering、VAE latent 与 likelihood typical set；它们分别引入不同 approximation。",
+        "批判路线：检查不可能的时间区间、$N/N+1$、单 endpoint 图像、无 n 的 histogram、synthetic-only score test，以及 protein 的模型内循环验证。"
+      ]
+    }
+  ],
+  "evidence_refs": [
+    "paper.pdf pp. 3–6, Equations (1)–(7) and algorithm table: marginal-preserving SDE, string evolution, pure transport, quasi-static MEP and walker/EMA principal-curve approximation",
+    "paper.pdf pp. 7–9, Figures 4–7: ImageNet score-weight and temperature sweeps, likelihood overlays/histograms, selected endpoints and visual-realism boundaries",
+    "paper.pdf pp. 9–11 and Figure 8: DiG/ScoreMD protein paths, TICA/model-energy analysis, qualitative plausibility and missing independent physical validation",
+    "paper.pdf pp. 14–18: velocity-score relation, Gaussian-mixture score diagnostic, SiT/DiG/ScoreMD settings and the printed schedule/convention ambiguities",
+    "source PDF SHA-256 ac7bdbe6d3117b5417e4664d0da1dde64b67420e244e1145d8a8a27be225a609",
+    "official arXiv v1 source archive SHA-256 349f22c240f9da0388b012f874366cb3501464619ee51cb31ef946c7b22cecfd",
+    "MinerU Markdown SHA-256 f59096a94b28562d993bc1839db3647770b484946e8e246b06741123312069c7",
+    "Evidence packet SHA-256 4a38a9496991b036a910af5d9b0eaaf483130af7f7bbd63fc480e692f7b3df89",
+    "Evidence status: full text, rendered pages and official TeX verified against latest arXiv v1; exact versus learned-score identity, quasi-static limit, finite-gamma and walker/EMA approximation, convergence, initialization, schedule and N convention, likelihood geometry, subjective realism, dependent histogram samples, model-internal protein validation, TICA projection, score error and post-hoc causality boundaries recorded; no independent reproduction performed."
+  ]
+}
