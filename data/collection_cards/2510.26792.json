@@ -1,0 +1,125 @@
+{
+  "arxiv_id": "2510.26792",
+  "source_version": "v2",
+  "source_pdf": "https://arxiv.org/pdf/2510.26792v2",
+  "title_en": "Learning Pseudorandom Numbers with Transformers: Permuted Congruential Generators, Curricula, and Interpretability",
+  "title_zh": "Transformer 学习伪随机数：置换同余生成器、课程学习与可解释性",
+  "curation_status": "full_text_verified",
+  "card_standard_version": "2.4",
+  "audience_profile": "physics_ai_literate_physicist",
+  "paper_profile": "theory_numerics",
+  "style_reference": "physicist_daily_arxiv",
+  "provenance": {
+    "program": "Collection", "catalog": "Paper Collection", "catalog_record_id": "2510.26792",
+    "catalog_record_ids": ["2510.26792"], "catalog_topic": "Representation Learning",
+    "collection_date": "2026-08-30", "sampled_at": "2026-08-31",
+    "selected_by": "ziming_mineru_serial_goal", "sampling_seed": "not_applicable_source_complete", "candidate_count": 464
+  },
+  "verified_metadata": {
+    "arxiv_id": "2510.26792", "version": "v2",
+    "title": "Learning Pseudorandom Numbers with Transformers: Permuted Congruential Generators, Curricula, and Interpretability",
+    "authors": ["Tao Tao", "Maissam Barkeshli"],
+    "categories": ["cs.LG", "cond-mat.dis-nn", "cs.CR"], "primary_category": "cs.LG",
+    "published": "2025-10-30T17:59:09Z", "updated": "2026-02-16T23:41:23Z",
+    "abstract": "The paper trains Transformers to predict several permuted congruential pseudorandom generators, studies context/model/data scaling and curriculum learning up to modulus 2^22, and analyzes bit-structure clusters in learned representations."
+  },
+  "equation_refs": [
+    {
+      "label": "Permuted congruential generator",
+      "latex": "s_i=(a s_{i-1}+c)\\bmod m,\\qquad x_i=f(s_i)",
+      "role": "separate the simple hidden linear recurrence from the nonlinear bit permutation exposed to the model",
+      "symbols": {"s_i": "hidden integer state", "a_c": "multiplier and increment", "m": "power-of-two modulus", "f": "shift/XOR/rotation/truncation permutation", "x_i": "observed output"},
+      "evidence": "paper.pdf p. 3, Eq. (1)",
+      "interpretation": "The Transformer sees output sequences, not the internal state or generator parameters; predictability here is learned from the sampled family."
+    },
+    {
+      "label": "Truncated LCG closure",
+      "latex": "z_{t,k}=x_t\\bmod 2^k,\\qquad z_{t+1,k}=(a z_{t,k}+c)\\bmod 2^k",
+      "role": "explain why retained low bits form their own shorter-period recurrence",
+      "symbols": {"k": "number of retained low bits", "z": "truncated output", "a_c": "LCG parameters"},
+      "evidence": "paper.pdf p. 6, Eqs. (4)–(5)",
+      "interpretation": "This exact algebra applies to truncated LCGs; PCG bit permutations obscure it and should not be assumed to obey the same visible recurrence."
+    },
+    {
+      "label": "XSLRR output map",
+      "latex": "v=s_i\\gg(2n-c_b),\\quad s_i'=s_i\\oplus(s_i\\gg n),\\quad x_i=\\operatorname{rot}_v(s_i'\\bmod 2^n)",
+      "role": "show how control bits rotate an XOR-mixed and truncated state",
+      "symbols": {"n": "output bit width", "c_b": "number of control bits", "gg": "right shift", "oplus": "bitwise XOR", "rot_v": "right rotation by v"},
+      "evidence": "paper.pdf p. 11, Eqs. (7)–(9)",
+      "interpretation": "The variable rotation makes the observed sequence much less directly invertible than an LCG, but experimental success is not a general cryptanalytic break."
+    }
+  ],
+  "figure_refs": [{
+    "label": "Figure 7", "asset_path": "assets/collection-figures/2510.26792/figure-7-token-embedding-clusters.webp",
+    "section": "核心结果与证据", "role": "show spontaneous grouping of integer tokens by rotation-invariant zero-run structure",
+    "evidence": "paper.pdf p. 9, Figure 7",
+    "alt_text": "XSLRR-16/8 token embedding 的前两个主成分散点图形成 18 个彩色簇，右表列出各簇对应的循环不变零游程模式。",
+    "caption": "模型没有获得人工 bit 标签，却在 embedding 主成分中按循环不变的零游程结构分簇。",
+    "interpretation": "PCA clustering reveals decodable representation structure; it does not by itself prove that these two components causally implement prediction."
+  }],
+  "cover": {
+    "mode": "source_figure", "asset_path": "assets/collection-figures/2510.26792/figure-7-token-embedding-clusters.webp",
+    "label": "Figure 7", "visual_type": "distribution", "evidence": "paper.pdf p. 9, Figure 7",
+    "alt_text": "伪随机数 token embedding 按零游程模式形成的 PCA 簇。",
+    "caption": "位旋转不变量在模型表征中自发成为可见坐标。",
+    "selection_rationale": "It connects the empirical prediction result to the paper's most concrete representation-level mechanism clue."
+  },
+  "sections": [
+    {"title": "作者信息", "paragraphs": [
+      "Tao Tao、Maissam Barkeshli；作者来自 University of Maryland, College Park 物理系，后者另属 Meta FAIR 与 Joint Quantum Institute。",
+      "本站核验 arXiv:2510.26792v2：初投 2025-10-30，更新于 2026-02-16；主分类 cs.LG，另含 cond-mat.dis-nn、cs.CR，共 27 页；正式发表于 ICLR 2026。",
+      "Collection 来源为刘子鸣网站的 Representation Learning 条目。"
+    ]},
+    {"title": "研究问题", "paragraphs": [
+      "伪随机数生成器由确定性递推产生，却被设计成让有限观察者难以预测。论文把 PCG 序列当作一种受控的“隐藏动力学反演”任务：Transformer 能否仅凭上下文样本推断未见序列的下一项？",
+      "PCG 比线性同余生成器多了移位、XOR、可变旋转和截断，隐藏状态不直接可见。作者进一步问：所需上下文怎样随模数增长，大模数训练为何长期停滞，内部 embedding 学到了什么 bit 结构？",
+      "任务是对训练分布内生成器家族的统计学习，不应直接等同于破解通用或密码学安全的 PRNG。"
+    ]},
+    {"title": "背景", "paragraphs": [
+      "隐藏状态按 LCG 线性递推，输出函数 f 再打乱其 bit。XSLRR/XSHRR 使用高位作旋转控制位，对状态移位、XOR、截断并旋转；TLCG 只保留若干低位，作为可解析对照。",
+      "每个上下文来自新的参数和初态，因此模型不能只背单条序列。多生成器联合训练还要求模型先从上下文识别当前是哪类置换，再预测它的递推。",
+      "经典攻击通常利用已知生成器结构、参数假设或周期完成。本文比较的是指定采样设置下、端到端模型在有限观测位置的预测能力；“超过已发表攻击”是该受控实验中的比较。"
+    ]},
+    {"title": "给物理学家的 AI 导读", "paragraphs": [
+      "可把 PCG 看成一个有限状态离散动力系统：s 是不可观测微观态，x 是经过非线性观测算符 f 的时间序列。Transformer 所做的接近从观测历史估计隐变量与演化律。",
+      "所需上下文约随 √m 增长，像系统尺度增大时识别时间出现幂律。这里是经验 scaling law，模数只取有限个 2 的幂，尚无普适指数或误差条证明。",
+      "大模数的长平台像优化中的亚稳态；混入小模数数据提供一条由易到难的参数路径。它改善的是有限预算下的可达性，而不是改变目标生成器的数学可预测性。",
+      "PCA 簇像从高维表征投影出的序参量。簇按循环不变零游程排列说明 bit 结构可读出，但 PCA 方差很小，且相关结构未被因果消融为唯一算法。"
+    ]},
+    {"title": "模型与方法", "paragraphs": [
+      "作者从头训练最多约 5,000 万参数的 decoder-only Transformer，数据规模最高约 50 亿 token；模数从较小系统扩展到 2^22，并测试 TLCG、XSLRR、XSHRR 等多种协议。",
+      "模型根据前缀逐 token 预测。实验扫描上下文位置、保留 bit 数、样本多样性、层数和注意力头数；联合数据与单一生成器数据分别训练。",
+      "对 m≥2^20，作者比较随机初始化、较小模数预训练、固定混合与逐渐衰减小模数比例的 curriculum；可解释性分析包括 embedding PCA、跨生成器余弦相似度和注意力头消融。"
+    ]},
+    {"title": "核心结果与证据", "paragraphs": [
+      "联合训练的一个模型在看到 512 个上下文元素后，对所测 PCG 变体均超过 90% 测试准确率；分开训练时，各变体在约 128 个元素后接近 100%。这表明模型能在同一权重中区分并学习多种协议。",
+      "严重截断仍未消除信号：m=2^16 的 TLCG 只保留 1 bit 时，第 256 个位置达到约 95% 准确率，而随机基线是 50%。这是有限状态低位周期可被长上下文利用的例子，不意味着单 bit 总能泄露任意 PRNG。",
+      "达到 90% 的上下文长度在所测范围内约按 √m 缩放。扩展到 m=2^20 时，随机初始化在 75k 步内停在约 4% 的第 640 token 准确率；预训练与 curriculum 越过平台。附录报告 m=2^20 达 0.9697、m=2^22 第 1279 位置达 0.9257。",
+      "Figure 7 显示 XSLRR-16/8 的 token embedding 按旋转不变零游程形成 18 簇；后层又逐步分离不同生成器。它提供迁移机制线索，但还不是网络实现完整 PCG 算法的逐步电路图。"
+    ]},
+    {"title": "有效性与局限", "paragraphs": [
+      "所有任务来自已知 PCG/TLCG 家族、特定参数采样和 power-of-two 模数；不能外推到密码学安全生成器、不同输出函数或真实加密攻击。",
+      "√m 标度来自有限模数、模型与 90% 阈值；附录改变阈值后检查稳健性，但仍是经验拟合。更大 m 是否变指数、是否受上下文窗限制尚未确定。",
+      "curriculum 对本文固定步数和超参数很关键，不等于从头训练原则上不可能；预训练、混合比例、学习率与数据预算相互耦合。",
+      "PCA 与余弦相似度证明表征可解码，head ablation 增加干预证据，但仍未给出唯一算法或严格因果分解。50 亿 token 的训练规模也提高了独立复现成本。"
+    ]},
+    {"title": "复现与资源", "paragraphs": [
+      "作者在论文中给出代码主页 https://github.com/TaoT1998/。复现需固定 PCG 协议、参数采样、序列长度、训练 token 数、模型宽深、学习率/weight decay 与 curriculum 混合日程。",
+      "最低成本验证可先做 m=2^16 的 TLCG/XSLRR：分别复核单 bit 结果、联合/单协议差异和 Figure 7 聚类；更强复核应多随机种子拟合上下文标度并加入经典算法基线。",
+      "本站核验 v2 PDF SHA-256：8ec9db93a4594ce80ea60826587731a991e3341f9de0b5d84e72f216b877ac5c。Evidence status: full-text verified; no independent reproduction performed."
+    ]},
+    {"title": "阅读指南", "paragraphs": [
+      "最短路径：Figure 1 理解 PCG → Figures 2–3 看预测与 √m 标度 → Figures 5–6 看平台和课程学习 → Figures 7–8 看表征。",
+      "物理路径：把任务视为部分可观测有限动力系统的系统辨识，再分别审查经验临界尺度、优化亚稳平台和 embedding 序参量。",
+      "AI 路径：区分分布内预测、生成器识别、参数反演与密码学攻击；本文直接测量的是前两者，并只为内部算法提供部分证据。"
+    ]}
+  ],
+  "evidence_refs": [
+    "paper.pdf pp. 2–6: PCG task, multi-generator results, truncation and context scaling",
+    "paper.pdf pp. 7–9: curriculum/pretraining and representation analyses",
+    "paper.pdf pp. 11–13 and appendices: generator definitions, training details and extended scaling results",
+    "source PDF SHA-256 8ec9db93a4594ce80ea60826587731a991e3341f9de0b5d84e72f216b877ac5c",
+    "Evidence packet SHA-256 87cce8e4b727c2116dfd5d1b04d239bbd5f2ae22bde9164f94e33441a761370a",
+    "Evidence status: full-text verified; no independent reproduction performed."
+  ]
+}
