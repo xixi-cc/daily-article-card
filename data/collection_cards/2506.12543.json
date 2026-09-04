@@ -1,0 +1,187 @@
+{
+  "arxiv_id": "2506.12543",
+  "source_version": "v1",
+  "source_pdf": "https://arxiv.org/pdf/2506.12543v1",
+  "title_en": "Is your batch size the problem? Revisiting the Adam-SGD gap in language modeling",
+  "title_zh": "问题出在批大小吗？重新审视语言模型中的 Adam–SGD 差距",
+  "curation_status": "full_text_verified",
+  "card_standard_version": "2.4",
+  "audience_profile": "physics_ai_literate_physicist",
+  "paper_profile": "theory_numerics",
+  "style_reference": "physicist_daily_arxiv",
+  "provenance": {
+    "program": "Collection",
+    "catalog": "Paper Collection",
+    "catalog_record_id": "2506.12543",
+    "catalog_record_ids": [
+      "2506.12543"
+    ],
+    "catalog_topic": "Training Dynamics",
+    "collection_date": "2026-08-30",
+    "sampled_at": "2026-08-31",
+    "selected_by": "ziming_mineru_serial_goal",
+    "sampling_seed": "not_applicable_source_complete",
+    "candidate_count": 464
+  },
+  "verified_metadata": {
+    "arxiv_id": "2506.12543",
+    "version": "v1",
+    "title": "Is your batch size the problem? Revisiting the Adam-SGD gap in language modeling",
+    "authors": [
+      "Teodora Srećković",
+      "Jonas Geiping",
+      "Antonio Orvieto"
+    ],
+    "categories": [
+      "cs.LG",
+      "math.OC"
+    ],
+    "primary_category": "cs.LG",
+    "published": "2025-06-14T15:37:31Z",
+    "abstract": "Adam is known to perform significantly better than Stochastic Gradient Descent (SGD) in language models, a phenomenon for which a number of explanations have been proposed. In this work, we revisit this optimizer gap through a series of comprehensively tuned baseline training runs for language modeling with Transformers. We exhaustively study how momentum, gradient clipping, and batch size affect the gap between SGD and Adam. Our empirical findings show that SGD with momentum can actually perform similarly to Adam in small-batch settings, if tuned correctly. We revisit existing explanations for Adam's advantage, including heavy-tailed class imbalance, directional sharpness, and Hessian heterogeneity, which struggle to directly explain this phenomenon. Towards bridging this gap in our understanding, by analyzing our Transformer training runs and simple quadratic settings inspired by the literature, we provide new insights, driven by stochastic differential equation models, into the role of batch size on the training dynamics.",
+    "comment": "Short version accepted at the 2025 HiLD Workshop at ICML"
+  },
+  "equation_refs": [
+    {
+      "label": "SGD diffusion approximation (Eq. 2)",
+      "latex": "dX_t=-\\nabla f(X_t)\\,dt+\\sqrt{\\frac{\\eta\\Sigma(X_t)}{B}}\\,dW_t",
+      "role": "separate the batch-independent drift of SGD from its batch-dependent gradient-noise amplitude",
+      "symbols": {
+        "X_t": "model-parameter vector in continuous optimization time",
+        "f": "full-batch training objective",
+        "eta": "learning rate entering the diffusion scale",
+        "Sigma": "single-example stochastic-gradient noise covariance",
+        "B": "batch size",
+        "W_t": "standard Brownian motion"
+      },
+      "evidence": "paper.pdf p. 11, Eq. (2)",
+      "interpretation": "Within the SDE approximation, increasing the batch size suppresses the SGD diffusion as B^{-1/2} but does not strengthen the leading drift; this helps explain why more examples per step need not buy SGD more early progress per update."
+    },
+    {
+      "label": "SignSGD drift (drift term of Eq. 3)",
+      "latex": "b_{\\mathrm{sign}}(X_t)=-\\operatorname{erf}\\!\\left(\\sqrt{\\frac{B}{2}}\\,\\Sigma(X_t)^{-1/2}\\nabla f(X_t)\\right)",
+      "role": "show how batch size enters the deterministic drift of a coordinate-wise signed update",
+      "symbols": {
+        "b_sign": "drift field of the SignSGD SDE",
+        "erf": "component-wise error function",
+        "B": "batch size",
+        "Sigma": "assumed diagonal gradient-noise covariance",
+        "nabla_f": "full-batch gradient"
+      },
+      "evidence": "paper.pdf p. 11, Eq. (3) and the Takeaway paragraph",
+      "interpretation": "Under the stated Gaussian-noise approximation and before erf saturates, the signed-update drift grows approximately as sqrt(B). The paper uses SignSGD as a tractable relative of Adam; it does not prove that Adam obeys this exact SDE."
+    }
+  ],
+  "figure_refs": [
+    {
+      "label": "Figure 1",
+      "asset_path": "assets/collection-figures/2506.12543/figure-1-adam-sgd-batch-sweep.webp",
+      "section": "核心结果与证据",
+      "role": "compare tuned Adam and momentum-SGD across batch size at a fixed token budget",
+      "evidence": "paper.pdf p. 2, Figure 1; numerical optima in Table 1 on p. 18",
+      "alt_text": "六个面板给出 Adam 与带动量 SGD 在批大小 64、256、1024 下的最终验证困惑度随学习率变化；SGD 的最优结果随批大小增大而明显恶化。",
+      "caption": "在 160M 参数模型、1.3B token 固定预算下，Adam 的最优验证困惑度约为 28–29，而 SGD 从批大小 64 的 30.76 恶化到批大小 1024 的 65.94。曲线同时包含超参数不稳定区，因此不能把单条失败轨迹当成优化器的固有结论。",
+      "interpretation": "批大小改变的不只是梯度方差，也改变固定 token 预算下的更新步数；因此 Figure 1 应与固定步数比较的 Figure 3 一起阅读。"
+    }
+  ],
+  "cover": {
+    "mode": "source_figure",
+    "asset_path": "assets/collection-figures/2506.12543/figure-1-adam-sgd-batch-sweep.webp",
+    "label": "Figure 1",
+    "visual_type": "data_plot",
+    "evidence": "paper.pdf p. 2, Figure 1",
+    "alt_text": "Adam 与带动量 SGD 在三种批大小下的学习率和动量扫描。",
+    "caption": "固定 1.3B token 预算时，Adam 对批大小较稳健，而 SGD 的最优困惑度随批大小增大显著恶化。",
+    "selection_rationale": "论文没有真实空间图像或机制示意图；Figure 1 是直接建立 Adam–SGD 差距及其批大小依赖的主数据图，优先于后续局部消融图。"
+  },
+  "sections": [
+    {
+      "title": "作者信息",
+      "paragraphs": [
+        "作者为 Teodora Srećković、Jonas Geiping 与 Antonio Orvieto，单位为 Max Planck Institute for Intelligent Systems、ELLIS Institute Tübingen 与 Tübingen AI Center；Srećković 为论文标注的通讯作者。",
+        "本文使用 arXiv:2506.12543v1（2025-06-14），主分类 cs.LG，另属 math.OC；短版被 2025 HiLD Workshop at ICML 接收。全文 20 页，定位是 Transformer 语言模型训练实验加简化 SDE/二次模型分析，不是一个关于 Adam 的完备收敛定理。",
+        "Collection 来源：刘子鸣网站收录的 Training Dynamics 条目；该来源只决定收录资格，正文结论均重新由论文全文核对。"
+      ]
+    },
+    {
+      "title": "研究问题",
+      "paragraphs": [
+        "通常的问题是“Adam 为什么比 SGD 好”。作者反过来寻找能使带动量 SGD 与 Adam 表现相当的语言模型训练区间，并把 batch size、更新步数、动量与 clipping 分开控制，以检验已有的 rare-token、directional sharpness 与 Hessian heterogeneity 解释是否足够。",
+        "关键区别是固定 token 预算与固定更新步数：批大小增大时，每步看见的数据更多，但相同 token 预算下的参数更新次数更少。若不区分这两个控制量，就会把“每步加速能力”与“总计算量”混成一个优化器排名。"
+      ]
+    },
+    {
+      "title": "背景",
+      "paragraphs": [
+        "SGD 用同一个全局学习率推进全部参数方向；Adam 还用每个坐标的历史二阶统计量重标度更新。Transformer 的 embedding、normalization、attention 与 MLP 参数块具有不同尺度和曲率，因此坐标自适应可能改变有效更新方向，而不只是改变步长。",
+        "语言模型指标 perplexity（PPL）是平均负对数似然的指数形式，越低表示模型给真实后续 token 分配的概率越高。它不是物理能量，也不是生成质量的全部；这里它主要是比较相同数据与模型设置下优化进度的可观测量。",
+        "作者把训练中的随机梯度视为带噪动力学：batch size 是噪声强度和每步样本数的控制参数。但“噪声有利”不是一般热涨落类比；在固定 token 预算下，小 batch 同时意味着更多离散更新。"
+      ]
+    },
+    {
+      "title": "给物理学家的 AI 导读",
+      "paragraphs": [
+        "具体图景是：输入是一批 token 序列；Transformer 参数 \\(X\\) 是演化状态；交叉熵损失给出每批随机梯度；SGD 或 Adam 把梯度变成参数增量； held-out token 上的 PPL 是输出可观测量。本文改变 batch size \\(B\\)、动量、学习率和 clipping，观察同一状态空间中的离散轨迹如何改变。",
+        "Adam 的“自适应”在这里首先应理解为坐标依赖的预条件，而不是模型自己改变物理定律。grafting 实验把更新的方向与模长交叉交换：采用 Adam 方向但保留 SGD 模长时表现接近 Adam，反向组合接近 SGD，说明大 batch 下主要问题更像方向失配。",
+        "SDE 是离散优化在小步长、统计假设下的连续近似。对 SGD，\\(B\\) 主要压低扩散项；对 SignSGD，\\(B\\) 还通过误差函数进入漂移。这个类比的边界是：训练“时间”是迭代尺度，loss 不是热力学能量，SignSGD 也不等同于 Adam。",
+        "最低先修只需梯度下降、协方差和 Brownian motion。建议先看 Figure 1 的坐标轴与 Table 1，再读 p. 6 的固定 token/固定步数对照，最后读 Eqs. (2)–(3)；这样先建立可观测事实，再判断 SDE 解释覆盖到哪里。"
+      ]
+    },
+    {
+      "title": "模型与方法",
+      "paragraphs": [
+        "主实验用 SlimPajama 上的 160M 参数 nanoGPT：12 层、宽度 768、12 个 attention heads，RMSNorm、RoPE 与 GLU/SwiGLU 类 MLP；补充实验扩展到 250M、410M 和 1B 参数，并加入 FineWeb。作者不使用 weight decay，原始梯度默认做阈值 1 的全局范数 clipping。",
+        "Figure 1 设置固定 1.3B token、序列长度 512、10% warmup 的 cosine schedule，比较 batch size 64、256、1024；分别扫描学习率和动量。验证 PPL 在独立的 100M held-out tokens 上计算。",
+        "固定步数实验改用序列长度 2048、batch size 8–1024、2.5k–160k steps 和固定 2000-step warmup 的 WSD schedule；SGD 取动量 \\(\\beta=0.98\\) 并扫学习率 0.25、0.5、1，Adam 取 \\(\\beta_1=\\beta_2=0.95\\) 并扫 \\(10^{-3},2\\times10^{-3},4\\times10^{-3}\\)。附录称各设置合计训练超过 250 个语言模型。",
+        "机制消融包括 gradient clipping、按坐标裁剪最大动量分量，以及 grafting 更新方向/模长。理论部分先写 SGD 的扩散近似 \\(dX_t=-\\nabla f(X_t)dt+\\sqrt{\\eta\\Sigma/B}\\,dW_t\\)，再引用 SignSGD 的弱 SDE 近似，比较 batch size 是否进入漂移项。"
+      ]
+    },
+    {
+      "title": "核心结果与证据",
+      "paragraphs": [
+        "Figure 1/Table 1：固定 1.3B token 时，Adam 在 batch size 64、256、1024 的最佳 PPL 分别为 28.77、28.20、29.36；SGD 为 30.76、33.08、65.94。小 batch 只把差距缩到约 2 PPL，并非所有设置下完全相同；大 batch 下 SGD 明显恶化。",
+        "Figure 3–4：固定 token 预算时，SGD 随 batch size 墑大而变差；固定更新步数时，SGD 随训练延长可追平甚至超过 Adam。作者因此把结论表述为 Adam 能从大 batch 获得每步加速，而 SGD 的 critical batch size 接近 1；这是这些模型与调参网格中的经验判断。",
+        "Figure 5：在 batch size 8 的 410M SlimPajama 模型（500k steps）和 batch size 16 的 1B FineWeb 模型（850k steps）上，SGD 轨迹最终低于 Adam 的训练 PPL，说明小-batch 现象并不限于 160M 模型。但两次训练分别约 1.5 天与 5 天，且作者选择了单张 A100 80GB 能容纳的最大 batch，没有展示大规模分布式预训练的可行性。",
+        "Figures 6–9：rare-token 差距、directional sharpness 和 Hessian heterogeneity 都与大-batch 失败相关，却不能单独解释小 batch 下 SGD 成功。异质二次模型仍显示 Adam 更能从 batch size 增大中受益，提示架构异质性与噪声尺度可能共同作用。",
+        "Figure 10 的 grafting 把因果线索指向更新方向；Figure 11–12 中按坐标裁剪最大的 5%–20% 动量分量可改善 SGD，10% 最好，且 normalization layers 的裁剪比例最高，但仍未完全达到 Adam。",
+        "Eqs. (2)–(3)：SGD 的领先漂移与 \\(B\\) 无关，而 SignSGD 在 \\(\\operatorname{erf}\\) 的线性区具有近似 \\(\\sqrt{B}\\) 的漂移增强。该结果建立在 Gaussian/协方差条件下，并借 SignSGD 理解 Adam；它是与实验一致的机制证据，不是对 Transformer Adam 动力学的直接证明。"
+      ]
+    },
+    {
+      "title": "有效性与局限",
+      "paragraphs": [
+        "“SGD 可以训练语言模型”只在小 batch、仔细调过学习率/动量/clipping、给足更新步数的区间成立；同 token 数不等于同 wall-clock、通信效率或能源成本，小 batch 也不适合常见多设备吞吐优化。",
+        "大部分主结果使用 160M 参数模型；410M 与 1B 只验证小-batch 长训练轨迹。没有覆盖现代数十亿到数千亿参数、mixture-of-experts、不同 tokenizer、QK normalization、weight decay 或 optimizer-state sharding。",
+        "PPL 比较依赖作者的学习率网格与 stability 选择规则；某些大步长设置中单次运行成功而中位数发散，Figure 1 报告最大稳定学习率。论文没有为所有主曲线统一给出多 seed 置信区间。",
+        "SDE 解释要求小步长和可描述的噪声统计；SignSGD 的定理引用已有工作，Adam 只因经验相似而被类比。\\(\\sqrt{B}\\) 漂移增强会在 erf 饱和后停止，不能外推成无限 batch 的无限加速。",
+        "grafting 与 adaptive clipping 是诊断性干预，不足以唯一证明“方向”是根因；rare tokens、曲率异质性和 normalization 参数仍可能共同决定方向误差。"
+      ]
+    },
+    {
+      "title": "复现与资源",
+      "paragraphs": [
+        "论文报告代码仓库 https://github.com/Niccolo-Ajroldi/plainLM，数据使用 SlimPajama 与 FineWeb；所有实验使用单张 NVIDIA A100-SXM4-80GB。公开仓库存在不等于本站已复现实验。",
+        "最低复现应固定数据快照、GPT-NeoX tokenizer、模型宽深、序列长度、有效 token batch、gradient accumulation、warmup/schedule、clipping 顺序、动量定义、学习率网格、验证集 100M tokens 与 PPL 计算。先复现 Table 1，再做固定 token/固定 steps 二因素比较。",
+        "机制复现需记录每步更新方向、模长、gradient correlation、directional sharpness、被裁剪坐标及其层归属；grafting 组合必须复用同一 batch 序列，否则不能把差异归因于方向或模长。",
+        "本站核验的 v1 PDF SHA-256：90fa2a7b9f191eaa259e5294d7d69e08c0bf6752ade5d1780df13546dae695d0。Evidence status: full-text verified; no independent reproduction performed."
+      ]
+    },
+    {
+      "title": "阅读指南",
+      "paragraphs": [
+        "快速路径：Figure 1 + Table 1 建立固定 token 预算事实；Figure 3–4 区分 batch size 与更新步数；Figure 10 判断方向/模长；最后用 Discussion 校准结论强度。",
+        "机制路径：先读 p. 9 的异质 Hessian 二次模型，再读 p. 11 的 Eqs. (2)–(3) 与 Figure 13。最关键的问题不是“噪声是否好”，而是 batch size 对不同更新规则的漂移与扩散分别怎样进入。",
+        "实践路径：若只有单卡或显存紧张，可把小-batch momentum-SGD 当作可检验 baseline；若目标是大规模吞吐，则应优先检查每步进展、临界 batch size 与分布式效率，而不是由小-batch PPL 直接宣布 SGD 可替代 Adam。"
+      ]
+    }
+  ],
+  "evidence_refs": [
+    "paper.pdf pp. 1–2: verified authors, affiliations, scope and Figure 1 optimizer sweeps",
+    "paper.pdf pp. 4–6 and p. 18: experimental controls, fixed-token/fixed-step comparison and exact Table 1 PPL values",
+    "paper.pdf pp. 7–10: tests of rare-token, directional-sharpness and Hessian explanations plus grafting/clipping interventions",
+    "paper.pdf pp. 11–12: SGD and SignSGD SDE equations, assumptions, interpretation and discussion",
+    "paper.pdf pp. 16–18: compute, code, datasets, hyperparameter grids and more-than-250-run accounting",
+    "source PDF SHA-256 90fa2a7b9f191eaa259e5294d7d69e08c0bf6752ade5d1780df13546dae695d0",
+    "Evidence status: full-text verified; no independent reproduction performed."
+  ]
+}

@@ -5,6 +5,26 @@ Status: **authorized for local serial execution in Goal mode**
 Frozen: 2026-08-31 (Asia/Shanghai)
 Catalog SHA-256: `9acb9bd5d88fa12758123eaee075e266f3413913f1fb3ed143fb2e2002fae5ad`
 
+## 2026-09-04 v2.4 resume boundary
+
+- The user resumed all unfinished cards in Goal mode after the earlier
+  205-installed checkpoint. The authoritative starting state is 256 pending,
+  3 blocked, and 8 pre-existing cards.
+- Preserve the 205 completed v2.3 cards as historical cards. Every newly
+  authored or substantively revised card uses Paper Card Standard v2.4,
+  `audience_profile: physics_ai_literate_physicist`, and a substantive
+  `给物理学家的 AI 导读` section.
+- Keep exactly one MinerU request active at a time and one card writer. A
+  model-routed extraction worker may prepare a sequential three-paper intake
+  while the primary writer performs non-conflicting review or validation; this
+  does not authorize concurrent MinerU requests or multiple writers.
+- Use two or three cards as an authoring unit and at most ten completed cards as
+  a full deterministic validation and commit batch. Preserve per-card states,
+  evidence hashes, and metrics.
+- Complete pending papers first, then re-evaluate the three retained blocked
+  items against their exact evidence. Local validation remains in scope;
+  publication remains unauthorized.
+
 ## Scope and boundaries
 
 - Source catalog: 916 records.

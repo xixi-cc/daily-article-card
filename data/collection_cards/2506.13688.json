@@ -1,0 +1,197 @@
+{
+  "arxiv_id": "2506.13688",
+  "source_version": "v2",
+  "source_pdf": "https://arxiv.org/pdf/2506.13688v2",
+  "title_en": "What Happens During the Loss Plateau? Understanding Abrupt Learning in Transformers",
+  "title_zh": "损失平台期里发生了什么？理解 Transformer 的突发学习",
+  "curation_status": "full_text_verified",
+  "card_standard_version": "2.4",
+  "audience_profile": "physics_ai_literate_physicist",
+  "paper_profile": "ai_empirical",
+  "style_reference": "physicist_daily_arxiv",
+  "provenance": {
+    "program": "Collection",
+    "catalog": "Paper Collection",
+    "catalog_record_id": "2506.13688",
+    "catalog_record_ids": [
+      "2506.13688"
+    ],
+    "catalog_topic": "Representation Learning",
+    "collection_date": "2026-08-30",
+    "sampled_at": "2026-08-31",
+    "selected_by": "ziming_mineru_serial_goal",
+    "sampling_seed": "not_applicable_source_complete",
+    "candidate_count": 464
+  },
+  "verified_metadata": {
+    "arxiv_id": "2506.13688",
+    "version": "v2",
+    "title": "What Happens During the Loss Plateau? Understanding Abrupt Learning in Transformers",
+    "authors": [
+      "Pulkit Gopalani",
+      "Wei Hu"
+    ],
+    "categories": [
+      "cs.LG",
+      "stat.ML"
+    ],
+    "primary_category": "cs.LG",
+    "published": "2025-10-22T18:00:02Z",
+    "abstract": "Training Transformers on algorithmic tasks frequently demonstrates an intriguing abrupt learning phenomenon: an extended performance plateau followed by a sudden, sharp improvement. This work investigates the underlying mechanisms for such dynamics, primarily in shallow Transformers. We reveal that during the plateau, the model often develops an interpretable partial solution while simultaneously exhibiting a strong repetition bias in their outputs. This output degeneracy is accompanied by internal representation collapse, where hidden states across different tokens become nearly parallel. We further identify the slow learning of optimal attention maps as a key bottleneck. Hidden progress in attention configuration during the plateau precedes the eventual rapid convergence, and directly intervening on attention significantly alters plateau duration and the severity of repetition bias and representational collapse. We validate that these identified phenomena—repetition bias and representation collapse—are not artifacts of toy setups but also manifest in the early pre-training stage of large language models like Pythia and OLMo.",
+    "comment": "NeurIPS 2025"
+  },
+  "equation_refs": [
+    {
+      "label": "Moving-window-sum target",
+      "latex": "y_i=\\begin{cases}x_1,&i=1,\\\\(x_{i-1}+x_i)\\bmod p,&i\\ge 2,\\end{cases}",
+      "role": "define the controlled task and expose its easy partial solution",
+      "symbols": {
+        "x_i": "input token at position i",
+        "y_i": "target output token at position i",
+        "p": "modulus, equal to 17 in the main experiment",
+        "i": "sequence position"
+      },
+      "evidence": "paper.pdf p. 3, unnumbered task definition",
+      "interpretation": "The first target is only a copy of x_1, whereas later targets require selecting and combining two adjacent inputs; this gives an exact meaning to the partial solution observed on the plateau."
+    },
+    {
+      "label": "Attention Progress Measure (Eq. 3)",
+      "latex": "\\mathrm{APM}=\\frac{\\sum_{(i,j)\\in\\Omega}|A_{ij}|}{\\sum_{i,j}|A_{ij}|}",
+      "role": "measure how much attention weight lies on task-relevant token pairs",
+      "symbols": {
+        "A_ij": "linear-attention score from source position j to output position i",
+        "Omega": "task-specific set of position pairs in the known optimal attention pattern",
+        "i_j": "query and source sequence positions"
+      },
+      "evidence": "paper.pdf p. 4, Eq. (3)",
+      "interpretation": "APM can increase while loss remains nearly flat, revealing hidden structural progress; because Omega is supplied from the known algorithm, it is not an unsupervised order parameter available for arbitrary tasks."
+    },
+    {
+      "label": "Representation cosine similarity (Eq. 5)",
+      "latex": "\\mathrm{COS}_{i,j}=\\frac{\\langle h_i,h_j\\rangle}{\\|h_i\\|\\,\\|h_j\\|}",
+      "role": "quantify alignment of hidden states at different output positions",
+      "symbols": {
+        "h_i": "final-layer hidden state at output position i",
+        "i_j": "two output positions",
+        "COS": "pairwise cosine similarity, averaged over positions and a random batch"
+      },
+      "evidence": "paper.pdf p. 5, Eq. (5)",
+      "interpretation": "Values near one mean different token positions point in nearly the same representation direction; they do not by themselves imply identical norms, zero rank, or irreversible information loss."
+    }
+  ],
+  "figure_refs": [
+    {
+      "label": "Figure 1",
+      "asset_path": "assets/collection-figures/2506.13688/figure-1-loss-plateau-mechanism.webp",
+      "section": "核心结果与证据",
+      "role": "connect the abrupt loss curve to attention-map formation, output repetition and hidden-state geometry",
+      "evidence": "paper.pdf p. 2, Figure 1",
+      "alt_text": "平台期前后对照：损失在约 170 步后突降；此前注意力图无清晰结构、隐藏态方向聚拢且输出重复，此后注意力出现任务相关对角带、隐藏态展开并输出正确序列。",
+      "caption": "单层 Transformer 在 moving-window-sum 任务上先进入可观测量近乎停滞的阶段，但其内部并非静止：任务相关注意力逐渐形成，随后损失突降、重复输出消退、位置表征重新分开。",
+      "interpretation": "该图是受控任务的一条代表性训练轨迹和示意；跨任务稳健性来自附录实验，不能据此把所有大模型能力跃迁都归为同一机制。"
+    }
+  ],
+  "cover": {
+    "mode": "source_figure",
+    "asset_path": "assets/collection-figures/2506.13688/figure-1-loss-plateau-mechanism.webp",
+    "label": "Figure 1",
+    "visual_type": "schematic",
+    "evidence": "paper.pdf p. 2, Figure 1",
+    "alt_text": "Transformer 突发学习前后的损失曲线、注意力图、隐藏态方向与输出序列对照。",
+    "caption": "表面平坦的 loss 隐藏了注意力结构的缓慢组织；跨过瓶颈后，输出与表征同时脱离退化态。",
+    "selection_rationale": "Figure 1 同时展示训练轨迹、内部表示、注意力结构与输出行为，是论文机制最完整的视觉入口，优先于只含单一指标的后续曲线。"
+  },
+  "sections": [
+    {
+      "title": "作者信息",
+      "paragraphs": [
+        "作者 Pulkit Gopalani 与 Wei Hu 均来自 University of Michigan, Ann Arbor；arXiv:2506.13688v2 于 2025-10-22 更新，论文为 NeurIPS 2025，主分类 cs.LG，另属 stat.ML。",
+        "全文 26 页。主证据来自 1–2 层浅 Transformer 的算法任务；Pythia 与 OLMo-2 只用于检验早期 checkpoint 中是否也出现重复与表征对齐，不等于在真实 LLM 预训练中完整重现同一突降机制。",
+        "Collection 来源：刘子鸣网站的 Representation Learning 条目；该来源只决定收录，卡片证据与版本由论文全文和 arXiv 元数据重新核对。"
+      ]
+    },
+    {
+      "title": "研究问题",
+      "paragraphs": [
+        "当 loss 长时间停在平台后突然下降，模型内部是真的静止，还是有一个不易被 loss 看见的慢变量正在演化？作者在已知最优算法的任务中同时测量部分解、输出重复、隐藏态几何与注意力结构。",
+        "论文进一步做训练时干预：人为增强或削弱正确 token 对之间的 attention weight，并把已经训练好的模块冻结到初始状态，以检验注意力学习只是相关指标，还是会改变平台长度与退化行为。"
+      ]
+    },
+    {
+      "title": "背景",
+      "paragraphs": [
+        "“突发学习”描述随训练步数出现的尖锐性能变化；它常被宽泛称为 emergence，但这里控制参数是优化时间而非系统尺寸，作者也没有建立热力学极限、非解析自由能或普适临界指数，因此“相变”只能作为动力学类比。",
+        "本文不同于 grokking：grokking 是固定训练集上先记忆、后泛化；主实验每步在线抽取新样本，train/test loss 基本重合。平台对应的是学会任务内部结构之前的优化瓶颈，而非训练误差已经很低后的泛化延迟。",
+        "representation collapse 在这里特指不同输出位置的最后层隐藏向量几乎平行；它发生在训练开始后，并区别于深层 softmax Transformer 初始化时讨论的 rank collapse。"
+      ]
+    },
+    {
+      "title": "给物理学家的 AI 导读",
+      "paragraphs": [
+        "输入是长度 16 的模 17 整数序列，目标输出每个位置的相邻两数之和；Transformer 的 token/position embeddings 与权重是演化自由度，交叉熵梯度是更新信号，loss、准确率、重复率、隐藏态夹角和 APM 是并行观测量。",
+        "attention map 可看作位置间的有向耦合矩阵，但它不是物理相互作用：权重可为负、依赖输入且由任务损失训练。已知目标算法规定集合 Ω，APM 测量耦合权重有多少落在正确位置对上；它在 loss 平台上从近 0 缓慢升至约 0.8。",
+        "隐藏向量余弦相似度接近 1 表示不同位置的表示方向对齐。它像一个退化态的 order parameter，但这里没有对称性破缺定理；向量范数与未测子空间仍可能携带信息。作者同时用输出重复率把几何对齐连接到可见行为。",
+        "阅读时先看 Figure 1 的四类观测量，再读 MWS 目标式与 APM；接着比较增强/削弱正确 attention 的 Figures 3–4。这样能区分“loss 看不见的进展”“与平台共现的退化态”以及“干预后会改变平台”的三种证据强度。"
+      ]
+    },
+    {
+      "title": "模型与方法",
+      "paragraphs": [
+        "主任务 moving-window-sum 取 n=16、p=17，输入 x_i 在 1–16 上均匀抽样，SEP=17；y_1=x_1，后续 y_i=(x_{i-1}+x_i) mod 17。第一位置只需复制，因此可精确定义平台期的 partial solution。",
+        "主模型是 1 层、1 头、causal linear-attention Transformer，含 token+absolute position embedding、pre-LayerNorm、4d hidden 的两层 GELU MLP 和 LM head；使用 linear attention 是为排除 softmax 小梯度这一特定解释。附录还检查 softmax、多层、多头和不同宽度。",
+        "训练采用 next-token cross entropy、Adam、固定学习率 10^{-4}、无 weight decay；每步重新抽 256 个样本，greedy decoding，输出部分 accuracy。实现基于 minGPT；单次实验在 A100 或 L40S 上多数几小时完成。",
+        "三个核心诊断量是：相邻输出相同的 repetition frequency、输出位置 hidden states 的平均 cosine similarity，以及已知正确位置集合 Ω 上的 Attention Progress Measure。另用 MLP probe 检查 attention block 输出中是否提前出现任务信息。",
+        "干预一把 Ω 上的 attention entries 乘 c：c>1 朝正确图样偏置，0<c<1 反向偏置；干预二把正常训练终点的 attention、MLP 或 embedding 权重分别固定为新训练的初值，比较哪个模块能消除平台。"
+      ]
+    },
+    {
+      "title": "核心结果与证据",
+      "paragraphs": [
+        "Figure 2：MWS 平台期首先学会 y_1=x_1，整体 accuracy 仍低；repetition frequency 在约前 50 步升到约 0.8，输出位置平均 cosine similarity 升到约 0.95。与此同时 APM 已开始上升，最终在 loss 突降前后达到约 0.8，说明平台并非内部无进展。",
+        "Figures 3–4：从训练开始把正确 attention entries 放大 10 倍时，cosine similarity 峰值约 0.6，而基线约 0.95，并更快收敛；c=0.2 或 0.5 则延长平台、重复与 collapse。方向相反的干预产生方向相反的结果，为注意力瓶颈提供因果证据。",
+        "Figure 5：固定已经学好的 attention/embedding 相关权重后，只训练 MLP 与 LM head，平台、重复和强 collapse 基本消失；只固定最优 MLP 或 embeddings+LM head 并无同样效果。W_O/W_V 也有作用，但关键瓶颈集中在形成任务相关 attention map。",
+        "Table 1 与 Appendix B：partial solution 或重复退化还出现在 addition、prefix sum、permutation、histogram、reverse、copy 及组合任务。prefix sum 的相邻重复很少，但输出 sequence entropy 仍降低，说明“重复偏置”会随任务换一种可观测形式。",
+        "Pythia 14M、1B、1.4B、2.8B 在 ARC-Easy 的 100 个问题上各生成 8 tokens；最后层平均 cosine similarity 从初始化约 0.4–0.65 在早期数步升到 >0.9，约 step 1000 后下降。OLMo-2 7B 在最早可用 step 150 checkpoint 约 0.93，step 600 约 0.43。",
+        "LLM 结果在 GSM8K、ARC-Challenge 及 random sampling 下呈类似趋势，并观察到换行符等重复输出；但它们只验证退化表征的共现，没有已知 Ω、APM 或完整平台干预，因此不能证明大模型突发能力都由同一 attention-search 机制造成。"
+      ]
+    },
+    {
+      "title": "有效性与局限",
+      "paragraphs": [
+        "主要因果实验依赖浅层、低维、在线采样的算法任务及已知最优 attention pattern；自然语言任务通常没有可直接写出的 Ω，APM 不能无监督搬用。",
+        "attention mask 乘法使用了任务答案定义的正确位置，属于诊断干预而非可部署训练算法；它同时改变前向信号和反向梯度，未唯一隔离 key/query 的搜索动力学。",
+        "作者把缓慢 attention 学习描述为对正确 token 的“search”，但 Discussion 明确承认缺乏严格理论验证，也未给出任务复杂度与平台时长的定量定律。",
+        "Figure 1 的突降并非统计物理意义下已证明的相变；有限网络、有限训练步和随机初始化下的 sharp crossover 可能随学习率、初始化、batch size 与 optimizer 改变。",
+        "Pythia/OLMo 分析使用已有离散 checkpoints，早期 checkpoint 间可能漏掉动力学细节；100 个 prompts、8-token generation 和最后层 cosine 不能覆盖语义质量、长上下文或跨层信息。",
+        "附录展示多种配置都可出现现象，但正文没有为所有图统一报告 seed 数、误差条或预注册阈值；“普遍”应理解为所检验设置中的稳健模式，而非 Transformer 的一般定理。"
+      ]
+    },
+    {
+      "title": "复现与资源",
+      "paragraphs": [
+        "代码：https://github.com/pulkitgopalani/tf-loss-plateau；实现改自 MIT-licensed minGPT。LLM 检查使用 Hugging Face 上 Apache-2.0 的 Pythia/OLMo-2 checkpoints，评测集为 ARC-Easy/Challenge 与 GSM8K。",
+        "最小复现应先锁定 n=16、p=17、vocabulary、1-layer/1-head linear attention、embedding dimension、初始化、Adam 10^{-4}、batch 256、online sampling、greedy decoding，并逐步输出 loss、accuracy、y_1 accuracy、ρ、COS 与 APM，而不是只保存最终 accuracy。",
+        "干预复现要保存相同随机种子下 c=0.2、0.5、1、10 及多个 t_0 的曲线；冻结实验应分别验证 KQ、KQVO、MLP、embedding/LM head，并确认 frozen weights 确实来自同一已收敛基线。",
+        "LLM 检查需固定 checkpoint revisions、tokenizer、100 个问题的抽样清单、prompt 格式、use_cache=False、8-token generation 与 greedy/random sampling。论文报告单张 A100 或 L40S，多数运行数小时。",
+        "本站核验的 v2 PDF SHA-256：87c9a7ae61eb16c3d8230b18a0168f34d19e66bec768129661bed1e456778e0e。Evidence status: full-text verified; no independent reproduction performed."
+      ]
+    },
+    {
+      "title": "阅读指南",
+      "paragraphs": [
+        "快速路径：Figure 1 看总体机制图，Figure 2 对齐 loss、APM、重复与 cosine 的先后顺序，Figures 3–5 检查干预与冻结证据，最后读 Discussion 中尚未证明的 search 假说。",
+        "物理式路径：把 APM、ρ、COS 当作三个候选 order parameters，但逐一问清定义、可观测范围和外场式干预 c；不要把有限训练中的 sharp crossover 自动升级为相变。",
+        "外推路径：读 Section 6 与 Appendix E 的 Pythia/OLMo 证据，再回到 Appendix F–G 的架构/优化变化。最重要的边界是：LLM 中看到了重复与表示对齐，没有完成主实验那样的已知机制干预。"
+      ]
+    }
+  ],
+  "evidence_refs": [
+    "paper.pdf pp. 1–5: scope, moving-window-sum setup, partial solution, APM, repetition and representation-collapse definitions",
+    "paper.pdf pp. 5–7: attention-layer localization, multiplicative attention interventions and optimal-component initialization",
+    "paper.pdf pp. 8–10: alternative repetition measures, Pythia/OLMo checkpoint results and unresolved mechanism",
+    "paper.pdf pp. 11–22: implementation details, cross-task results and attention-output probe",
+    "paper.pdf pp. 22–26: LLM datasets/sampling, architecture and optimizer ablations, and statistical-physics context",
+    "source PDF SHA-256 87c9a7ae61eb16c3d8230b18a0168f34d19e66bec768129661bed1e456778e0e",
+    "Evidence status: full-text verified; no independent reproduction performed."
+  ]
+}
