@@ -1,0 +1,209 @@
+{
+  "arxiv_id": "2602.08333",
+  "source_version": "v1",
+  "source_pdf": "https://arxiv.org/pdf/2602.08333v1",
+  "title_en": "Regime Change Hypothesis: Foundations for Decoupled Dynamics in Neural Network Training",
+  "title_zh": "训练阶段转换假说：神经网络解耦动力学的基础",
+  "curation_status": "full_text_verified",
+  "card_standard_version": "2.4",
+  "audience_profile": "physics_ai_literate_physicist",
+  "paper_profile": "theory_experiment",
+  "style_reference": "physicist_daily_arxiv",
+  "provenance": {
+    "program": "Collection",
+    "catalog": "Paper Collection",
+    "catalog_record_id": "2602.08333",
+    "catalog_record_ids": [
+      "2602.08333"
+    ],
+    "catalog_topic": "Training Dynamics",
+    "collection_date": "2026-08-30",
+    "sampled_at": "2026-08-31",
+    "selected_by": "ziming_mineru_serial_goal",
+    "sampling_seed": "not_applicable_source_complete",
+    "candidate_count": 464
+  },
+  "verified_metadata": {
+    "arxiv_id": "2602.08333",
+    "version": "v1",
+    "title": "Regime Change Hypothesis: Foundations for Decoupled Dynamics in Neural Network Training",
+    "authors": [
+      "Cristian Pérez-Corral",
+      "Alberto Fernández-Hernández",
+      "Jose I. Mestre",
+      "Manuel F. Dolz",
+      "Jose Duato",
+      "Enrique S. Quintana-Ortí"
+    ],
+    "categories": [
+      "cs.LG",
+      "cs.AI"
+    ],
+    "primary_category": "cs.LG",
+    "published": "2026-02-09",
+    "updated": "2026-02-09",
+    "abstract": "A local continuity result for ReLU activation masks motivates an empirical hypothesis that activation-pattern changes often decay earlier than parameter updates during training."
+  },
+  "equation_refs": [
+    {
+      "label": "local preservation of a ReLU activation pattern",
+      "latex": "w_0\\notin B,\\ x\\notin Z,\\ \\|w-w_0\\|<\\varepsilon(x,w_0)\\quad\\Longrightarrow\\quad \\operatorname{act}(x;w)=\\operatorname{act}(x;w_0)",
+      "role": "state the measure-theoretic local stability proposition behind the regime-freezing intuition",
+      "symbols": {
+        "B": "measure-zero set of degenerate parameter values",
+        "Z": "measure-zero set of inputs lying on activation boundaries for fixed parameters",
+        "act": "concatenated binary signs of all ReLU pre-activations",
+        "epsilon": "input- and parameter-dependent local radius"
+      },
+      "evidence": "paper.pdf pp. 2–3, Proposition 1 and proof",
+      "interpretation": "对固定 $x,w_0$，只要每个 pre-activation 与零有正 margin，连续性就保证足够小扰动不翻转符号。$\\varepsilon$ 没有统一下界，也没有约束优化器一串有限步都留在同一区域；这不是 SGD/Adam 的两阶段收敛定理。"
+    },
+    {
+      "label": "parameter and activation-pattern change observables",
+      "latex": "\\Delta w_i=\\frac1p\\|w_i-w_{i-1}\\|_1,\\qquad \\Delta a_i=\\frac1L\\sum_{l=1}^L\\frac{1}{|S|n_l}\\sum_{x\\in S}\\|\\operatorname{act}_l(x;w_i)-\\operatorname{act}_l(x;w_{i-1})\\|_1",
+      "role": "compare the mean absolute parameter step with the mean fraction of ReLU mask bits that flip after each batch",
+      "symbols": {
+        "p": "number of trainable parameters",
+        "S": "fixed validation subset of size 0.2 times the batch size",
+        "L": "number of monitored ReLU layers",
+        "n_l": "number of mask bits in layer l"
+      },
+      "evidence": "paper.pdf p. 5, Eqs. (2)–(3)",
+      "interpretation": "两量都按元素平均，但一个有参数单位、一个是 bit-flip fraction，不能直接比较绝对幅度。$\\Delta a$ 只在很小固定样本子集、eval mode 上测量，因此是 activation-boundary crossing 的抽样 proxy。"
+    },
+    {
+      "label": "normalized cumulative-change ratio",
+      "latex": "\\operatorname{AUC}(x)=\\frac1T\\sum_{i=1}^T\\widehat x_i,\\qquad \\rho_{\\rm AUC}=\\frac{\\operatorname{AUC}_W}{\\operatorname{AUC}_P}",
+      "role": "summarize separately normalized weight- and pattern-change curves into the paper's relative speedup proxy",
+      "symbols": {
+        "x_hat_i": "smoothed curve after its own 0.5-to-99.5-percentile robust min-max normalization",
+        "AUC_W": "mean normalized cumulative weight change",
+        "AUC_P": "mean normalized cumulative pattern change",
+        "rho_AUC": "ratio greater than one when the normalized pattern curve has smaller area"
+      },
+      "evidence": "paper.pdf p. 5, metric definition immediately after Eq. (3)",
+      "interpretation": "每条曲线各自 min-max 后，$\\rho_{AUC}$ 比较的是相对形状与衰减历程，不是两个有共同单位的 relaxation times。称它 speedup factor 容易误读；它不能直接换算训练时间或 FLOPs。"
+    }
+  ],
+  "figure_refs": [
+    {
+      "label": "Figure 1",
+      "asset_path": "assets/collection-figures/2602.08333/figure-1-training-regime-curves.webp",
+      "section": "核心结果与证据",
+      "role": "show training score, validation score, normalized weight changes and activation-mask changes for all 18 model-dataset pairs",
+      "evidence": "paper.pdf p. 6, Figure 1 and Table II",
+      "alt_text": "An eighteen-panel grid of MLP, CNN and Transformer training runs comparing task scores with weight-update and ReLU activation-mask change trajectories.",
+      "caption": "Figure 1：18 个模型—数据集组合的任务分数、参数变化与 ReLU mask 变化；多数面板中 mask-change 曲线更早衰减，但效应大小高度异质。",
+      "interpretation": "17/18 个 AUC 比值大于 1，支持 evaluated settings 下的经验趋势；图没有多 seed uncertainty，且独立归一化使曲线只能作 run 内相对比较。"
+    }
+  ],
+  "cover": {
+    "mode": "source_figure",
+    "asset_path": "assets/collection-figures/2602.08333/figure-1-training-regime-curves.webp",
+    "label": "Figure 1",
+    "visual_type": "comparison",
+    "evidence": "paper.pdf p. 6, Figure 1",
+    "alt_text": "18 组神经网络训练曲线对比权重更新与 ReLU 激活模式翻转。",
+    "caption": "多数实验中 ReLU 门控比参数更新更早进入低变化区；这是一项异质的曲线统计，不是已证明的普适相变。",
+    "selection_rationale": "The complete panel grid is the empirical foundation of the hypothesis and reveals both its breadth and its exceptions better than the headline mean."
+  },
+  "sections": [
+    {
+      "title": "作者信息",
+      "paragraphs": [
+        "Cristian Pérez-Corral、Alberto Fernández-Hernández、Jose I. Mestre、Manuel F. Dolz、Jose Duato 与 Enrique S. Quintana-Ortí 来自 Universitat Politècnica de València、Universitat Jaume I 及 Openchip & Software Technologies。",
+        "本站核验 arXiv:2602.08333v1：提交于 2026-02-09，是当前唯一版本；主分类 cs.LG，交叉分类 cs.AI，PDF 共 8 页。",
+        "Collection 来源为刘子鸣网站的 Training Dynamics 条目。论文称代码与完整配置将在 acceptance 后发布；本站核验时 arXiv 记录未提供代码链接。"
+      ]
+    },
+    {
+      "title": "研究问题",
+      "paragraphs": [
+        "ReLU 网络训练是否存在两个时间尺度：早期大量神经元跨过 activation boundary、改变分段线性区域；后期门控大致冻结，而权重继续在既定区域内调节 affine map？",
+        "作者先证明一个局部事实：对几乎所有参数和输入，若参数扰动足够小，所有 ReLU 符号不变。再用逐 batch 的 parameter-update magnitude 与 activation-mask flip fraction 检查训练曲线。",
+        "如果这种分离稳定存在，未来或可把结构学习与区内数值优化解耦。但本文只提出 regime-change hypothesis，没有实现两阶段 optimizer，也没有测得训练成本下降。"
+      ]
+    },
+    {
+      "title": "背景",
+      "paragraphs": [
+        "固定 ReLU 门控 $D_l$ 后，MLP 在对应 input polyhedron 内就是 affine map：$K=W_LD_L\\cdots W_1D_1W_0$，bias 也按同一链传播。跨过某个 pre-activation 为零的超平面才改变局部线性算子。",
+        "parameter update 可以很小却仍在边界附近翻转 mask，也可以很大但沿不改变符号的方向移动；因此权重步长与 mask Hamming distance 是互补 observables，不是必然单调对应。",
+        "‘regime change’在本文指两条经验变化曲线的时间尺度分离。它没有 order parameter singularity、thermodynamic limit、critical exponent 或 sharp transition theorem，不应读成统计物理相变。",
+        "现代 Transformer 的 FFN 常用 GELU/SiLU，没有严格二值门控与 polyhedral partition。本文为可测量性把 FFN nonlinearity 替换为 ReLU，只监控该子模块，softmax attention 不在理论内。"
+      ]
+    },
+    {
+      "title": "给物理学家的 AI 导读",
+      "paragraphs": [
+        "可把每个 ReLU sign pattern 看作 parameterized dynamics 的一个 sector：在 sector 内，对输入的映射是 affine；sector boundary 是某个 pre-activation 为零的 codimension-one surface。",
+        "Proposition 1 类似远离界面时相标签对小扰动稳定的拓扑平凡事实。它不说明实际优化轨道离界面多远，也不保证越来越少穿越界面；后者才是训练动力学的经验内容。",
+        "AUC ratio 不是 relaxation-time ratio。因为两条信号分别去极值、按各自 percentile 缩放，绝对 amplitude 和共同时间尺度信息被部分抹去；大比值表示 normalized curve shape 分离较强。",
+        "若真有动力学 crossover，更物理的检验应直接定义 first-passage/stabilization time、跨 seed 分布和随宽度/数据量的 scaling，再看是否出现可重复的时间尺度分离。"
+      ]
+    },
+    {
+      "title": "模型与方法",
+      "paragraphs": [
+        "理论对象是有限层 ReLU MLP。作者排除使某神经元在开集上恒为零的 measure-zero 参数集合，并对固定参数排除 activation boundary 上的 measure-zero 输入集合；连续性随后给出局部 mask preservation。",
+        "实验每 batch 计算每参数平均 $L^1$ 更新 $\\Delta w_i$，并在固定验证子集上计算各 ReLU 层 mask 的平均 normalized Hamming change $\\Delta a_i$。dropout 关闭，BatchNorm 使用 running statistics。",
+        "两条轨迹先以相当于每 epoch batch 数 30% 的 moving-average window 平滑，再分别按 0.5/99.5 percentiles robust min-max；其均值称 AUC，论文报告 $\\rho=AUC_W/AUC_P$。",
+        "18 组实验覆盖 4 个 MLP、7 个 CNN 配置与 7 个 Transformer-based 配置，包括 GPT-2/WikiText、RoBERTa/AG News、T5/SQuAD 和多种 vision Transformer。每组扫描 optimizer、learning rate 与 weight decay，保留 best-validation configuration。",
+        "所有实验固定随机种子，使用 PyTorch 2.6、A100 40GB；验证 subset 大小仅为 batch size 的 0.2 倍。未用 learning-rate scheduling 或 label smoothing。"
+      ]
+    },
+    {
+      "title": "核心结果与证据",
+      "paragraphs": [
+        "Table II 中 18 组有 17 组 $\\rho>1$，唯一反例是 MLP–MNIST 的 0.71；因此数据支持‘多数 evaluated runs 中 pattern-change cumulative area 更小’，不支持无例外的普遍律。",
+        "论文报告平均比值 3.85，并给非对称离散度 +6.43/−2.03。该均值受 GPT-2/WikiText 12、ViT-B16/CIFAR100 11、PyramidViT/TinyImageNet 9.9、Swin/Food-101 7.2 等大值显著影响。",
+        "若看完整表，多个 MLP/CNN 结果靠近 1：Adult 1.07、HAR 1.05、ResNet34/CIFAR100 1.12、Breast Cancer 1.23。异质性比单个 3.85 headline 更能描述证据。",
+        "Figure 1 展示多数 activation-change curves 较早落低，同时 weights 仍变；训练/验证 score 继续演化，与两阶段直觉相容。可是独立 normalization、平滑与 early stopping 都会影响面积。",
+        "Transformer 大比值仅来自替换为 ReLU 的 FFN mask，不能说明 attention pattern、GELU/SiLU gating 或整个 Transformer representation 已冻结。"
+      ]
+    },
+    {
+      "title": "有效性与局限",
+      "paragraphs": [
+        "Proposition 1 的结论是 pointwise local：$\\varepsilon$ 随输入、参数和离边界 margin 改变。它不提供沿 optimizer trajectory 的 uniform radius，也不证明 late training 不再跨 boundary。",
+        "参数变化和 mask 变化先平滑再分别 min-max；$\\rho$ 因而依赖 percentile、window、training horizon 与 early stopping。它不是以 epoch、step 或 wall-clock 表示的直接 stabilization speedup。",
+        "验证 mask 只用固定且很小的 subset，可能漏掉数据分布其他区域的 boundary motion。每层先平均也会掩盖少数关键层持续重组。",
+        "每个 model–dataset pair 报 best-validation hyperparameter configuration；虽然避免明显 undertraining，却把模型、数据、optimizer 和搜索选择混在一起，不能分离哪一因素造成比值差异。",
+        "固定 seed 有助于同一 run 对齐，但没有多 seed error bars 或显著性检验。17/18 的方向一致性值得注意，数值大小与平均 3.85 的不确定性仍未知。",
+        "Transformer 实验使用 ReLU FFN 替换，偏离原生 GELU/SiLU 训练；softmax attention、residual stream 和 LayerNorm 没有相应离散 activation-pattern theorem。",
+        "论文没有实现冻结 gates、分布式解耦或 second-stage affine optimization，也没有精度—成本对照；‘potentially accelerating convergence’是未来方向。",
+        "本站完成全文核验，未运行代码、复证定理或重做多 seed 实验。"
+      ]
+    },
+    {
+      "title": "复现与资源",
+      "paragraphs": [
+        "当前 arXiv 记录未提供代码。最低复现应先完全实现 $\\Delta w$、$\\Delta a$、eval-mode mask、固定 subset、30%-epoch smoothing 与 0.5/99.5 percentile normalization，再逐项做 sensitivity analysis。",
+        "应同时报告原始未归一化曲线、共同归一化版本、threshold crossing time、最后一次显著 mask burst 和 AUC；扫描 smoothing window、subset size 与 early-stopping horizon，判断结论是否稳健。",
+        "每组至少多个 seeds，给 $\\rho$ 的 median/interval，并对 18 组做层级汇总；避免由 12、11、9.9 三个大值主导总体均值。",
+        "机制检验应测每个样本到最近 ReLU boundary 的 margin，比较 optimizer step projection 与 margin；这直接连接局部定理和实际 crossing probability。",
+        "真正验证 decoupled training 需在检测到 crossover 后冻结 masks 或切换 solver，与原 optimizer 在相同精度下比较 steps、FLOPs、wall-clock 和 memory；GELU/SiLU 则需定义软门控或 curvature-based 对应量。"
+      ]
+    },
+    {
+      "title": "阅读指南",
+      "paragraphs": [
+        "快速路线：pp. 2–3 读 Proposition 1 的量词；p. 5 读两种 observable、独立 normalization 与 AUC 定义；p. 6 Figure 1 和 Table II 看全部异质结果。",
+        "物理路线：把 activation sectors、boundary crossing 与 optimizer trajectory 对应起来，特别检查局部稳定半径是否能转成沿轨道的统计预测。",
+        "AI 路线：先分清 weights 继续变化、network function 继续变化、ReLU masks 变化和 validation score 变化；四者没有两两等价。",
+        "批判路线：优先看 0.71 的反例、接近 1 的若干组、Transformer 的 ReLU replacement，以及结论中尚未实现的 decoupled optimizer。"
+      ]
+    }
+  ],
+  "evidence_refs": [
+    "paper.pdf pp. 1–3, Definitions 1–2, Proposition 1 and Corollary 1: ReLU regions, measure-zero exclusions and local affine behavior",
+    "paper.pdf pp. 4–5, Tables I–II and Eqs. (2)–(3): model sweep, parameter and activation metrics, smoothing and normalization",
+    "paper.pdf pp. 5–6, Figure 1 and Table II: all 18 trajectories, AUC ratios, exception and large-ratio cases",
+    "paper.pdf p. 5, implementation paragraph: PyTorch/A100 setup, fixed seeds, ReLU substitutions and validation subset",
+    "paper.pdf pp. 5–6, Conclusion: hypothesis scope, smooth-activation limitation and unimplemented decoupled-training proposal",
+    "source PDF SHA-256 423367862618adf141696e010ad715ac85e427246bca9280508ef48d8c571628",
+    "MinerU Markdown SHA-256 a645909e07f2d750bcb3bcb87ed7394749f14d19fb670ee2786d88fa3c0f7a9d",
+    "Evidence packet SHA-256 6717915cadd84e2d1406a846124e7ea01e97c506e2b8cba0c9df66d0694dd6bc",
+    "Evidence status: full-text verified against arXiv v1; no independent reproduction performed."
+  ]
+}

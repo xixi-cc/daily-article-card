@@ -1,0 +1,202 @@
+{
+  "arxiv_id": "2602.09297",
+  "source_version": "v3",
+  "source_pdf": "https://arxiv.org/pdf/2602.09297v3",
+  "title_en": "Laplacian Heads Improve Transformers by Smoothing Token Representations",
+  "title_zh": "拉普拉斯头通过平滑 token 表示改进 Transformer",
+  "curation_status": "full_text_verified",
+  "card_standard_version": "2.4",
+  "audience_profile": "physics_ai_literate_physicist",
+  "paper_profile": "ai_empirical",
+  "style_reference": "physicist_daily_arxiv",
+  "provenance": {
+    "program": "Collection",
+    "catalog": "Paper Collection",
+    "catalog_record_id": "2602.09297",
+    "catalog_record_ids": [
+      "2602.09297"
+    ],
+    "catalog_topic": "Representation Learning",
+    "collection_date": "2026-08-30",
+    "sampled_at": "2026-08-31",
+    "selected_by": "ziming_mineru_serial_goal",
+    "sampling_seed": "not_applicable_source_complete",
+    "candidate_count": 464
+  },
+  "verified_metadata": {
+    "arxiv_id": "2602.09297",
+    "version": "v3",
+    "title": "Laplacian Heads Improve Transformers by Smoothing Token Representations",
+    "authors": [
+      "Yuchong Zhang",
+      "Vardan Papyan"
+    ],
+    "categories": [
+      "cs.LG"
+    ],
+    "primary_category": "cs.LG",
+    "published": "2026-02-10",
+    "updated": "2026-05-15",
+    "abstract": "The paper replaces selected attention matrices with their random-walk Laplacians and reports representation and accuracy changes across supervised vision, language modeling and self-supervised vision."
+  },
+  "equation_refs": [
+    {
+      "label": "mixed attention and Laplacian heads",
+      "latex": "X' = X + \\sum_{i\\in\\mathcal A} P^{(i)}XW_V^{(i)}W_O^{(i)} + \\sum_{i\\in\\mathcal L}(I-P^{(i)})XW_V^{(i)}W_O^{(i)}",
+      "role": "replace the token-mixing operator in selected heads without adding trainable parameters",
+      "symbols": {
+        "X": "sequence of token representations",
+        "P_i": "row-stochastic softmax attention matrix for head i",
+        "A": "set of ordinary attention heads",
+        "L": "set of Laplacian heads",
+        "W_V_W_O": "learned value and output channel maps"
+      },
+      "evidence": "paper.pdf pp. 2–3, Equations (1)–(3)",
+      "interpretation": "改动只替换 token 方向的线性算子，$W_VW_O$ 仍可改变通道、幅度和符号。因此模型参数量不增加，但实际 residual dynamics 并不只由 $I-P$ 决定。"
+    },
+    {
+      "label": "random-walk Laplacian versus heat flow",
+      "latex": "L_{\\rm rw}=I-P,\\qquad \\dot x=-L_{\\rm rw}x,\\qquad x(t+1)\\approx Px(t)\\; (\\Delta t=1)",
+      "role": "separate the graph-Laplacian motivation from the sign of the implemented residual branch",
+      "symbols": {
+        "P": "row-stochastic attention transition matrix",
+        "L_rw": "random-walk graph Laplacian",
+        "x": "one scalar feature over token positions"
+      },
+      "evidence": "paper.pdf p. 3, Section 2.2 and Equations (4)–(7)",
+      "interpretation": "因 $P\\mathbf 1=\\mathbf 1$，有 $L_{rw}\\mathbf 1=0$，即 token-常数信号是右零模；但普通序列均值守恒还需 $\\mathbf 1^TL_{rw}=0$，仅 row-stochastic 并不保证。更重要的是，热方程含 $-L_{rw}$，而模型显式加上 $+L_{rw}XW_VW_O$；若通道映射取恒等，它更像反扩散。故‘平滑’是结构动机与训练后观测，不是该 residual 项自动满足的动力学定理。"
+    },
+    {
+      "label": "supervised representation variance decomposition",
+      "latex": "V_{\\rm total}=V_{\\rm between\\ class}+V_{\\rm within\\ class}+V_{\\rm within\\ sequence}",
+      "role": "track how token variation is redistributed as more heads use the Laplacian operator",
+      "symbols": {
+        "V_total": "total representation variance",
+        "V_between_class": "variance of class-level sequence means",
+        "V_within_class": "variation of sequence means inside each class",
+        "V_within_sequence": "token variation around each sequence mean"
+      },
+      "evidence": "paper.pdf pp. 5–6, Section 4.1 and Appendix C",
+      "interpretation": "训练后 $V_{within\\ sequence}$ 下降并伴随 class geometry 增强，与 token collapse/Neural Collapse 图景相容；它是相关性诊断，不单独证明这种 collapse 导致 accuracy 提升。"
+    }
+  ],
+  "figure_refs": [
+    {
+      "label": "Figure 3",
+      "asset_path": "assets/collection-figures/2602.09297/figure-3-laplacian-head-accuracy.webp",
+      "section": "核心结果与证据",
+      "role": "show accuracy as a function of Laplacian-head count and stochastic-depth strength on three supervised vision datasets",
+      "evidence": "paper.pdf p. 4, Figure 3",
+      "alt_text": "Three plots show CIFAR10, CIFAR100 and ImageNet accuracy versus the number of Laplacian heads, with separate curves for different drop-path rates.",
+      "caption": "Figure 3：监督视觉任务中 Laplacian-head 数量与准确率的关系；ImageNet 的最佳点在每层 3 个头，而非全头替换。",
+      "interpretation": "三组曲线同时说明改动可带来增益和明显的 task/hyperparameter dependence；它不支持‘Laplacian 越多越好’的单调规律。"
+    }
+  ],
+  "cover": {
+    "mode": "source_figure",
+    "asset_path": "assets/collection-figures/2602.09297/figure-3-laplacian-head-accuracy.webp",
+    "label": "Figure 3",
+    "visual_type": "data_plot",
+    "evidence": "paper.pdf p. 4, Figure 3",
+    "alt_text": "CIFAR10、CIFAR100 与 ImageNet 上准确率随 Laplacian-head 数量变化的三联图。",
+    "caption": "同一结构改动在不同数据集和正则化强度下呈现不同最优头数。",
+    "selection_rationale": "The plot preserves both the reported gains and the central non-monotonic boundary better than a purely conceptual diagram."
+  },
+  "sections": [
+    {
+      "title": "作者信息",
+      "paragraphs": [
+        "Yuchong Zhang 与 Vardan Papyan 来自 University of Toronto 和 Vector Institute。研究把图拉普拉斯算子直接引入 Transformer attention head，并在监督视觉、语言模型和 DINO 自监督视觉中比较。",
+        "本站核验 arXiv:2602.09297v3：v1 提交于 2026-02-10，v3 更新于 2026-05-15；主分类 cs.LG，PDF 共 37 页。v1–v3 标题一致，无身份漂移。",
+        "Collection 来源为刘子鸣网站的 Representation Learning 条目。"
+      ]
+    },
+    {
+      "title": "研究问题",
+      "paragraphs": [
+        "标准 self-attention 用行随机矩阵 $P$ 对 token 做加权平均，容易增强低频或 token 间共享分量。能否在不增加参数的前提下加入互补算子，让模型更直接地操控 token 差异？",
+        "作者将部分 head 的 $P$ 换成 random-walk Laplacian $I-P$，再问三个问题：accuracy 是否提高、表示谱是否更快衰减、学到的主成分是否更贴合分类或分割任务。",
+        "论文标题把效果概括为 smoothing，但真正需要区分的是算子代数、带可学习通道映射的 residual dynamics，以及训练后表示的统计现象。三者有关联，却不是同一个命题。"
+      ]
+    },
+    {
+      "title": "背景",
+      "paragraphs": [
+        "对每个 attention head，$P=\\operatorname{softmax}(QK^T/\\sqrt{d_k})$ 的每一行和为 1。$PX$ 类似图上的一步随机游走：每个 token 从其他 token 汇聚信息。",
+        "$I-P$ 是 random-walk Laplacian。对 token-常数向量有 $(I-P)\\mathbf 1=0$，所以它去掉该右零模并突出相对差异；但 $P$ 通常不是对称或 doubly stochastic，不能把无向图拉普拉斯的全部直觉原样搬来。",
+        "图扩散满足 $\\dot x=-Lx$：负号衰减高频。模型却把 $(I-P)XW_VW_O$ 加入 residual stream，$W_VW_O$ 的学习决定通道旋转和有效符号。",
+        "Transformer 中的 representation collapse 有两面性：适度压缩可去除 nuisance directions、突出 task-relevant subspace；过度平滑会让 token 难以区分，损害需要局部结构的任务。"
+      ]
+    },
+    {
+      "title": "给物理学家的 AI 导读",
+      "paragraphs": [
+        "可把 token index 当作动态图上的 sites，attention $P(X)$ 是随状态变化的非对称传输核，$I-P$ 则是 state-dependent random-walk Laplacian。它不像固定晶格哈密顿量，而是每层、每个样本都重新生成。",
+        "普通 attention 和 Laplacian head 不是简单的低通/高通滤波器组，因为后面还有可学习的 $W_VW_O$，并通过 residual、LayerNorm 和 MLP 与其他层耦合。单看 $I-P$ 的谱不足以确定整层的稳定性。",
+        "‘零行和’意味着常数列向量是零模，不等于对任意输入都保持算术平均。若要均值守恒，需要列和也为 1，或选择与 stationary distribution 加权的平均。",
+        "因此最稳妥的物理解读是：架构给网络新增一种对 token 差异敏感、同时抑制常数模的基元；训练是否把它组合成有效平滑，要由表示谱、任务几何和反例共同判断。"
+      ]
+    },
+    {
+      "title": "模型与方法",
+      "paragraphs": [
+        "每层固定总 head 数，只把其中 $n_L$ 个普通 attention heads 改成 Laplacian heads。论文在 ViT-B/DeiT-3 中扫描 $n_L\\in\\{0,3,6,9,11,12\\}$，并联合扫描 drop-path 0.1、0.3、0.4；训练 300 epochs。",
+        "监督视觉覆盖 CIFAR10、CIFAR100 与 ImageNet。Table 1 在 baseline-optimal drop-path 下报告 3 个 random seeds 的 mean±std，Figure 3 展示不同正则化强度下的曲线。",
+        "语言实验使用 561M 参数、20 blocks、每层 10 heads 的 GPT-2-style model，在约 11.2B FineWeb-Edu tokens 上预训练，再做 mid-training 与 supervised fine-tuning；评估 ARC-Easy、ARC-Challenge、MMLU、GSM8K、HumanEval。",
+        "DINO 实验使用 6-head ViT-S，比较 0、1、3、5、6 个 Laplacian heads，并用 ImageNet linear probing 与 ADE20K segmentation 检验表示。",
+        "分析部分用 supervised ANOVA-like variance decomposition、语言 hidden-state singular spectrum/99% PC count，以及各 principal component 的任务可分性刻画表示压缩。"
+      ]
+    },
+    {
+      "title": "核心结果与证据",
+      "paragraphs": [
+        "监督视觉 baseline 为 CIFAR10 95.35±0.16、CIFAR100 75.12±0.46、ImageNet 81.45±0.08。全 12-head 替换分别达到 95.86、77.04、82.32；但 ImageNet 最佳为 3 heads 的 82.73，显示明显非单调性。",
+        "语言模型五任务平均由 23.93 提升到 9-head 的 30.09。最大单项变化是 ARC-Easy：5-head 从 31.03 到 47.12，增加 16.09 percentage points；GSM8K 的最佳头数是 3，HumanEval 是 9。",
+        "DINO 的 ImageNet Top-1 从 71.55 提升到 3/5-head 的 72.98；ADE20K mIoU 从 29.81 提升到 5-head 的 32.27，但全 6-head 降到 29.64，低于 baseline。这个反例直接限制了‘更多 collapse 更好’。",
+        "语言 hidden states 达到 99% explained variance 所需 PC 数由 baseline 547.7 降到全-head 430.4，约降 21%。监督视觉中 within-sequence variance 下降、between-class geometry 增强；DINO 中部分 PCs 对 segmentation 更有用。",
+        "这些谱与几何变化和 accuracy 同时出现，支持架构确实改变 representation organization；但实验没有隔离证明哪一种 collapse 指标是增益的因果中介。"
+      ]
+    },
+    {
+      "title": "有效性与局限",
+      "paragraphs": [
+        "‘parameter-free’只表示不增加 trainable parameters；token-mixing 运算和架构已改变，所有模型也都重新训练，不能理解为零计算代价或对现成模型的无训练修补。",
+        "热方程的耗散项是 $-(I-P)x$，而实际 residual 显式加入 $+(I-P)XW_VW_O$。当通道映射不是已知负定算子时，单凭符号不能保证平滑；论文的 smoothing 结论主要来自训练后光谱观测。",
+        "仅有 row-stochasticity 可推出 $(I-P)\\mathbf1=0$，不能推出普通 token mean 不变；后者要求 $\\mathbf1^T(I-P)=0$。因此‘不移动均值’应限制在适当零模/加权平均语境。",
+        "任务最优头数不同，ImageNet 和 DINO 都有非单调或全-head 退化；论文也承认每层固定相同数量很可能不是最优 layer-wise allocation。",
+        "经验范围是特定 ViT/DeiT、561M GPT-2-style 与 DINO ViT-S recipe，不能外推到现代多十亿参数 LLM 或所有 attention variants。",
+        "监督图像分类明确报告 3 seeds 和 hyperparameter sweep；不能把这一 uncertainty protocol 自动推广到所有实验。DINO 附录正文写训练 50 epochs，而 Table 5 写 100 epochs，精确复现前必须向作者澄清。",
+        "本站完成全文核验，未独立重训模型或复算全部 representation statistics。"
+      ]
+    },
+    {
+      "title": "复现与资源",
+      "paragraphs": [
+        "最小复现应先实现同一 attention logits 与 $P$，只切换 $P$ 和 $I-P$ 分支；逐层记录 residual norm、token mean、stationary-distribution-weighted mean 与 singular spectrum，避免只看最终 accuracy。",
+        "为验证符号问题，可冻结同一 $P$，分别测试 $+(I-P)$、$-(I-P)$ 和带约束/无约束 $W_VW_O$，测量一次更新前后的 Dirichlet energy；这能区分算子命名与真实扩散方向。",
+        "训练比较应固定参数量、初始化、数据顺序、optimizer、drop path 与总计算量，对每个 head count 使用多 seeds，并保留完整 hyperparameter surface 而非只报最优点。",
+        "DINO 复现需先解决 50/100 epochs 冲突并同时报告两个设置。若研究 layer allocation，应在固定 Laplacian-head 总预算下比较 early/middle/late layers，而不是让容量与位置一起变化。",
+        "因果链验证可对 checkpoint 做 head ablation 或 operator swap，再用 mediation-style 分析检验谱压缩是否预测单样本/单任务增益；仅跨模型相关不足以回答。"
+      ]
+    },
+    {
+      "title": "阅读指南",
+      "paragraphs": [
+        "快速路线：pp. 2–3 读 Equations (1)–(7)；p. 4 看 Figure 3 与 Tables 1–3；pp. 5–7 看 representation analysis。",
+        "物理路线：先自行核对 $L=I-P$、$\\dot x=-Lx$ 与 residual 的符号，再区分右零模、左零模和 stationary distribution；不要默认 $P$ 对称。",
+        "AI 路线：比较 vision、language 与 DINO 的不同最优 head counts，理解 architecture intervention 必须和训练 recipe 一起评价。",
+        "批判路线：重点检查 Appendix 的 DINO epoch 冲突、all-head ADE20K 退化、ImageNet 非单调曲线，以及 representation collapse 与 task gain 之间尚未识别的因果方向。"
+      ]
+    }
+  ],
+  "evidence_refs": [
+    "paper.pdf pp. 2–3, Sections 2.1–2.2 and Equations (1)–(7): standard attention, random-walk Laplacian and diffusion motivation",
+    "paper.pdf p. 4, Figure 3 and Tables 1–3: supervised vision, language and DINO headline results",
+    "paper.pdf pp. 5–7, Section 4: variance, spectral and task-separability analyses",
+    "paper.pdf Appendix B and Table 5: training recipes and the DINO 50-versus-100-epoch inconsistency",
+    "source PDF SHA-256 3b36ce55867e19c02d82cb77c851d915a48d9c556c9b2b2cf0b760f8c4aeac14",
+    "MinerU Markdown SHA-256 e6c5461ad36725af227c399620a23b518f23a5dc2477c6d7e4d3a2f28d100225",
+    "Evidence packet SHA-256 575852ba1439e91825e9e39e4543aabbf7f519bd604acf81672648f386c06a26",
+    "Evidence status: full-text verified against arXiv v3; no independent reproduction performed."
+  ]
+}

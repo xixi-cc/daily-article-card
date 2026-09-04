@@ -1,0 +1,207 @@
+{
+  "arxiv_id": "2602.09276",
+  "source_version": "v2",
+  "source_pdf": "https://arxiv.org/pdf/2602.09276v2",
+  "title_en": "Effective Reasoning Chains Reduce Intrinsic Dimensionality",
+  "title_zh": "有效推理链降低任务的内在维度",
+  "curation_status": "full_text_verified",
+  "card_standard_version": "2.4",
+  "audience_profile": "physics_ai_literate_physicist",
+  "paper_profile": "ai_empirical",
+  "style_reference": "physicist_daily_arxiv",
+  "provenance": {
+    "program": "Collection",
+    "catalog": "Paper Collection",
+    "catalog_record_id": "2602.09276",
+    "catalog_record_ids": [
+      "2602.09276"
+    ],
+    "catalog_topic": "AI Agents",
+    "collection_date": "2026-08-30",
+    "sampled_at": "2026-08-31",
+    "selected_by": "ziming_mineru_serial_goal",
+    "sampling_seed": "not_applicable_source_complete",
+    "candidate_count": 464
+  },
+  "verified_metadata": {
+    "arxiv_id": "2602.09276",
+    "version": "v2",
+    "title": "Effective Reasoning Chains Reduce Intrinsic Dimensionality",
+    "authors": [
+      "Archiki Prasad",
+      "Mandar Joshi",
+      "Kenton Lee",
+      "Mohit Bansal",
+      "Peter Shaw"
+    ],
+    "categories": [
+      "cs.CL",
+      "cs.AI",
+      "cs.LG"
+    ],
+    "primary_category": "cs.CL",
+    "published": "2026-02-09",
+    "updated": "2026-05-28",
+    "abstract": "Across alternative reasoning-chain supervision for fixed Gemma models, a LoRA capacity threshold is used as a task-compressibility proxy and is strongly rank-correlated with later in- and out-of-distribution accuracy."
+  },
+  "equation_refs": [
+    {
+      "label": "LoRA as a structured trainable subspace",
+      "latex": "W=W_0+BA,\\qquad B\\in\\mathbb R^{m\\times r},\\ A\\in\\mathbb R^{r\\times n},\\qquad d=\\operatorname{params}(r,L_{\\rm LoRA})",
+      "role": "vary the number of trainable degrees of freedom while keeping the pretrained backbone fixed",
+      "symbols": {
+        "W_0": "frozen pretrained weight matrix",
+        "A_B": "learned low-rank factors",
+        "r": "LoRA rank",
+        "L_LoRA": "chosen set or count of adapted matrices",
+        "d": "actual number of trainable adapter parameters"
+      },
+      "evidence": "paper.pdf pp. 2–3, Sections 2.1–2.2",
+      "interpretation": "LoRA 扫描的是架构对齐的低秩参数族，不是参数空间中的各向同性随机子空间。所得最小 $d$ 因此是相对于 target modules、rank grid 与 student model 的 capacity proxy；换 PEFT 参数化可能改变数值与排序。"
+    },
+    {
+      "label": "operational intrinsic-dimension threshold",
+      "latex": "d_{\\rm int}=\\min\\{d:\\mathcal A(d)\\ge\\tau\\}",
+      "role": "define the first discrete LoRA capacity that reaches a common training-accuracy target",
+      "symbols": {
+        "A_d": "final training accuracy for one LoRA configuration",
+        "tau": "shared threshold across all reasoning strategies",
+        "d_int": "smallest sampled trainable-parameter count crossing the threshold"
+      },
+      "evidence": "paper.pdf p. 3, Section 2.3 and Figure 1",
+      "interpretation": "$d_{int}$ 不是隐藏表示流形的局部维数，也不是严格求出的连续最小值；它是 20 或 30 个离散 LoRA 配置上的最小 crossing，因此更准确地说是依赖阈值和网格的上界/代理。"
+    },
+    {
+      "label": "rank-predictive evaluation",
+      "latex": "r_s=\\operatorname{corr}_{\\rm Spearman}\\!\\left(\\operatorname{rank}(d_{\\rm int}),\\operatorname{rank}(-A_{\\rm overall})\\right)",
+      "role": "test whether lower measured adapter capacity ranks the reasoning strategies with higher generalization",
+      "symbols": {
+        "A_overall": "geometric mean of GSM8K and five stress-test accuracies",
+        "r_s": "Spearman rank correlation, signed so positive means lower dimension predicts higher accuracy"
+      },
+      "evidence": "paper.pdf pp. 4–6, Tables 1–3 and evaluation protocol",
+      "interpretation": "Spearman 只检验顺序单调关系，不使用绝对距离，也不建立因果方向。$d_{int}$ 与 accuracy 都来自同一 model family 对同一 strategy-specific supervision 的拟合，潜在共同原因包括 teacher quality、format 与 filtering。"
+    }
+  ],
+  "figure_refs": [
+    {
+      "label": "Figure 1",
+      "asset_path": "assets/collection-figures/2602.09276/figure-1-intrinsic-dimension-overview.webp",
+      "section": "核心结果与证据",
+      "role": "summarize the strategy intervention, LoRA capacity sweep, common-threshold crossing and correlation with generalization",
+      "evidence": "paper.pdf p. 3, Figure 1",
+      "alt_text": "An overview links alternative rationales for one math problem to LoRA training-accuracy curves, a shared threshold defining intrinsic dimension, and an inverse relation with downstream accuracy.",
+      "caption": "Figure 1：固定 student model、改变 reasoning supervision，再扫描 LoRA 容量；越早跨过共同训练阈值的策略，通常在 ID/OOD 测试上也更强。",
+      "interpretation": "流程展示的是可操作的 model–task learnability proxy。图中的‘压缩’是以更少 trainable adapter parameters 达标，不是对 hidden-state manifold 或 Kolmogorov complexity 的直接测量。"
+    }
+  ],
+  "cover": {
+    "mode": "source_figure",
+    "asset_path": "assets/collection-figures/2602.09276/figure-1-intrinsic-dimension-overview.webp",
+    "label": "Figure 1",
+    "visual_type": "schematic",
+    "evidence": "paper.pdf p. 3, Figure 1",
+    "alt_text": "不同推理链、LoRA 容量扫描、共同阈值和泛化表现之间的完整分析流程。",
+    "caption": "推理链的‘有效性’被转化为达到相同训练阈值所需的最小 LoRA 参数量，并用 OOD 排名检验。",
+    "selection_rationale": "The overview prevents a geometric misreading by showing exactly how the reported dimension is operationally measured."
+  },
+  "sections": [
+    {
+      "title": "作者信息",
+      "paragraphs": [
+        "Archiki Prasad、Mandar Joshi、Kenton Lee、Mohit Bansal 与 Peter Shaw 来自 UNC Chapel Hill 与 Google DeepMind；论文披露 AP、MJ、KL、PS 任职于开发 Gemma 的 Google DeepMind，AP 的部分工作完成于实习期间。",
+        "本站核验 arXiv:2602.09276v2：v1 提交于 2026-02-09，v2 更新于 2026-05-28；主分类 cs.CL，交叉分类 cs.AI、cs.LG，PDF 共 22 页。v1–v2 标题一致，无身份漂移。",
+        "Collection 来源为刘子鸣网站的 AI Agents 条目。"
+      ]
+    },
+    {
+      "title": "研究问题",
+      "paragraphs": [
+        "为什么有些 chain-of-thought、program-of-thought 或短解释能帮助小模型泛化，而更长的推理链、额外 filler 或看似详细的步骤反而无效？长度和 base-model perplexity 只能部分预测。",
+        "作者借用 intrinsic dimensionality 的思想：固定 pretrained student 和底层问题，只改变训练答案中的 reasoning strategy；若某种监督让任务更容易拟合，它应以更少 LoRA trainable parameters 达到同一训练准确率。",
+        "论文的核心问题不是 test-time 多想几步是否有用，而是 post-training data 的表达形式是否改变任务对 student model 的有效容量需求，以及该需求能否预测 ID/OOD generalization。"
+      ]
+    },
+    {
+      "title": "背景",
+      "paragraphs": [
+        "经典 intrinsic dimension 问高维参数模型能否只在一个低维子空间内达到目标性能。这里不用随机投影，而用 LoRA 的低秩矩阵更新，因此得到的是 structured adaptation dimension。",
+        "LoRA 冻结 $W_0$，只训练 $BA$；rank 和被适配的 attention/MLP matrices 决定参数预算。更小预算达标可理解为该监督与 pretrained representation 更相容。",
+        "reasoning chain 是训练 target 的一部分：模型既要生成中间 token，也要给最终答案。Executed PoT 包含实际执行程序得到的结果，Simulated PoT 则要求模型内部模拟；No CoT 只输出答案。",
+        "MDL/压缩是解释视角：参数需求较低可能意味着更短的有效描述，但 LoRA parameter count 不等于 bit-level description length，更不等于数据的 Kolmogorov complexity。"
+      ]
+    },
+    {
+      "title": "给物理学家的 AI 导读",
+      "paragraphs": [
+        "可把 LoRA sweep 看成限制可调 control coordinates 的容量扫描：对每个 strategy，逐步扩大允许的参数子空间，观察 order-like observable——训练 accuracy——何时跨过共同阈值。",
+        "这个 crossing 类似有限网格上的 operational scale，不是连续系统的谱维数或 fractal dimension。其绝对值随坐标选择、网格间距、threshold 和训练时间改变；论文主要依赖相对排序。",
+        "强 Spearman correlation 表示两种排序相近：容易被小 adapter 拟合的 supervision 也往往更泛化。它没有证明 reasoning chain 把某个客观 task manifold 压扁；teacher quality 或更一致的 label map 也可同时改善两者。",
+        "Executed PoT 像把困难子演算交给外部精确 solver，从而给 student 一个更规则的输入—输出关系。但 cognitive tasks 上 No CoT 反而最佳，说明最优表示依赖问题结构而非‘推理越显式越好’。"
+      ]
+    },
+    {
+      "title": "模型与方法",
+      "paragraphs": [
+        "主实验用 Gemma-3 base 1B 与 4B。每个 reasoning strategy 单独生成 GSM8K training targets，主要由 Gemma-3 27B 或 Gemini 2.5 Flash teacher 产生，并按最终答案正确性过滤，留下约 6.2K–7.5K 样本。",
+        "对每个策略，1B 扫 20 个 LoRA configurations、训练 8,000 steps；4B 扫 30 个、训练 6,000 steps。参数数目按 log scale 从 rank-1 的 query/value adaptation 延伸到 full-rank、attention+MLP 全适配。batch size 8，AdamW。",
+        "共同阈值取所有策略中 full-capacity 第一 epoch 最大训练 accuracy 的 90%：4B 为 63.0%，1B 为 24.3%。作者还测试 70%、80%、validation-derived threshold。",
+        "14 种 GSM8K 策略包括 No CoT、短 CoT、2/4/8 distractors、Gemma/Gemini CoT、Executed/Simulated PoT、Plan Solve、Critical CoT 与 High Review Ratio CoT。",
+        "generalization 用 GSM8K test 加五个 GSM-Symbolic/GSM-IC/GSM-Hard stress splits；overall 是六个 split accuracy 的 geometric mean。baseline metrics 为长度、student token perplexity 与 sequence KL。"
+      ]
+    },
+    {
+      "title": "核心结果与证据",
+      "paragraphs": [
+        "在 14 种 GSM8K 策略上，4B 的 lower-$d_{int}$ 与 higher-overall-accuracy Spearman 为 0.93，1B 为 0.75；对应 token-perplexity correlation 为 0.82/0.63，length 为 0.31/0.24，sequence KL 为 −0.17/−0.18。",
+        "4B 的 Executed PoT 以 1.49M trainable parameters 跨过 63% threshold，OOD accuracy 43.40%、overall 46.15%；No CoT 需要 5246.16M proxy，OOD 6.20%、overall 7.18%。Short CoT 为 3.92M、overall 32.63%。",
+        "threshold robustness 有限但方向稳定：1B 在四种阈值下 correlation 0.72–0.75，4B 为 0.93–0.94。这支持 ranking 不完全由 90% 选择造成，但不消除 LoRA grid 与训练 recipe 依赖。",
+        "向 Short CoT 加 2/4/8 个无关步骤时，dimension proxy 总体上升、accuracy 下降；将 50% reasoning chains 替换为错误链，Short CoT proxy 增约 500×、accuracy 降 12.0 points，Gemma-27B CoT 增约 125×、降 12.8 points。",
+        "Reasoning Gym extension 每组只比较四种策略：algorithmic group 中 Executed PoT 最优，cognitive group 中 No CoT 最优。小样本 Spearman 可达 1.00，但四个点不足以支持精确的普遍相关强度。"
+      ]
+    },
+    {
+      "title": "有效性与局限",
+      "paragraphs": [
+        "‘intrinsic dimension’是最小 sampled LoRA parameter count 的 proxy/upper bound；不是隐藏态 manifold dimension。绝对数值依赖 student、任务、threshold、adapted modules、rank grid、optimizer 与训练时长。",
+        "同一 strategy 的 $d_{int}$ 和 downstream accuracy 都来自相同 student family 对同一训练集的拟合，相关性有预测价值却不识别因果。更一致、更容易由 teacher 生成的 targets 可同时降低 proxy 并提高 accuracy。",
+        "数据按正确最终答案过滤，会改变各策略的样本和内容分布；样本数虽与 accuracy 无显著相关（论文报告约 −0.11，$p>0.7$），teacher、format、答案过滤与 strategy 仍是捆绑干预。",
+        "Executed PoT 的训练 target 利用外部执行得到结果，其优势可能来自正确性与格式一致性，不单是抽象‘推理结构’；No CoT 在 cognitive tasks 最优也反驳统一最优链。",
+        "主要证据只涵盖 Gemma-3 1B/4B 与 GSM8K arithmetic；Reasoning Gym 只用 4B 和每组四策略。跨模型家族、代码、科学推理和开放式任务的排序稳定性未知。",
+        "计算代价高：单策略要做 20 或 30 次 LoRA training，14 策略已是数百次训练，另有 learning-rate 与 convergence preliminary sweeps；它不是廉价 data-selection metric。",
+        "离散 sweep 只找到已尝试路径上的 crossing；不同 PEFT 或 random subspace 可能用更少参数。Table 中达到 full-capacity 边界的数值尤其应理解为 censoring/上界。",
+        "本站完成全文核验，未重跑 LoRA sweeps、teacher generation 或 OOD evaluation。"
+      ]
+    },
+    {
+      "title": "复现与资源",
+      "paragraphs": [
+        "复现应固定 Gemma checkpoint、tokenizer、每种 reasoning dataset、correctness filter、20/30 个 LoRA targets、target-module selection、训练 steps 和 common-threshold construction，并保存每条 Pareto curve。",
+        "不要只报告跨阈值点：给相邻 LoRA 配置的训练 accuracy、多个 seeds 和 crossing interval；对未跨阈值策略报告 right-censoring，而不是把上限当精确 dimension。",
+        "因果检验可对同一正确 solution 做配对改写：保持 teacher、token length、final answer 和样本集合不变，只改变结构；对 distractor 数量与错误率做 dose-response。",
+        "参数化稳健性应比较 LoRA、IA3、prefix tuning、随机子空间与不同 target matrices 的 strategy ranking；若排序不稳定，指标反映的是 adapter inductive bias。",
+        "工程上可先用较便宜 proxy（base-model PPL、少量 capacity points）筛选，再只对候选做完整 sweep；必须把筛选成本和 OOD evaluation leakage 分开统计。"
+      ]
+    },
+    {
+      "title": "阅读指南",
+      "paragraphs": [
+        "快速路线：pp. 2–3 读 LoRA 与 $d_{int}$ 的操作定义；pp. 5–6 看 Tables 1–3；p. 7 Figure 2 看 threshold crossing；pp. 8–9 看 distractor、错误链和 Reasoning Gym。",
+        "物理路线：把容量扫描类比有限尺寸/控制参数扫描，但始终记住 parameterization 不是坐标不变量，threshold 也不是临界点。",
+        "AI 路线：先区分 training rationale、test-time reasoning 与 external code execution；本文主要研究第一项对后训练 learnability 的影响。",
+        "批判路线：优先核对 Appendix A 的 configuration search、Appendix B 的 correctness filtering 与样本数、每策略 20/30 次训练成本，以及 cognitive tasks 的 No-CoT 反例。"
+      ]
+    }
+  ],
+  "evidence_refs": [
+    "paper.pdf pp. 2–3, Sections 2.1–2.3 and Figure 1: LoRA parameterization, capacity sweep and operational dimension definition",
+    "paper.pdf pp. 3–5, Section 3 and Table 1: reasoning datasets, 14 strategies, training protocol and Gemma-3 4B results",
+    "paper.pdf pp. 5–7, Tables 2–3 and Figure 2: 1B results, Spearman comparisons and threshold robustness",
+    "paper.pdf pp. 7–9, Tables 4–5: Reasoning Gym, distractors, incorrect-chain mixtures and task dependence",
+    "paper.pdf pp. 9–10 and Appendices A–C: computational cost, upper-bound interpretation, LoRA search and dataset construction",
+    "source PDF SHA-256 58edde2d2073ff2769944a59f71fcb2ad2d36689cd096c9ecfe0397f0cc0c278",
+    "MinerU Markdown SHA-256 8f843b946f83f84b45fd8e3494858d936b9c4dad73136323355d4470eac3d97d",
+    "Evidence packet SHA-256 66916669ca63e3674b52c123262716391a3e7e7050f1877133f0e659700b94df",
+    "Evidence status: full-text verified against arXiv v2; no independent reproduction performed."
+  ]
+}
