@@ -1,0 +1,113 @@
+{
+  "arxiv_id": "2510.17469",
+  "source_version": "v1",
+  "source_pdf": "https://arxiv.org/pdf/2510.17469v1",
+  "title_en": "Layer Specialization Underlying Compositional Reasoning in Transformers",
+  "title_zh": "Transformer 组合推理背后的层级专门化",
+  "curation_status": "full_text_verified",
+  "card_standard_version": "2.4",
+  "audience_profile": "physics_ai_literate_physicist",
+  "paper_profile": "ai_empirical",
+  "style_reference": "physicist_daily_arxiv",
+  "provenance": {
+    "program": "Collection", "catalog": "Paper Collection", "catalog_record_id": "2510.17469",
+    "catalog_record_ids": ["2510.17469"], "catalog_topic": "Scaling Laws",
+    "collection_date": "2026-08-30", "sampled_at": "2026-08-31",
+    "selected_by": "ziming_mineru_serial_goal", "sampling_seed": "not_applicable_source_complete", "candidate_count": 464
+  },
+  "verified_metadata": {
+    "arxiv_id": "2510.17469", "version": "v1",
+    "title": "Layer Specialization Underlying Compositional Reasoning in Transformers",
+    "authors": ["Jing Liu"],
+    "categories": ["cs.LG", "cs.AI"], "primary_category": "cs.LG",
+    "published": "2025-10-20T12:08:22Z", "updated": "2025-10-20T12:08:22Z",
+    "abstract": "A six-layer Transformer study on Random Hierarchy Model sequences compares memorization, in-distribution, novel-rule-combination and shifted-layer transfer. Attention-derived specialization concentrates early in causal models and late in masked models, and changes over three training phases, but the evidence is correlational and the benchmark is small and synthetic."
+  },
+  "equation_refs": [
+    {
+      "label": "RHM sequence length",
+      "latex": "d=s^L",
+      "role": "connect recursive hierarchy depth to the observable sequence length",
+      "symbols": {"L": "number of recursive grammar levels and model layers in the experiments", "s": "branching factor", "d": "number of leaf tokens"},
+      "evidence": "paper.pdf p. 3, Section 3 and Figure 1",
+      "interpretation": "Increasing L grows the dependency scale exponentially at fixed s; it is a controlled complexity knob, not a claim that natural-language complexity follows the same law."
+    }
+  ],
+  "figure_refs": [{
+    "label": "Figure 2", "asset_path": "assets/collection-figures/2510.17469/figure-2-layer-specialization.webp",
+    "section": "核心结果与证据", "role": "compare where causal and masked Transformers concentrate the attention-based specialization score",
+    "evidence": "paper.pdf p. 4, Figure 2",
+    "alt_text": "左右两幅六层热图分别展示 causal 与 masked Transformer 在记忆、同分布、同规则新组合和跨层迁移条件下的专门化分数。",
+    "caption": "Causal 模型的高分集中在第 0–1 层，masked 模型集中在第 5 层；红框标出各自最强路径。",
+    "interpretation": "The plot visualizes an attention statistic, not an ablation-based causal contribution or task accuracy; high score must not be read as proof that the layer is necessary."
+  }],
+  "cover": {
+    "mode": "source_figure", "asset_path": "assets/collection-figures/2510.17469/figure-2-layer-specialization.webp",
+    "label": "Figure 2", "visual_type": "data_plot", "evidence": "paper.pdf p. 4, Figure 2",
+    "alt_text": "因果与双向 Transformer 的逐层专门化热图。",
+    "caption": "相同层次任务可对应不同内部组织：因果注意力偏早层，双向注意力偏末层。",
+    "selection_rationale": "It shows the paper's main mechanistic contrast while allowing the card to explain that the metric is correlational rather than causal."
+  },
+  "sections": [
+    {"title": "作者信息", "paragraphs": [
+      "Jing Liu；作者单位为 ENS、Université PSL、EHESS、CNRS（法国巴黎）。",
+      "本站核验 arXiv:2510.17469v1：提交并更新于 2025-10-20；主分类 cs.LG，另含 cs.AI，共 9 页；首页标注 preprint under review。",
+      "Collection 来源为刘子鸣网站的 Scaling Laws 条目。"
+    ]},
+    {"title": "研究问题", "paragraphs": [
+      "Transformer 能否把训练中见过的局部规则重新组合，用于从未出现过的层次序列？若能，计算是否会集中到某些层，并随训练阶段逐步形成？",
+      "论文用 Random Hierarchy Model（RHM）隔离记忆、同分布泛化、已知规则的新组合和分布变化后的跨层迁移，再比较 causal language model（CLM）与 masked language model（MLM）。",
+      "核心观察是两种架构都出现 layer specialization，但位置相反：CLM 偏最早层，MLM 偏最后层。作者将它解释为组合推理的内部组织；因果证据仍缺失。"
+    ]},
+    {"title": "背景", "paragraphs": [
+      "in-context learning 指模型在不更新参数时，根据 prompt 中的示例改变当前预测。它可表现为规则适配，但也可能依赖表面统计，因此需要 OOD 组合来区分。",
+      "RHM 是概率上下文无关文法：root 经 L 次递归、每次分成 s 个子节点，最终产生 s^L 个可观测 token。部分层可采用 Zipf 频率，模拟不均匀词频。",
+      "mechanistic interpretability 不只问输出是否正确，还问激活或 attention 是否形成可重复的计算模块。本文的 specialization 是统计指标，不等于已定位一个完整 circuit。"
+    ]},
+    {"title": "给物理学家的 AI 导读", "paragraphs": [
+      "RHM 类似可控的实空间重整化树：高层隐藏变量约束远距离叶节点，改变递归深度就改变关联长度。模型必须从 observable tokens 反推中间层结构。",
+      "四种测试条件像逐级加严的 ensemble：training microstates、同一分布的新 microstates、相同 Hamiltonian/rules 的新组合，以及改变某层频率后的 distribution shift。只有后两项接近系统性组合泛化。",
+      "layer specialization score 衡量 attention 是否随树中层级关系而变化。它更像 order parameter：可追踪结构何时出现，却不能仅凭相关性证明该结构驱动了相变或性能。",
+      "CLM/MLM 的早层—晚层差异可由信息边界解释，但论文未控制 objective、masking 与 readout 的所有差别；不要把位置差异直接归因于 causal versus bidirectional attention。"
+    ]},
+    {"title": "模型与方法", "paragraphs": [
+      "模型为六层 GPT-like Transformer，4 heads、embedding 512、MLP expansion 4、RoPE θ=10000、ReLU、pre-LayerNorm 和 tied embedding/output weights；比较 causal next-token 与 masked reconstruction/root classification。",
+      "任务指标是 next-token prediction accuracy。mechanistic 指标包括按 RHM 层级关系条件化的 attention variance、representation PCA 与 attention-map clustering。",
+      "四种 condition 为 mem、ind、gen-same 与 transfer；后者把 Zipf-distributed layer 改到不同层。in-context examples 数 n_ct 用来测试 few-shot dependence。",
+      "多数模型以 AdamW 训练 200k steps，η=1.5×10^-4、weight decay 2.0、batch 1024、n_ct=32、5% warmup 后 cosine annealing；超参数先在较浅设置扫描再迁移。"
+    ]},
+    {"title": "核心结果与证据", "paragraphs": [
+      "Figure 2 中 CLM 的 transfer specialization 在 layer 0 为 0.51；gen-same 的 layer 1 为 0.49。MLM 则在 layer 5 对 gen-same/transfer 分别为 0.52/0.51，中间层多约 0.08 或更低。",
+      "两类模型在 transfer 条件的最高 specialization 都约 0.51，但这不是 task accuracy。正文把“相似分数”解释为不同架构可形成不同计算路径，证据只支持 metric-level convergence。",
+      "Figure 3 把平均 specialization 分成三阶段：0–5k steps 从约 0.1 快升到 0.5–0.6；5k–15k plateau；15k–35k 在 OOD 出现时进一步重组。CLM 均值略降、MLM 约保持 0.5–0.55。",
+      "时间上的共同变化支持 specialization 与 generalization 相关；没有 layer ablation、activation patching 或训练干预，所以不能证明 specialization 是必要机制。"
+    ]},
+    {"title": "有效性与局限", "paragraphs": [
+      "RHM 是低维、离散且已知生成规则的 synthetic grammar；自然语言中的语义歧义、长程知识、噪声和交互式 prompt 均未覆盖。",
+      "模型只有六层且固定宽度/heads，未做规模律、多个随机种子、误差条或跨架构 replication；标题中的 Transformers 不应读成所有 Transformer。",
+      "specialization 由 attention statistic 定义。attention pattern 可与 computation 相关却不保证因果贡献；作者也明确指出需要 surgical intervention。",
+      "CLM 与 MLM 同时改变 masking、训练目标和 root classification，因此早/晚层差异并非单变量因果实验。",
+      "正文把 0.51 specialization 与“comparable transfer performance”交替表述，容易混淆内部指标和行为准确率；本站按 Figure 2 将其限定为 specialization score。"
+    ]},
+    {"title": "复现与资源", "paragraphs": [
+      "论文未提供代码仓库。复现需先固定 RHM rule tables、Zipf layer、train/test composition split 和随机种子，并分别输出四种条件的 task accuracy 与 specialization。",
+      "加入 layer/head ablation、activation patching、attention randomization 和 matched-objective control，检验早层或晚层的高分是否对 transfer 必要。",
+      "报告每个 seed 的热图和置信区间，并扫描 depth、width、n_ct；否则无法判断 0.51 是稳定结构还是单次训练的选择。",
+      "本站核验 v1 PDF SHA-256：69e9936848339e9a39dfd3ccf7f636cdbd0210048558df6beadea00fccc9085a。Evidence status: full-text verified; no independent reproduction performed."
+    ]},
+    {"title": "阅读指南", "paragraphs": [
+      "最短路径：Figure 1/RHM → four conditions → Figure 2 → Figure 3 → limitations。",
+      "物理路径：把 specialization 当 order parameter，把 train phase 当相关时间序列；随后寻找干预而非只看共变。",
+      "AI 路径：分清 task accuracy、specialization score 和 causal contribution，重点检查 transfer split 是否泄漏规则。"
+    ]}
+  ],
+  "evidence_refs": [
+    "paper.pdf pp. 1–3: RHM motivation, model setup and four generalization conditions",
+    "paper.pdf p. 4: layer-wise specialization Figure 2 and reported scores",
+    "paper.pdf pp. 5–6: training phases, correlation claims and limitations",
+    "paper.pdf p. 9: architecture, initialization and optimization schedule",
+    "source PDF SHA-256 69e9936848339e9a39dfd3ccf7f636cdbd0210048558df6beadea00fccc9085a",
+    "Evidence packet SHA-256 e7b8a316015d9d54de79dcbebff6ee9d974b218787e47e6e18df9b1307034527",
+    "Evidence status: full-text verified; no independent reproduction performed."
+  ]
+}

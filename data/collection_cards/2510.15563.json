@@ -1,0 +1,129 @@
+{
+  "arxiv_id": "2510.15563",
+  "source_version": "v1",
+  "source_pdf": "https://arxiv.org/pdf/2510.15563v1",
+  "title_en": "On the Neural Feature Ansatz for Deep Neural Networks",
+  "title_zh": "深度神经网络的神经特征拟设",
+  "curation_status": "full_text_verified",
+  "card_standard_version": "2.4",
+  "audience_profile": "physics_ai_literate_physicist",
+  "paper_profile": "theory_numerics",
+  "style_reference": "physicist_daily_arxiv",
+  "provenance": {
+    "program": "Collection", "catalog": "Paper Collection", "catalog_record_id": "2510.15563",
+    "catalog_record_ids": ["2510.15563"], "catalog_topic": "Machine Learning",
+    "collection_date": "2026-08-30", "sampled_at": "2026-08-31",
+    "selected_by": "ziming_mineru_serial_goal", "sampling_seed": "not_applicable_source_complete", "candidate_count": 464
+  },
+  "verified_metadata": {
+    "arxiv_id": "2510.15563", "version": "v1",
+    "title": "On the Neural Feature Ansatz for Deep Neural Networks",
+    "authors": ["Edward Tansley", "Estelle Massart", "Coralia Cartis"],
+    "categories": ["cs.LG"], "primary_category": "cs.LG",
+    "published": "2025-10-17T11:47:36Z", "updated": "2025-10-17T11:47:36Z",
+    "abstract": "For an L-layer deep linear network, the paper proves that balanced gradient-flow dynamics give W1^T W1=(A_f)^(1/L) at every time, while weight decay makes unbalanced layers approach the same relation exponentially. Synthetic experiments support the scaling beyond exact assumptions, but explicit ReLU counterexamples show that neither the ansatz nor AGOP alignment is a general explanation of nonlinear-network generalization."
+  },
+  "equation_refs": [
+    {
+      "label": "Average gradient outer product",
+      "latex": "A_f=\\frac1N\\sum_{i=1}^{N}\\nabla f(x_i)\\nabla f(x_i)^{\\top}",
+      "role": "encode the input directions to which the trained function is most sensitive on the sample",
+      "symbols": {"A_f": "average gradient outer product (AGOP)", "x_i": "input sample", "nabla_f": "input gradient or Jacobian contribution"},
+      "evidence": "paper.pdf p. 3, Eq. (2.1)",
+      "interpretation": "Its leading eigenvectors are active input directions of the function. It is a data-averaged response matrix, not a covariance of the hidden weights."
+    },
+    {
+      "label": "Exact depth-dependent NFA",
+      "latex": "W_{1,t}^{\\top}W_{1,t}=\\bigl(A_{f,t}\\bigr)^{1/L}",
+      "role": "state the exact first-layer feature relation for balanced deep linear networks",
+      "symbols": {"W_1": "first-layer weight matrix", "L": "number of linear layers", "A_f": "AGOP, equal to J_f^T J_f for a linear map"},
+      "evidence": "paper.pdf pp. 3–5, Theorem 3.1 and Eq. (3.4)",
+      "interpretation": "Balancedness lets the product Jacobian telescope into (W1^T W1)^L. The exponent 1/L is therefore a consequence of matrix factorization and gradient-flow invariance in this restricted model."
+    },
+    {
+      "label": "Weight-decay approach to NFA",
+      "latex": "\\left\\lVert (A_{f,t})^{1/L}-W_{1,t}^{\\top}W_{1,t}\\right\\rVert_F=\\mathcal O\\!\\left(c_{\\max}e^{-2\\lambda t/L}\\right)",
+      "role": "quantify how weight decay removes an initially unbalanced layer factorization",
+      "symbols": {"lambda": "positive weight-decay rate", "c_max": "largest initial adjacent-layer imbalance", "t": "gradient-flow time"},
+      "evidence": "paper.pdf pp. 5–6, Lemma 3.2 and Corollary 3.1",
+      "interpretation": "The theorem controls a linear network under continuous-time dynamics; it does not prove the same exponential law for finite-step Adam or general nonlinear networks."
+    }
+  ],
+  "figure_refs": [{
+    "label": "Figure 1", "asset_path": "assets/collection-figures/2510.15563/figure-1-nfa-alignment.webp",
+    "section": "核心结果与证据", "role": "show first-layer and AGOP-root matrices becoming visually aligned after training",
+    "evidence": "paper.pdf p. 3, Figure 1",
+    "alt_text": "四幅热图比较五层线性网络训练前后的 W1 转置乘 W1 与 AGOP 五次方根；训练后两幅矩阵图样几乎一致。",
+    "caption": "五层线性网络在权重衰减下由未平衡初始化走向 NFA 对齐；余弦相似度由 0.915 升至 1.000。",
+    "interpretation": "This single synthetic run illustrates the asymptotic theorem but is not evidence that arbitrary nonlinear architectures obey the NFA."
+  }],
+  "cover": {
+    "mode": "source_figure", "asset_path": "assets/collection-figures/2510.15563/figure-1-nfa-alignment.webp",
+    "label": "Figure 1", "visual_type": "data_plot", "evidence": "paper.pdf p. 3, Figure 1",
+    "alt_text": "训练前后第一层 Gram 矩阵与 AGOP 的 L 次根的四联热图。",
+    "caption": "在线性、平衡化动力学中，网络的第一层几何与函数的输入敏感方向锁定。",
+    "selection_rationale": "It turns the matrix identity into a direct before/after comparison while keeping the linear-network scope visible in the caption."
+  },
+  "sections": [
+    {"title": "作者信息", "paragraphs": [
+      "Edward Tansley、Estelle Massart、Coralia Cartis；作者来自牛津大学 Mathematical Institute 与 UCLouvain ICTEAM Institute。",
+      "本站核验 arXiv:2510.15563v1：提交并更新于 2025-10-17；主分类 cs.LG，共 21 页。",
+      "Collection 来源为刘子鸣网站的 Machine Learning 条目。"
+    ]},
+    {"title": "研究问题", "paragraphs": [
+      "神经网络训练后，第一层权重的 Gram 矩阵为什么常与模型对输入梯度的平均外积相似？Neural Feature Ansatz（NFA）把这种经验规律写成 W1^T W1∝(A_f)^α。",
+      "本文问两个可分离的问题：在线性深网中 α 是否随深度变化；去掉精心构造的 balanced initialization 后，weight decay 是否会恢复这种关系。",
+      "答案在 L 层线性网络中很强：平衡梯度流给出精确 α=1/L；不平衡初始化加衰减时误差指数趋零。但论文也主动给出 ReLU 反例，否定把它当作普适神经网络定律。"
+    ]},
+    {"title": "背景", "paragraphs": [
+      "A_f 平均每个样本的输入梯度外积。对任意方向 z，z^T A_f z 是模型沿 z 方向的平均平方响应；它对应物理中的 susceptibility/Fisher-like metric，但这里不等同于热力学易感率或参数 Fisher information。",
+      "W1^T W1 则描述第一层对输入方向的放大。若两者共享特征向量和谱的幂律关系，权重几何就能读出函数最敏感的低维子空间。",
+      "深线性网络的函数仍只是一个线性映射，深度不增加表达能力；它的价值在于把同一映射分解成多层矩阵，从而暴露优化的隐式偏置。"
+    ]},
+    {"title": "给物理学家的 AI 导读", "paragraphs": [
+      "把相邻层的 balancedness 看成链上局部应力匹配：W_l W_l^T=W_{l+1}^T W_{l+1}。梯度流保持这些差值，因此整条矩阵乘积的谱可从第一层逐级传递，最终得到 L 次幂。",
+      "weight decay 在这里不只是防过拟合，而是让相邻层的初始不平衡按 e^{-2λt} 衰减。它像耗散项把不同因子拉向同一 gauge 选择；这只是动力学类比，不意味着存在热平衡分布。",
+      "NFA 是 representation diagnostic，而不是 generalization theorem。函数加一个巨大常数不改变梯度；反过来，一个幅度趋零但频率趋高的误差项可让函数值很接近、AGOP 却近乎正交。",
+      "因此对真实模型应分别问：权重—AGOP 是否对齐、预测误差是否小、OOD 是否可靠。三个问题可相关，但数学上互不等价。"
+    ]},
+    {"title": "模型与方法", "paragraphs": [
+      "理论对象是 f(x)=W_L⋯W_1x。线性性使 Jacobian 与 x 无关，并有 A_f=J_f^T J_f；再利用相邻层 Gram 矩阵的守恒关系证明 Theorem 3.1。",
+      "对不平衡初始化，连续时间更新加入 −λW_l。相邻层不平衡恰按 e^{-2λt} 衰减，再用半正定矩阵根的 Hölder 型界得到 Corollary 3.1。",
+      "非线性反例用无偏置两层 ReLU 精确表示 [x1]_+ + [x2]_+；其 W^T W 为单位阵，而 AGOP 有非零非对角项，任意正 α 都不能使两者成比例。",
+      "数值部分在 d=20 的 rank-5 synthetic multi-index target 上比较 2–5 个线性层及末端 ReLU，使用 GD/SGD、momentum/Adam、不同 λ 和初始化；默认 2048 个样本、随机方法 batch 64。"
+    ]},
+    {"title": "核心结果与证据", "paragraphs": [
+      "Theorem 3.1 给出全过程的精确等式，而非只在收敛点成立；深度把二层结果 α=1/2 推广为 α=1/L。代价是严格的线性、gradient flow 与 balanced initialization。",
+      "Theorem 3.2/Corollary 3.1 表明 λ>0 时，初始不平衡 c_max 的影响以 e^{-2λt/L} 控制。λ 越大理论上对齐越快，但过大衰减也可能使权重归零、任务学不成。",
+      "Figure 1 的五层例子显示余弦对齐由 0.915 到 1.000；Figures 2–3 中 balanced 情形在缩放指数 Lα=1 处最佳，足够强的 decay 可使 unbalanced 情形也接近该峰，momentum 加快对齐。",
+      "非线性实验只显示第一层奇异值可恢复 rank-5 目标子空间，样本从 2048 增至 8192 时更清楚；这支持后续猜想，不修复 Section 4 的一般反例。"
+    ]},
+    {"title": "有效性与局限", "paragraphs": [
+      "严格证明针对 deep linear network；末端 ReLU 实验、全 ReLU 网络和 Adam 结果属于经验外推，不能与定理同等级表述。",
+      "balanced initialization 对标量输出会迫使各层 rank 1，是很强的结构约束；weight-decay 结果也依赖可微损失、连续时间和固定正 λ。",
+      "NFA 只约束二阶方向结构，并忽略函数的常数偏移；高频小振幅反例又说明函数值误差小不保证梯度几何接近，因此它既非泛化的充分条件也非必要条件。",
+      "数值验证以合成 multi-index 数据为主，缺少大型真实网络、seed 区间与有限步长误差的系统标定。MNIST 附录只报告训练准确率通常 Adam≥97%、SGD≥95%。",
+      "本站未独立复现定理代码或实验；MinerU 仅用于结构化阅读，公式与页码按 v1 PDF 核对。"
+    ]},
+    {"title": "复现与资源", "paragraphs": [
+      "论文未列出公开代码链接。最小复现可生成 rank-5 的 A∈R^{5×20} 与 ReLU link，分别构造 balanced/unbalanced 2–5 层线性因子并记录 ||(A_f)^{1/L}−W1^T W1||_F。",
+      "应同时画 task loss、adjacent-layer imbalance 与 NFA cosine；否则只能看到对齐，无法判断网络是否真正学到目标。",
+      "非线性验证应加入 Section 4 的两个反例，并区分 function-value error、gradient error、AGOP eigenspace overlap 与 test error。",
+      "本站核验 v1 PDF SHA-256：1304a7b1f886988d2ff6da6d5bfbe1fe754268b58c393ce28a631d4cb7064bb0。Evidence status: full-text verified; no independent reproduction performed."
+    ]},
+    {"title": "阅读指南", "paragraphs": [
+      "最短路径：Eq. (2.1) → Lemma 3.1 → Theorems 3.1/3.2 → Section 4 counterexamples → Figures 2–4。",
+      "物理路径：把 AGOP 当作输入响应度量，把 balancedness 当作矩阵因子链的守恒量，再检查耗散项改变什么。",
+      "AI 路径：始终把 linear theorem、nonlinear counterexample 和 synthetic empirical extension 分成三层证据。"
+    ]}
+  ],
+  "evidence_refs": [
+    "paper.pdf pp. 2–3: active subspaces, AGOP and NFA definitions",
+    "paper.pdf pp. 3–6: balancedness invariant, exact and asymptotic deep-linear theorems",
+    "paper.pdf pp. 6–7: nonlinear and generalization counterexamples",
+    "paper.pdf pp. 7–10 and appendix: synthetic experiments, optimizer variants and MNIST check",
+    "source PDF SHA-256 1304a7b1f886988d2ff6da6d5bfbe1fe754268b58c393ce28a631d4cb7064bb0",
+    "Evidence packet SHA-256 2c03cb4f420aa4064072f880f5960cbadcc86734ca618bec07219394dcdc1b07",
+    "Evidence status: full-text verified; no independent reproduction performed."
+  ]
+}
