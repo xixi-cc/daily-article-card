@@ -1,0 +1,202 @@
+{
+  "arxiv_id": "2602.02385",
+  "source_version": "v1",
+  "source_pdf": "https://arxiv.org/pdf/2602.02385v1",
+  "title_en": "Transformers learn factored representations",
+  "title_zh": "Transformer 学会因子化表征",
+  "curation_status": "full_text_verified",
+  "card_standard_version": "2.4",
+  "audience_profile": "physics_ai_literate_physicist",
+  "paper_profile": "theory_experiment",
+  "style_reference": "physicist_daily_arxiv",
+  "provenance": {
+    "program": "Collection",
+    "catalog": "Paper Collection",
+    "catalog_record_id": "2602.02385",
+    "catalog_record_ids": ["2602.02385"],
+    "catalog_topic": "Representation Learning",
+    "collection_date": "2026-08-30",
+    "sampled_at": "2026-08-31",
+    "selected_by": "ziming_mineru_serial_goal",
+    "sampling_seed": "not_applicable_source_complete",
+    "candidate_count": 464
+  },
+  "verified_metadata": {
+    "arxiv_id": "2602.02385",
+    "version": "v1",
+    "title": "Transformers learn factored representations",
+    "authors": [
+      "Adam Shai",
+      "Loren Amdahl-Culleton",
+      "Casper L. Christensen",
+      "Henry R. Bigelow",
+      "Fernando E. Rosas",
+      "Alexander B. Boyd",
+      "Eric A. Alt",
+      "Kyle J. Ray",
+      "Paul M. Riechers"
+    ],
+    "categories": ["cs.LG"],
+    "primary_category": "cs.LG",
+    "published": "2026-02-02T17:49:06Z",
+    "updated": "2026-02-02T17:49:06Z",
+    "abstract": "The paper derives geometric predictions for joint versus direct-sum representations of latent factors and tests them in small transformers trained on synthetic next-token processes with known hidden structure."
+  },
+  "equation_refs": [
+    {
+      "label": "joint 与 factored 表征的维数代价",
+      "latex": "D_{\\mathrm{joint}}=\\prod_{n=1}^{N}d_n-1,\\qquad D_{\\mathrm{factored}}=\\sum_{n=1}^{N}(d_n-1)",
+      "role": "contrast the exponential tensor-product state space with a linear-size direct sum of normalized factor states",
+      "symbols": {
+        "N": "latent factors 的数量",
+        "d_n": "factor n 的 predictive-state 空间维数",
+        "D_joint": "归一化 joint predictive vectors 可变化的最大维数",
+        "D_factored": "分别保存每个归一化 factor state 所需的总维数"
+      },
+      "evidence": "paper.pdf pp. 3–4, Section 2.4 and Figure 1c",
+      "interpretation": "这与多体系统中完整 Hilbert/configuration space 与少体坐标的差别相似：直接存 joint correlations 会指数膨胀；若条件独立使 joint belief 始终留在 product-state manifold 上，只记录每个 factor 的局部坐标即可。"
+    },
+    {
+      "label": "条件独立动力学与 direct-sum 编码",
+      "latex": "T^{(x)}=\\bigotimes_{n=1}^{N}T_n^{(x)},\\qquad \\boldsymbol\\eta_{\\mathrm{FWH}}^{(x_{1:\\ell})}=\\bigoplus_{n=1}^{N}\\boldsymbol\\eta_n^{(x_{1:\\ell})}",
+      "role": "state the sufficient generator structure and the lossless factored coordinate map on product predictive states",
+      "symbols": {
+        "T_x": "观察 token x 后作用于 joint latent state 的转移算符",
+        "T_n_x": "factor n 的局部 token-conditioned operator",
+        "eta_n": "给定 context 后 factor n 的 normalized predictive vector",
+        "oplus": "嵌入彼此正交子空间的 direct sum"
+      },
+      "evidence": "paper.pdf pp. 2–4, Eqs. (3)–(6), Proposition 2.2 and Theorem 2.3",
+      "interpretation": "定理证明的是：在 product-state manifold 上存在可逆线性坐标化，能把各 factor 放进正交子空间而不损失预测信息；它不证明任意 Transformer 或 SGD 必然找到这一坐标。"
+    },
+    {
+      "label": "有效维数与子空间重叠诊断",
+      "latex": "k_p^*=\\min\\left\\{k:\\frac{\\sum_{j=1}^{k}\\lambda_j}{\\sum_j\\lambda_j}\\ge p\\right\\},\\qquad \\Omega(A,B)=\\frac{\\lVert Q_A^{\\mathsf T}Q_B\\rVert_F^2}{\\min(d_A,d_B)}",
+      "role": "measure activation compression and basis-invariant overlap between candidate factor subspaces",
+      "symbols": {
+        "lambda_j": "mean-centered residual activations 的 PCA eigenvalues",
+        "p": "cumulative explained variance threshold，主文取 0.95",
+        "Q_A_Q_B": "两个候选 factor subspaces 的 orthonormal bases",
+        "Omega": "0 表示正交、1 表示较小子空间完全包含于较大子空间"
+      },
+      "evidence": "paper.pdf pp. 10–12 and 26–29, Figures 2–3 and Appendices F, H",
+      "interpretation": "$k_{0.95}^*$ 是 variance-based operational dimension，而不是严格 rank；低维与线性可解码也不足以证明正交，因此作者另用 vary-one datasets、principal angles 和维数可加性检查。"
+    }
+  ],
+  "figure_refs": [
+    {
+      "label": "Figure 1",
+      "asset_path": "assets/collection-figures/2602.02385/figure-1-factored-representations.webp",
+      "section": "核心结果与证据",
+      "role": "summarize the product-manifold/direct-sum geometry, exponential dimension saving, synthetic test construction and lossy-factoring regime",
+      "evidence": "paper.pdf p. 3, Figure 1",
+      "alt_text": "Figure 1 概览：joint simplex 分解为各 factor 的低维几何，joint 维数随 factor 数指数增长而 factored 维数线性增长，并展示 Transformer residual stream 的 factor 投影与训练动力学。",
+      "caption": "Figure 1 把论文的逻辑压缩为一张图：条件独立时 product predictive state 可无损映入正交 direct sum；偏离该流形时，因子化用更少维数换取预测误差。",
+      "interpretation": "图中的低维几何来自可控生成器与小模型；它是实验设计和结果概览，不是自然语言或大模型中存在语义对象子空间的直接证据。"
+    }
+  ],
+  "cover": {
+    "mode": "source_figure",
+    "asset_path": "assets/collection-figures/2602.02385/figure-1-factored-representations.webp",
+    "label": "Figure 1",
+    "visual_type": "comparison",
+    "evidence": "paper.pdf p. 3, Figure 1",
+    "alt_text": "joint predictive-state manifold、factored direct-sum geometry 与 Transformer 实验结果概览。",
+    "caption": "从指数大的联合状态空间，压缩到线性大的 factor 子空间直和。",
+    "selection_rationale": "Figure 1 simultaneously exposes the theorem's manifold condition, the dimensional tradeoff and the empirical claim, so a reader can see both mechanism and scope boundary before reading details."
+  },
+  "sections": [
+    {
+      "title": "作者信息",
+      "paragraphs": [
+        "Adam Shai、Loren Amdahl-Culleton、Casper L. Christensen、Henry R. Bigelow、Eric A. Alt、Kyle J. Ray 与 Paul M. Riechers 来自 Astera Institute 的 Simplex；Fernando E. Rosas 同时关联 University of Sussex、Imperial College London 与 University of Oxford；Alexander B. Boyd 来自 Beyond Institute for Theoretical Science。",
+        "本站核验 arXiv:2602.02385v1：2026-02-02 提交，主分类 cs.LG，共 30 页。",
+        "Collection 来源为刘子鸣网站的 Representation Learning 条目。"
+      ]
+    },
+    {
+      "title": "研究问题",
+      "paragraphs": [
+        "一个 token stream 由多个不可见随机过程共同产生时，Transformer 会在 residual stream 中保存完整 joint belief，还是把各个 latent factors 拆到近似正交的低维子空间？两者对 next-token prediction 都可能可用，却有完全不同的维数标度与可解释性。",
+        "作者先用 generalized hidden Markov model 把 context 的全部预测相关信息写成 predictive vector，再比较 tensor-product joint representation 与 direct-sum factored representation。条件独立给出后者无损的充分条件；不满足时会出现维数效率—预测保真度权衡。",
+        "真正的学习问题不是‘这种坐标是否存在’，而是标准 next-token cross-entropy、有限 Transformer 与 Adam 是否会选择它。论文用已知 latent geometry 的合成序列，使两种假说产生可区分的维数、线性重构和子空间重叠预测。"
+      ]
+    },
+    {
+      "title": "背景",
+      "paragraphs": [
+        "residual stream 是 Transformer 每层传递的向量状态。若一个 factor 可由该向量的线性投影恢复，就说它 linearly accessible；若不同 factors 的变化方向近乎正交，它们可被分别读取而少受串扰。这比仅凭 probe 能分类更强，但仍不等于网络在因果上只沿这些方向计算。",
+        "predictive vector 类似 filtering distribution：它不是当前 hidden state 的点估计，而是 context 对未来所需 latent information 的充分统计量。不同 contexts 若有相同 predictive vector，就给所有 future strings 相同概率。",
+        "factorization 在这里是生成过程的统计结构，不是人为给 token 加字段。训练数据只显示 0–431 的整数 token；三个 ternary 与两个 quaternary sub-tokens 的 Cartesian-product 结构对模型不可见。"
+      ]
+    },
+    {
+      "title": "给物理学家的 AI 导读",
+      "paragraphs": [
+        "可把 joint predictive vector 看成多体概率分布：保留全部 correlations 需要 tensor-product coordinates；在独立或条件独立的流形上，若干 single-factor marginals 已足够，等价于用 direct sum 描述。这里的‘正交’指 neural activation Euclidean geometry，并非量子态正交。",
+        "观测链路是：隐藏 GHMM factors 产生组合 token → Transformer 最小化 next-token cross-entropy → 收集各层 residual activations → PCA 测有效维数 → 用 ground-truth beliefs 做 linear regression → vary-one interventions 与 principal angles 测 factor subspaces 是否分离。",
+        "五个三维 latent factors 的完整 normalized joint state 可变化于 242 维，而 direct sum 只需 10 维；主模型 $d_{model}=120$，理论上放不下完整 joint geometry，但附录把宽度增至 480 后仍偏向低维因子化，排除了‘只是容量不足’这一简单解释。",
+        "‘世界被拆成对象’是有吸引力的外推，但实验中的 factors 是研究者预先知道的随机过程。卡片应把结论读成受控系统中的 representational inductive bias，而不是已经证明自然语言 Transformer 自动获得人类式 object ontology。"
+      ]
+    },
+    {
+      "title": "模型与方法",
+      "paragraphs": [
+        "数据由五个 factors 组成：三个 3-state Mess3 HMM 与两个三维 Bloch Walk GHMM；它们分别发出 3、3、3、4、4 元 sub-tokens，组合后连同 BOS 得到 $3^3\\times4^2+1=433$ 个 observed tokens。作者构造 independent、仍满足 token-conditioned factorization 的 dependency chain，以及以概率 $\\varepsilon$ 注入不可分解随机转移的 noisy generators。",
+        "主实验使用 4-layer GPT-2-style decoder-only Transformer，$d_{model}=120$、MLP width 480、3 heads；Adam learning rate $5\\times10^{-4}$、无 weight decay，sequence length 8、batch size 25,000。附录测试 context 33/101、$d_{model}=480$、MLP 1920，以及 RNN/LSTM。",
+        "对 activations 的 PCA 给出 cumulative explained variance 与 $k_{0.95}^*$；linear regression 检验每个 factor 的 predictive geometry 是否可恢复。vary-one 数据固定四个 factors、只改变一个 factor，提取候选 subspace；维数可加性和 $Q_A^TQ_B$ 的 singular values 用于测 orthogonality。",
+        "理论部分证明条件独立 operator 保持 product states，并构造在该 manifold 上无损、可逆的 direct-sum linear map。Factored World Hypothesis 则额外声称网络原生偏好这种坐标，属于随后由实验检验的假说。"
+      ]
+    },
+    {
+      "title": "核心结果与证据",
+      "paragraphs": [
+        "independent-factor 实验中，初始化约需 100 个 PCs 才解释 95% activation variance；训练后 $k_{0.95}^*$ 稳定在约 11，接近 factored prediction 10，远低于 joint geometry 在同一 95% CEV 口径下的 135。线性 regression 同时恢复五个 ground-truth factor geometries。",
+        "orthogonality 证据是近似而非精确：训练后各 vary-one dimensionalities 之和约 14，union dimension 约 12；只取每个 factor 前两个 PCs 时 pairwise overlap 接近零，但加入较弱 PCs 后仍有重叠。",
+        "当 factors 构成有向依赖链、但给定 observed token 后 transition operator 仍可 tensor-factorize 时，模型同样收敛到约 10 维，支持决定性条件是 conditional independence 而非 unconditional independence。",
+        "不可分解噪声实验扫描 $\\varepsilon\\in\\{0,0.001,0.01,0.05,0.1,0.2,0.3,0.5\\}$。所有设置早期先压向约 10 维；噪声越大，后期为降低 cross-entropy 使用的维数越多。这是‘先选紧凑因子化、再为 correlations 扩容’的主要动力学证据。",
+        "扩大 residual width 到 480 或加长 context 后趋势仍在；vanilla RNN 与 LSTM 也能线性恢复 factors，但 CEV transition 更平滑、最终维数常高于 10，提示现象不完全是 Transformer 独有，却可能有架构依赖。",
+        "Figure 1 汇总了从 product-state manifold、指数维数节省到合成实验的整套逻辑；独立实验的定量曲线主要见 Figures 2–3，noise dynamics 见 Figures 5、12。"
+      ]
+    },
+    {
+      "title": "有效性与局限",
+      "paragraphs": [
+        "Theorem 2.3 是表示存在性结果：条件独立时 direct-sum map 在 product states 上无损；它没有给出 SGD 收敛定理，也没有证明 learned coordinates 唯一、逐层保持或被模型因果使用。",
+        "实验只覆盖人造 GHMM、已知五因子结构与小型网络。自然语言的潜变量不一定离散、有限维或条件独立，大语言模型中的语义 factors 也没有在本文直接测量。",
+        "$k_{0.95}^*$ 衡量 variance concentration，不是 algebraic rank 或任务所需最小维数；95% threshold 有约定性，尽管附录报告 90%–99% 范围内结论定性稳定。少量低方差方向仍可能对 prediction 有功能意义。",
+        "linear probes 使用 ground-truth factor beliefs，vary-one 分析还能控制生成器只改变一个 factor；真实数据通常没有这两种监督。线性可恢复、低 overlap 与因果可操控是不同命题，本文没有逐子空间 intervention 证明。",
+        "noisy runs 的 early compression 支持一种优化偏好，但也可能与 spectral bias、低秩学习或一般 compression dynamics 有关；‘representational attractor’是对轨迹的描述，不是排除了替代机制的动力系统定理。",
+        "训练 seeds、误差条与不同 generator families 的覆盖有限。架构外推仅含 RNN/LSTM controls；没有真实语料、现代大模型或 downstream behavior 验证。"
+      ]
+    },
+    {
+      "title": "复现与资源",
+      "paragraphs": [
+        "作者公开训练代码与配置：https://github.com/Astera-org/factored-reps 。最小复现应先跑五个 independent factors，固定数据生成 seed、model initialization 与 analysis sample，保存 loss、每层 CEV spectrum、factor regression RMSE 和 pairwise overlap。",
+        "核对主结果不能只看 $k_{0.95}^*$：需同时比较 10D factored 与 242D joint theoretical geometries、报告 90%–99% CEV sensitivity，并验证 $d_{model}=480$ 的 capacity control。",
+        "noise 实验应逐个 $\\varepsilon$ 记录整个训练轨迹，而非只比较终点；还应把 prediction loss 相对最优 joint predictor 的 gap 与 effective dimension 放在同一时间轴上，辨认何时模型为保真度离开 factored regime。",
+        "更强的因果复现可对识别出的 factor subspace 做 projection/ablation，测试只损伤对应 sub-token prediction；本文没有提供这一证据。本站未运行代码或独立重现实验。"
+      ]
+    },
+    {
+      "title": "阅读指南",
+      "paragraphs": [
+        "快速阅读：p. 3 Figure 1 看 joint/product/direct-sum 的全景；pp. 3–4 Proposition 2.2 与 Theorem 2.3 看无损条件；pp. 6–12 Figures 2–5 看 independent、orthogonality 与 noisy dynamics。",
+        "物理路线：先把 Eq. (3) 当作过滤后的 belief state，再读 Eqs. (4)–(6) 的 tensor product 到 direct sum；之后看 Appendix H 的 principal-angle overlap，最后读 Appendix C.4/D.5 的 off-manifold noise。",
+        "判断论文强度时分三层：无损 factored coordinates 的存在是数学结果；小 Transformer 学到相应几何是受控实验结果；自然语言模型把现实世界分解成可解释对象则仍是待检验外推。"
+      ]
+    }
+  ],
+  "evidence_refs": [
+    "paper.pdf pp. 1–5, Eqs. (1)–(6), Figure 1, Proposition 2.2 and Theorem 2.3: predictive-state setup, conditional factorization and lossless direct-sum map",
+    "paper.pdf pp. 5–12, Figures 2–5: synthetic generators, activation dimensionality, linear reconstruction, orthogonality and lossy-factoring dynamics",
+    "paper.pdf pp. 20–25, Figures 9–12 and Appendices C–E: dependency, capacity, context, recurrent-model and noise controls plus training details",
+    "paper.pdf pp. 25–29, Appendices F–H: CEV, regression, vary-one identification and principal-angle overlap definitions",
+    "public code: https://github.com/Astera-org/factored-reps",
+    "source PDF SHA-256 d0582aa1da73f8f2ed7bf33b18ca246ed2acede27fb6dff9689e64a5ddcdd8db",
+    "MinerU Markdown SHA-256 bfef7ff0159fdabe1b228768c71c526028d1e5b593e1fdca997a96fc3c4babfd",
+    "Evidence packet SHA-256 2d9cc87b7af105fb504fa62a9d97a6aac8ed09cc902f425707e161f8f75116e5",
+    "Evidence status: full-text verified; no independent reproduction performed."
+  ]
+}

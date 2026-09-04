@@ -1,0 +1,201 @@
+{
+  "arxiv_id": "2602.01203",
+  "source_version": "v3",
+  "source_pdf": "https://arxiv.org/pdf/2602.01203v3",
+  "title_en": "Attention Sink Forges Native MoE in Attention Layers: Sink-Aware Training to Address Head Collapse",
+  "title_zh": "注意力汇聚点在注意力层中锻造原生 MoE：用 Sink-Aware 训练缓解头坍缩",
+  "curation_status": "full_text_verified",
+  "card_standard_version": "2.4",
+  "audience_profile": "physics_ai_literate_physicist",
+  "paper_profile": "theory_experiment",
+  "style_reference": "physicist_daily_arxiv",
+  "provenance": {
+    "program": "Collection",
+    "catalog": "Paper Collection",
+    "catalog_record_id": "2602.01203",
+    "catalog_record_ids": [
+      "2602.01203"
+    ],
+    "catalog_topic": "Mechanistic Interpretability",
+    "collection_date": "2026-08-30",
+    "sampled_at": "2026-08-31",
+    "selected_by": "ziming_mineru_serial_goal",
+    "sampling_seed": "not_applicable_source_complete",
+    "candidate_count": 464
+  },
+  "verified_metadata": {
+    "arxiv_id": "2602.01203",
+    "version": "v3",
+    "title": "Attention Sink Forges Native MoE in Attention Layers: Sink-Aware Training to Address Head Collapse",
+    "authors": [
+      "Zizhuo Fu",
+      "Wenxuan Zeng",
+      "Runsheng Wang",
+      "Meng Li"
+    ],
+    "categories": [
+      "cs.CL",
+      "cs.AI"
+    ],
+    "primary_category": "cs.CL",
+    "published": "2026-02-01T12:45:39Z",
+    "updated": "2026-05-27T09:56:04Z",
+    "abstract": "The paper interprets the mass assigned to a zero-valued attention sink as an implicit per-head gate, uses that view to diagnose uneven head utilization, and adds a sink-aware auxiliary load-balancing loss for training and fine-tuning."
+  },
+  "equation_refs": [
+    {
+      "label": "attention sink 诱导的隐式门控",
+      "latex": "G_t^{l,h}=1-A_{t,\\mathrm{sink}}^{l,h},\\qquad O_t^{l,h}\\approx G_t^{l,h}\\sum_{j\\ne\\mathrm{sink}}\\widetilde A_{t,j}^{l,h}\\mathbf v_j^{l,h}",
+      "role": "factor the non-sink attention output into a head-level amplitude gate and a renormalized token mixture",
+      "symbols": {
+        "A_t_sink": "query token t 分给 first-token 或 synthetic sink 的 attention mass",
+        "G_t_l_h": "layer l、head h 对 token t 的有效输出门",
+        "A_tilde": "在非 sink tokens 上重新归一化的 attention distribution",
+        "v_j": "token j 的 value vector",
+        "O_t_l_h": "进入 output projection 前的单头输出"
+      },
+      "evidence": "paper.pdf pp. 2–4, Eqs. (1)–(4) and Appendix B",
+      "interpretation": "若 sink 的 value contribution 近零，总输出只剩非 sink 部分；其总权重正好是 $1-A_{sink}$，因此可代数分解成‘gate × 条件分布下的 token mixture’。这证明一种输入依赖的幅度分解，不自动证明 heads 是标准稀疏 MoE experts。"
+    },
+    {
+      "label": "跨层头负载不平衡",
+      "latex": "\\operatorname{Imbalance}=\\frac{1}{N_L}\\sum_{l=1}^{N_L}\\operatorname{CV}\\!\\left(\\{\\operatorname{Imp}^{l,h}\\}_{h=1}^{N_h}\\right)",
+      "role": "quantify how unevenly the inferred gates activate heads within each layer",
+      "symbols": {
+        "Imp_l_h": "head h 的 gate 在 batch 中所有 tokens 上的平均值",
+        "CV": "同层 heads 重要性均值归一化后的标准差",
+        "N_L": "模型层数",
+        "N_h": "该层 attention heads 数"
+      },
+      "evidence": "paper.pdf p. 5, Eqs. (5)–(6) and Figures 4–5",
+      "interpretation": "CV 高表示 gate mass 集中在少数 heads。它测的是作者定义下的 load imbalance，不直接等于信息贡献、可剪枝性或因果必要性。"
+    },
+    {
+      "label": "sink-aware 辅助平衡损失",
+      "latex": "\\mathcal L_{\\mathrm{aux}}=\\frac{1}{N_L}\\sum_l\\frac{1}{|\\mathcal R_l|}\\sum_{h\\in\\mathcal R_l}\\left(\\operatorname{Imp}^{l,h}-\\overline{\\operatorname{Imp}}_{\\mathcal R_l}\\right)^2",
+      "role": "penalize variance among routed heads while exempting pretrained dominant heads treated as shared",
+      "symbols": {
+        "R_l": "fine-tuning 时第 l 层除 top-m shared heads 外的 routed-head 集合",
+        "Imp_bar": "routed heads 的平均 gate activation",
+        "L_aux": "加入 base training loss 的辅助项",
+        "m": "保留为 shared heads 的高重要性头数量"
+      },
+      "evidence": "paper.pdf pp. 5–6, Eqs. (7)–(8); Appendix D p. 18",
+      "interpretation": "从头训练可对所有 heads 拉平 gate；预训练模型若强行全体拉平会出现 head pinning，因此作者冻结式保留 top-$m$ dominant heads，只平衡其余 routed heads。公式按论文机制作等价记述。"
+    }
+  ],
+  "figure_refs": [
+    {
+      "label": "Figure 4",
+      "asset_path": "assets/collection-figures/2602.01203/figure-4-cross-model-head-collapse.webp",
+      "section": "核心结果与证据",
+      "role": "show uneven inferred head activation across three model families and three attention mechanisms",
+      "evidence": "paper.pdf p. 5, Figure 4",
+      "alt_text": "LLaMA-3.1-8B、GPT-OSS-20B 与 Qwen3-Next-80B-A3B 的逐层逐头重要性热图，分别代表 Vanilla、Sink 与 Gated Attention；亮度集中在少数固定 heads。",
+      "caption": "Figure 4 以 gate-derived importance 热图展示三类 attention 中的头负载不均：少数 heads 长期高激活，许多 heads 接近关闭。",
+      "interpretation": "The cross-model pattern supports the existence of uneven gate utilization under the proposed metric; it does not alone show that low-score heads are dispensable or that sink formation causally produces collapse."
+    }
+  ],
+  "cover": {
+    "mode": "source_figure",
+    "asset_path": "assets/collection-figures/2602.01203/figure-4-cross-model-head-collapse.webp",
+    "label": "Figure 4",
+    "visual_type": "field_map",
+    "evidence": "paper.pdf p. 5, Figure 4",
+    "alt_text": "三种大型语言模型的 attention-head load heatmaps，显示跨层的头坍缩。",
+    "caption": "Vanilla、Sink、Gated 三类注意力都出现少数头主导的负载图样。",
+    "selection_rationale": "Figure 4 is the strongest compact cross-architecture evidence for the motivating head-collapse phenomenon; Figure 1 explains algebraic variants but does not show that imbalance actually occurs."
+  },
+  "sections": [
+    {
+      "title": "作者信息",
+      "paragraphs": [
+        "Zizhuo Fu、Wenxuan Zeng、Runsheng Wang、Meng Li；作者来自北京大学人工智能研究院与集成电路学院，Meng Li 为通信作者。",
+        "本站核验 arXiv:2602.01203v3：v1 于 2026-02-01 提交，v3 于 2026-05-27 更新；主分类 cs.CL，另含 cs.AI，共 18 页。",
+        "Collection 来源为刘子鸣网站的 Mechanistic Interpretability 条目。"
+      ]
+    },
+    {
+      "title": "研究问题",
+      "paragraphs": [
+        "causal self-attention 必须把每个 query 的 softmax 权重分完，即使该 head 当前不需要读取任何 token。许多模型把多余概率质量塞给 first token，并把其 value 压到接近零，这就是 attention sink/value drain。论文问：这部分被丢弃的 mass 是否等价于一个 head-wise gate？",
+        "作者把 Vanilla Attention 的 first-token sink、GPT-OSS 风格 synthetic Sink Attention、Qwen3-Next 风格显式 sigmoid gate 写进同一分解，并据此把 attention heads 类比成 experts、gate 类比成 router。",
+        "在这个视角下，少数 heads 的 gate 长期占优被称为 head collapse。作者提出辅助 load-balancing loss，在 0.6B–2B 从头训练和 4B–8B LoRA fine-tuning 中测试是否同时降低 imbalance 与提高任务分数。"
+      ]
+    },
+    {
+      "title": "背景",
+      "paragraphs": [
+        "标准 attention 输出是 values 的 convex combination；softmax 和为 1，不能表达‘本头此刻整体关闭’。若 first token 的 value 近零，分给它的比例不会进入有效输出，其余 token 的总质量 $1-A_{sink}$ 就成了隐式 amplitude gate。",
+        "Sink Attention 在 softmax denominator 额外加入 learnable sink logit，但不给它 value；Gated Attention 则正常计算 attention 后再乘显式 sigmoid $G_t^{l,h}$. 三者都能改变单头写入 residual stream 的幅度，但实现与几何约束不同。",
+        "标准 sparse MoE 通常有独立 feed-forward experts、显式 router 和 top-$k$ sparse dispatch。这里每个 attention head 仍共同计算且通常没有 top-$k$ 路由，所以‘native MoE’应理解为 gate/expert 的结构类比，而不是计算稀疏性等价。"
+      ]
+    },
+    {
+      "title": "给物理学家的 AI 导读",
+      "paragraphs": [
+        "输入 token 先变为 query/key/value；query-key dot products 经 softmax 给出读取概率；每头输出再经 $W_O$ 写入 residual stream。本文把 sink mass 当作被吸收的权重，把剩余 mass 当作 head activation，最后观察逐层热图、CV、validation bits-per-byte 与下游 accuracy。",
+        "物理类比上，sink 像满足归一化约束但不耦合可观测输出的 reservoir，$1-A_{sink}$ 像通道 transmissivity。类比的限制是 sink value 仅近似为零，且 attention weights 是数据和参数共同决定的非线性量，不是守恒粒子数。",
+        "head collapse 也不同于表示真正坍缩到同一点：它专指 gate-derived load 的不均衡。低 activation 可能表示冗余，也可能表示只对少数稀有输入工作的 specialist；CV 不包含这种条件功能信息。",
+        "判断机制证据要分三步：代数分解说明 sink 可作为 gate；跨模型 heatmap 说明该 gate 不均衡；加入 auxiliary loss 后性能变化说明干预有效。三步合起来仍未完全排除 regularization、optimization 或额外计算带来的替代解释。"
+      ]
+    },
+    {
+      "title": "模型与方法",
+      "paragraphs": [
+        "对 Vanilla/Sink Attention，作者以 $G=1-A_{sink}$ 定义 gate，并在非 sink tokens 上重新归一化；对 Gated Attention 直接用 $G=\\sigma(xW_\\theta)$. head importance 是 $G$ 在 batch 全 tokens 的均值，head imbalance 是各层 importance CV 的平均。",
+        "从头训练时 auxiliary loss 直接压低同层所有 heads 的 importance variance。对已有模型这样做会出现 head pinning：dominant heads 不降，其余 heads 全被推高。改进版把 top-$m$ heads 当 shared，辅助 loss 只作用于其余 routed heads。",
+        "从头实验使用 0.6B/1B/2B 三个模型、Vanilla/Sink/Gated 三种 attention，FineWeb-Edu token budget 为参数量的 20×，AdamW、learning rate 0.02，最后 20% 线性衰减，$\\lambda=10^{-4}$；作者报告与 Flash Attention 结合后训练 latency 增加少于 2%。",
+        "fine-tuning 使用 Qwen3-4B、Qwen3-8B、LLaMA3.1-8B，AceReason-Nemotron、rank-16 LoRA、$\\lambda=10^{-2}$ 和 NVIDIA A100；论文未给出完整 seed-level uncertainty 或足以完全重建所有 runs 的配置文件。"
+      ]
+    },
+    {
+      "title": "核心结果与证据",
+      "paragraphs": [
+        "Figure 2 显示多种 Vanilla models 的 first-token value norm 明显偏低；Appendix Table 3 的 selective intervention 只将 sink ratio $>0.75$ 的 heads 的 first-token value 置零，Qwen3-8B 平均 70.36→70.38、Qwen3-14B 66.91→67.09，支持高-sink heads 中 value contribution 很小。",
+        "同一 Table 3 若将所有 heads 的 first-token value 置零，Qwen3-8B 平均从 70.36 降到 64.10，HellaSwag 和 MMLU 尤其大幅下降；这与正文‘all heads only negligible drop’的说法不一致。可接受证据是阈值选择性置零，而不是任意 first-token value 都无语义。",
+        "Figure 4 在 LLaMA-3.1-8B、GPT-OSS-20B、Qwen3-Next-80B-A3B 上给出不均衡 importance heatmaps；Figure 5 的训练轨迹显示 imbalance 随训练上升，加入 auxiliary loss 后更低。这是 metric-level head collapse 与干预响应的主要证据。",
+        "Table 1 的九组从头训练对照中，auxiliary loss 的平均 accuracy 均上升：0.6B 三种 attention 分别 +1.28、+0.80、+0.92 points；1B 为 +0.76、+0.48、+1.29；2B 为 +1.37、+0.15、+1.40。个别任务仍下降，例如 2B Sink 的 OpenBookQA 59.80→57.40。",
+        "Table 2 的 LoRA fine-tuning category averages 也上升：Qwen3-4B reasoning 74.73→75.24、LongBench 51.46→52.75；Qwen3-8B 为 74.31→76.01、50.67→55.38；LLaMA3.1-8B 为 56.50→58.97、40.51→43.98。仍有 HotpotQA、Qasper、TriviaQA 等单项反例。",
+        "Figure 9 显示 value drain、sink mass 与 imbalance 的时间顺序/共演化，作者据此提出‘operative gate 是 collapse 前提’的 mechanistic hypothesis；未做阻断 sink formation 的 matched intervention，因此这部分应保留为假说而非因果定律。"
+      ]
+    },
+    {
+      "title": "有效性与局限",
+      "paragraphs": [
+        "隐式 gate 分解要求 sink component 的 value contribution 近零。对 Vanilla Attention 只是近似；punctuation 或其他局部 sinks 可能既吸收注意力又携带上下文，单看 first token 会漏计。DeepSeek-V4 等 Sink Attention 还可能同时保留 first-token sink。",
+        "importance 只取 gate 均值，不测删除该 head 后 loss 的 causal change。跨数据集固定的高分头和已有 pruning 文献提供旁证，但 Figure 4 本身不能证明低分 heads 可无损删除，也不能区分稀有 specialist。",
+        "aux loss 直接优化本文定义的 balance metric，因此 balance 改善部分是设计结果；accuracy 增益需要 matched tokens/compute、多 seed error bars 和更强 regularization controls 才能归因于避免 head collapse。主表没有统计显著性。",
+        "从头训练的 attention variants 之间可能存在初始化与实现差异；fine-tuning 的 shared/routed top-$m$ 规则依赖已有 importance 排名。论文未系统扫描 $m$、$\\lambda$、不同数据配比或 inference throughput。",
+        "‘更大模型受益更多’不在所有数字上单调成立，例如 2B Sink 平均只 +0.15 point；从 4B/8B 三模型 fine-tuning 也不足以建立 scaling law。"
+      ]
+    },
+    {
+      "title": "复现与资源",
+      "paragraphs": [
+        "论文未给出可核验的公开代码仓库。复现隐式 gate 时必须分别实现 first-token、synthetic-sink 与 explicit-sigmoid 三种定义，并保存 $A_{sink}$、sink value norm、head output norm 和 ablation delta，避免只用 attention weight 代表因果贡献。",
+        "最小机制复现可在一个 Vanilla checkpoint 上按 head 扫描：原模型、只置零高-sink first-token values、置零随机 matched heads、以及直接缩放完整 head output；以相同 prompts 比较 logits 与下游 metric，检验 $1-A_{sink}$ 是否真是足够的 gate。",
+        "训练复现应锁定 FineWeb-Edu/AceReason revisions、tokenizer、architecture、seeds、Flash Attention kernel、$m$ 和 auxiliary-loss normalization，并分别报告 base loss、aux loss、CV、activation entropy、训练 FLOPs 与 wall-clock。",
+        "进一步实验应使用 per-input head ablation 或 activation patching，确认被平衡后的新 heads 是否学到互补功能；若只提高平均 gate 而不增加独立信息，就不能称为恢复有效容量。"
+      ]
+    },
+    {
+      "title": "阅读指南",
+      "paragraphs": [
+        "快速阅读：p. 1 Figure 1 对照三种 attention；pp. 3–4 看 implicit-gate 分解；p. 5 Figures 4–5 看 collapse metric；pp. 6–7 Tables 1–2 看训练与 fine-tuning 结果。",
+        "机制审读：把 Appendix B 的代数等价、Appendix A 的 value-zeroing intervention 和 Figure 9 的时间轨迹分开；尤其核对 Table 3 可见全-head zeroing 并非 negligible。",
+        "最关键下一步是 matched causal intervention：在保持总输出尺度和正则强度相同的条件下，阻断 sink gate、直接平衡 head outputs 或随机平衡 controls，并以多 seed 检验究竟是哪条路径带来泛化收益。"
+      ]
+    }
+  ],
+  "evidence_refs": [
+    "paper.pdf pp. 1–4, Figures 1–3 and Eqs. (1)–(4): attention variants, value drain and the implicit-gate algebra",
+    "paper.pdf pp. 5–6, Figures 4–5 and Eqs. (5)–(8): head-importance metric, imbalance and sink-aware auxiliary losses",
+    "paper.pdf pp. 6–9, Tables 1–2 and Figures 6–9: from-scratch training, fine-tuning, load trajectories and mechanistic hypothesis",
+    "paper.pdf pp. 12–18, Appendix Table 3 and Figures 10–12: value-zeroing intervention, cross-family heatmaps, single-sink limitations and head pinning",
+    "source PDF SHA-256 561d864fa5b03615c287b5bb2f60d52d7864acfd825ae6d0669795f0e4a85274",
+    "MinerU Markdown SHA-256 9f85ea0e6eb6dce074b83ade8a5660d09056a106acc254a55f76b198e7844e23",
+    "Evidence packet SHA-256 f9544cad389702dca74ee1c1f3fba6a407f7efab108972355881953197866d2f",
+    "Evidence status: full-text verified; no independent reproduction performed."
+  ]
+}

@@ -1,0 +1,201 @@
+{
+  "arxiv_id": "2602.01434",
+  "source_version": "v2",
+  "source_pdf": "https://arxiv.org/pdf/2602.01434v2",
+  "title_en": "Phase Transitions for Feature Learning in Neural Networks",
+  "title_zh": "神经网络特征学习的相变",
+  "curation_status": "full_text_verified",
+  "card_standard_version": "2.4",
+  "audience_profile": "physics_ai_literate_physicist",
+  "paper_profile": "theory_numerics",
+  "style_reference": "physicist_daily_arxiv",
+  "provenance": {
+    "program": "Collection",
+    "catalog": "Paper Collection",
+    "catalog_record_id": "2602.01434",
+    "catalog_record_ids": [
+      "2602.01434"
+    ],
+    "catalog_topic": "Representation Learning",
+    "collection_date": "2026-08-30",
+    "sampled_at": "2026-08-31",
+    "selected_by": "ziming_mineru_serial_goal",
+    "sampling_seed": "not_applicable_source_complete",
+    "candidate_count": 464
+  },
+  "verified_metadata": {
+    "arxiv_id": "2602.01434",
+    "version": "v2",
+    "title": "Phase Transitions for Feature Learning in Neural Networks",
+    "authors": [
+      "Andrea Montanari",
+      "Zihao Wang"
+    ],
+    "categories": [
+      "stat.ML",
+      "math.PR"
+    ],
+    "primary_category": "stat.ML",
+    "published": "2026-02-01T20:47:36Z",
+    "updated": "2026-02-26T18:06:09Z",
+    "abstract": "The paper derives a Hessian-outlier threshold for feature learning by finite-width two-layer neural networks in proportional high-dimensional multi-index models and relates the spectral transition, partly heuristically, to late-time feature recovery and grokking."
+  },
+  "equation_refs": [
+    {
+      "label": "低维潜变量生成模型与两层学习器",
+      "latex": "y_i=h(\\Theta_*^{\\mathsf T}\\mathbf x_i,\\varepsilon_i),\\quad \\mathbf x_i\\sim\\mathcal N(0,I_d),\\qquad f_\\Theta(\\mathbf x)=\\frac1m\\sum_{j=1}^m a_j\\sigma(\\boldsymbol\\theta_j^{\\mathsf T}\\mathbf x+b_j)",
+      "role": "define a high-dimensional input with a fixed low-dimensional target subspace and the neural network trained to recover it",
+      "symbols": {
+        "Theta_star": "列向量张成 k-dimensional planted latent subspace 的正交矩阵",
+        "h": "把 latent coordinates 与 noise 映成 label 的 link function",
+        "theta_j": "第 j 个 hidden neuron 的可训练 first-layer feature",
+        "a_j_b_j": "分析中固定的 second-layer coefficient 与 bias",
+        "m": "hidden-neuron 数，主定理中先保持固定"
+      },
+      "evidence": "paper.pdf pp. 3–4, Eqs. (1)–(3)",
+      "interpretation": "数据本身在 $d$ 维 Gaussian 空间没有低维几何，但 label 只看 $k$ 个 planted projections；所谓 feature learning 是训练后的 $\\theta_j$ 与 $\\Theta_*$ 产生非消失相关，而不是只把训练 loss 降低。"
+    },
+    {
+      "label": "Hessian informative-outlier 阈值",
+      "latex": "\\delta_j^*(t)=\\inf\\{\\delta>0:\\mathcal E_j(z,t,\\delta)=0\\ \\text{for some }z<\\min[0,c_j(t)]\\},\\qquad \\delta_{\\mathrm{NN}}=\\min_{j\\in[m]}\\delta_j^*(\\infty)",
+      "role": "define the sample-to-dimension ratio at which a negative eigenvalue separates from the Hessian bulk and aligns with a hard latent direction",
+      "symbols": {
+        "delta": "sample ratio n/d",
+        "E_j": "Eq. (39) 的 hard-block determinant or outlier equation",
+        "c_j": "neuron-j Hessian block limiting bulk spectrum 的左边缘",
+        "z": "候选 negative outlier eigenvalue",
+        "t": "gradient-descent iteration in the fixed-time asymptotic",
+        "delta_NN": "所有 neurons 中最早出现 informative outlier 的 large-time threshold"
+      },
+      "evidence": "paper.pdf pp. 17–22, Eqs. (37)–(48) and Theorems 1–2",
+      "interpretation": "当 $\\delta$ 超过阈值，bulk 左侧出现负孤立模且 eigenvector 在 hard subspace 上有 $O(1)$ 投影；低于阈值，任意固定序号的最低 eigenvectors 对 hard directions 渐近正交。完整 $\\mathcal E_j$ 由 DMFT 随机变量与 Stieltjes transform 给出。"
+    },
+    {
+      "label": "弱恢复的可观测量",
+      "latex": "\\rho(t)=\\max_{j\\le m}\\frac{|\\langle\\boldsymbol\\theta_j(t),\\boldsymbol\\theta_*\\rangle|}{\\lVert\\boldsymbol\\theta_j(t)\\rVert},\\qquad \\rho>1/2\\ \\Rightarrow\\ \\text{empirical success}",
+      "role": "connect the spectral prediction to the simulation criterion for learning the planted feature",
+      "symbols": {
+        "rho": "learned neuron 与 single-index target direction 的最大 cosine alignment",
+        "theta_star": "noiseless phase-retrieval example 中的 planted direction",
+        "m": "学习器宽度",
+        "one_half": "Figures 1 and 4–5 使用的 operational success threshold"
+      },
+      "evidence": "paper.pdf pp. 4 and 28–32, Figures 1, 4–7",
+      "interpretation": "训练 loss 可在 $\\rho\\approx0$ 时先下降，因为网络能在样本噪声方向过拟合；后来 $\\rho$ 快速上升才表示真正找到 label-generating direction，并伴随 test error/gap 下降。"
+    }
+  ],
+  "figure_refs": [
+    {
+      "label": "Figure 1",
+      "asset_path": "assets/collection-figures/2602.01434/figure-1-feature-learning-thresholds.webp",
+      "section": "核心结果与证据",
+      "role": "compare empirical weak-recovery transitions against algorithmic and neural-network threshold predictions under two initializations",
+      "evidence": "paper.pdf p. 4, Figure 1",
+      "alt_text": "noiseless phase retrieval 中单个 GeLU neuron 的成功概率随 delta=n/d 的曲线；四个维度各 60 次随机试验，比较 optimal spectral initialization 与 random initialization，并标出 delta_alg=0.5 和 delta_NN 约 6。",
+      "caption": "Figure 1 显示同一目标下初始化造成的 sample threshold 差距：optimal spectral initialization 明显早于 random initialization，而普通单-neuron GD 的预测阈值约为 $\\delta_{NN}=6$. ",
+      "interpretation": "The finite-dimensional simulations support a sharp threshold near the asymptotic prediction for this particular phase-retrieval learner; they do not establish the same numerical threshold for deep or wide modern networks."
+    }
+  ],
+  "cover": {
+    "mode": "source_figure",
+    "asset_path": "assets/collection-figures/2602.01434/figure-1-feature-learning-thresholds.webp",
+    "label": "Figure 1",
+    "visual_type": "data_plot",
+    "evidence": "paper.pdf p. 4, Figure 1",
+    "alt_text": "神经网络弱恢复成功率的样本比相变与理论阈值。",
+    "caption": "相同可学习信号，不同初始化跨越不同的特征学习阈值。",
+    "selection_rationale": "Figure 1 directly juxtaposes observable finite-size transition curves with both the optimal-algorithm and neural-network thresholds, making the paper's main statistical-computational gap immediately visible."
+  },
+  "sections": [
+    {
+      "title": "作者信息",
+      "paragraphs": [
+        "Andrea Montanari 来自 Stanford University 统计系与数学系；Zihao Wang 来自 Stanford University 数学系。",
+        "本站核验 arXiv:2602.01434v2：v1 于 2026-02-01 提交，v2 于 2026-02-26 更新；主分类 stat.ML，另含 math.PR，共 75 页。",
+        "Collection 来源为刘子鸣网站的 Representation Learning 条目。"
+      ]
+    },
+    {
+      "title": "研究问题",
+      "paragraphs": [
+        "监督数据的 labels 只依赖 $d$ 维输入中的 $k$ 个 latent directions。即使信息论上能从 $n=O(d)$ 样本恢复这些方向，普通两层网络的 gradient descent 是否会做到？临界 sample ratio $\\delta=n/d$ 由目标、loss、activation、宽度和初始化怎样决定？",
+        "作者将训练分成两个时间尺度：$O(1)$ 步内，gradient 学到 easy directions 或只对训练样本过拟合；随后若经验风险 Hessian 产生一个与 hard latent subspace 对齐的 negative outlier，轨迹可沿该不稳定方向逃离 saddle。",
+        "论文严格刻画固定时间 Hessian bulk、outlier 和 alignment 的 BBP-like transition，再定义 large-time spectral threshold $\\delta_{NN}$；最后用 phase retrieval 数值实验把它与弱恢复和 grokking 联系起来。"
+      ]
+    },
+    {
+      "title": "背景",
+      "paragraphs": [
+        "lazy/kernel regime 的 features 基本固定，而 feature learning 要求 first-layer weights 朝数据的 planted subspace 转动。‘hard direction’是任何固定次数的一阶更新都不能形成非消失相关的方向；它不是计算上永远不可学。",
+        "Hessian 在训练到一个早期状态后近似为 data-dependent weighted covariance $X^T D_j X$。随机矩阵的 BBP transition 告诉我们：signal spike 低于临界强度时埋在 spectral bulk 中，高于临界强度才分离为 outlier，其 eigenvector 才携带 $O(1)$ signal overlap。",
+        "这里负 outlier 不是热力学相的序参量，而是 loss surface 的局部下降方向；sample ratio 控制它能否从随机 bulk 分离。有限维成功概率从 0 到 1 的变陡，是 asymptotic spectral transition 的数值对应。"
+      ]
+    },
+    {
+      "title": "给物理学家的 AI 导读",
+      "paragraphs": [
+        "生成链路是：Gaussian covariate $x$ 经未知 $\\Theta_*^Tx$ 产生 label；两层网络只训练 first-layer features $\\theta_j$；empirical-risk GD 先改变参数但未对齐 hidden signal；Hessian 的 informative unstable mode 出现后，feature correlation $\\rho$ 才在更长时间上增长。",
+        "DMFT 把高维、重复使用同一 dataset 的离散 GD 轨迹化为有限维自洽 Gaussian processes 与 response/correlation kernels。它与自旋玻璃动力学中的动态平均场形式相近，但这里 disorder 来自训练样本，observable 是 parameter-signal overlap 与 Hessian spectrum。",
+        "grokking 在此模型中是 train loss 先下降、test loss 和 misalignment 长时间停留，随后 feature direction 被学到而 generalization gap 突降。它解释一种 grokking 机制，不代表所有算法、模算术任务或 Transformer grokking 都由同一 Hessian transition 造成。",
+        "读定理时必须遵守极限次序：先让 $n,d\\to\\infty$、$n/d\\to\\delta$，保持 $k,m$ 和固定 $t$；之后才考察 DMFT 的 $t\\to\\infty$。真实 feature recovery 被预期发生在 $t=\\Theta(\\log d)$，这一步并未被主定理证明。"
+      ]
+    },
+    {
+      "title": "模型与方法",
+      "paragraphs": [
+        "输入为 isotropic Gaussian，labels 来自 noisy multi-index link $h$；两层网络的 output weights $a_j$ 与 biases $b_j$ 固定，只训练 $m$ 个 first-layer vectors。主分析让 $n,d\\to\\infty$ 且 $k,m$ 固定，假设 smooth bounded activation/loss derivatives、nonempty hard subspace，并要求 features 与 gradients 不完全平行。",
+        "离散时间 DMFT 给出训练 preactivations、parameters 和 memory-response kernels 的闭合递推，计算复杂度依赖 $m,t$ 而不依赖 $n,d$。对每个 neuron block，Stieltjes transform 定义 Hessian bulk 及左边缘 $c_j(t)$. ",
+        "Theorem 1 在每个 fixed $t$ 证明：outlier determinant 有 $z<\\min(0,c_j)$ 的根时，真实 Hessian 出现收敛到 $z$ 的 eigenvalues，其 eigenspace 对 hard subspace 有显式非零 overlap；低于阈值则最低固定个数 eigenvectors 渐近无信息。",
+        "Theorem 2 在额外假设 DMFT process 以 $L^2$ 收敛后，给出先高维极限、再 $t\\to\\infty$ 的 spectral threshold。将这一极限 outlier 视为随后 $\\log d$ 时间 feature learning 的驱动力，是论文的动力学假说。"
+      ]
+    },
+    {
+      "title": "核心结果与证据",
+      "paragraphs": [
+        "主定理得到可数值计算的 $\\delta_j^*(t)$，并以 $\\delta_{NN}=\\min_j\\delta_j^*(\\infty)$ 预测 feature-learning threshold。它依赖 link、loss、activation、step size、initialization 和 width，因此不是一个普适常数。",
+        "noiseless phase retrieval $h(z)=z^2$ 的信息论与 optimal spectral algorithm threshold 都是 $\\delta_{alg}=0.5$。单 GeLU neuron、Huber loss、random initialization 的理论预测约 $\\delta_{NN}=6.0$，即约 12 倍样本比；optimal spectral initialization 的 transition 又比 random initialization 早约 5 倍。",
+        "Figure 1 在 $d=1000,2000,3000,4000$、每点 60 trials 下显示成功率跃迁与预测相符。Figures 4–5 给出 GeLU 约 6.0、quadratic activation 约 3.6 的 transition，说明网络选择改变阈值。",
+        "DMFT Monte Carlo 用每步 $9\\times10^5$ samples、binary-search tolerance 0.01；GeLU 的 $\\delta^*(t)$ 从 $t=0$ 约 4.35 增至 $t=10$ 约 5.85，四次 $1/t$ 多项式外推为 6.05；Quad 从约 2.0、3.2 外推到 3.6。外推本身是数值步骤。",
+        "Figure 7 在 GeLU、$d=5000$ 下显示：$\\delta=5$ 不恢复；$\\delta=10$ 约 $t=300$ 后 grokking；$\\delta=15$ 约 $t=100$；$\\delta=50$ 快速学习且 generalization gap 较小。它支持靠近阈值时 spectral gap 缩小、escape time 变长的机制图景。",
+        "附录宽度实验在 $m=1,2,3,5,10$ 及 $m/d=0.01$ 的有限规模上仍见 transition，但 threshold 随 width 的极限趋势未定；这不能替代主定理要求的 fixed-$m$ asymptotic。"
+      ]
+    },
+    {
+      "title": "有效性与局限",
+      "paragraphs": [
+        "严格部分覆盖 isotropic Gaussian covariates、fixed low-dimensional multi-index target、两层网络、只训练 first layer，并要求 activation/loss 二阶光滑且导数受控。ReLU 不满足同样 smoothness；深层网络、attention、learned output layer 与现实数据不在定理范围。",
+        "fixed-$t$ Hessian spectral transition 是严谨结果；从 $\\delta_{NN}(\\infty)$ 推出 $t=\\Theta(\\log d)$ 的 GD weak recovery 和 grokking 是 heuristic hypothesis，作者明确列为 open problem。不能把模拟匹配写成证明。",
+        "Theorem 2 假设 DMFT process 收敛到 stationary limit；Assumptions 1(c,e) 还保证 Hessian bulk 左支撑受控。去掉这些条件可能不存在清晰的 negative-outlier/bulk separation。",
+        "算法最优性方面，$\\delta_{NN}>\\delta_{alg}$ 源于 GD 自行产生的 data preprocessing 一般不是 optimal spectral preprocessing；示例中的 12× gap 只属于 phase retrieval 配方，不是神经网络普遍样本低效因子。",
+        "数值成功阈值取 $\\rho>1/2$，curve 用 sigmoid fit；有限 $d$、有限训练时长和 $1/t$ 多项式外推都会移动 apparent transition。缺少公开代码链接也限制逐项复核。"
+      ]
+    },
+    {
+      "title": "复现与资源",
+      "paragraphs": [
+        "论文未提供可核验的公开代码仓库。最小复现可从 $k=m=1$、$h(z)=z^2$、Gaussian inputs、GeLU、Huber-$M=1$ 开始，在多个 $d$ 与 $\\delta$ 上保存 train/test risk、$\\rho(t)$、Hessian 最小 eigenpairs。",
+        "Figure 1 应对每个 $(d,\\delta)$ 独立运行 60 trials，同时实现 random 与论文引用的 optimal spectral initialization；成功率、标准差与 sigmoid fit 都要输出原始点，不只报告拟合阈值。",
+        "DMFT 侧需实现 Eqs. (22)–(25) 的 covariance/response recursion，独立增加 Monte Carlo sample size、缩小 delta search tolerance，并对 $1/t$ 外推阶数做敏感性分析；有限网络侧再比较 outlier eigenvector overlap 是否先于 $\\rho$ 上升。",
+        "更强验证应扫描 activation、loss、learning rate、width，并严格分开 fixed-$m$ 与 $m/d$ fixed 两种极限；对 grokking 还需检验 escape time 是否随 spectral gap 呈预言标度。本站未运行这些模拟。"
+      ]
+    },
+    {
+      "title": "阅读指南",
+      "paragraphs": [
+        "快速阅读：p. 4 Figure 1 看 $\\delta_{alg}$ 与 $\\delta_{NN}$ 的差距；pp. 7–9 Figure 3 看两阶段动力学；pp. 17–22 Theorems 1–2 看真正证明的 spectral statements；pp. 28–32 Figures 4–7 看数值核验。",
+        "物理路线：先读 Section 2.2 的 discrete DMFT，再读 Section 3.3 的 spiked-covariance/BBP interpretation；证明细节从 resolvent、leave-one-out concentration 到 determinant zeros 位于 Appendices C–D。",
+        "最关键的开放问题是把 fixed-time outlier  rigorously 连接到 $\\log d$ 时间 escape；在此之前，应把‘Hessian 相变预测 feature learning’称作有严格谱基础并获数值支持的动力学机制，而非完整证明。"
+      ]
+    }
+  ],
+  "evidence_refs": [
+    "paper.pdf pp. 3–9, Eqs. (1)–(3), Figures 1–3 and informal overview: multi-index setup, threshold gap and two-timescale mechanism",
+    "paper.pdf pp. 12–22, Eqs. (20)–(52) and Theorems 1–2: DMFT, fixed-time Hessian bulk/outliers, alignment and large-time spectral limit",
+    "paper.pdf pp. 23–27, Sections 3.2–3.4: grokking interpretation, BBP-like spiked model and suboptimal preprocessing",
+    "paper.pdf pp. 28–32 and 73–75, Figures 4–11: finite-size thresholds, DMFT Monte Carlo, grokking dynamics and width experiments",
+    "source PDF SHA-256 cfa754b159d1bac841eec2f9101de39ac586eb9a5d9e18adc409590c18765657",
+    "MinerU Markdown SHA-256 e810218a5aaeddc44c5b25f8e0309298935893273c3c4e459e30a50732df5408",
+    "Evidence packet SHA-256 ae61a3e7b5004ab71147668e8daff175e45ececafa8e56ec6b8d07b26ca4aa38",
+    "Evidence status: full-text verified; no independent reproduction performed."
+  ]
+}
