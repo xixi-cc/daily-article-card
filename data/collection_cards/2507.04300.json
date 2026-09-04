@@ -1,0 +1,172 @@
+{
+  "arxiv_id": "2507.04300",
+  "source_version": "v1",
+  "source_pdf": "https://arxiv.org/pdf/2507.04300v1",
+  "title_en": "QF: Quick Feedforward AI Model Training without Gradient Back Propagation",
+  "title_zh": "QF：无需梯度反向传播的快速前馈式模型更新",
+  "curation_status": "full_text_verified",
+  "card_standard_version": "2.4",
+  "audience_profile": "physics_ai_literate_physicist",
+  "paper_profile": "ai_empirical",
+  "style_reference": "physicist_daily_arxiv",
+  "provenance": {
+    "program": "Collection",
+    "catalog": "Paper Collection",
+    "catalog_record_id": "2507.04300",
+    "catalog_record_ids": ["2507.04300"],
+    "catalog_topic": "Machine Learning",
+    "collection_date": "2026-08-30",
+    "sampled_at": "2026-08-31",
+    "selected_by": "ziming_mineru_serial_goal",
+    "sampling_seed": "not_applicable_source_complete",
+    "candidate_count": 464
+  },
+  "verified_metadata": {
+    "arxiv_id": "2507.04300",
+    "version": "v1",
+    "title": "QF: Quick Feedforward AI Model Training without Gradient Back Propagation",
+    "authors": ["Feng Qi"],
+    "categories": ["cs.LG", "cs.AI", "q-bio.NC"],
+    "primary_category": "cs.LG",
+    "published": "2025-07-06T08:56:41Z",
+    "abstract": "The preprint proposes transferring instruction-conditioned activations into one Transformer feedforward weight matrix using a closed-form rank-limited update rather than backpropagation. A single Qwen 1.5B demonstration shows recall of two injected statements, but does not provide benchmark-scale evidence for efficiency, generalization or resistance to forgetting.",
+    "comment": "8-page v1 preprint; code: https://github.com/oxinnovate/QF"
+  },
+  "equation_refs": [
+    {
+      "label": "Activation-matching constraint (Eq. 1)",
+      "latex": "Wu+v=W'u'+v'",
+      "role": "make the no-instruction pass at one feedforward block reproduce the instruction-conditioned residual output",
+      "symbols": {"u_v": "input and residual activations with instruction", "u_prime_v_prime": "corresponding activations without instruction", "W_prime": "edited feedforward weight matrix"},
+      "evidence": "paper.pdf p. 3, Eq. (1)",
+      "interpretation": "This is a local activation equality at selected tokens and a selected layer; it does not require the whole model output distribution or behavior on other prompts to remain unchanged."
+    },
+    {
+      "label": "Claimed minimum-change objective (Eq. 2)",
+      "latex": "\\min_{W'}\\|W'-W\\|_F^2\\quad\\text{subject to}\\quad W'u'=Wu+(v-v')",
+      "role": "formalize the claim that knowledge can be inserted with the smallest weight displacement",
+      "symbols": {"F": "Frobenius norm", "B": "desired output correction v-v'"},
+      "evidence": "paper.pdf p. 3, Eqs. (1)–(2); Appendix pp. 7–8",
+      "interpretation": "For full-row-rank constraints, the standard minimum-Frobenius correction is -(Wu'-Wu-B)(u'^T u')^{-1}u'^T, or a pseudoinverse form."
+    },
+    {
+      "label": "Printed QF update (Eq. 3)",
+      "latex": "W'=W-[W(u'-u)+(v'-v)](u^T u')^{-1}u^T",
+      "role": "apply a closed-form targeted weight edit from the two forward-pass activation traces",
+      "symbols": {"u": "instruction-pass input activation", "u_prime": "no-instruction input activation"},
+      "evidence": "paper.pdf p. 3, Eq. (3); Appendix pp. 7–8",
+      "interpretation": "Multiplication by u' shows this update satisfies Eq. (1) when u^T u' is invertible. However, the Lagrangian derivative should contain u'^T, not u^T; unless u and u' have special alignment, the printed expression is not the minimizer of Eq. (2)."
+    }
+  ],
+  "figure_refs": [
+    {
+      "label": "Figure 3",
+      "asset_path": "assets/collection-figures/2507.04300/figure-3-qf-workflow.webp",
+      "section": "模型与方法",
+      "role": "show the two activation-recording passes, cutoff layer and subsequent inference with edited weights",
+      "evidence": "paper.pdf p. 4, Figure 3",
+      "alt_text": "QF 三阶段流程图：带 instruction 的前向传播记录 u,v；无 instruction 的前向传播记录 u',v'；在截断层用闭式公式把 W 更新为 W'，再进行无 instruction 推理。",
+      "caption": "QF 把同一问答在 open-book 与 closed-book 两次前向传播中的局部激活差，转成一个 feedforward matrix edit。",
+      "interpretation": "图示的是预期机制，不是因果验证；“知识进入权重”仍需在未见 prompts、反事实和大规模保持集上测量。"
+    }
+  ],
+  "cover": {
+    "mode": "source_figure",
+    "asset_path": "assets/collection-figures/2507.04300/figure-3-qf-workflow.webp",
+    "label": "Figure 3",
+    "visual_type": "schematic",
+    "evidence": "paper.pdf p. 4, Figure 3",
+    "alt_text": "QF 的 instruct、update、infer 流程以及被编辑的 Transformer 中间层权重。",
+    "caption": "两次前向传播提供一对 activation constraints，随后用一次闭式矩阵修正替代反向传播。",
+    "selection_rationale": "该图准确展示方法实际做了什么，便于读者把“无 backprop”与“无需监督、无需权重更新”等更强但错误的理解分开。"
+  },
+  "sections": [
+    {
+      "title": "作者信息",
+      "paragraphs": [
+        "Feng Qi，署名机构为 OxInnovate。",
+        "本文为 arXiv:2507.04300v1，分类 cs.LG、cs.AI、q-bio.NC，提交于 2025-07-06，共 8 页。",
+        "Collection 来源为刘子鸣网站的 Machine Learning 条目；作者公开了 QF 代码。"
+      ]
+    },
+    {
+      "title": "研究问题",
+      "paragraphs": [
+        "能否不用 loss backpropagation，把模型在“给出事实 instruction”时形成的局部 activations，直接固化为一次权重更新，使随后只给 query 也得到相似回答？",
+        "作者将其定位为 knowledge consolidation，并进一步声称低资源、单样本、持续学习、避免 catastrophic forgetting 以及更接近大脑；这些强结论需要分别核验。"
+      ]
+    },
+    {
+      "title": "背景",
+      "paragraphs": [
+        "backpropagation 用链式法则计算参数对目标函数的梯度。knowledge editing 则常只改少数参数，使某一事实关联改变；它仍可使用梯度、闭式 least-squares 或 learned editor。QF 属于局部 activation matching 的闭式编辑路线。",
+        "“无梯度”只说明更新公式不调用反向传播。它仍需要目标 answer、instruction、两次 teacher-forced forward passes、人工选择 layer/token significance，并真实修改 weights，因此不是 unsupervised learning，也不是纯 inference。",
+        "从物理角度，可把 W 看成线性响应算子，把一组 activation pairs 当作硬约束。最小范数更新类似在参数空间中投影到满足约束的仿射超平面；是否保留其他行为取决于约束子空间与未测方向。"
+      ]
+    },
+    {
+      "title": "给物理学家的 AI 导读",
+      "paragraphs": [
+        "输入–状态–输出链为：open-book pass 输入 instruction+query+目标 answer token，记录某 FFN layer 的 u,v；closed-book pass 去掉 instruction 并记录 u',v'；闭式公式更新 W；之后只给 query 测试输出。",
+        "这里的 u 与 v 不是可直接解释的“知识坐标”，而是依赖 prompt、token position、layer、model state 的高维 activations。匹配一个点附近的局部输出，不等价于学习了一个对措辞、上下文和冲突事实稳定的概念。",
+        "证据应分四级：线性代数上满足 constraint；目标 prompt 的生成改变；paraphrase/related prompts 泛化；大保持集、冲突编辑与多次编辑后副作用可控。论文主要展示前两级和一个 paraphrase，没有覆盖后两级。",
+        "“brain-like”在本文是类比性动机，没有神经生理模型、局部可塑性规则与生物数据检验。前向记录后由全局矩阵求逆/更新也不能仅因没有 backprop 就视为 biologically plausible。"
+      ]
+    },
+    {
+      "title": "模型与方法",
+      "paragraphs": [
+        "方法选择 Transformer decoder 的一个中间 feedforward weight W。QF-instruct 与 QF-update 两次传播分别得到 (u,v) 和 (u',v')，并要求 edited block 满足 W'u'+v'=Wu+v。",
+        "对多个 tokens，u,u' 为 D×T matrices；代码用 qfsignificance mask 选择需强化的 answer tokens。更新后第一次 QF-infer-wp 安装 W'，后续 QF-infer-w 使用已修改模型。",
+        "实验声称使用 Qwen2.5-1.5B-Instruct 和单张 RTX 4090；但 Table 1 标题行写 Qwen2-1.5B-Instruct，版本命名不一致。全文没有说明被编辑 layer、精确 dtype、运行时间、峰值显存或 baseline tuning。",
+        "演示先注入“Qi started Oxinnovate”，测试原问、一个 paraphrase 与 Alibaba 保持问题；再注入地点事实并复测 founder，共列出 8 次生成结果。"
+      ]
+    },
+    {
+      "title": "核心结果与证据",
+      "paragraphs": [
+        "在作者的单次示例中，原模型不知道 Oxinnovate founder；给 instruction 时能回答 Qi；执行 QF 后无 instruction 也回答 Qi，并对“The person behind Oxinnovate?”生成“Founded by Qi”。",
+        "第二次编辑写入 PKU Science Park/Beijing 后，模型回答地点并仍回答 founder；Alibaba 的单个控制问题在第一次编辑后仍为 Jack Ma。结果证明代码路径可在该 prompt set 上改变生成。",
+        "Eq. (3) 在 u^T u' 可逆时确实满足 activation constraint：右乘 u' 后修正项正好抵消 Wu'-Wu-(v-v')。这解释了目标 token 上能被强制匹配。",
+        "但附录的最小范数推导不成立：对约束 W'u'=Wu+B，Lagrangian 对 W' 求导应产生 Lambda u'^T；文中写成 Lambda u^T，代入时又在 u^T 与 u'^T 间切换。标准 minimum-Frobenius solution 使用 u' 的 pseudoinverse。打印的 QF 更新通常是一个满足约束的斜投影解，而非 Eq. (2) 的最小改动解。",
+        "论文未报告与 ROME/MEMIT、least-squares editor、LoRA 或一两步 gradient update 的成功率、时间、显存和副作用对比，因此“更有效、更节省资源”尚无比较证据。"
+      ]
+    },
+    {
+      "title": "有效性与局限",
+      "paragraphs": [
+        "实验不是数据集评测：只有两个自造 facts、少量 prompts、一个 base model、一次运行；没有 accuracy denominator、置信区间、随机种子、held-out paraphrases、multi-hop questions、adversarial prompts 或真实知识冲突。",
+        "以一个 Alibaba 问题保持正确不能证明避免 catastrophic forgetting。应在 thousands of locality prompts、perplexity、downstream benchmarks 和多次连续 edits 后测量；Frobenius displacement 小也不推出 functional change 小。",
+        "公式要求相关 Gram/cross-Gram matrix 可逆；重复或相关 token activations 会带来奇异或 ill-conditioned 情况。论文未说明 pseudoinverse、ridge regularization、condition number 或数值稳定策略。",
+        "closed-book pass 使用 QF-instruct answer 作为 next-token input，存在 teacher forcing。逐 token 编辑依赖目标答案已知，生成成功可能是局部 logit steering；不能据此判断模型形成了可组合的事实表示。",
+        "论文把中间层与 Wernicke/Broca areas 对应，并以“aha moment”解释编辑有效性，但未提供 layer sweep 或脑科学证据。这些表述应视为启发式比喻。",
+        "最重要的技术保留是 Eq. (2) 与 Eq. (3) 不一致。即使仓库实现复现示例，也只能验证实现的编辑效果，不能自动修复论文关于 minimum-change solution 的数学主张。"
+      ]
+    },
+    {
+      "title": "复现与资源",
+      "paragraphs": [
+        "代码：https://github.com/oxinnovate/QF；论文给出的入口为 qf_learn_simple.py，硬件为单张 RTX 4090。复现前应锁定 commit、Qwen checkpoint revision、Transformers 版本、layer 与 qfsignificance。",
+        "第一项数学复核应分别实现论文 Eq. (3) 与标准 pseudoinverse minimum-norm update，数值检查 constraint residual、||W'-W||_F、condition number 和未编辑 tokens 的 activation drift。",
+        "行为评测至少应采用 CounterFact 或 zsRE 类 edit set，报告 edit success、paraphrase、neighborhood/locality、perplexity、sequential editing 与 wall-time/peak-memory，并与 ROME/MEMIT、LoRA 和 matched gradient step 对照。",
+        "本站核验的 v1 PDF SHA-256：770d7b584a6f128b2148aeeee50b79751238e6dea2fe63919937ceaed2c16c2b。Evidence status: full-text verified; no independent reproduction performed; demonstration outputs, efficiency and forgetting claims not independently reproduced."
+      ]
+    },
+    {
+      "title": "阅读指南",
+      "paragraphs": [
+        "最短路径：Figure 3 → Eqs. (1)–(3) → Table 1 → Appendix derivation。先确认 constraint 与 minimization 是两个不同命题。",
+        "线性代数路径：自己从 min ||Delta W||_F subject to Delta W u'=-R 推导 pseudoinverse 解，再与打印公式比较；这一步比脑科学类比更关键。",
+        "AI 评测路径：把 8 行 qualitative outputs 当 smoke test，而非 benchmark；阅读时逐项寻找成功率、保持集、顺序编辑、baseline 和资源计量，本文均未充分提供。"
+      ]
+    }
+  ],
+  "evidence_refs": [
+    "paper.pdf pp. 1–2: motivation and schematic comparison with backpropagation",
+    "paper.pdf pp. 3–4: activation constraint, Frobenius objective, printed update and QF workflow",
+    "paper.pdf pp. 5–6: eight qualitative generations, model/hardware statement and discussion claims",
+    "paper.pdf pp. 7–8: batched Lagrangian derivation and inconsistent use of u versus u' in the gradient/final solution",
+    "source PDF SHA-256 770d7b584a6f128b2148aeeee50b79751238e6dea2fe63919937ceaed2c16c2b",
+    "Evidence status: full-text verified; no independent reproduction performed; demonstration outputs, efficiency and forgetting claims not independently reproduced."
+  ]
+}
