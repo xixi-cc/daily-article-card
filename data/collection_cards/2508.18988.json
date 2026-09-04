@@ -1,0 +1,122 @@
+{
+  "arxiv_id": "2508.18988",
+  "source_version": "v1",
+  "source_pdf": "https://arxiv.org/pdf/2508.18988v1",
+  "title_en": "Interpretable by AI Mother Tongue: Native Symbolic Reasoning in Neural Models",
+  "title_zh": "用 AI 母语实现可解释性：神经模型中的原生符号推理",
+  "curation_status": "full_text_verified",
+  "card_standard_version": "2.4",
+  "audience_profile": "physics_ai_literate_physicist",
+  "paper_profile": "ai_empirical",
+  "style_reference": "physicist_daily_arxiv",
+  "provenance": {
+    "program": "Collection", "catalog": "Paper Collection", "catalog_record_id": "2508.18988", "catalog_record_ids": ["2508.18988"],
+    "catalog_topic": "AI Agents", "collection_date": "2026-08-30", "sampled_at": "2026-08-31",
+    "selected_by": "ziming_mineru_serial_goal", "sampling_seed": "not_applicable_source_complete", "candidate_count": 464
+  },
+  "verified_metadata": {
+    "arxiv_id": "2508.18988", "version": "v1", "title": "Interpretable by AI Mother Tongue: Native Symbolic Reasoning in Neural Models",
+    "authors": ["Hung Ming Liu"], "categories": ["cs.CL", "cs.AI", "cs.LG"], "primary_category": "cs.CL",
+    "published": "2025-08-26T12:40:21Z",
+    "abstract": "The paper proposes a Dynamic Intuition Classifier that vector-quantizes hidden states into discrete symbols, uses those symbols to modulate attention and residual features, and records symbol/gate traces for inspection. A two-phase AG News experiment is offered, but central comparison statistics remain as literal placeholders and the reported phase accuracy decreases from 50.94% to 47.32%, so the architecture is more substantiated than the claimed interpretability gains.",
+    "comment": "v1; 25 pages; 9 figures; dashboard URL supplied by the author"
+  },
+  "equation_refs": [
+    {
+      "label": "Nearest-codebook quantization (Eq. 1)", "latex": "z_q=\\arg\\min_k\\|x-c_k\\|^2",
+      "role": "turn a continuous hidden vector into one discrete internal symbol",
+      "symbols": {"x": "block representation", "c_k": "k-th codebook vector", "z_q": "selected code vector"},
+      "evidence": "paper.pdf p. 7, Eq. (1)",
+      "interpretation": "Discreteness makes states enumerable, but a code index has no semantic meaning until its label association and stability are independently measured."
+    },
+    {
+      "label": "Gated symbol injection (Eqs. 7–8)", "latex": "g=\\sigma(W_gx_{\\mathrm{repr}}),\\qquad x_{\\mathrm{enhanced}}=x+g\\,W_pz_q",
+      "role": "control how strongly the quantized pathway perturbs the ordinary Transformer stream",
+      "symbols": {"g": "scalar gate in [0,1]", "W_p": "symbol projection", "x_repr": "first-token representation"},
+      "evidence": "paper.pdf p. 8, Eqs. (7)–(8)",
+      "interpretation": "Calling g intuition confidence is an interpretation imposed by training; sigmoid magnitude alone is not calibrated probability or epistemic uncertainty."
+    },
+    {
+      "label": "Explainability-augmented objective (Eq. 11)", "latex": "L_{\\mathrm{total}}=L_{\\mathrm{task}}+\\lambda_{\\mathrm{purity}}L_{\\mathrm{purity}}+\\lambda_{\\mathrm{focus}}L_{\\mathrm{focus}}",
+      "role": "trade classification error against label-pure symbols and correctness-aligned gates",
+      "symbols": {"L_purity": "batch empirical symbol-to-label cross-entropy", "L_focus": "binary cross-entropy between mean gate and correctness", "lambda": "manually chosen weights"},
+      "evidence": "paper.pdf p. 9, Eq. (11)",
+      "interpretation": "The losses directly encode the desired diagnostics, so improved purity or gate–correctness association is partly objective compliance, not independent proof of faithful reasoning."
+    }
+  ],
+  "figure_refs": [
+    {
+      "label": "Figure 1", "asset_path": "assets/collection-figures/2508.18988/figure-1-dynamic-intuition-architecture.webp", "section": "模型与方法",
+      "role": "show where quantization, symbolic routing, gating and auxiliary losses enter the Transformer block", "evidence": "paper.pdf p. 6, Figure 1",
+      "alt_text": "Dynamic Transformer Block 流程图：输入同时进入标准路径与 VQ-AIM 符号路径，离散符号控制 sparse attention 和 residual injection，输出再连接 task、purity 与 focus losses。",
+      "caption": "离散 code、gate 和 attention mask 被显式暴露为可记录的内部变量。",
+      "interpretation": "图证明接口可观测，不证明这些变量是决策的充分因果解释，也不证明符号语义跨样本稳定。"
+    }
+  ],
+  "cover": {
+    "mode": "source_figure", "asset_path": "assets/collection-figures/2508.18988/figure-1-dynamic-intuition-architecture.webp", "label": "Figure 1", "visual_type": "schematic",
+    "evidence": "paper.pdf p. 6, Figure 1", "alt_text": "带离散符号、intuition gate 和 sparse attention 的分类器架构。",
+    "caption": "把可检查的离散 bottleneck 嵌入模型，不再只做 post-hoc probe。",
+    "selection_rationale": "论文最可靠的贡献是架构提案；选择结构图而非结果图，可避免把含占位符的实验主张视觉化为已验证结论。"
+  },
+  "sections": [
+    {"title": "作者信息", "paragraphs": [
+      "Hung Ming Liu 为论文唯一署名作者；稿件首页未列机构。",
+      "本站核验 arXiv:2508.18988v1，提交于 2025-08-26，主分类 cs.CL，另含 cs.AI 与 cs.LG，共 25 页。",
+      "Collection 来源为刘子鸣网站的 AI Agents 条目；作者给出 AI Intuition Explorer dashboard：https://cyrilliu1974.github.io/github.io/vi.html，但论文未给出训练代码仓库。"
+    ]},
+    {"title": "研究问题", "paragraphs": [
+      "Post-hoc attention/probe 往往只能说哪些隐藏变量与输出相关。本文尝试让模型从结构上产生离散 symbols、symbol chains 与 gates，使每次分类都留下可枚举的内部记录。",
+      "关键科学问题不是“能否画出符号图”，而是这些符号是否稳定、具有跨样本语义、对输出有因果作用，并在保持预测性能时提供校准良好的选择性计算。"
+    ]},
+    {"title": "背景", "paragraphs": [
+      "Vector-quantized autoencoder 用最近 code vector 替换连续 representation，并用 straight-through estimator 训练。离散 bottleneck 便于计数和聚类，但 codebook collapse、label leakage 与不稳定 permutation 都是已知风险。",
+      "论文把 System-1 intuition、trustworthiness 与 internal symbols 联系起来。这里应把认知术语当设计隐喻：模型只执行可微 gating 与 classification，没有行为实验建立人类认知同构。",
+      "内生 symbol 比事后解释更接近 interpretable-by-design，但是否 faithful 仍需 intervention：删掉、交换或固定 symbol/gate 后，预测是否按声称机制改变。本文主要展示 observability，未完成这一步。"
+    ]},
+    {"title": "给物理学家的 AI 导读", "paragraphs": [
+      "VQ codebook 可类比把连续相空间 partition 成 256 个 cells；每层 token state 落入一个 cell，symbol chain 是短离散 trajectory。Partition 是否有物理意义，要看对扰动、seed 和重新训练是否稳定。",
+      "Gate g 像一个 state-dependent coupling constant，控制符号通道对标准 Transformer 的反馈强度。但作者用 prediction correctness 直接监督它，因此 g 的经验分布不能独立证明模型获得“自知之明”。",
+      "Symbol purity 是 code 与 class label 的 mutual alignment，而非机制语义。若一个 code 只对应 Sports，它很纯；但它可能只是读取 label-correlated shortcut，无法解释模型用了哪条证据。",
+      "把 attention mask、symbol 与 gate 全部记录下来只是建立测量仪器。像实验物理一样，还需要 calibration、null controls、uncertainty bars 和 perturbation response，才能从仪器读数上升到机制结论。"
+    ]},
+    {"title": "模型与方法", "paragraphs": [
+      "每个 Dynamic Transformer Block 含 VQ-AIM encoder、symbolic router、intuition gate、self-attention 与 feed-forward network。最近邻 code z_q 生成 soft sparse mask，并经 g W_p z_q 注入 residual stream。",
+      "Phase 1 在完整 AG News 上训练 baseline/gated model 并保存 experience database；Phase 2 筛选高 purity、稳定且 gate 激活的所谓 intuitive samples，再以 purity/focus auxiliary losses 专门化。",
+      "实验设置为 d_model=128、4 heads、sequence length 100、codebook size 256、2 blocks。Intuitive Accuracy 只统计 mean gate>0.5 的样本，Gated Ratio 是该条件触发频率。",
+      "Purity loss 直接最大化 batch 内 P(label|symbol)，focus loss 把 correctness r 当 binary target 拟合 mean gate。两者把可解释性定义锁定为 label concentration 与 confidence-like gating。"
+    ]},
+    {"title": "核心结果与证据", "paragraphs": [
+      "论文报告 Phase 1 accuracy 50.94%，gate scores 高度靠近 1，被解释为 overconfidence；Phase 2 accuracy 47.32%，gate distribution 更分散，被解释为 calibration 改善。没有给出 ECE、Brier score、reliability diagram 或 uncertainty intervals。",
+      "47.32% 低于 50.94%，且远高于四分类 random baseline 25% 但明显不足以支持“competitive accuracy”而不提供标准 Transformer baseline、split details 与重复 runs。作者把下降称为 no significant decline，却没有报告显著性检验。",
+      "正文声称 purity 有 p<0.01、gate activation 差异有 p<0.05，但关键均值仍写成 “[Expert Model Mean]”“[Baseline Model Mean]”和 “[value]”。这些是未填占位符，因此相应定量主张当前不可审计。",
+      "Dashboard 展示 symbol association network、单样本 chain 与 attention heatmap。这说明日志管线可工作；selected visualizations 不能证明 symbol causality、semantic invariance 或总体解释质量。"
+    ]},
+    {"title": "有效性与局限", "paragraphs": [
+      "最严重的证据缺口是主结果含 literal placeholders，表号与图号也前后不一致。即使公式和架构完整，统计结论在当前 v1 不能视为已报告结果。",
+      "AG News 单数据集、单一小模型且未说明 seeds、train/validation split、optimizer 细节的完整可复现实验表；Phase 2 还在模型自身成功样本上筛选，可能产生 selection bias 与 specialization overfit。",
+      "Purity 使用真实 labels 训练，focus 使用正确性训练；两指标随目标改善并非独立验证。需要 held-out symbol semantics、counterfactual intervention 和跨 seed code alignment。",
+      "Gate distribution 变宽不等于 calibration 变好。校准要求预测概率与 empirical correctness 一致；论文没有把 g 分箱后比较 accuracy，也没有证明 g 是概率。",
+      "作者把离散序列称 thought chain 或 AI mother tongue，但 code IDs 缺少组合语法、可迁移词义和解码一致性测试；最稳妥称呼是 learned discrete latent trace。"
+    ]},
+    {"title": "复现与资源", "paragraphs": [
+      "Dashboard URL 可访问性不等于训练复现；论文未提供代码、checkpoint、数据 split 或 environment lock。现阶段只能按公式重实现，不能逐项核对作者 run。",
+      "最低复核应报告至少 5 seeds 的 accuracy、macro-F1、codebook utilization/perplexity、purity on held-out labels、ECE/Brier、gated coverage 与 selective-risk curve，并给 confidence intervals。",
+      "机制复核应做 symbol ablation/swap、gate clamp、matched continuous bottleneck 与 shuffled-label purity controls；跨 seed 用 optimal matching 比较 codes，避免把任意 index 当稳定语义。",
+      "本站核验 v1 PDF SHA-256：ce235322bc7b88b856ce1e45e062ad01f32bc1fab0c4523e131a1868de779cb2。Evidence status: full-text verified; no independent reproduction performed; central statistical claims are not auditable because reported comparison values remain placeholders."
+    ]},
+    {"title": "阅读指南", "paragraphs": [
+      "最短路径：Figure 1 → Eqs. (1)、(7)–(11) → Sections 7–8 → raw placeholder sentences → limitations。先读架构，再决定哪些实验主张仍可用。",
+      "工程路径：把 VQ bottleneck、router、gate、experience database 与 dashboard 当五个可独立测试的 modules，不必接受 System-1 或 mother-tongue 叙事。",
+      "批判性路径：依次问 observable、predictive、causal、stable、compositional、calibrated 六个层级。当前稿件主要支持 observable，给出有限 predictive evidence，其余仍需实验。"
+    ]}
+  ],
+  "evidence_refs": [
+    "paper.pdf pp. 1–6: motivation, cognitive framing and Dynamic Intuition architecture",
+    "paper.pdf pp. 7–9: VQ, router, gate, purity/focus losses and total objective",
+    "paper.pdf pp. 15–20: AG News settings, 50.94/47.32 percent results, placeholders and dashboard visualizations",
+    "paper.pdf pp. 21–22: discussion, stated limitations and future work",
+    "source PDF SHA-256 ce235322bc7b88b856ce1e45e062ad01f32bc1fab0c4523e131a1868de779cb2",
+    "Evidence status: full-text verified; no independent reproduction performed; central statistical claims are not auditable because reported comparison values remain placeholders."
+  ]
+}

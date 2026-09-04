@@ -1,0 +1,127 @@
+{
+  "arxiv_id": "2508.18526",
+  "source_version": "v2",
+  "source_pdf": "https://arxiv.org/pdf/2508.18526v2",
+  "title_en": "Quantifying The Limits of AI Reasoning: Systematic Neural Network Representations of Algorithms",
+  "title_zh": "量化 AI 推理的边界：算法的系统神经网络表示",
+  "curation_status": "full_text_verified",
+  "card_standard_version": "2.4",
+  "audience_profile": "physics_ai_literate_physicist",
+  "paper_profile": "theory",
+  "style_reference": "physicist_daily_arxiv",
+  "provenance": {
+    "program": "Collection", "catalog": "Paper Collection", "catalog_record_id": "2508.18526", "catalog_record_ids": ["2508.18526"],
+    "catalog_topic": "Learning Theory", "collection_date": "2026-08-30", "sampled_at": "2026-08-31",
+    "selected_by": "ziming_mineru_serial_goal", "sampling_seed": "not_applicable_source_complete", "candidate_count": 464
+  },
+  "verified_metadata": {
+    "arxiv_id": "2508.18526", "version": "v2",
+    "title": "Quantifying The Limits of AI Reasoning: Systematic Neural Network Representations of Algorithms",
+    "authors": ["Anastasis Kratsios", "Dennis Zvigelsky", "Bradd Hart"],
+    "categories": ["cs.LG", "cs.CC", "cs.LO", "cs.NE", "math.NA"], "primary_category": "cs.LG",
+    "published": "2025-08-25T21:55:37Z", "updated": "2025-09-16T14:10:46Z",
+    "abstract": "The paper formalizes finite-precision computation as circuits of elementary gates and constructs ReLU subnetworks that exactly emulate those gates. Composing the replacements transfers circuit size and graph structure into feedforward-network size, with applications to Boolean logic, dynamic programming, finite-time Turing-machine traces and universal finite-grid lookup.",
+    "comment": "v2; 18 pages main body; 45 pages total plus references"
+  },
+  "equation_refs": [
+    {
+      "label": "Finite-precision state space (Eq. 1)",
+      "latex": "\\mathbb R_q=\\left\\{(-1)^{\\beta_{q+1}}\\sum_{j=-q}^{q}\\frac{\\beta_j}{2^j}: (\\beta_j)_{j=-q}^{q+1}\\in\\{0,1\\}^{2q+2}\\right\\}",
+      "role": "replace ideal real arithmetic by the finite set actually represented on digital hardware",
+      "symbols": {"q": "precision/range index", "beta_j": "binary digits including a sign bit"},
+      "evidence": "paper.pdf p. 6, Eq. (1)",
+      "interpretation": "Exactness below is exact on this discrete machine model, including specified modular overflow; it is not exact equality for arbitrary real inputs."
+    },
+    {
+      "label": "Universal finite-grid representation (Theorem 2)",
+      "latex": "\\beta_f^\\top\\Phi_{\\mathrm{Enc}}(x)=f(x),\\qquad N_1=(2^{2q+2}-1)^d\\le 4^{d(q+1)}",
+      "role": "represent every map on the finite input grid by a fixed spike encoder and function-specific linear readout",
+      "symbols": {"Phi_Enc": "universal ReLU encoder", "beta_f": "lookup values for target f", "d": "input dimension"},
+      "evidence": "paper.pdf p. 13, Theorem 2",
+      "interpretation": "Universality is constructive but worst-case width and parameter count grow exponentially in d q, so representability alone says little about practical learnability."
+    },
+    {
+      "label": "Finite-time Turing simulation (Corollary 3)",
+      "latex": "\\widehat f(x,t)=\\mathcal M(x)_t,\\qquad \\operatorname{depth}(\\widehat f)=O(T),\\quad \\operatorname{units}(\\widehat f)=O(T^2\\log T)",
+      "role": "encode the state at every step of a stopped finite-time transductor",
+      "symbols": {"M": "fixed transductor", "T": "reasoning horizon", "t": "requested computation step"},
+      "evidence": "paper.pdf p. 15, Corollary 3",
+      "interpretation": "The network is constructed from a known algorithm for a fixed horizon; the corollary does not show that gradient training discovers the simulation or generalizes beyond T."
+    }
+  ],
+  "figure_refs": [
+    {
+      "label": "Figure 2", "asset_path": "assets/collection-figures/2508.18526/figure-2-circuit-surgery.webp", "section": "模型与方法",
+      "role": "visualize gate-by-gate circuit surgery into a composed ReLU feedforward graph", "evidence": "paper.pdf p. 4, Figure 2",
+      "alt_text": "上方为由逻辑门组成的有向无环电路，下方把每个门替换成对应的小型 ReLU 网络，同时保留原连接结构。",
+      "caption": "算法图的每个 elementary gate 被一个精确 emulator 取代，时间展开为网络空间。",
+      "interpretation": "这是存在性构造，不是从数据训练出该网络的流程，也不说明替换后的表示最小。"
+    }
+  ],
+  "cover": {
+    "mode": "source_figure", "asset_path": "assets/collection-figures/2508.18526/figure-2-circuit-surgery.webp", "label": "Figure 2", "visual_type": "schematic",
+    "evidence": "paper.pdf p. 4, Figure 2", "alt_text": "计算电路逐门替换为 ReLU 子网络的示意。",
+    "caption": "把 algorithmic runtime 展开成 neural-network spatial complexity。",
+    "selection_rationale": "该图直接揭示论文真正的数学操作，可避免把“神经网络能推理”误读成训练或认知结论。"
+  },
+  "sections": [
+    {"title": "作者信息", "paragraphs": [
+      "Anastasis Kratsios 与 Dennis Zvigelsky 来自 McMaster University Department of Mathematics and Statistics 及 Vector Institute；Bradd Hart 来自 McMaster University。",
+      "本站核验 arXiv:2508.18526v2：初版提交于 2025-08-25，v2 更新于 2025-09-16；主分类 cs.LG，并含 circuit complexity、logic、neural/evolutionary computing 与 numerical analysis 分类。",
+      "Collection 来源为刘子鸣网站的 Learning Theory 条目；论文未给出本站可核验的实现仓库。"
+    ]},
+    {"title": "研究问题", "paragraphs": [
+      "若一个 reasoning task 已经能写成 Boolean、tropical、arithmetic 或 analytic circuit，是否能系统地翻译为 ReLU feedforward network，并让网络规模显式继承算法复杂度？",
+      "本文回答的是 representation/existence：给定 circuit 后如何构造网络。它不回答有限数据下能否学习该权重、优化需要多少样本与时间，也不证明现代 LLM 的推理机制就是该 circuit。"
+    ]},
+    {"title": "背景", "paragraphs": [
+      "Universal approximation 通常把 f 当 black box，只借助连续性或光滑性给近似误差。若已知 f 的 algorithmic factorization，丢掉内部结构再逼近会浪费信息。",
+      "Circuit complexity 把算法写成 DAG：nodes 是 elementary gates，edges 是数据依赖。ReLU 网络同样是组合图，因此可为每类 gate 建立一个小型 emulator dictionary，再沿原 DAG 拼接。",
+      "数字计算不是无限精度实数模型。作者显式定义有限集合 R_q 与 modular arithmetic，使“exact”成为可判定的有限域命题；代价是结论依赖该 machine semantics。"
+    ]},
+    {"title": "给物理学家的 AI 导读", "paragraphs": [
+      "这更像把一个离散时间演化算符做 spatial unrolling：原算法每一步消耗 runtime，展开后的深层网络把中间状态作为额外层与 neurons 保存。所谓 neural reasoning 在这里是已知计算图的静态 realization。",
+      "Gate surgery 类似 coarse model 的局部替换规则：只要每个 local block 在允许输入域上等价，而且 wiring 的 domains/codomains 相容，整体 composition 就等价。证明难点集中在不同 gates 的显式 ReLU realization。",
+      "Theorem 2 的 universal encoder 本质是有限网格上的 delta-like lookup table；它与统计物理中枚举全部 microstates 类似，保证存在却遭遇指数态空间。结构化 circuit 才可能把复杂度降到可用尺度。",
+      "必须区分 expressivity、efficient representation、trainability 与 out-of-distribution generalization。本文主要建立前两者之间的 upper-bound transfer；后两者没有由构造自动推出。"
+    ]},
+    {"title": "模型与方法", "paragraphs": [
+      "作者定义 G-circuit 及 surgery：在某节点插入 compatible ReLU subcircuit，并按 parent mapping 重接边。依次替换全部 computational nodes，输入/输出与计算依赖保持不变。",
+      "Theorem 1 覆盖 bit encoders/decoders、Boolean/predicate logic、finite-precision arithmetic、interval indicators 与 tropical min/max 等 gates；Table 1 汇总各 emulator 的 depth、width 和 nonzero parameters。",
+      "Theorem 2 不要求目标有良好 circuit：固定 encoder 为每个 finite-grid point 构造 spike，readout 存储 f 的值，因此任意 f:R_q^d→R_q^D 都可表示，但最坏规模 O(4^{dq})。",
+      "应用通过已有 circuit bound 直接转移：例如 all-pairs shortest paths 的 tropical circuit 有 O(k^3) nodes，对应 ReLU FFNN 也获得 cubic nonzero-parameter upper bound。"
+    ]},
+    {"title": "核心结果与证据", "paragraphs": [
+      "主定理给出 constructive compilation：网络 computational graph 镜像原 circuit，规模由 gate 数量与 emulator cost 控制。因而“algorithmic time 换 network space”不再只是口号。",
+      "任意 B-bit Boolean function 可由 O(2^B) nonzero parameters 的 ReLU FFNN 表示；任意 finite-grid function 也可表示，但 O(4^{dq}) 的通用构造清楚暴露 curse of dimensionality。",
+      "对 stopped transductor，固定 horizon T 的网络可输出 step t 的 machine state，depth O(T)、computation units O(T^2 log T)（大 O 隐去 bit-width 依赖）。这保留显式中间计算轨迹。",
+      "动态规划案例把 O(k^3) all-pairs-shortest-path circuit 变成同阶 nonzero-parameter ReLU network。这里的 cubic 是 representation upper bound，不是训练 cost 或 inference hardware benchmark。"
+    ]},
+    {"title": "有效性与局限", "paragraphs": [
+      "“No reasoning task lies beyond neural networks”只在任务已有 finite-precision circuit/finite-horizon computation、允许人为设定权重且资源不受限的语境成立。它不是对不可计算问题或无限时间过程的结论。",
+      "Exactness 依赖作者的 R_q、rounding/overflow 与 indistinguishability definitions。换 IEEE floating-point exceptions、不同 rounding 或连续实数语义，需要重新核对 emulator。",
+      "存在一个网络不意味着 SGD 能从样本找到它；构造也没有 robustness margin。许多 equality/indicator/spike gates 对输入量化与离网扰动可能非常敏感。",
+      "最坏通用网络指数大，structured bounds 也继承原算法的 complexity。没有压缩下界、优化实验、noise tests 或与可执行程序 wall time/energy 的比较，不能据此宣称神经网络是更高效的计算载体。",
+      "把 circuit nodes 称为 chain-of-thought 是结构性类比；它不保证中间 neurons 对人类语义可读，也不证明现有 LLM 的自然语言 CoT faithful。"
+    ]},
+    {"title": "复现与资源", "paragraphs": [
+      "论文没有公开代码链接。最小复核可从 NAND、NOT、finite-bit addition 和 min gate 开始，在全部 finite inputs 上穷举比较 circuit 与构造的 ReLU outputs，并显式测试 overflow boundary。",
+      "组合级复核应实现 Figure 2 surgery，自动检查每个 node 的 domain/codomain、topological order、network depth/width/nonzero count，并与 Table 1 bound 对照。",
+      "科学计算扩展应分别测试 grid-exactness 与 off-grid stability；加入 input perturbation、rounding mode 与 finite-weight precision，避免把数学构造误作鲁棒数值算法。",
+      "本站核验 v2 PDF SHA-256：190eeb0348ee960e9741eb2adb9f236ba4a82720e0a1c109f272c0856788dd85。Evidence status: full-text verified; no independent reproduction performed; constructions, constants and application bounds not independently checked."
+    ]},
+    {"title": "阅读指南", "paragraphs": [
+      "最短路径：Figure 1 → finite-precision definition → Figure 2/Table 1 → Theorems 1–2 → Corollaries 3–4 → Conclusion。先锁定 exact 的语义。",
+      "证明路径：选一种 gate，核对其 ReLU emulator 在 R_q 上逐点正确；再检查 surgery composition。无需一开始通读所有 gate appendices。",
+      "批判性路径：把“可计算”“可表示”“参数量多项式”“可训练”“对噪声稳定”“能解释真实 LLM”分开；本文严格推进前两到三项，不覆盖后三项。"
+    ]}
+  ],
+  "evidence_refs": [
+    "paper.pdf pp. 1–5: distinction from black-box approximation and gate-surgery overview",
+    "paper.pdf pp. 6–12: finite-precision model, circuits, compatibility and Theorem 1",
+    "paper.pdf pp. 13–18: Theorem 2, Boolean/Turing/dynamic-programming applications and conclusion",
+    "paper.pdf pp. 20–59: explicit gate constructions and proofs",
+    "source PDF SHA-256 190eeb0348ee960e9741eb2adb9f236ba4a82720e0a1c109f272c0856788dd85",
+    "Evidence status: full-text verified; no independent reproduction performed; constructions, constants and application bounds not independently checked."
+  ]
+}
