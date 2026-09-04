@@ -1,0 +1,124 @@
+{
+  "arxiv_id": "2510.26745",
+  "source_version": "v3",
+  "source_pdf": "https://arxiv.org/pdf/2510.26745v3",
+  "title_en": "Deep sequence models tend to memorize geometrically; it is unclear why",
+  "title_zh": "深度序列模型倾向于几何化记忆，但原因仍不清楚",
+  "curation_status": "full_text_verified",
+  "card_standard_version": "2.4",
+  "audience_profile": "physics_ai_literate_physicist",
+  "paper_profile": "theory_numerics",
+  "style_reference": "physicist_daily_arxiv",
+  "provenance": {
+    "program": "Collection", "catalog": "Paper Collection", "catalog_record_id": "2510.26745",
+    "catalog_record_ids": ["2510.26745"], "catalog_topic": "Representation Learning",
+    "collection_date": "2026-08-30", "sampled_at": "2026-08-31",
+    "selected_by": "ziming_mineru_serial_goal", "sampling_seed": "not_applicable_source_complete", "candidate_count": 464
+  },
+  "verified_metadata": {
+    "arxiv_id": "2510.26745", "version": "v3", "title": "Deep sequence models tend to memorize geometrically; it is unclear why",
+    "authors": ["Shahriar Noroozizadeh", "Vaishnavh Nagarajan", "Elan Rosenfeld", "Sanjiv Kumar"],
+    "categories": ["cs.LG", "cs.AI", "cs.CL", "stat.ML"], "primary_category": "cs.LG",
+    "published": "2025-10-30T17:40:22Z", "updated": "2026-05-18T17:56:38Z",
+    "abstract": "On synthetic graph sequence tasks, the paper finds that Transformers and Mamba organize learned embeddings according to global graph geometry rather than merely storing local co-occurrences, and studies a spectral-bias mechanism in a simpler Node2Vec-like model."
+  },
+  "equation_refs": [
+    {
+      "label": "Associative memory score",
+      "latex": "f(u)[v]=\\Phi(u)^\\top W_{\\rm assoc}\\Phi(v)",
+      "role": "formalize local edge lookup with arbitrary entity keys",
+      "symbols": {"u_v": "source and candidate target vertices", "Phi": "entity embeddings", "W_assoc": "matrix storing observed adjacencies"},
+      "evidence": "paper.pdf p. 9, Definition 2a",
+      "interpretation": "This representation can memorize local co-occurrences without arranging embeddings according to graph distance."
+    },
+    {
+      "label": "Geometric memory score",
+      "latex": "f(u)[v]=\\Phi_{\\rm geom}(u)^\\top\\Phi_{\\rm geom}(v)",
+      "role": "encode adjacency and multihop closeness directly in embedding geometry",
+      "symbols": {"Phi_geom": "structured vertex embedding", "inner_product": "similarity used for navigation"},
+      "evidence": "paper.pdf p. 10, Definition 2b",
+      "interpretation": "If learned, global geometry can turn repeated predecessor lookup into a near one-step nearest-direction problem; the definition alone does not explain why training selects it."
+    },
+    {
+      "label": "Simplified embedding dynamics",
+      "latex": "\\Delta V^{(t)}=\\eta\\,C^{(t)}V^{(t)}",
+      "role": "show how graph-coupled gradient updates repeatedly filter embedding modes",
+      "symbols": {"V": "matrix of node embeddings", "eta": "learning rate", "C": "time-dependent graph-coupled update matrix"},
+      "evidence": "paper.pdf p. 18, Eq. (7)",
+      "interpretation": "Early in training C resembles a negative Laplacian and amplifies selected spectral components; this clean analysis belongs to the simplified two-layer model, not a full Transformer proof."
+    }
+  ],
+  "figure_refs": [{
+    "label": "Figure 1", "asset_path": "assets/collection-figures/2510.26745/figure-1-associative-geometric-memory.webp",
+    "section": "核心结果与证据", "role": "contrast unstructured associative embeddings with graph-shaped Transformer and explicitly non-associative Node2Vec embeddings",
+    "evidence": "paper.pdf p. 4, Figure 1",
+    "alt_text": "路径星、网格、环和不规则图的三列嵌入：Transformer 固定嵌入呈杂乱关联记忆，学习嵌入和 Node2Vec 则恢复全局图形。",
+    "caption": "相同局部边事实可以存成查表矩阵，也可以重排为反映全局关系的几何坐标。",
+    "interpretation": "The plots are compelling diagnostics on synthetic graphs; visual shape alone is not a proof that all information is stored geometrically."
+  }],
+  "cover": {
+    "mode": "source_figure", "asset_path": "assets/collection-figures/2510.26745/figure-1-associative-geometric-memory.webp",
+    "label": "Figure 1", "visual_type": "comparison", "evidence": "paper.pdf p. 4, Figure 1",
+    "alt_text": "关联记忆与几何记忆对四类图的嵌入对照。",
+    "caption": "局部共现训练竟可在嵌入空间中恢复未直接监督的全局图结构。",
+    "selection_rationale": "It makes the paper's central distinction visible before the reader encounters the path-composition and spectral arguments."
+  },
+  "sections": [
+    {"title": "作者信息", "paragraphs": [
+      "Shahriar Noroozizadeh、Vaishnavh Nagarajan、Elan Rosenfeld、Sanjiv Kumar；作者来自 Carnegie Mellon University 与 Google Research，第一作者工作完成于 Google Research 实习期间。",
+      "本站核验 arXiv:2510.26745v3：初投 2025-10-30，更新于 2026-05-18；主分类 cs.LG，另含 cs.AI、cs.CL、stat.ML，共 69 页；论文注明 ICML 2026。",
+      "Collection 来源为刘子鸣网站的 Representation Learning 条目。"
+    ]},
+    {"title": "研究问题", "paragraphs": [
+      "一种常见叙述是：无压缩规律的原子事实只能由权重矩阵逐条查表。论文展示另一种可能——即使监督只包含局部边，模型也会把实体嵌入排成反映多跳关系的全局几何。",
+      "作者问两个问题：这种几何记忆能否让模型解决未见路径上的多步组合？在没有显式正则、低维瓶颈或全局监督时，训练为何偏向几何而非更直接的关联记忆？",
+      "标题的“原因仍不清楚”很重要：论文给出合成任务证据和简化模型中的谱机制，但没有完成深 Transformer 的一般理论。"
+    ]},
+    {"title": "背景", "paragraphs": [
+      "Path-star 图由 d 条长度 l 的路径从中心伸出。训练集包含所有局部边二元组，以及 75% 叶节点到中心的寻路样本；测试要求从未见叶节点预测第一跳。",
+      "若只把边存成关联查表，第一 token 等价于隐式复合 l 次 predecessor，直觉上很难从终点监督学到。若嵌入已经按路径排列，同一问题却近似变成一次空间导航。",
+      "实验加入反向边和 pause token 以稳定训练；大图上去掉反向边会因 reversal curse 失败，pause token 则明显加速。因此成功不是完全无脚手架的涌现。"
+    ]},
+    {"title": "给物理学家的 AI 导读", "paragraphs": [
+      "关联记忆像为每条键值对保留独立耦合常数；几何记忆则像选择低维集体坐标，使相关实体的内积自动携带多跳结构。前者局部而冗余，后者允许未直接共现的点发生推断。",
+      "图 Laplacian 的本征向量是离散系统的正常模。简化模型早期更新矩阵近似负 Laplacian，反复梯度步像谱滤波，逐渐突出 Fiedler-like 低频模，于是邻接关系转化为平滑全局坐标。",
+      "这里的“低频”不是时间频率，而是图上的缓慢空间变化；谱间隙和初始化投影会影响哪些模最先占优。",
+      "类比边界是：深 Transformer 同时能用关联矩阵和几何嵌入，两种机制可能竞争或混合；Node2Vec 分析中明确禁止关联通道，因此不能直接当作深网的微观推导。"
+    ]},
+    {"title": "模型与方法", "paragraphs": [
+      "主实验训练从头初始化的 decoder-only GPT-mid，并用 Mamba 验证现象；输入包含图节点 token，训练目标由局部边记忆与部分路径任务组成。作者还测试只对最难的第一 token 计算 loss。",
+      "几何诊断包括三维嵌入可视化、内积与图距离关系，以及 path-star、tree-star、网格、环和不规则图。对照包括冻结随机 embedding 的关联模型和移除中间层、权重绑定的两层 Node2Vec 式模型。",
+      "理论部分分析两层模型的交叉熵梯度动力学；早期 C 近似图 Laplacian 相关算符，后期数值观察 V 的列空间趋向 Fiedler-like 子空间并使 CV 接近零。附录命题依赖经验启发的假设。"
+    ]},
+    {"title": "核心结果与证据", "paragraphs": [
+      "Figure 3 报告：G_{5×10^3,5} 与 G_{10^4,6} 的最难第一 token 准确率均为 100%，G_{10^4,10} 为 57.16%；相应随机水平仅 0.02%、0.01%、0.01%。模型只见 75% 路径的寻路监督，却能在保留路径上泛化。",
+      "Figure 1 中，冻结任意 embedding 的 Transformer 能记局部边但点云无全局结构；可学习 Transformer embedding 和显式非关联的 Node2Vec 都重现 path-star、网格和环的几何。这支持两种存储范式的区别。",
+      "在小图上，关联解可由梯度下降约 2 步学到，而几何约需 100 步；稀疏图中作者估算两者 bit/norm complexity 相等或仅差约 2 倍。因而常见的速度、压缩或显式正则解释都不充分。",
+      "两层权重绑定模型即使宽度 100 大于节点数、没有显式低秩约束，仍出现低秩谱偏置。Observation 4 及后续部分证明/观察了一部分动力学结构，但精确极限、速率以及向深序列模型的提升仍开放。"
+    ]},
+    {"title": "有效性与局限", "paragraphs": [
+      "证据集中在符号化 path-star/tree-star 与小型图任务；把结论推广到自然语言事实、真实知识图谱或预训练大模型，需要新的实验。",
+      "模型是从头训练的小型或中型 Transformer/Mamba，没有大规模预训练形成的语义与优化历史；反向边和 pause token 对结果有实质影响。",
+      "深网中的存储无法被实验完全分解为纯关联或纯几何。Figure 1 的形状、内积诊断和寻路泛化共同提供证据，却不是机制唯一性的证明。",
+      "严格谱分析只覆盖禁止关联记忆的简化两层模型；正文和附录中的若干 observations、假设与 propositions 是部分或经验性解释。论文没有声称已经回答标题中的完整 why。"
+    ]},
+    {"title": "复现与资源", "paragraphs": [
+      "复现应报告图生成随机种子、d/l、训练叶比例、正反边数据、pause token、embedding 是否冻结、loss 是否只作用第一 token，以及多个初始化的均值与方差。",
+      "机制复核可同时追踪路径准确率、embedding 内积对图距离的相关性、Laplacian 本征模投影、有效秩和 CV 范数；再分别移除反向边、pause token 或关联通道。",
+      "本站核验 v3 PDF SHA-256：53f3f588e0519699b179a35c843dae072615a49d30cd8c5461228e9f2451eed0。Evidence status: full-text verified; no independent reproduction performed."
+    ]},
+    {"title": "阅读指南", "paragraphs": [
+      "最短路径：Figure 1 的两种记忆 → Figure 3 的最难 token → Definitions 2a/2b → Section 4 的 Node2Vec 谱动力学 → Limitations。",
+      "物理路径：从图 Laplacian 正常模理解谱偏置，再检查这个简化动力学何处不能提升为 Transformer 的严格理论。",
+      "AI 路径：把“模型学到可见几何”“几何支持组合泛化”和“训练为何选择几何”分成三个命题；本文前两项证据强，第三项仍是部分解释。"
+    ]}
+  ],
+  "evidence_refs": [
+    "paper.pdf pp. 4–10: associative/geometric memory, path-star setup and first-token results",
+    "paper.pdf pp. 11–20: geometry diagnostics, complexity puzzles and spectral-bias dynamics",
+    "paper.pdf p. 24 and appendices: explicit limitations, assumptions and extended experiments",
+    "source PDF SHA-256 53f3f588e0519699b179a35c843dae072615a49d30cd8c5461228e9f2451eed0",
+    "Evidence packet SHA-256 66681665c2d5663045b9461de7383dc5cf14bc953510a7793b7cd8682682f7fa",
+    "Evidence status: full-text verified; no independent reproduction performed."
+  ]
+}

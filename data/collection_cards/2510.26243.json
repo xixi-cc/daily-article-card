@@ -1,0 +1,123 @@
+{
+  "arxiv_id": "2510.26243",
+  "source_version": "v1",
+  "source_pdf": "https://arxiv.org/pdf/2510.26243v1",
+  "title_en": "Angular Steering: Behavior Control via Rotation in Activation Space",
+  "title_zh": "角度操控：通过激活空间旋转控制模型行为",
+  "curation_status": "full_text_verified",
+  "card_standard_version": "2.4",
+  "audience_profile": "physics_ai_literate_physicist",
+  "paper_profile": "theory_experiment",
+  "style_reference": "physicist_daily_arxiv",
+  "provenance": {
+    "program": "Collection", "catalog": "Paper Collection", "catalog_record_id": "2510.26243",
+    "catalog_record_ids": ["2510.26243"], "catalog_topic": "Learning Theory",
+    "collection_date": "2026-08-30", "sampled_at": "2026-08-31",
+    "selected_by": "ziming_mineru_serial_goal", "sampling_seed": "not_applicable_source_complete", "candidate_count": 464
+  },
+  "verified_metadata": {
+    "arxiv_id": "2510.26243", "version": "v1", "title": "Angular Steering: Behavior Control via Rotation in Activation Space",
+    "authors": ["Hieu M. Vu", "Tan M. Nguyen"], "categories": ["cs.LG", "cs.AI"], "primary_category": "cs.LG",
+    "published": "2025-10-30T08:23:35Z", "updated": "2025-10-30T08:23:35Z",
+    "abstract": "The paper formulates activation steering as a rotation in a fixed two-dimensional plane, adds an activation-dependent mask, and evaluates refusal and emotion control across several open language-model families."
+  },
+  "equation_refs": [
+    {
+      "label": "Fixed-plane rotation operator",
+      "latex": "R_\\phi^{\\mathcal P}=I-(b_1b_1^\\top+b_2b_2^\\top)+[b_1\\ b_2]\\,R_\\phi\\,[b_1\\ b_2]^\\top",
+      "role": "rotate only the component in a chosen orthonormal two-dimensional subspace",
+      "symbols": {"b_1": "target feature direction", "b_2": "orthogonal companion direction", "R_phi": "ordinary 2D rotation matrix", "P": "span of b1 and b2"},
+      "evidence": "paper.pdf p. 4, Eq. (1)",
+      "interpretation": "For a fixed plane this is orthogonal and preserves vector norm, but it does not preserve the nonlinear network's output or utility."
+    },
+    {
+      "label": "Target-angle activation",
+      "latex": "h_{\\mathrm{steered}}=h-\\operatorname{proj}_{\\mathcal P}(h)+\\lVert\\operatorname{proj}_{\\mathcal P}(h)\\rVert[b_1\\ b_2]R_\\theta(1,0)^\\top",
+      "role": "replace the in-plane direction while preserving its radius",
+      "symbols": {"h": "original activation", "theta": "desired angle from the feature axis", "proj_P": "projection onto the steering plane"},
+      "evidence": "paper.pdf p. 4, Eq. (2)",
+      "interpretation": "The operation sets an angle in one selected plane; unrelated features can still share that plane or change downstream."
+    },
+    {
+      "label": "Adaptive gate",
+      "latex": "m(x)=\\max\\{0,\\operatorname{sign}(\\operatorname{proj}_{d_{\\rm feat}}(x))\\}",
+      "role": "apply rotation only when the local activation aligns positively with the target feature",
+      "symbols": {"x": "activation being tested", "d_feat": "feature direction", "m": "binary gate"},
+      "evidence": "paper.pdf p. 5, Eq. (3)",
+      "interpretation": "This heuristic improves selectivity in the reported tests; it is not a learned causal classifier of harmful intent."
+    }
+  ],
+  "figure_refs": [{
+    "label": "Figures 1–2", "asset_path": "assets/collection-figures/2510.26243/figure-1-angular-steering.webp",
+    "section": "给物理学家的 AI 导读", "role": "show the geometric normalization argument and the intervention points inside a Transformer block",
+    "evidence": "paper.pdf p. 2, Figures 1–2",
+    "alt_text": "激活向量归一化前后、加法与消融方向在二维平面中对应旋转的三维示意，以及在 Transformer 层归一化后插入操控的位置。",
+    "caption": "归一化把若干常见操控放到同一圆周几何中；Angular Steering 在固定平面内用角度作控制量。",
+    "interpretation": "The diagram motivates a parameterization; it does not show that the chosen plane isolates a single semantic degree of freedom."
+  }],
+  "cover": {
+    "mode": "source_figure", "asset_path": "assets/collection-figures/2510.26243/figure-1-angular-steering.webp",
+    "label": "Figures 1–2", "visual_type": "schematic", "evidence": "paper.pdf p. 2, Figures 1–2",
+    "alt_text": "二维激活旋转的几何示意与 Transformer 插入位置。",
+    "caption": "把行为操控强度改写为激活子空间中的角度。",
+    "selection_rationale": "It gives physicists both the rotation picture and the exact point at which the intervention enters the network."
+  },
+  "sections": [
+    {"title": "作者信息", "paragraphs": [
+      "Hieu M. Vu、Tan M. Nguyen；作者来自 Torilab 与 National University of Singapore 数学系。",
+      "本站核验 arXiv:2510.26243v1：提交于 2025-10-30；主分类 cs.LG，另含 cs.AI，共 38 页；论文注明 NeurIPS 2025 Spotlight。",
+      "Collection 来源为刘子鸣网站的 Learning Theory 条目。"
+    ]},
+    {"title": "研究问题", "paragraphs": [
+      "Activation steering 在推理时改变隐藏向量，以增强或抑制拒答、情绪等行为。常见加向量和方向消融把效果强度绑在线性系数上，过强时容易破坏语言能力。",
+      "论文问：若层归一化后相关向量落在近似定半径圆周上，能否把加法和消融统一为二维旋转，并直接用角度控制行为？",
+      "目标是局部、无需再训练的控制，不是证明模型安全，也不是删除参数中的危险知识。"
+    ]},
+    {"title": "背景", "paragraphs": [
+      "作者先从有害与无害提示的平均激活差构造拒答特征 b1；再收集逐层候选方向，投影掉 b1 后取第一主成分作为 b2，得到固定平面 P。",
+      "固定平面区别于每个样本都用 span(h,d_feat) 的动态平面：前者让同一角度在样本间具有较一致含义，也减少平面随激活抖动。",
+      "归一化后的几何对应并非新行为定律，而是一种干预参数化：加法、消融可在特定条件下写成圆周上的目标方向。"
+    ]},
+    {"title": "给物理学家的 AI 导读", "paragraphs": [
+      "这像在高维相空间中选一个二维反应坐标平面：其余正交分量保持不变，只改变投影的相位角。角度是控制参量，圆弧扫描可画出行为的响应曲线。",
+      "旋转算符在固定正交平面内保范数，类似无耗散的坐标旋转；但后续网络包含非线性、残差和注意力，所以模型输出、困惑度或信息量并不守恒。",
+      "b2 是数据驱动的第一主成分，不是由对称性导出的共轭方向；二维平面也可能混入其他语义自由度。因此“行为方向”更像经验序参量，而非已隔离的本征模。",
+      "Adaptive gate 只在投影符号为正时施加旋转，像一个分段外场。它缓解过度操控，却没有识别请求是否真正有害。"
+    ]},
+    {"title": "模型与方法", "paragraphs": [
+      "拒答校准使用 AdvBench 的 416 条有害提示（80%）和 512 条 Alpaca 无害提示，剩余 104 条 AdvBench 用于测试。模型包括 Qwen2.5 3B/7B/14B、Llama 3.2 3B、Llama 3.1 8B 与 Gemma2 9B。",
+      "干预放在每个 Transformer block 的归一化之后、attention 与 MLP 之前；目标角从 0° 到 360°，以 10° 扫描。评测包括字符串拒答、LlamaGuard-3、HarmBench、QVQ judge，以及 TinyBenchmarks 的常识、数学和代码子集。",
+      "基线是 activation addition 与 directional ablation；附录还测试情绪 steering、动态平面替代方案、困惑度和 vLLM 实现开销。"
+    ]},
+    {"title": "核心结果与证据", "paragraphs": [
+      "Figure 7 的角度扫描在多数模型上形成连续的强拒答弧和弱拒答弧，说明行为并非只在一个线性系数端点改变；Gemma2-9B 的周期结构较弱。",
+      "Adaptive Angular Steering 对 3B 小模型尤其重要：非自适应操控更易产生不连贯文本，而门控后整体稳定。TinyBenchmarks 每项只抽 100 题；Qwen2.5-3B 在约 160°–280° 仍明显掉分，作者归因于特征干扰。",
+      "Table 2 中 AAS 的拒答控制等于或优于 addition/ablation，但不少分数与 addition 基本相同；各方法调参方式不同，因此证据支持“可用且易解释的参数化”，不足以证明全面优势。",
+      "固定 PCA 平面在 Table 3 中比 span(h,d_feat) 有更低且更稳定的困惑度；困惑度由原始基座模型评估。vLLM 的 Table 6 报告吞吐变化约为 −0.22% 到 −3.79%，即所测配置中额外开销低于 4%。"
+    ]},
+    {"title": "有效性与局限", "paragraphs": [
+      "平面构造是启发式的，作者明确指出未必泛化到其他行为、架构或数据分布；二维可视化不能证明语义真正是二维的。",
+      "安全评测依赖有限有害提示、自动分类器和生成设置。提高拒答率不等于鲁棒对齐，降低拒答也具有明显双重用途。",
+      "旋转保留的是单个激活在所选分解中的范数，而不是网络函数、事实能力或下游 logits；平面中若有纠缠特征，仍会产生副作用。",
+      "TinyBenchmarks 样本小，GSM8K 严格格式会造成额外失分；AAS 与 addition 的许多结果持平，尚缺少跨任务、跨语言和长期对话的独立复现。"
+    ]},
+    {"title": "复现与资源", "paragraphs": [
+      "作者代码与产物位于 https://github.com/lone17/angular-steering/。复现必须记录具体模型 revision、校准提示、层位置、b1/b2 正交化方法、角度和 gate。",
+      "最有信息量的复核是同时画行为指标、基础能力和困惑度随角度的整圈曲线，并用随机正交 b2、不同校准子集和单层/多层干预作消融。",
+      "本站核验 v1 PDF SHA-256：854f695ca70183fe219900bf3c9ee23c1cb0d2cedf49e23a0878c3281fe930ea。Evidence status: full-text verified; no independent reproduction performed."
+    ]},
+    {"title": "阅读指南", "paragraphs": [
+      "最短路径：Figures 1–2 → Eqs. (1)–(3) → Figure 7 的周期响应 → Tables 2–3 → Limitations。",
+      "物理路径：把 P 看作经验降维后的反应坐标，检查旋转的守恒量、响应曲线以及平面选择对结果的敏感性。",
+      "AI 路径：区分几何参数化、行为改变、通用能力保持和安全保证；本文主要为前两项提供证据。"
+    ]}
+  ],
+  "evidence_refs": [
+    "paper.pdf pp. 2–5: geometric motivation, fixed steering plane and Eqs. (1)–(3)",
+    "paper.pdf pp. 6–10: refusal setup, angular sweeps, capability and stated limitations",
+    "paper.pdf pp. 19–24: baseline, plane, perplexity and vLLM comparisons",
+    "source PDF SHA-256 854f695ca70183fe219900bf3c9ee23c1cb0d2cedf49e23a0878c3281fe930ea",
+    "Evidence packet SHA-256 4c5d835d1e3d4c651ee3d9b921c58fbc7bd4e11bf743e705cd5d8b29300d743b",
+    "Evidence status: full-text verified; no independent reproduction performed."
+  ]
+}
