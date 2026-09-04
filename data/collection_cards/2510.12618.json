@@ -1,0 +1,184 @@
+{
+  "arxiv_id": "2510.12618",
+  "source_version": "v2",
+  "source_pdf": "https://arxiv.org/pdf/2510.12618v2",
+  "title_en": "Towards Fast Coarse-graining and Equation Discovery with Foundation Inference Models",
+  "title_zh": "用基础推断模型加速粗粒化与方程发现",
+  "curation_status": "full_text_verified",
+  "card_standard_version": "2.4",
+  "audience_profile": "physics_ai_literate_physicist",
+  "paper_profile": "theory_experiment",
+  "style_reference": "physicist_daily_arxiv",
+  "provenance": {
+    "program": "Collection",
+    "catalog": "Paper Collection",
+    "catalog_record_id": "2510.12618",
+    "catalog_record_ids": ["2510.12618"],
+    "catalog_topic": "Representation Learning",
+    "collection_date": "2026-08-30",
+    "sampled_at": "2026-08-31",
+    "selected_by": "ziming_mineru_serial_goal",
+    "sampling_seed": "not_applicable_source_complete",
+    "candidate_count": 464
+  },
+  "verified_metadata": {
+    "arxiv_id": "2510.12618",
+    "version": "v2",
+    "title": "Towards Fast Coarse-graining and Equation Discovery with Foundation Inference Models",
+    "authors": ["Manuel Hinz", "Maximilian Mauel", "Patrick Seifner", "David Berghaus", "Kostadin Cvejoski", "Ramses J. Sanchez"],
+    "categories": ["cs.LG"],
+    "primary_category": "cs.LG",
+    "published": "2025-10-14T15:17:23Z",
+    "updated": "2026-01-20T16:34:49Z",
+    "abstract": "A frozen Foundation Inference Model for stochastic differential equations supplies drift and diffusion estimates inside a one-step simulation loss, while only an autoencoder learns the coarse coordinate. A six-page synthetic double-well demonstration is fast and conceptually useful, but does not yet establish accurate equation discovery or real-data generality."
+  },
+  "equation_refs": [
+    {
+      "label": "Latent stochastic dynamics (Eq. 1)",
+      "latex": "d\\mathbf x=\\mathbf f(\\mathbf x)\\,dt+\\mathbf G(\\mathbf x)\\,d\\mathbf W(t)",
+      "role": "specify the assumed low-dimensional dynamical class behind high-dimensional observations",
+      "symbols": {
+        "x": "unknown coarse-grained state",
+        "f": "latent drift field",
+        "G": "state-dependent diffusion amplitude"
+      },
+      "evidence": "paper.pdf p. 2, Eq. (1)",
+      "interpretation": "The SDE class is an input assumption encoded by the frozen FIM. The method discovers coordinates within that class; it does not decide from data whether an SDE is appropriate."
+    },
+    {
+      "label": "FIM-constrained one-step loss (Eq. 2)",
+      "latex": "\\mathcal L=\\sum_{i=1}^{N-1}\\left\\lVert\\mathbf y^*_{i+1}-\\psi_\\theta\\!\\left(\\varphi_\\theta(\\mathbf y_i^*)+\\Delta t\\,\\widehat{\\mathbf f}_{\\rm FIM}+\\boldsymbol\\varepsilon_i\\odot\\sqrt{\\Delta t\\,\\widehat{\\mathbf g}_{\\rm FIM}}\\right)\\right\\rVert^2",
+      "role": "train the encoder-decoder by predicting the next observation through a frozen inferred latent SDE",
+      "symbols": {
+        "phi_theta_psi_theta": "trainable encoder and decoder",
+        "fhat_ghat": "frozen FIM-SDE drift and diagonal diffusion estimates conditioned on encoded trajectory",
+        "epsilon_i": "standard Gaussian Euler-Maruyama noise"
+      },
+      "evidence": "paper.pdf pp. 2–3, Eq. (2)",
+      "interpretation": "The FIM is evaluated on coordinates that change during training, so the problems are computationally decoupled in parameters but remain coupled through the loss and context D."
+    },
+    {
+      "label": "Synthetic double-well benchmark (Eq. 3)",
+      "latex": "dx=4(x-x^3)\\,dt+\\sqrt{\\max(4-1.25x^2,0)}\\,dW(t)",
+      "role": "provide a known one-dimensional metastable process for the proof of concept",
+      "symbols": {
+        "x": "ground-truth latent coordinate",
+        "x_pm_1": "stable deterministic equilibria",
+        "Delta_t": "Euler-Maruyama step 0.002"
+      },
+      "evidence": "paper.pdf p. 3, Eq. (3)",
+      "interpretation": "The drift has stable wells at plus/minus one and an unstable point at zero; diffusion is strongest near zero and vanishes at the support boundary. This is a deliberately simple, in-family test."
+    }
+  ],
+  "figure_refs": [
+    {
+      "label": "Figure 2",
+      "asset_path": "assets/collection-figures/2510.12618/figure-2-ten-runs.webp",
+      "section": "核心结果与证据",
+      "role": "show optimization trajectories and drift/diffusion estimates across ten random initializations",
+      "evidence": "paper.pdf p. 4, Figure 2",
+      "alt_text": "左图是十次训练损失曲线；中图比较真实、真实坐标条件下和学习坐标条件下的 drift；右图以相同方式比较 diffusion，橙色各次结果差异明显。",
+      "caption": "十次训练都降低一步重建损失并恢复双稳态 drift 形状，但 diffusion 的幅值与形状跨初始化变化较大。",
+      "interpretation": "The figure supports optimization repeatability more strongly than quantitative generator recovery; the learned-coordinate diffusion ensemble is broad."
+    }
+  ],
+  "cover": {
+    "mode": "source_figure",
+    "asset_path": "assets/collection-figures/2510.12618/figure-2-ten-runs.webp",
+    "label": "Figure 2",
+    "visual_type": "data_plot",
+    "evidence": "paper.pdf p. 4, Figure 2",
+    "alt_text": "十个随机初始化的损失、drift 与 diffusion 三联图，展示训练稳定性和生成元恢复误差。",
+    "caption": "冻结的 SDE 推断器能给粗粒变量学习提供动力学约束，但低损失不等于唯一、精确的方程恢复。",
+    "selection_rationale": "The ten-run panel exposes both the method's practical speed and the gauge/identifiability variation that a single best run would hide."
+  },
+  "sections": [
+    {
+      "title": "作者信息",
+      "paragraphs": [
+        "Manuel Hinz、Maximilian Mauel、Patrick Seifner、David Berghaus、Kostadin Cvejoski、Ramses J. Sanchez；单位包括 Lamarr Institute、University of Bonn、Fraunhofer IAIS 与 JetBrains Research。",
+        "本站核验 arXiv:2510.12618v2：初版提交于 2025-10-14，v2 更新于 2026-01-20；分类 cs.LG，共 6 页。",
+        "Collection 来源为刘子鸣网站的 Representation Learning 条目。"
+      ]
+    },
+    {
+      "title": "研究问题",
+      "paragraphs": [
+        "实验常给出高维场、图像或神经活动，而有效动力学可能只有少数慢变量。通常必须同时学习坐标变换和该坐标中的 ODE/SDE，两个模块会互相漂移并造成难调的多目标优化。",
+        "能否把“给定低维轨迹后估计漂移/扩散”交给已经预训练好的 Foundation Inference Model，只训练 encoder-decoder，从而更快、更稳定地找到可解释粗粒变量？",
+        "论文回答的是一个 proof-of-concept：已知真实系统是一维 SDE，观测是人为生成的移动高斯斑点。它尚未解决未知维数、未知动力学类别或真实测量噪声。"
+      ]
+    },
+    {
+      "title": "背景",
+      "paragraphs": [
+        "传统 SINDy/latent ODE/latent SDE 方法常把 reconstruction loss 与 dynamics consistency loss 联合训练。权重平衡不当时，encoder 可以选择容易重建却动力学复杂的坐标，动力学模块也可迁就随时间变化的 latent gauge。",
+        "Foundation Inference Model 不是聊天式基础模型；这里指在大量模拟动力系统上预训练、能对新轨迹 zero-shot 估计 infinitesimal generator 的模型。FIM-SDE 输出 drift f_hat 和对角 diffusion g_hat。",
+        "作者把 FIM-SDE 权重冻结。encoder 产生当前 latent trajectory 作为 context，FIM 给出局部 SDE，再走一步 Euler-Maruyama、decoder 回到像素空间，与下一帧比较。"
+      ]
+    },
+    {
+      "title": "给物理学家的 AI 导读",
+      "paragraphs": [
+        "可把 autoencoder 的 latent coordinate 看成待选的广义坐标，而冻结 FIM 像一个已经学过大量 SDE 的 closure operator：它评价“这组坐标能否由熟悉的局部生成元推进”。",
+        "方法不是直接从像素写出解析方程。训练时每一步都把编码轨迹送入黑箱 FIM，最终得到数值 drift/diffusion profile；若要符号公式，仍需后续 regression 或 symbolic discovery。",
+        "latent coordinate 存在 gauge freedom：任意可逆重参数化 x→z(x) 会通过 Ito formula 同时改变 drift 和 diffusion。作者为画图做线性 rescaling，但不同 run 的非线性 gauge 仍可能使逐点函数不可直接比较。",
+        "一步 prediction loss 约束的是短时转移核。对于稠密采样，它近似生成元；采样稀疏时，同样的有限时间 propagator 可能对应不同局部参数，因此作者也把 dense sampling 列为主要限制。"
+      ]
+    },
+    {
+      "title": "模型与方法",
+      "paragraphs": [
+        "真实系统为一维双稳 SDE：drift 4(x-x^3)，state-dependent semicircle diffusion；从 x=0 出发，以 Delta t=0.002 做 5000 步 Euler-Maruyama。",
+        "每个 x 映射为 51×51 像素图上的水平移动 Gaussian blob，因此 observation dimension D=2601、latent dimension d=1。encoder 与 decoder 都是对称三层 MLP。",
+        "FIM-SDE 始终冻结，只优化 autoencoder 参数。约 300 training steps、RTX 5090 上约 5 分钟；论文重复 10 个随机初始化，并把学习坐标线性对齐 ground truth 供可视化。",
+        "输入是一条合成、稠密时间序列；没有 train/test trajectory 划分、不同噪声强度、不同 Delta t、不同 embedding 或其他 coarse-graining baseline。"
+      ]
+    },
+    {
+      "title": "核心结果与证据",
+      "paragraphs": [
+        "十个 run 的 training loss 都从约 0.008 降至约 0.0015，说明在这个设定下优化轨迹相当一致。单次 Figure 1 也显示约 300 steps 后能重建双稳 drift 和边界处 vanishing diffusion 的定性结构。",
+        "Figure 2 中 learned-coordinate drift 多数保留从正到负的双稳形状，但幅值和零点附近细节随 run 变化；diffusion 的橙色曲线散布更大，部分峰值远高于 ground truth/FIM-on-true-coordinate 曲线。",
+        "因此最稳妥结论是：FIM regularizer 能快速找到支持正确定性物理的低维表示。图并不支持“精确恢复 Eq. (3) 的漂移和扩散”或“十次 run 得到相同生成元”。",
+        "作者以 observation-space reconstruction 同样准确来论证 dynamics 被捕获；但一步像素误差低与长期 stationary distribution、transition rates、first-passage times 正确并不等价。"
+      ]
+    },
+    {
+      "title": "有效性与局限",
+      "paragraphs": [
+        "只有一个 in-distribution 合成系统，真实 latent dimension 和 SDE class 都预先正确，观测映射平滑且无背景干扰。Foundation model 的跨系统泛化没有在本文中被系统测试。",
+        "没有与 jointly-trained latent SDE、variational baseline、PCA/autoencoder 后再拟合 FIM 等方法比较，因此“更稳定/更快”主要来自十次自身运行和单个 RTX 5090 时间，不是相对 benchmark。",
+        "FIM 假设 diagonal diffusion；一维示例无法暴露高维 correlated noise、non-Markov memory、partial observability 或错误动力学类别的问题。",
+        "Figure 2 的 diffusion recovery 变化显著，且只做线性 gauge alignment。需要 coordinate-invariant observables 才能判断不同 run 是否真的表示相同物理。",
+        "没有 held-out rollout、长期分布、Kramers escape rate、drift/diffusion error、置信区间定义或数据/代码 URL。本站未独立复现。"
+      ]
+    },
+    {
+      "title": "复现与资源",
+      "paragraphs": [
+        "先复现 Eq. (3) 的 5000-step trajectory 与 51×51 blob；固定 FIM-SDE checkpoint，记录十个 seeds 的 loss、coordinate map、pointwise generator error 和像素 one-step error。",
+        "不要只比较对齐后的函数图：从学习 SDE 重新模拟，测 stationary density、well occupancy、mean first-passage time 与 finite-lag transition kernel，这些量更接近 gauge-invariant physics。",
+        "加入 sparse sampling、observation noise、非线性 observation map、二维 correlated diffusion 和错误模型类；再与 PCA+FIM、plain AE+post-hoc FIM、joint latent SDE 做相同硬件 wall-clock 对照。",
+        "论文未给出可核验代码仓库 URL。本站核验 v2 PDF SHA-256：97ea9f656995de2b30dd250b4de385b6f6a49ad84f42f5cb6da4470a2fdefb81。Evidence status: full-text verified; no independent reproduction performed; speed and equation-recovery quality were not independently reproduced."
+      ]
+    },
+    {
+      "title": "阅读指南",
+      "paragraphs": [
+        "最短路径：Eq. (1) → Eq. (2) → synthetic Eq. (3) → Figure 1 → ten-run Figure 2 → Conclusions。",
+        "物理路径：重点追踪 Ito coordinate transform、generator 与 finite-time propagator 的区别，以及哪些 observable 对 latent gauge 不敏感。",
+        "AI 路径：把 frozen pretrained inference model、trainable representation 和 downstream symbolic equation discovery 分开，不要把 zero-shot FIM 等同于端到端零训练。"
+      ]
+    }
+  ],
+  "evidence_refs": [
+    "paper.pdf pp. 1–2: problem framing, FIM role and latent SDE assumption",
+    "paper.pdf pp. 2–3: one-step FIM-constrained loss and dense-sampling limitation",
+    "paper.pdf p. 3: synthetic double-well setup and Figure 1",
+    "paper.pdf p. 4: ten-run Figure 2, timing, gauge alignment and conclusions",
+    "source PDF SHA-256 97ea9f656995de2b30dd250b4de385b6f6a49ad84f42f5cb6da4470a2fdefb81",
+    "Evidence packet SHA-256 d117ef1b6124eee9c6b2211dafa107483362696e64ba77ec1eca5b76195cbede",
+    "Evidence status: full-text verified; no independent reproduction performed."
+  ]
+}
