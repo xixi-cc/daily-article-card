@@ -1,0 +1,73 @@
+{
+  "arxiv_id": "2602.07800",
+  "source_version": "v1",
+  "source_pdf": "https://arxiv.org/pdf/2602.07800v1",
+  "title_en": "Approximating Matrix Functions with Deep Neural Networks and Transformers",
+  "title_zh": "用深度神经网络与 Transformer 近似矩阵函数",
+  "curation_status": "full_text_verified",
+  "card_standard_version": "2.4",
+  "audience_profile": "physics_ai_literate_physicist",
+  "paper_profile": "theory_numerics",
+  "style_reference": "physicist_daily_arxiv",
+  "provenance": {"program": "Collection", "catalog": "Paper Collection", "catalog_record_id": "2602.07800", "catalog_record_ids": ["2602.07800"], "catalog_topic": "Transformer Theory", "collection_date": "2026-08-30", "sampled_at": "2026-08-31", "selected_by": "ziming_mineru_serial_goal", "sampling_seed": "not_applicable_source_complete", "candidate_count": 464},
+  "verified_metadata": {
+    "arxiv_id": "2602.07800", "version": "v1", "title": "Approximating Matrix Functions with Deep Neural Networks and Transformers",
+    "authors": ["Rahul Padmanabhan", "Simone Brugiapaglia"], "categories": ["cs.LG"], "primary_category": "cs.LG",
+    "published": "2026-02-08", "updated": "2026-02-08",
+    "abstract": "The paper gives an explicit ReLU-network existence bound for uniformly approximating the matrix exponential and experimentally evaluates numerical encodings for transformer approximation of five matrix functions."
+  },
+  "equation_refs": [
+    {
+      "label": "uniform matrix-exponential approximation",
+      "latex": "\\sup_{A\\in[-M,M]^{n\\times n}}\\|f_\\epsilon(A)-e^A\\|_F\\le\\epsilon,\\qquad K=\\left\\lceil\\max\\left\\{enM,\\frac{nM+\\ln(\\sqrt2/(\\sqrt\\pi\\epsilon))}{\\ln2}-1\\right\\}\\right\\rceil",
+      "role": "set the compact input domain and Taylor truncation order in the constructive existence theorem",
+      "symbols": {"A": "real n by n input matrix", "M": "entrywise magnitude bound", "epsilon": "uniform Frobenius-error target", "K": "Taylor degree chosen to control the remainder"},
+      "evidence": "paper.pdf pp. 4–5, Theorem 1 and proof sketch",
+      "interpretation": "定理在整个 entrywise box 上控制绝对 Frobenius error；它证明某个显式 ReLU network 存在，并不保证普通训练能找到它，也不说明它比 scaling-and-squaring 等数值算法更快。"
+    },
+    {
+      "label": "constructive width-depth bounds",
+      "latex": "\\operatorname{width}(f_\\epsilon)\\le C_1Kn^K,\\quad \\operatorname{depth}(f_\\epsilon)\\le C_2[1+\\ln K(\\ln K+\\ln(2e/\\epsilon)+K(\\ln n+\\ln M))]",
+      "role": "quantify the cost of expanding every matrix-power entry into scalar products and approximating those products with ReLU subnetworks",
+      "symbols": {"n_to_K": "number-scale of index paths in powers of A", "C_1_C_2": "unspecified universal constants", "width": "maximum layer width", "depth": "network depth"},
+      "evidence": "paper.pdf pp. 4–5, Lemmas 1–2 and Theorem 1",
+      "interpretation": "因为 $K=O(nM+\\log\\epsilon^{-1})$，width 含 $n^K$，随 $nM$ 指数爆炸；这是可表达性上界而非实用效率优势。depth 较温和不能抵消 width 的 curse of dimensionality。"
+    },
+    {
+      "label": "tolerance-based empirical accuracy",
+      "latex": "\\operatorname{Acc}(\\tau)=\\frac1{N_{eval}}\\sum_i\\mathbf1\\!\\left[\\frac{\\|\\hat Y_i-Y_i\\|_1}{\\|Y_i\\|_1+10^{-7}}<\\tau\\right]",
+      "role": "report the fraction of test matrices whose aggregate entrywise relative error falls below a chosen tolerance",
+      "symbols": {"tau": "relative-error threshold", "Y_i": "reference matrix function output", "hat_Y_i": "network prediction", "N_eval": "evaluation sample count"},
+      "evidence": "paper.pdf pp. 5–6, Definition 2 and Eq. (1)",
+      "interpretation": "88.41% accuracy at $\\tau=0.01$ means 88.41% of samples pass this whole-matrix relative-$L^1$ threshold；它不是平均误差 1%，也不是 elementwise accuracy。"
+    }
+  ],
+  "figure_refs": [{
+    "label": "Figure 1", "asset_path": "assets/collection-figures/2602.07800/figure-1-baseline-accuracy-vs-matrix-dimension.webp", "section": "核心结果与证据", "role": "show the dimensional collapse of generic feedforward baselines",
+    "evidence": "paper.pdf p. 6, Figure 1", "alt_text": "Maximum tolerance-based accuracy of three-layer and seven-layer ReLU networks versus matrix dimension for exponential, logarithm, sign, sine and cosine functions; all fall below three percent from dimension three onward.",
+    "caption": "Figure 1：两种 feedforward ReLU baselines 的最佳 tolerance accuracy 随矩阵维数迅速坍塌；从 $3\\times3$ 起，五类函数均低于 3%。",
+    "interpretation": "这张图证明所测 baseline/training recipe 的失败，不反驳同文的存在定理：实验网络既不是 theorem construction，也没有指数宽度。"
+  }],
+  "cover": {"mode": "source_figure", "asset_path": "assets/collection-figures/2602.07800/figure-1-baseline-accuracy-vs-matrix-dimension.webp", "label": "Figure 1", "visual_type": "data_plot", "evidence": "paper.pdf p. 6, Figure 1", "alt_text": "浅层和深层 ReLU baseline 的矩阵函数近似精度随维数下降。", "caption": "可表达性存在定理与可训练小网络之间，存在清楚的维数鸿沟。", "selection_rationale": "Figure 1 directly exposes the theory-practice gap that a physicist must understand before interpreting the transformer results."},
+  "sections": [
+    {"title": "作者信息", "paragraphs": ["Rahul Padmanabhan 与 Simone Brugiapaglia 来自加拿大 Concordia University 数学与统计系。", "本站核验 arXiv:2602.07800v1，提交于 2026-02-08，主分类 cs.LG；PDF 共 10 页。", "Collection 来源为刘子鸣网站的 Transformer Theory 条目。"]},
+    {"title": "研究问题", "paragraphs": ["矩阵指数、对数、符号、正弦和余弦不是逐元素函数，而依赖矩阵谱与非交换乘法。神经网络能否把 $A\\mapsto f(A)$ 学成快速 surrogate？", "论文分成彼此独立的两问：ReLU network 是否存在统一近似 $e^A$ 的构造与复杂度界；带离散数值编码的 encoder-decoder Transformer 在低维随机矩阵上实际能达到什么精度。", "关键不是笼统回答‘Transformer 会线性代数’，而是辨认函数、编码、维数与容差各自决定的窄适用区。"]},
+    {"title": "背景", "paragraphs": ["若 $A=PJP^{-1}$，解析矩阵函数由 Jordan blocks 上的 $f(\\lambda),f'(\\lambda),\\ldots$ 定义；直接逐元素应用 $f$ 一般错误。", "经典 matrix exponential 有 Padé/scaling-and-squaring、Krylov 等带稳定性分析的算法。学习 surrogate 只有在固定分布反复求值、包含训练成本后仍更快且误差可控，才有数值价值。", "universal approximation 只说明表达能力。本文的 ReLU 构造展开 Taylor series 和矩阵乘法路径，数值 Transformer 则学习字符串化数字；二者不是同一 architecture 或同一证明链。"]},
+    {"title": "给物理学家的 AI 导读", "paragraphs": ["把 $e^A$ 看作 propagator：小扰动在 non-normal matrices 上可能被显著放大，因此 entrywise input box 与 output relative error 不能替代谱条件数和 backward stability。", "定理 width $Kn^K$ 类似枚举长度-$K$ 的 lattice paths，展示 curse of dimensionality；‘depth 近线性’不代表总复杂度可扩展。", "数值编码相当于选择坐标与离散化。P10、P1000、FP15、B1999 对不同函数排名翻转，说明性能很大一部分来自 representation inductive bias，而非 Transformer 自动发现统一谱算法。", "Figure 1 的维数坍塌与 Table 2 的 3×3 成功并不矛盾：前者是 generic continuous baselines，后者是高算力 sequence model 加任务敏感 encoding；两者都没有证明 dimension-asymptotic scaling。"]},
+    {"title": "模型与方法", "paragraphs": ["理论对 $A\\in[-M,M]^{n\\times n}$ 截断 $e^A=\\sum_{k=0}^KA^k/k!+R_K$，用 ReLU multiplication subnetworks 近似每条 matrix-power index path，并把 truncation 与 network errors 各压到 $\\epsilon/2$。", "baselines 为 3-hidden-layer 与 7-hidden-layer ReLU networks，以及带 Fourier features 的 encoder-only Transformer；训练样本量从 $2^5$ 到 $2^{18}$，矩阵 entries 由 Gaussian 抽样后限制在 $[-5,5]$。", "主模型为 8-layer encoder、1-layer decoder、8 heads、embedding 512；每 epoch 300K samples、100 epochs。数字用 P10、P1000、FP15、B1999 token schemes 表示。", "作者用 whole-matrix relative-$L^1$ threshold accuracy，报告 $\\tau=0.05,0.02,0.01,0.005$；不同函数/architecture 的 training losses 也不完全相同。"]},
+    {"title": "核心结果与证据", "paragraphs": ["Theorem 1 给出任意 $\\epsilon>0$ 的 uniform ReLU approximation，但 width 随 $nM$ 指数增长。论文明确未实现该构造，普通 ReLU experiments 的失败不能验证或否定这个上界。", "Figure 1 中 shallow/deep baselines 从 dimension 3 起对所有函数低于 3%；Fourier encoder 在 3×3 上最好也仅为 sign、$\\tau=0.05$ 时 0.256%。", "3×3 时 FP15 对 sign 在 1% tolerance 达 88.41%，P10 对 logarithm 达 74.96%；B1999 对 exponential 在 5% tolerance 达 99.58%。同一 encoding 对其他函数可为 0%，不存在统一赢家。", "5×5 时 B1999 exponential 在 5% tolerance 尚有 93.86%，但 1% 仅 1.75%；sign 最好约 1–2%，sine/cosine 几乎全为 0。维数从 3 到 5 已出现剧烈失效。"]},
+    {"title": "有效性与局限", "paragraphs": ["理论只覆盖 matrix exponential 的存在性，不覆盖 Transformer、训练样本复杂度、推理 FLOPs 或 numerical stability；universal constants 也未具体化。", "实验只到 3×3/5×5 的主结果，作者自己把 dimension 10 以上列为未来工作。不能据此声称可替代科学计算中的大矩阵算法。", "输入来自单一 clipped-Gaussian distribution；没有按 normal/non-normal、谱半径、接近 branch cut、condition number 分层，也未测试 distribution shift。", "matrix logarithm/sign 的定义域存在谱条件与 branch choices，论文卡片不把 aggregate accuracy 当作所有输入均数学良定义或稳定。", "accuracy 是阈值通过率，会隐藏误差尾部和 catastrophic outliers；缺少与 SciPy/Higham algorithms 的速度、误差、能耗以及 backward-error 对比。", "各 encoding 的 vocabulary 从 210 到 30,000，且不同 functions 最优 encoding 不同；结果可能包含 tokenization capacity、output length 与训练预算的混杂。", "本站核验全文和表格，但未运行 LAWT 代码、重训模型或复核 reference matrix-function implementation。"]},
+    {"title": "复现与资源", "paragraphs": ["作者给出 `rahul3/LAWT` 代码。复现应锁定 commit、random seeds、matrix sampler、clipping 顺序、函数实现与 train/eval split，并保存失败/非有限 outputs。", "除 threshold accuracy 外，应报告 relative-$L^1$ 分布、Frobenius error、最大误差、谱/condition-number 分层与 classical baseline；matrix exponential 另测 semigroup consistency $\\hat f(A+B)$（在可交换情形）和 backward error。", "公平比较 encoding 时需控制参数量、vocabulary/output sequence length、tokens/FLOPs 与 wall time；把 3×3 和 5×5 分开做多个 seeds。", "理论构造若要数值化，应按 $K,n,M,\\epsilon$ 实际计数 neurons/weights，并与复用 matrix multiplication 的更紧构造比较。本站未独立复现。"]},
+    {"title": "阅读指南", "paragraphs": ["快速路线：pp. 1–3 了解 matrix functions 与 encodings；pp. 4–5 看 Theorem 1；pp. 6–9 对照 Figure 1、Tables 2–3。", "理论路线：检查 Taylor remainder 的 $e^{nM}$ bound、$A^k$ 的 path expansion和 $n^K$ width 来源；不要把存在上界读成训练或效率定理。", "数值路线：先读 tolerance metric，再横向比较同一 dimension/function 的四种 encodings；最重要的结论是强烈的 function-specific encoding dependence 与 3→5 维退化。"]}
+  ],
+  "evidence_refs": [
+    "paper.pdf pp. 1–3, Sections 1–2 and Table 1: matrix-function scope and numerical encodings",
+    "paper.pdf pp. 4–5, Lemmas 1–2 and Theorem 1: constructive ReLU approximation and complexity bounds",
+    "paper.pdf pp. 5–7, Definition 2, Eq. (1) and Figure 1: experimental metric, setup and baseline dimensional collapse",
+    "paper.pdf pp. 7–9, Tables 2–3 and Conclusions: transformer results, encoding dependence and dimension limits",
+    "source PDF SHA-256 2068397aa70bf3e6cc3a02e474554a0f03b9e513b5e54269569ca475c95c364b",
+    "MinerU Markdown SHA-256 c19b4885739622766ae58795d58e9c7e02e5e3cf3e0e5619351b9665759e1595",
+    "Evidence packet SHA-256 0769d96813ff955c83fc6b846b86aefde390ee6a0d851dc7c68ebeadec4fd3c3",
+    "Evidence status: full-text verified; no independent reproduction performed."
+  ]
+}
