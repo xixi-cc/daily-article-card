@@ -1,0 +1,130 @@
+{
+  "arxiv_id": "2510.15425",
+  "source_version": "v2",
+  "source_pdf": "https://arxiv.org/pdf/2510.15425v2",
+  "title_en": "TeamFormer: Shallow Parallel Transformers with Progressive Approximation",
+  "title_zh": "TeamFormer：通过渐进逼近构建浅层并行 Transformer",
+  "curation_status": "full_text_verified",
+  "card_standard_version": "2.4",
+  "audience_profile": "physics_ai_literate_physicist",
+  "paper_profile": "ai_empirical",
+  "style_reference": "physicist_daily_arxiv",
+  "provenance": {
+    "program": "Collection", "catalog": "Paper Collection", "catalog_record_id": "2510.15425",
+    "catalog_record_ids": ["2510.15425"], "catalog_topic": "Machine Learning",
+    "collection_date": "2026-08-30", "sampled_at": "2026-08-31",
+    "selected_by": "ziming_mineru_serial_goal", "sampling_seed": "not_applicable_source_complete", "candidate_count": 464
+  },
+  "verified_metadata": {
+    "arxiv_id": "2510.15425", "version": "v2",
+    "title": "TeamFormer: Shallow Parallel Transformers with Progressive Approximation",
+    "authors": ["Wei Wang", "Xiao-Yong Wei", "Qing Li"],
+    "categories": ["cs.LG"], "primary_category": "cs.LG",
+    "published": "2025-10-17T08:28:26Z", "updated": "2026-02-24T07:59:27Z",
+    "abstract": "TeamFormer replaces a sequential Transformer stack by parallel branches that all read the same input, combines their outputs linearly, and activates branches progressively during training. Small ViT experiments on CIFAR-10/100 and Fashion-MNIST report competitive accuracy and lower multi-GPU latency, but the universal-approximation argument is existential, the code URL remains a placeholder, and a stated loss-improvement inequality has its sign reversed."
+  },
+  "equation_refs": [
+    {
+      "label": "Sequential Transformer composition (Eq. 3)",
+      "latex": "G(X;W)=G_n\\!\\left(\\cdots G_2(G_1(X;W_1);W_2)\\cdots;W_n\\right)",
+      "role": "make explicit the activation dependency that prevents simultaneous evaluation of ordinary layers",
+      "symbols": {"G_i": "i-th Transformer block", "X_i": "activation after block i", "W_i": "parameters of block i"},
+      "evidence": "paper.pdf p. 3, Eq. (3)",
+      "interpretation": "This is the conventional serial data path. Pipeline/model parallelism can distribute it, but cannot remove the mathematical dependency X_i=G_i(X_{i-1})."
+    },
+    {
+      "label": "Parallel branch approximation (Eq. 12)",
+      "latex": "W^*=\\arg\\min_W\\left\\lVert f(x_0)-x_0-\\sum_{i=1}^{n}\\widehat G_i(x_0)\\right\\rVert",
+      "role": "replace the composition by independently evaluable residual branches sharing the same input",
+      "symbols": {"f": "target input-output map", "Ghat_i": "parallel residual approximator", "sum": "learned linear aggregation in the implementation"},
+      "evidence": "paper.pdf p. 4, Eq. (12)",
+      "interpretation": "Universal approximation motivates existence of branches for a continuous target, but does not guarantee that finite branches trained by the proposed optimizer find them or match a deep compositional representation efficiently."
+    },
+    {
+      "label": "Progressive nested optimization (Eq. 14)",
+      "latex": "W^*=\\arg\\min_{W_1,\\ldots,W_n}\\Bigl(\\cdots\\arg\\min_{W_1,W_2}(\\arg\\min_{W_1}\\mathcal L)\\cdots\\Bigr)",
+      "role": "train an initial branch group before exposing later branches, then jointly refine active branches",
+      "symbols": {"W_i": "parameters of branch i", "L": "task loss", "nested_argmin": "paper's formal shorthand for staged activation"},
+      "evidence": "paper.pdf p. 5, Eq. (14) and Algorithm 1",
+      "interpretation": "The actual algorithm is a curriculum over active branches, not exact nested global minimization. Earlier branches are updated again after later branches activate, so the notation should not be read literally."
+    }
+  ],
+  "figure_refs": [{
+    "label": "Figure 4", "asset_path": "assets/collection-figures/2510.15425/figure-4-progressive-curves.webp",
+    "section": "核心结果与证据", "role": "compare intermediate-layer/branch accuracy and loss for ViT and TeamFormer",
+    "evidence": "paper.pdf p. 6, Figure 4",
+    "alt_text": "六个面板展示 CIFAR-10、CIFAR-100、Fashion-MNIST 上 ViT 与 TeamFormer 随 layer/branch 增加的 accuracy 和 loss；TeamFormer 较早达到高准确率。",
+    "caption": "并行分支按课程逐步加入后，早期 branch 已获得可分类表示；这支持 early truncation，但不等于一般深层网络都可无损展开成浅层并行和。",
+    "interpretation": "The curves are useful architecture diagnostics, but branch-wise heads/training differ from intermediate ViT readouts and no uncertainty bands are shown."
+  }],
+  "cover": {
+    "mode": "source_figure", "asset_path": "assets/collection-figures/2510.15425/figure-4-progressive-curves.webp",
+    "label": "Figure 4", "visual_type": "data_plot", "evidence": "paper.pdf p. 6, Figure 4",
+    "alt_text": "顺序 ViT 与并行 TeamFormer 在增加层或分支时的精度和损失轨迹。",
+    "caption": "TeamFormer 用 staged training 让并行 residual branches 逐步降低任务损失；收益只在小型视觉分类设置中验证。",
+    "selection_rationale": "It links the progressive-training claim to measured intermediate behavior and exposes where compression by dropping late branches comes from."
+  },
+  "sections": [
+    {"title": "作者信息", "paragraphs": [
+      "Wei Wang、Xiao-Yong Wei、Qing Li；作者单位为香港理工大学计算学系。",
+      "本站核验 arXiv:2510.15425v2：初版提交于 2025-10-17，v2 更新于 2026-02-24；主分类 cs.LG，共 10 页。",
+      "Collection 来源为刘子鸣网站的 Machine Learning 条目。"
+    ]},
+    {"title": "研究问题", "paragraphs": [
+      "Transformer 的层必须顺序读写 activation；即使参数分布在多张 GPU，上游输出仍是下游输入。能否改变函数分解，让多个分支同时读取同一个 embedding，再汇总其残差？",
+      "TeamFormer 把 depth 换成 parallel branches，并用逐步激活课程让新分支在已有近似上继续降 loss。目标是保留多模块协作，同时减少 critical path。",
+      "论文进一步声称深度优势来自 progressive approximation 而非顺序性本身；这个强解释主要依赖 universal approximation theorem 与小规模 ViT 结果，需要比工程加速更严格地审视。"
+    ]},
+    {"title": "背景", "paragraphs": [
+      "data parallelism 复制模型、切 batch；pipeline/model parallelism 切模型，但 activation 依赖仍串行。TeamFormer 改写 computation graph，使 branches 可同时计算，因此必须改变模型函数类和训练过程。",
+      "串行 residual network 逐步构造 x_i=x_{i-1}+F_i(x_{i-1})；并行版本近似 x_0+Σ_i G_i(x_0)。后者像加性展开，少了层间复合产生的高阶特征重用。",
+      "为补偿缺失的依赖，Algorithm 1 先开一个 branch，再逐个加入；每一阶段对当前所有 active branches 与 aggregator 反向传播。"
+    ]},
+    {"title": "给物理学家的 AI 导读", "paragraphs": [
+      "串行 Transformer 类似 time-ordered evolution：后一步作用于已被前一步改变的状态。TeamFormer 更像多通道同时测量初态，再线性叠加响应。两者一般不等价，除非并行 basis 足够丰富。",
+      "universal approximation theorem 只说足够大的网络可逼近连续函数，类似完备基展开的存在性；它不告诉需要多少 branch、优化是否找到系数、样本效率或计算量是否优于深层复合。",
+      "progressive activation 可看成 continuation method：先解低维模型，再逐渐释放自由度。这可能改善优化路径，但并不证明每个新增 branch 都是正交模态或严格降低泛化误差。",
+      "并行降低 wall-clock 依赖足够多 GPU 和低聚合开销；它可缩短 latency，却可能增加同时占用的设备、内存带宽与总能耗，需与 throughput/成本一起报告。"
+    ]},
+    {"title": "模型与方法", "paragraphs": [
+      "每个 branch 是 1–24 个 Transformer layers，所有 branches 读取 x0；输出 concatenate 后由 linear G_sum 汇总。文中 TF/PF/ParaFormer 命名混用，但指同一并行架构。",
+      "Algorithm 1 在每个 batch 内按 i=1…n 计算前 i 个 branches 的组合 loss 并更新，再以全部 branches 做一次 prediction/update。该实现比一句“独立训练每层”更耦合。",
+      "实验用 3-head、head dimension 192、FFN hidden 768 的 ViT12/ViT24，在 CIFAR-10、CIFAR-100、Fashion-MNIST 上训练 300 epochs；构造 10 个等参数量附近的 branch/depth 组合。",
+      "推理测试在 8×A6000 工作站上处理 CIFAR-10 的 10,000 张图，对比单 GPU sequential、3/4/6 GPU FairScale、GPipe 与 TeamFormer。"
+    ]},
+    {"title": "核心结果与证据", "paragraphs": [
+      "Table 1 中多个 TeamFormer 变体超过对应 ViT。例如 12 总层的最好 CIFAR-100 为 64.54% 对 ViT12 的 62.62%；24 总层最好 CIFAR-10 为 89.85% 对 ViT24 的 86.94%。单 branch 版本通常较弱。",
+      "Figure 4 显示 TeamFormer accuracy 随 branches 较平滑提高，而 ViT intermediate readout 较晚形成；这支持 staged branches 可早停，但没有多 seed error bars。",
+      "TeamFormer^1_24 在第 5 branch 为 91.03%、全 24 branches 为 91.67%，作者称可丢弃后 19 branches 得到 4.8× 压缩；再与 float32→float8 量化组合，摘要称最高 15.07×。这些是特定精度容忍下的模型大小比，不是无损压缩。",
+      "Table 2 总时延：TeamFormer 在 1/3/4/6 GPU 为 1562.5/1159.8/975.8/876.3 ms；FairScale 为 2768.5/3116.5/3749.3 ms，GPipe 为 2784.7/3139.6/3804.8 ms。6 GPU TeamFormer 对这些 baseline 约 4.3×，对单 GPU sequential 1572.9 ms 仅约 1.8×。",
+      "正文写“330.33%±86 faster”而摘要写 3.30×±0.86，百分比与倍数表达不一致；应直接使用表中绝对时延和明确比较对象。"
+    ]},
+    {"title": "有效性与局限", "paragraphs": [
+      "UAT 论证是存在性，不证明从 G_i(x_{i-1}) 替换为 Ghat_i(x0) 在固定参数/FLOP 下保持效率、归纳偏置或可训练性；“深度本身不重要”超出证据。",
+      "论文定义 progressive 为 L_i−L_{i−1}>0，却又把 L_i−L_{i−1}≤0 称为 degradation。若 loss 越低越好，符号方向应相反，这是正文内部错误。",
+      "只测小图像分类与浅 ViT；没有 ImageNet、语言模型、长序列、生成任务、OOD、robustness 或等总训练算力比较，不能外推到大语言模型。",
+      "multi-GPU baseline 随 GPU 数增加反而变慢，表明通信/实现占主导；TeamFormer改变模型结构，不是同函数的纯 parallelization。缺少 batch size、重复次数、方差定义、GPU utilization 和能耗。",
+      "代码链接在 v2 仍是 https://(open-upon-acceptance) 占位符。实验难以独立复现；compression×quantization 的组合也未给统一 accuracy/latency 表。"
+    ]},
+    {"title": "复现与资源", "paragraphs": [
+      "论文未给可用代码仓库。复现先实现 Figure 1/Algorithm 1 的 shared-input branches 与 linear aggregator，并核对每个 batch 多次更新造成的训练算力。",
+      "报告 matched parameter、matched FLOP、matched total accelerator-hour 三种对照；同时测单设备 latency、多设备 latency、throughput、peak memory、通信量和 energy/image。",
+      "加上普通并行 ensemble、仅共同输入但 joint training、无 progressive curriculum、冻结旧 branches 与随机 branch order，分离架构和课程贡献。",
+      "本站核验 v2 PDF SHA-256：17bf096ae5a64b79a002e74d2d176398633ab1af71bb331ecb1b5d050de6b6f4。Evidence status: full-text verified; no independent reproduction performed."
+    ]},
+    {"title": "阅读指南", "paragraphs": [
+      "最短路径：Figure 1 → Eqs. (3),(12) → Algorithm 1 → Table 1/Figure 4 → Table 2 → Conclusion limitations。",
+      "物理路径：比较 time-ordered composition 与 parallel basis expansion，并区分存在性、优化可达性和资源效率。",
+      "AI 路径：重点核对 progressive loss 符号、训练 update 次数、baseline 公平性以及 3.30× 的比较分母。"
+    ]}
+  ],
+  "evidence_refs": [
+    "paper.pdf pp. 1–5: serial/parallel architectures, UAT argument, Eqs. (3),(12),(14) and Algorithm 1",
+    "paper.pdf pp. 6–7: Table 1, intermediate curves, feature plots and compression claim",
+    "paper.pdf p. 8: expansion experiment and multi-GPU latency Table 2",
+    "paper.pdf pp. 8–10: conclusion, implementation boundary and references",
+    "source PDF SHA-256 17bf096ae5a64b79a002e74d2d176398633ab1af71bb331ecb1b5d050de6b6f4",
+    "Evidence packet SHA-256 02e246edcd19c7bf0d6b4b6b0e1314d38ca37b1cf498618a03a8f033a86f01f0",
+    "Evidence status: full-text verified; no independent reproduction performed."
+  ]
+}

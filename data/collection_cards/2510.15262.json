@@ -1,0 +1,129 @@
+{
+  "arxiv_id": "2510.15262",
+  "source_version": "v1",
+  "source_pdf": "https://arxiv.org/pdf/2510.15262v1",
+  "title_en": "Robust Layerwise Scaling Rules by Proper Weight Decay Tuning",
+  "title_zh": "通过适当调节权重衰减获得稳健的逐层缩放规则",
+  "curation_status": "full_text_verified",
+  "card_standard_version": "2.4",
+  "audience_profile": "physics_ai_literate_physicist",
+  "paper_profile": "ai_empirical",
+  "style_reference": "physicist_daily_arxiv",
+  "provenance": {
+    "program": "Collection", "catalog": "Paper Collection", "catalog_record_id": "2510.15262",
+    "catalog_record_ids": ["2510.15262"], "catalog_topic": "Machine Learning",
+    "collection_date": "2026-08-30", "sampled_at": "2026-08-31",
+    "selected_by": "ziming_mineru_serial_goal", "sampling_seed": "not_applicable_source_complete", "candidate_count": 464
+  },
+  "verified_metadata": {
+    "arxiv_id": "2510.15262", "version": "v1",
+    "title": "Robust Layerwise Scaling Rules by Proper Weight Decay Tuning",
+    "authors": ["Zhiyuan Fan", "Yifeng Liu", "Qingyue Zhao", "Angela Yuan", "Quanquan Gu"],
+    "categories": ["cs.LG", "cs.AI", "stat.ML"], "primary_category": "cs.LG",
+    "published": "2025-10-17T02:58:35Z", "updated": "2025-10-17T02:58:35Z",
+    "abstract": "The paper extends width-wise hyperparameter transfer from initialization-dominated µP dynamics to an AdamW steady state. In LLaMA-style models it empirically finds top singular values proportional to sqrt(eta/lambda)d^0.75, leading to matrix learning rate eta proportional to d^-1 and weight decay lambda proportional to sqrt(d); widths 256–2048 show aligned gains and validation optima under the tested fixed architecture and training recipe."
+  },
+  "equation_refs": [
+    {
+      "label": "AdamW update",
+      "latex": "W\\leftarrow W-\\eta(\\widehat G+\\lambda W),\\qquad \\widehat G=M\\oslash(\\sqrt V+\\varepsilon)",
+      "role": "separate the adaptive gradient step from explicit multiplicative weight decay",
+      "symbols": {"eta": "learning rate", "lambda": "decoupled weight-decay coefficient", "M_V": "bias-corrected first and second gradient moments"},
+      "evidence": "paper.pdf p. 4, Section 3.1",
+      "interpretation": "For scale-invariant sublayers, the direction keeps moving while decay controls the radial scale; eta and lambda therefore jointly set the steady state rather than acting as independent knobs."
+    },
+    {
+      "label": "Rotational-equilibrium norm",
+      "latex": "\\lVert W\\rVert_{\\mathrm{rms}}=\\Theta_d\\!\\left(\\sqrt{\\eta/\\lambda}\\right)",
+      "role": "state the optimizer-governed radial scale used to connect weight decay to layer amplification",
+      "symbols": {"W": "matrix-like parameter", "Theta_d": "width-scaling order", "eta_over_lambda": "ratio controlling the steady norm at fixed setup"},
+      "evidence": "paper.pdf p. 5, Section 4",
+      "interpretation": "This is a steady-regime scaling relation under homogeneous/scale-invariant assumptions, not a universal equilibrium law for every neural parameter."
+    },
+    {
+      "label": "Proposed width rule",
+      "latex": "\\sqrt{\\eta_2/\\lambda_2}\\propto d^{-0.75},\\qquad \\eta_2\\propto d^{-1}\\;\\Longrightarrow\\;\\lambda_2\\propto d^{1/2}",
+      "role": "keep matrix top singular values and measured sublayer gains approximately aligned as width grows",
+      "symbols": {"d": "embedding width", "subscript_2": "matrix-like attention and FFN parameters", "0.75": "empirical exponent measured for the tested LLaMA setup"},
+      "evidence": "paper.pdf pp. 7–8, Fact F2 and Table 2",
+      "interpretation": "The square-root decay follows algebraically once the empirical 0.75 exponent and µP learning-rate rule are accepted; the paper does not derive 0.75 from first principles."
+    }
+  ],
+  "figure_refs": [{
+    "label": "Figure 4", "asset_path": "assets/collection-figures/2510.15262/figure-4-lr-wd-ridge.webp",
+    "section": "核心结果与证据", "role": "show the coupled validation-loss landscape of base learning rate and weight decay",
+    "evidence": "paper.pdf p. 9, Figure 4",
+    "alt_text": "验证损失相对最优值的热图，横轴学习率、纵轴权重衰减；低损失区域形成倾斜带，显示两者必须联合调节。",
+    "caption": "AdamW 的 learning rate 与 weight decay 不是两个独立旋钮：沿近最优斜带可得到相近损失。",
+    "interpretation": "The ridge supports coupling at one training regime; it does not by itself establish width transfer or a universal exponent."
+  }],
+  "cover": {
+    "mode": "source_figure", "asset_path": "assets/collection-figures/2510.15262/figure-4-lr-wd-ridge.webp",
+    "label": "Figure 4", "visual_type": "data_plot", "evidence": "paper.pdf p. 9, Figure 4",
+    "alt_text": "学习率—权重衰减二维扫描中的低验证损失斜带。",
+    "caption": "同一训练损失可由成对变化的 learning rate 与 weight decay 获得；宽度外推必须缩放二者的组合。",
+    "selection_rationale": "It makes the central two-parameter coupling visible and prevents the square-root rule from being read as a stand-alone magic constant."
+  },
+  "sections": [
+    {"title": "作者信息", "paragraphs": [
+      "Zhiyuan Fan、Yifeng Liu、Qingyue Zhao、Angela Yuan、Quanquan Gu；作者单位包括 MIT 与 UCLA。",
+      "本站核验 arXiv:2510.15262v1：提交并更新于 2025-10-17；主分类 cs.LG，另含 cs.AI、stat.ML，共 17 页。",
+      "Collection 来源为刘子鸣网站的 Machine Learning 条目。"
+    ]},
+    {"title": "研究问题", "paragraphs": [
+      "µP 试图在小宽度 proxy 上调好学习率，再零样本迁移到更宽模型；它主要约束初始化附近的功能更新。但带 normalization 的现代网络很快进入由 AdamW 与 weight decay 支配的稳态，原有 transfer 可能漂移。",
+      "论文问：能否按参数类型同时缩放 learning rate 与 weight decay，使每个线性子层的输入—输出增益在宽度变化时仍近似不变？",
+      "结论是经验规则而非完整理论：vector-like 参数保持 eta 常数且不衰减；matrix-like 参数取 eta∝d^-1、lambda∝sqrt(d)。"
+    ]},
+    {"title": "背景", "paragraphs": [
+      "LLaMA 的 embedding/RMSNorm 等按宽度线性增长，attention/FFN 矩阵按 d² 增长。µP 因此给两类参数不同初始化与 learning-rate scaling。",
+      "AdamW 将 weight decay 与自适应梯度分离。对 scale-invariant 参数，放大 W 不改变前向函数，却会改变反向有效步长；训练可表现为权重方向持续旋转、范数趋于稳定。",
+      "论文用 sublayer gain ||y||rms/||x||rms 和全奇异值谱作诊断，避免仅看 Frobenius norm 混合谱形状与尺度。"
+    ]},
+    {"title": "给物理学家的 AI 导读", "paragraphs": [
+      "把归一化后的权重空间想成具有径向冗余的流形：前向函数主要依赖方向，AdamW decay 提供向内漂移，随机/自适应梯度提供切向运动。所谓 rotational equilibrium 是尺度平衡图景，不是热平衡或详细平衡的证明。",
+      "sublayer gain 类似线性响应的放大率，top singular value 则是最易被放大的方向。跨宽度匹配谱顶端，比只匹配参数 RMS 更直接约束最坏方向的信号传播。",
+      "指数 0.75 是这组 LLaMA/FineWeb/H200 实验中的 phenomenology；由它和 eta∝d^-1 得到 lambda∝sqrt(d)。因此真正可迁移的思路是“测谱并匹配增益”，不一定是固定的 1/2 指数。",
+      "文中 mean-field/统计物理语言是解释视角。没有从数据分布、Adam statistics 推导谱形或临界指数，不能把经验 collapse 当成 universality class。"
+    ]},
+    {"title": "模型与方法", "paragraphs": [
+      "主实验从头训练 8-layer、16-head LLaMA-style 模型，FineWeb、context 1024、batch 480、BF16；宽度 256（约 19M）到 2048（约 500M），H200 GPU。",
+      "宽度迁移实验训练 20,000 steps，1,000-step warmup 后 cosine decay 到峰值的 0.01；base width 为 256，逐类应用 Table 2 的初始化、eta 与 lambda。",
+      "作者先在固定 d=512 下联合缩放 eta/lambda，观察谱形基本不变且整体按 sqrt(eta/lambda) 移动；再扫描宽度，拟合 top spectrum alignment 所需的 d^-0.75。",
+      "另有二层 synthetic network，在高方差输入下重现 square-root weight-decay scaling，作为机制示例而非 LLM 的严格推导。"
+    ]},
+    {"title": "核心结果与证据", "paragraphs": [
+      "Figure 2 显示只有 lambda2∝sqrt(d) 时，不同宽度的 FFN top singular values 与 sublayer gain 最接近对齐；固定或其他 decay scaling 明显漂移。",
+      "Figure 3 的宽度 256–2048 loss curves 在按新规则换算 base eta、base lambda 后，其 minima 近似重合，支持 proxy-to-target transfer。曲线为便于比较做了纵向平移，不能比较跨宽度绝对 loss。",
+      "Figure 4 在 eta_base=0.02、lambda_base=0.075 附近显示低损失斜带；沿带不同 decay 可得到近似相同 final loss。作者据此建议先选 decay，再做一维 learning-rate sweep。该扫描每个模型训练 5B tokens、500 warmup steps。",
+      "证据覆盖一个固定 depth/head/FFN-ratio 架构族；结果证明的是 tested range 内的近似 transfer，不是无限宽极限定理。"
+    ]},
+    {"title": "有效性与局限", "paragraphs": [
+      "0.75 来自谱对齐的经验拟合，没有误差条、拟合区间敏感性或独立架构验证；小指数偏差在更大宽度上会累积。",
+      "只研究 AdamW、LLaMA-style、固定 8 层/16 heads/FFN ratio。MoE、稀疏 attention、depth scaling、SGD/Adafactor、batch 或 token budget 随宽度增长都可能改变规则。",
+      "超参数 transfer 以 validation minima 对齐衡量，未展示下游能力、长训练、不同语料、不同 seeds、训练稳定性尾部或总搜索成本的完整统计。",
+      "top singular values 对最强放大方向敏感，但不保证 activation distribution、Jacobian、梯度噪声或所有层都真正同分布；平均跨 layers 也会掩盖异常层。",
+      "所谓 zero-shot 是超参数无需在 target width 再 sweep，不是模型无需训练。本站未独立复现谱、损失或成本。"
+    ]},
+    {"title": "复现与资源", "paragraphs": [
+      "论文未提供明确代码仓库。复现应先锁定 FineWeb slice、tokenizer、width/depth/head ratio、AdamW betas 与每类参数分组，逐宽度保存每层完整谱和 activation gain。",
+      "对 0.75 做 log-log regression，报告 layer-wise/seed-wise 区间；比较 top singular value、operator norm、Frobenius norm、Jacobian norm 哪个最能预测 validation optimum。",
+      "加入 matched-compute 的 standard µP、fixed decay、独立 per-width sweep，并记录 proxy sweep + target training 的总算力，才能量化 transfer 的真实节省。",
+      "本站核验 v1 PDF SHA-256：55ac08f41e175fb7d03052f0772c8c3fd8336f41c2dd8a8b3d1afe64ac187aef。Evidence status: full-text verified; no independent reproduction performed."
+    ]},
+    {"title": "阅读指南", "paragraphs": [
+      "最短路径：AdamW steady-state premise → Figure 1 → Fact F1/F2 → Table 2 → Figures 2–4 → Scope。",
+      "物理路径：区分径向范数平衡、切向参数运动与功能增益，不要把 rotational equilibrium 误读为热力学平衡。",
+      "AI 路径：检查 parameter grouping、base width、训练 budget 和谱对齐是否真能预测 target validation optimum。"
+    ]}
+  ],
+  "evidence_refs": [
+    "paper.pdf pp. 4–5: AdamW, parameter classes and µP scaling",
+    "paper.pdf pp. 5–8: rotational-equilibrium norm, spectral observations and proposed rule",
+    "paper.pdf pp. 8–10: width transfer, two-dimensional sweep and synthetic model",
+    "paper.pdf pp. 10–11 and appendix: scope, outlook and experimental configuration",
+    "source PDF SHA-256 55ac08f41e175fb7d03052f0772c8c3fd8336f41c2dd8a8b3d1afe64ac187aef",
+    "Evidence packet SHA-256 ccb86aaa87a1191d7a089672505fe64c990113d10f24b125ae939177eb098b3f",
+    "Evidence status: full-text verified; no independent reproduction performed."
+  ]
+}
