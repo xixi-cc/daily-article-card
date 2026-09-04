@@ -1,0 +1,126 @@
+{
+  "arxiv_id": "2508.12837",
+  "source_version": "v2",
+  "source_pdf": "https://arxiv.org/pdf/2508.12837v2",
+  "title_en": "Learning In-context n-grams with Transformers: Sub-n-grams Are Near-stationary Points",
+  "title_zh": "Transformer 的上下文 n-gram 学习：低阶 n-gram 是近驻点",
+  "curation_status": "full_text_verified",
+  "card_standard_version": "2.4",
+  "audience_profile": "physics_ai_literate_physicist",
+  "paper_profile": "theory_numerics",
+  "style_reference": "physicist_daily_arxiv",
+  "provenance": {
+    "program": "Collection", "catalog": "Paper Collection", "catalog_record_id": "2508.12837", "catalog_record_ids": ["2508.12837"],
+    "catalog_topic": "Training Dynamics", "collection_date": "2026-08-30", "sampled_at": "2026-08-31",
+    "selected_by": "ziming_mineru_serial_goal", "sampling_seed": "not_applicable_source_complete", "candidate_count": 464
+  },
+  "verified_metadata": {
+    "arxiv_id": "2508.12837", "version": "v2",
+    "title": "Learning In-context n-grams with Transformers: Sub-n-grams Are Near-stationary Points",
+    "authors": ["Aditya Varre", "Gizem Yüce", "Nicolas Flammarion"],
+    "categories": ["cs.LG"], "primary_category": "cs.LG", "published": "2025-08-18T11:24:30Z",
+    "abstract": "For a simplified two-layer Transformer trained on in-context n-gram prediction, the paper constructs parameter families implementing every lower-order k-gram estimator and bounds the population cross-entropy gradient there. In the joint long-context and large-logit-scale limit these configurations become near-stationary, offering a candidate explanation for stagewise training plateaus.",
+    "comment": "v2 updated 2025-08-19; 40 pages; first two authors contributed equally"
+  },
+  "equation_refs": [
+    {
+      "label": "Population cross-entropy gradient (Lemma 3.1)",
+      "latex": "\\partial_{\\theta_i}\\mathcal L(\\theta)=\\mathbb E_{p_\\tau,x^T}\\left\\langle p_\\theta(x^T)-p_\\tau(\\cdot\\mid x^T),\\,\\partial_{\\theta_i}\\log p_\\theta(x^T)\\right\\rangle",
+      "role": "factor the gradient into prediction residual and parameter score",
+      "symbols": {"p_tau": "random n-gram source drawn from a prior", "p_theta": "Transformer next-token distribution", "x_T": "in-context sequence"},
+      "evidence": "paper.pdf p. 4, Lemma 3.1",
+      "interpretation": "A restricted score that sees only a suffix can make the full-source residual cancel in expectation, yielding a sufficient stationarity condition."
+    },
+    {
+      "label": "History-matching attention score",
+      "latex": "\\langle K_2r_1[j],Q_2r_1[i]\\rangle=c\\sum_{\\ell=1}^{n-1}\\mathbf1\\{x_{j-\\ell}=x_{i+1-\\ell}\\}",
+      "role": "count how many positions in two n-gram histories agree",
+      "symbols": {"c": "logit-scale and parameter-norm control", "r_1": "concatenated current and shifted-token embeddings"},
+      "evidence": "paper.pdf p. 6, Section 4.1",
+      "interpretation": "As c grows, softmax selects positions with a fully matching history; deactivating late heads changes the same circuit into a lower-order k-gram counter."
+    },
+    {
+      "label": "Near-stationary gradient bound (Theorem 4.1)",
+      "latex": "\\|\\nabla\\mathcal L(\\theta_\\star^k)\\|=\\sqrt c\\,\\mathbb E\\,O\\!\\left(\\|p_\\tau(\\cdot\\mid x_{T-k+2:T})-\\widehat p_k\\|^2\\right)+O(T\\sqrt c\\,e^{-c})",
+      "role": "separate finite-context counting error from finite-softmax leakage",
+      "symbols": {"theta_star_k": "constructed k-gram parameter family", "p_hat_k": "empirical k-gram estimator", "T": "context length"},
+      "evidence": "paper.pdf p. 7, Theorem 4.1",
+      "interpretation": "With c=Theta(T) and an ergodic source, both terms vanish asymptotically; the theorem does not classify the Hessian or prove optimizer escape times."
+    }
+  ],
+  "figure_refs": [{
+    "label": "Figure 3", "asset_path": "assets/collection-figures/2508.12837/figure-3-stagewise-attention.webp", "section": "核心结果与证据",
+    "role": "align two loss plateaus with the attention heads' transition from uniform averaging to one-step and two-step history retrieval",
+    "evidence": "paper.pdf p. 9, Figure 3; four source subpanels joined horizontally without altering their content",
+    "alt_text": "左侧 test loss 在约 1.635 和 1.607 形成两段平台；右侧三组双头 attention maps 对应早期均匀注意、两头读取前一 token、最终其中一头读取前二 token。",
+    "caption": "训练先停在较低阶统计解附近，再形成更长 history 的 attention circuit。",
+    "interpretation": "选定迭代的视觉对应支持 stagewise mechanism，但单条主曲线本身不能证明近驻点导致平台或给出普适跃迁时间。"
+  }],
+  "cover": {
+    "mode": "source_figure", "asset_path": "assets/collection-figures/2508.12837/figure-3-stagewise-attention.webp", "label": "Figure 3", "visual_type": "comparison",
+    "evidence": "paper.pdf p. 9, Figure 3; faithful horizontal composite of extracted subpanels", "alt_text": "测试损失平台与两个第一层 attention heads 在三个训练时刻的注意力图并排。",
+    "caption": "Loss plateau 对应可解释的 sub-n-gram circuit，而不是无结构停滞。",
+    "selection_rationale": "该图把 loss-landscape 论点与可观测 attention 机制放在同一视野，最适合解释类似 metastable stages 的直觉及其证据限度。"
+  },
+  "sections": [
+    {"title": "作者信息", "paragraphs": [
+      "Aditya Varre、Gizem Yüce 与 Nicolas Flammarion 来自 EPFL Theory of Machine Learning Lab；Varre 与 Yüce 为 equal contribution。",
+      "本站核验 arXiv:2508.12837v2：初版提交于 2025-08-18，v2 更新于 2025-08-19；主分类 cs.LG，共 40 页。",
+      "Collection 来源为刘子鸣网站的 Training Dynamics 条目；作者代码仓库：https://github.com/tml-epfl/sub-n-grams-are-stationary。"
+    ]},
+    {"title": "研究问题", "paragraphs": [
+      "Transformer 学习 in-context n-gram 时，test loss 常不是平滑下降，而是依次经过 uniform、unigram、bigram 等长平台后突然跃迁。为什么“会一点低阶统计”反而让梯度几乎停住？",
+      "作者研究 population cross-entropy landscape：先给一般 stationary sufficient condition，再显式构造能实现每个 k≤n counting estimator 的简化 Transformer，并问这些 sub-n-gram solutions 的梯度是否渐近消失。"
+    ]},
+    {"title": "背景", "paragraphs": [
+      "n-gram source 的下一 token 只依赖前 n-1 个 tokens。In-context 学习时，每条 sequence 的 transition table 从 prior 新抽，模型不能把一张固定表写入 weights，只能在当前上下文中统计相同 history 后出现过什么。",
+      "k-gram estimator 忽略较远 history，只按最近 k-1 tokens 分组计数。对 n-gram 真源它通常有 bias，却是更简单、样本更多的近似，因此可以形成从短 context 到长 context 的层级。",
+      "Cross-entropy gradient 是 prediction residual 与 score function 的期望内积。若 score 只依赖短 suffix，而预测等于给定该 suffix 的真实 conditional expectation，完整 residual 在条件平均后抵消。"
+    ]},
+    {"title": "给物理学家的 AI 导读", "paragraphs": [
+      "可把不同 k-gram circuits 类比为一串 coarse-grained macrostates：k 增大时保留更多微观历史。Loss 曲线在每个 macrostate 附近缓慢演化，再跳到更细的描述层级。",
+      "但 theorem 只证明特定大范数参数族上的一阶力 |grad L| 变小；没有证明它是 local minimum、saddle manifold 或有自由能垒，也没有计算 Hessian、basin volume、noise-driven escape rate。故“相变”是机制类比而非热力学定理。",
+      "两个误差源很清楚：有限 T 时 empirical counts 尚未等于 conditional probability；有限 c 时 softmax 仍向错误 histories 泄漏。取 c=Theta(T) 后，统计误差和约 T sqrt(c)e^{-c} 的软化误差都消失。",
+      "参数点随 c 增大走向无穷范数。这类 near-stationarity 与有限 weight decay、normalization、Adam noise 下的真实轨迹可能不同；实验负责连接两者，但还不是完整动力学证明。"
+    ]},
+    {"title": "模型与方法", "paragraphs": [
+      "简化模型有两层 attention：第一层含 n-1 个 heads，第 h 头由 input-independent positional attention 复制第 -h 个 token；skip connection 保留当前 token。第二层一枚 head 比较拼接 histories 并平均 matching positions 后的 tokens。",
+      "通过把 h≥k 的 value heads 置零，同一架构退化为 k-gram estimator。构造依赖线性独立 token embeddings、大 logit scale c、特制 query/key/value matrices 和第二层无 residual。",
+      "Proposition 3.2 给出一般 sufficient condition；Theorem 4.1 再利用 softmax derivative 的 self-bounding、sparse hard-attention limit 与 Markov-chain ergodicity，控制构造点的全部参数梯度。",
+      "主实验用 trigram source、S=5、T=32、Dirichlet concentration 0.5、两层两头简化模型、one-hot embedding；Adam 学习率 0.01、batch 128、2^14 steps、2^16 test sequences，无 weight decay。"
+    ]},
+    {"title": "核心结果与证据", "paragraphs": [
+      "理论证明每个 k≤n 都存在一个实现 empirical k-gram MLE 的参数构造；当 context 和 norm 联合增大时，这些点成为 population CE 的 near-stationary points，即使 k<n 并非最优真模型。",
+      "梯度界把机制拆为 estimator consistency 与 softmax saturation：前者在所假设 ergodic Markov source 下随 T 衰减，后者为 O(T sqrt(c)e^{-c})。这是比仅观察 loss plateau 更具体的可证解释。",
+      "Figure 3 中，两个 heads 先近似均匀；第一个长平台二者主要复制 -1 token，对应 bigram-like solution；跳出后第二枚 head 转向 -2 token，形成完整 trigram history，test loss 落到下一层。",
+      "Appendix 在更普通 attention-only Transformer、one-hot/learned embeddings 和 5 seeds 上复现“先学 -1 再学 -2”的顺序，并展示平台期 gradient norms 低、跃迁期 spike；这些是数值支持，不是路径概率定理。"
+    ]},
+    {"title": "有效性与局限", "paragraphs": [
+      "Stationarity 是充分而非必要条件；论文构造了一族 near-stationary solutions，没有枚举 landscape，也未证明实际 optimizer 必须靠近该精确参数流形。",
+      "结论在 population loss、T趋于无穷、c趋于无穷且无 regularization 的极限成立。有限样本 SGD/Adam noise、weight decay、LayerNorm 与有限 precision 都可能改变梯度和停留时间。",
+      "简化架构把 positional attention matrix 直接参数化、固定第二层 value routing，并省略标准 MLP/normalization/residual/logit readout。Appendix 只说明部分构造可扩展；一般架构的全梯度证明仍需额外工作。",
+      "实验是小词表 synthetic trigram。自然语言的 latent syntax、token ambiguity、nonstationarity 与长程语义依赖远超固定 n-gram；这里的阶段顺序不能直接解释大模型全部 emergence/grokking。",
+      "Figure 3 的主轨迹没有系统提供 plateau duration 的 seed distribution、optimizer/learning-rate sweep 或 Hessian spectrum；因果说法应限于与 near-stationary mechanism 一致。"
+    ]},
+    {"title": "复现与资源", "paragraphs": [
+      "代码仓库 https://github.com/tml-epfl/sub-n-grams-are-stationary；复现时应锁定 commit，并核对 v2 论文的 S、T、Dirichlet alpha、2^14 updates 与 2^16 test set。",
+      "最小解析复核可枚举 S=2 的短 Markov sequences，直接计算 population CE、conditional expectation 与自动微分，验证 Proposition 3.2 的 residual cancellation。",
+      "最小动力学复核应对每个 seed 同时记录 loss、全梯度 norm、各 head 对 offsets -1/-2 的 attention mass、parameter norm 与 k-gram baseline loss；再扫 T、c、weight decay 和 optimizer noise。",
+      "本站核验的 v2 PDF SHA-256：9fec54b4c414435aec531ff0d10a601980d13ef42113adb94e1c0ec726f3b184。Evidence status: full-text verified; no independent reproduction performed; stationary-point proof, training dynamics and code not independently reproduced."
+    ]},
+    {"title": "阅读指南", "paragraphs": [
+      "最短路径：Figure 1 → Lemma 3.1/Proposition 3.2 → Figure 2 → Theorem 4.1 → Figure 3。先理解 conditional cancellation，再看 attention circuit。",
+      "理论路径：检查 k-gram construction 的 head deactivation、matching set M_T^k、softmax self-bounding 和两项 gradient error；特别注意 T 与 c 的联合极限。",
+      "动力学路径：把 near-zero gradient、plateau、metastability、optimizer escape 和最终 higher-order circuit 分为五个命题。本文严格证明第一项的构造版本，实验支持中间关联，但未给普适 escape theory。"
+    ]}
+  ],
+  "evidence_refs": [
+    "paper.pdf pp. 1–3: stagewise-learning question, n-gram data model and simplified architecture",
+    "paper.pdf pp. 4–5: population cross-entropy gradient and sufficient stationarity condition",
+    "paper.pdf pp. 5–8: k-gram parameter constructions and Theorem 4.1 gradient bound",
+    "paper.pdf pp. 8–9: trigram training setup, Figure 3 plateaus and attention-head transitions",
+    "paper.pdf pp. 12–40: full proofs, architectural extensions, seeds and gradient-norm experiments",
+    "source PDF SHA-256 9fec54b4c414435aec531ff0d10a601980d13ef42113adb94e1c0ec726f3b184",
+    "Evidence status: full-text verified; no independent reproduction performed; stationary-point proof, training dynamics and code not independently reproduced."
+  ]
+}
