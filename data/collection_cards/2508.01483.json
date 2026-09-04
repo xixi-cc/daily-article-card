@@ -1,0 +1,172 @@
+{
+  "arxiv_id": "2508.01483",
+  "source_version": "v1",
+  "source_pdf": "https://arxiv.org/pdf/2508.01483v1",
+  "title_en": "Training Dynamics of the Cooldown Stage in Warmup-Stable-Decay Learning Rate Scheduler",
+  "title_zh": "Warmup–Stable–Decay 学习率调度中冷却阶段的训练动力学",
+  "curation_status": "full_text_verified",
+  "card_standard_version": "2.4",
+  "audience_profile": "physics_ai_literate_physicist",
+  "paper_profile": "ai_empirical",
+  "style_reference": "physicist_daily_arxiv",
+  "provenance": {
+    "program": "Collection",
+    "catalog": "Paper Collection",
+    "catalog_record_id": "2508.01483",
+    "catalog_record_ids": ["2508.01483"],
+    "catalog_topic": "Training Dynamics",
+    "collection_date": "2026-08-30",
+    "sampled_at": "2026-08-31",
+    "selected_by": "ziming_mineru_serial_goal",
+    "sampling_seed": "not_applicable_source_complete",
+    "candidate_count": 464
+  },
+  "verified_metadata": {
+    "arxiv_id": "2508.01483",
+    "version": "v1",
+    "title": "Training Dynamics of the Cooldown Stage in Warmup-Stable-Decay Learning Rate Scheduler",
+    "authors": ["Aleksandr Dremov", "Alexander Hägele", "Atli Kosson", "Martin Jaggi"],
+    "categories": ["cs.LG", "cs.AI"],
+    "primary_category": "cs.LG",
+    "published": "2025-08-02T20:36:52Z",
+    "abstract": "The paper holds a pretrained checkpoint fixed and varies only the final learning-rate cooldown of decoder-only language-model training. It proposes operational bias and variance coordinates across data permutations, compares schedule shapes and AdamW settings, and visualizes local loss surfaces.",
+    "comment": "Published in Transactions on Machine Learning Research, August 2025; reviewed on OpenReview: https://openreview.net/forum?id=ZnSYEcZod3; 29 pages"
+  },
+  "equation_refs": [
+    {
+      "label": "Operational loss decomposition (Eq. 1)",
+      "latex": "\\mathbb E_i[L(m_i)-L(m^*)]=\\underbrace{L(\\mathbb E_i m_i)-L(m^*)}_{\\mathrm{bias}}+\\underbrace{\\mathbb E_iL(m_i)-L(\\mathbb E_i m_i)}_{\\mathrm{variance}}",
+      "role": "decompose mean excess validation loss relative to a longer-trained reference into average-model displacement and ensemble gain",
+      "symbols": {"m_i": "model trained with one data permutation", "m_star": "weight average of longer-trained reference models", "L": "validation loss"},
+      "evidence": "paper.pdf p. 5, Eq. (1)",
+      "interpretation": "The equality is an algebraic add-and-subtract identity. These labels are operational analogies, not the classical supervised-learning bias–variance theorem; nonconvex L does not guarantee a nonnegative variance term."
+    },
+    {
+      "label": "Cooldown schedule family",
+      "latex": "\\eta(x)=\\eta_0 f(x),\\quad f_{\\rm linear}=1-x,\\quad f_{\\rm cosine}=\\frac{1+\\cos(\\pi x)}2,\\quad f_{\\rm sqrt}=1-\\sqrt{x}",
+      "role": "parameterize how quickly the learning rate loses stochastic exploration during the normalized cooldown coordinate x",
+      "symbols": {"x": "fractional progress through cooldown", "eta_0": "stable-stage learning rate"},
+      "evidence": "paper.pdf p. 16, Appendix B cooldown formulas",
+      "interpretation": "All schedules end at zero but allocate different integrated learning rate and noise exposure; shape comparisons therefore also change total effective step size."
+    },
+    {
+      "label": "Recency shift and deviation (Eq. 2)",
+      "latex": "s=|C|^{-1}\\sum_{i\\in C}[c(b_i)-p(b_i)],\\qquad d=N^{-1}\\sum_{i=1}^N([c(b_i)-p(b_i)]-s)^2",
+      "role": "measure cooldown improvement on recent batches and nonuniformity of that improvement across the full observed data order",
+      "symbols": {"p_b": "pre-cooldown perplexity on batch b", "c_b": "post-cooldown perplexity", "C": "indices used during cooldown"},
+      "evidence": "paper.pdf p. 7, Eq. (2)",
+      "interpretation": "This is a retrospective diagnostic on already seen batches; it measures order-dependent recency effects, not held-out generalization by itself."
+    }
+  ],
+  "figure_refs": [
+    {
+      "label": "Figure 6",
+      "asset_path": "assets/collection-figures/2508.01483/figure-6-bias-variance.webp",
+      "section": "核心结果与证据",
+      "role": "place lowered-linear and nonlinear cooldown schedules in the paper's operational bias–variance plane",
+      "evidence": "paper.pdf p. 6, Figure 6",
+      "alt_text": "左右两幅散点图展示不同 cooldown shapes 的 operational variance 与 bias；左图比较 lowered-linear 参数，右图加入 sqrt、cosine、square、mirror-cosine 等，lowered-linear 0.7 与 sqrt 靠近 bias+variance 最小线。",
+      "caption": "在固定 210M 模型和训练配方下，保留较高学习率更久降低 reference-relative bias，却增加不同数据顺序间的 ensemble gap。",
+      "interpretation": "最优点是该实验和所定义坐标中的经验平衡；不能脱离模型规模、token budget、optimizer state 与 reference choice 当作通用常数。"
+    }
+  ],
+  "cover": {
+    "mode": "source_figure",
+    "asset_path": "assets/collection-figures/2508.01483/figure-6-bias-variance.webp",
+    "label": "Figure 6",
+    "visual_type": "data_plot",
+    "evidence": "paper.pdf p. 6, Figure 6",
+    "alt_text": "多种 WSD cooldown 曲线在 reference-relative bias 与 ensemble variance 坐标中的位置。",
+    "caption": "Cooldown shape 在探索与收敛之间移动模型，而不是只改变最后几步的装饰。",
+    "selection_rationale": "该图汇集论文的核心比较、重复数据顺序和最优候选，并能直接引出其自定义 bias–variance 定义的适用边界。"
+  },
+  "sections": [
+    {
+      "title": "作者信息",
+      "paragraphs": [
+        "Aleksandr Dremov、Alexander Hägele、Atli Kosson 与 Martin Jaggi 来自 EPFL。论文发表于 Transactions on Machine Learning Research 2025 年 8 月，并经过 OpenReview 公开评审。",
+        "本站核验 arXiv:2508.01483v1：提交于 2025-08-02；分类 cs.LG、cs.AI，共 29 页。",
+        "Collection 来源为刘子鸣网站的 Training Dynamics 条目；论文给出较完整实验附录，但未列出专属代码仓库。"
+      ]
+    },
+    {
+      "title": "研究问题",
+      "paragraphs": [
+        "Warmup–Stable–Decay（WSD）允许模型在 constant-learning-rate 阶段持续训练，再从任意 checkpoint 接一段短 cooldown。为什么最后约 20% 的退火会显著降低 validation perplexity，不同下降曲线为何留下不同终点？",
+        "作者固定同一个 pre-cooldown checkpoint，只改变 cooldown shape、batch size、AdamW β1/β2、weight decay 或 optimizer state，并用跨 data permutations 的 weight averaging 构造一个经验“bias–variance”坐标系。"
+      ]
+    },
+    {
+      "title": "背景",
+      "paragraphs": [
+        "Cosine schedule 从训练早期持续衰减，通常需要预先知道总 token budget；WSD 先 warmup，再保持 stable learning rate，最后单独 cooldown，因此更适合从 stable checkpoint 延长训练或生成多个终点。",
+        "学习率同时控制 deterministic update scale 与 mini-batch noise scale。较慢衰减让模型探索更久，但不同 shuffle 可能走向更分散的终点；较快衰减更像在当前 basin 内冻结，却可能保留对 reference 的系统偏差。",
+        "论文借用 bias–variance 语言，但对象是多个训练终点及其 weight average。它不是数据生成分布上预测估计量的经典 bias²+variance+noise 分解。"
+      ]
+    },
+    {
+      "title": "给物理学家的 AI 导读",
+      "paragraphs": [
+        "可把 stable phase 看作有限温度的随机动力学，cooldown 看作调节退火协议。不同 η(t) 不只改变最终温度，还改变累积扩散长度和漂移积分，所以即使都在同一时间降到零，也不应期待同一终态分布。",
+        "论文的 variance=平均单模型 loss−平均权重模型的 loss，测的是 model averaging 带来的 ensemble-like gain；bias=平均权重模型 loss−长训练 reference loss。由于神经网络 loss 对参数非凸，这两个量不具备普适非负性或坐标不变性。",
+        "主要 210M decoder-only Transformer 先训练 26,400 steps、约 2.7B tokens，再完成总计 33,000 steps、约 3.4B tokens；长训练 sqrt reference 到 59,400 steps、约 6B tokens。每个 shape 使用 N=9 个 data permutations。",
+        "lowered-linear 0.7 和 sqrt 是这套训练配方下的 Pareto-like balance，不是理论推导出的 universal schedule。AdamW β2、weight decay、batch scaling 与 optimizer state 都能把同一曲线移到不同位置。"
+      ]
+    },
+    {
+      "title": "模型与方法",
+      "paragraphs": [
+        "主模型为 210M 参数、Llama-like decoder-only Transformer，在 SlimPajama 子集上训练；AdamW 默认 β=(0.9,0.95)、weight decay 0.1、gradient clipping 1.0、bfloat16，sequence length 512、batch 200（约 0.1M tokens/step）。",
+        "比较 linear、cosine、mirror cosine、square、sqrt 与 lowered-linear family；所有 cooldown 终点学习率为零。短实验从同一 checkpoint 出发、改变 data order，reference 则在同一数据重复排列上训练更久。",
+        "除 Eq. (1) 的 loss/weight-average 坐标，作者还检查 parameter-space distance、prediction KL 与 recency shift–deviation；这些替代坐标给出相似排序，但细节和可解释性不同。",
+        "附加实验用 60M 模型和 FineWeb-Edu 10B-token 子集复查几何，并比较 batch size、β1/β2、weight decay、reset optimizer、checkpoint averaging、linear probes 和二维 loss-landscape slices。"
+      ]
+    },
+    {
+      "title": "核心结果与证据",
+      "paragraphs": [
+        "Figure 6 中，lowered-linear parameter 降低时 operational variance 下降而 bias 上升；lowered-linear 0.7 与 sqrt 靠近最小 bias+variance 方向。Figure 7 显示两条曲线本身相似，0.7 在该实验中 perplexity 略好。",
+        "高 variance、低 bias 的 mirror-cosine/square 单模型较不稳定，但若最终对多个 runs 做 weight averaging，它们可能优于单模型最优曲线。实际代价是必须训练并保存多个完整模型。",
+        "延长训练而不做模型平均优于论文测试的所有 averages，说明平均不是额外 tokens 的替代品；这也限制了“variance 可由 averaging 消除”的工程含义。",
+        "Cooldown 中单改 AdamW β 参数造成的 perplexity 差异与换 schedule shape 同量级，较高 β2 在扫描范围内持续改善；batch-size 改变在配套 learning-rate scaling 后影响较小。",
+        "二维 loss slices 显示从 stable phase 的宽阔方向向较窄 basin 下滑，与 river-valley picture 相容；但切片方向由 checkpoint-to-final vector 和十个 Adam steps 构造，不能确定完整高维 landscape topology。"
+      ]
+    },
+    {
+      "title": "有效性与局限",
+      "paragraphs": [
+        "Eq. (1) 本质上是加减 L(E[m]) 的恒等式；把两项命名为 bias/variance 是有用的 operational convention，却不是机制证明。Reference 是更长训练的 sqrt-average，而非已知全局最优点，也会影响坐标原点。",
+        "Shape 同时改变 integrated learning rate、noise exposure 和有效 weight decay，实验没有把这些全部匹配。因此“曲线形状”效应不能唯一归因于 exploration–exploitation。",
+        "主证据来自 210M 模型、特定 SlimPajama 配方；60M/FineWeb-Edu 复查增加稳健性，但尚未覆盖 billion-scale production runs、不同 tokenizers、不同 optimizer families 或 downstream capability。",
+        "每个主要 shape 有 9 个 data permutations，优于单 seed；但许多附加 hyperparameter sweeps 只报告 min–max 或图形趋势，且在同一实验体系中选择 lowered-linear 0.7，仍需独立 held-out recipe 验证。",
+        "作者明确说内部 feature-quality probe 没得到有用结论。当前证据支持训练终点 loss/weights 的现象学变化，不支持 cooldown 已被定位到某种明确 representation mechanism。"
+      ]
+    },
+    {
+      "title": "复现与资源",
+      "paragraphs": [
+        "公开评审页：https://openreview.net/forum?id=ZnSYEcZod3；数据来自 SlimPajama 与 FineWeb-Edu，附录列出模型 shape、optimizer 和 cooldown formulas，但论文未给专属代码链接。",
+        "最小复核需保留同一 pre-cooldown checkpoint 和 optimizer state，为每个 shape 预注册 9 个相同 data permutations；逐 run 保存 validation loss、weight-average loss、integrated η 与 integrated η²。",
+        "更强测试应加入 held-out 模型规模/数据集，分别匹配 cumulative step size、noise scale 与 compute；对 scheduler 和 β2 做 nested validation，避免在同一曲线集上选择再报告最佳点。",
+        "本站核验的 v1 PDF SHA-256：45bec047c884bf84c5fdcd1fc0b0ae718fcf966ee49b9f802d994ccdbbad3357。Evidence status: full-text verified; no independent reproduction performed; cooldown comparisons, model averaging and loss-landscape interpretations not independently reproduced."
+      ]
+    },
+    {
+      "title": "阅读指南",
+      "paragraphs": [
+        "最短路径：Figure 3 的 cooldown drop → Figure 4 的 shape comparison → Eq. (1) 与 Figure 6 → Figure 9 的 averaging → Figure 11 的 AdamW β sweep。",
+        "物理路径：把 η(t) 当作 protocol，分别计算 drift integral、noise integral 与 relaxation time；再判断所谓 bias–variance 坐标是否真能区分未平衡、basin selection 和 parameter symmetry。",
+        "工程路径：先选择部署的是单 checkpoint、checkpoint average 还是多-run weight average，再调 cooldown。不同交付方式对应的最优 shape 不同，且训练/存储成本也不同。"
+      ]
+    }
+  ],
+  "evidence_refs": [
+    "paper.pdf pp. 1–4: WSD setup, shared checkpoint, model/data scale and cooldown-shape loss curves",
+    "paper.pdf pp. 5–8: operational bias–variance identity, nine permutations, reference training and recency analysis",
+    "paper.pdf pp. 8–12: averaging, optimizer/batch sweeps, loss slices, conclusions and explicit mechanism limits",
+    "paper.pdf pp. 15–22: architecture, schedule formulas, alternate coordinate systems and scale/dataset replications",
+    "paper.pdf pp. 22–29: optimizer-state controls, gradients, probes and enlarged loss-landscape plots",
+    "source PDF SHA-256 45bec047c884bf84c5fdcd1fc0b0ae718fcf966ee49b9f802d994ccdbbad3357",
+    "Evidence status: full-text verified; no independent reproduction performed; cooldown comparisons, model averaging and loss-landscape interpretations not independently reproduced."
+  ]
+}
