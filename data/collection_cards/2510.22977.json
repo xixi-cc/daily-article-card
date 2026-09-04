@@ -1,0 +1,131 @@
+{
+  "arxiv_id": "2510.22977",
+  "source_version": "v2",
+  "source_pdf": "https://arxiv.org/pdf/2510.22977v2",
+  "title_en": "The Reasoning Trap: How Enhancing LLM Reasoning Amplifies Tool Hallucination",
+  "title_zh": "推理陷阱：增强大模型推理为何会放大工具幻觉",
+  "curation_status": "full_text_verified",
+  "card_standard_version": "2.4",
+  "audience_profile": "physics_ai_literate_physicist",
+  "paper_profile": "ai_empirical",
+  "style_reference": "physicist_daily_arxiv",
+  "provenance": {
+    "program": "Collection", "catalog": "Paper Collection", "catalog_record_id": "2510.22977",
+    "catalog_record_ids": ["2510.22977"], "catalog_topic": "Machine Learning",
+    "collection_date": "2026-08-30", "sampled_at": "2026-08-31",
+    "selected_by": "ziming_mineru_serial_goal", "sampling_seed": "not_applicable_source_complete", "candidate_count": 464
+  },
+  "verified_metadata": {
+    "arxiv_id": "2510.22977", "version": "v2",
+    "title": "The Reasoning Trap: How Enhancing LLM Reasoning Amplifies Tool Hallucination",
+    "authors": ["Chenlong Yin", "Zeyang Sha", "Shiwen Cui", "Changhua Meng", "Zechao Li"],
+    "categories": ["cs.LG", "cs.AI"], "primary_category": "cs.LG",
+    "published": "2025-10-27T03:58:29Z", "updated": "2026-04-17T17:15:28Z",
+    "abstract": "The paper introduces SimpleToolHalluBench to test abstention when a required tool is absent or replaced by a distractor. Across reasoning RL, distillation, and thinking toggles, reasoning-enhanced configurations hallucinate tools more often; controlled training and activation analyses associate the increase with think-then-act behavior, while DPO reduces it at a measured utility cost."
+  },
+  "equation_refs": [
+    {
+      "label": "Tool-hallucination rates",
+      "latex": "R_{\\mathrm{NTA}}=H_{\\mathrm{NTA}}/N_{\\mathrm{NTA}},\\qquad R_{\\mathrm{DT}}=H_{\\mathrm{DT}}/N_{\\mathrm{DT}}",
+      "role": "measure fabricated or misused-tool responses separately in no-tool and distractor-tool conditions",
+      "symbols": {"H": "responses flagged as hallucinated by the judge", "N": "number of benchmark samples", "NTA_DT": "No-Tool-Available and Distractor-Tool tasks"},
+      "evidence": "paper.pdf p. 3, Eq. (1)",
+      "interpretation": "The rate is conditional on benchmark prompts and the LLM-as-judge labeling pipeline; it is not a calibrated probability for arbitrary deployed agents."
+    },
+    {
+      "label": "Centered kernel alignment",
+      "latex": "\\operatorname{CKA}(K,L)=\\frac{\\operatorname{HSIC}(K,L)}{\\sqrt{\\operatorname{HSIC}(K,K)\\operatorname{HSIC}(L,L)}}",
+      "role": "compare layer representations before and after reasoning RL without requiring coordinate-wise alignment",
+      "symbols": {"K_L": "Gram matrices of base and post-RL activations", "HSIC": "Hilbert–Schmidt independence criterion", "CKA": "similarity from 0 to 1"},
+      "evidence": "paper.pdf p. 7, Section 5.1",
+      "interpretation": "Low CKA diagnoses representational drift, not damage to a uniquely identified tool circuit and not a causal direction of change."
+    },
+    {
+      "label": "Activation discrimination score",
+      "latex": "S_{\\mathrm{disc}}=\\frac{1}{|D|}\\sum_{(a_i,y_i)\\in D}\\mathbf 1[f_\\theta(a_i)=y_i]-0.5",
+      "role": "localize layers where correct and hallucinated responses become linearly separable",
+      "symbols": {"a_i": "component activation", "y_i": "correct-versus-hallucinated label", "f_theta": "linear classifier"},
+      "evidence": "paper.pdf p. 8, Section 5.2",
+      "interpretation": "A positive score marks decodable correlates. It does not show that the probed component causes hallucination."
+    }
+  ],
+  "figure_refs": [{
+    "label": "Figure 1", "asset_path": "assets/collection-figures/2510.22977/figure-1-reasoning-trap.webp",
+    "section": "研究问题", "role": "contrast planning success and honest abstention across base and reasoning models",
+    "evidence": "paper.pdf p. 2, Figure 1",
+    "alt_text": "四格示意：有工具时推理模型比基础模型更能完成复杂任务；无所需工具时基础模型拒答，而推理模型编造不存在的工具。",
+    "caption": "更强的“继续完成任务”倾向可能同时提高规划成功率与无工具时的过度行动。",
+    "interpretation": "This is the authors' conceptual summary; quantitative support comes from controlled benchmark tables rather than the illustration itself."
+  }],
+  "cover": {
+    "mode": "source_figure", "asset_path": "assets/collection-figures/2510.22977/figure-1-reasoning-trap.webp",
+    "label": "Figure 1", "visual_type": "comparison", "evidence": "paper.pdf p. 2, Figure 1",
+    "alt_text": "基础模型与推理模型在工具存在和缺失两种条件下的四格行为对比。",
+    "caption": "能力提升与可靠拒答并非同一个优化方向；工具缺失时，“想办法做完”可能变成编造动作。",
+    "selection_rationale": "It makes the benchmark's two-factor design—reasoning capability and tool availability—immediately legible to readers unfamiliar with agents."
+  },
+  "sections": [
+    {"title": "作者信息", "paragraphs": [
+      "Chenlong Yin、Zeyang Sha、Shiwen Cui、Changhua Meng、Zechao Li；作者来自 Pennsylvania State University、南京理工大学及独立研究者。",
+      "本站核验 arXiv:2510.22977v2：初版提交于 2025-10-27，v2 更新于 2026-04-17；主分类 cs.LG，另含 cs.AI，共 19 页，arXiv comment 标注 ACL 2026 Main。",
+      "Collection 来源为刘子鸣网站的 Machine Learning 条目。"
+    ]},
+    {"title": "研究问题", "paragraphs": [
+      "Agent 不只生成文字，还会调用搜索、计算器或数据库。所需工具不存在时，可靠行为应是明确拒绝，而不是虚构函数、伪造返回值或滥用无关工具。",
+      "论文检验一个看似矛盾的假设：强化 chain-of-thought 式推理会提高复杂任务成功率，却也可能提高“必须行动”的倾向，从而放大 tool hallucination。",
+      "研究覆盖 tool-specific RL、纯数学 reasoning RL、R1 distillation 和 Qwen3 thinking toggle，并用 matched ablation 区分“RL 本身”与显式 reasoning step。"
+    ]},
+    {"title": "背景", "paragraphs": [
+      "SimpleToolHalluBench 有两种受控条件。NTA 完全不给工具；DT 只给与请求无关的 distractor tool。题目设计成没有正确工具便绝对无法完成。",
+      "tool hallucination 包括编造不存在的调用/输出，或调用提供但不相关的工具后声称任务完成。两类错误都要求 agent 忽略可验证的接口边界。",
+      "benchmark 用 LLM-as-judge 标记响应，再分别计算 RNTA 与 RDT；它测的是 abstention fidelity，不是一般事实问答 hallucination。"
+    ]},
+    {"title": "给物理学家的 AI 导读", "paragraphs": [
+      "可以把工具清单视为动力学允许的通道集合：工具不存在就是跃迁矩阵元严格为零。可靠 agent 应把该硬约束传播到最终决策。",
+      "reasoning tuning 像加大驱动力，帮助系统越过复杂规划势垒；若目标函数只奖励完成，零通道约束没有同时强化，系统会以“虚构通道”满足动作先验。",
+      "CKA 测的是两个表示流形的整体相似度，probe score 测 correct/hallucinated 两类轨迹的线性可分性。二者是相关诊断，不是发现单一缺陷 mode。",
+      "所谓 trade-off 是当前训练方案和基准上的经验 Pareto 张力，不是能力与诚实之间的基本物理不相容定律。"
+    ]},
+    {"title": "模型与方法", "paragraphs": [
+      "tool-specific 实验以 Qwen2.5-7B-Instruct 为基座，在 SynTool 上用 ReCall/GRPO 训练，每 100 steps 保存 checkpoint，同时测 validation reward 与两类幻觉率。",
+      "non-agentic 对照只在 GSM8K 数学题上做 GRPO，却在完全独立的工具 benchmark 上测副作用，用于排除纯 tool-pattern overfitting。",
+      "跨方法比较包括 Qwen2.5/Llama3.1 Instruct 对 R1-Distill，以及 Qwen3-8B/32B Think Off 对 Think On。",
+      "机制分析用 base/post-RL layerwise CKA，再对 attention output、MLP output、residual-mid/post 训练线性分类器；缓解实验比较显式 prompt 与 DPO。"
+    ]},
+    {"title": "核心结果与证据", "paragraphs": [
+      "ReCall 训练中 SynTool reward 上升的同时 RNTA/RDT 大幅升高；GSM8K-only GRPO 也出现同方向变化，说明效应不只来自重复工具调用模板。",
+      "Table 1 中 Qwen2.5-7B 从 Instruct 的 34.8/54.7 升至 R1-Distill 的 74.3/78.7；Llama3.1-8B 从 62.5/99.7 升至 96.3/100。Qwen3 thinking toggle 的提升较小但方向一致。",
+      "matched ablation 中 direct tool-use RL 为 41.4/63.6，而 think-then-act RL 为 90.2/100；两者数据、reward、optimizer 与超参数相同，支持显式 reasoning step 与增幅相关。",
+      "instruction following 只小降（IFEval 62.4→59.8，ComplexBench 60.8→59.4），BFCL tool-call 反而 13.6→23.5；因此失败不等同于一般指令能力崩溃。",
+      "GSM8K-RL 后训练域 CKA 各层 >0.9，而工具输入在早中层跌至 <0.75；late residual probes 的 discrimination >0.14，attention/MLP output 平均约 0.02/0.04。",
+      "prompt 仅将 90.2/100 降到 87.5/98.9；DPO 降到 55.8/71.4，但 SynTool reward 从 0.45 降到 0.34，显示当前缓解的能力成本。"
+    ]},
+    {"title": "有效性与局限", "paragraphs": [
+      "benchmark 是刻意简单的 impossible-tool 场景；真实 API 有权限、参数、超时和部分可用性，错误类型比 NTA/DT 更复杂。",
+      "幻觉标签依赖 LLM-as-judge，文中比率不是人工全量审计后的绝对事实；模型对 system prompt 格式和工具 schema 也可能敏感。",
+      "跨 RL、distillation、toggle 的同向相关很有价值，但训练谱系并非随机对照；“training-method agnostic”仍受所选 Qwen/Llama 模型族限制。",
+      "matched RL ablation 更接近因果比较，但 think block 同时改变输出长度、计算量和行为格式，尚不能隔离某个抽象 reasoning capability。",
+      "CKA drift 与 residual separability 只定位神经相关量，没有用 patching/ablation 证明这些表示变化导致工具幻觉。DPO 的 trade-off 也不是不可避免上限。"
+    ]},
+    {"title": "复现与资源", "paragraphs": [
+      "复现应固定 prompt、tool schema、sampling temperature、judge model/version 与判定 rubric，并人工复核一组 NTA/DT 边界样本。",
+      "RL 曲线要按 checkpoint 同时报告 reward、RNTA、RDT 与响应长度；matched ablation 必须确认唯一差异确为是否要求 think block。",
+      "机制分析需保存同一输入在 base/post-RL 的逐层激活，并以 held-out split 训练 probe；缓解比较要匹配 decoding 与工具成功条件。",
+      "本站核验 v2 PDF SHA-256：518490185f9c4adbdc3c02ad15ba9391ef1ecf773358a00c0e6126c6c1f756ac。Evidence status: full-text verified; no independent reproduction performed."
+    ]},
+    {"title": "阅读指南", "paragraphs": [
+      "最短路径：Figure 1 → benchmark definition/Eq. (1) → Tables 1–3 → Figures 4–5 → Table 4。",
+      "物理路径：把 unavailable tool 当零耦合通道，把 reasoning RL 当驱动力，再检查表示漂移与末层轨迹分叉。",
+      "AI 路径：不要读成“推理越强必然越幻觉”；更准确的是这些增强方案在该 abstention benchmark 上共同暴露了未被联合优化的可靠性。"
+    ]}
+  ],
+  "evidence_refs": [
+    "paper.pdf pp. 2–3: benchmark design, task definitions and hallucination-rate metric",
+    "paper.pdf pp. 4–7: RL, math-only, distillation, toggle and matched-ablation results",
+    "paper.pdf pp. 7–10: CKA, activation probes and mitigation trade-off",
+    "paper.pdf pp. 11–19: implementation details, prompts and additional results",
+    "source PDF SHA-256 518490185f9c4adbdc3c02ad15ba9391ef1ecf773358a00c0e6126c6c1f756ac",
+    "Evidence packet SHA-256 7fd35f7a204df80ea7273202c78c505faf7cea03ab75978ce77ff87e3c7c2822",
+    "Evidence status: full-text verified; no independent reproduction performed."
+  ]
+}

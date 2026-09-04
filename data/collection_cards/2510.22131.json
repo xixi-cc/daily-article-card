@@ -1,0 +1,104 @@
+{
+  "arxiv_id": "2510.22131",
+  "source_version": "v1",
+  "source_pdf": "https://arxiv.org/pdf/2510.22131v1",
+  "title_en": "Probing Neural Combinatorial Optimization Models",
+  "title_zh": "探测神经组合优化模型的内部表示",
+  "curation_status": "full_text_verified",
+  "card_standard_version": "2.4",
+  "audience_profile": "physics_ai_literate_physicist",
+  "paper_profile": "ai_empirical",
+  "style_reference": "physicist_daily_arxiv",
+  "provenance": {
+    "program": "Collection", "catalog": "Paper Collection", "catalog_record_id": "2510.22131",
+    "catalog_record_ids": ["2510.22131"], "catalog_topic": "Machine Learning",
+    "collection_date": "2026-08-30", "sampled_at": "2026-08-31",
+    "selected_by": "ziming_mineru_serial_goal", "sampling_seed": "not_applicable_source_complete", "candidate_count": 464
+  },
+  "verified_metadata": {
+    "arxiv_id": "2510.22131", "version": "v1",
+    "title": "Probing Neural Combinatorial Optimization Models",
+    "authors": ["Zhiqin Zhang", "Yining Ma", "Zhiguang Cao", "Hoong Chuin Lau"],
+    "categories": ["cs.LG", "cs.AI"], "primary_category": "cs.LG",
+    "published": "2025-10-25T03:11:10Z", "updated": "2025-10-25T03:11:10Z",
+    "abstract": "The paper designs linear probing tasks for routing models and introduces Coefficient Significance Probing to inspect which embedding coordinates encode distance, non-myopic choices, and capacity constraints. Across AM, POMO, and LEHD, it reports layer- and architecture-dependent representations, then uses two LEHD dimensions and sparsity regularization as intervention-style checks."
+  },
+  "equation_refs": [],
+  "figure_refs": [{
+    "label": "Figure 6", "asset_path": "assets/collection-figures/2510.22131/figure-6-key-dimensions.webp",
+    "section": "核心结果与证据", "role": "connect two CS-Probing-selected LEHD dimensions to a concrete non-myopic TSP decision",
+    "evidence": "paper.pdf p. 9, Figure 6",
+    "alt_text": "左、中图比较同一 TSP 实例的最优路线与贪心路线；右图在第 31、97 两个嵌入维度中显示当前节点更靠近最优下一节点而非欧氏最近节点。",
+    "caption": "LEHD 的两个关键坐标把原空间中的“最近”关系重排成更符合全局路线的邻近关系。",
+    "interpretation": "This single-instance visualization makes the probe hypothesis concrete; the retention and zeroing experiments provide stronger behavioral evidence than the plot alone."
+  }],
+  "cover": {
+    "mode": "source_figure", "asset_path": "assets/collection-figures/2510.22131/figure-6-key-dimensions.webp",
+    "label": "Figure 6", "visual_type": "comparison", "evidence": "paper.pdf p. 9, Figure 6",
+    "alt_text": "最优 TSP 路线、欧氏贪心路线与 CS-Probing 发现的二维潜空间并列比较。",
+    "caption": "探针的价值不只是说“信息存在”，还可定位让局部距离服从全局路线结构的坐标。",
+    "selection_rationale": "It links an abstract coefficient analysis to both geometry and the solver's actual next-node choice, making the paper accessible to non-specialists."
+  },
+  "sections": [
+    {"title": "作者信息", "paragraphs": [
+      "Zhiqin Zhang、Yining Ma、Zhiguang Cao、Hoong Chuin Lau；作者来自 Singapore Management University 与 MIT。",
+      "本站核验 arXiv:2510.22131v1：提交于 2025-10-25；主分类 cs.LG，另含 cs.AI，共 39 页、16 幅图，arXiv comment 标注 NeurIPS 2025 Spotlight。",
+      "Collection 来源为刘子鸣网站的 Machine Learning 条目。"
+    ]},
+    {"title": "研究问题", "paragraphs": [
+      "神经组合优化模型能给出很短的 TSP/CVRP 路线，但最终路线分数无法说明内部表示学到了距离、约束，还是某种不可迁移的统计捷径。",
+      "论文设计辅助 probing tasks：冻结求解器，只训练简单线性模型从中间 embedding 预测人工定义的决策变量；若能线性读出，至少说明该信息可被低复杂度接口访问。",
+      "进一步的 CS-Probing 不只看 probe accuracy，还逐维检查回归系数及统计显著性，试图定位模型族的 inductive bias 与跨规模复用的坐标。"
+    ]},
+    {"title": "背景", "paragraphs": [
+      "研究对象包括 Attention Model（AM）、POMO 与 LEHD。AM/POMO 属于先编码再逐步解码的 HELD 结构，LEHD 在每一步重新编码候选节点，属于 LEHD-style dynamic decoder。",
+      "TSP 探针 1 回归两节点欧氏距离，是低层几何量；探针 2 判断候选边是否属于近优路线，测试能否避免只选最近节点的 myopic policy。",
+      "CVRP 探针 3 读出 demand addition，探针 4 判断两节点是否应在同一路线，分别对应低层容量信息和高层组合约束。"
+    ]},
+    {"title": "给物理学家的 AI 导读", "paragraphs": [
+      "linear probe 类似在冻结的多体态上测一个简单 observable：高 R²/AUC 说明目标量能由当前坐标线性读出，但不说明系统的动力学真的使用该 observable。",
+      "逐层 probing 像做 coarse-graining tomography：浅层先形成距离坐标，深层逐渐增强与全局决策有关的变量；不同架构对应不同的表示流。",
+      "CS-Probing 把 128 维 embedding 当作一组选定基底中的分量。系数显著不等同于 basis-invariant mode；相关坐标、缩放和旋转都可能改变单维解释。",
+      "论文较强的证据来自干预：只保留第 31/97 维仍近似保持 LEHD 性能，而同时置零二者使 gap 崩坏。即便如此，这仍针对一个训练实例和既定基底。"
+    ]},
+    {"title": "模型与方法", "paragraphs": [
+      "对每个决策状态抽取 current node 与 candidate node embedding，通常拼接为 256 维 probe 输入；部分版本加入 Hadamard interaction h_i⊙h_j，以允许线性探针表达二次关系。",
+      "连续任务用线性回归与 R²，二分类任务用 logistic probe 与 AUC；每项评估重复 10 次并报告 mean±SEM。",
+      "CS-Probing 对每一维的 coefficient magnitude 和 p-value 联合排序，并对 256 次检验用 Benjamini–Hochberg 控制 FDR=0.05。",
+      "作者还在 diffusion NCO、ATSP、JSSP/GNN 上做边界测试；这些是扩展性示例，不等于对所有组合优化模型完成系统覆盖。"
+    ]},
+    {"title": "核心结果与证据", "paragraphs": [
+      "TSP-20 中，不加 interaction 时 AM/POMO/LEHD 的距离 R² 约为 0.253/0.198/0.942；加 interaction 后均显著提高，说明注意力后 embedding 已把非线性距离变得更易线性访问。",
+      "避免 myopia 的 probe 从初始 embedding 的约 0.5 AUC 提升到三类模型末层的 0.83–0.86；层分析显示距离信息在第一层迅速出现，而高层策略信息随深度增强。",
+      "LEHD 在 TSP-20→100 时复用相同关键维度：距离任务的 31/69，myopia 任务的 31/97；AM/POMO 的 top dimensions 更易重排。此关系与 LEHD 较强规模泛化一致，但本身仍是相关证据。",
+      "只保留 LEHD 的 31/97 两维，TSP-100 gap 从 0.57% 变 0.65%，到 TSP-1000 从 3.17% 变 3.56%；置零二者却使 TSP-100 gap 升至 60.43%，而置零对照维度几乎不变。",
+      "受此启发，对末层 embedding 加适度 sparsity regularization：TSP-200 gap 最好由 0.86% 降至 0.73%，TSP-1000 由 3.17% 降至 2.87%；强度并非越大越好。"
+    ]},
+    {"title": "有效性与局限", "paragraphs": [
+      "probe 成功只证明信息 decodable，不证明原 decoder 使用同一线性方向；单维系数又依赖 embedding 的坐标规范与相关特征。",
+      "“optimal edge”与 same-route 标签来自优化器产生的参考解；大规模 CVRP 使用 HGS 近似解，因此标签本身不总是可认证最优。",
+      "两维保留/置零显著增强了因果可信度，但结论集中于 LEHD 某一基底与模型；跨 seed、宽度、重参数化后的坐标稳定性仍需更严格测试。",
+      "regularization 改善幅度较小且不单调，TSPLib 在 λ=10^-3 时反而恶化到 8.61%；不能概括为稀疏表示普遍提高泛化。",
+      "探针任务由研究者预先定义，只能找到已知领域概念；尚未回答模型是否依赖人类未命名的、更有效的策略变量。"
+    ]},
+    {"title": "复现与资源", "paragraphs": [
+      "论文首页给出公开代码链接，复现时应以 PDF 中脚注指向的仓库版本为准，并锁定 AM/POMO/LEHD checkpoint、实例生成 seed 与参考 solver。",
+      "必须保存 probe dataset 的 node pair、decision step、embedding layer、是否含 interaction term；混用这些设置会让 R²/AUC 与系数不可比。",
+      "CS-Probing 应报告标准化前后系数、共线性诊断、10 次重复和 BH-FDR 校正；干预实验需跨 seed 重做 31/97 与随机维度对照。",
+      "本站核验 v1 PDF SHA-256：4266f149b93f02ed8954b783ed1d794d636dcb36e1cd8b98e71cdedc05e0c443。Evidence status: full-text verified; no independent reproduction performed."
+    ]},
+    {"title": "阅读指南", "paragraphs": [
+      "最短路径：Table 1 → Figures 2/3 → Figure 5 与 Table 2 → Figure 6、Tables 3–5 → limitations-by-design。",
+      "物理路径：把 probe 当可读 observable、把层深当 coarse-graining flow，再用 retain/zero intervention 检验响应。",
+      "AI 路径：始终区分 encoded、linearly decodable、used by decoder、causally necessary 四个强度不同的命题。"
+    ]}
+  ],
+  "evidence_refs": [
+    "paper.pdf pp. 2–5: model families, four probing tasks and layer/training results",
+    "paper.pdf pp. 6–10: CS-Probing, FDR correction, key-dimension interventions and regularization",
+    "paper.pdf pp. 11–39: task construction, robustness extensions, complete tables and additional figures",
+    "source PDF SHA-256 4266f149b93f02ed8954b783ed1d794d636dcb36e1cd8b98e71cdedc05e0c443",
+    "Evidence packet SHA-256 5da488bc6bcf81f9de4c09f5458d3dd40703f7cacec7089b965101d692447b9e",
+    "Evidence status: full-text verified; no independent reproduction performed."
+  ]
+}

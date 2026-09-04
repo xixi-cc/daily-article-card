@@ -1,0 +1,130 @@
+{
+  "arxiv_id": "2510.24256",
+  "source_version": "v2",
+  "source_pdf": "https://arxiv.org/pdf/2510.24256v2",
+  "title_en": "From Memorization to Reasoning in the Spectrum of Loss Curvature",
+  "title_zh": "从记忆到推理：损失曲率谱中的行为结构",
+  "curation_status": "full_text_verified",
+  "card_standard_version": "2.4",
+  "audience_profile": "physics_ai_literate_physicist",
+  "paper_profile": "theory_numerics",
+  "style_reference": "physicist_daily_arxiv",
+  "provenance": {
+    "program": "Collection", "catalog": "Paper Collection", "catalog_record_id": "2510.24256",
+    "catalog_record_ids": ["2510.24256"], "catalog_topic": "Machine Learning",
+    "collection_date": "2026-08-30", "sampled_at": "2026-08-31",
+    "selected_by": "ziming_mineru_serial_goal", "sampling_seed": "not_applicable_source_complete", "candidate_count": 464
+  },
+  "verified_metadata": {
+    "arxiv_id": "2510.24256", "version": "v2",
+    "title": "From Memorization to Reasoning in the Spectrum of Loss Curvature",
+    "authors": ["Jack Merullo", "Srihita Vatsavaya", "Lucius Bushnaq", "Owen Lewis"],
+    "categories": ["cs.CL", "cs.LG"], "primary_category": "cs.CL",
+    "published": "2025-10-28T10:09:35Z", "updated": "2025-10-31T00:26:33Z",
+    "abstract": "The paper uses K-FAC eigenbases to order MLP weight components by dataset-averaged approximate loss curvature. In OLMo-2 and ViT experiments, flatter aggregate directions preferentially interact with memorized examples; removing them suppresses recitation but also harms arithmetic and closed-book fact retrieval more than open-book QA or logical reasoning."
+  },
+  "equation_refs": [
+    {
+      "label": "K-FAC curvature block",
+      "latex": "F_W\\approx G\\otimes A=\\mathbb E[gg^{\\top}]\\otimes\\mathbb E[aa^{\\top}]",
+      "role": "replace an intractable full Hessian/Fisher block by gradient and activation covariance factors",
+      "symbols": {"a": "input activation to a linear projection", "g": "gradient at its output", "F_W": "approximate Fisher curvature for W"},
+      "evidence": "paper.pdf pp. 3–4 and p. 12, Eq. (1)",
+      "interpretation": "The Kronecker approximation makes large-model spectral analysis feasible, but its eigenvectors are approximate dataset-averaged curvature modes rather than exact Hessian modes."
+    },
+    {
+      "label": "Curvature-pair mass",
+      "latex": "G=U_G\\operatorname{diag}(\\lambda)U_G^{\\top},\\quad A=U_A\\operatorname{diag}(\\mu)U_A^{\\top},\\quad \\Pi_{ij}=\\lambda_i\\mu_j",
+      "role": "rank each rank-one weight-space component by approximate curvature",
+      "symbols": {"lambda_mu": "eigenvalues of gradient and activation covariance", "Pi_ij": "curvature mass of u_i v_j^T", "U_G_U_A": "factor eigenbases"},
+      "evidence": "paper.pdf p. 6, Section 5",
+      "interpretation": "Large Π marks directions consistently affecting the sampled loss; small Π can contain idiosyncratic structure whose curvature cancels when averaged across examples."
+    },
+    {
+      "label": "Curvature-preserving weight edit",
+      "latex": "W_S=U_G(C\\odot M)U_A^{\\top}=\\sum_{(i,j)\\in S}C_{ij}u_i v_j^{\\top},\\qquad C=U_G^{\\top}WU_A",
+      "role": "retain the eigenvector pairs carrying a chosen fraction of total curvature mass",
+      "symbols": {"M": "binary mask for selected pairs", "S": "highest-curvature pair set", "C": "weight coefficients in the K-FAC product basis"},
+      "evidence": "paper.pdf p. 6, weight-edit construction",
+      "interpretation": "The edit is a projection chosen by aggregate curvature, not targeted deletion of individually identified memories; layer and retained-mass choices are tuned experimentally."
+    }
+  ],
+  "figure_refs": [{
+    "label": "Figure 2 (OLMo-2 7B panels)", "asset_path": "assets/collection-figures/2510.24256/figure-2-curvature-spectrum.webp",
+    "section": "核心结果与证据", "role": "compare memorized-versus-clean activation selectivity across K-FAC and SVD spectral bands",
+    "evidence": "paper.pdf p. 5, Figure 2, OLMo-2 7B panels",
+    "alt_text": "四幅随 MLP layer 变化的激活比曲线；K-FAC 的 top 10% 到 bottom 50% 谱带呈有序分离，SVD 曲线更杂乱。",
+    "caption": "对 OLMo-2 7B，K-FAC 曲率序比普通奇异值序更稳定地分开记忆样本与干净样本的激活。",
+    "interpretation": "The ratios diagnose aggregate selectivity in chosen MLP projections; they do not localize a single memory to one eigenvector."
+  }],
+  "cover": {
+    "mode": "source_figure", "asset_path": "assets/collection-figures/2510.24256/figure-2-curvature-spectrum.webp",
+    "label": "Figure 2", "visual_type": "comparison", "evidence": "paper.pdf p. 5, Figure 2",
+    "alt_text": "K-FAC 曲率基与 SVD 基在不同网络层对记忆/干净文本的激活比比较。",
+    "caption": "曲率谱在数据平均后，把共享结构推向陡峭端，把彼此不一致的逐样本记忆推向平坦端。",
+    "selection_rationale": "It visualizes the paper's key inversion—from sharp individual memories to flat aggregate memorization directions—and the advantage over an SVD control."
+  },
+  "sections": [
+    {"title": "作者信息", "paragraphs": [
+      "Jack Merullo、Srihita Vatsavaya、Lucius Bushnaq、Owen Lewis；作者来自 Goodfire。",
+      "本站核验 arXiv:2510.24256v2：初版提交于 2025-10-28，v2 更新于 2025-10-31；主分类 cs.CL，另含 cs.LG，共 28 页。",
+      "Collection 来源为刘子鸣网站的 Machine Learning 条目。"
+    ]},
+    {"title": "研究问题", "paragraphs": [
+      "单个被记住的训练样本常对应尖锐损失方向；但一个模型同时记住许多彼此无关文本时，这些方向是否在总体权重空间形成可分离结构？",
+      "论文用数据平均的 K-FAC 曲率谱分解 MLP 权重，检查 memorized 与 clean 输入分别激活哪些谱带，并删除低曲率成分测试行为变化。",
+      "更广的问题是：逐字复述、闭卷事实、算术、开放书问答和逻辑推理，是否沿同一“记忆—推理”轴连续排列。"
+    ]},
+    {"title": "背景", "paragraphs": [
+      "Hessian 描述参数微扰造成的二阶损失变化，但大模型的完整 Hessian 不可存储。K-FAC 用 activation covariance A 与 output-gradient covariance G 的 Kronecker product 近似每个线性层 Fisher block。",
+      "对单个样本，精确记忆很脆弱，所以局部曲率可很高；对许多样本求平均时，各记忆使用不同方向，曲率贡献互相分散，而共享的泛化机制在样本间方向一致。",
+      "因此论文提出一个反转：aggregate high-curvature modes 更像共享结构，aggregate low-curvature modes 更富含稀有、专用或记忆相关结构。"
+    ]},
+    {"title": "给物理学家的 AI 导读", "paragraphs": [
+      "K-FAC 给出一种近似 normal-mode basis：λ_i μ_j 是 rank-one 权重扰动 u_i v_j^T 的刚度。保留大刚度 mode，相当于滤掉平坦软模。",
+      "单样本 sharp、总体 flat 并不矛盾：若每个缺陷钉扎在不同方向，quenched realization 各自很硬，但 disorder average 后没有共同硬轴。",
+      "曲率保留编辑像按 stiffness 做 spectral coarse-graining。观察哪些功能先消失，可以把行为放到“共享稳健结构—专用脆弱结构”的经验谱上。",
+      "类比边界在于 Fisher/K-FAC 不是精确 Hessian，网络高度非线性，且一次有限权重投影会离开原局部邻域；谱端与具体认知过程不能一一对应。"
+    ]},
+    {"title": "模型与方法", "paragraphs": [
+      "语言模型使用开放训练数据的 OLMo-2，主报 7B；从约 20M Dolmino/OLMo tokens、sequence length 512 收集 MLP gate/up/down projection 的 A 与 G。",
+      "记忆判据以 64-token prefix 贪心生成 48-token suffix；另有 8-token 历史名言集合。指标含 exact strict、75% 相似阈值 loose 与 normalized Levenshtein distance。",
+      "主 K-FAC 编辑作用于 7B 的 layers 23–25、up/gate projections，保留 60% curvature energy；与 BalancedSubnet 和按 SVD 截断比较，并匹配 perplexity。",
+      "视觉模型为 86M ViT-Base/ImageNet，10% 训练图像换随机标签并训练 300 epochs；从 10k images 收集统计，编辑首尾 MLP 层。"
+    ]},
+    {"title": "核心结果与证据", "paragraphs": [
+      "Figure 2 中 OLMo layer 22 的 K-FAC bottom 50% 对 memorized 文本激活比 clean 高 23.1%，top 10% 则对 clean 高 26%；谱带按曲率顺序单调分离，SVD 不稳定。",
+      "在匹配 perplexity 约 22.5–23.6 时，OLMo-2 7B 的 Dolma strict recitation 为 K-FAC 3.4%、BalancedSubnet 6.0%、SVD 3.0%；OOD 历史名言为 16.1%、60.0%、17.5%。",
+      "ViT 随机标签记忆率从 81.6% 降至 3.5%；K-FAC 使真实标签恢复率 66.5%、验证准确率 71.7%，高于 SVD 的 58.9%/67.8%。",
+      "但软模不只存逐字记忆：编辑后逻辑推理保留基线的 95–106%、open-book QA 93–99%，closed-book QA 74–86%，数学 66–74%，记忆仅 3–16%。",
+      "SimpleMath 与低曲率 band 的相互作用更强，对应更大性能下降；一个 GSM8K 示例保持正确推理文本却把 20+80+160 算成 220，提示精确算术依赖窄用途结构。"
+    ]},
+    {"title": "有效性与局限", "paragraphs": [
+      "K-FAC 是 Fisher/Hessian 的块对角 Kronecker 近似；结论可能随统计数据、层选择、projection 类型和 retained-energy threshold 改变。",
+      "方法并非真正 label-free：计算曲率不需 forget set，但作者用 memorization labels 做 layer/hyperparameter sweep 来选择有效编辑位置。",
+      "strict/loose recitation 只覆盖可由给定 prefix 贪心复现的记忆；模型中未被该提示触发的知识或隐私记忆不会计入。",
+      "编辑同时伤害算术和闭卷事实，说明 low curvature 不是“坏记忆专属子空间”；它更像低频/专用结构的混合区，不能安全地整体删除。",
+      "任务保留率是有限 benchmark 的平均值，且文中展示生成样本数量有限；较低 perplexity 不排除罕见语法或事实能力退化。"
+    ]},
+    {"title": "复现与资源", "paragraphs": [
+      "复现须锁定 OLMo-2 checkpoint、20M-token curvature sample、tokenization、sequence positions、A/G normalization，以及 layers 23–25 的具体 projection。",
+      "对每个 eigenpair 保存 λ_i μ_j、C_ij、累计 curvature mass 与 mask；同时跑随机正交基、SVD 和相同参数预算的剪枝对照。",
+      "行为审计至少覆盖 strict/loose/edit distance、perplexity、检索 nDCG、开放/闭卷 QA、算术和逻辑，并人工检查长尾生成。",
+      "本站核验 v2 PDF SHA-256：622c1b50350fd7ea776a20a320eb74940749d6528e97d6e5ddbc952d35ffd469。Evidence status: full-text verified; no independent reproduction performed."
+    ]},
+    {"title": "阅读指南", "paragraphs": [
+      "最短路径：Figure 1 → K-FAC Eq. (1) → Figure 2 → weight-edit equations → Tables 1–2 → Figures 3–4。",
+      "物理路径：从 disorder average 导致的 sharp-to-flat inversion 读起，再把曲率 mask 当软模截断观察响应。",
+      "AI 路径：不要把 low curvature 等同 memorization；算术和 parametric facts 的损伤正是论文最重要的反证与细化。"
+    ]}
+  ],
+  "evidence_refs": [
+    "paper.pdf pp. 2–6: aggregate-curvature inversion, K-FAC statistics and spectral selectivity",
+    "paper.pdf pp. 6–9: curvature-mass edit, OLMo/ViT settings and memorization suppression",
+    "paper.pdf pp. 9–12: downstream task spectrum, activation ratios and K-FAC interpretation",
+    "paper.pdf pp. 13–28: hyperparameters, controls, stress tests and generation examples",
+    "source PDF SHA-256 622c1b50350fd7ea776a20a320eb74940749d6528e97d6e5ddbc952d35ffd469",
+    "Evidence packet SHA-256 b7f692d9f5fb96bf033480fdb8f88c0c85974a0ab4e2dcf4827d83691d6dca9b",
+    "Evidence status: full-text verified; no independent reproduction performed."
+  ]
+}
