@@ -1,0 +1,197 @@
+{
+  "arxiv_id": "2602.24264",
+  "source_version": "v2",
+  "source_pdf": "https://arxiv.org/pdf/2602.24264v2",
+  "title_en": "Compositional Generalization Requires Linear, Orthogonal Representations in Vision Embedding Models",
+  "title_zh": "组合泛化要求视觉嵌入模型具有线性、正交的表示",
+  "curation_status": "full_text_verified",
+  "card_standard_version": "2.4",
+  "audience_profile": "physics_ai_literate_physicist",
+  "paper_profile": "theory_experiment",
+  "style_reference": "physicist_daily_arxiv",
+  "provenance": {
+    "program": "Collection",
+    "catalog": "Paper Collection",
+    "catalog_record_id": "2602.24264",
+    "catalog_record_ids": ["2602.24264"],
+    "catalog_topic": "Representation Learning",
+    "collection_date": "2026-08-30",
+    "sampled_at": "2026-08-31",
+    "selected_by": "ziming_mineru_serial_goal",
+    "sampling_seed": "not_applicable_source_complete",
+    "candidate_count": 464
+  },
+  "verified_metadata": {
+    "arxiv_id": "2602.24264",
+    "version": "v2",
+    "title": "Compositional Generalization Requires Linear, Orthogonal Representations in Vision Embedding Models",
+    "authors": ["Arnas Uselis", "Andrea Dittadi", "Seong Joon Oh"],
+    "categories": ["cs.CV", "cs.LG"],
+    "primary_category": "cs.CV",
+    "published": "2026-02-27",
+    "updated": "2026-07-06",
+    "abstract": "An exact binary fixed-encoder linear-readout theorem links strong all-support transfer and posterior stability to additive, cross-concept-orthogonal embeddings, while pretrained vision models are tested for an approximate multivalued analogue."
+  },
+  "equation_refs": [
+    {
+      "label": "exact support stability",
+      "latex": "p_i^{(T)}(\\cdot\\mid f(x))=p_i^{(T')}(\\cdot\\mid f(x))\\quad\\forall i,x,T,T'\\in\\mathcal T_{valid}",
+      "role": "require every valid readout retraining to produce exactly the same per-concept posterior on every input",
+      "symbols": {
+        "f": "fixed non-contextual encoder",
+        "T_T_prime": "two valid labeled supports used to retrain the readout",
+        "p_i": "softmax posterior for concept i",
+        "T_valid": "one of two strong support families in the theorem"
+      },
+      "evidence": "paper.pdf pp. 4–5 and 18–23, Stability definition and Proposition 1",
+      "interpretation": "标题中的 requires 依赖这个 worst-case exact Stability，而不只是 held-out accuracy；普通平均泛化或一次随机 10% split 不满足其量词。"
+    },
+    {
+      "label": "additive orthogonal factorization",
+      "latex": "z_{\\mathbf c}=\\sum_{i=1}^{k}u_{i,c_i},\\qquad (u_{i,1}-u_{i,0})^\\top(u_{j,1}-u_{j,0})=0\\quad(i\\ne j)",
+      "role": "state the binary representation geometry proved necessary and sufficient under the proposition's assumptions",
+      "symbols": {
+        "c": "tuple of k binary concepts",
+        "z_c": "fixed encoder embedding of that tuple",
+        "u_i_ci": "factor vector for value c_i of concept i",
+        "k": "number of concepts"
+      },
+      "evidence": "paper.pdf pp. 5 and 18–28, Proposition 1 and proof",
+      "interpretation": "精确等价只覆盖 binary concepts、affine heads、GD+cross-entropy 的 max-margin 极限及两类 supports；multivalued 经验式是自然扩展，不是同一必要性定理。"
+    },
+    {
+      "label": "projected whitened factorization score",
+      "latex": "R^2=1-\\frac{\\sum_{x_{\\mathbf c}}\\|f(x_{\\mathbf c})-\\sum_i u_{i,c_i}\\|_2^2}{\\sum_{x_{\\mathbf c}}\\|f(x_{\\mathbf c})-\\bar f\\|_2^2}",
+      "role": "quantify approximate additive reconstruction after projecting into a supervised probe span and whitening",
+      "symbols": {
+        "f_x": "vision embedding after the paper's projection and whitening pipeline",
+        "u_i_ci": "factor estimated from labeled concept-value averages",
+        "f_bar": "mean processed embedding",
+        "R2": "projected linearity score"
+      },
+      "evidence": "paper.pdf pp. 7–9, Equation (7), Figures 8–9 and appendix",
+      "interpretation": "该指标用 labels 学 probes/factors，并丢弃 probe span 外分量；它测 supervised task-relevant subspace 的近似加性，不是整个 raw representation 的线性度。"
+    }
+  ],
+  "figure_refs": [
+    {
+      "label": "Figure 7 DINOv3 factor geometry",
+      "asset_path": "assets/collection-figures/2602.24264/figure-7-dinov3-linear-orthogonal-factors.webp",
+      "section": "核心结果与证据",
+      "role": "visualize approximately repeatable factor displacements, additive reconstructions, and near-orthogonal cross-concept projections in DINOv3 dSprites embeddings",
+      "evidence": "paper.pdf p. 7, Figure 7; official source asset figures/summary_attempt.pdf",
+      "alt_text": "A DINOv3 dSprites summary shows factor changes as similar displacement arrows, additive reconstructions, and grid-like cross-concept PCA projections.",
+      "caption": "Figure 7：DINOv3/dSprites 的定性 factor geometry。图依赖监督 labels、PCA 与单一 model/dataset；它不是 Proposition 1 的证明、因果 orthogonalization 实验或 exact factorization 证据。",
+      "interpretation": "该图为物理读者提供“独立 collective coordinates”的直观，但真实模型只表现 partial additivity/near-orthogonality，且坐标由分析流程选择。"
+    }
+  ],
+  "cover": {
+    "mode": "source_figure",
+    "asset_path": "assets/collection-figures/2602.24264/figure-7-dinov3-linear-orthogonal-factors.webp",
+    "label": "Figure 7 DINOv3 factor geometry",
+    "visual_type": "comparison",
+    "evidence": "paper.pdf p. 7, Figure 7; official source asset figures/summary_attempt.pdf",
+    "alt_text": "Visual factor changes map to approximately additive directions and near-orthogonal cross-concept geometry.",
+    "caption": "DINOv3/dSprites 中的近似 factor additivity 与 cross-concept near-orthogonality；定性、监督且 PCA-dependent。",
+    "selection_rationale": "The official figure is the clearest visual bridge from the theorem's algebraic factor directions to the partial geometry observed in one pretrained vision model."
+  },
+  "sections": [
+    {
+      "title": "作者信息",
+      "paragraphs": [
+        "作者为 Arnas Uselis、Andrea Dittadi 与 Seong Joon Oh，来自 Tübingen AI Center、University of Tübingen、Helmholtz Munich 与 TUM；论文发表于 ICML 2026。",
+        "本站核验 arXiv:2602.24264v2：v1 提交于 2026-02-27，v2 更新于 2026-07-06；主分类 cs.CV、交叉分类 cs.LG，PDF 68 页。",
+        "代码为 https://github.com/oshapio/necessary-compositionality；Collection 来源为刘子鸣网站的 Representation Learning 条目。"
+      ]
+    },
+    {
+      "title": "研究问题",
+      "paragraphs": [
+        "如果线性 readout 在只见部分 concept combinations 后，换任何允许的训练 support 都能对完整笛卡尔积泛化且给出相同 posterior，那么固定 vision encoder 的 embeddings 必须具有怎样的几何？",
+        "论文在 binary 理想框架中证明 additivity 与 cross-concept orthogonality 的必要充分性，并另证同时线性分类全部 $n^k$ 组合需 $d\\ge k$。随后用监督 factor recovery 检查 CLIP/SigLIP/DINO 等 pretrained embeddings。",
+        "理论与实证并不等价：定理含 exact Stability 与特定 supports；实验使用 multivalued datasets、一个随机训练比例及 heterogeneous checkpoints，只观察 partial geometry 与 accuracy 的相关。"
+      ]
+    },
+    {
+      "title": "背景",
+      "paragraphs": [
+        "compositional generalization 指从已见 factor combinations 推到未见组合，例如见过红方块和蓝圆后识别蓝方块。要谈必要条件，必须指定 decoder、learning rule、哪些 supports 被允许及泛化是 average 还是 worst-case。",
+        "本文的 Divisibility 要每个 tuple 有非空联合 decision region；Transferability 要每个 valid support 训练出的 readout 都分类整个 grid；Stability 更要求所有 retrainings 对每个输入给完全相同 posterior。",
+        "binary logistic GD 在可分数据上权重范数发散但方向趋于 hard-margin SVM。证明利用这个 implicit bias 与精心选取的 supports，把 counterfactual pairs 变为 tight support vectors。",
+        "orthogonality 只要求不同 concepts 的 value-difference directions 正交；同一 concept 内多个 values 不必互正交，factor 还可做总和为零的 concept-wise shifts，因此表示并非唯一坐标。"
+      ]
+    },
+    {
+      "title": "给物理学家的 AI 导读",
+      "paragraphs": [
+        "可把每个 concept 的差分向量当独立 order-parameter direction。exact Stability 像要求改变采样边界条件后响应函数完全不变；这个强约束才迫使不同 sectors 解耦正交，普通低误差远弱于此。",
+        "$d\\ge k$ 是 k 个 affine hyperplanes 要实现所有 $2^k$ sign regions 的 region-count 下界，不是“每个 n-valued concept 要 n-1 维”的一般定理。后者 $1+k(n-1)$ 只属于额外 on-off logit pattern。",
+        "实证的 whitened projected $R^2$ 先选 task-relevant probe span，再重新定标 covariance；因此它像在已知 order parameters 的子空间中测 harmonic factorization，而非无监督发现全部 microscopic degrees of freedom。",
+        "checkpoint scatter 的正相关可由 scale、architecture、objective、pretraining data 同时驱动。没有定向增加 orthogonality 并保持其他量固定的干预，就不能把几何当作泛化的因果 control parameter。"
+      ]
+    },
+    {
+      "title": "模型与方法",
+      "paragraphs": [
+        "形式对象 $\\Pi=(f,\\mathcal H,A,\\mathcal T)$：固定 non-contextual encoder $f$、affine readout class、GD+CE learning rule 与 valid-support family；concept space 是 $\\mathcal C_1\\times\\cdots\\times\\mathcal C_k$。",
+        "binary Proposition 1 的两类 supports 是：所有大小 $2^{k-1}+1$ 的 subsets，或 anchor tuple 加全部 single flips 的 $1+k$ cross design；第一类是所有略过半 grid 的 supports，不是一次随机 split。",
+        "数据为 PUG-Animal（$k=4,N=39,168$）、dSprites（$k=6,N=180,000$）、MPI3D（$k=7,N=64,800$）和 ImageNet-AO；前三者按保留 factors 构造 full factorial grids。",
+        "模型库覆盖 OpenAI/OpenCLIP/MetaCLIP、SigLIP/SigLIP2、DINOv1–v3，约 21.6M–3.63B parameters、hidden 384–1280；同 family/checkpoints 共享训练生态，并非独立 replicates。",
+        "实证以 linear probes 定 task span，project+whiten embeddings，再按 concept-value labels 平均估 factors；compositional accuracy 是每 concept classifier 的 held-out accuracy 平均。"
+      ]
+    },
+    {
+      "title": "核心结果与证据",
+      "paragraphs": [
+        "在 binary exact assumptions 下，Proposition 1 得 $z_{\\mathbf c}=\\sum_i u_{i,c_i}$ 且不同 concept differences 正交；反向也成立。multivalued appendix 只给 factors 可恢复时的构造性 sufficiency，不证明 GD+CE 必然恢复。",
+        "独立 geometric-capacity theorem 由 k 个 affine hyperplanes 的 regions 得 $d\\ge k$，$d=k$ coordinate construction 达界；它只要求全部 combinations 可线性实现，不依赖 Stability 或 max-margin proof。",
+        "pretrained models 的 projected $R^2$ 约 0.4–0.6，random baselines 约 0.12–0.42，明确是 partial 而非 exact factorization。Figure 8 显示 $R^2$ 与 held-out accuracy 的 checkpoint-level 正关联，却未给 correlation coefficient、CI 或 test。",
+        "主文同时写 probes 用 10% combinations 训练，又写 held-out 10%；附录 convention 暗示 10% train、90% test。本站保留冲突，不把推断值当官方确认。实证 10% support 也不匹配定理的两类 validity families。",
+        "split robustness 用 13 个 fractions（0.001–0.999）、3 seeds，并在高 accuracy ceiling 时关系变平；这扩大了描述性稳健性，但未消除 checkpoint confounding 或建立因果。",
+        "orthogonality 指标为 centered normalized factor directions 的 mean absolute cosine；pretrained within-concept 约 0.53–0.55、cross-concept 约 0.09–0.12，random cross 约 0.32。因此准确表述是 partial near-orthogonality。",
+        "直接优化 embeddings 的实验跑 50,000 Adam epochs，改变 Euclidean/spherical、CE/BCE、$k,n,d$；它不是从 pixels 学 encoder，且 $n^k>100,000$ 时抽样 100,000 combinations。观察阈值不是新的普适下界。"
+      ]
+    },
+    {
+      "title": "有效性与局限",
+      "paragraphs": [
+        "requires 只在 binary、fixed encoder、affine heads、GD+CE max-margin、exact Divisibility/Transferability/Stability 与两类 supports 下成立；不覆盖 nonlinear/contextual decoders、finite-time optimizers 或 average-case generalization。",
+        "现实 encoder 是随 pretraining objective 联合学习一次，并未在所有 valid supports 上固定后反复训练 readout；authors 也承认这一理论–实验 mismatch。multivalued 式是 heuristic extension。",
+        "chosen Cartesian product 与监督 taxonomy 忽略 multi-object binding、relations、nuisance variation、ambiguous labels 与 non-factorial support；factorization 相对于研究者选择的 concepts，不证明模型内存在唯一 ontology。",
+        "projected whitened $R^2$ 依赖 probes、labels、projection、whitening 与 metric；accuracy correlation 混合 architecture、scale、objective、data 与 family lineage，且 checkpoints 非独立。无 coefficient/CI/test。",
+        "主文 train/test fraction 自相矛盾，且实证 support 不验证 theorem support quantifiers。orthogonality SD 是 concept-pair heterogeneity，不是 model/seed uncertainty；pairs 共享 factors。",
+        "低 factor PCA rank 依赖 cardinality、centering、sampling 和 95% cutoff，不是 causal/intrinsic concept dimension。near-zero cosine 没有通过 rotation/orthogonalization ablation 显示会因果提升泛化。",
+        "所谓随 scale convergence 是前瞻：没有 controlled parameter/data scaling trajectory 或 extrapolation 到 exact factorization。其他 compositionality 定义、relational/contextual representations 与显式模块架构均在定理外。"
+      ]
+    },
+    {
+      "title": "复现与资源",
+      "paragraphs": [
+        "代码为 https://github.com/oshapio/necessary-compositionality；先 pin commit、checkpoint revisions、dataset grids、factor preprocessing、probe splits/seeds、projection/whitening 与 exact train/test fraction。",
+        "把 theorem supports 直接实现为 binary controlled tests，分别验证 all-$2^{k-1}+1$ 与 anchor-cross quantifiers；报告 posterior Stability error，而不只 accuracy。",
+        "实证按 model family/pretraining ecosystem 分层 bootstrap，报告固定模型的 split-seed intervals 与 checkpoint correlation coefficient；用 held-out families 检查 R²–accuracy association。",
+        "做 causal geometry experiment：在 function-preserving controls 下 selectively rotate/mix cross-concept factors，或训练带 orthogonality regularizer 的 matched encoders，测 unseen-combination accuracy 与 nuisance tradeoffs。",
+        "扩展到 non-factorial natural scenes、multi-object binding 与 relations；比较 raw、projected、whitened metrics，公开 concept-pair dependence 和 factor-rank sensitivity。"
+      ]
+    },
+    {
+      "title": "阅读指南",
+      "paragraphs": [
+        "快速路线：pp. 3–6 看定义、Proposition 1 与 $d\\ge k$；pp. 7–9 看 Figure 7–10；pp. 18–30 看必要充分证明；pp. 37–68 看限制、splits 与直接优化。",
+        "物理路线：把 exact Stability 看作强边界条件，把 factor directions 看作 decoupled sectors；再检查有限样本、坐标选择和 perturbation 是否真的验证因果。",
+        "AI 路线：区分 encoder representation、linear-readout retraining、support family、held-out accuracy 与 posterior invariance；标题强度来自最后一项。",
+        "批判路线：重点核对 binary/multivalued 范围、10% split 冲突、theorem/experiment support mismatch、checkpoint dependence、无系数相关与 partial orthogonality。"
+      ]
+    }
+  ],
+  "evidence_refs": [
+    "paper.pdf pp. 3–6 and pp. 18–30, Definitions and Proposition 1: exact binary fixed-encoder framework, strong support families, max-margin proof, additive orthogonal factors and d>=k bound",
+    "paper.pdf pp. 7–9, Figures 7–10: supervised projected-whitened factorization, checkpoint association, partial scores and near-orthogonality",
+    "paper.pdf pp. 37–46 and 58–68: exact-Stability role, counterexamples, datasets/models, split inconsistency, three-seed robustness and direct embedding optimization",
+    "source PDF SHA-256 91801fb188991af9f71767528053d7982f94d0fde57c51baa69790311e64db33",
+    "official arXiv v2 source archive SHA-256 56f0b53059a6efe13024e81f3db99b0e031d80741d0d90c52149a86ac4f208ba",
+    "MinerU Markdown SHA-256 c2e79a76441be14fd7d7ee4e58d2a74d9ac1e30248c5f1d3bb0cfd3d6489f4c0",
+    "Evidence packet SHA-256 42a993957bf469d9cd4434fdff3a21613f5b508ac0080a900d213c237311cce2",
+    "Evidence status: full text, rendered pages and official TeX verified against latest arXiv v2; theorem quantifiers, binary and multivalued scope, support-family mismatch, exact stability, max-margin, dimension-bound, supervised metric, split inconsistency, checkpoint dependence, statistical, partial-orthogonality, causal and scaling boundaries recorded; no independent reproduction performed."
+  ]
+}

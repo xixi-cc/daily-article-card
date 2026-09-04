@@ -1,0 +1,196 @@
+{
+  "arxiv_id": "2603.01097",
+  "source_version": "v5",
+  "source_pdf": "https://arxiv.org/pdf/2603.01097v5",
+  "title_en": "Understanding LoRA as Knowledge Memory: An Empirical Analysis",
+  "title_zh": "将 LoRA 理解为知识记忆：一项实证分析",
+  "curation_status": "full_text_verified",
+  "card_standard_version": "2.4",
+  "audience_profile": "physics_ai_literate_physicist",
+  "paper_profile": "ai_empirical",
+  "style_reference": "physicist_daily_arxiv",
+  "provenance": {
+    "program": "Collection",
+    "catalog": "Paper Collection",
+    "catalog_record_id": "2603.01097",
+    "catalog_record_ids": ["2603.01097"],
+    "catalog_topic": "AI Agents",
+    "collection_date": "2026-08-30",
+    "sampled_at": "2026-08-31",
+    "selected_by": "ziming_mineru_serial_goal",
+    "sampling_seed": "not_applicable_source_complete",
+    "candidate_count": 464
+  },
+  "verified_metadata": {
+    "arxiv_id": "2603.01097",
+    "version": "v5",
+    "title": "Understanding LoRA as Knowledge Memory: An Empirical Analysis",
+    "authors": ["Seungju Back", "Dongwoo Lee", "Naun Kang", "Taehee Lee", "S. K. Hong", "Youngjune Gwon", "Sungjin Ahn"],
+    "categories": ["cs.LG"],
+    "primary_category": "cs.LG",
+    "published": "2026-03-01",
+    "updated": "2026-07-29",
+    "abstract": "LoRA rank, knowledge load, training format, adapter partitioning, routing, merging, and hybrid context are varied across synthetic recall and document QA benchmarks to characterize an empirical adapter-memory operating regime."
+  },
+  "equation_refs": [
+    {
+      "label": "LoRA update",
+      "latex": "W'=W+\\Delta W,\\qquad \\Delta W=BA,\\quad A\\in\\mathbb R^{r\\times d_{in}},\\ B\\in\\mathbb R^{d_{out}\\times r}",
+      "role": "represent a frozen base-weight update by trainable low-rank factors",
+      "symbols": {
+        "W": "frozen pretrained weight matrix",
+        "A_B": "trainable LoRA factors",
+        "r": "adapter rank",
+        "Delta_W": "effective fine-tuning update"
+      },
+      "evidence": "paper.pdf, LoRA setup and rank sweeps",
+      "interpretation": "rank 限制更新矩阵的代数秩，不直接给可存 facts 数或 bits；多 layers/modules、optimizer 与 nonlinear network 会共同决定下游 recall。"
+    },
+    {
+      "label": "empirical parameter efficiency",
+      "latex": "\\operatorname{Efficiency}(\\tau)=\\frac{T_{max}(\\tau)}{N_{params}},\\qquad T_{max}=\\max\\{T:\\operatorname{Score}(T)\\ge\\tau\\}",
+      "role": "compare the largest tested token load above a chosen score threshold per trainable adapter parameter",
+      "symbols": {
+        "tau": "user-chosen performance threshold",
+        "T_max": "largest successful point on the discrete tested token-load grid",
+        "N_params": "trainable LoRA parameter count",
+        "Efficiency": "benchmark-defined tokens-per-parameter ratio"
+      },
+      "evidence": "paper.pdf pp. 3 and 24, Equation (1)",
+      "interpretation": "这是工程指标而非 Shannon capacity：它随阈值、最大搜索 load、tokenizer、训练 compute、placement 与 metric 改变，不能解释为固有 bits/parameter。"
+    },
+    {
+      "label": "concatenated adapter merge",
+      "latex": "A_{cat}=\\operatorname{concat}(A_1,\\ldots,A_N),\\quad B_{cat}=\\operatorname{concat}(B_1,\\ldots,B_N),\\quad \\Delta W_{cat}=\\sum_{i=1}^{N}B_iA_i",
+      "role": "combine several adapter updates into one higher-rank effective update",
+      "symbols": {
+        "A_i_B_i": "factors of adapter i",
+        "N": "number of merged adapters",
+        "Delta_W_cat": "sum of their effective updates"
+      },
+      "evidence": "paper.pdf appendix, adapter-merging equations",
+      "interpretation": "加入更多相关 modules 后得分下降与 interference 相容，但 merge scaling、normalization、sparsification 和实现也同时变化；不能由 score 单独定位知识冲突机制。"
+    }
+  ],
+  "figure_refs": [
+    {
+      "label": "Figure 3 oracle-partitioned LoRA memory",
+      "asset_path": "assets/collection-figures/2603.01097/figure-3-oracle-partitioned-lora-memory.webp",
+      "section": "核心结果与证据",
+      "role": "compare full-context ICL, one rank-32 LoRA, and eight partitioned rank-4 LoRAs under perfect shard selection on 64K PhoneBook",
+      "evidence": "paper.pdf p. 5, Figure 3 left; official source asset figures/q6_poc.pdf",
+      "alt_text": "A bar chart reports 32.2 percent for ICL, 6.2 percent for one rank-32 LoRA, and 99.8 percent for oracle-routed rank-4 LoRA shards.",
+      "caption": "Figure 3 左：64K PhoneBook exact-match 中，ICL 32.2%、single rank-32 LoRA 6.2%、八个 rank-4 shards 在 oracle routing 下 99.8%。这是 perfect-router 上界，不是端到端 modular memory 成绩。",
+      "interpretation": "结果证明已知 query→shard 身份时 partitioning 极有效；实用 PaperQA retrieval 明显低于 oracle，甚至可输给 single LoRA，因此 routing 是系统瓶颈。"
+    }
+  ],
+  "cover": {
+    "mode": "source_figure",
+    "asset_path": "assets/collection-figures/2603.01097/figure-3-oracle-partitioned-lora-memory.webp",
+    "label": "Figure 3 oracle-partitioned LoRA memory",
+    "visual_type": "comparison",
+    "evidence": "paper.pdf p. 5, Figure 3 left; official source asset figures/q6_poc.pdf",
+    "alt_text": "Oracle routing makes partitioned low-rank adapters nearly perfectly recall a synthetic phonebook while ICL and one adapter perform far worse.",
+    "caption": "分片 LoRA 在 oracle router 下的 PhoneBook 上界；关键未解问题是实际 routing、merge 与生命周期管理。",
+    "selection_rationale": "The official panel captures both the strongest modular-memory result and its decisive oracle-routing caveat in one compact comparison."
+  },
+  "sections": [
+    {
+      "title": "作者信息",
+      "paragraphs": [
+        "作者为 Seungju Back、Dongwoo Lee、Naun Kang、Taehee Lee、S. K. Hong、Youngjune Gwon 与 Sungjin Ahn，来自 KAIST、Samsung SDS 与 NYU；论文发表于 ICML 2026。",
+        "本站核验 arXiv:2603.01097v5：v1 提交于 2026-03-01，v5 更新于 2026-07-29，主分类 cs.LG，PDF 41 页。",
+        "代码为 https://github.com/ahn-ml/Understanding-LoRA-as-Knowledge-Memory；Collection 来源为刘子鸣网站的 AI Agents 条目。"
+      ]
+    },
+    {
+      "title": "研究问题",
+      "paragraphs": [
+        "LoRA 除了适配任务，能否像外接知识记忆一样把新事实/文档编码进参数？容量随 rank 与 token load 如何变化，拆成多个 adapters 是否比一个大 adapter 更有效？",
+        "论文在 PhoneBook、CounterFact、PaperQA 和长文 QA 上扫描 rank/load、synthetic format、model size、partition/router、merge 与 ICL/RAG hybrid，并比较查询时延。",
+        "“memory”是工程隐喻：本文测 fine-tuning 后 exact recall 或 QA score，没有给信息论容量、事实的物理位置、读写机制或完整 continual-memory 生命周期。"
+      ]
+    },
+    {
+      "title": "背景",
+      "paragraphs": [
+        "LoRA 冻结 base model，只训练 $BA$ 低秩更新。trainable parameters 少、模块可切换，但 rank 是矩阵约束，不是“可装 r 条知识”；知识还通过多层非线性与 base features 表达。",
+        "参数 memory 与 context memory 的代价结构不同：LoRA 要离线训练、加载/路由，之后短 prompt 可重复查询；ICL/RAG 每次送入 context/retrieved chunks，但更新与 provenance 更直接。",
+        "PhoneBook exact recall 是最干净的 memorization probe：虚构姓名–电话对来自训练集。它不测 paraphrase、semantic reasoning、冲突解决或后续更新后的遗忘。",
+        "modular memory 的理想优势来自 partition：每 query 只激活小 shard，减少互相干扰。但若不知道 shard，router error 会直接成为 recall error；oracle 与 practical system 必须分开。"
+      ]
+    },
+    {
+      "title": "给物理学家的 AI 导读",
+      "paragraphs": [
+        "把 rank 看作可调自由度、knowledge tokens 看作 load，score collapse 像有限容量 crossover；但 PhoneBook slices 是固定顺序的 nested subsets，没有 resampled disorder 或 seed intervals，不能从曲线提取普适临界 law。",
+        "$T_{max}/N_{params}$ 类似经验 storage density，但 $T_{max}$ 是离散 grid 上过人为阈值的最后一点。改变阈值、tokenizer、训练步数或最大 load 都会改变“最优 rank”，它不是状态方程。",
+        "oracle-sharded 结果像知道 disorder realization 后选择正确子系统：它隔离了 storage/partition 潜力，却把检索熵设为零。实际 router 的混淆矩阵才决定端到端容量。",
+        "merge 更多 adapters 后下降并不唯一指向 destructive interference；TIES/scale/normalization 改变 effective update。需直接测每事实 logits/activations 与参数 update overlap 才能建立机制。"
+      ]
+    },
+    {
+      "title": "模型与方法",
+      "paragraphs": [
+        "主容量实验用 Llama-3.1-8B、Qwen3-8B，rank 2–1024、load 1K–20K tokens；PhoneBook/CounterFact 训练 1,500 steps、batch 8、LoRA $\\alpha=r$。",
+        "PhoneBook 按固定顺序累加 pairs，直到各模型 tokenizer 首次超过目标 token count；小 slices 嵌套于大 slices，因此 load points 不独立且新增 items identity 与 token load 混杂。",
+        "PaperQA 用 15 篇近期 conference introductions，每篇由 Gemini 2.5 Pro 生成 10 recall、10 comprehension、10 logical questions，共 450；主 judge 为 GPT-4.1 0–10 score。",
+        "64K proof-of-concept 匹配 stored adapter-parameter budget：一个 rank-32 LoRA 训练全部数据，对比八个 rank-4 LoRAs 各训 8K；后者用 oracle 选正确 shard。",
+        "long documents 用 NarrativeQA、QuALITY、InfinityBench 与 LongBench v2；single LoRA rank 16，chunk modules rank 4，top-1/top-3 retrieval 及 TIES merge，并与 ICL/RAG 组合。"
+      ]
+    },
+    {
+      "title": "核心结果与证据",
+      "paragraphs": [
+        "固定 rank 时 PhoneBook performance 随 load 超过某区间坍塌；rank 越高绝对性能通常越好，低 rank（常为 4）按选定 $T_{max}/N_{params}$ 指标最有效率。论文未拟合 analytic/information-theoretic capacity law。",
+        "PaperQA mixed-format 表中 Llama/Qwen：original 3.187/4.587，QA40 5.893/5.409，Original+QA40 6.300/5.371，all formats 6.822/5.614；all formats 4,088 tokens 而 original 947，未匹配 data budget。",
+        "64K PhoneBook 的 ICL/single/oracle-sharded scores 为 32.2%/6.2%/99.8%。八个 rank-4 与一个 rank-32 stored parameters 匹配，但每 query 激活 computation 与 partition 也不同，不能只归因为 rank。",
+        "PaperQA 的 BGE top-1 routing 低于 oracle且可输给 single LoRA；Arrow、SpectR、LAG 也未稳定补齐。合并方法中 TIES 略优、Linear 强、DARE 较差，但小差异无 uncertainty。",
+        "把 1–5 个 ground-truth PaperQA modules 以 TIES 合并，N=1 最好、更多相关 modules 更差，与 interference 相容；未隔离 merge scaling/normalization/distribution shift。",
+        "long-context hybrid 强弱依 task/model/cell：Qwen3-8B QuALITY 的 Top3+ICL 76.26 对 ICL 72.89，但 Single+ICL 有时低于 ICL。100K+ tables 也有 cells 偏好 RAG 或 Multi-LoRA+RAG。",
+        "timing 在 RTX PRO 6000、Llama-8B、BGE、30 questions/document 上测并排除 LoRA training 与 synthetic generation；Flash Attention 会反转 single-LoRA/base inference ordering，说明结果强依赖 software stack。"
+      ]
+    },
+    {
+      "title": "有效性与局限",
+      "paragraphs": [
+        "memory/internalize/store 仅由下游 score 操作化；没有 mutual information、bits capacity、fact localization 或 mechanistic read/write。训练集 recall 不等于 semantic generalization 或长期 persistence。",
+        "PhoneBook nested loads 非独立、无 resampled datasets；中心 comparisons 没有 seed counts、error bars、confidence intervals 或 tests。小 merger 差异不能写成统计确定。",
+        "PaperQA 无法证明 base model 零污染；questions 由 Gemini 生成、一个 GPT-4.1 主判，无 blinded human audit、inter-rater agreement 或 judge calibration。QA training 与 QA evaluation 也可能 objective-match。",
+        "synthetic format mixtures token budgets 不同；Qwen size comparison 又分别调 learning rate/steps，因此不能把差异纯归因 diversity 或 scale。",
+        "99.8% 是 perfect router 上界。partition 与 active computation 同时改变；practical routing/merging 明显更弱，系统的 routing cost、错误与 update policy 不能省略。",
+        "long-context tables 混合 chunk size/overlap、ranks、steps、retrieval 与 merge；documents 内 questions 共享 source/adapters，不是独立 replicates。timing 排除离线 lifecycle costs。",
+        "范围主要是约 1B–14B Llama/Qwen、指定 PEFT。未测 sequential overwriting、forgetting、conflict/deletion、privacy/provenance、poisoning 或 base-capability retention。"
+      ]
+    },
+    {
+      "title": "复现与资源",
+      "paragraphs": [
+        "pin code/model/tokenizer/data/order、LoRA target modules、rank/alpha、optimizer、steps 与 judge prompts；公开每个 load slice 的 item IDs，按多 random permutations 重建容量曲线。",
+        "对 $T_{max}/N_{params}$ 报多阈值、连续 interpolated curves、training FLOPs 与 bits；用 held-out paraphrases/conflicts 检查 recall 不只是 exact training-string memorization。",
+        "router 需报告 shard confusion matrix、top-k recall、latency、memory footprint 与 end-to-end QA；oracle 仅作上界。比较 one/many LoRA 时匹配 stored parameters、active parameters、training tokens 和 query compute。",
+        "merge 实验加入 update cosine/overlap、per-fact logit retention、scale-normalized controls 与 sequential addition，区分 algebraic scaling、router error 和真正知识冲突。",
+        "总成本应包括 synthetic generation、LoRA training/update、indexing、loading 与 repeated queries；跨 hardware/Flash/PEFT stacks 复测。补 deletion、revocation、conflict、forgetting 与 provenance 生命周期。"
+      ]
+    },
+    {
+      "title": "阅读指南",
+      "paragraphs": [
+        "快速路线：pp. 3–5 看 rank/load、PaperQA 与 oracle partition；pp. 5–8 看 routing/merge/long context；pp. 15–24 看 datasets/metric；pp. 35–41 看 100K+ 与 timing。",
+        "物理路线：把 rank-load 曲线看有限系统 crossover，但先检查 nested disorder、阈值、训练预算与不确定性，再谈 capacity。",
+        "AI 路线：区分 stored adapter budget、active adapter compute、router accuracy、merge update 与 context tokens；99.8% 只固定了其中部分。",
+        "批判路线：重点检查 oracle routing、synthetic data/judge、unmatched token budgets、无 seed intervals、模型调参混杂和 timing 的 lifecycle exclusion。"
+      ]
+    }
+  ],
+  "evidence_refs": [
+    "paper.pdf pp. 3–5 and pp. 22–24: rank/load grids, empirical efficiency threshold, PaperQA format table and oracle-partitioned PhoneBook comparison",
+    "paper.pdf pp. 5–8 and pp. 31–35: practical routing, adapter merging, merge-count intervention, long-document and 100K+ benchmark-specific results",
+    "paper.pdf pp. 15–17 and pp. 39–41: nested PhoneBook construction, synthetic PaperQA/judge protocol, timing components and software-stack sensitivity",
+    "source PDF SHA-256 08b937f35edf84cb1ac2ab67b8ff4a49a8f4f1d71a7629418555c0fcca66ad68",
+    "official arXiv v5 source archive SHA-256 7e2a720630211f5c10a6f12c51991fc62c9aedd2b795061627f3448c2dac990b",
+    "MinerU Markdown SHA-256 2c83d5836e31dae21419ec1569fe3e7384ec81c23c210f4487331a8c25b68332",
+    "Evidence packet SHA-256 ae2c66767f9e7638eb47cfe278917d30c41d7984f838b8973ed12c5bc4d1356c",
+    "Evidence status: full text, rendered pages and official TeX verified against latest arXiv v5; operational-memory definition, nested-load dependence, rank/threshold metric, synthetic-data judge, oracle routing, partition/compute confounding, merge interference, long-context heterogeneity, statistical uncertainty, timing lifecycle and continual-memory boundaries recorded; no independent reproduction performed."
+  ]
+}
