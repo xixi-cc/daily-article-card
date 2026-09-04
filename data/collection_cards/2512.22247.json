@@ -1,0 +1,185 @@
+{
+  "arxiv_id": "2512.22247",
+  "source_version": "v2",
+  "source_pdf": "https://arxiv.org/pdf/2512.22247v2",
+  "title_en": "The Affine Divergence: Aligning Activation Updates Beyond Normalisation",
+  "title_zh": "仿射发散：超越归一化来对齐激活更新",
+  "curation_status": "full_text_verified",
+  "card_standard_version": "2.4",
+  "audience_profile": "physics_ai_literate_physicist",
+  "paper_profile": "theory_numerics",
+  "style_reference": "physicist_daily_arxiv",
+  "provenance": {
+    "program": "Collection",
+    "catalog": "Paper Collection",
+    "catalog_record_id": "2512.22247",
+    "catalog_record_ids": ["2512.22247"],
+    "catalog_topic": "Learning Theory",
+    "collection_date": "2026-08-30",
+    "sampled_at": "2026-08-31",
+    "selected_by": "ziming_mineru_serial_goal",
+    "sampling_seed": "not_applicable_source_complete",
+    "candidate_count": 464
+  },
+  "verified_metadata": {
+    "arxiv_id": "2512.22247",
+    "version": "v2",
+    "title": "The Affine Divergence: Aligning Activation Updates Beyond Normalisation",
+    "authors": ["George Bird"],
+    "categories": ["cs.LG"],
+    "primary_category": "cs.LG",
+    "published": "2025-12-24T00:31:22Z",
+    "updated": "2026-03-10T14:20:06Z",
+    "abstract": "The paper derives a sample-dependent mismatch between a local activation-space gradient and the activation change induced by ordinary parameter gradient descent, proposes norm-like and affine-like structural maps that cancel it under stated approximations, and tests them in parameterless CIFAR-10 ablations."
+  },
+  "equation_refs": [
+    {
+      "label": "仿射层及参数梯度",
+      "latex": "z_i=W_{ij}x_j+b_i,\\qquad g_i\\equiv\\frac{\\partial\\mathcal L}{\\partial z_i},\\qquad \\Delta W_{ij}=-\\eta g_i x_j,\\quad \\Delta b_i=-\\eta g_i",
+      "role": "set up the local comparison between direct activation descent and the activation change induced through parameter updates",
+      "symbols": {
+        "x": "one sample's input activation vector",
+        "z": "pre-activation output of the affine layer",
+        "W,b": "weight matrix and bias vector",
+        "g": "loss gradient with respect to z",
+        "eta": "gradient-descent learning rate"
+      },
+      "evidence": "paper.pdf p. 3, Eqs. (1)–(7)",
+      "interpretation": "这里的“理想激活步”是把 z 临时当独立欧氏坐标时的局部梯度步；真实网络中各样本、各层的激活共享参数，通常不能彼此独立更新。"
+    },
+    {
+      "label": "仿射发散因子",
+      "latex": "\\Delta z_i=-\\eta g_i\\bigl(\\lVert x\\rVert_2^2+1\\bigr),\\qquad \\frac{\\Delta\\mathcal L}{\\Delta z_i}=\\frac{\\partial\\mathcal L}{\\partial z_i}\\bigl(\\lVert x\\rVert_2^2+1\\bigr)",
+      "role": "show the sample-dependent scalar multiplying the propagated activation update",
+      "symbols": {
+        "Delta_z_i": "change in the same sample's pre-activation after updating W and b",
+        "norm_x_squared_plus_1": "paper's affine-divergence factor",
+        "Delta_L_over_Delta_z": "finite-difference notation introduced by the author, not a formal derivative"
+      },
+      "evidence": "paper.pdf pp. 3–4, Eqs. (8)–(11)",
+      "interpretation": "单样本时它只改变步长，相当于样本依赖的有效学习率；在 batch 中，不同样本经共享参数产生交叉项，方向也可能偏转。该式依赖同一样本、单步、一阶和单层截断。"
+    },
+    {
+      "label": "两类结构修正",
+      "latex": "z_{\\mathrm{norm}}=W\\frac{x}{\\lVert x\\rVert_2}+b,\\qquad z_{\\mathrm{aff}}=\\frac{Wx+b}{\\sqrt{\\lVert x\\rVert_2^2+1}}",
+      "role": "cancel the single-sample local divergence through a norm-like map or a non-scale-invariant affine-like map",
+      "symbols": {
+        "z_norm": "norm-like structural correction",
+        "z_aff": "affine-like structural correction",
+        "sqrt_norm_x_squared_plus_1": "soft radial denominator that remains nonsingular at x=0"
+      },
+      "evidence": "paper.pdf p. 5, Eqs. (18)–(19)",
+      "interpretation": "前者投影掉径向自由度，并把局部有效步长加倍，公平比较时需相应减半 η；后者保留径向信息但改变了原始仿射层。所谓“消除”只对推导采用的局部近似成立。"
+    }
+  ],
+  "figure_refs": [
+    {
+      "label": "Figure 3",
+      "asset_path": "assets/collection-figures/2512.22247/figure-3-normalizer-geometry.webp",
+      "section": "给物理学家的 AI 导读",
+      "role": "compare how common parameterless normalizers and the affine-like map transform a two-dimensional Gaussian point cloud",
+      "evidence": "paper.pdf p. 11, Figure 3",
+      "alt_text": "五个面板比较 BatchNorm、LayerNorm、L2-Norm、RMSNorm 与 affine-like 映射对二维高斯点云的作用；LayerNorm 在二维坍缩为两簇，L2/RMS 投到圆周，affine-like 保留圆盘内的径向分布。",
+      "caption": "Figure 3 把归一化的几何代价画得很直观：球面投影删除径向自由度，而 affine-like 映射把无穷平面软压缩进有界区域但保留半径排序。",
+      "interpretation": "This is a two-dimensional geometry illustration with identity weights and zero bias, not evidence that radial information is useful or that the affine-like map will generalize to deep networks."
+    }
+  ],
+  "cover": {
+    "mode": "source_figure",
+    "asset_path": "assets/collection-figures/2512.22247/figure-3-normalizer-geometry.webp",
+    "label": "Figure 3",
+    "visual_type": "comparison",
+    "evidence": "paper.pdf p. 11, Figure 3",
+    "alt_text": "多种归一化与 affine-like 映射对二维点云几何的不同改变。",
+    "caption": "归一化把表示压到壳层；affine-like 修正保留径向自由度，同时限制大范数输入。",
+    "selection_rationale": "It gives non-specialist physicists an immediate geometric picture of the paper's proposed distinction between normalization-like and affine-like corrections."
+  },
+  "sections": [
+    {
+      "title": "作者信息",
+      "paragraphs": [
+        "George Bird；University of Manchester Department of Computer Science。",
+        "本站核验 arXiv:2512.22247v2：初稿提交于 2025-12-24，当前版本更新于 2026-03-10；分类 cs.LG；论文标注为 ICLR 2026 GRaM workshop Proceedings Track，共 30 页。",
+        "Collection 来源为刘子鸣网站的 Learning Theory 条目。"
+      ]
+    },
+    {
+      "title": "研究问题",
+      "paragraphs": [
+        "梯度下降直接更新的是共享参数 W、b，而不是每个样本的中间激活 z。论文问：把参数更新重新代入仿射层后，某个样本实际得到的 $\\Delta z$，是否等于把 z 当独立变量时的欧氏最陡下降 $-\\eta\\partial\\mathcal L/\\partial z$？",
+        "作者发现，在单样本、单步、一阶、单层近似下，两者相差 $\\lVert x\\rVert^2+1$，并把它命名为 affine divergence。随后反推能消去该因子的前向映射，得到一个 norm-like 方案和一个不具尺度不变性的 affine-like 方案。",
+        "真正需要检验的不是代数恒等式，而是这个局部 mismatch 是否构成归一化成功的主要机制，以及修正局部 activation geometry 是否能在共享参数、多样本、深层网络中改善训练。"
+      ]
+    },
+    {
+      "title": "背景",
+      "paragraphs": [
+        "普通仿射层 $z=Wx+b$ 对 W、b 做梯度下降。对同一个 x 重新计算 z 时，权重项贡献 $-\\eta g\\lVert x\\rVert^2$，bias 再贡献 $-\\eta g$；因此输入范数会调制该样本的实际激活步长。",
+        "BatchNorm、LayerNorm、RMSNorm 不只是数值稳定技巧，也改变表示空间几何。参数化的 $\\gamma,\\beta$ 又是额外的可学习仿射层；论文为了隔离几何机制，实验主要比较去参数化版本，因此结果不能直接等同于库中常用的完整 normalizer。",
+        "论文的“理想”采用激活坐标中的欧氏度量。这个选择不像 natural gradient 那样具有重参数化不变性；换一组激活坐标，所谓最陡方向也会改变。"
+      ]
+    },
+    {
+      "title": "给物理学家的 AI 导读",
+      "paragraphs": [
+        "可以把每层激活看成高维状态坐标、参数更新看成通过约束流形诱导的位移。$-\\eta g$ 是假设 z 可自由移动时的切向箭头；真实位移必须由同一组 W、b 同时推动整批样本，所以一般落在受约束的可实现方向上。",
+        "因子 $\\lVert x\\rVert^2+1$ 类似坐标相关的 mobility：单样本时只重标时间步，batch 时 Gram 型交叉项会耦合不同样本并偏转合成方向。但这不是热力学熵产生，也没有证明存在物理意义上的发散或不稳定性。",
+        "Figure 3 展示几何差别：L2/RMSNorm 把点投到球壳，删除一个径向自由度；affine-like 映射 $x/\\sqrt{\\lVert x\\rVert^2+1}$ 像把无穷空间软压入单位球，仍区分不同半径。是否应该保留径向坐标取决于任务，不能仅由维数计数决定。"
+      ]
+    },
+    {
+      "title": "模型与方法",
+      "paragraphs": [
+        "理论部分从单个 affine layer 推导参数更新对该层输出的传播，先保留学习率一阶项并在该层终止传播；主推导按单样本处理，附录再写 batch 交叉项。",
+        "结构修正把补偿写进前向映射。norm-like 先将 x 归一化再做仿射变换；affine-like 则把整个 $Wx+b$ 除以 $\\sqrt{\\lVert x\\rVert^2+1}$。作者还讨论只改梯度的方案，但逐样本 Jacobian 难以用标准 autodiff 高效实现。",
+        "主要实验是 CIFAR-10 全连接分类：ADAM、100 epochs、默认学习率 0.001、batch size 32、每个配置 5 次重复；变化 width、depth、tanh/Leaky-ReLU，共 112 种配置、560 个网络。normalizers 均去除可学习缩放以做机制消融。",
+        "附录把同样思路扩展到 convolutional patches 得到 PatchNorm，并尝试分析 attention；attention 推导在 value、多头和堆叠之前已很复杂，论文没有提出可用修正。residual connections 也明确超出单层近似。"
+      ]
+    },
+    {
+      "title": "核心结果与证据",
+      "paragraphs": [
+        "在局部单样本推导中，标准 affine map 的有效激活步为 $-\\eta g(\\lVert x\\rVert^2+1)$；两类结构映射在相同近似下可把比例恢复为常数。norm-like 方案给出两倍有效学习率，论文同时测试 η 与 η/2。",
+        "全连接 CIFAR-10 消融中，tanh 下两种 structural corrections 通常明显优于 no norm、BatchNorm、LayerNorm、RMSNorm；Leaky-ReLU 的分离较小，但 affine-like 多数配置最好。结论来自小型参数化被移除的网络，而非现代残差架构。",
+        "作者从 batch 交叉项预测：随着 batch size 从 8 增至 128，结构修正的性能可能下降。两层、宽 32 的 CIFAR-10 实验确实给出负相关，而若干对照为平坦或正相关；这是支持机制的独立定性信号，但样本点少、同一数据集且缺少外部复现。",
+        "PatchNorm 在 32 种 convolutional 配置、160 个网络上仍可训练，但优势不再稳定：不同 activation/architecture 下 LayerNorm、RMSNorm 或 BatchNorm 可胜出。作者据此承认 patch overlap 与下游非线性破坏独立样本近似。",
+        "Figure 3 只说明映射的几何：二维 LayerNorm 坍缩为两个点，L2/RMS 到圆周，affine-like 填满圆盘。它不能单独证明自由度保留导致了更高准确率。"
+      ]
+    },
+    {
+      "title": "有效性与局限",
+      "paragraphs": [
+        "优点是从精确的局部代数出发，提出可证伪的 batch-size 趋势，并同时报告 affine、batch、convolution、attention 和 residual 情形何处不再简单；不是只用 benchmark 排名包装新模块。",
+        "核心 equality 依赖同一输入重算、单步、一阶和单层截断。深层网络中更新上游参数也会改变 x，residual paths 跨层传梯度；batch 中每个样本不能通过共享参数独立实现自己的 $-\\eta g$。因此“消除 divergence”不是全网络定理。",
+        "把 activation-space 欧氏梯度称为“数学上理想”是一项建模选择，而非坐标无关结论。中间激活是参数的函数、不是独立控制量；优先对齐它们也未被证明必然改善 loss trajectory、泛化或表示质量。",
+        "实验仅用 CIFAR-10，5 repeats，且没有逐方法调参；去参数化的 BatchNorm/LayerNorm/RMSNorm 与真实实践不同。大量网络配置增加覆盖面，却不等于独立数据集、优化器或任务的重复证据。",
+        "batch-size 负斜率与作者推导相容，但 cross-term 的符号和净效应没有完整解析预测；学习率、每 epoch 更新次数和梯度噪声都随 batch size 改变，尚不能唯一归因于 affine divergence。",
+        "PatchNorm 结果混合，attention 没有解，residual 网络超出范围。论文因此最多支持一个有趣的局部机制假说和候选结构映射，不能支持用 affine-like 全面替代现代 normalisation。"
+      ]
+    },
+    {
+      "title": "复现与资源",
+      "paragraphs": [
+        "论文给出 Zenodo 资源：https://doi.org/10.5281/zenodo.15476947 。复现时应固定 arXiv v2、代码归档版本、CIFAR-10 split、ADAM 设置、初始化、网络 width/depth、activation、batch size 与是否包含 $\\gamma,\\beta$。",
+        "最小代数复现可用一个 affine layer 和显式 SGD：保存 W、b、x、g，更新参数后重算 z，核对 $\\Delta z=-\\eta g(\\lVert x\\rVert^2+1)$；随后用两个样本检查交叉 Gram 项，避免把单样本比例误当 batch 结论。",
+        "经验复现应先逐点重画 Figure 1、6、7 的均值与标准误，再加入完整参数化 normalizers、matched compute/updates、学习率扫描、多个数据集与 residual MLP/Transformer。本站未运行训练实验。"
+      ]
+    },
+    {
+      "title": "阅读指南",
+      "paragraphs": [
+        "先读 Eqs. (8)–(11)，自己区分三件事：参数梯度、把 z 当独立变量的梯度、参数更新后同一样本的实际 $\\Delta z$。这能避免被“divergence”一词误导成数值爆炸。",
+        "再读 Eqs. (18)–(21) 与 Figure 3，比较 norm-like 和 affine-like 的径向几何、奇点、自由度与有效学习率；同时记住这些性质都依赖所选激活坐标。",
+        "最后对照 Figure 1、6–9 与附录 C：全连接结果是正证据，PatchNorm 是边界案例，attention/residual 是未解决项。最关键的后续实验是完整现代网络中的 matched-update ablation，并用 Jacobian/NTK 或 function-space 指标判断 activation alignment 是否真的改善优化。"
+      ]
+    }
+  ],
+  "evidence_refs": [
+    "paper.pdf pp. 3–7: affine-divergence derivation, structural corrections and geometric properties",
+    "paper.pdf pp. 8–12: parameterless fully connected CIFAR-10 ablations and Figure 3 geometry",
+    "paper.pdf appendices C–E: batch-size prediction, convolution/PatchNorm results, unresolved attention and residual cases, experimental details",
+    "source PDF SHA-256 28d7b1a5e8e78dcfc0c933009de4a2a2dcba79376c2335917886ec71a9c1765b",
+    "Evidence packet SHA-256 42c8bea1d6c188a055007fda4e25a4ec820ba25fb2a6d0a731272d84b2e92859",
+    "Evidence status: full-text verified; no independent reproduction performed."
+  ]
+}

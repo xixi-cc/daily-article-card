@@ -1,0 +1,187 @@
+{
+  "arxiv_id": "2512.22213",
+  "source_version": "v3",
+  "source_pdf": "https://arxiv.org/pdf/2512.22213v3",
+  "title_en": "On the Existence and Behavior of Secondary Attention Sinks",
+  "title_zh": "次级注意力汇的存在与行为",
+  "curation_status": "full_text_verified",
+  "card_standard_version": "2.4",
+  "audience_profile": "physics_ai_literate_physicist",
+  "paper_profile": "ai_empirical",
+  "style_reference": "physicist_daily_arxiv",
+  "provenance": {
+    "program": "Collection",
+    "catalog": "Paper Collection",
+    "catalog_record_id": "2512.22213",
+    "catalog_record_ids": ["2512.22213"],
+    "catalog_topic": "Representation Learning",
+    "collection_date": "2026-08-30",
+    "sampled_at": "2026-08-31",
+    "selected_by": "ziming_mineru_serial_goal",
+    "sampling_seed": "not_applicable_source_complete",
+    "candidate_count": 464
+  },
+  "verified_metadata": {
+    "arxiv_id": "2512.22213",
+    "version": "v3",
+    "title": "On the Existence and Behavior of Secondary Attention Sinks",
+    "authors": ["Jeffrey T. H. Wong", "Cheng Zhang", "Louis Mahon", "Wayne Luk", "Anton Isopoussu", "Yiren Zhao"],
+    "categories": ["cs.LG", "cs.AI", "cs.CL"],
+    "primary_category": "cs.LG",
+    "published": "2025-12-22T09:06:43Z",
+    "updated": "2026-03-14T18:04:19Z",
+    "abstract": "The paper identifies non-BOS attention sinks that begin in middle layers and persist for variable depths, and relates their formation to MLP-induced alignment with a primary-sink direction and to large residual-stream norms across selected reasoning-model families."
+  },
+  "equation_refs": [
+    {
+      "label": "pre-norm decoder 的残差分解",
+      "latex": "\\widetilde H^{l}=H^{l}+O^{l},\\qquad H^{l+1}=\\widetilde H^{l}+F^{l}",
+      "role": "separate the attention output and MLP output added to each token's residual-stream state",
+      "symbols": {
+        "H_l": "token-by-hidden-dimensional residual stream entering layer l",
+        "O_l": "multi-head self-attention output",
+        "F_l": "MLP output",
+        "H_l+1": "state passed to the next decoder block"
+      },
+      "evidence": "paper.pdf pp. 2 and 5, decoder-block description and Figure 3",
+      "interpretation": "逐模块追踪 cosine 和 norm 可定位 sink direction 在 attention 之后还是 MLP 之后出现；这是一种 residual-stream bookkeeping，不表示 MLP 单独决定所有后续 attention。"
+    },
+    {
+      "label": "基于 BOS 方向的次级汇检测",
+      "latex": "c_{t}^{l}=\\frac{h_{t}^{l}\\cdot h_{0}^{l}}{\\|h_{t}^{l}\\|_2\\,\\|h_{0}^{l}\\|_2},\\qquad t\\ne0,\\qquad c_t^l>0.95",
+      "role": "detect non-BOS hidden states that align strongly with the primary BOS-sink direction",
+      "symbols": {
+        "h_t_l": "hidden state of token t at layer l",
+        "h_0_l": "BOS hidden state in the same layer",
+        "c_t_l": "cosine similarity used for thresholding",
+        "0.95": "paper's operational detection threshold"
+      },
+      "evidence": "paper.pdf p. 3, Section 3 detection protocol",
+      "interpretation": "次级汇由作者的操作阈值定义；换模型、prompt、head aggregation 或 threshold 后计数可能改变。方向相似也不等价于功能相同。"
+    },
+    {
+      "label": "跨未来 queries 与 heads 的 sink score",
+      "latex": "s_{k}^{(l,h)}=\\frac{1}{T-k}\\sum_{t=k}^{T-1}a_{tk}^{(l,h)},\\qquad s_k^l=\\frac{1}{H}\\sum_{h=1}^{H}s_k^{(l,h)}",
+      "role": "measure how much subsequent positions attend to token k in one layer, averaged over heads",
+      "symbols": {
+        "a_tk": "causal attention weight from query position t to key position k",
+        "T": "sequence length",
+        "H": "number of attention heads",
+        "l,h": "layer and head indices",
+        "s_k_l": "layer-level sink score"
+      },
+      "evidence": "paper.pdf p. 6, Eq. (1)",
+      "interpretation": "这是 attention allocation 的统计量，不直接测 token 对 logits、答案正确率或信息传输的因果贡献；平均 heads 还可能隐藏少数 head 的异质行为。"
+    }
+  ],
+  "figure_refs": [
+    {
+      "label": "Figure 4",
+      "asset_path": "assets/collection-figures/2512.22213/figure-4-secondary-sink-strength-lifetime.webp",
+      "section": "核心结果与证据",
+      "role": "relate BOS weakening, secondary-sink onset, MLP-output norm, sink strength and layer lifetime in DeepSeek-14B",
+      "evidence": "paper.pdf p. 6, Figure 4",
+      "alt_text": "左图比较 BOS 与次级汇沿层深的 sink score；中图显示 layer-22 MLP 输出范数越大，后续多个层的相对 sink score 越高；右图显示 lifetime 随该范数分段增加。",
+      "caption": "次级汇在 BOS 注意力最低的中层出现，其强度和持续层数都与生成它的 MLP 输出范数相关。",
+      "interpretation": "The plots support a strong association in one focal model/dataset; they do not by themselves establish that secondary sinks functionally compensate for BOS or improve reasoning."
+    }
+  ],
+  "cover": {
+    "mode": "source_figure",
+    "asset_path": "assets/collection-figures/2512.22213/figure-4-secondary-sink-strength-lifetime.webp",
+    "label": "Figure 4",
+    "visual_type": "comparison",
+    "evidence": "paper.pdf p. 6, Figure 4",
+    "alt_text": "次级注意力汇的深度位置、强度与寿命同 MLP 输出范数的关系。",
+    "caption": "某些 token 会在中层被 MLP 推入 BOS-like 方向，短暂成为新的 attention sink。",
+    "selection_rationale": "It jointly shows the depth-localized phenomenon and the paper's most quantitative mechanism-to-impact correlation."
+  },
+  "sections": [
+    {
+      "title": "作者信息",
+      "paragraphs": [
+        "Jeffrey T. H. Wong、Cheng Zhang、Louis Mahon、Wayne Luk、Anton Isopoussu、Yiren Zhao；Imperial College London 与 UnlikelyAI。",
+        "本站核验 arXiv:2512.22213v3：初稿提交于 2025-12-22，当前版本更新于 2026-03-14；分类 cs.LG、cs.AI、cs.CL；被 ICLR 2026 Workshop on Unifying Concept Representation Learning 接收，共 12 页。",
+        "Collection 来源为刘子鸣网站的 Representation Learning 条目。"
+      ]
+    },
+    {
+      "title": "研究问题",
+      "paragraphs": [
+        "attention sink 是语义作用有限、却被很多后续 token 高度关注的位置，经典例子是 BOS。论文报告另一类现象：某些普通位置直到中间层才突然变成 sink，并只持续有限层数。",
+        "作者问这些 secondary sinks 出现在哪些模型、层和 token，哪一模块把它们造出来，为什么有的强而持久、有的只活两层，以及它们与 primary BOS sink 的深度变化有什么关系。",
+        "工作属于 mechanistic observation：它试图定位产生 attention pattern 的内部计算，但没有回答该 pattern 是否对生成质量、推理正确率、KV cache 或安全行为有益。"
+      ]
+    },
+    {
+      "title": "背景",
+      "paragraphs": [
+        "Transformer 每层先由 attention 在 token positions 间搬运信息，再由 position-wise MLP 改写每个 token 的 residual stream。一个 token 的 hidden state 若具有极大 norm 与特殊 key geometry，可能吸收许多后续 queries 的注意力。",
+        "已有 multi-sink 工作中的非 BOS sinks 往往与 BOS 同层出现并贯穿全深度；本文把这类都归入 primary level。secondary 的判据是更晚的 $l_{start}$ 与有限 lifetime。",
+        "sink 是关于 attention matrix 的角色，不等于高语义信息或因果重要性。softmax attention 可把某位置当作 bias/default route；value norm 很小的 sink 即使得到高权重，也可能只产生有限输出。"
+      ]
+    },
+    {
+      "title": "给物理学家的 AI 导读",
+      "paragraphs": [
+        "可把网络深度 l 当离散时间、每个 token hidden vector 当随深度演化的状态。primary sink 像贯穿轨迹的参考方向；secondary sink 是中途被推入这一方向、经过若干层后又离开的瞬态族。",
+        "$(l_{start},\\mathrm{lifetime})$ 类似事件的成核层与驻留时间，但这里没有热噪声、自由能或相变。所谓 levels 是经验离散簇，取决于层数、检测阈值、prompt distribution 和模型家族。",
+        "MLP 输出 norm 与 lifetime 的关系像初始扰动幅度控制穿越时间；cosine alignment 则给方向信息。两者结合比只看大范数更有辨识力，但仍需 activation intervention 才能从相关走向机制。"
+      ]
+    },
+    {
+      "title": "模型与方法",
+      "paragraphs": [
+        "作者用 DeepSeek-14B/32B、Qwen3-32B 生成 AIME24 与 MATH reasoning traces，再把 traces 输入 11 个 model families。主文聚焦 DeepSeek-R1-Distill-Qwen-14B 在 AIME24，附录报告 30-trace 和 AIME-500 的大表。",
+        "检测先计算非 BOS hidden state 与同层 BOS state 的 cosine，阈值为 0.95；再以首次超过条件的层和连续持续层数定义 sink level。论文还记录 hidden/key/value norms、token index 与 token identity。",
+        "形成机制通过逐模块追踪 layer-22 MLP 前后 alignment、对 250 个 future-sink MLP inputs 做 PCA、将单个 $\\pm\\alpha PC_i$ 输入 MLP、以及 t-SNE clustering 来分析。",
+        "activation swapping 把 future-sink 位置的 hidden state、attention output 或 MLP output 换成平均无语义 token 的对应量，观察后续 sink 是否被压制；这比纯观测相关更接近因果干预，但替换同时改变 norm、direction 和上下文一致性。"
+      ]
+    },
+    {
+      "title": "核心结果与证据",
+      "paragraphs": [
+        "11 个 families 中，作者在 Qwen2、Qwen2-Math、Qwen2.5、Qwen2.5-Math、Qwen3 与 QwQ 检出 secondary sinks，而 Llama-3.1、CodeLlama、Mathstral 以及部分 DeepSeek/Phi 模型未检出。现象不是 Transformer 普遍常数。",
+        "DeepSeek-14B 的代表性 sinks 在 layer 22 前 norm 接近普通 token，经过该层 MLP 后几乎对齐 BOS direction 且 hidden norm 大幅上升；75 个 AIME24 future sinks 显示相同突变。PCA directions 经 MLP 后也被放大并转向 BOS-like direction。",
+        "早层 t-SNE 中 future sinks 与普通无语义 token 混合，到 layer 19 已形成可分簇，早于 layer-22 的显式 sink onset。swapping 越靠后越常压制 sink，支持前层逐步选择、特定中层 MLP 完成转换的链条。",
+        "secondary lifetime 从 2 到 22 层。Figure 4 中 $l_{start}$ MLP-output norm 与相对 sink score 近似 log-linear、与 lifetime 单调分段相关；同一深度区间里 BOS score 出现 valley，secondary score 上升。",
+        "大模型的 levels 更集中：论文报告 QwQ-32B 有 3 个、Qwen3-14B 有 6 个。附录计数随 traces、family 与 checkpoint 差异巨大，因此 level 数与出现率是模型/数据统计，不应当作普适缩放律。"
+      ]
+    },
+    {
+      "title": "有效性与局限",
+      "paragraphs": [
+        "证据链从跨模型检测、逐层 module tracing、PCA probes、clustering 到 activation swapping，强于仅展示一张 attention heatmap；作者还公开代码和完整检测表，并明确报告许多阴性模型。",
+        "但主机制图主要来自 DeepSeek-14B+AIME24；其他模型只部分复现。检测把 cosine>0.95、语义无信息 token 的人工分类和 head-averaged sink score组合在一起，阈值敏感性与 false-positive/negative calibration 未系统给出。",
+        "“BOS weakening 与 secondary emergence 同时发生”支持 compensation 假说，却没有通过删除 secondary sink 后恢复 BOS、保持总 attention budget 或测任务损失来证明功能补偿。",
+        "数学训练数据/post-training 与更强 secondary sinks 的比较存在 scale、RoPE base、architecture 和 checkpoint 混杂；不能据此断言 sinks 支持 reasoning capability，更不能把 sink count 当推理能力指标。",
+        "token swapping 可抑制后续 sink，说明早层 representation 对形成有因果作用；但换成平均 token 是大幅 off-manifold intervention，尚未隔离究竟是方向、范数、token identity 还是局部语法信息起作用。",
+        "论文明确把 text generation 和 downstream performance 影响留作开放问题。没有 perplexity、AIME accuracy、logit attribution、head ablation 或长上下文质量实验，因此目前结论只到 attention mechanism 的形成与分配。"
+      ]
+    },
+    {
+      "title": "复现与资源",
+      "paragraphs": [
+        "项目代码：https://github.com/JeffreyWong20/Secondary-Attention-Sinks 。版本固定 arXiv v3；应同时固定 model revision、tokenizer/chat template、trace source、generation parameters 与 attention implementation。",
+        "最小复现先在 DeepSeek-R1-Distill-Qwen-14B 的 AIME24 traces 上重算 per-layer hidden/key/value norms、cosine>0.95 detections 与 $(l_{start},lifetime)$，再核对 Figure 3/4。",
+        "质量复现应扫描 cosine threshold、按 head 而非仅平均、加入随机 token/匹配 norm 的 controls，并分别干预 direction 与 magnitude；最后测 next-token KL、perplexity、答案准确率和 KV-cache 操作后果。本站未运行模型。"
+      ]
+    },
+    {
+      "title": "阅读指南",
+      "paragraphs": [
+        "先用 Figure 1/2 分清 primary 与 secondary：关键不是位置是否 BOS，而是 onset layer 与 lifetime。再检查 Table 1/2 的阴性 families，避免只看有现象的模型。",
+        "随后读 Figure 3、7、8：MLP alignment 是形成位置，PCA probe 测输入子空间，swapping 测早层必要性；三者支持不同层面的因果说法。",
+        "最后看 Figure 4 时，把 correlation 与 function 分开。最关键后续实验是 matched-norm directional intervention，以及在不显著扰乱 residual stream 的条件下改变 sink lifetime 并测生成行为。"
+      ]
+    }
+  ],
+  "evidence_refs": [
+    "paper.pdf pp. 2–4: primary/secondary definitions, 11-family detection protocol and sink levels",
+    "paper.pdf pp. 5–7: MLP alignment, PCA/clustering, sink-score definition, norm-strength-lifetime correlations and conclusion",
+    "paper.pdf appendices A–C: 30/500-trace detection tables, token distributions and activation-swapping experiments",
+    "source PDF SHA-256 0ac356c704698a217d906c527c0bb3877701bf04d9318528641082294d37ea7a",
+    "Evidence packet SHA-256 5a3660c153659594cd7fee8d3d4734a669a660f749633ea3bd23278ccadb24fb",
+    "Evidence status: full-text verified; no independent reproduction performed."
+  ]
+}
