@@ -1,0 +1,198 @@
+{
+  "arxiv_id": "2602.00816",
+  "source_version": "v1",
+  "source_pdf": "https://arxiv.org/pdf/2602.00816v1",
+  "title_en": "Hessian Spectral Analysis at Foundation Model Scale",
+  "title_zh": "基础模型尺度的 Hessian 谱分析",
+  "curation_status": "full_text_verified",
+  "card_standard_version": "2.4",
+  "audience_profile": "physics_ai_literate_physicist",
+  "paper_profile": "numerical",
+  "style_reference": "physicist_daily_arxiv",
+  "provenance": {
+    "program": "Collection",
+    "catalog": "Paper Collection",
+    "catalog_record_id": "2602.00816",
+    "catalog_record_ids": [
+      "2602.00816"
+    ],
+    "catalog_topic": "AI Agents",
+    "collection_date": "2026-08-30",
+    "sampled_at": "2026-08-31",
+    "selected_by": "ziming_mineru_serial_goal",
+    "sampling_seed": "not_applicable_source_complete",
+    "candidate_count": 464
+  },
+  "verified_metadata": {
+    "arxiv_id": "2602.00816",
+    "version": "v1",
+    "title": "Hessian Spectral Analysis at Foundation Model Scale",
+    "authors": [
+      "Diego Granziol",
+      "Khurshid Juarev"
+    ],
+    "categories": [
+      "stat.ML"
+    ],
+    "primary_category": "stat.ML",
+    "published": "2026-01-31T16:57:06Z",
+    "updated": "2026-01-31T16:57:06Z",
+    "abstract": "The paper implements shard-local finite-difference Hessian-vector products under FSDP and combines them with stochastic Lanczos quadrature to estimate curvature spectra of language models up to 120B parameters."
+  },
+  "equation_refs": [
+    {
+      "label": "分片内中心差分 Hessian-vector product",
+      "latex": "H\\mathbf v\\approx\\frac{\\nabla_{\\boldsymbol\\theta}L(\\boldsymbol\\theta+\\varepsilon\\mathbf v)-\\nabla_{\\boldsymbol\\theta}L(\\boldsymbol\\theta-\\varepsilon\\mathbf v)}{2\\varepsilon}",
+      "role": "compute a full-Hessian action without materializing the matrix or gathering all sharded parameters",
+      "symbols": {
+        "H": "训练目标对全部参数的 Hessian",
+        "v": "单位 probe direction",
+        "theta": "模型参数",
+        "L": "在选定数据上的训练 loss",
+        "epsilon": "有限差分扰动步长"
+      },
+      "evidence": "paper.pdf p. 3, Eq. (1) and Algorithm 1",
+      "interpretation": "同一批数据分别在 $\\theta+\\varepsilon v$ 和 $\\theta-\\varepsilon v$ 求梯度，两者之差给出曲率算子沿 $v$ 的作用。每张 GPU 只扰动自己的 DTensor shard，因此保留 FSDP 分片，但这仍是有限差分近似而非显式构造 Hessian。"
+    },
+    {
+      "label": "截断误差与舍入误差的平衡步长",
+      "latex": "\\varepsilon^\\star\\asymp\\left(\\frac{\\varepsilon_{\\mathrm{mach}}\\lVert\\nabla L(\\boldsymbol\\theta)\\rVert}{\\lVert\\nabla_{\\boldsymbol\\theta}(D_{\\mathbf v}^{3}L(\\boldsymbol\\theta))\\rVert}\\right)^{1/3}",
+      "role": "show why making the finite-difference step arbitrarily small eventually amplifies floating-point cancellation",
+      "symbols": {
+        "epsilon_star": "理论量级上的最优扰动尺度",
+        "epsilon_mach": "浮点 machine precision",
+        "D_v_3": "loss 沿 probe direction 的三阶方向导数",
+        "grad_L": "当前参数处的一阶梯度"
+      },
+      "evidence": "paper.pdf p. 3, Theorem 3.1 and Eqs. (2)–(4)",
+      "interpretation": "大 $\\varepsilon$ 带来 $O(\\varepsilon^2)$ 截断偏差，小 $\\varepsilon$ 又把两个近等梯度相减的误差放大为 $O(\\varepsilon_{mach}/\\varepsilon)$；立方根尺度来自平衡两项，不是通用于所有模型的固定超参数。"
+    },
+    {
+      "label": "block-diagonal 假设的方向误差",
+      "latex": "\\delta_b=\\frac{\\lVert(H\\mathbf v)^{(b)}-(H\\mathbf v^{(b)})^{(b)}\\rVert}{\\lVert(H\\mathbf v)^{(b)}\\rVert}",
+      "role": "measure how much cross-layer Hessian coupling is discarded by a block-local approximation",
+      "symbols": {
+        "b": "一个 Transformer parameter block",
+        "v_b": "只在 block b 非零的 masked probe",
+        "Hv_full_b": "完整 probe 产生并限制到 block b 的响应",
+        "Hv_b_b": "只扰动 block b 后在该 block 内得到的响应"
+      },
+      "evidence": "paper.pdf p. 6, Section 6 and Tables 6–7",
+      "interpretation": "若 Hessian 真接近 block diagonal，$\\delta_b$ 应接近 0 且两向量 cosine 应接近 1；论文测到 order-one relative error，说明跨层二阶耦合不能在这些设置中忽略。"
+    }
+  ],
+  "figure_refs": [
+    {
+      "label": "Figure 2",
+      "asset_path": "assets/collection-figures/2602.00816/figure-2-openai-120b-spectral-density.webp",
+      "section": "核心结果与证据",
+      "role": "show the reported Hessian spectral-density estimate at 120B-parameter scale",
+      "evidence": "paper.pdf p. 7, Figure 2",
+      "alt_text": "OpenAI 120B 开放权重语言模型在 WikiText-2、序列长 64、有限差分 epsilon 10^-4 下的 Hessian 谱密度曲线，横轴为特征值。",
+      "caption": "Figure 2 展示作者用 10 次 Lanczos 迭代得到的 120B 模型 Hessian 谱密度；明显的负特征值表示所测 loss 点存在局部下降曲率方向。",
+      "interpretation": "The plot demonstrates that a foundation-scale spectrum can be estimated with the pipeline; because it uses one limited run without reorthogonalization or dataset-size controls, its detailed density and downstream interpretation are indicative rather than definitive."
+    }
+  ],
+  "cover": {
+    "mode": "source_figure",
+    "asset_path": "assets/collection-figures/2602.00816/figure-2-openai-120b-spectral-density.webp",
+    "label": "Figure 2",
+    "visual_type": "data_plot",
+    "evidence": "paper.pdf p. 7, Figure 2",
+    "alt_text": "120B 开放权重语言模型的 Hessian 特征值谱密度。",
+    "caption": "把基础模型的 loss landscape 曲率变成可测的谱：120B 参数下的 Hessian density。",
+    "selection_rationale": "Figure 2 is the central scale demonstration and a direct scientific observable; the numerical-analysis figures explain epsilon tuning but do not show the claimed foundation-model-scale result."
+  },
+  "sections": [
+    {
+      "title": "作者信息",
+      "paragraphs": [
+        "作者为 Diego Granziol 与 Khurshid Juarev；论文正文未给出可核验的作者单位或公开代码仓库，因此本站不补推断性机构信息。",
+        "本站核验 arXiv:2602.00816v1：2026-01-31 提交，主分类 stat.ML，共 14 页。",
+        "Collection 来源为刘子鸣网站的 AI Agents 条目；论文实质更接近大模型二阶优化与分布式测量方法。"
+      ]
+    },
+    {
+      "title": "研究问题",
+      "paragraphs": [
+        "深度学习常谈 loss landscape 的 sharp、flat、negative-curvature directions，但基础模型有数百亿参数，Hessian 本身根本无法存储。论文问：能否只通过 $H\\mathbf v$ 这种 matrix-free observable，在 FSDP 分片不被破坏的前提下测量全局 Hessian 谱？",
+        "系统难点不是 HVP 公式本身，而是普通实现可能为自动微分 gather 全参数，抵消 ZeRO-3 的内存收益。作者改用每个 rank 原地扰动本地 shard 的中心有限差分，每个 HVP 只需两次常规 FSDP gradient pass。",
+        "随后用 stochastic Lanczos quadrature 将一串 HVP 压缩为小型 tridiagonal matrix 的谱，测试运行时间、精度、步长、子采样，以及 layer-wise block diagonal Hessian 是否可靠。"
+      ]
+    },
+    {
+      "title": "背景",
+      "paragraphs": [
+        "Hessian $H=\\nabla^2_\\theta L$ 是参数扰动到梯度变化的线性响应算子。对物理学家而言，它类似能量面在某构型附近的 dynamical matrix：正特征值方向局部向上，负特征值方向局部向下，接近零的方向较平坦；但神经网络 loss、参数坐标和数据采样使它不具备通常物理哈密顿量的坐标不变性。",
+        "Pearlmutter HVP 能不显式存储 $P\\times P$ 矩阵地算 $H v$；本文为了适配超大 FSDP 系统，采用两个梯度的有限差分。Lanczos 反复调用这个算子，构造 $m\\times m$ 三对角矩阵，其 Ritz values 近似原 Hessian 的极端谱结构。",
+        "用随机 probe 重复 Lanczos 并做 quadrature，可估计 spectral density 或 trace function。它是随机、有限步数、有限数据的估计；图中的谱峰既受真实曲率影响，也可能受差分平滑、浮点噪声和 Krylov 正交性丢失影响。"
+      ]
+    },
+    {
+      "title": "给物理学家的 AI 导读",
+      "paragraphs": [
+        "输入链路是：取一批 tokenized text，模型给出 next-token loss；在当前 checkpoint 的参数空间随机选方向 $v$；比较 $\\theta\\pm\\varepsilon v$ 的梯度得到 $Hv$；Lanczos 将许多方向响应转成特征值密度。最终 observable 是谱、trace、inverse-HVP、运行时间与显存，而不是直接生成质量。",
+        "‘曲率谱’回答的是局部问题：若现在沿某个参数组合微扰，loss 的二阶响应如何。它不能单独告诉我们 optimizer 会走哪条非线性路径，也不能把 flatness 简单等同于 generalization，因为参数重标度会改变 Hessian 数值。",
+        "本文所谓 full Hessian 是相对于选定 loss、数据子样本、model mode 与 checkpoint 的完整 parameter Hessian，不是遍历全部训练数据得到的精确总体对象；HVP 是全 block 耦合的，但用 finite difference 和 SLQ 估计。",
+        "阅读时先分清三个误差源：$\\varepsilon$ 太大产生局部平均偏差，太小放大浮点 cancellation；Lanczos 向量低精度和不重正交会产生 ghost eigenvalues；数据子采样又让所测算子本身波动。"
+      ]
+    },
+    {
+      "title": "模型与方法",
+      "paragraphs": [
+        "Algorithm 1 在各 rank 的 local DTensor shard 上依次做 $+\\varepsilon v$、$-2\\varepsilon v$、$+\\varepsilon v$，以恢复原参数；两个扰动点使用相同 dataloader slice。除已有 FSDP 通信外，只需向量归一化或 Krylov dot products 的 scalar all-reduce。",
+        "Theorem 3.1 将 HVP 误差拆成 $O(\\varepsilon^2)$ 的 Taylor truncation 与 $O(\\varepsilon_{mach}/\\varepsilon)$ 的 roundoff amplification。作者给出的经验量级是 fp32 的 $\\varepsilon^\\star\\sim10^{-3}$–$10^{-2}$，bf16 约 $10^{-1}$；实际谱实验又在具体模型上扫描步长。",
+        "每次 HVP 约为两次 gradient evaluation 加本地 $O(P/R)$ 向量操作；一次 Lanczos iteration 再增加少量 scalar reductions。含 $m$ 步、$s$ 个随机 probes 的 SLQ 主成本约为 $smT_{\\mathrm{Lanczos}}$。",
+        "block-diagonal test 把参数按 Transformer layers 分块：比较完整随机 probe 的 block response 与只保留该 block 的 masked probe response，以相对误差和 cosine similarity 直接测量被忽略的 cross-block curvature。"
+      ]
+    },
+    {
+      "title": "核心结果与证据",
+      "paragraphs": [
+        "单节点 Qwen-0.6B strong scaling 从 1 GPU 的 12.40 s 降到 8 GPU 的 2.16 s，即 5.74×；Qwen-32B 从 1 node/8 GPUs 的 9.36 s 降到 2 nodes/16 GPUs 的 5.20 s，即 1.80×。这支持 near-linear scaling 的局部证据，但节点规模只到 2。",
+        "同一 32B Qwen、8 GPUs 对比中，本文 FSHP 平均 22.21 s、峰值显存 74.71 GB，HessFormer 为 89.57 s、71.91 GB，约 4× wall-clock 改善；batch 分别为 80 和 32，因此不是完全 matched-throughput benchmark。",
+        "Lanczos 相对 HVP 的附加开销在两个示例中为约 1.3% 和 1.8%；这不等于一整次谱估计只多 1–2%，因为完整 SLQ 仍需要每个 probe 的多次 HVP。",
+        "Qwen-0.6B/WikiText-2 的 28-block 近似相对误差为 $0.941\\pm0.059$、cosine 为 $0.311\\pm0.120$；DeepSeek 1.3B coder fine-tuning 的 24-block 结果为 $1.214\\pm0.150$ 与 $0.00443\\pm0.127$。在这些设置中，block-local curvature 丢失了强 cross-layer coupling。",
+        "Figure 2 报告 OpenAI 120B 开放权重模型、WikiText-2、sequence length 64、$\\varepsilon=10^{-4}$ 的谱密度，并出现很大的负特征值。作者将其视为数据未被记忆且仍有下降方向；从局部负曲率进一步联系到 hallucination 只是文中的启发性解释，没有给出生成行为的因果检验。",
+        "Pythia-160M/1.4B 步长扫描在约 $10^{-4}$–$10^{-3}$ 范围得到较稳定的谱结构；Lanczos scalar arithmetic 保持 fp32 时，bf16 存 basis vectors 与 fp32 的差异较小。这个 memory-saving 结论是在所测模型、数据和重正交配置下成立。"
+      ]
+    },
+    {
+      "title": "有效性与局限",
+      "paragraphs": [
+        "有限差分输出是局部平均 Hessian，不是无偏的 exact HVP；‘faithful’取决于 $\\varepsilon$、浮点精度、loss smoothness 和 stochastic gradient noise。ReLU 等非光滑网络也不严格满足 Theorem 3.1 的 $C^4$ 假设。",
+        "120B 谱只运行 10 次 Lanczos iteration，未保存完整 Krylov subspace、未做 reorthogonalization，也没有不同数据规模的重复实验；作者明确称该图 only indicative。详细谱峰、负尾宽度和 scale trend 都需要多 probe、多 seed 置信区间。",
+        "作者把 large negative eigenvalues 与未记忆及 hallucination 联系起来，但未测 hallucination rate、样本级回忆或干预曲率方向；因此卡片只接受‘存在所测 loss 的下降曲率方向’，不接受幻觉机制结论。",
+        "block-diagonal failure 只在 Qwen-0.6B/WikiText-2 与 DeepSeek-1.3B coding fine-tune 上定量展示，不能自动推广到所有 checkpoint、Fisher/Gauss-Newton、K-FAC 变体或 GPTQ 校准问题。Hessian 与 Fisher 也不是同一算子。",
+        "FSDP 在模型可装入单卡或普通 data parallel 时可能更慢；本文 wrapper 的 cost profile 跟随底层 FSDP，不是对 FSDP 本身的普适加速。"
+      ]
+    },
+    {
+      "title": "复现与资源",
+      "paragraphs": [
+        "论文未给出可核验的公开实现仓库。复现需要支持 FSDP ZeRO-3/DTensor 的分布式训练栈、固定 checkpoint 与 dataloader slice，并在每次中心差分后验证参数逐 shard 精确恢复。",
+        "最小数值测试应先在可显式构造 Hessian 的小模型上比较 autograd HVP 与 finite-difference HVP，扫描 $\\varepsilon$、fp32/bf16 和 stochastic batch；再检查 Lanczos Ritz values、正交性 loss 与 ghost duplication。",
+        "扩展到大模型时应逐项记录 model revision、tokenizer、dataset revision/subsample、sequence length、training/eval mode、probe seed、$m$、$s$、reorthogonalization window、GPU 型号、通信后端、峰值显存和 wall-clock，才能比较不同谱。",
+        "若要检验 block approximation，应在同一归一化 probe 上同时报告 absolute norm、relative error、cosine 和每层分布，并加入 Fisher、Gauss-Newton、K-FAC 等真正下游使用的算子作为对照。"
+      ]
+    },
+    {
+      "title": "阅读指南",
+      "paragraphs": [
+        "快速阅读：p. 3 Eq. (1) 与 Algorithm 1 看 shard-local HVP；pp. 5–6 Tables 2–5 看成本；p. 6 Tables 6–7 看 block-diagonal failure；p. 7 Figure 2 看 120B 谱。",
+        "数值分析路线：pp. 3–4 Theorems 3.1、4.1 分开追踪 finite-difference error 与 Lanczos error，再读 pp. 7–9 的 $\\varepsilon$、precision 和 subsampling 实验；不要把合适的步长当成 architecture-independent 常数。",
+        "最关键的下一步是公开实现并对 120B 结果做多 probe、多数据规模、完整 reorthogonalization 的误差条复测；若讨论 hallucination，还需把谱指标与生成样本、记忆测试及沿特征向量的干预建立因果联系。"
+      ]
+    }
+  ],
+  "evidence_refs": [
+    "paper.pdf pp. 3–4, Eq. (1), Theorem 3.1, Algorithm 1 and Theorem 4.1: shard-local finite-difference HVP, numerical error and Lanczos stability",
+    "paper.pdf pp. 5–6, Tables 2–7: cost model, single- and multi-node scaling, HessFormer comparison and block-diagonal approximation errors",
+    "paper.pdf pp. 7–9, Figures 2–8: 120B spectral density and precision, finite-difference-step and subsampling studies",
+    "paper.pdf pp. 9 and 12–14, conclusion and Appendices B–C: practical claims, FSDP-versus-DP boundary and distributed Lanczos cost breakdown",
+    "source PDF SHA-256 9ce6939f09851aa5cf4e2b7fc3d9fe69b64cc891d8f4b44823c6523870e161e6",
+    "MinerU Markdown SHA-256 a3e3ba3f1558b519527cfcffa69cb8d9be384fb35183acca8ce3ba3897cb8457",
+    "Evidence packet SHA-256 96c8dd5477ce75e410b64ee739db2f8b342a804133021046f1554729c46780c2",
+    "Evidence status: full-text verified; no independent reproduction performed."
+  ]
+}
