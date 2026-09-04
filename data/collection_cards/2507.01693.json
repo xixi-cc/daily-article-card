@@ -1,0 +1,174 @@
+{
+  "arxiv_id": "2507.01693",
+  "source_version": "v2",
+  "source_pdf": "https://arxiv.org/pdf/2507.01693v2",
+  "title_en": "GPT, But Backwards: Exactly Inverting Language Model Outputs",
+  "title_zh": "反向运行 GPT：精确逆推出语言模型输入",
+  "curation_status": "full_text_verified",
+  "card_standard_version": "2.4",
+  "audience_profile": "physics_ai_literate_physicist",
+  "paper_profile": "ai_empirical",
+  "style_reference": "physicist_daily_arxiv",
+  "provenance": {
+    "program": "Collection",
+    "catalog": "Paper Collection",
+    "catalog_record_id": "2507.01693",
+    "catalog_record_ids": ["2507.01693"],
+    "catalog_topic": "Learning Theory",
+    "collection_date": "2026-08-30",
+    "sampled_at": "2026-08-31",
+    "selected_by": "ziming_mineru_serial_goal",
+    "sampling_seed": "not_applicable_source_complete",
+    "candidate_count": 464
+  },
+  "verified_metadata": {
+    "arxiv_id": "2507.01693",
+    "version": "v2",
+    "title": "GPT, But Backwards: Exactly Inverting Language Model Outputs",
+    "authors": ["Adrians Skapars", "Edoardo Manino", "Youcheng Sun", "Lucas C. Cordeiro"],
+    "categories": ["cs.LG", "cs.AI"],
+    "primary_category": "cs.LG",
+    "published": "2025-07-02T13:20:30Z",
+    "abstract": "The task of reconstructing unknown textual inputs to language models is a fundamental auditing primitive that allows us to assess the model's vulnerability to a range of security issues, including stealing hidden system prompts, detecting backdoors, and leaking private data. Existing inversion works assume access to differing levels of information but oftentimes fail to fully reconstruct the desired input. The paper presents Sparse One-hot Discrete Adam (SODA), a search-based inversion method using white-box access to the language model and its output, and reports exact reconstruction on natural-language and random inputs of up to 10 tokens.",
+    "comment": "7-page main paper plus appendices in a 15-page PDF; ICML 2025 Workshop on Reliable and Responsible Foundation Models; v2 updated 2025-11-10"
+  },
+  "equation_refs": [
+    {
+      "label": "Discrete inverse problem (Eq. 7)",
+      "latex": "x^*=\\arg\\min_{x'}\\phi(f(x'),y)",
+      "role": "search over token sequences for an input whose model output matches the observation",
+      "symbols": {"f": "known differentiable language model", "y": "observed target output information", "x_prime": "candidate prompt of an assumed length", "phi": "text- or logit-matching objective"},
+      "evidence": "paper.pdf p. 3, Eq. (7)",
+      "interpretation": "The inverse need not be unique: a many-to-one generator can map different prompts to the same text. Exact recovery requires richer output information or assumptions about the input domain."
+    },
+    {
+      "label": "Text-only objective (Eq. 10)",
+      "latex": "\\Phi_{text}=\\sum_{i=1}^{m}\\left[\\max_a p(a\\mid x'y_{<i})-p(y_i\\mid x'y_{<i})\\right]",
+      "role": "test whether the target tokens would be selected by greedy decoding from a candidate prompt",
+      "symbols": {"m": "number of observed output tokens", "y_less_i": "known target prefix", "p": "model next-token distribution"},
+      "evidence": "paper.pdf p. 3, Eq. (10)",
+      "interpretation": "Zero loss certifies that x' reproduces the same greedy output prefix, not that x'=x. This is why text-only inversion can return collisions and has much lower exact-input recovery."
+    },
+    {
+      "label": "Logit-distribution objective (Eq. 11)",
+      "latex": "\\Phi_{logit}=\\sum_{i=1}^{m}d\\!\\left(p(a\\mid x'y_{<i}),p(a\\mid xy_{<i})\\right)",
+      "role": "use exposed next-token distributions as a higher-information fingerprint of the hidden input",
+      "symbols": {"d": "distance between output distributions or logits", "x": "unknown original prompt", "x_prime": "candidate prompt"},
+      "evidence": "paper.pdf p. 3, Eq. (11)",
+      "interpretation": "The experiments optimize logits before SoftMax. Near equality is a strong empirical fingerprint, but uniqueness over the full discrete domain is not established as a theorem."
+    }
+  ],
+  "figure_refs": [
+    {
+      "label": "Figure 1",
+      "asset_path": "assets/collection-figures/2507.01693/figure-1-language-model-inversion.webp",
+      "section": "研究问题",
+      "role": "distinguish exact input recovery from output reproduction and failed inversion",
+      "evidence": "paper.pdf p. 2, Figure 1",
+      "alt_text": "一个隐藏输入经过语言模型产生输出；SODA 恢复原输入，其他方法分别找到输出相同但输入不同的字符串，或连目标输出也不能复现。",
+      "caption": "“复现同一输出”与“找回原输入”是不同任务；SODA 的目标是后者，但实验成功依赖白盒梯度和通常较丰富的 logits。",
+      "interpretation": "示意图中的 exact inverse 是实验目标，不表示任意 LLM 输出在数学上都有唯一逆映射。"
+    }
+  ],
+  "cover": {
+    "mode": "source_figure",
+    "asset_path": "assets/collection-figures/2507.01693/figure-1-language-model-inversion.webp",
+    "label": "Figure 1",
+    "visual_type": "schematic",
+    "evidence": "paper.pdf p. 2, Figure 1",
+    "alt_text": "从语言模型输出反搜原提示，并区分精确逆、输出碰撞和搜索失败。",
+    "caption": "输出匹配不等于输入唯一；本文利用白盒梯度和 logit 指纹提高精确恢复率。",
+    "selection_rationale": "Figure 1 直接消除标题最容易引起的误解：论文研究的是受限威胁模型下的精确输入恢复，而非一般黑盒 API 的可逆性。"
+  },
+  "sections": [
+    {
+      "title": "作者信息",
+      "paragraphs": [
+        "Adrians Skapars、Edoardo Manino 与 Lucas C. Cordeiro 来自 University of Manchester，Youcheng Sun 来自 Mohamed bin Zayed University of Artificial Intelligence；Cordeiro 另隶属 Federal University of Amazonas。",
+        "本文使用 arXiv:2507.01693v2，主分类 cs.LG，另属 cs.AI；初版提交于 2025-07-02，v2 更新于 2025-11-10，发表于 ICML 2025 Reliable and Responsible Foundation Models Workshop。",
+        "Collection 来源为刘子鸣网站的 Learning Theory 条目；实验代码与数据归档链接为 https://doi.org/10.5281/zenodo.15539879。"
+      ]
+    },
+    {
+      "title": "研究问题",
+      "paragraphs": [
+        "已知一个 decoder-only language model 及其输出，能否恢复产生该输出的原始 token sequence，而不只是找到另一个产生相同文本的 prompt？这可用于审计 prompt 泄漏、训练后门与输出归因风险。",
+        "核心困难有两层：输入是 |V|^n 个离散序列的组合搜索；生成映射又可能 many-to-one。作者问 continuous relaxation、modified Adam 和 periodic resets 能否在短输入上找到精确原像。"
+      ]
+    },
+    {
+      "title": "背景",
+      "paragraphs": [
+        "token 先经 embedding matrix 进入 Transformer，最后由 unembedding 与 SoftMax 给出下一 token 分布。若只观察采样出的文本，大量概率信息被丢弃；若能读取 top-k 或 full logits，输出携带更细的模型状态指纹。",
+        "white-box inversion 表示攻击者可计算目标模型对候选输入的梯度；这明显强于只调用聊天 API 的 black-box 场景。论文还假定 greedy deterministic decoding，并通常知道原输入长度。",
+        "SODA 不直接在 token index 上做不可导搜索，而把每个位置表示为 vocabulary simplex 上的 SoftMax distribution，沿连续变量优化，最后 argmax 回离散 token。"
+      ]
+    },
+    {
+      "title": "给物理学家的 AI 导读",
+      "paragraphs": [
+        "可把每个 token position 的 |V| 维 logits Z_i 看成一个退火中的概率场：高温时分布平滑、便于求导，低温/argmax 时投影到 one-hot 顶点。目标函数是候选 prompt 与观测输出之间的失配。",
+        "搜索链为 Z → SoftMax_tau(Z) → embedding → frozen LLM → output logits → Phi；反向传播只更新输入变量 Z，不训练模型参数。modified Adam、multiplicative decay 和周期性 momentum/full-state reset 用来逃离坏的局部极小。",
+        "可观测量必须分清：exact match 要求所有输入 tokens 顺序相同；partial match 只逐位置计数；cosine similarity 只衡量语义；zero objective 可能只说明生成结果相同。论文最强的 79.5% 与 98.1% 是 exact-input 指标。",
+        "从信息论直觉看，完整 logit vector 比一个采样 token 暴露更多关于输入的连续信息。Table 2 确实显示增加每个位置可见的 logits 比单纯增加输出文本长度更有效，但论文没有计算 mutual information 或一般可识别性界。"
+      ]
+    },
+    {
+      "title": "模型与方法",
+      "paragraphs": [
+        "SODA 从全零 Z 初始化，以 temperature tau 的 SoftMax 形成 relaxed one-hot input，经冻结模型计算 Phi 的梯度；Adam 更新省略 bias correction，并在每步对 Z 做乘法 decay。",
+        "算法定期把 Adam 的 first/second moments 清零，更低频地把 Z 重采样为 N(0,0.1)；每轮还用 tau趋近0的离散候选做 early-stop 检查。超参数按模型手工调节，主要实验通常运行 1000 iterations，长输入分析到 100K。",
+        "模型覆盖 TinyStories-33M、GPT-2 85M/1.5B、Qwen2.5 0.5B/3B。Random dataset 对每个 n=1…10 均匀采样 1000 个 token sequences；自然语言 ID 来自 TinyStories validation，OOD 来自 Reddit。",
+        "比较方法为 GCG、embedding search 和微调的 T5-Small inversion model。Table 1 用单张 RTX A6000，其他实验用单张 L4；全部实验合计约 9100 GPU-hours。"
+      ]
+    },
+    {
+      "title": "核心结果与证据",
+      "paragraphs": [
+        "在 TinyStories-33M 的 Random 1–10 token 集合上，SODA exact match 为 79.5±0.8%；加入 fluency penalty 后反降至 75.3±0.8。自然语言 OOD 为 87.6±0.6%，ID 加 fluency 为 98.1±0.3%。",
+        "长度是主要瓶颈：TinyStories 从 n=1–3 的 100% 降至 n=9 的 34.6%、n=10 的 13.6%；Qwen2.5-3B 在 n=8–10 已为 0.4%、0%、0%。所以“up to 10 tokens”不能理解为长度 10 仍有约 79% 成功率。",
+        "Table 5 在 25 个输出文本 tokens 下，SODA exact match 只有 3.6±0.4%；给一个输出位置的 full logits 时为 79.5±0.8%，GCG 为 11.8±0.6%。最强结果主要是 logit-exposure 风险，不是仅凭可见回答复原 prompt。",
+        "Table 2 对 n≤3 的子集显示 full logits、1 个输出位置已达 99.9±0.1%；只给文本时即便 100 output tokens 也仅 16.7±1.3%。增加 logit depth 的作用远大于延长可见文本。",
+        "消融从完整 SODA 的 79.5 降到：无 decay 20.0、无 reset 44.2、恢复 Adam bias correction 45.5；纯 embedding search 为 24.6。结果支持算法组件组合，而非仅 continuous relaxation。",
+        "隐私数据的输入长 15–25 tokens，exact recovery 为 0%，PII position recovery 为 3.0±0.3%；后门实验在专门植入的 Pythia-1.4B 中找回 6 个 triggers。后两者是初步案例，不等于现实系统的普遍泄漏率。"
+      ]
+    },
+    {
+      "title": "有效性与局限",
+      "paragraphs": [
+        "标题中的“exactly inverting”是成功样本上的 exact-token criterion，而非证明语言模型映射全局可逆。many-to-one collision 仍存在；Eq. (9) 所要求的唯一性没有对实际 LLM 与完整输入域证明。",
+        "威胁模型较强：需要模型白盒梯度，最佳结果还需要 full 或 top-k logits、已知/枚举输入长度、greedy decoding 和大量搜索。普通聊天 API 只返回采样文本时，Table 5 的恢复率低得多。",
+        "论文写道若最优值非零即可证明目标不可生成，但 SODA 只是非凸 relaxed search，不能证明已找到 global optimum。因此搜索失败不能作为“没有任何 causal input”的形式证明，只能依据校准集给经验概率。",
+        "输入主要限于 1–10 tokens；15–25 token 隐私集 exact rate 为 0。作者也明确把更长输入与非 greedy decoding 留给未来工作。",
+        "各模型使用分别手调的最优超参数，且 Table 1 固定 iterations 而非等计算量；更大模型每步更昂贵。模型大小影响较小的结论与 vocabulary、architecture、调参和 compute budget 混杂。",
+        "0% false-positive 是有限样本与特定 wrong-length 设置下的观测，不是总体错误率为零的证明。隐私与后门演示也在合成 PII 或人工植入 backdoor 上进行，不应外推为对真实用户数据的已证攻击能力。"
+      ]
+    },
+    {
+      "title": "复现与资源",
+      "paragraphs": [
+        "作者提供 Zenodo 归档 https://doi.org/10.5281/zenodo.15539879。复现应固定 model revision、tokenizer、input length、Random seeds 0/1、SODA hyperparameters、可见 output logits 深度和最大 iterations。",
+        "最小实验可先复现 TinyStories-33M 的 n=1…10 长度曲线及 Table 4 消融；必须分别报告 text-only、top-k 和 full-logit 条件，不能只汇总 79.5%。",
+        "更严格比较应按 forward/backward passes、GPU-hours 或 wall-clock 匹配 SODA、GCG 与 inversion model，并把 hyperparameter selection 与 test set 隔离；对 false positives 给样本量和置信上界。",
+        "本站核验的 v2 PDF SHA-256：05eb437c84badc9895771a8b0746bcab5eb93cf3f23086d1fe345a2de65710ed。Evidence status: full-text verified; no independent reproduction performed; numerical results and security demonstrations not independently reproduced."
+      ]
+    },
+    {
+      "title": "阅读指南",
+      "paragraphs": [
+        "最短路径：Figure 1 → Eqs. (7), (10), (11) → Algorithm 1 → Tables 1, 2, 5 → Appendix G。始终记录攻击者究竟看到文本、top-k 还是 full logits。",
+        "算法路径：把连续 Z 视作 vocabulary simplex 坐标，逐项理解 temperature、decay、moment reset、full reset 与 discretized early stopping，再用 Table 4 判断每项贡献。",
+        "安全路径：先看 Table 5 的 text/logit 差异，再看长输入 Privacy Table 6 和有限样本 false-positive tests；不要从短输入 full-logit 结果直接推断真实 API prompt 泄漏。"
+      ]
+    }
+  ],
+  "evidence_refs": [
+    "paper.pdf pp. 1–3: threat model, inversion definitions, greedy decoding and text/logit objectives",
+    "paper.pdf pp. 4–5: SODA continuous relaxation, modified Adam, decay, resets and datasets",
+    "paper.pdf pp. 5–7: hardware, Tables 1–6, length dependence, text-versus-logit results and applications",
+    "paper.pdf pp. 8–10: hyperparameter selection, SODA/GCG/inversion-model configurations",
+    "paper.pdf pp. 11–15: length curves, false-positive tests, PII decomposition, backdoors and provider logit examples",
+    "source PDF SHA-256 05eb437c84badc9895771a8b0746bcab5eb93cf3f23086d1fe345a2de65710ed",
+    "Evidence status: full-text verified; no independent reproduction performed; numerical results and security demonstrations not independently reproduced."
+  ]
+}
