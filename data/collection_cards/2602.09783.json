@@ -1,0 +1,181 @@
+{
+  "arxiv_id": "2602.09783",
+  "source_version": "v1",
+  "source_pdf": "https://arxiv.org/pdf/2602.09783v1",
+  "title_en": "Why Linear Interpretability Works: Invariant Subspaces as a Result of Architectural Constraints",
+  "title_zh": "为什么线性可解释性有效：架构约束产生的不变子空间",
+  "curation_status": "full_text_verified",
+  "card_standard_version": "2.4",
+  "audience_profile": "physics_ai_literate_physicist",
+  "paper_profile": "theory_experiment",
+  "style_reference": "physicist_daily_arxiv",
+  "provenance": {
+    "program": "Collection",
+    "catalog": "Paper Collection",
+    "catalog_record_id": "2602.09783",
+    "catalog_record_ids": ["2602.09783"],
+    "catalog_topic": "Representation Learning",
+    "collection_date": "2026-08-30",
+    "sampled_at": "2026-08-31",
+    "selected_by": "ziming_mineru_serial_goal",
+    "sampling_seed": "not_applicable_source_complete",
+    "candidate_count": 464
+  },
+  "verified_metadata": {
+    "arxiv_id": "2602.09783",
+    "version": "v1",
+    "title": "Why Linear Interpretability Works: Invariant Subspaces as a Result of Architectural Constraints",
+    "authors": ["Andres Saurez", "Yousung Lee", "Dongsoo Har"],
+    "categories": ["cs.LG", "cs.CL"],
+    "primary_category": "cs.LG",
+    "published": "2026-02-10",
+    "updated": "2026-02-10",
+    "abstract": "The paper proposes that linearly communicable semantic features occupy context-invariant subspaces, derives token-based feature directions, and tests projection classifiers across eight tasks and four model families."
+  },
+  "equation_refs": [
+    {
+      "label": "definition of a linearly communicable feature",
+      "latex": "\\exists\\,\\phi:\\quad \\phi^T W_U h(c)=g(f(c))\\quad\\forall c\\in\\mathcal C",
+      "role": "state the exact linear-decodability assumption built into the theorem's object",
+      "symbols": {"h_c": "hidden state in context c", "W_U": "linear unembedding", "phi": "linear output functional", "f": "semantic feature", "g": "scalar encoding of its value"},
+      "evidence": "paper.pdf p. 3, Definition 3.4 and Equation (1)",
+      "interpretation": "这里不是从 Transformer 架构推出所有语义都线性，而是先把可交流特征定义为已能经线性接口精确恢复。主定理因此只覆盖满足该强前提的特征。"
+    },
+    {
+      "label": "projection decomposition and its missing uniqueness condition",
+      "latex": "h(c)=h_f(c)+\\eta(c),\\qquad w_f^T h_f(c)=o_f(c),\\qquad \\eta(c)\\in w_f^\\perp",
+      "role": "separate feature-relevant and orthogonal components in the invariant-subspace proof",
+      "symbols": {"w_f": "effective linear readout direction", "h_f": "chosen feature-relevant component", "eta": "readout-null component", "o_f": "feature-relevant scalar output"},
+      "evidence": "paper.pdf p. 11, Equations (10)–(13); official v1 TeX proof",
+      "interpretation": "若不额外规定 $h_f$ 是到 $\\operatorname{span}(w_f)$ 的正交投影或最小范数解，仅有这些约束并不能保证分解唯一；而把所有 $h_f(c)$ 的 span 定义成 $S_f$ 只能给出构造性存在，不能自动给出低维性。"
+    },
+    {
+      "label": "zero-shot class-token direction",
+      "latex": "\\hat d_k=\\frac{h_{t_k}-\\bar h}{\\|h_{t_k}-\\bar h\\|},\\qquad \\bar h=\\frac1K\\sum_{j=1}^K h_{t_j},\\qquad \\hat k=\\arg\\max_k h(c)^T\\hat d_k",
+      "role": "turn the self-reference hypothesis into an unlabeled projection classifier",
+      "symbols": {"t_k": "explicit class token or prompt", "d_k": "mean-centered unit prototype", "K": "number of classes", "h_c": "implicit-instance activation"},
+      "evidence": "paper.pdf pp. 5–6, Equations (7) and (9)",
+      "interpretation": "这是 cosine/prototype geometry 的可检验算法：显式类名若与隐式实例共享方向，点积即可分类。它验证 association，而不是单凭高 accuracy 证明方向由架构必然产生。"
+    }
+  ],
+  "figure_refs": [
+    {
+      "label": "Figure 1",
+      "asset_path": "assets/collection-figures/2602.09783/figure-1-invariant-subspace-schematic.webp",
+      "section": "给物理学家的 AI 导读",
+      "role": "illustrate the claimed shared direction between an explicit class token and contextually expressed instances",
+      "evidence": "paper.pdf p. 1, Figure 1; official v1 TeX source",
+      "alt_text": "A schematic shows the token France and contextual mentions such as Paris and Marseille sharing one proposed invariant semantic direction.",
+      "caption": "Figure 1：论文提出显式 token 与不同语境中的同类实例共享一个方向；这是待检验的几何假设示意，不是定理证明。",
+      "interpretation": "对物理读者，可把它看成在高维表示空间中选择一个 order-parameter-like coordinate；关键问题是该坐标是否低维、跨语境稳定并具有因果意义。"
+    }
+  ],
+  "cover": {
+    "mode": "source_figure",
+    "asset_path": "assets/collection-figures/2602.09783/figure-1-invariant-subspace-schematic.webp",
+    "label": "Figure 1",
+    "visual_type": "schematic",
+    "evidence": "paper.pdf p. 1, Figure 1; official v1 TeX source",
+    "alt_text": "France token and contextual country mentions aligned along a proposed invariant feature direction.",
+    "caption": "显式类名提供原型方向，隐式语境投影到同一方向；图示表达论文假说而非证明。",
+    "selection_rationale": "The author-created schematic gives the clearest conceptual bridge, provided its evidential status is kept explicit."
+  },
+  "sections": [
+    {
+      "title": "作者信息",
+      "paragraphs": [
+        "Andres Saurez、Yousung Lee 与 Dongsoo Har 来自 Korea Advanced Institute of Science and Technology（KAIST）；通讯作者为 Dongsoo Har。",
+        "本站核验 arXiv:2602.09783v1：提交于 2026-02-10，主分类 cs.LG、交叉分类 cs.CL，PDF 共 19 页；v1 是当前唯一版本，标题身份一致。",
+        "Collection 来源为刘子鸣网站的 Representation Learning 条目。"
+      ]
+    },
+    {
+      "title": "研究问题",
+      "paragraphs": [
+        "深层 Transformer 是非线性系统，为什么简单 linear probe、activation direction 和 sparse autoencoder 仍经常找到可解释语义？这种线性结构来自训练偏置，还是由网络接口本身约束？",
+        "论文主张：凡是通过 OV circuit 或 unembedding 等线性接口交流的语义特征，都必须占据跨语境不变的子空间；若进一步退化为一维，显式 token 自身就能提供该方向。",
+        "实证问题是：不用带标签实例训练，class-token direction 能否对隐式语句分类；不同提取方法是否找到相似的方向结构。"
+      ]
+    },
+    {
+      "title": "背景",
+      "paragraphs": [
+        "linear probe 在冻结 hidden state 上训练线性分类器；它成功只说明信息可线性读取，不自动说明模型实际使用该信息，也不说明该几何结构由架构必然造成。",
+        "attention 的 QK 部分非线性地产生路由权重，OV 与 residual stream 对给定路由执行线性值传递；最终 unembedding 也把 hidden state 线性映射到 token logits。",
+        "SAE 用高维稀疏 latent 重构 activation，希望把 superposition 中的特征分离。它和 class-token prototype 都依赖低维方向，但优化目标、尺度和选择偏差不同。",
+        "论文所谓 invariant 是 feature-relevant component 跨 contexts 落在固定 subspace，不是动力系统中在算子作用下保持不变的 invariant subspace；物理读者应区分这两个术语。"
+      ]
+    },
+    {
+      "title": "给物理学家的 AI 导读",
+      "paragraphs": [
+        "可把 hidden state 看成高维微观状态，把 class direction 当作一个候选 order parameter。投影值大表示该语义坐标被激活，但它是否完备、唯一和因果，需要额外实验。",
+        "线性 readout 只固定某些可观测量 $w_f^Th$；与 $w_f$ 正交的巨大 null space 仍可容纳任意 context dependence。知道一个宏观可观测量，并不会唯一重建微观态或迫使其落在一维流形。",
+        "把所有相关状态的 feature components 取 span 总能定义一个子空间，类似给任意轨迹取线性包络；非平凡结论应是维数小、方向稳定或对干预封闭，而这些并未由存在性构造给出。",
+        "Figure 1 的共享箭头因此更适合作为可检验 ansatz：需要跨 prompt、layer、seed 和 model 的角度分布，以及沿该方向干预输出的响应函数。"
+      ]
+    },
+    {
+      "title": "模型与方法",
+      "paragraphs": [
+        "理论先定义 semantic feature $f(c)$ 与 communicable feature：至少两个 contexts 共享 feature value，且某个线性 functional 能对所有 contexts 恢复 $g(f(c))$。",
+        "Theorem 3.7 将 feature-relevant components 的 span 定义为 $S_f$；随后 Proposition B.2 试图用 $K$ 个 class centroids 的 affine hull 推出 $\\dim S_f\\le K-1$，并据此把 binary feature 变成单方向。",
+        "Self-Reference Property 再主张显式 token hidden state 与其 semantic direction 成比例。实际 zero-shot 方法对 class-token activations 做 mean-centering 和单位化，再按与 instance activation 的点积分类。",
+        "unsupervised probe 只用 class tokens 训练 contrastive linear transform；SAE 则只在 implicit-instance head outputs 上训练。三种方法都逐 attention head 评价。",
+        "数据含 Animals、Countries、Emotions、Literary Quotes/Authors、Cartoon Characters、Languages、Fruits、Companies 八类任务；模型为 LLaMA3-8B、LLaMA3.2-3B、Mistral 与 GPT2-Small。"
+      ]
+    },
+    {
+      "title": "核心结果与证据",
+      "paragraphs": [
+        "LLaMA3-8B 的 Figure 3 中，同类 class token–instance cosine 高于异类的 head 比例为 Countries 91.5%、Animals 97.6%、Cartoon Characters 86.0%、Emotions 89.6%。邻近正文却写范围 89.6%–98.6%，与图注不一致。",
+        "Table 2 按每个 model×method×task 单独选最高 accuracy 的一个 head。八任务简单平均中，unsupervised/zero-shot 分别约为：LLaMA3-8B 75.83/70.72、LLaMA3.2-3B 69.82/65.45、Mistral 72.14/67.87、GPT2-Small 42.34/34.05。",
+        "‘unsupervised consistently outperforms zero-shot’只对每模型均值成立，并非每个 cell：前三个较大模型各胜 6/8 项，GPT2-Small 胜 7/8 项。",
+        "modular division 控制实验中，带 MLP classification head 的 2-layer Transformer 可达约 95% validation accuracy，而一个 non-Fourier run 上 detached linear probe 约 20%；部分 seeds 会形成 Fourier structure 并伴随 probe 成功，但没有 seed 数和汇总统计。",
+        "SAE top-32 latent overlap 在 Animals 中报告 mammals 15/32、fish 23/32、reptiles 25/32、birds 22/32，说明 prototype 与 instances 存在共享稀疏坐标，但尚未证明它们是同一因果特征。"
+      ]
+    },
+    {
+      "title": "有效性与局限",
+      "paragraphs": [
+        "Theorem 3.7 的 communicable 定义已经假设精确 linear decodability；证明再将全部 $h_f(c)$ 的 span 定义为不变子空间，主要是构造性存在，不能单独解释为何 subspace 低维。",
+        "证明声称 $h=h_f+\\eta$ 在 $w_f^Th_f=o_f$、$\\eta\\perp w_f$ 下唯一，但未明确 $h_f$ 是正交投影/最小范数解；按所写条件，唯一性论证不充分。",
+        "Proposition B.2 由 $K$ 个代表 centroid 的 affine hull 至多 $K-1$ 维，跳到完整 feature subspace 至多 $K-1$ 维。前者只给一种可实现表示，linear separability 并不禁止额外 within-class feature directions。",
+        "Self-Reference theorem 写精确 $h_t\\propto d_{f_t}$，完整证明却保留正交 residual，并只在未证明的 single-dominant-feature 假设下近似成比例；故应用应视为经验 hypothesis。",
+        "逐任务选择 top-1 head 是 oracle/post-selection 结果，没有典型 head 分布、held-out head selection、随机种子误差条或 multiple-comparison correction。它证明‘存在好 head’强于证明方法稳健。",
+        "任务是小规模分类 prompt，部分数据为手工或公开收集；未提供完整 code/data/checkpoint、SAE/probe hyperparameters 和 seed protocol。实验是 association，不是 feature-direction intervention。",
+        "作者也明确承认 QK nonlinear routing 不受该理论保证，且没有刻画何时高维 subspace 会塌缩成单方向。本站完成全文和官方 TeX 审查，未独立复现。"
+      ]
+    },
+    {
+      "title": "复现与资源",
+      "paragraphs": [
+        "复现首先应发布八个 prompt sets、tokenization/class prompts、抽取的 layer/head 位置、所有 head accuracy、SAE architecture/TopK、optimizer、seed 与 checkpoint，而非只给 best-head 表。",
+        "head selection 应在 validation contexts 上完成，再冻结 head 到 held-out test；同时报告 median、quantiles、best-minus-median gap 和 permutation null，量化 oracle selection bias。",
+        "理论检验应构造反例：保持线性 readout 可解码，却在 $w_f^\\perp$ 中加入高维 class-dependent variation，检查 Theorem/Proposition 的哪些结论仍成立。",
+        "因果检验可沿 class direction 做 matched activation patching/ablation，测量对应 logit、无关 logits 和行为准确率的 dose-response；再与随机方向及 probe-matched control 比较。",
+        "跨语境稳定性应报告 principal angles 或 subspace overlap 随 layer、prompt family、model seed 变化，而不是只用 class-token 与实例均值的 cosine。"
+      ]
+    },
+    {
+      "title": "阅读指南",
+      "paragraphs": [
+        "快速路线：pp. 2–5 读 Definitions 3.3–3.6、Theorem 3.7 和 Self-Reference；pp. 6–7 看方法与 Table 2；p. 8 看作者局限。",
+        "数学路线：直接读 pp. 11、14 的完整证明，逐项检查分解唯一性、span 的定义依赖，以及‘可在 $K-1$ 维实现’与‘所有表示至多 $K-1$ 维’的区别。",
+        "AI 路线：区分 zero-shot prototype、只用 class tokens 学的 transform、只用 instances 学的 SAE；三者并非真正独立证据，因为共享模型、prompts 和 top-head selection。",
+        "物理路线：把方向当候选 order parameter，要求有限样本误差、跨 realization 稳健性与受控扰动响应；不要把线性可读性直接等同于动力学机制。"
+      ]
+    }
+  ],
+  "evidence_refs": [
+    "paper.pdf pp. 2–5, Definitions 3.3–3.6, Theorem 3.7, Figure 2 and Theorem 3.13: theory claims and architectural assumptions",
+    "paper.pdf pp. 5–7, Figure 3, Equations (7)–(9), Tables 1–2: probes, datasets, alignment and top-head classification",
+    "paper.pdf pp. 7–8, Figures 4–5 and conclusion: SAE overlap, polysemy claims and stated limitations",
+    "paper.pdf pp. 11 and 14 plus official v1 TeX: full proofs and recorded logical gaps",
+    "source PDF SHA-256 16b8b6d45d020a4197bca145b5a210faa05f7b7411df8f954dcc89bd4f3021d9",
+    "official arXiv v1 source archive SHA-256 8376c106e3cc073f7f857f353bfe5bd9fe17e734f4ef154cbe7af22cc33284da",
+    "MinerU Markdown SHA-256 7e96a0ada092396bf52384d7d751a578332a46104df54b91022467f0b7cb5cba",
+    "Evidence packet SHA-256 3696223b0b8f26de1c33170cd67c472e92767c332c47589dffaa181dcaac4a37",
+    "Evidence status: full-text and official TeX verified against arXiv v1; proof gaps and internal numerical inconsistencies recorded; no independent reproduction performed."
+  ]
+}
