@@ -1,0 +1,195 @@
+{
+  "arxiv_id": "2602.18649",
+  "source_version": "v1",
+  "source_pdf": "https://arxiv.org/pdf/2602.18649v1",
+  "title_en": "Global Low-Rank, Local Full-Rank: The Holographic Encoding of Learned Algorithms",
+  "title_zh": "全局低秩、局部满秩：学习算法的全息编码",
+  "curation_status": "full_text_verified",
+  "card_standard_version": "2.4",
+  "audience_profile": "physics_ai_literate_physicist",
+  "paper_profile": "theory_numerics",
+  "style_reference": "physicist_daily_arxiv",
+  "provenance": {
+    "program": "Collection",
+    "catalog": "Paper Collection",
+    "catalog_record_id": "2602.18649",
+    "catalog_record_ids": ["2602.18649"],
+    "catalog_topic": "Scaling Laws",
+    "collection_date": "2026-08-30",
+    "sampled_at": "2026-08-31",
+    "selected_by": "ziming_mineru_serial_goal",
+    "sampling_seed": "not_applicable_source_complete",
+    "candidate_count": 464
+  },
+  "verified_metadata": {
+    "arxiv_id": "2602.18649",
+    "version": "v1",
+    "title": "Global Low-Rank, Local Full-Rank: The Holographic Encoding of Learned Algorithms",
+    "authors": ["Yongzhong Xu"],
+    "categories": ["cs.LG", "cs.AI"],
+    "primary_category": "cs.LG",
+    "published": "2026-02-20",
+    "updated": "2026-02-20",
+    "abstract": "Shared-trunk Transformers trained on three modular-arithmetic tasks are reconstructed by trajectory PCA, per-matrix SVD, and joint SVD to compare low-dimensional learning paths with the rank structure of terminal weight updates."
+  },
+  "equation_refs": [
+    {
+      "label": "trajectory-PCA reconstruction",
+      "latex": "\\Delta\\theta_t=\\theta_t-\\theta_0,\\qquad \\widehat{\\theta}^{(k)}=\\theta_0+\\sum_{j=1}^{k}(\\mathbf v_j^\\top\\Delta\\theta_T)\\mathbf v_j",
+      "role": "project the final parameter displacement onto directions inferred from the same run's checkpoint trajectory",
+      "symbols": {
+        "theta_t": "complete parameter vector at checkpoint t",
+        "theta_0": "initial parameter vector",
+        "v_j": "right singular direction of the sampled trajectory matrix",
+        "k": "number of retained trajectory directions"
+      },
+      "evidence": "paper.pdf pp. 3–5, Section 2.4 and Table 2",
+      "interpretation": "只需少数方向可重建该 run 的末态功能，但基底本身是 P 维、由完整训练历史事后学习；这不是可直接部署的 k 参数模型，也不是 invariant manifold 定理。"
+    },
+    {
+      "label": "per-matrix low-rank intervention",
+      "latex": "\\Delta W_i=U_i\\Sigma_iV_i^\\top,\\qquad \\Delta W_i^{(k)}=U_{i,:,1:k}\\Sigma_{i,1:k}V_{i,:,1:k}^\\top",
+      "role": "truncate every selected trunk weight-update matrix simultaneously to the same algebraic rank",
+      "symbols": {
+        "Delta_W_i": "final minus initial update of one trunk matrix",
+        "U_Sigma_V": "its singular-value decomposition",
+        "k": "retained rank for every reconstructed trunk matrix"
+      },
+      "evidence": "paper.pdf pp. 3, 5–6, Sections 2.4 and 3.2, Tables 3–4",
+      "interpretation": "这是对一种坐标依赖、同时施加的线性截断的功能测试；失败不能证明每个矩阵在代数上满秩，也不能排除微调、蒸馏或其他非线性压缩。"
+    },
+    {
+      "label": "task-selectivity index",
+      "latex": "\\mathrm{SI}_A=\\frac{D_A-\\overline{C}_A}{D_A+\\overline{C}_A}",
+      "role": "compare damage to a targeted task with mean collateral damage to the other tasks after a directional intervention",
+      "symbols": {
+        "D_A": "accuracy damage to target task A",
+        "C_bar_A": "mean collateral accuracy damage to non-target tasks",
+        "SI_A": "reported selectivity index"
+      },
+      "evidence": "paper.pdf pp. 7–8, Section 4.1 and Table 5",
+      "interpretation": "SI 接近 1 表示该操作的 collateral damage 小；它依赖绝对 damage 与分母，既不证明 circuit 充分性，也不能把 gradient/parameter-space intervention 自动称为 activation-space circuit。"
+    }
+  ],
+  "figure_refs": [
+    {
+      "label": "Figure 3 reconstruction comparison",
+      "asset_path": "assets/collection-figures/2602.18649/figure-3-reconstruction-methods.webp",
+      "section": "核心结果与证据",
+      "role": "compare functional recovery from trajectory PCA, per-matrix SVD, and zero-padded joint SVD across three architectures and five weight decays",
+      "evidence": "paper.pdf p. 7, Figure 3; official TeX source asset fig3_methods_comparison.png",
+      "alt_text": "Three panels compare mean three-task accuracy against retained reconstruction size for trajectory PCA, per-matrix SVD, and joint SVD.",
+      "caption": "Figure 3：三种事后重建的平均三任务准确率。每条曲线对应一个未报告重复次数的 scale×weight-decay 条件；trajectory PCA 使用完整训练历史，heads 保持最终值，横轴也未完整计入 P 维基底的存储成本。",
+      "interpretation": "图支持“同一轨迹基底比所试静态 SVD 截断更能恢复功能”，但三方法获得的信息不匹配，不能据此推出普适全息编码定律或端到端压缩优势。"
+    }
+  ],
+  "cover": {
+    "mode": "source_figure",
+    "asset_path": "assets/collection-figures/2602.18649/figure-3-reconstruction-methods.webp",
+    "label": "Figure 3 reconstruction comparison",
+    "visual_type": "data_plot",
+    "evidence": "paper.pdf p. 7, Figure 3; official source asset fig3_methods_comparison.png",
+    "alt_text": "Three reconstruction methods show sharply different recovery of modular-arithmetic accuracy.",
+    "caption": "Trajectory PCA 与两类静态 SVD 的功能恢复对比；方法的信息预算与存储记账并不相同。",
+    "selection_rationale": "The official author figure most directly exposes the paper's central global-versus-local contrast and the methodological asymmetry needed for a careful reading."
+  },
+  "sections": [
+    {
+      "title": "作者信息",
+      "paragraphs": [
+        "作者为 Yongzhong Xu；论文给出代码仓库 https://github.com/skydancerosel/holographic_encoding。",
+        "本站核验 arXiv:2602.18649v1：2026-02-20 提交，主分类 cs.LG、交叉分类 cs.AI，PDF 14 页；这是当前唯一官方版本。",
+        "官方 arXiv/PDF 年份为 2026，但 TeX 标题页写 February 20, 2025；本站按官方记录采用 2026，并保留这一源内元数据冲突。Collection 来源为刘子鸣网站的 Scaling Laws 条目。"
+      ]
+    },
+    {
+      "title": "研究问题",
+      "paragraphs": [
+        "一个拥有数十万到数百万参数的 Transformer，训练时是否只沿少数集体方向运动？如果答案是肯定的，为什么把末态的单个权重矩阵做低秩截断却会破坏功能？",
+        "论文在同一 shared trunk 上联合学习模 97 加法、乘法与平方和，比较 trajectory PCA、逐矩阵 SVD 和跨矩阵 joint SVD，并把“全局低维轨迹、局部功能上近满秩”概括为 holographic encoding。",
+        "核心可检验命题不是“神经网络一定全息”，而是：对这些已训练小模型和指定重建操作，同一 run 的历史轨迹方向比仅看终态权重的两种 SVD 更有效。"
+      ]
+    },
+    {
+      "title": "背景",
+      "paragraphs": [
+        "grokking 是训练准确率已高、测试准确率却在长平台后才跃升的现象。这里训练直到三个任务测试准确率都超过 95%，所研究的是有限群内 withheld-pair generalization，不是语言理解。",
+        "trajectory PCA 把每个 checkpoint 展平成 P 维向量，再对时间序列做 SVD；它像从一条高维轨迹拟合 collective coordinates。低 PCA 维数描述采样路径，不等于末态每个矩阵低秩，更不等于函数的最小实现维数。",
+        "矩阵 SVD 的 Frobenius energy 是几何量，任务 accuracy 是功能量。低奇异值方向可以携带对分类边界至关重要的信息，因此“保留 90% energy”不保证保留 90% 功能。",
+        "所谓全息在这里是作者的编码隐喻：整体训练路径可由少数协调方向描述，而任一局部矩阵的简单截断都可能失效；它不是引力中的 holographic principle，也没有建立边界自由度与体自由度的严格对应。"
+      ]
+    },
+    {
+      "title": "给物理学家的 AI 导读",
+      "paragraphs": [
+        "可把完整参数向量视为相空间坐标，把 checkpoint 序列视为一条非平衡轨迹。PCA 找到的是这条已观测轨迹方差最大的坐标轴；要称 invariant manifold，还需证明扰动后的轨迹仍留在其中、切空间闭合并且跨初值稳定，本文没有这些检验。",
+        "“全局低秩、局部满秩”并不矛盾：少数 P 维集体模可以同时在许多矩阵块上产生高代数秩的更新，类似一个低维控制参量协同改变大量局域自由度。但存储 k 个 P 维模约需 kP 个数，不能把 k=3–5 直接当作压缩到 3–5 个参数。",
+        "比较算法时要做 information matching。trajectory PCA 看到了同一训练 run 的许多 checkpoint；per-matrix/joint SVD 只看初态和末态。前者胜出说明历史信息有用，不证明任何静态方法原则上都找不到协调结构。",
+        "15 个点是 3 个耦合改变的架构配置乘 5 个 weight decay，并非 15 次独立重复；没有 seeds、误差条或检验，因而不能从平滑曲线判断 scaling law、普适性或初值稳定性。"
+      ]
+    },
+    {
+      "title": "模型与方法",
+      "paragraphs": [
+        "输入为所有 $97^2=9409$ 个有序数对，随机 50/50 分 train/test；三个任务分别预测 $(x+y)\\bmod97$、$(xy)\\bmod97$、$(x^2+y^2)\\bmod97$，共享 Transformer trunk、使用三个独立 97 类 linear heads。",
+        "三种 pre-norm encoder 为 2L/128d/4 heads（315,427 参数）、4L/128d/4 heads（580,387）和 4L/256d/8 heads（2,209,059）；depth、width、head 数与参数量并未逐项隔离。",
+        "训练使用 full-batch AdamW，learning rate $10^{-3}$、$\\beta=(0.9,0.98)$，weight decay $\\lambda\\in\\{0.1,0.2,0.3,0.5,1.0\\}$。论文没有报告 seed 数、重复、checkpoint cadence 或每条件最大 step。",
+        "trajectory PCA 用 checkpoint 参数减初始化后的轨迹学习 basis，再投影同一 run 的最终位移；逐矩阵 SVD 同时截断所有 trunk $\\Delta W_i$；joint SVD 把异形 trunk 更新展平、zero-pad 到共同长度后按行堆叠。",
+        "trunk-only 重建保留最终 task heads 与 token embeddings。task-selectivity probe 则取 task-loss gradient covariance 的 top-10 eigenvectors，从最终 weight vector 中投影移除。"
+      ]
+    },
+    {
+      "title": "核心结果与证据",
+      "paragraphs": [
+        "15 个 scale×decay 条件都报告平均 test accuracy 超过 97%；baseline 的 grok step 从 $\\lambda=0.1$ 约 157k 缩到 $\\lambda=1$ 约 25k，large、$\\lambda=1$ 约 6,400 step，但没有跨 seed 不确定性。",
+        "使每个任务分别恢复到各自 baseline 95% 以上所需 trajectory PCs 为 2–6；99% 阈值需 3 到超过 30 个，large 在低 decay 的 quadratic task 出现长尾。95% normalized recovery 与绝对 95% accuracy 不应混用。",
+        "PC1 报告解释 90–97% 轨迹方差，3 PCs 超过 96%；在 Figure 3 中 k=5 的平均三任务 accuracy 为 0.935–0.994。这个结果是同轨迹、事后重建，不是 held-out basis transfer。",
+        "逐矩阵能量统计中，90% Frobenius energy 需约满秩的 44–52%，99% 需 77–80%。rank 64 的平均 accuracy 随架构与 decay 从 0.035 到 0.869，说明 energy retention 与功能保留并非同一指标。",
+        "joint SVD 的 half-row-rank 重建只有 0.009–0.106，full row rank 为 0.979–0.997；但满行秩精确恢复有限行堆栈是构造性结果，且 zero-padding/展平约定决定了跨矩阵坐标对齐。",
+        "task-gradient 方向移除后，作者报告 selectivity index 均值约 0.97–1.00、目标任务损伤 10–35 个百分点、其他任务小于 1 点；task subspace overlap 为 0.061–0.120，但 overlap 定义、采样和不确定性未在文中充分给出。"
+      ]
+    },
+    {
+      "title": "有效性与局限",
+      "paragraphs": [
+        "每个 scale×decay 只呈现一个条件结果，未报告 seeds、重复、误差条、confidence interval 或统计检验；初值、随机 split 与训练随机性对 2–6 PC 结论的影响未知。",
+        "trajectory PCA 使用被重建 run 的完整历史并需要保存 P 维 basis、初始化与系数。Figure 3 没有完整 bit-rate、basis/trajectory storage、quantization、decoder cost 或压缩文件大小，因此不是端到端压缩基准。",
+        "逐矩阵 SVD 同时截断全部 trunk 矩阵，失败无法定位哪个矩阵或 discarded component 必需；heads、embedding 保持最终态，也不能代表完整模型压缩。",
+        "joint SVD 对异形矩阵任意 zero-pad；full row rank 的恢复部分是线性代数必然。三种方法输入信息不同，不能据此排除更好的静态 basis、pruning with retraining、distillation 或 function-space compression。",
+        "PCA 只证明所采 checkpoint 可低维近似，不证明 dynamical invariance、稳定 manifold 或跨 run 普适 basis；三个混合改变的模型点也不足以建立 scaling law。",
+        "论文把 gradient covariance 后的 weight-vector projection 称为 activation-space circuit，但按所写方法这是 parameter/gradient-space intervention。off-manifold ablation 的选择性支持该操作下的 necessity，不给出 circuit sufficiency 或唯一机制。",
+        "只研究小型模 97、full-batch、from-scratch Transformer；关于 LoRA、自然语言模型、safety、editing、continual learning 和 sudden capabilities 的讨论均为外推。本站未 pin/审计代码或复现实验。"
+      ]
+    },
+    {
+      "title": "复现与资源",
+      "paragraphs": [
+        "代码链接为 https://github.com/skydancerosel/holographic_encoding；arXiv artifact 未 pin commit。复现应先固定 commit、环境、随机 split、所有 seeds、checkpoint cadence、停止条件与原始曲线。",
+        "把 scale×decay 每格扩展为多 seeds，报告逐 task 曲线、均值区间和 failure/censoring；架构扫描应分别改变 depth、width、heads 与参数量，避免把耦合配置称为 scaling law。",
+        "做 out-of-sample trajectory test：从其他 seeds、仅早期窗口或另一 decay 学 basis，再重建 held-out run；同时与随机同维子空间、centered PCA、independent-component 与 nonlinear trajectory models 比较。",
+        "压缩比较需统一信息预算，把 basis、initialization、coefficients、heads、embeddings 和 decoder 全部计入 bits；允许各静态方法在相同数据访问权限下训练，并测试微调后的 rate–accuracy curve。",
+        "逐个矩阵做 matched ablation，加入层级/矩阵级 controls；给 joint SVD 的 padding、normalization、overlap 公式与 probe 样本完整定义，并区分 activation、gradient、parameter 与 function space。"
+      ]
+    },
+    {
+      "title": "阅读指南",
+      "paragraphs": [
+        "快速路线：p. 3 看 tasks、三种模型和重建定义；pp. 4–5 看 trajectory PC 阈值；pp. 5–8 看三种方法与 Figure 3；pp. 7–9 看 selectivity/overlap；pp. 11–13 看边界与外推。",
+        "物理路线：先区分 ambient dimension、trajectory dimension、matrix rank 与 function complexity；再问 PCA 子空间是否跨初值稳定、是否满足扰动后的 invariance。",
+        "AI 路线：重点检查哪些参数保持 final、每种方法看到了哪些训练信息，以及 normalized accuracy、absolute accuracy、Frobenius energy 与模型存储量四个不同指标。",
+        "批判路线：关注无重复的 15 条曲线、PCA basis 的 kP 存储、zero-padding joint SVD 的构造性满秩恢复，以及 activation-space 措辞与实际 weight intervention 的冲突。"
+      ]
+    }
+  ],
+  "evidence_refs": [
+    "paper.pdf pp. 3–5, Sections 2–3 and Tables 1–3: modular tasks, architecture grid, training settings, trajectory reconstruction thresholds and energy-rank summaries",
+    "paper.pdf pp. 5–8, Figures 2–3 and Table 4: per-matrix and joint-SVD interventions, method comparison, normalized versus absolute recovery and final-component boundary",
+    "paper.pdf pp. 7–11, Tables 5–6: gradient-covariance weight interventions, selectivity, overlap, shared trajectory directions and the activation/parameter-space ambiguity",
+    "paper.pdf pp. 11–13, discussion, limitations and conclusion: compression, scaling, manifold, LoRA, interpretability and safety extrapolation boundaries",
+    "source PDF SHA-256 67587a0814c069916e1bf5f22ee5f4fe997cd048a8f9643da678a76026749d2e",
+    "official arXiv v1 source archive SHA-256 6bba7fe30dc1e5b2e16f9645d85df2494c36d0a0c4301ceaf43015aee2301cfc",
+    "MinerU Markdown SHA-256 5ad7ba9e9cee83c05eb2637c6f5990da04d8fab50dc2ca7fe4c92094730bab68",
+    "Evidence packet SHA-256 3beda1de50827416f3c34d91aa56f4e77a3cf73963e10c0ab8ea56c3377261b4",
+    "Evidence status: full text, rendered pages and official TeX verified against only/latest arXiv v1; statistical independence, architecture confounding, trajectory hindsight, basis storage, normalized threshold, information matching, simultaneous ablation, algebraic versus functional rank, zero-padding construction, full-row-rank tautology, end-to-end compression, parameter/gradient versus activation space, manifold, scaling and external-domain boundaries recorded; no independent reproduction performed."
+  ]
+}
