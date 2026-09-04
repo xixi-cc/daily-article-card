@@ -1,0 +1,186 @@
+{
+  "arxiv_id": "2512.19941",
+  "source_version": "v6",
+  "source_pdf": "https://arxiv.org/pdf/2512.19941v6",
+  "title_en": "Block-Recurrent Dynamics in Vision Transformers",
+  "title_zh": "视觉 Transformer 中的块递归动力学",
+  "curation_status": "full_text_verified",
+  "card_standard_version": "2.4",
+  "audience_profile": "physics_ai_literate_physicist",
+  "paper_profile": "ai_empirical",
+  "style_reference": "physicist_daily_arxiv",
+  "provenance": {
+    "program": "Collection",
+    "catalog": "Paper Collection",
+    "catalog_record_id": "2512.19941",
+    "catalog_record_ids": ["2512.19941"],
+    "catalog_topic": "Mechanistic Interpretability",
+    "collection_date": "2026-08-30",
+    "sampled_at": "2026-08-31",
+    "selected_by": "ziming_mineru_serial_goal",
+    "sampling_seed": "not_applicable_source_complete",
+    "candidate_count": 464
+  },
+  "verified_metadata": {
+    "arxiv_id": "2512.19941",
+    "version": "v6",
+    "title": "Block-Recurrent Dynamics in Vision Transformers",
+    "authors": ["Mozes Jacobs", "Thomas Fel", "Richard Hakim", "Alessandra Brondetta", "Demba Ba", "T. Andy Keller"],
+    "categories": ["cs.CV", "cs.AI", "cs.LG"],
+    "primary_category": "cs.CV",
+    "published": "2025-12-23T00:18:23Z",
+    "updated": "2026-03-17T13:59:22Z",
+    "abstract": "The paper partitions Vision Transformer depth into contiguous representational phases, trains weight-tied recurrent surrogates to reproduce the full layer trajectory of DINOv2, and analyzes normalized token trajectories using perturbations, update rank, coherence and dynamic mode decomposition."
+  },
+  "equation_refs": [
+    {
+      "label": "块递归假设的可检验定义",
+      "latex": "\\mathbb E_{x\\sim P}\\|f_L(x)-(B_k^{(n_k)}\\circ\\cdots\\circ B_1^{(n_1)})(x)\\|_F\\leq\\varepsilon,\\qquad\\sum_jn_j=L",
+      "role": "state that an L-layer untied computation can be approximated by k distinct maps reused for the same total number of depth steps",
+      "symbols": {
+        "f_L": "original depth-L ViT computation or activation trajectory",
+        "B_j": "j-th tied recurrent block",
+        "n_j": "number of repeated applications of block j",
+        "epsilon": "distribution-averaged approximation tolerance",
+        "P": "input-image distribution"
+      },
+      "evidence": "paper.pdf pp. 3–4, Definition 1 and Eq. (1)",
+      "interpretation": "这是近似可重写性而非原网络权重真的相等；Raptor 通过另外训练的 tied blocks 构造存在性证据，误差和任务性能都依赖输入分布。"
+    },
+    {
+      "label": "闭环递归轨迹损失",
+      "latex": "\\mathcal L_h^{\\rm AR}=\\mathbb E_x\\sum_{\\ell=1}^{h}\\|\\tilde a_\\ell(x)-a_\\ell(x)\\|_F,\\qquad\\mathcal L_{\\rm total}=\\lambda\\mathcal L_{\\rm TF}+(1-\\lambda)\\mathcal L_{\\rm AR,H}+\\Omega(\\theta)",
+      "role": "train repeated blocks both on teacher states and on states produced by their own previous rollout",
+      "symbols": {
+        "a_l": "teacher activation at layer l",
+        "a_tilde_l": "Raptor autoregressive activation",
+        "h,H": "rollout horizons",
+        "lambda": "teacher-forcing weight annealed during training",
+        "Omega": "regularization terms"
+      },
+      "evidence": "paper.pdf pp. 4 and 7–8, Eq. (2) and hybrid objective",
+      "interpretation": "Teacher forcing 可并行但看不到自身误差；autoregressive loss 训练闭环稳定性。只做前者在 ImageNet-1k 约 3% accuracy，说明逐层局部相似不足以保证长程轨迹。"
+    },
+    {
+      "label": "归一化深度流的角速度",
+      "latex": "\\hat x_\\ell=x_\\ell/\\|x_\\ell\\|_2,\\qquad s_\\ell=\\arccos\\langle\\hat x_{\\ell+1},\\hat x_\\ell\\rangle,\\qquad c_\\ell=\\langle\\hat x_\\ell,\\hat x_L\\rangle",
+      "role": "separate directional evolution from feature-norm growth and compare token-specific depth dynamics",
+      "symbols": {
+        "x_l": "token representation at depth l",
+        "s_l": "one-layer angular displacement",
+        "c_l": "cosine similarity to the terminal direction",
+        "cls,register,patch": "three token populations analyzed separately"
+      },
+      "evidence": "paper.pdf pp. 9–11 and Appendix C",
+      "interpretation": "所谓 attractor 与 contraction 都定义在单位球方向上，并由有限 12 层或观测深度的轨迹与小扰动支持；它们不证明无限迭代极限存在，也不描述绝对 feature norm。"
+    }
+  ],
+  "figure_refs": [
+    {
+      "label": "Figure 7",
+      "asset_path": "assets/collection-figures/2512.19941/figure-7-raptor-block-performance.webp",
+      "section": "核心结果与证据",
+      "role": "compare ImageNet-1k linear-probe accuracy and final-representation R-squared as the number of recurrent blocks increases",
+      "evidence": "paper.pdf p. 9, Figure 7",
+      "alt_text": "两个散点图比较 2、3、4 个 recurrent blocks 的 Raptor：左图为 ImageNet-1k accuracy 相对 DINOv2 ViT-S/B，右图为与 DINOv2-B 表示的 R²。",
+      "caption": "从 2 增至 3 个 tied blocks 带来主要提升，4 blocks 后趋于饱和；分类差距很小，但并未达到与原模型完全等价。",
+      "interpretation": "Each point is one of three seeds. The figure supports a compact recurrent surrogate on one frozen-backbone classification probe; Table 1 shows larger residual gaps on segmentation and depth."
+    }
+  ],
+  "cover": {
+    "mode": "source_figure",
+    "asset_path": "assets/collection-figures/2512.19941/figure-7-raptor-block-performance.webp",
+    "label": "Figure 7",
+    "visual_type": "data_plot",
+    "evidence": "paper.pdf p. 9, Figure 7",
+    "alt_text": "Raptor 使用 2、3、4 个复用 blocks 时的 ImageNet-1k accuracy 与表示 R²。",
+    "caption": "12 个不同层的视觉计算，可以由少数分阶段复用的更新规则近似重放。",
+    "selection_rationale": "It is the cleanest constructive test that layer similarity corresponds to reusable function rather than merely correlated representations."
+  },
+  "sections": [
+    {
+      "title": "作者信息",
+      "paragraphs": [
+        "Mozes Jacobs、Thomas Fel、Richard Hakim、Alessandra Brondetta、Demba Ba、T. Andy Keller；Kempner Institute at Harvard University、University of Osnabrück 与 Harvard University。",
+        "本站核验 arXiv:2512.19941v6：初稿提交于 2025-12-23，当前版本更新于 2026-03-17；分类 cs.CV、cs.AI、cs.LG；ICLR 2026 论文，共 26 页。",
+        "Collection 来源为刘子鸣网站的 Mechanistic Interpretability 条目。"
+      ]
+    },
+    {
+      "title": "研究问题",
+      "paragraphs": [
+        "ViT 的连续层常产生相似表示，但表示相似不等于功能相同。论文问：训练好的 L 层 ViT 是否真的可由 $k\\ll L$ 个不同更新块分阶段反复应用来重写？",
+        "若这种 block recurrence 存在，就可把网络深度视为离散时间：同一 phase 内复用近似相同动力学，跨 phase 再切换更新规则。它是否支持对 token 轨迹做吸引子、扰动响应和低秩模态分析？",
+        "作者先用 layer–layer cosine similarity 与连续 max-cut 找 phase，再训练 Raptor tied-block surrogate 重放教师全部中间层，而非只拟合最终 label。"
+      ]
+    },
+    {
+      "title": "背景",
+      "paragraphs": [
+        "残差层可写成 $x_{\\ell+1}=x_\\ell+F_\\ell(x_\\ell)$，形式上像非自治离散流。若一段深度内 $F_\\ell$ 可由同一 B 近似，就得到自治或周期分段的 recurrent dynamics。",
+        "层间 cosine matrix 中的方块只说明 states 相近，恒等 skip connection 甚至会让未训练网络也显得相似。功能复用必须通过替换层或让一个 tied block 在自身输出上稳定 rollout 来检验。",
+        "Raptor 保留重复应用次数，因此主要压缩不同参数/程序描述长度，而不是减少 FLOPs：同一块运行 6 次仍是 6 个 depth steps。"
+      ]
+    },
+    {
+      "title": "给物理学家的 AI 导读",
+      "paragraphs": [
+        "可把 layer index 当离散时间、token embedding 当高维状态。Raptor 试图识别一个分段自治模型：在每个时间窗里用同一非线性映射推进，类似从逐时变化方程拟合少数 effective propagators。",
+        "“angular attractor”只研究 $x/\\|x\\|$ 的方向；小扰动后的轨迹向基线回弯表示有限深度内局部自校正。真正动力系统中的吸引子还需无限时间、邻域 basin 与稳定性谱，这里只建立有限深度的经验对应。",
+        "patch tokens 后期更新方向趋同，被作者类比为 mean-field coherence；cls token 则在末段急转并保留更长记忆。类比帮助组织 observable，但不意味着存在热力学极限、相互作用平均场方程或真正相变。"
+      ]
+    },
+    {
+      "title": "模型与方法",
+      "paragraphs": [
+        "max-cut 动态规划把层间 similarity matrix 分成 k 个连续区间，使区间内相似、区间间较不同。CIFAR-100 控制实验比较 max-cut 与随机 partitions，并扫描 stochastic-depth dropout。",
+        "DINOv2-B 的 12 个 encoder layers 被分成 k=2、3、4 个阶段。每个 Raptor block 与原 block 架构一致并带 depth-scale MLP；先独立训练阶段，再联合做 teacher-forcing 与 autoregressive trajectory matching，$\\lambda$ 在前 5 epochs 从 0.5 退火到 0。",
+        "下游冻结 Raptor/DINOv2 backbone，仅训练 ImageNet-1k classification、ADE20k segmentation 与 NYUv2 depth 的 heads。每种 k 训练三个 seed；动态分析另在 DINOv2-Giant 的 ImageNet validation trajectories 上测方向收敛、扰动敏感度、update rank、coherence 和 rank-10 DMD。"
+      ]
+    },
+    {
+      "title": "核心结果与证据",
+      "paragraphs": [
+        "Raptor k=2/3/4 的 ImageNet-1k top-1 为 $81.2\\pm0.2$%、$83.0\\pm0.1$%、$83.2\\pm0.1$%，DINOv2-B 为 84.5%。因此“恢复 96%/98%”是相对 accuracy 比值，不是只剩 4%/2% error。",
+        "dense tasks 的差距更大：ADE20k mIoU 为 39.6/43.0/43.6，而 DINOv2-B 为 47.5；NYUv2 RMSE 为 0.648/0.618/0.607，而教师为 0.578。k=3 已超过 DINOv2-S 的 ImageNet accuracy，却未达到其 segmentation/depth 指标。",
+        "只做 teacher forcing 的 k=3 模型在 ImageNet-1k 约 3% accuracy；加入 autoregressive stage 后提高超过 68 个百分点。这个消融说明“每一步拟合正确”仍可能因 rollout distribution shift 崩溃。",
+        "CIFAR-100 中，更高 stochastic depth 与更高层间相似度、更好的 Raptor $R^2$ 同时出现；但 p=0.7–0.9 有异常训练而被后续分析排除。过拟合开始后 recurrent reconstruction 也退化，支持 regularization 与 compressibility 关联而非单一因果机制。",
+        "方向分析显示五个 ImageNet classes 的轨迹进入分离的末端区域，小扰动对 patch tokens 随剩余深度衰减、对 late cls 反而放大；最终 phase 的 layer-update stable/effective rank 约降至 6，patch coherence 上升，rank-10 DMD eigenvalues 位于单位圆内且靠近正实轴。"
+      ]
+    },
+    {
+      "title": "有效性与局限",
+      "paragraphs": [
+        "由 similarity 分段、训练 tied surrogate 重构全轨迹、再做下游 probes，比仅画相似矩阵强得多；intra-block layer swaps 保持准确率而 inter-block swaps 导致 collapse，也支持 phase 具有功能区分。",
+        "Raptor 是用 DINOv2 activations 另外蒸馏得到的近似模型，不证明原 ViT 内部权重共享，也不是精确等价。性能最强证据集中于一个 DINOv2-B teacher 和 ImageNet-derived training；dense tasks 仍有可见 gap。",
+        "所谓 equivalent runtime 指重复块次数与原深度相同；参数存储/描述变短，但 FLOPs 没减少。附录的 Levin-complexity 界还要求零误差 BRH 和 block-runtime parity，不能直接套到有限 $\\varepsilon$ 的实测 Raptor。",
+        "stochastic depth、训练状态与 recurrence 的关系来自控制相关和部分消融；作者也承认大规模训练动力学的因果来源尚未隔离。高 dropout 异常运行的排除限制了全扫描结论。",
+        "吸引子、mean-field 与 phase transition 是对有限层、单位球投影 observable 的动力学语言。PCA basin、rank collapse 和 DMD 线性谱与这些解释一致，但并未唯一排除其他低维压缩或 residual smoothing 解释。"
+      ]
+    },
+    {
+      "title": "复现与资源",
+      "paragraphs": [
+        "项目页：https://kempnerinstitute.github.io/raptor 。版本固定为 arXiv v6；复现需使用相同 DINOv2-B registers、ImageNet-1k activation sample、连续 max-cut partitions 与三 seed 汇总。",
+        "关键训练参数包括 20 epochs、batch 64、AdamW weight decay $10^{-4}$、10k-step warmup 至 $10^{-4}$、cosine decay 至 $10^{-6}$，以及 token-specific loss weights 和两阶段 rollout schedule。",
+        "建议依次复现 Figure 7/Table 1、teacher-forcing collapse、intra/inter-block swap，再做 perturbation/rank/DMD；本站未训练 Raptor 或独立重算动力学 observable。"
+      ]
+    },
+    {
+      "title": "阅读指南",
+      "paragraphs": [
+        "先读 Definition 1，把“原模型有重复结构”理解为分布上的可近似重写；再看 Figures 1–6，确认从 similarity 到 max-cut、再到闭环 surrogate 的逻辑链。",
+        "Figure 7 与 Table 1 要一起看：分类接近不代表所有下游任务等价。随后读 perturbation、rank 与 DMD 部分，并始终记住状态已归一化到单位球。",
+        "最值得继续研究的是：是否能在不借助完整 teacher trajectory 的情况下从原权重识别 recurrent maps；不同数据分布上的 $\\varepsilon$ 如何标度；以及 dense prediction gap 是否对应遗漏的 time-varying component。"
+      ]
+    }
+  ],
+  "evidence_refs": [
+    "paper.pdf pp. 3–8: BRH definition, max-cut phases, stochastic-depth controls and hybrid recurrent training",
+    "paper.pdf pp. 9–12: DINOv2 downstream metrics, teacher-forcing ablation, perturbations, token dynamics, rank and DMD",
+    "paper.pdf appendices A, C–F: partitions, training hyperparameters, observable definitions, Levin-bound assumptions and layer-swap controls",
+    "source PDF SHA-256 31b066879a2e9e1ef61992c77fd13355e64d967c4aa57aad67ef78cea690a436",
+    "Evidence packet SHA-256 ab7054533a2653d7b21a512590315707e4569a88f7f223cc6cb161ef1340a5fb",
+    "Evidence status: full-text verified; no independent reproduction performed."
+  ]
+}

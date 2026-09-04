@@ -1,0 +1,200 @@
+{
+  "arxiv_id": "2512.20607",
+  "source_version": "v2",
+  "source_pdf": "https://arxiv.org/pdf/2512.20607v2",
+  "title_en": "Saddle-to-Saddle Dynamics Explains A Simplicity Bias Across Neural Network Architectures",
+  "title_zh": "鞍点到鞍点动力学解释跨神经网络架构的简单性偏置",
+  "curation_status": "full_text_verified",
+  "card_standard_version": "2.4",
+  "audience_profile": "physics_ai_literate_physicist",
+  "paper_profile": "theory_numerics",
+  "style_reference": "physicist_daily_arxiv",
+  "provenance": {
+    "program": "Collection",
+    "catalog": "Paper Collection",
+    "catalog_record_id": "2512.20607",
+    "catalog_record_ids": ["2512.20607"],
+    "catalog_topic": "Training Dynamics",
+    "collection_date": "2026-08-30",
+    "sampled_at": "2026-08-31",
+    "selected_by": "ziming_mineru_serial_goal",
+    "sampling_seed": "not_applicable_source_complete",
+    "candidate_count": 464
+  },
+  "verified_metadata": {
+    "arxiv_id": "2512.20607",
+    "version": "v2",
+    "title": "Saddle-to-Saddle Dynamics Explains A Simplicity Bias Across Neural Network Architectures",
+    "authors": ["Yedi Zhang", "Andrew Saxe", "Peter E. Latham"],
+    "categories": ["cs.LG"],
+    "primary_category": "cs.LG",
+    "published": "2025-12-23T18:55:30Z",
+    "updated": "2026-03-10T21:09:23Z",
+    "abstract": "The paper links stage-like gradient-flow learning to narrow-network fixed points embedded in wider networks, invariant manifolds of low effective width, and data- or initialization-induced timescale separation across linear, convolutional, ReLU, quadratic, and attention examples."
+  },
+  "equation_refs": [
+    {
+      "label": "统一的可加单元架构与梯度流",
+      "latex": "f(x;\\theta_{1:H})=g_{\\rm out}\\!\\left(\\sum_{i=1}^{H}\\phi(g_{\\rm in}(x);u_i)v_i\\right),\\qquad \\dot\\theta=-\\nabla_\\theta\\mathcal L",
+      "role": "represent neurons, convolutional kernels or attention heads as exchangeable additive units and define the continuous-time training dynamics",
+      "symbols": {
+        "H": "actual number of units in the selected layer",
+        "u_i,v_i": "input-side and output-side parameters of unit i",
+        "phi": "unit computation, architecture dependent",
+        "g_in,g_out": "network portions before and after the layer",
+        "L": "empirical supervised loss"
+      },
+      "evidence": "paper.pdf pp. 2–3, Eqs. (1)–(3)",
+      "interpretation": "统一性来自单元可置换且输出可相加；gradient flow 是小学习率极限，不自动覆盖有限步长、Adam、随机 batch 或参数不具有该分解的架构。"
+    },
+    {
+      "label": "窄网络固定点嵌入宽网络",
+      "latex": "u_H=u_i^*,\\qquad v_H=\\gamma_v v_i^*,\\qquad v_i=(1-\\gamma_v)v_i^*",
+      "role": "duplicate one unit while splitting its outgoing weight so that a width-H network implements the same function and remains stationary",
+      "symbols": {
+        "theta_star": "fixed point of the width-(H-1) network",
+        "i,H": "old unit and added unit",
+        "gamma_v": "arbitrary split coefficient",
+        "f_star": "unchanged input-output map"
+      },
+      "evidence": "paper.pdf pp. 3–4, Theorem 1 and Eq. (4)",
+      "interpretation": "这证明宽网络的 loss landscape 含有表达较窄函数的固定点族；固定点是否为鞍点仍依赖架构和损失条件，定理本身不保证实际轨迹一定经过它。"
+    },
+    {
+      "label": "线性网络中的方向时间尺度分离",
+      "latex": "\\dot v_i=\\Sigma_{yz}u_i,\\qquad \\dot u_i=\\Sigma_{yz}^{\\top}v_i,\\qquad \\|(I-P)\\theta_i\\|=O\\!\\left(\\epsilon^{1-s_{r+1}/s_1}\\right)\\;\\text{when }\\|P\\theta_i\\|=O(1)",
+      "role": "show that singular directions with larger input-output correlation grow exponentially earlier than the remaining directions",
+      "symbols": {
+        "Sigma_yz": "empirical target-feature cross-correlation",
+        "s_1,s_r+1": "leading and next singular values",
+        "P": "projector onto the multiplicity-r leading singular subspace",
+        "epsilon": "small Gaussian initialization scale"
+      },
+      "evidence": "paper.pdf pp. 5–7, Eqs. (9)–(12) and Theorem 4",
+      "interpretation": "谱间隙使所有 units 先沿同一低秩方向增长，形成 data-induced low-rank simplicity；若最大奇异值重数为 D，网络会从有效宽度 0 直接跳到 D，中间 plateaus 消失。"
+    },
+    {
+      "label": "二次模型中的单元时间尺度分离",
+      "latex": "\\dot v_i=u_i^{\\top}\\Sigma_{yZ}u_i,\\qquad \\dot u_i=2v_i\\Sigma_{yZ}u_i,\\qquad v_i(t)=\\left(v_i(0)^{-1}-t\\right)^{-1}",
+      "role": "capture the rich-get-richer growth that lets the largest randomly initialized unit become order one while others remain small",
+      "symbols": {
+        "Z(x)": "architecture-dependent matrix feature",
+        "Sigma_yZ": "target-matrix-feature correlation",
+        "v_i,u_i": "parameters of a quadratic unit",
+        "H": "number of units or, in linear self-attention, heads"
+      },
+      "evidence": "paper.pdf pp. 7–8, Eqs. (13)–(16) and Proposition 5",
+      "interpretation": "这里的 separation 来自不同随机初值而非数据谱；它产生少数大 units 的稀疏结构。严格命题针对二层二次动力学并要求小初始化与 $\\Sigma_{yZ}$ 同时有正负特征值。"
+    }
+  ],
+  "figure_refs": [
+    {
+      "label": "Figure 1",
+      "asset_path": "assets/collection-figures/2512.20607/figure-1-saddle-to-saddle-dynamics.webp",
+      "section": "核心结果与证据",
+      "role": "compare the proposed invariant-manifold picture with staged loss and effective-unit patterns across six two-layer architectures",
+      "evidence": "paper.pdf p. 2, Figure 1",
+      "alt_text": "左侧为轨迹沿低有效宽度不变流形从一个鞍点转向下一个的示意；右侧线性全连接、卷积、ReLU、自注意力与二次网络都出现台阶损失和从一个到两个有效单元的权重结构。",
+      "caption": "不同架构都可出现“平台—突降—平台”，但低复杂度的参数形态不同：低秩、少方向或少活跃单元。",
+      "interpretation": "These controlled examples establish a common phenomenology and architecture-specific effective-width diagnostic; they are not a proof that arbitrary production networks follow the same heteroclinic sequence."
+    }
+  ],
+  "cover": {
+    "mode": "source_figure",
+    "asset_path": "assets/collection-figures/2512.20607/figure-1-saddle-to-saddle-dynamics.webp",
+    "label": "Figure 1",
+    "visual_type": "comparison",
+    "evidence": "paper.pdf p. 2, Figure 1",
+    "alt_text": "鞍点间轨迹与六类神经网络的分阶段损失、权重结构对照。",
+    "caption": "训练并非总是平滑下降：它可以沿低有效宽度流形逐次招募新单元。",
+    "selection_rationale": "It places the dynamical-systems mechanism and its cross-architecture empirical manifestations in one source figure."
+  },
+  "sections": [
+    {
+      "title": "作者信息",
+      "paragraphs": [
+        "Yedi Zhang、Andrew Saxe、Peter E. Latham；Gatsby Computational Neuroscience Unit 与 Sainsbury Wellcome Centre，University College London。",
+        "本站核验 arXiv:2512.20607v2：初稿提交于 2025-12-23，当前版本更新于 2026-03-10；分类 cs.LG；ICLR 2026 conference paper，共 45 页。",
+        "Collection 来源为刘子鸣网站的 Training Dynamics 条目。"
+      ]
+    },
+    {
+      "title": "研究问题",
+      "paragraphs": [
+        "神经网络的训练 loss 有时长时间停在平台，随后突然下降；同时学到的函数似乎从简单到复杂。论文问：这些跨线性层、ReLU、卷积与 attention 的现象，是否来自同一种参数空间动力学？",
+        "作者提出三段链条：窄网络固定点可嵌入宽网络成为鞍点；表示较少有效 units 的参数约束构成不变流形；数据谱或随机初始化产生时间尺度分离，使轨迹靠近这些流形并逐次逃离鞍点。",
+        "这里的 simplicity 被明确限定为实现同一 input-output map 所需的最少有效 units，而不是 Kolmogorov complexity、平滑性、短程序或更好泛化的统称。"
+      ]
+    },
+    {
+      "title": "背景",
+      "paragraphs": [
+        "在 gradient flow 中，固定点满足 $\\nabla_\\theta\\mathcal L=0$；若 Hessian 既有稳定又有不稳定方向，它是鞍点。轨迹靠近鞍点时运动很慢形成 loss plateau，沿不稳定方向逃离时出现快速下降。",
+        "不变流形是“一旦精确落在其中，动力学永不离开”的参数集合。若两 units 始终相等、成比例、线性相关，或某些 units 恒为零，宽网络实际上只实现较窄网络的函数。",
+        "连接不同固定点的轨迹在动力系统语言中接近 heteroclinic orbit。实际随机初始化通常只在流形附近，因此关键不是流形存在，而是横向偏离是否比沿流形到下一个固定点的运动慢。"
+      ]
+    },
+    {
+      "title": "给物理学家的 AI 导读",
+      "paragraphs": [
+        "把网络参数视作高维相空间坐标，负 loss gradient 是速度场。plateau 对应轨迹在鞍点附近的慢通道；burst 对应不稳定模放大。网络的 permutation symmetry 让“复制一个 unit 并分摊输出权重”自然生成固定点族。",
+        "effective width 类似受约束流形上的自由度计数：线性网络中 rank-r 权重只需要 r 个独立 units；ReLU 中若若干神经元共线，只产生较少 kink directions；卷积核和 attention heads 则按真正非零、独立贡献的数量计数。",
+        "要区分两种机制：线性情形由数据相关矩阵的奇异值谱选择方向，所有 units 可分布式地共担低秩模式；二次/线性自注意力情形由初值极值触发 rich-get-richer，先长大的少数 units/head 形成局域稀疏表示。"
+      ]
+    },
+    {
+      "title": "模型与方法",
+      "paragraphs": [
+        "统一架构把一层写成 H 个可交换单元的和；unit 可指 hidden neuron、convolutional kernel 或 attention head。Theorem 1 构造四类窄网络固定点嵌入，Theorem 3 证明 equal/zero/proportional/linearly dependent weights 在 gradient flow 下保持不变。",
+        "线性二层网络配平方损失时，初期 $W=O(\\epsilon^2)$，动力学由 $\\Sigma_{yz}$ 控制。其奇异模以 $e^{s_k t}$ 增长，谱隙让 leading r-dimensional subspace 先达到 $O(1)$；在后续 rank-r saddle 附近，对残差相关矩阵重复同样过程。",
+        "二次单元与 linear self-attention 的近零动力学对初值非线性放大；最大初始 unit 达 $O(1)$ 时其他 units 仍为 $O(\\epsilon)$。作者用 synthetic teacher tasks、MNIST 二分类和多种二层/深层数值模拟观察 loss 阶梯与权重 rank/活跃 unit 同步变化。",
+        "Figure 2 通过改变 width、数据奇异值幂律指数、初始化 rank 与 scale 检验预测；附录还测试 softmax attention、sigmoid/sinusoid/tanh 与高阶激活、三层网络及 skip connections。"
+      ]
+    },
+    {
+      "title": "核心结果与证据",
+      "paragraphs": [
+        "Figure 1 的六个二层例子都先在只能由 1 个 effective unit 表达的中间状态停留，再到需要 2 个 units 的终态。线性全连接/卷积表现为 rank 1→2，ReLU 为一条→两条权重射线，linear self-attention 与 quadratic net 为一个→两个大 units。",
+        "Theorem 4 给出线性早期的定量分离：leading subspace 达 $O(1)$ 时，其余分量为 $O(\\epsilon^{1-s_{r+1}/s_1})$。这解释数据谱越不简并，plateaus 越明显；Figure 2 中把三个奇异值设为相等会消除线性网络除初始逃逸外的平台。",
+        "Proposition 5 说明二次近零动力学由初始化顺序统计选择 unit；因此增加 heads/units 缩小最大几个初值的间隔，使 linear self-attention plateaus 变短，而增加线性网络宽度影响很小。Figure 2A 的模拟符合这一区分。",
+        "MNIST 二分类中，width-1000 两层线性/ReLU 网络的 loss 突降与第一层前两个 singular values 的增长相伴；3/5 的第二残差 singular value 为 1.38，明显小于 0/1 的 3.90，对应更长第二平台。这是现实数据上的机制一致性检查，不是大模型实验。",
+        "大而低秩的初始化即使远离鞍点、只靠近低有效宽度流形，也会先指数下降再出现台阶；增大 isotropic initialization 则逐渐缩短平台。这个对比支持“靠近不变流形”比“必须从鞍点附近开始”更准确。"
+      ]
+    },
+    {
+      "title": "有效性与局限",
+      "paragraphs": [
+        "固定点嵌入与不变流形定理覆盖相当广的可加、可交换单元架构，也延伸到多层；它们给出了为何宽模型可暂时实现窄模型函数的严格结构基础。参数扫描对 width、谱隙和初始化的相反预测增强了机制可信度。",
+        "但“这些结构存在”不等于“自然训练轨迹会访问它们”。Section 5 对动力学的严格分析集中在二层线性和二次、小初始化、gradient flow/平方损失近似；从“附近”到真正先接近固定点再逃离，许多一般架构仍靠 heuristic 与模拟。",
+        "ReLU 的方向分离在讨论中被明确称为 conjecture；deep nets 与 richer transformers 只展示小型模拟并提出层内阶数猜想。linear self-attention 不是带 softmax、MLP、normalization 与残差块的现代 Transformer 整体。",
+        "tanh 网络是重要反例：小初始化使早期 rank-one，但因 tanh 非齐次，该 rank-one 集合一般不是有效宽度 1 的不变流形，后续不必发生 saddle-to-saddle。大 isotropic 初始化、所需有效宽度已为 1、或线性数据谱简并也可削弱/消除阶段。",
+        "作者尚未证明所列 fixed points/invariant manifolds 穷尽全部结构，也未给出一般网络需要离流形多近的误差界；saddle 序列甚至可能依赖历史而非 Markovian。有限 learning rate、SGD noise、Adam 和大规模训练会怎样改变驻留时间仍未解决。",
+        "简单只表示少有效单元，不保证测试误差更低。若最易学的是 texture 等伪相关特征，simplicity bias 反而损害 OOD generalization；本文解释训练次序，不建立“越早学越正确”的价值判断。"
+      ]
+    },
+    {
+      "title": "复现与资源",
+      "paragraphs": [
+        "论文提供 Figure 1 动画作为补充材料；版本固定为 arXiv v2 / ICLR 2026。复现时需区分连续 gradient flow 理论与离散 gradient descent 模拟，并记录 learning rate、初始化方差、width 和 teacher/data correlation spectrum。",
+        "最小路线是：重跑 Figure 1 的 linear fully-connected 与 linear self-attention；再复现 Figure 2 的 width、$s_n=n^{-\\kappa}$、low-rank/isotropic initialization 扫描，检查两种时间尺度分离是否给出不同趋势。",
+        "现实数据检查可重做 MNIST digit pairs 的 loss、第一层 singular values 与 Table 1 残差谱；推广到 Transformer 时应同时测每层 head effective rank、MLP units、skip-path 活性和 Hessian unstable modes，而非仅凭台阶 loss 命名鞍点。本站未独立运行这些实验。"
+      ]
+    },
+    {
+      "title": "阅读指南",
+      "paragraphs": [
+        "先读 Eq. (1)、Theorem 1 与 Theorem 3，确认“窄函数嵌入宽参数空间”是严格部分；再用 Figure 1A 把 fixed point、invariant manifold、effective width 和一次 h→h+1 transition 对齐。",
+        "随后分开读 Section 5.1 与 5.2：前者追踪 $\\Sigma_{yz}$ 的 singular directions，后者追踪不同 units 的初始化幅值。不要把 low-rank 与 sparse 当成同一个机制或同一个参数结构。",
+        "最后用 Figure 2 与 tanh 反例检验适用条件，再读 Discussion 的 deep-network conjecture。最关键的开放问题是定量的 near-manifold 稳定性、一般优化器/噪声下的驻留时间，以及真实大模型中 effective unit 的可辨识定义。"
+      ]
+    }
+  ],
+  "evidence_refs": [
+    "paper.pdf pp. 2–5: cross-architecture staged dynamics, unified unit parameterization, embedded fixed points and invariant manifolds",
+    "paper.pdf pp. 5–10: linear and quadratic timescale-separation analyses and width/data/initialization predictions",
+    "paper.pdf pp. 10–13 and appendices B–C: conditions, deep-network conjectures, MNIST checks, nonlinear counterexamples and open questions",
+    "source PDF SHA-256 4897dc2a5b1e08096e0a00003fe7f94bdd0daefbbed91dfd3a7aa41f57716f1c",
+    "Evidence packet SHA-256 df9db20bccd730f269e898989d4761c34d5c2cd72e7d5cd2d791cdcc44cf5b84",
+    "Evidence status: full-text verified; no independent reproduction performed."
+  ]
+}

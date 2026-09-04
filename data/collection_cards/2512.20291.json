@@ -1,0 +1,186 @@
+{
+  "arxiv_id": "2512.20291",
+  "source_version": "v4",
+  "source_pdf": "https://arxiv.org/pdf/2512.20291v4",
+  "title_en": "Mixture-of-Experts with Gradient Conflict-Driven Subspace Topology Pruning for Emergent Modularity",
+  "title_zh": "以梯度冲突驱动子空间拓扑剪枝的混合专家模型与涌现模块化",
+  "curation_status": "full_text_verified",
+  "card_standard_version": "2.4",
+  "audience_profile": "physics_ai_literate_physicist",
+  "paper_profile": "ai_empirical",
+  "style_reference": "physicist_daily_arxiv",
+  "provenance": {
+    "program": "Collection",
+    "catalog": "Paper Collection",
+    "catalog_record_id": "2512.20291",
+    "catalog_record_ids": ["2512.20291"],
+    "catalog_topic": "Machine Learning",
+    "collection_date": "2026-08-30",
+    "sampled_at": "2026-08-31",
+    "selected_by": "ziming_mineru_serial_goal",
+    "sampling_seed": "not_applicable_source_complete",
+    "candidate_count": 464
+  },
+  "verified_metadata": {
+    "arxiv_id": "2512.20291",
+    "version": "v4",
+    "title": "Mixture-of-Experts with Gradient Conflict-Driven Subspace Topology Pruning for Emergent Modularity",
+    "authors": ["Yuxing Gan", "Ziyu Lei"],
+    "categories": ["cs.LG"],
+    "primary_category": "cs.LG",
+    "published": "2025-12-23T12:00:10Z",
+    "updated": "2026-01-19T08:53:06Z",
+    "abstract": "The paper replaces isolated mixture-of-experts parameter blocks with logical experts selected from a shared low-rank backbone, and uses lagged pairwise gradient conflict to alter a learnable topology mask in a three-dataset image-classification test."
+  },
+  "equation_refs": [
+    {
+      "label": "从共享参数骨架寻址专家子空间",
+      "latex": "\\mathbf I_i=\\sigma(\\mathbf A_{i,:})\\boldsymbol\\Pi,\\qquad \\mathcal S_i=\\operatorname{argtop}_r(\\mathbf I_i),\\qquad r=\\left\\lfloor D_{\\rm base}/\\sqrt N\\right\\rfloor",
+      "role": "turn one row of topology logits into the physical coordinates used by a logical expert",
+      "symbols": {
+        "A": "learnable N-by-N topology-logit matrix",
+        "Pi": "fixed map from N initial partitions to D_base coordinates",
+        "I_i": "soft control weights over backbone coordinates",
+        "S_i": "hard top-r active coordinate set",
+        "r": "per-expert subspace rank"
+      },
+      "evidence": "paper.pdf pp. 3–4, Eqs. (4)–(6)",
+      "interpretation": "这里的 physical backbone 只是共享权重矩阵的命名，不是物理介质；平方根 rank 规则是作者选择的容量启发式，而非由缩放理论推出。"
+    },
+    {
+      "label": "重叠子空间上的滞后梯度冲突",
+      "latex": "\\mathcal K_{ij}=\\mathcal S_i\\cap\\mathcal S_j,\\quad s_{ij}=\\frac{\\mathbf g_i[\\mathcal K_{ij}]\\cdot\\mathbf g_j[\\mathcal K_{ij}]}{\\|\\mathbf g_i[\\mathcal K_{ij}]\\|\\,\\|\\mathbf g_j[\\mathcal K_{ij}]\\|+\\epsilon},\\quad \\mathcal C_{ij}=\\operatorname{ReLU}(-s_{ij})",
+      "role": "measure only opposing update directions on coordinates simultaneously used by two experts",
+      "symbols": {
+        "g_i": "detached per-expert backbone gradient from the preceding optimization step",
+        "K_ij": "currently shared coordinate set",
+        "s_ij": "cosine similarity restricted to that overlap",
+        "C_ij": "nonnegative conflict score"
+      },
+      "evidence": "paper.pdf p. 5, Eqs. (13)–(15)",
+      "interpretation": "负 cosine 是一个 mini-batch 上的优化几何量，不是热力学排斥力；使用上一时刻梯度还隐含了两个更新步之间权重和路由变化足够慢。"
+    },
+    {
+      "label": "直接作用于拓扑 logits 的目标",
+      "latex": "\\mathcal L_{\\rm total}=\\mathcal L_{\\rm task}+\\lambda_{\\rm conf}\\sum_{i\\ne j}A_{ij}\\mathcal C_{ij}+\\lambda_{\\rm reg}\\|\\mathbf A\\|_1,\\qquad \\frac{\\partial\\mathcal L_{\\rm conf}}{\\partial A_{ij}}=\\mathcal C_{ij}",
+      "role": "apply a nonsaturating downward update to topology logits whenever the stored gradients conflict",
+      "symbols": {
+        "L_task": "classification objective",
+        "lambda_conf": "conflict weight, set to 10 in the experiment",
+        "lambda_reg": "logit L1 weight, set to 1e-4",
+        "A_ij": "connection logit from logical expert i to initial partition j"
+      },
+      "evidence": "paper.pdf pp. 5–6, Eqs. (16)–(17)",
+      "interpretation": "$|A|$ 最小化把连接概率拉向 $\\sigma(A)=0.5$，因此是居中/保持可塑性的力，不是通常把连接概率推到零的稀疏正则。论文附录的剪枝定理还要求持续正冲突、冲突项局部支配任务增益与正则、非零 sigmoid 导数和受控噪声。"
+    }
+  ],
+  "figure_refs": [
+    {
+      "label": "Figure 1",
+      "asset_path": "assets/collection-figures/2512.20291/figure-1-cdsp-moe-framework.webp",
+      "section": "模型与方法",
+      "role": "show the separation between content/task routing, logical-expert topology masks, shared coordinates and the two optimization signals",
+      "evidence": "paper.pdf p. 3, Figure 1",
+      "alt_text": "CDSP-MoE 框架图：输入经 router 选择逻辑专家，拓扑矩阵从共享 U/V 参数骨架取出子空间；任务损失更新权重，梯度冲突损失更新拓扑。",
+      "caption": "模型把“选择哪个专家”和“专家由哪些共享坐标组成”分开学习，并用前一步的梯度冲突修改后者。",
+      "interpretation": "The diagram is architectural, not evidence that the learned masks are semantically unique or scalable to language-model experts."
+    }
+  ],
+  "cover": {
+    "mode": "source_figure",
+    "asset_path": "assets/collection-figures/2512.20291/figure-1-cdsp-moe-framework.webp",
+    "label": "Figure 1",
+    "visual_type": "schematic",
+    "evidence": "paper.pdf p. 3, Figure 1",
+    "alt_text": "共享参数子空间、逻辑专家拓扑、router 与梯度冲突反馈构成的 CDSP-MoE。",
+    "caption": "不再给每个专家一套孤立权重，而是在共享坐标中动态切出子空间。",
+    "selection_rationale": "It exposes the paper's central distinction between routing examples and learning the parameter-sharing topology."
+  },
+  "sections": [
+    {
+      "title": "作者信息",
+      "paragraphs": [
+        "Yuxing Gan（独立研究者）与 Ziyu Lei（华中科技大学）；论文首页标注两位作者贡献相同，并明确写作 Preprint / Work in progress。",
+        "本站核验 arXiv:2512.20291v4：初稿提交于 2025-12-23，当前版本更新于 2026-01-19；分类 cs.LG，共 20 页。",
+        "Collection 来源为刘子鸣网站的 Machine Learning 条目。"
+      ]
+    },
+    {
+      "title": "研究问题",
+      "paragraphs": [
+        "标准稀疏 MoE 先规定 N 个互不共享的专家，再由 router 选择其中少数。论文问：能否反过来只保存一个共享低秩权重骨架，让每个“逻辑专家”通过可学习 mask 选择坐标？",
+        "若两个专家在同一坐标上要求相反的参数更新，能否把这种 gradient conflict 当作结构监督，削弱共享连接，从训练动力学中形成模块？",
+        "作者还测试移除显式 Task ID 后，router 是否仍能仅凭图像内容区分三个数据集；这比训练时有 ID 的标准 baseline 更接近所谓 blind inference。"
+      ]
+    },
+    {
+      "title": "背景",
+      "paragraphs": [
+        "MoE 的条件计算是“每个输入只激活少数分支”。常见实现的专家参数彼此独立，路由器还需 load-balancing loss 避免少数专家过载；这并不自动保证专家学到可解释语义。",
+        "多任务学习中，若两个任务对共享参数的梯度内积为负，一步更新可能帮助一个任务而伤害另一个。PCGrad 一类方法修改梯度；本文则尝试修改谁还能共享这些坐标。",
+        "论文的 shared physical subspace、force、Hamiltonian、equilibrium 等是组织优化过程的类比语言。实际对象仍是有限维权重、mini-batch 梯度和 AdamW 更新，没有建立真实能量、温度或统计系综。"
+      ]
+    },
+    {
+      "title": "给物理学家的 AI 导读",
+      "paragraphs": [
+        "可把共享 backbone 的坐标看成一组可复用基函数，把每个专家看成选择其中 r 个基函数的稀疏有效模型；拓扑矩阵 A 类似可学习的耦合图，但边权是算法参数而非可观测物理相互作用。",
+        "冲突分数只取重叠坐标上梯度夹角的负半轴。它告诉我们当前 batch 的两个下降方向是否相反，却不等于两个任务本质不相容：梯度会随参数化、尺度、batch 和训练时刻改变。",
+        "所谓 emergent modularity 的操作定义主要是 topology/routing heatmap 出现分组。MNIST 与 KMNIST 被研究者称为 symbolic、Fashion-MNIST 被称为 object；这是合理的事后语义解释，但尚非由独立可辨识量证明的相或普适序参量。"
+      ]
+    },
+    {
+      "title": "模型与方法",
+      "paragraphs": [
+        "CDSP-MoE 设置 8 个逻辑专家，共享 $D_{\\rm base}=256$ 的 U/V 低秩骨架；每个专家由 topology logits 经 sigmoid、固定初始分区 $\\Pi$ 和 top-r 选择得到 $r=32$ 个坐标。离散 top-r 的任务梯度通过所选坐标平均强度 $m_i$ 这一标量 bridge 回传到 A。",
+        "router 接收 LayerNorm 后的展平 28×28 灰度图和可随机遮掉的 task embedding；实验的 Task Dropout 为 0.1。冲突分支保存每个 active expert 对 backbone 的 detached gradient，到下一步只在坐标交集内算负 cosine，并直接降低相应 A logits。",
+        "AdamW 训练 10 epochs、batch 128；backbone learning rate 为 $5\\times10^{-3}$，topology 为 $5\\times10^{-2}$，冲突项权重 10，logit L1 权重 $10^{-4}$。两时间尺度是让 lagged gradient 尚可代表下一步冲突的工程假设。",
+        "比较对象包括：训练和推理使用 Task ID 的标准 top-2 MoE oracle、推理时拿掉 ID 的同一 baseline、从训练开始就没有 ID 且只有负载均衡的 pure-blind baseline，以及 blind CDSP-MoE。"
+      ]
+    },
+    {
+      "title": "核心结果与证据",
+      "paragraphs": [
+        "三个数据集混合分类的 epoch-10 accuracy/loss 为：Task-ID oracle 95.14%/0.1408，移除 ID 的 blind baseline 93.92%/0.1722，blind CDSP-MoE 94.54%/0.1469。CDSP 相对同信息条件 baseline 高 0.62 个百分点，距 oracle 仍有 0.60 个百分点；“virtually matching”不等于统计等价。",
+        "routing heatmap 中，epoch 9 的 MNIST/KMNIST 主要使用 E0/E5，Fashion-MNIST 偏向 E7；blind CDSP 仍保留这一区别。标准 baseline 去掉 ID 后三任务 routing distribution 的 Pearson correlation 约为 1，说明其 sharp specialization 主要来自 ID shortcut。",
+        "pure-blind baseline 仍把三任务大量路由到 E0/E6/E7，而 CDSP 的 topology 只剩 E5/E7/E2/E0 等较强对角结构。这支持“额外冲突信号与更分离的路由共同出现”，但模型结构也不同，尚不是只切换 conflict loss 的严格单因素消融。",
+        "定义阈值 $\\tau=0.1$ 后，alpha sparsity 从近 0 升至约 30%，辅助损失在 epoch 2–10 约稳定于 $6\\times10^{-4}$。30% 是这一配置的一条训练轨迹和人为阈值下的经验 setpoint，不证明只有 30% 路径本质有害，更与所谓 Golden Ratio 无数学关系。"
+      ]
+    },
+    {
+      "title": "有效性与局限",
+      "paragraphs": [
+        "优点是作者同时给出任务性能、移除指令的对照、routing/topology 轨迹和纯 blind baseline，因而不只以漂亮的专家标签论证模块化；公式也清楚区分 task-gradient 与 topology-gradient 通道。",
+        "实验仅含 MNIST、KMNIST、Fashion-MNIST 三个小型 10 类灰度分类任务、约 32k 参数和 10 epochs；未验证 LLM、文本 token、很多任务、分布外泛化或大规模稀疏算子效率。论文未报告多随机种子误差条、显著性检验或资源开销实测，0.62 个百分点提升的稳健性未知。",
+        "三种模型的信息条件和结构并不完全一致：oracle 拥有 Task ID，blind baseline 是拿掉训练时依赖的信息，CDSP 又加入共享子空间与 conflict objective。因此表格适合说明受控案例中的行为差异，不足以归因所有增益于一个机制。",
+        "引言借用 continual-learning 与 forgetting 动机，但实验是混合多任务分类，没有任务序列、旧任务保持曲线或 catastrophic-forgetting 指标；论文自己也把 continual learning 留作未来工作。",
+        "附录的 decoupling theorem 是条件命题：须有持续非零期望冲突，冲突力局部压过 task gain 和 regularization，且近似独立、噪声有界。高维随机向量虽约有一半 cosine 为负，其幅度同时集中到 0；符号概率不推出强而持续的剪枝力，也不能证明一般情形下模块化必然涌现。",
+        "存储每个专家的滞后梯度和计算 pairwise overlap/cosine 会增加训练内存与计算；低秩投影和稀疏采样只是作者提出的扩展设想。共享参数是否减少实际训练/推理成本，本文没有 benchmark。"
+      ]
+    },
+    {
+      "title": "复现与资源",
+      "paragraphs": [
+        "作者在 arXiv 摘要给出代码：https://github.com/konodiodaaaaa1/Conflict-Driven-Subspace-Pruning-Mixture-of-Experts 。版本应固定到 arXiv v4，并记录代码 commit、数据混合与随机种子。",
+        "最小复现先核对 N=8、$D_{base}=256$、r=32、hidden size 256、batch 128、10 epochs，以及 backbone/topology 的两组学习率，再分别重跑 oracle、blind-at-test、pure-blind 与 CDSP。",
+        "必须报告多个 seeds 的 accuracy/loss、routing similarity、$\\tau$ 扫描后的 alpha sparsity，以及额外显存/step time；还应增加只移除 conflict term、只保留共享 topology 的同构消融。本站未执行训练或独立验证作者代码。"
+      ]
+    },
+    {
+      "title": "阅读指南",
+      "paragraphs": [
+        "先看 Figure 1 和 Eqs. (4)–(9)，分清 router 选择逻辑专家、topology 决定专家坐标、scalar bridge 传 task gradient 三件事；再读 Eqs. (13)–(17) 的滞后冲突更新。",
+        "接着把 Figure 2/3 与 Table A2 一起看：heatmap 回答“路由是否分开”，accuracy 回答“任务是否做对”，两者不能相互替代。对 94.54% 应比较同样 blind 的 93.92%，不要只与带 Task ID 的 95.14% 比。",
+        "最后读 Appendix E 时，把每个 theorem 的 assumptions 写在结论旁。最有价值的后续检验是同构 conflict ablation、多 seed、更多不易人为二分的任务，以及把梯度缓存成本随专家数 N 和 active top-k 的标度实际量出来。"
+      ]
+    }
+  ],
+  "evidence_refs": [
+    "paper.pdf pp. 3–6: shared backbone, topology addressing, differentiable bridge, adversarial masking and lagged-gradient conflict objective",
+    "paper.pdf pp. 6–9 and Figures 2–3: three-dataset setup, routing/topology evolution and blind baselines",
+    "paper.pdf appendices A–E: hyperparameters, epoch-10 performance, alpha-sparsity definition and conditional convergence arguments",
+    "source PDF SHA-256 a647ce7955c5e41cffe20ac565b77907c0f872410ea00ffaf3712f8943e249fe",
+    "Evidence packet SHA-256 f79dc293c1e1a90bdbc24ee6f64b67c910c7b9d2bf74fd17bba2f28f19f30f35",
+    "Evidence status: full-text verified; no independent reproduction performed."
+  ]
+}
