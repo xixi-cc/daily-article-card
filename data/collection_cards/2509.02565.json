@@ -1,0 +1,96 @@
+{
+  "arxiv_id": "2509.02565",
+  "source_version": "v2",
+  "source_pdf": "https://arxiv.org/pdf/2509.02565v2",
+  "title_en": "Understanding sparse autoencoder scaling in the presence of feature manifolds",
+  "title_zh": "存在特征流形时，稀疏自编码器如何缩放",
+  "curation_status": "full_text_verified",
+  "card_standard_version": "2.4",
+  "audience_profile": "physics_ai_literate_physicist",
+  "paper_profile": "theory_numerics",
+  "style_reference": "physicist_daily_arxiv",
+  "provenance": {
+    "program": "Collection",
+    "catalog": "Paper Collection",
+    "catalog_record_id": "2509.02565",
+    "catalog_record_ids": ["2509.02565"],
+    "catalog_topic": "Representation Learning",
+    "collection_date": "2026-08-30",
+    "sampled_at": "2026-08-31",
+    "selected_by": "ziming_mineru_serial_goal",
+    "sampling_seed": "not_applicable_source_complete",
+    "candidate_count": 464
+  },
+  "verified_metadata": {
+    "arxiv_id": "2509.02565",
+    "version": "v2",
+    "title": "Understanding sparse autoencoder scaling in the presence of feature manifolds",
+    "authors": ["Eric J. Michaud", "Liv Gorton", "Tom McGrath"],
+    "categories": ["cs.LG"],
+    "primary_category": "cs.LG",
+    "published": "2025-09-02T17:59:50Z",
+    "updated": "2025-09-04T17:55:36Z",
+    "abstract": "The paper adapts a capacity-allocation model to sparse autoencoders and asks whether multidimensional feature manifolds can absorb many SAE latents, leaving far fewer distinct features represented than the nominal dictionary width suggests.",
+    "comment": "13 pages, 8 figures, short workshop submission"
+  },
+  "equation_refs": [
+    {
+      "label": "Capacity-allocation objective",
+      "latex": "\\mathbb{E}_{x}[\\mathcal{L}(x)]=\\sum_i p_iL_i(n_i),\\qquad \\sum_i n_i=N",
+      "role": "reduce SAE training to distributing a finite latent budget among features",
+      "symbols": {"p_i": "frequency of feature i", "L_i(n_i)": "loss after assigning n_i latents to feature i", "N": "total SAE latents"},
+      "evidence": "paper.pdf p. 2, Section 2.2",
+      "interpretation": "This reduction requires feature-specific latents and additive reconstruction and sparsity losses; the paper explicitly notes that practical SAEs can violate these assumptions."
+    },
+    {
+      "label": "Optimal allocation exponent (Eq. 2)",
+      "latex": "n_i\\propto p_i^{1/(1+\\beta)}\\propto i^{-\\gamma},\\qquad \\gamma=\\frac{1+\\alpha}{1+\\beta}",
+      "role": "show how frequency decay and manifold tiling compete for latent capacity",
+      "symbols": {"alpha": "power-law exponent in feature frequencies", "beta": "power-law improvement exponent of per-feature loss", "gamma": "resulting allocation exponent"},
+      "evidence": "paper.pdf p. 10, Eq. (2)",
+      "interpretation": "A small beta means that a common manifold keeps benefiting slowly from more tiles, so optimization can continue spending latents there."
+    },
+    {
+      "label": "Sublinear feature discovery (Eq. 3)",
+      "latex": "D(N)\\propto N^{(1+\\beta)/(1+\\alpha)}\\quad(\\beta<\\alpha)",
+      "role": "quantify the pathological regime in which dictionary width overstates feature coverage",
+      "symbols": {"D(N)": "number of features receiving at least one latent", "N": "number of SAE latents"},
+      "evidence": "paper.pdf p. 10, Eq. (3)",
+      "interpretation": "This is an asymptotic result inside the stylized power-law allocation model, not a measured law for real LLM activations."
+    }
+  ],
+  "figure_refs": [
+    {
+      "label": "Figure 2",
+      "asset_path": "assets/collection-figures/2509.02565/figure-2-capacity-allocation.webp",
+      "section": "核心结果与证据",
+      "role": "contrast linear feature discovery with the manifold-driven sublinear regime",
+      "evidence": "paper.pdf p. 3, Figure 2",
+      "alt_text": "左侧给出 SAE latent capacity allocation 模型及 good/pathological 两个区间；右侧显示 discovery efficiency 随 latent 数增加，在 beta 小于 alpha 时持续下降。",
+      "caption": "同样增加字典宽度，可能是在发现新特征，也可能只是在更细地铺砌高频流形。",
+      "interpretation": "图中一亿 latents 对应约三百万 features 是指定 alpha、beta 的数值模拟，不是对某个真实 SAE 的实测审计。"
+    }
+  ],
+  "cover": {
+    "mode": "source_figure",
+    "asset_path": "assets/collection-figures/2509.02565/figure-2-capacity-allocation.webp",
+    "label": "Figure 2",
+    "visual_type": "phase_diagram",
+    "evidence": "paper.pdf p. 3, Figure 2",
+    "alt_text": "SAE capacity allocation 的两个 scaling regimes 与 discovery-efficiency 曲线。",
+    "caption": "字典更宽，并不自动意味着覆盖了更多不同语义特征。",
+    "selection_rationale": "它直接呈现论文的核心判别量 D(N)/N，并把 alpha 与 beta 的竞争关系视觉化。"
+  },
+  "sections": [
+    {"title": "作者信息", "paragraphs": ["Eric J. Michaud、Liv Gorton 与 Tom McGrath；工作来自 Goodfire，Michaud 同时隶属 MIT。", "本站核验 arXiv:2509.02565v2：初版提交于 2025-09-02，v2 更新于 2025-09-04；主分类 cs.LG，13 页、8 幅图。", "Collection 来源为刘子鸣网站的 Representation Learning 条目；论文定位为 short workshop submission。"]},
+    {"title": "研究问题", "paragraphs": ["SAE 的 reconstruction loss 随 latent 数量呈幂律下降时，这些新增 latents 究竟在发现更多彼此不同的 features，还是在反复细分同一个高频、多维 feature manifold？", "作者把问题写成有限容量的最优分配：每个特征出现频率为 p_i，分到 n_i 个 latents 后代价为 L_i(n_i)，总预算为 N。目标是判断何时可观测 loss scaling 会掩盖 feature coverage 的停滞。"]},
+    {"title": "背景", "paragraphs": ["Sparse autoencoder 用过完备字典把神经网络 activation 写成少数 decoder directions 的线性组合。Latent 常被解释成“特征”，但一个连续、弯曲或多维的语义自由度可能需要多个线性方向才能逼近。", "因此 dictionary width N、活跃 latent 数与真实 feature 数并不等价。论文借用 neural scaling 的 capacity-allocation 模型，把 SAE 的优化偏好与数据中 feature frequency distribution 联系起来。", "两个指数控制竞争：p_i约为i^{-(1+alpha)} 描述稀有特征尾部；L(n)约为n^{-beta} 描述给同一流形继续增加 latents 能多快降低损失。"]},
+    {"title": "给物理学家的 AI 导读", "paragraphs": ["可把每个 feature manifold 看作一个可分配分辨率的相空间区域，n_i 是局部网格点数，L_i(n_i) 是离散化误差；优化器按“单位容量带来的能量下降”在各区域间分配资源。", "alpha 与 beta 的竞争类似态密度和单模误差的竞争。当 beta<alpha 时，高频流形的边际收益衰减得不够快，容量凝聚在少数常见流形上，D(N) 对 N 呈次线性增长。", "SAE latent 不是天然的物理 normal mode。若数据沿圆周变化，ReLU 字典会用多根相邻 decoder vectors 对流形分片；这些 directions 可能是同一自由度的坐标补丁，而不是多个独立概念。", "真正应监测的是 feature coverage 或 manifold coverage，而非仅看 reconstruction/sparsity loss。一个更低的 loss 可以与更差的稀有特征覆盖同时发生。"]},
+    {"title": "模型与方法", "paragraphs": ["模型假设 activation 是稀疏出现、两两正交的 feature subspaces 之和，且 SAE latents 对 feature 专一，使 reconstruction loss 与 sparsity penalty 都能逐 feature 相加。由此得到 Eq. (1) 的资源分配问题。", "离散 feature 的 L(n) 在获得一个 latent 后近似饱和，最优策略依频率依次覆盖新 feature；流形 feature 则可能有缓慢下降的 L(n)，允许多个 latents 对其 tiling。", "在 p_i 与 L(n) 都是幂律时，连续优化给出 Eq. (2) 的 allocation exponent，并在 beta<alpha 时得到 Eq. (3) 的 sublinear discovery。", "实验训练 ReLU/L1 与 JumpReLU SAEs 重构圆、不同维球面和带径向厚度的 spherical shells，并比较 Gemma Scope 与视觉模型 SAE decoder 的 firing-frequency 和近邻余弦统计。"]},
+    {"title": "核心结果与证据", "paragraphs": ["Figure 1 显示圆周数据可被 4、8、24 个 ReLU latents 越铺越细：loss 继续下降，但语义自由度仍是同一个圆。", "Figure 2 汇总两种 regime。beta大于alpha时 D(N) 与 N 近似线性；beta小于alpha时 D(N)约为N^{(1+beta)/(1+alpha)}，discovery efficiency D(N)/N 随规模下降。指定 alpha=0.5 的模拟中，beta很小时一亿 latents 只覆盖约三百万 features。", "几何依赖很强：unit hyperspheres 可容纳大量 tiles，而带径向变化的 shells 往往早早出现 loss plateau。这一反例说明“多维流形必然造成 pathology”并不成立。", "Gemma Scope 两个 SAE 在 latent ranks 10^2到10^4 间的 firing-frequency slopes 约为 -0.74 与 -0.57，但 latent 与真实 feature 未知的一对多/多对一关系使其不能直接给出 alpha。"]},
+    {"title": "有效性与局限", "paragraphs": ["论文没有判定真实 SAEs 是否处于 pathological regime；alpha 与 beta 都未被可靠识别，作者将工作明确定位为问题框架。", "正交 feature subspaces、feature-specific latents 和 loss additivity 都是强假设。Superposition、feature absorption、compositional latents 与相关激活会破坏逐 feature 分解。", "Toy manifolds 的几何与真实 LLM representation 未建立对应；nearest-neighbor cosine 只能提示 decoder clustering，不能证明多个 latents 属于同一语义流形。", "幂律形式与渐近极限也可能只覆盖有限尺度窗口。Figure 2 的一亿对三百万依赖人为设定指数，不能作为现有模型的容量审计。", "完整 PDF 已核验，但本站未独立训练 SAE、拟合 alpha/beta 或复现图表。结论层级应保持为 mechanism hypothesis 加 toy evidence。"]},
+    {"title": "复现与资源", "paragraphs": ["最小复核可先生成 S1 与 spherical shell 数据，固定 L1/JumpReLU objective，扫描字典宽度并记录 reconstruction、sparsity、dead latents 和 decoder angular coverage。", "对真实 activation，应先定义可反驳的“同一 manifold”判据，再联合测量 firing-frequency、decoder-neighbor graph、局部 intrinsic dimension 与 intervention consistency，而非只按 cosine 聚类。", "可拟合 L_i(n) 的局部斜率与不确定度，再将观测 alpha、beta 代入 allocation model，检查 D(N) prediction 是否能跨 N 外推。", "本站核验 v2 PDF SHA-256：7d5fb5bbab61a804c14f0f547e709662d428b59207a8332675720f379fcafd01。Evidence status: full-text verified; no independent reproduction performed; toy SAE training, power-law fits and real-activation diagnostics not independently reproduced."]},
+    {"title": "阅读指南", "paragraphs": ["最短路径：Section 2.2 的 allocation assumption → Figure 1 的 manifold tiling → Figure 2 与 Appendix B 的 alpha/beta regimes → Section 4 的未决问题。", "读公式时先区分 dictionary size N、allocated latents n_i 与 discovered features D(N)；把三者混用会抹掉论文要揭示的病态。", "判断实践意义时重点看 Figure 3 的几何反例与 Appendix A.1 的不确定性，而不是只记住一亿对三百万的醒目数字。"]}
+  ],
+  "evidence_refs": ["paper.pdf pp. 1–2: SAE assumptions and capacity-allocation reduction", "paper.pdf pp. 2–4: discrete-feature baseline, manifold tiling and numerical regimes", "paper.pdf pp. 4, 8–13: discussion, exponent speculation and additional synthetic/real-activation diagnostics", "paper.pdf p. 10: derivation of allocation and feature-discovery exponents", "source PDF SHA-256 7d5fb5bbab61a804c14f0f547e709662d428b59207a8332675720f379fcafd01", "Evidence status: full-text verified; no independent reproduction performed; toy SAE training, power-law fits and real-activation diagnostics not independently reproduced."]
+}
