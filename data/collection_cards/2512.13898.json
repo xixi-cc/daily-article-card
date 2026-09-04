@@ -1,0 +1,191 @@
+{
+  "arxiv_id": "2512.13898",
+  "source_version": "v1",
+  "source_pdf": "https://arxiv.org/pdf/2512.13898v1",
+  "title_en": "Let's (not) just put things in Context: Test-Time Training for Long-Context LLMs",
+  "title_zh": "别只把信息塞进上下文：面向长上下文 LLM 的测试时训练",
+  "curation_status": "full_text_verified",
+  "card_standard_version": "2.4",
+  "audience_profile": "physics_ai_literate_physicist",
+  "paper_profile": "theory_experiment",
+  "style_reference": "physicist_daily_arxiv",
+  "provenance": {
+    "program": "Collection",
+    "catalog": "Paper Collection",
+    "catalog_record_id": "2512.13898",
+    "catalog_record_ids": ["2512.13898"],
+    "catalog_topic": "AI Agents",
+    "collection_date": "2026-08-30",
+    "sampled_at": "2026-08-31",
+    "selected_by": "ziming_mineru_serial_goal",
+    "sampling_seed": "not_applicable_source_complete",
+    "candidate_count": 464
+  },
+  "verified_metadata": {
+    "arxiv_id": "2512.13898",
+    "version": "v1",
+    "title": "Let's (not) just put things in Context: Test-Time Training for Long-Context LLMs",
+    "authors": [
+      "Rachit Bansal", "Aston Zhang", "Rishabh Tiwari", "Lovish Madaan",
+      "Sai Surya Duvvuri", "Devvrit Khatri", "David Brandfonbrener",
+      "David Alvarez-Melis", "Prajjwal Bhargava", "Mihir Sanjay Kale", "Samy Jelassi"
+    ],
+    "categories": ["cs.LG", "cs.CL"],
+    "primary_category": "cs.LG",
+    "published": "2025-12-15T21:01:37Z",
+    "updated": "2025-12-15T21:01:37Z",
+    "abstract": "The paper diagnoses softmax score dilution in long contexts and proposes query-only test-time training, which reuses one KV cache while adapting all query projections on sampled context spans, outperforming FLOP-matched thinking on Qwen3 long-context benchmarks."
+  },
+  "equation_refs": [
+    {
+      "label": "近并列干扰项导致注意力稀释",
+      "latex": "\\alpha_{i,j^*}\\leq\\frac{1}{1+m e^{-\\Delta}}",
+      "role": "upper-bound the attention mass on a unique target when m distractors lie within Delta logits",
+      "symbols": {
+        "j*": "target or needle position",
+        "m": "number of near-tie distractors",
+        "Delta": "maximum target-to-distractor logit gap in that set",
+        "alpha": "softmax attention weight"
+      },
+      "evidence": "paper.pdf p. 4, Lemma 2.2",
+      "interpretation": "If m grows proportionally with context length while Delta stays O(1), target mass vanishes. This is a worst-case static-attention statement, not a prediction that every natural long document has linearly many near ties."
+    },
+    {
+      "label": "固定目标注意力所需的对数间隙",
+      "latex": "\\min_{j\\neq j^*}(z_{i,j^*}-z_{i,j})\\geq\\log\\frac{(T-1)(1-\\varepsilon)}{\\varepsilon}\\Rightarrow\\alpha_{i,j^*}\\geq1-\\varepsilon",
+      "role": "state a sufficient worst-case margin that keeps target attention finite as context length grows",
+      "symbols": {
+        "T": "context length",
+        "epsilon": "allowed attention mass outside the target",
+        "z_i,j": "query-key attention logit",
+        "alpha_i,j*": "target attention mass"
+      },
+      "evidence": "paper.pdf pp. 4–5, Lemma 2.3",
+      "interpretation": "The logarithmic scaling guarantees concentration against all distractors. Easier data distributions may need less, so Omega(log T) should not be read as a universal empirical law for average documents."
+    },
+    {
+      "label": "qTTT 的查询更新",
+      "latex": "\\nabla_{q_i}\\ell_i=\\frac{1}{\\sqrt{d_k}}(\\mu_i-k_{j^*}),\\quad M_i(q_i-\\eta\\nabla\\ell_i)=M_i(q_i)+\\eta\\|\\nabla\\ell_i\\|_2^2+O(\\eta^2)",
+      "role": "show that a small gradient step on the query moves it toward the target key and raises the target margin to first order",
+      "symbols": {
+        "ell_i": "negative log attention on the correct next-token target",
+        "mu_i": "attention-weighted mean key",
+        "M_i": "paper's target-versus-background margin objective",
+        "eta": "test-time learning rate"
+      },
+      "evidence": "paper.pdf p. 7, Proposition 3.1 and Lemma 3.2",
+      "interpretation": "The monotonic first-order result fixes K and uses the correct local next-token target. Real qTTT samples spans and optimizes language-model loss, so benchmark gains remain empirical rather than guaranteed by this lemma."
+    }
+  ],
+  "figure_refs": [
+    {
+      "label": "Figure 4",
+      "asset_path": "assets/collection-figures/2512.13898/figure-4-longbench-qTTT-results.webp",
+      "section": "核心结果与证据",
+      "role": "compare in-context, FLOP-matched thinking and qTTT across six LongBench-v2 domains and three Qwen3 sizes",
+      "evidence": "paper.pdf p. 8, Figure 4",
+      "alt_text": "六组 LongBench-v2 任务的柱状图，每组比较 Qwen3 1.7B、4B、8B 在纯上下文、thinking 与 qTTT 下的得分。",
+      "caption": "qTTT 的优势集中在检索分散、多跳和代码类长上下文任务；收益随模型与任务变化，并非每一栏都同幅度提升。",
+      "interpretation": "The comparison matches estimated extra FLOPs and uses one run per configuration with dataset-specific learning rates selected on held-out validation; it is not a training-free or hyperparameter-free comparison."
+    }
+  ],
+  "cover": {
+    "mode": "source_figure",
+    "asset_path": "assets/collection-figures/2512.13898/figure-4-longbench-qTTT-results.webp",
+    "label": "Figure 4",
+    "visual_type": "comparison",
+    "evidence": "paper.pdf p. 8, Figure 4",
+    "alt_text": "三种推理时计算策略在 LongBench-v2 六类任务和三种 Qwen3 模型规模上的得分比较。",
+    "caption": "同样的推理 FLOPs，用来更新 query 往往比继续生成 thinking tokens 更能找回长上下文证据。",
+    "selection_rationale": "It places the claimed compute reallocation benefit across tasks and model sizes in one view, making heterogeneity visible alongside the average gain."
+  },
+  "sections": [
+    {
+      "title": "作者信息",
+      "paragraphs": [
+        "Rachit Bansal、Aston Zhang、Rishabh Tiwari、Lovish Madaan、Sai Surya Duvvuri、Devvrit Khatri、David Brandfonbrener、David Alvarez-Melis、Prajjwal Bhargava、Mihir Sanjay Kale、Samy Jelassi。",
+        "作者机构包括 Meta、Harvard University、Kempner Institute、OpenAI、UC Berkeley 与 UT Austin；多位作者的工作在 Meta 实习期间完成。",
+        "本站核验 arXiv:2512.13898v1：提交于 2025-12-15；分类 cs.LG、cs.CL，共 24 页。Collection 来源为刘子鸣网站的 AI Agents 条目。"
+      ]
+    },
+    {
+      "title": "研究问题",
+      "paragraphs": [
+        "LLM 的 nominal context window 可以很长，但 softmax attention 必须把总质量分给所有 token。若许多 distractors 的 logit 接近真正证据，目标即使排名第一也可能只得到很小权重。",
+        "继续生成 chain-of-thought token 仍使用同一组静态 query/key，可能无法恢复已经在 prefill 中被稀释的信号。论文问：能否把同等 inference compute 用于当前上下文上的少量参数更新？",
+        "qTTT 的答案是只更新所有层的 query projection W_Q：K/V 只 prefill 一次并缓存，再从当前长上下文抽短 span 做 next-token 梯度步，使 query 更贴近相关 keys。"
+      ]
+    },
+    {
+      "title": "背景",
+      "paragraphs": [
+        "Attention 权重是 exp(z_j) 除以全部 token 的配分函数。一个目标态面对 m 个能量近简并的干扰态时，其占据概率至多为 1/(1+m e^{-Δ})；这是典型的熵—能隙竞争。",
+        "Test-time compute 通常花在延长解码、self-consistency 或 beam search；test-time training 则在单个输入的 micro-distribution 上改变权重。后者要求本地或服务端运行时允许梯度和可变参数。",
+        "全参数 TTT 每一步都可能使 K/V 失效并重做长上下文 prefill。只改 W_Q 保持已缓存的 K/V 不变，将更新成本限制在 k≪T 的短 span。"
+      ]
+    },
+    {
+      "title": "给物理学家的 AI 导读",
+      "paragraphs": [
+        "Score dilution 可类比大量近简并态的熵压过单个目标态：要让目标保持固定 Boltzmann 权重，其 logit 能隙在最坏情形必须随 log T 增长。",
+        "Thinking token 像在不改变 Hamiltonian 的情况下继续演化；若目标耦合一开始就太弱，更多步只能在已稀释的信号上运算。qTTT 则直接改变 query-key 耦合。",
+        "这里的定理针对单层检索抽象和已知目标 key；现实语言模型的 span loss 没有显式告诉每个 query 哪个远端 token 是证据。因而“provably raises margin”与“provably solves benchmark”是两件事。",
+        "FLOP matching 只配平近似乘加量。显存、反向传播、kernel 效率、服务并发和恢复原权重的成本仍会决定部署吞吐；论文另在单张 A100 上报告相近墙钟趋势。"
+      ]
+    },
+    {
+      "title": "模型与方法",
+      "paragraphs": [
+        "作者先用代码 bug localization 和银行交易异常两个可控 sandbox，保持 needle 固定、逐渐增加语义相关 haystack，比较纯 in-context、thinking 与 qTTT。",
+        "算法对完整上下文做一次 K/V prefill；随后均匀抽取长度 k 的连续 span，在固定缓存下最小化 next-token NLL，只用 AdamW 更新每层 W_Q，最后用适配后的 query 生成答案。",
+        "默认 k=128、N_TTT=32、batch size 1、bf16、gradient clipping 1.0；以 T_think≈2N_TTT k 将其与 8192 个 thinking tokens 的额外 FLOPs 配平。",
+        "评测覆盖 Qwen3 1.7B/4B/8B（附录另含 32B）、LongBench-v2 六类与 ZeroScrolls 八个数据集；每数据集从 {3e−4,…,3e−7} 在 held-out validation 选最佳学习率。"
+      ]
+    },
+    {
+      "title": "核心结果与证据",
+      "paragraphs": [
+        "理论上，若 m 个 distractors 距目标不超过常数 Δ，目标 attention 随 m 增大而消失；要对 T−1 个最坏情形 distractors 保证 1−ε 权重，充分间隙按 log T 增长。",
+        "固定 K 时，对 −log α_target 做小步 query gradient 会把 q 朝 target key 相对当前平均 key 的方向移动，并使论文定义的 margin 一阶增加。",
+        "LongBench-v2 中 Qwen3-4B 的六类平均分为 in-context 27.0、thinking 33.5、qTTT 39.6；因此摘要所称 +12.6 points 是相对纯 in-context，qTTT 相对 FLOP-matched thinking 为 +6.1。",
+        "同模型的 Long Dialogue History 为 20.5/30.8/43.6，Multi-Document QA 为 30.0/40.0/46.0；Qwen3-8B 的 Code Repositories 为 30.0/44.0/52.0。",
+        "ZeroScrolls 上 Qwen3-4B 平均为 18.4/23.9/32.5，对 in-context 提高 14.1 points；retrieval/multi-hop 收益大，QMSum、SummScreen 等摘要任务提升较小或与 thinking 接近。"
+      ]
+    },
+    {
+      "title": "有效性与局限",
+      "paragraphs": [
+        "Omega(log T) 是抵抗最坏情形 distractors 的静态注意力条件；自然文本中 near-tie 数量、相关性和 logit 分布未必按该构造增长，不能把它当平均长上下文准确率的普适缩放律。",
+        "Proposition 3.1 假设固定 keys 和明确 target，用 attention loss 推导；实际 qTTT 用随机 span 的语言模型 NLL，远端检索 margin 的改善需要实证连接。",
+        "每个数据集用 held-out validation 选择最佳学习率，且每配置只做一次 run。固定随机 seed 和作者称低方差不足以给出跨 seed 置信区间。",
+        "实验集中于 Qwen3 和所选 benchmark；qTTT 并非每个任务都胜过 thinking，尤其生成质量而非证据检索主导的摘要任务更弱。",
+        "方法需在每个输入上保留梯度、optimizer 状态并修改所有层 W_Q；闭源 API、量化只读权重、KV 分布式服务或高并发 batching 很难直接采用。FLOPs 相等不保证成本、能耗和吞吐相等。"
+      ]
+    },
+    {
+      "title": "复现与资源",
+      "paragraphs": [
+        "先复现 sandbox：固定 needle 与 bug，只改变 haystack 长度；同时记录 target attention mass、margin、accuracy、prefill/反向/解码时间，检验退化是否真由 score dilution 同步解释。",
+        "基准复现需固定 Qwen3 checkpoint、chat template、上下文截断、thinking sampler、输出长度和 LR-selection split，并至少增加多个 span/decoding seeds。",
+        "部署评估应区分 per-example latency 与吞吐，记录峰值显存、KV cache 复用、optimizer state、恢复基础权重和多用户隔离；再与 retrieval、self-consistency、best-of-N 做同质量预算比较。",
+        "论文未在正文或 arXiv 页面提供可核验代码链接。本站核验 v1 PDF SHA-256：c314ccdd5ad064e0d26db14e3af7449b20964320d6b1dfdf0f0e1f2726715bf8。Evidence status: full-text verified; no independent reproduction performed."
+      ]
+    },
+    {
+      "title": "阅读指南",
+      "paragraphs": [
+        "最短路径：Figure 1 → Lemmas 2.2–2.3 → Algorithm 1 / Proposition 3.1 → Figures 4–5 → Appendix D、F、H。",
+        "物理路径：先读 softmax 配分函数的能隙—熵竞争，再区分静态定理、参数响应与端到端 benchmark 三层。",
+        "AI 路径：核对 12.6/14.1 points 的参照是 in-context；与 thinking 的净增益较小但仍为正。"
+      ]
+    }
+  ],
+  "evidence_refs": [
+    "paper.pdf pp. 3–7: sandbox diagnosis, score-dilution bounds, qTTT algorithm, margin update and FLOP matching",
+    "paper.pdf pp. 8–10: LongBench-v2 and ZeroScrolls headline results, task dependence and discussion",
+    "paper.pdf appendices D–H: hyperparameter selection, one-run protocol, full tables, added baselines and A100 latency",
+    "source PDF SHA-256 c314ccdd5ad064e0d26db14e3af7449b20964320d6b1dfdf0f0e1f2726715bf8",
+    "Evidence packet SHA-256 4afe7970e669e6a6c3ba27ea2358f524503f92c974778ded57494d9f50990df3",
+    "Evidence status: full-text verified; no independent reproduction performed."
+  ]
+}

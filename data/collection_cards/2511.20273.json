@@ -1,0 +1,186 @@
+{
+  "arxiv_id": "2511.20273",
+  "source_version": "v1",
+  "source_pdf": "https://arxiv.org/pdf/2511.20273v1",
+  "title_en": "Beyond Components: Singular Vector-Based Interpretability of Transformer Circuits",
+  "title_zh": "超越组件：用奇异向量解析 Transformer 电路",
+  "curation_status": "full_text_verified",
+  "card_standard_version": "2.4",
+  "audience_profile": "physics_ai_literate_physicist",
+  "paper_profile": "ai_empirical",
+  "style_reference": "physicist_daily_arxiv",
+  "provenance": {
+    "program": "Collection",
+    "catalog": "Paper Collection",
+    "catalog_record_id": "2511.20273",
+    "catalog_record_ids": ["2511.20273"],
+    "catalog_topic": "Mechanistic Interpretability",
+    "collection_date": "2026-08-30",
+    "sampled_at": "2026-08-31",
+    "selected_by": "ziming_mineru_serial_goal",
+    "sampling_seed": "not_applicable_source_complete",
+    "candidate_count": 464
+  },
+  "verified_metadata": {
+    "arxiv_id": "2511.20273",
+    "version": "v1",
+    "title": "Beyond Components: Singular Vector-Based Interpretability of Transformer Circuits",
+    "authors": ["Areeb Ahmad", "Abhinav Joshi", "Ashutosh Modi"],
+    "categories": ["cs.LG", "cs.AI", "cs.CL"],
+    "primary_category": "cs.LG",
+    "published": "2025-11-25T12:59:15Z",
+    "updated": "2025-11-25T12:59:15Z",
+    "abstract": "The paper factorizes augmented attention and MLP matrices into singular directions, learns sparse direction masks that preserve GPT-2 Small behavior on three canonical tasks, and interprets several subfunctions multiplexed within previously known circuit components."
+  },
+  "equation_refs": [
+    {
+      "label": "偏置吸收后的 QK 双线性形式",
+      "latex": "[1,x_i]W_{\\mathrm{aug}}^{(QK)}[1,x_j]^\\top=q_i k_j^\\top",
+      "role": "place weights and biases in one matrix so the same directional analysis applies to attention scores",
+      "symbols": {
+        "x_i,x_j": "residual-stream activations at query and key positions",
+        "q_i,k_j": "query and key vectors",
+        "W_aug^(QK)": "block matrix containing W_Q W_K^T and all bias cross terms"
+      },
+      "evidence": "paper.pdf pp. 3–4, Section 2",
+      "interpretation": "The augmentation is an exact algebraic rewrite; its SVD coordinates are parameter-derived axes, not automatically semantic features."
+    },
+    {
+      "label": "奇异方向门控",
+      "latex": "W_{\\mathrm{aug}}=U\\Sigma V^\\top,\\qquad \\widetilde W_{\\mathrm{aug}}=U\\Sigma M V^\\top,\\quad M=\\operatorname{diag}(m_1,\\ldots,m_r)",
+      "role": "scale each rank-one singular mapping independently while keeping the singular bases fixed",
+      "symbols": {
+        "U,V": "left and right singular-vector bases",
+        "Sigma": "singular values",
+        "m_i": "learned continuous mask for direction i",
+        "r": "nonzero matrix rank"
+      },
+      "evidence": "paper.pdf p. 4, Section 3",
+      "interpretation": "The learned subspace is axis-aligned in the original SVD basis. A useful rotated combination that does not align with one singular direction can be missed."
+    },
+    {
+      "label": "忠实度—稀疏度目标",
+      "latex": "\\mathcal L_M=D_{\\mathrm{KL}}[p(y\\mid x)\\,\\|\\,p_M(y\\mid x)]+\\lambda\\|\\operatorname{diag}M\\|_1",
+      "role": "retain the original model's output distribution using as few singular directions as possible",
+      "symbols": {
+        "p": "original GPT-2 predictive distribution",
+        "p_M": "distribution after directional masking",
+        "lambda": "sparsity tradeoff",
+        "M": "collection of learned direction masks"
+      },
+      "evidence": "paper.pdf p. 5, Optimization Objective",
+      "interpretation": "Low KL plus sparse masks establishes behavioral sufficiency under the chosen corruptions; it does not by itself prove that every retained direction causally mediates the task."
+    }
+  ],
+  "figure_refs": [
+    {
+      "label": "Figure 1",
+      "asset_path": "assets/collection-figures/2511.20273/figure-1-singular-direction-masks.webp",
+      "section": "核心结果与证据",
+      "role": "show the learned QK singular-direction masks across every GPT-2 Small attention head and their overlap with known IOI circuit heads",
+      "evidence": "paper.pdf p. 7, Figure 1",
+      "alt_text": "12 层、每层 12 个 attention head 的小图阵列；横轴是奇异方向编号，纵轴是 mask 值，已知 IOI 电路头以不同颜色标注。",
+      "caption": "已知 IOI 电路头通常只在少数奇异方向上保留较大 mask，但不同 head 的稀疏结构并不相同。",
+      "interpretation": "The plot visualizes learned masks, not a complete causal circuit. Head-level correspondence is supportive because the mask objective was optimized for output reconstruction on the same task."
+    }
+  ],
+  "cover": {
+    "mode": "source_figure",
+    "asset_path": "assets/collection-figures/2511.20273/figure-1-singular-direction-masks.webp",
+    "label": "Figure 1",
+    "visual_type": "data_plot",
+    "evidence": "paper.pdf p. 7, Figure 1",
+    "alt_text": "GPT-2 Small 各 attention head 中任务相关奇异方向的稀疏 mask 图谱。",
+    "caption": "一个 attention head 不是最小功能单元；其内部还可能复用多个低秩方向。",
+    "selection_rationale": "It directly shows the paper's proposed resolution below the component level and the sparsity pattern underlying the main empirical claim."
+  },
+  "sections": [
+    {
+      "title": "作者信息",
+      "paragraphs": [
+        "Areeb Ahmad、Abhinav Joshi、Ashutosh Modi；Indian Institute of Technology Kanpur。",
+        "本站核验 arXiv:2511.20273v1：提交于 2025-11-25；分类 cs.LG、cs.AI、cs.CL；NeurIPS 2025 接收论文，共 33 页。",
+        "Collection 来源为刘子鸣网站的 Mechanistic Interpretability 条目。"
+      ]
+    },
+    {
+      "title": "研究问题",
+      "paragraphs": [
+        "机制可解释性常把整个 attention head 或 MLP 当作电路节点，但一个组件可能同时承担复制、抑制、实体检测等多个功能；这种粒度会把内部的 superposition 隐藏掉。",
+        "论文问：把每个权重映射分解为正交的 rank-one 奇异方向后，是否只需少数方向就能重构任务行为？这些方向能否对应已知电路，并在单个 head 内分离不同子功能？",
+        "作者在 GPT-2 Small 的 IOI、Greater-Than 和 Gender-Pronoun 三个规范任务上学习方向 mask，再结合激活、token 投影和干预解释部分高权重方向。"
+      ]
+    },
+    {
+      "title": "背景",
+      "paragraphs": [
+        "SVD 把矩阵写成一组正交输入方向到正交输出方向的 rank-one 映射。它给出方便且可复现的坐标系，但奇异值排序只反映矩阵范数贡献，不等于任务重要性。",
+        "作者先把 bias 吸收到 augmented matrix，使 attention 的 QK、OV 以及 MLP 的 input/output 投影都能用同一种分解；随后冻结模型，只优化每个奇异值旁的连续门。",
+        "Circuit 的 faithfulness 在这里主要指 mask 后输出分布接近原模型；interpretability 则来自方向的 token/激活结构与人工语义标签。两者相关，但不是同一个可观测量。"
+      ]
+    },
+    {
+      "title": "给物理学家的 AI 导读",
+      "paragraphs": [
+        "可把一个 head 看成耦合矩阵，而奇异方向类似彼此正交的正常模；任务相关 mask 试图找出在特定响应函数中真正被激发的少数模，而不是保留振幅最大的模。",
+        "SVD 基底由参数矩阵唯一到简并子空间内的旋转为止。若奇异值近简并，单个方向的语义可能随微小扰动旋转，因此“第 7 个方向是实体/动作分离器”需要稳定性检验。",
+        "稀疏重构相当于测量一个受限响应：在所选数据和 corruption 下删除多数方向，输出仍相近。它比纯相关性更强，却还没有穷尽跨 head 相互作用、冗余通道与离分布响应。",
+        "Table 1 的 sparsity 是被剪掉的比例，而不是保留比例：IOI relative sparsity 91.32% 意味着约保留 8.68% 非零奇异方向；full-matrix sparsity 还会更高。"
+      ]
+    },
+    {
+      "title": "模型与方法",
+      "paragraphs": [
+        "对每个 GPT-2 Small attention head 构造 QK 与 OV augmented matrices，对每个 MLP 构造 input/output augmented matrices，并保留全部非零奇异方向；QK 有效秩 64，OV 增广后为 65。",
+        "对 OV/MLP，masked 与 complementary 子空间分别作用于 clean 和 corrupted activations，以减小直接置零造成的分布漂移；QK 只保留 masked kernel，避免一个 softmax 中混合两套相似度核。",
+        "训练目标是原模型与 masked 模型输出的 KL 加 mask 的 L1；在 held-out reconstruction loss 稳定时早停。三个任务沿用或扩展既有 clean/corrupted 数据对。",
+        "解释阶段比较已知 IOI heads，检查奇异方向对 token、位置和语义类别的投影，并用方向缩放/交换观察输出 logit 的可控变化。"
+      ]
+    },
+    {
+      "title": "核心结果与证据",
+      "paragraphs": [
+        "Table 1 报告 IOI 的 relative/full sparsity 为 91.32%/98.66%，KL 0.21±0.02；pruned/full accuracy 为 0.70±0.07/0.79±0.05，exact match 为 0.77±0.06。",
+        "GT 与 GP 分别剪去 95.21% 和 96.81% 的相对奇异方向，KL 为 0.23±0.03 与 0.13±0.01；但 GT exact match 仅 0.33±0.06，所以“minimal impact”不能理解为近乎完美复制。",
+        "learned masks 的 KL 优于按奇异值 top-k 和随机方向基线；Figure 1 显示 Name Mover、Backup Name Mover、S-Inhibition 等已知 IOI heads 往往只激活少数方向。",
+        "Head 9.6 内，S7 区分实体与动作（平均 +3.52±1.42 对 −4.44±0.68），S28 放大实体显著性，S1 强烈检测序列首 token，支持一个 head 复用多个子功能。",
+        "Gender-Pronoun 实验中缩放/交换方向可翻转 he/she 输出，作者报告所测干预达到完美翻转；这是精心选定方向和任务上的局部因果证据，不是整条模型电路的完备解释。"
+      ]
+    },
+    {
+      "title": "有效性与局限",
+      "paragraphs": [
+        "实验只覆盖 GPT-2 Small 和三个长期用于机制研究的窄任务，不能说明相同方向稀疏性会出现在大模型、instruction tuning、开放式生成或长链推理中。",
+        "mask 被限制在固定 SVD 轴上；真实任务子空间可能是多个近简并方向的旋转组合。论文没有系统报告跨 seed、checkpoint、模型规模和基底扰动的方向稳定性。",
+        "每个 augmented matrix 被独立分析，跨组件协同与高阶相互作用可能被遗漏；一个弱方向单独无效，也可能通过组合成为必要通道。",
+        "KL 重构与 task accuracy 衡量行为充分性，不自动给出 necessity 或 end-to-end causal mediation。作者明确承认仍需 causal tracing、activation patching 等更直接检验。",
+        "部分方向仍难解释，语义标签来自人工读取；所谓 independent computations 是 SVD 正交性加任务证据的解释，不是统计独立或动力学解耦定理。"
+      ]
+    },
+    {
+      "title": "复现与资源",
+      "paragraphs": [
+        "代码位于 https://github.com/Exploration-Lab/Beyond-Components 。先用固定 GPT-2 Small checkpoint 与公开 IOI split 复现 Table 1，再分析单个 head，可避免把实现差异误当解释差异。",
+        "复核应保存每个矩阵的谱、mask、KL、task metric 与 corruption 定义，并与相同保留方向数的 magnitude-top-k、随机 SVD 和旋转低秩子空间比较。",
+        "稳健性测试可扰动 checkpoint、重训 mask、旋转近简并子空间并换 paraphrase/OOD prompts；因果测试则分别做 sufficiency、necessity、resample ablation 与跨组件 patching。",
+        "本站核验 v1 PDF SHA-256：f65edaadeae27f9fb556c0a2716272a5b75af19cc5332abd37c8ea581420ee65。Evidence status: full-text verified; no independent reproduction performed."
+      ]
+    },
+    {
+      "title": "阅读指南",
+      "paragraphs": [
+        "最短路径：augmented matrix → SVD mask objective → Table 1 → Figure 1 → Head 9.6 → Discussion and Limitations。",
+        "物理路径：把奇异方向当正常模，同时检查近简并导致的基底规范自由度，以及局部模如何跨组件耦合。",
+        "AI 路径：区分 reconstruction faithfulness、task sufficiency、causal necessity 和 human interpretability 四个标准。"
+      ]
+    }
+  ],
+  "evidence_refs": [
+    "paper.pdf pp. 3–6: augmented matrices, SVD directional masks, complementary activations and optimization objective",
+    "paper.pdf pp. 6–10: GPT-2 Small tasks, Table 1, circuit overlap, interventions, Head 9.6 and limitations",
+    "paper.pdf appendices A–B: dataset splits, hyperparameters, sparsity calculation, direction-level tables and extra results",
+    "source PDF SHA-256 f65edaadeae27f9fb556c0a2716272a5b75af19cc5332abd37c8ea581420ee65",
+    "Evidence packet SHA-256 08210117c118ed6aeb86a5ad6c02bb9907fbfd5c0a7d0f05ab8f2b9adafc87bd",
+    "Evidence status: full-text verified; no independent reproduction performed."
+  ]
+}
