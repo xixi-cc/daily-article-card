@@ -1,0 +1,185 @@
+{
+  "arxiv_id": "2601.03220",
+  "source_version": "v2",
+  "source_pdf": "https://arxiv.org/pdf/2601.03220v2",
+  "title_en": "From Entropy to Epiplexity: Rethinking Information for Computationally Bounded Intelligence",
+  "title_zh": "从熵到 Epiplexity：为计算受限智能重思信息",
+  "curation_status": "full_text_verified",
+  "card_standard_version": "2.4",
+  "audience_profile": "physics_ai_literate_physicist",
+  "paper_profile": "theory_numerics",
+  "style_reference": "physicist_daily_arxiv",
+  "provenance": {
+    "program": "Collection",
+    "catalog": "Paper Collection",
+    "catalog_record_id": "2601.03220",
+    "catalog_record_ids": ["2601.03220"],
+    "catalog_topic": "Representation Learning",
+    "collection_date": "2026-08-30",
+    "sampled_at": "2026-08-31",
+    "selected_by": "ziming_mineru_serial_goal",
+    "sampling_seed": "not_applicable_source_complete",
+    "candidate_count": 464
+  },
+  "verified_metadata": {
+    "arxiv_id": "2601.03220",
+    "version": "v2",
+    "title": "From Entropy to Epiplexity: Rethinking Information for Computationally Bounded Intelligence",
+    "authors": ["Marc Finzi", "Shikai Qiu", "Yiding Jiang", "Pavel Izmailov", "J. Zico Kolter", "Andrew Gordon Wilson"],
+    "categories": ["cs.LG", "stat.ML"],
+    "primary_category": "cs.LG",
+    "published": "2026-01-06T18:04:03Z",
+    "updated": "2026-03-16T15:30:04Z",
+    "abstract": "The paper defines epiplexity as the description length of a compute-bounded probabilistic model selected by time-bounded MDL, with the residual code length called time-bounded entropy, and develops practical estimators and examples involving computation, ordering, emergence and data selection."
+  },
+  "equation_refs": [
+    {
+      "label": "计算受限的 two-part code",
+      "latex": "P^*=\\underset{P\\in\\mathcal P_T}{\\arg\\min}\\left\\{|P|+\\mathbb E_X\\!\\left[\\log_2\\frac{1}{P(X)}\\right]\\right\\}",
+      "role": "select the shortest model-plus-residual-data description among probabilistic programs executable within budget T",
+      "symbols": {
+        "P_T": "prefix-free probabilistic programs that can both sample and evaluate probabilities within runtime T",
+        "P_star": "time-bounded MDL minimizer, with ties broken by shortest program",
+        "P_length": "program description length in bits",
+        "negative_log_likelihood": "expected residual code length for X under P"
+      },
+      "evidence": "paper.pdf pp. 7–8, Definitions 7–8 and Eq. (3)",
+      "interpretation": "这不是数据本身的绝对属性：换 universal machine、runtime budget、可用模型类、memory limit 或编码约定，最优 P* 及分解都会变化。"
+    },
+    {
+      "label": "Epiplexity 与 time-bounded entropy",
+      "latex": "S_T(X)=|P^*|,\\qquad H_T(X)=\\mathbb E_X\\!\\left[\\log_2\\frac{1}{P^*(X)}\\right],\\qquad MDL_T=S_T+H_T",
+      "role": "decompose the best compute-bounded description into learned structural information and residual unpredictability",
+      "symbols": {
+        "S_T": "epiplexity, the bits used to describe the selected model",
+        "H_T": "time-bounded entropy, the residual expected data code length",
+        "MDL_T": "total time-bounded two-part description length"
+      },
+      "evidence": "paper.pdf p. 8, Eq. (4)",
+      "interpretation": "高熵而简单的均匀随机源可有很小 S_T；复杂但完全可预测的结构也不必有高 H_T。两项是同一最优编码下的分账，不是相互独立测量的两个状态量。"
+    },
+    {
+      "label": "Prequential 近似",
+      "latex": "|P_{\\mathrm{preq}}|\\approx\\sum_{i=0}^{M-1}\\left[\\log_2\\frac{1}{P_i(Z_i)}-\\log_2\\frac{1}{P_M(Z_i)}\\right]",
+      "role": "estimate model information as the area of online loss above the final-model loss",
+      "symbols": {
+        "P_i": "model before training on token or minibatch i",
+        "Z_i": "next training item encoded by the synchronized learner",
+        "P_M": "final trained model",
+        "M": "number of online training steps"
+      },
+      "evidence": "paper.pdf pp. 13–14, Eq. (8) and Section 4.1",
+      "interpretation": "它便宜但只是 heuristic：两个 Kolmogorov-complexity 上界相减不再是上界，且 symmetry of information 没有自动给出 time-bounded runtime guarantee。论文的 requential code 更严格但通常慢 2–10 倍。"
+    }
+  ],
+  "figure_refs": [
+    {
+      "label": "Figure 1",
+      "asset_path": "assets/collection-figures/2601.03220/figure-1-random-vs-structural-information.webp",
+      "section": "给物理学家的 AI 导读",
+      "role": "separate random from structural information, illustrate computation-created apparent structure, and motivate possible OOD reuse",
+      "evidence": "paper.pdf p. 2, Figure 1",
+      "alt_text": "左侧用简单代码、动物图像和随机配置/像素区分低或高的随机与结构信息；右上显示计算可把简单初态变成混沌吸引子等复杂结构；右下示意学得的共享子程序可能帮助 OOD 任务。",
+      "caption": "Figure 1 的主张不是“复杂外观等于高信息”，而是计算受限观察者会把可压缩进模型的规律与仍需逐样本编码的随机性分开记账。",
+      "interpretation": "The OOD panel is a motivating mechanism sketch; epiplexity counts learned structure but does not test whether that structure is relevant to a chosen downstream task."
+    }
+  ],
+  "cover": {
+    "mode": "source_figure",
+    "asset_path": "assets/collection-figures/2601.03220/figure-1-random-vs-structural-information.webp",
+    "label": "Figure 1",
+    "visual_type": "schematic",
+    "evidence": "paper.pdf p. 2, Figure 1",
+    "alt_text": "Epiplexity 将计算受限观察者可学到的结构与残余随机信息区分开。",
+    "caption": "相同数据对不同计算预算的观察者，可以呈现不同的“结构—随机性”分解。",
+    "selection_rationale": "It provides the clearest non-specialist map from familiar entropy and dynamics concepts to the paper's observer-dependent structural-information proposal."
+  },
+  "sections": [
+    {
+      "title": "作者信息",
+      "paragraphs": [
+        "Marc Finzi、Shikai Qiu、Yiding Jiang、Pavel Izmailov、J. Zico Kolter、Andrew Gordon Wilson；Carnegie Mellon University 与 New York University。",
+        "本站核验 arXiv:2601.03220v2：初稿提交于 2026-01-06，当前版本更新于 2026-03-16；分类 cs.LG、stat.ML；共 65 页。",
+        "Collection 来源为刘子鸣网站的 Representation Learning 条目。"
+      ]
+    },
+    {
+      "title": "研究问题",
+      "paragraphs": [
+        "Shannon entropy 量化给定分布下的平均编码成本，Kolmogorov complexity 寻找输出某个对象的最短程序；二者通常允许观察者拥有不受限计算，因此难以表达“某种规律原则上很短，但现实模型在预算内找不到或用不了”。",
+        "论文问能否把数据对有限计算观察者呈现的内容拆成两部分：训练后进入模型权重的可学习结构，以及即便用该模型仍需逐样本支付的残余随机性。作者将前者命名为 epiplexity，后者为 time-bounded entropy。",
+        "目标从 model selection 转向 data selection：在固定计算预算下，哪些数据、顺序或合成变换迫使学习器形成更多可复用结构？但“更多”只计结构量，不说明其语义是否适合某个具体 OOD 任务。"
+      ]
+    },
+    {
+      "title": "背景",
+      "paragraphs": [
+        "two-part MDL 用 $L(P)+L(X|P)$ 比较解释：重复规律写进模型一次，剩余不可预测细节继续编码。本文额外约束 P 必须在 T 内完成概率评估和采样，于是结构与随机性的分界随观察者算力移动。",
+        "伪随机生成器给出关键直觉：生成程序和 seed 可能很短，但不知道 seed 的多项式时间观察者无法区分其输出与真随机。反过来，混沌动力学的方程很短，有限精度的远期轨迹不可预测，模型却仍可能学习不变测度。",
+        "epiplexity 接近 algorithmic statistics、sophistication、logical depth 与 computational mechanics 中 statistical complexity 的问题意识；主要新增量是把可采样、可算 likelihood 的计算预算显式放进 probabilistic model class。"
+      ]
+    },
+    {
+      "title": "给物理学家的 AI 导读",
+      "paragraphs": [
+        "可把 $P^*$ 类比为给定分辨率与观测时间下的有效理论：$S_T$ 是写下有效动力学/参数所需的位数，$H_T$ 是用该理论编码微观轨迹仍需付出的位数。它像 coarse graining，但 coarse variables 由压缩最优性而非预先指定。",
+        "随着 T 增大，观察者能识别更难的规律，最优模型也可能改变；因此 $S_T$ 不必单调简单地上升或下降。总 $MDL_T$ 随可用计算增多不能变差，但“模型位数”和“残余位数”的交换取决于最优程序切换。",
+        "Figure 1 中 Lorenz 例子尤其重要：逐点长期预测因 Lyapunov 不稳定而失败，不妨碍模型学习 attractor 的 invariant measure。论文所谓“计算创造信息”是对有限观察者的有效描述长度增加，不违反封闭系统的微观信息守恒。"
+      ]
+    },
+    {
+      "title": "模型与方法",
+      "paragraphs": [
+        "正式定义在 prefix-free universal Turing machine 上考察可在 T(n) 内采样并计算概率的程序集合 $\\mathcal P_T$；以 model bits 加 expected negative log-likelihood 的 two-part code 选 $P^*$，再把两项分别定义为 $S_T$ 与 $H_T$。",
+        "实际神经网络不能直接求最短程序。prequential 方法让 encoder/decoder 同步在线训练，用 loss curve 高于 final loss 的面积估计写入权重的信息；随后在模型大小 N、训练 tokens D 与超参数上寻找预算约束 $6ND+2N|X|\\le T$ 的下凸包。",
+        "更严格的 requential coding 用 teacher checkpoints 产生 synthetic tokens，以每步 $KL(P_i^t\\|P_i^s)$ 加相对熵编码 overhead 显式描述 student training run。它能保证可解码 runtime，但要同时运行/采样 teacher，论文报告通常比 prequential 慢 2–10 倍。",
+        "理论分析使用 cryptographic one-way-function/PRG 假设构造有限观察者的高熵或高结构例子；实验覆盖 elementary cellular automata、induction、chess ordering、OpenWebText、CIFAR-5M、scaling-law 外推和已有 ADO 数据混合结果。"
+      ]
+    },
+    {
+      "title": "核心结果与证据",
+      "paragraphs": [
+        "定义层面，均匀随机源具有高 $H_T$、低 $S_T$；简单重复序列两者都低。论文还证明在标准密码学假设下，可构造对高效观察者几乎不可预测的分布，并展示确定性计算、factorization order 与预算变化可改变有限观察者看到的结构量。",
+        "cellular automata 中，不同 Wolfram classes 给出不同 epiplexity；induction toy task 展示 likelihood learner 可能为边缘分布学到比简单生成过程更复杂的逆向算法。Lorenz 实验中，模型无法恢复 30 Lyapunov times 后的单轨迹，却近似学到 invariant measure。",
+        "chess 数据的 board-then-moves 与反向 ordering 含相同联合样本，却产生不同 epiplexity；高 epiplexity 顺序在 chess puzzle 上相近、在 centipawn evaluation 上更好，支持 ordering 影响可复用表示，但只是一个领域内的关联与干预。",
+        "在 $6\\times10^{18}$ FLOPs、最多 160M 参数和 5B tokens 的 requential 估计中，OpenWebText 的 epiplexity 高于 chess，CIFAR-5M 最低且作者估计其信息 99% 以上为残余随机部分。tokenization、序列化方式和模型族参与了该比较，不能读成模态固有常数。",
+        "已有 ADO 训练使用 1.3B 参数、125B Pile tokens；更偏向 loss 持续下降的数据子集时，prequential epiplexity 与七个 zero-shot tasks、SlimPajama/FineWeb OOD perplexity 同向改善。该结果支持数据选择假说，但 ADO 并非按严格 epiplexity objective 直接优化。"
+      ]
+    },
+    {
+      "title": "有效性与局限",
+      "paragraphs": [
+        "论文把正式定义、密码学构造、可计算估计器与多类例子连成完整链条；明确区分“结构信息多少”和“对任务有用”，也直接报告 prequential 与 requential 的量纲差异与额外成本。",
+        "绝对 $S_T$ 依赖 universal machine 的编码常数、时间/内存预算、model class、tokenization、factorization、optimizer 和 training algorithm。有限数据集上比较差值时这些选择未必抵消，跨模态排序尤其敏感。",
+        "prequential 面积是 heuristic，不是严格 time-bounded program length；requential 虽给显式 code，也只在扫描到的 architectures、teacher schedules 和超参数内求最优。有限 sweep 与 lower-convex-hull smoothing 都可能高估真正最短 code。",
+        "高 epiplexity 不保证特定 OOD：随机选择一个复杂但无关的算法同样可增加结构位数。chess/ADO 的正相关只能说明所测数据和任务共享结构，不能建立通用 data-quality scalar。",
+        "OpenWebText/CIFAR、scaling-law 和 ADO 部分混用新实验、既有拟合与外部论文结果；从 loss scaling 反演 model description length 继承 scaling-law functional form、token definition 与远距离外推误差。",
+        "作者使用 6×2080Ti、6×Titan RTX 和 32 TPUv4。若指标本身需要大规模 teacher-student 训练，作为预训练数据筛选准则的成本与收益仍需在真实 pipeline 中测量。"
+      ]
+    },
+    {
+      "title": "复现与资源",
+      "paragraphs": [
+        "代码：https://github.com/shikaiqiu/epiplexity 。复现应固定 arXiv v2、commit、tokenizer、dataset ordering、model class、N/D grid、optimizer、µP/CompleteP 规则、teacher checkpoints、预算 T 与所有随机种子。",
+        "最小复现先选三种合成源：均匀 bits、短周期序列、ECA rule 54。保存每步 held-out online loss 与 final loss，按 Eq. (8) 数值积分，再画 N、D sweep 的 MDL–compute Pareto frontier；不要只报告单一模型面积。",
+        "质量复现应同时跑 requential code，包含 KL 的 logarithmic/constant overhead，并报告 prequential/requential 比值及其不确定性；随后交换 ordering、tokenization 和 architecture，检验排名是否稳定。本站未运行这些训练。"
+      ]
+    },
+    {
+      "title": "阅读指南",
+      "paragraphs": [
+        "先读 Definitions 7–8：确认观察者必须同时会 sampling 和 probability evaluation，并理解 $S_T,H_T$ 来自同一个最优 two-part code，而不是把“可压缩性”换了名字。",
+        "再读 Section 4 与 Figure 2，逐项区分 formal epiplexity、prequential proxy 和 requential explicit code；看到 loss-curve 面积时先问 test-loss 估计、runtime、hyperparameter optimum 是否真的满足。",
+        "最后按 Figure 1→ECA/induction→chess→natural data 的顺序读证据。最值得继续研究的是 observer sensitivity：在 matched compute 下改变模型族、tokenization 与 memory bound，哪些 epiplexity 排名和 OOD 关联仍保持。"
+      ]
+    }
+  ],
+  "evidence_refs": [
+    "paper.pdf pp. 5–12: MDL background, time-bounded probabilistic programs, Definitions 7–8 and theoretical properties",
+    "paper.pdf pp. 13–16: prequential and requential estimators, runtime accounting and estimator caveats",
+    "paper.pdf pp. 17–29 and appendices: cellular automata, induction, chess, natural-data, ADO and scaling-law evidence plus proofs and experiment details",
+    "source PDF SHA-256 8c67d250b0507f341bf3bd91961c28ebde33290c8548f4af48d0e5683699488c",
+    "Evidence packet SHA-256 20ad0d90fb689ba19067b6f2ced64dc6abeb2c21241faa2214f50a69b4ae5fd2",
+    "Evidence status: full-text verified; no independent reproduction performed."
+  ]
+}

@@ -1,0 +1,187 @@
+{
+  "arxiv_id": "2601.03368",
+  "source_version": "v1",
+  "source_pdf": "https://arxiv.org/pdf/2601.03368v1",
+  "title_en": "A path to natural language through tokenisation and transformers",
+  "title_zh": "经由分词与 Transformer 通往自然语言统计",
+  "curation_status": "full_text_verified",
+  "card_standard_version": "2.4",
+  "audience_profile": "physics_ai_literate_physicist",
+  "paper_profile": "theory_numerics",
+  "style_reference": "physicist_daily_arxiv",
+  "provenance": {
+    "program": "Collection",
+    "catalog": "Paper Collection",
+    "catalog_record_id": "2601.03368",
+    "catalog_record_ids": ["2601.03368"],
+    "catalog_topic": "Representation Learning",
+    "collection_date": "2026-08-30",
+    "sampled_at": "2026-08-31",
+    "selected_by": "ziming_mineru_serial_goal",
+    "sampling_seed": "not_applicable_source_complete",
+    "candidate_count": 464
+  },
+  "verified_metadata": {
+    "arxiv_id": "2601.03368",
+    "version": "v1",
+    "title": "A path to natural language through tokenisation and transformers",
+    "authors": ["David S. Berman", "Alexander G. Stapleton"],
+    "categories": ["cs.CL", "cs.LG", "stat.ML"],
+    "primary_category": "cs.CL",
+    "published": "2026-01-06T19:14:04Z",
+    "updated": "2026-01-06T19:14:04Z",
+    "abstract": "The note derives a Zipf-law approximation for per-token entropy, applies recursive single-pair BPE to several text corpora, and compares the prediction with corpus statistics and small GPT-2 predictive entropies at different tokenisation depths."
+  },
+  "equation_refs": [
+    {
+      "label": "Zipf 频率律",
+      "latex": "f_s\\propto r_s^{-1},\\qquad p_s=\\frac{f_s}{\\Gamma}",
+      "role": "approximate token frequency as the inverse of its rank and normalize by the total token slots",
+      "symbols": {
+        "f_s": "count or frequency of token type s",
+        "r_s": "rank in descending frequency order",
+        "Gamma": "total number of token slots in the tokenized corpus",
+        "p_s": "empirical per-slot token probability"
+      },
+      "evidence": "paper.pdf pp. 2 and 5–6, Eqs. (1)–(3)",
+      "interpretation": "Zipf exponent near one is an empirical mid-rank approximation; high-frequency function words and rare hapax tokens deviate systematically, so one fitted point or exponent does not specify the full language distribution."
+    },
+    {
+      "label": "Zipf+IID 的 slot entropy 预测",
+      "latex": "\\mathbb E[S]=\\frac{s f_s}{\\Gamma}\\left[H_V\\ln\\Gamma-H_V\\ln(s f_s)-\\alpha(V)\\right]",
+      "role": "predict average entropy per token slot from vocabulary size and a stable mid-rank frequency under exact Zipf and IID assumptions",
+      "symbols": {
+        "V": "vocabulary size",
+        "H_V": "V-th harmonic number",
+        "alpha_V": "paper's finite sum of logarithmic rank terms",
+        "s": "chosen token rank, taken near a stable mid-rank region",
+        "S": "per-slot Shannon entropy in nats in the paper's plots"
+      },
+      "evidence": "paper.pdf pp. 5–7, Eqs. (16)–(17) and Figure 2",
+      "interpretation": "该公式同时假设 Zipf 与 token slots 近 IID。不同 BPE 深度改变 token 的物理含义、平均字符数和 Γ；逐 token 熵不能不经换算就比较每字符或整篇文本的信息。"
+    },
+    {
+      "label": "模型预测熵",
+      "latex": "p_s=\\frac{e^{z_s}}{\\sum_{s'=1}^{V}e^{z_{s'}}},\\qquad H(p)=-\\sum_{s=1}^{V}p_s\\log p_s",
+      "role": "measure uncertainty of the transformer's next-token distribution before sampling",
+      "symbols": {
+        "z_s": "logit for vocabulary item s",
+        "p_s": "context-conditioned next-token probability",
+        "H_p": "instantaneous softmax entropy",
+        "V": "tokenizer-dependent vocabulary size"
+      },
+      "evidence": "paper.pdf p. 11, Eqs. (20)–(21)",
+      "interpretation": "softmax entropy 是条件分布的不确定度，不等于采样后序列的 empirical unigram entropy，也不直接等于语言的 entropy rate；三者只在额外平稳性与充分采样条件下相关。"
+    }
+  ],
+  "figure_refs": [
+    {
+      "label": "Figure 6",
+      "asset_path": "assets/collection-figures/2601.03368/figure-6-tokenisation-depth-entropy.webp",
+      "section": "核心结果与证据",
+      "role": "compare Zipf-IID predicted and transformer empirical predictive entropy at 100, 1000 and 10000 BPE recursion steps",
+      "evidence": "paper.pdf p. 12, Figure 6 combined panel",
+      "alt_text": "100、1000、10000 次 BPE recursion 的样本 predictive entropy 及其经验均值，与三条 Zipf+IID 预测水平线比较；浅层预测明显偏高，深层预测与经验值逐渐接近。",
+      "caption": "Figure 6 显示随着 BPE recursion 加深，Zipf+IID 的 per-token entropy 预测从约三倍高估逐步靠近小型 GPT-2 的平均 softmax entropy。",
+      "interpretation": "Agreement improves in one IMDB setup while the vocabulary, sequence units and trained model embeddings all change; it does not isolate whether Zipf convergence, weaker dependencies or model fit causes the match."
+    }
+  ],
+  "cover": {
+    "mode": "source_figure",
+    "asset_path": "assets/collection-figures/2601.03368/figure-6-tokenisation-depth-entropy.webp",
+    "label": "Figure 6",
+    "visual_type": "data_plot",
+    "evidence": "paper.pdf p. 12, Figure 6 combined panel",
+    "alt_text": "不同 BPE 深度下的模型预测熵与 Zipf-IID 理论熵对比。",
+    "caption": "更深 BPE 让 Zipf-IID 预测靠近模型的逐 token 熵，但比较单位也随 tokenizer 改变。",
+    "selection_rationale": "It is the paper's main model-level quantitative test and makes both the convergence trend and the large shallow-tokenization discrepancy visible."
+  },
+  "sections": [
+    {
+      "title": "作者信息",
+      "paragraphs": [
+        "David S. Berman、Alexander G. Stapleton；Queen Mary University of London Centre for Theoretical Physics。",
+        "本站核验 arXiv:2601.03368v1：提交并更新于 2026-01-06；分类 cs.CL、cs.LG、stat.ML；共 19 页。",
+        "Collection 来源为刘子鸣网站的 Representation Learning 条目。"
+      ]
+    },
+    {
+      "title": "研究问题",
+      "paragraphs": [
+        "自然语言的词频在中间 rank 常近似 $f(r)\\sim r^{-1}$。现代模型却不直接读“词”，而先用 BPE 把字符反复合并成 subword tokens。论文问：随着 BPE 深度增加，token rank-frequency 是否流向 Zipf 指数 1，逐 token entropy 如何变化？",
+        "作者先在 Zipf+IID 假设下推导只依赖 vocabulary size、总 slots 与一个中秩频率的 entropy 公式，再把它同语料 unigram entropy 和小型 GPT-2 的 context-conditioned softmax entropy 比较。",
+        "中心证据是统计吻合随 tokenization depth 改善。它不是在评测下游语言能力，也没有证明 Zipf 性是好 tokenizer 的充分条件。"
+      ]
+    },
+    {
+      "title": "背景",
+      "paragraphs": [
+        "BPE 每轮寻找最频繁的相邻 token pair，并把该 pair 作为新 token。本文实验采用每轮只做一次 merge，因此 100、1000、10000 recurse steps 对应不断增大的词表；这与工程库一次训练出固定规模词表的实现需仔细对齐。",
+        "corpus unigram entropy $-\\sum p_s\\log p_s$ 忽略顺序；语言真正的 entropy rate 要处理长程条件概率。Transformer 的 next-token softmax 给出有限 context 下的条件分布，因此可把 IID 理论与实际 context dependence 的差距显式化。",
+        "Zipf law 描述一阶边缘频率，不决定 syntax、semantics 或 mutual information。两个语料可以共享相同 rank-frequency curve，却有完全不同的可读性与条件结构。"
+      ]
+    },
+    {
+      "title": "给物理学家的 AI 导读",
+      "paragraphs": [
+        "把 BPE merge 看作改变观测尺度很有启发性：字符自由度被组合成较大的 effective symbols，词表变大而序列变短；rank-frequency exponent 和 entropy 都随表示坐标变化。",
+        "但这不是已建立的 renormalization group：没有给出保持 partition function/observables 的 coarse-graining map、semigroup、fixed-point stability 或 universal critical exponents。文中的“flow to infrared/Zipf universality class”是类比，不是物理等价。",
+        "尤其要区分 entropy density 的单位。每 token 熵增加不意味着每字符、每 byte 或每篇文档总熵增加；像更换 lattice spacing 后，必须连同 site density 一起换算。"
+      ]
+    },
+    {
+      "title": "模型与方法",
+      "paragraphs": [
+        "作者先用多个文本语料检查 Zipf exponent，并在 20Newsgroups 上研究用哪个 rank 的频率代入公式最稳；极高/极低 ranks 偏离大，约 rank 500 的区域在该数据上较稳定，预测 entropy 为 8.05 nats。",
+        "随后对语料递归执行单 pair BPE merge，记录词表 V、token slots Γ、拟合 exponent 与 empirical entropy；IMDB 图展示 100、1000、10000 steps 下频率曲线趋近 exponent 1，entropy 先快增后进入长尾。",
+        "模型实验在 IMDB 上使用 6-layer GPT2LMHeadModel，embedding width 256、context 128、dropout 0.1；10000-step tokenizer 的 vocabulary 为 10115。各 tokenization depth 训练对应模型并比较逐位置 softmax entropy 与 Zipf+IID 预测。",
+        "作者还汇总各 heads 的局部 off-diagonal attention magnitudes，观察其均值/方差随 BPE 深度下降，并把它当作 token dependence 减弱的 proxy。"
+      ]
+    },
+    {
+      "title": "核心结果与证据",
+      "paragraphs": [
+        "在所测语料中，递归 BPE 增大词表后，mid-rank 拟合的 Zipf exponent 朝 1 移动；empirical per-slot entropy 快速上升后边际增长变小。尾部 rare tokens 仍使简单 power-law fit 不稳。",
+        "Figure 6 中，100 recurse steps 的 Zipf+IID 水平线约为 11 nats，而模型 empirical mean 约 4 nats，近三倍高估；1000 steps 的预测约 7.2、经验约 5.6，10000 steps 两者约在 7.8 附近吻合。",
+        "深 BPE 下预测改善与两个变化同时发生：边缘 token frequencies 更 Zipf-like，局部 off-diagonal attention magnitude 也变小。论文没有 factorial ablation，因而不能量化两者各自贡献。",
+        "attention histogram 随深度收窄，支持所选模型对局部 cross-token interaction 的依赖减弱；但 attention score 由训练目标、head specialization 与 positional mask 决定，不是数据 mutual information 的无偏估计。",
+        "结果说明 tokenizer 会重塑模型看到的统计量，而不是透明的预处理。论文没有比较 perplexity per byte、compression ratio、下游 accuracy、生成质量或 compute efficiency，因此不能据此选出最佳 BPE 深度。"
+      ]
+    },
+    {
+      "title": "有效性与局限",
+      "paragraphs": [
+        "优点是把 corpus marginal、模型 conditional distribution 与 attention diagnostic 放在同一问题中，并把浅 tokenization 下约三倍的理论失败保留下来，而非只展示 asymptotic agreement。",
+        "Zipf+IID 公式依赖 exponent≈1、足够大样本和中秩拟合；rank 选择来自同一数据的经验稳定区。作者报告约 10% 的中区精度不能外推到 tails、其他语言或不同 tokenizer。",
+        "模型证据主要是一个 IMDB movie-review corpus 和一个小 GPT-2 配置。训练/测试文本被合成 monolithic corpus 用于部分语料统计；若模型评估复用同源文本，泛化与 overfitting 边界需更清楚。",
+        "不同 BPE 深度同时改变 V、平均 token 长度、sequence length、embedding 参数量与优化难度。逐 token entropy 若不转换为 nats/character 或 bits/byte，就不能比较原始字符串的压缩率。",
+        "小 off-diagonal attention 不推出 IID：信息可通过 MLP、residual stream、多个 heads 或超出局部 cutoff 的位置传播；attention weight/score 也不等于统计相关或因果依赖。",
+        "RG 与 infrared universality 的语言没有相应的守恒量、fixed point 或 universality test。更保守的结论是 BPE 深度形成一条 tokenizer-dependent statistical trajectory。"
+      ]
+    },
+    {
+      "title": "复现与资源",
+      "paragraphs": [
+        "代码：https://github.com/xand-stapleton/natural-language-tokenisation 。复现应固定 arXiv v1、commit、语料版本、文本清洗、初始字符词表、每轮 merge 数、rank fitting interval、log base 和 random seeds。",
+        "最小复现可在 IMDB 上逐轮保存 V、Γ、平均字符/token、fitted exponent、unigram nats/token 与 nats/character；同时用 held-out 文本验证 Zipf formula，避免仅用同一 corpus 拟合和评估。",
+        "模型复现应核对 6×256、context 128 和 vocabulary 10115 配置，报告 train/validation loss、softmax entropy 与 sampled-sequence entropy；再用 mutual information 或 controlled shuffling 检验 IID，而非只看 attention。本站未运行训练。"
+      ]
+    },
+    {
+      "title": "阅读指南",
+      "paragraphs": [
+        "先读 Eq. (17) 并列出假设：Zipf exponent 1、IID、finite V、选定中秩 s。然后检查 Figure 2 的 rank sensitivity，确认预测不是无参数普适公式。",
+        "再看 Figures 3–6，把 corpus entropy 与 model softmax entropy 分开，并给每条纵轴补上“每 token”单位；这是理解约三倍误差及深层吻合的关键。",
+        "最后读 Figure 7 和结论中的 RG 类比。最有判别力的后续实验是固定 bits/byte 与 model compute，对多语言、Unigram/SentencePiece/BPE 做 matched-tokenization 比较，并直接估计 conditional entropy rate。"
+      ]
+    }
+  ],
+  "evidence_refs": [
+    "paper.pdf pp. 2–7: Zipf assumptions, entropy derivation, rank sensitivity and finite-vocabulary formula",
+    "paper.pdf pp. 8–13: recursive BPE statistics, GPT-2 setup, predictive entropy and Figure 6",
+    "paper.pdf pp. 13–16 and appendices: attention proxy, conclusion, architecture and dataset details",
+    "source PDF SHA-256 1ff01c618c9203aec621100f467c08ada87a0f71b13216781a2fed88ac3fab9e",
+    "Evidence packet SHA-256 8f268ad58ac8d0678f4ab09ed00c433793ea617d898fb0969176dfb9babd042f",
+    "Evidence status: full-text verified; no independent reproduction performed."
+  ]
+}
