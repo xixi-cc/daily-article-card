@@ -1,0 +1,212 @@
+{
+  "arxiv_id": "2602.16740",
+  "source_version": "v1",
+  "source_pdf": "https://arxiv.org/pdf/2602.16740v1",
+  "title_en": "Quantifying LLM Attention-Head Stability: Implications for Circuit Universality",
+  "title_zh": "量化 LLM 注意力头稳定性：对回路普适性的启示",
+  "curation_status": "full_text_verified",
+  "card_standard_version": "2.4",
+  "audience_profile": "physics_ai_literate_physicist",
+  "paper_profile": "ai_empirical",
+  "style_reference": "physicist_daily_arxiv",
+  "provenance": {
+    "program": "Collection",
+    "catalog": "Paper Collection",
+    "catalog_record_id": "2602.16740",
+    "catalog_record_ids": [
+      "2602.16740"
+    ],
+    "catalog_topic": "Mechanistic Interpretability",
+    "collection_date": "2026-08-30",
+    "sampled_at": "2026-08-31",
+    "selected_by": "ziming_mineru_serial_goal",
+    "sampling_seed": "not_applicable_source_complete",
+    "candidate_count": 464
+  },
+  "verified_metadata": {
+    "arxiv_id": "2602.16740",
+    "version": "v1",
+    "title": "Quantifying LLM Attention-Head Stability: Implications for Circuit Universality",
+    "authors": [
+      "Karan Bali",
+      "Jack Stanley",
+      "Praneet Suresh",
+      "Danilo Bzdok"
+    ],
+    "categories": [
+      "cs.LG",
+      "cs.AI"
+    ],
+    "primary_category": "cs.LG",
+    "published": "2026-02-17",
+    "updated": "2026-02-17",
+    "abstract": "Across independently trained 7M–124M GPT-like models, nearest matching of attention maps is typically weaker at middle depth; AdamW raises the reported score in many configurations, while residual-stream CKA is more stable than individual-head similarity."
+  },
+  "equation_refs": [
+    {
+      "label": "prompt-averaged attention-map similarity",
+      "latex": "\\bar s^{(m,n)}_{ij}=\\frac{1}{|\\mathcal P|}\\sum_{p\\in\\mathcal P}\\operatorname{cos}\\!\\left(\\operatorname{vec}A_i^m(p),\\operatorname{vec}A_j^n(p)\\right)",
+      "role": "represent two heads by post-softmax attention matrices on a fixed prompt ensemble and compare their average pattern similarity",
+      "symbols": {
+        "m_n": "anchor and independently trained pair refits",
+        "i_j": "heads in the compared models",
+        "P": "fixed evaluation prompt set",
+        "A": "post-softmax token-by-token attention matrix"
+      },
+      "evidence": "paper.pdf pp. 3–4, Equations (1)–(2)",
+      "interpretation": "这一定义比较的是指定 prompt distribution 上的 attention pattern，不是参数、输出 contribution、causal function 或完整 circuit 的同一性。"
+    },
+    {
+      "label": "nearest-match seed stability",
+      "latex": "s_i^{(m,n)}=\\max_{j\\in\\{1,\\ldots,H_n\\}}\\bar s^{(m,n)}_{ij},\\qquad S_i^{(m)}=\\frac{1}{N-1}\\sum_{n\\ne m}s_i^{(m,n)}",
+      "role": "assign each anchor head its independently chosen best counterpart in every other refit and average the maxima",
+      "symbols": {
+        "H_n": "candidate heads in the same layer of pair refit n",
+        "N": "number of independently initialized refits",
+        "s_i_mn": "best-match score against one pair refit",
+        "S_i_m": "anchor-specific stability score"
+      },
+      "evidence": "paper.pdf p. 4, Equations (3)–(4)",
+      "interpretation": "最大化令标签置换不敏感，但允许 many-to-one matching；候选头越多，纯机会最大值也越高。它没有建立双射、cycle consistency 或跨三次 refit 的传递 identity。"
+    },
+    {
+      "label": "layer stability and depth gap",
+      "latex": "S_l^{(m)}=\\frac{1}{|H_l|}\\sum_{i\\in H_l}S_i^{(m)},\\qquad \\Delta S=S_{l_{\\max}}-S_{l_{\\min}},\\qquad r_l=\\frac{l}{L}",
+      "role": "compress head scores into a depth profile and locate its most and least stable layers",
+      "symbols": {
+        "H_l": "heads in layer l",
+        "L": "total model depth",
+        "Delta_S": "within-architecture extreme-layer gap",
+        "r_l": "relative layer depth"
+      },
+      "evidence": "paper.pdf pp. 4 and 6–7, Equations (5)–(7)",
+      "interpretation": "所谓 mid-layer dip 是相对深度上的描述性 profile；极值会受层数、噪声与所选 anchor 影响，文中没有为 $\\Delta S$ 或 extremum location 给置信区间。"
+    }
+  ],
+  "figure_refs": [
+    {
+      "label": "Figure 2",
+      "asset_path": "assets/collection-figures/2602.16740/figure-2-head-and-layer-stability.webp",
+      "section": "核心结果与证据",
+      "role": "show per-head nearest-match scores and their layer average for one representative 8-layer, 8-head MLP anchor",
+      "evidence": "paper.pdf p. 4, Figure 2",
+      "alt_text": "A heatmap of anchor-head best-match scores across refits and a depth profile falling from near one at layer one to about 0.70 at layer five.",
+      "caption": "Figure 2：代表性的 8 层、8 头 MLP anchor 中，平均 best-match stability 从第 1 层近 1 降至第 5 层约 0.70 后回升；阴影标为 ±1 SD，是描述性离散度而非 seed/anchor 置信区间。",
+      "interpretation": "图显示所定义 observable 的中层低谷，但每个 anchor head 可复用同一 target head，且主图只选一个 anchor，不能据此认定唯一通用回路。"
+    }
+  ],
+  "cover": {
+    "mode": "source_figure",
+    "asset_path": "assets/collection-figures/2602.16740/figure-2-head-and-layer-stability.webp",
+    "label": "Figure 2",
+    "visual_type": "data_plot",
+    "evidence": "paper.pdf p. 4, Figure 2",
+    "alt_text": "Representative attention-head nearest-match heatmap and layer-wise stability dip.",
+    "caption": "随机种子重训后，attention-map 最近邻相似度在网络中层最低。",
+    "selection_rationale": "The main result is visible together with head-level heterogeneity, while the caption can expose its anchor-specific nearest-neighbor meaning."
+  },
+  "sections": [
+    {
+      "title": "作者信息",
+      "paragraphs": [
+        "Karan Bali、Jack Stanley、Praneet Suresh 与 Danilo Bzdok 来自 Mila – Quebec Artificial Intelligence Institute 与 McGill University。",
+        "本站核验 arXiv:2602.16740v1：提交于 2026-02-17，目前仅此版本；主分类 cs.LG，交叉分类 cs.AI，PDF 33 页。",
+        "Collection 来源为刘子鸣网站的 Mechanistic Interpretability 条目。"
+      ]
+    },
+    {
+      "title": "研究问题",
+      "paragraphs": [
+        "mechanistic interpretability 常在一个训练实例中给某个 attention head 命名，例如 induction head。若相同架构和数据从不同随机种子重训，该 head 的行为还会在另一个实例中出现吗？",
+        "论文把 seed stability 定义为：固定 prompt 上，一个 anchor head 能否在另一 refit 的相同层找到 attention map 最相似的 head；再研究这种分数随深度、架构、prompt 长度和 optimizer 如何变化。",
+        "核心应用问题是：单模型上发现的部件能否视为 universal circuit，以及 residual stream 是否比单个 attention head 提供更稳健的跨实例分析对象。"
+      ]
+    },
+    {
+      "title": "背景",
+      "paragraphs": [
+        "Transformer 的每个 attention head 产生 token-to-token 权重矩阵。head 编号在不同随机初始化之间没有天然对应；即使整体语言建模性能类似，内部基底和功能分工也可发生置换或重组。",
+        "circuit 通常指多个 heads、MLPs、residual nodes 与连接边共同实现的因果 computation。两个 head 的 attention patterns 相似只是一个候选对应信号，不等于整个 circuit 相同。",
+        "post-softmax attention map 受 causal mask、行归一化、位置偏好和 prompt 共同约束。高 cosine similarity 既可能来自共享功能，也可能来自这些通用结构。",
+        "CKA 比较 representation Gram geometry，能忽略正交变换与整体缩放；它与 attention-map cosine 是不同 observable，数值大小不能直接当同一温标比较。"
+      ]
+    },
+    {
+      "title": "给物理学家的 AI 导读",
+      "paragraphs": [
+        "可把每个随机 seed 看作同一哈密顿量/训练协议的独立样品，把 attention head 看成没有规范固定的内部模。跨样品比较前要处理 head permutation，但真正的 mode mixing 还要求比较子空间而非逐模标签。",
+        "文中的 $\\max_j$ 类似在候选态中寻找最大 overlap。候选空间从 8 变 16，或从同层扩成全网时，extreme-value baseline 自然上升；若没有 shuffled/random null，分数不能直接跨搜索空间比较。",
+        "many-to-one nearest matching 不是谱态的一一对应：多个 anchor modes 可同时投到同一 target mode。更强的 universality 证据需要 Hungarian bijection、双向一致性、三模型 cycle consistency，或直接比较所实现的 causal subspace。",
+        "中层稳定性低可能表示功能更自由、基底旋转更强或 prompt probes 不充分，并不唯一意味着功能不存在。residual stream 更稳定也可能来自 skip connection 和更粗粒度的聚合 observable。"
+      ]
+    },
+    {
+      "title": "模型与方法",
+      "paragraphs": [
+        "作者训练 26 种 decoder-only GPT-like 配置：2/4/8 层配 8 或 16 heads，含 MLP 与 attention-only 版本、Adam 与 AdamW 镜像；另有 12 层 12 头 GPT-2-small。参数规模约 7M–124M。",
+        "2/4/8 层模型在 20 亿 C4 tokens 上训练，每配置 50 个独立 refits；12 层端点改用 90 亿 OpenWebText tokens 且仅 5 refits，同时 tokenizer、规模和数据也变化。",
+        "主 probe set 是 GPT-5.2 Thinking 合成的 100 个自然语言 prefixes。长度扫描由同一 20 个 master prompts 截断成 5/10/20/30/40/50 个空格分隔词块，不等于模型 tokenizer token 数。",
+        "对每 prompt 提取 post-softmax attention matrix，flatten 后算 cosine；先跨 100 prompts 平均，再对 pair refit 同层候选取最大，最后对除 anchor 外的 refits 平均。",
+        "cross-layer variant 允许在全部层找最近邻；within-layer commonness 比较同一 refit 内 heads；residual stream 用 100 prompts 上 RBF-kernel CKA；功能重要性以 zero-ablation 后 perplexity 变化衡量。",
+        "Adam baseline 对小模型 learning rate 为 $10^{-4}$、无 weight decay；AdamW 为 $10^{-4}$、decoupled weight decay 0.1。GPT-2-small 的 Adam 是 $5\\times10^{-5}$，AdamW 是 $10^{-4}$，并非只改变 optimizer/decay。"
+      ]
+    },
+    {
+      "title": "核心结果与证据",
+      "paragraphs": [
+        "代表性的 8 层 8 头 MLP 中，layer stability 从第 1 层近 1 降到第 5 层约 0.70，再在末端回升；其他图总体也呈 early/late 高、middle 低，且 middle heads 在同层更不冗余。",
+        "放开层约束会让 stability 略升，作者也指出这是候选池变大所致；alignment map 仍大体对角占优，但中层 best matches 更分散到邻层。",
+        "随着输入从 5 增到 50 个空格词块，中层 stability 明显下降。这证明该测量依赖上下文长度和 probe distribution，也限制了“head 固有 identity”的解释。",
+        "AdamW 在深 MLP 与全部 attention-only 配置中提高所画 stability，浅 MLP 增益较小；WikiText-2 validation perplexity 图看起来近似不变，激活 norm 也受抑制。",
+        "8/12 层配置的最不稳定层多落在相对深度 0.4–0.8；8 层 8 头 Adam MLP 示例的最稳层为 $l=1$、$r=0.125$，最不稳层为 $l=5$、$r=0.625$。",
+        "residual-stream RBF-CKA 在所测配置中高于单头 stability。head zero-ablation 的 $\\Delta\\mathrm{PPL}$ 与 stability 在各层相关很小且 noisy，但随深度的可视趋势变得更负。"
+      ]
+    },
+    {
+      "title": "有效性与局限",
+      "paragraphs": [
+        "所谓 head persists 是固定 prompts 上存在高 attention-map cosine 最近邻，不是参数相等、unique identity、causal equivalence 或完整 circuit universality。",
+        "每个 anchor head 独立取最大，允许 many-to-one；没有 Hungarian assignment、双向匹配或 cycle consistency。max 还产生随 8/16 heads 和 same/all-layer 候选数变化的机会偏置，且无 null correction。",
+        "causal mask、softmax 归一化与局部位置偏好可抬高 cosine；论文没有 untrained、shuffled-head、random-matrix 或 matched-complexity baseline。",
+        "主要图选一个 anchor 与其余 refits 比较，没有跨 anchor 的均值和 uncertainty。±1 SD 不是 inferential interval；全文未给 hypothesis tests、effect sizes、多重比较或 extremum/architecture trend 的置信区间。",
+        "小模型有 50 refits，但 GPT-2-small 仅 5；12 层同时改变 corpus、tokens、tokenizer、模型规模与 learning rate，因此不能把 endpoint 差异单独归因于 depth 或 AdamW。",
+        "within-layer commonness 的附录公式没有清楚排除 self-comparison，可能被 similarity=1 向上偏置；定量使用前需查代码。",
+        "AdamW 是有价值的训练干预，但未做 seed-level inferential test；activation norm 降低只与 mediation 一致，不证明 norm control 导致 stability。所谓 no performance tradeoff 也没有 equivalence margin。",
+        "zero-ablation 是 off-distribution necessity test，不等于充分性或可替代性；每层只有 8/12/16 heads 的 Pearson correlation 被作者承认小且 noisy，跨深度趋势不是因果证明。",
+        "模型仅约 7M–124M，未覆盖 frontier LLM、post-training、MoE、长上下文或生产 scaffold。monitorability 与 AI safety 是前瞻外推，论文没有测试 monitor 或事故检测。本站未审计代码或复现训练。"
+      ]
+    },
+    {
+      "title": "复现与资源",
+      "paragraphs": [
+        "代码为 https://github.com/karanbali/attention_head_seed_stability，权重为 https://huggingface.co/karanbali/attention_head_seed_stability；arXiv artifact 未 pin 当前 revision，本站只核验论文中的链接。",
+        "复现应先固定 data shard/order、tokenizer、初始化、optimizer、learning rate、weight decay、checkpoint 与完整 prompt set；按 anchor–pair–head–prompt 保存相似度张量，不只保留 layer mean。",
+        "加入同规模 random/untrained/shuffled null，估计 $\\max_j$ 的候选数基线；并比较 nearest-neighbor、Hungarian bijection、mutual match 与三 refit cycle-consistency。",
+        "对所有 anchors 重复分析，以 refit 为统计单位给 bootstrap/hierarchical intervals；预注册 architecture contrasts，分别控制 corpus、token budget、model width/depth 与 candidate heads。",
+        "用多个自然语料 prompt distributions 和真实 tokenizer 长度做 sensitivity；比较 attention logits、patterns、head outputs、residual/MLP subspaces 与 task-conditioned causal interventions。",
+        "若要主张 universal circuit，应在多个 seeds、data samples、checkpoints、训练 recipes 和任务上定位完整边集合，并测试 interchange、patching 与功能保持，而非只匹配单头图样。"
+      ]
+    },
+    {
+      "title": "阅读指南",
+      "paragraphs": [
+        "快速路线：p. 3 看 Figure 1 与训练矩阵；pp. 3–4 看 Eqs. (1)–(5) 和 Figure 2；pp. 5–8 看 cross-layer、prompt length、AdamW、residual 与 ablation；附录 A 查配置与 prompts。",
+        "物理路线：把 head matching 当无规范内部模的 overlap 问题，首先检查 permutation、subspace rotation、extreme-value null 与有限样品 uncertainty。",
+        "AI 路线：区分 attention pattern、head output、residual representation 和 causal circuit；这四者不是同一层级的“功能”。",
+        "批判路线：重点检查 many-to-one max、单 anchor、候选数偏置、12 层 confounds、合成 prompts、AdamW learning-rate confound，以及 124M 结果向 frontier universality 的外推。"
+      ]
+    }
+  ],
+  "evidence_refs": [
+    "paper.pdf pp. 3–4, Equations (1)–(5) and Figures 1–2: prompt-wise attention-map cosine, nearest-neighbor matching, refit averaging, layer profiles and representative middle-depth dip",
+    "paper.pdf pp. 3 and 9–12, architecture and training appendices: 26 configurations, 7M–124M scale, 50 versus 5 refits, C4/OpenWebText and optimizer settings",
+    "paper.pdf pp. 5–7, Figures 3–7: cross-layer candidates, within-layer uniqueness, prompt-length sensitivity, Adam/AdamW comparison and relative-depth extrema",
+    "paper.pdf pp. 7–8, Figures 8–10 and Appendix A: residual-stream RBF-CKA, zero-ablation correlation and meta-SNE",
+    "paper.pdf pp. 8 and 10–12, Limitations and prompt/configuration details: hyperparameter, scale, synthetic-prompt and training-recipe boundaries",
+    "source PDF SHA-256 ee5d8c1446f99ffeadfc79381d2787c36816f7695202465856a03c874e3f1bbd",
+    "official arXiv v1 source archive SHA-256 a52353c660aaf8ea974703529619802c64e63ba7d1a5d346e365c324c951e0b6",
+    "MinerU Markdown SHA-256 52b33ec5897f64d76c461b6fc4407f8101c72ae83d74463f484d0ed93a502a2f",
+    "Evidence packet SHA-256 46bf4c70126c1d23b80f7b15587ed0d60953a2044aaf8ac9f63b4cb65d6ae161",
+    "Evidence status: full-text and official TeX verified against the only/latest arXiv v1; nearest-match identity, many-to-one and maximum-selection bias, anchor dependence, candidate-set size, prompt distribution, architecture/corpus/refit confounding, uncertainty, optimizer and learning-rate confounding, mediation, ablation, cross-metric, scale, circuit and safety boundaries recorded; no independent reproduction performed."
+  ]
+}

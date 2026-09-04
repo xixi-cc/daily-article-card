@@ -1,0 +1,213 @@
+{
+  "arxiv_id": "2602.18523",
+  "source_version": "v3",
+  "source_pdf": "https://arxiv.org/pdf/2602.18523v3",
+  "title_en": "The Geometry of Multi-Task Grokking: Transverse Instability, Superposition, and Weight Decay Phase Structure",
+  "title_zh": "多任务 Grokking 的几何：横向不稳定性、叠加与权重衰减相结构",
+  "curation_status": "full_text_verified",
+  "card_standard_version": "2.4",
+  "audience_profile": "physics_ai_literate_physicist",
+  "paper_profile": "theory_numerics",
+  "style_reference": "physicist_daily_arxiv",
+  "provenance": {
+    "program": "Collection",
+    "catalog": "Paper Collection",
+    "catalog_record_id": "2602.18523",
+    "catalog_record_ids": [
+      "2602.18523"
+    ],
+    "catalog_topic": "Representation Learning",
+    "collection_date": "2026-08-30",
+    "sampled_at": "2026-08-31",
+    "selected_by": "ziming_mineru_serial_goal",
+    "sampling_seed": "not_applicable_source_complete",
+    "candidate_count": 464
+  },
+  "verified_metadata": {
+    "arxiv_id": "2602.18523",
+    "version": "v3",
+    "title": "The Geometry of Multi-Task Grokking: Transverse Instability, Superposition, and Weight Decay Phase Structure",
+    "authors": [
+      "Yongzhong Xu"
+    ],
+    "categories": [
+      "cs.LG",
+      "cs.AI"
+    ],
+    "primary_category": "cs.LG",
+    "published": "2026-02-19",
+    "updated": "2026-04-03",
+    "abstract": "Small shared-trunk Transformers trained on two or three modular-arithmetic tasks exhibit delayed generalization, low-dimensional post-hoc trajectory reconstructions, weight-decay-dependent timescales, and strong sensitivity to selected transverse-gradient interventions."
+  },
+  "equation_refs": [
+    {
+      "label": "trajectory-PCA reconstruction threshold",
+      "latex": "\\theta_k=\\theta(0)+\\sum_{i=1}^{k}(\\mathbf v_i^\\top\\Delta\\theta(T))\\mathbf v_i,\\qquad k^*=\\min\\{k:\\operatorname{Acc}_q(\\theta_k)>0.9\\ \\forall q\\}",
+      "role": "ask how many directions learned from a complete parameter trajectory suffice to reconstruct all task accuracies",
+      "symbols": {
+        "theta_0": "initial parameters",
+        "Delta_theta_T": "terminal displacement from initialization",
+        "v_i": "right singular directions of the same run's uncentered checkpoint trajectory",
+        "q": "one modular arithmetic task",
+        "k_star": "post-hoc all-task reconstruction threshold"
+      },
+      "evidence": "paper.pdf pp. 13–16, reconstruction definition and Tables 9–10",
+      "interpretation": "测得 dual-task 约 5–10、tri-task 约 3–8 个方向即可恢复；但基底使用同一完整 run 的晚期信息，是 in-sample hindsight compression，不是在线预测器或函数最小维数定理。"
+    },
+    {
+      "label": "spectral-gap and commutator coordinates",
+      "latex": "g_{12}^{(\\ell)}=\\sigma_1(W_Q^{(\\ell)})-\\sigma_2(W_Q^{(\\ell)}),\\qquad c^{(\\ell)}=\\|[W_Q^{(\\ell)},W_K^{(\\ell)}]\\|_F",
+      "role": "construct the two empirical coordinates used to visualize an attention-operator training trajectory",
+      "symbols": {
+        "sigma_1_sigma_2": "two largest singular values of the layer query matrix",
+        "W_Q_W_K": "query and key weight matrices",
+        "commutator": "matrix product difference W_Q W_K minus W_K W_Q",
+        "ell": "Transformer layer"
+      },
+      "evidence": "paper.pdf pp. 19–22, Equations (9)–(11) and Figures 19–21",
+      "interpretation": "谱隙开启与 commutator 峰值/回落给出有用相图坐标，但它们是选定矩阵的 diagnostics；轨迹成环不等于已证明的热力学相变、对称破缺定理或唯一机制。"
+    },
+    {
+      "label": "transverse-gradient deletion",
+      "latex": "\\mathbf g_{\\mathrm{new}}=P_{\\mathcal M}\\mathbf g+(1-\\alpha)P_{\\mathcal M^\\perp}\\mathbf g=\\mathbf g-\\alpha\\mathbf g_\\perp",
+      "role": "causally attenuate the gradient component orthogonal to a PCA space learned from an unperturbed reference trajectory",
+      "symbols": {
+        "g": "original training gradient",
+        "M": "post-hoc empirical trajectory PCA subspace",
+        "g_perp": "component orthogonal to that subspace",
+        "alpha": "deleted fraction of the orthogonal component"
+      },
+      "evidence": "paper.pdf pp. 18–19, Equation (8), Tables 11–12",
+      "interpretation": "在 seed 42、WD=1 的特定干预下，1–7% deletion 延迟训练，10–25% 在预算内失败，但 dual-task 50% 又恢复；所以因果结论只对该 basis/run/intervention 成立，响应并非全局单调。"
+    }
+  ],
+  "figure_refs": [
+    {
+      "label": "Figure 19 phase portrait",
+      "asset_path": "assets/collection-figures/2602.18523/figure-phase-portrait-grokking.webp",
+      "section": "核心结果与证据",
+      "role": "visualize one selected seed and layer in spectral-gap–commutator coordinates, colored by training time and test accuracy",
+      "evidence": "paper.pdf p. 20, Figure 19; official source asset fig3_hero_phase_portrait.png",
+      "alt_text": "Two panels trace a loop in query spectral-gap versus query-key commutator norm, colored by step and accuracy.",
+      "caption": "Figure 19：谱隙–commutator 平面上的单条小模型轨迹。需注意官方 PDF/TeX caption 称 tri-task，但源 PNG 内部标注 ModAdd+ModMul、seed 42、layer 0，并标出 add 16,400、mul 16,300；原始 caption–asset 不一致尚未消解。",
+      "interpretation": "该图只能作为一个选定 run 的经验可视化；在核对原始日志和绘图代码前，不应从图中读取 tri-task 的任务次序或宣称普适 phase portrait。"
+    }
+  ],
+  "cover": {
+    "mode": "source_figure",
+    "asset_path": "assets/collection-figures/2602.18523/figure-phase-portrait-grokking.webp",
+    "label": "Figure 19 phase portrait",
+    "visual_type": "data_plot",
+    "evidence": "paper.pdf p. 20, Figure 19; official source asset fig3_hero_phase_portrait.png",
+    "alt_text": "A selected training trajectory loops through spectral-gap and commutator coordinates.",
+    "caption": "一个训练 run 在谱隙–非对易度平面中的轨迹；图源的 dual/tri-task 标注存在未解决冲突。",
+    "selection_rationale": "The author-created plot makes the proposed geometric narrative concrete while also exposing the provenance inconsistency that prevents stronger task-specific use."
+  },
+  "sections": [
+    {
+      "title": "作者信息",
+      "paragraphs": [
+        "作者为 Yongzhong Xu；论文给出代码仓库 https://github.com/skydancerosel/grokking-integrability。",
+        "本站核验 arXiv:2602.18523v3：v1 提交于 2026-02-19，v3 更新于 2026-04-03；主分类 cs.LG，交叉分类 cs.AI，PDF 42 页。",
+        "Collection 来源为刘子鸣网站的 Representation Learning 条目。"
+      ]
+    },
+    {
+      "title": "研究问题",
+      "paragraphs": [
+        "小 Transformer 在训练集早已拟合后，为何还会经历很长平台才突然泛化？当一个 shared trunk 同时学习模 97 加法、乘法和平方和时，多种算法沿同一参数轨迹如何出现？",
+        "论文追踪 task accuracy、完整参数 trajectory PCA、$W_Q/W_K$ commutator、singular-value gap、Hessian bottom eigenvalue，并扫描 weight decay，尝试把延迟泛化描述成几何转变。",
+        "还通过压缩、缩放、剪枝和 transverse-gradient deletion 测试哪些方向对 grokking 必需，并把结果解释为 parameter-space superposition、holographic incompressibility 与 overparameterized path redundancy。"
+      ]
+    },
+    {
+      "title": "背景",
+      "paragraphs": [
+        "grokking 通常指 training accuracy 很早接近完美，而 test accuracy 在长时间后突跃。这里作者将“已 grok”定义为 test accuracy 达 98% 且连续三次保持，却把 grok step 记为第一次越过 90%；两个阈值不可混用。",
+        "trajectory PCA 对一串 checkpoint 参数位移做 SVD，寻找训练实际经过的低维方向。它描述路径的方差，不等于 Hessian 本征模、激活 feature，也不直接给函数复杂度。",
+        "矩阵 commutator $[W_Q,W_K]$ 衡量两个选定方阵是否共享本征基的一个代理；非零值不是量子力学可观测量或几何曲率本身，必须结合定义的有限差分 defect 解读。",
+        "物理中的 phase transition 需要控制极限、有限尺寸标度与临界行为。有限模型、少数超参数点上的 sharp crossover 可以叫相变类比，但不能自动成为热力学相。"
+      ]
+    },
+    {
+      "title": "给物理学家的 AI 导读",
+      "paragraphs": [
+        "把 training step 当时间、weight decay 当控制参量、各任务 test accuracy 当序参量，是读图的好起点；但这里只有一个约 30 万参数系统和 5 个正 WD 点，没有 size sequence，因此不存在可估计的临界指数。",
+        "uncentered PCA 的 PC1 可捕获整体 drift，却可能把 memorization scaffold 与算法信息混在不同方差尺度。低方差方向具有大功能效应并不奇怪：relevant direction 的动力学重要性不由 explained variance 决定。",
+        "所谓 transverse direction 是相对于同一完整、未扰动轨迹事后学得的 PCA space；它带有未来信息和坐标选择。删除它能测试这套 intervention 下的 necessity，却未识别唯一 invariant/center manifold。",
+        "42/42 是 task-condition 计数，不是 42 个独立样品。tri-task 的 27 个 signs 嵌套于 9 条模型轨迹，每条共享同一个 defect onset；将其当 27 个独立 Bernoulli 得到 $2^{-27}$ 会高估证据强度。"
+      ]
+    },
+    {
+      "title": "模型与方法",
+      "paragraphs": [
+        "模型是 2 层 pre-norm Transformer encoder，$d_{model}=128$、4 heads、$d_{ff}=256$、GELU、无 dropout。输入为 $a,b\\in\\{0,\\ldots,96\\}$，每个任务用独立 $128\\to97$ linear head。",
+        "dual-task 学 $(a+b)\\bmod97$ 与 $(ab)\\bmod97$，约 303k 参数；tri-task 再加 $(a^2+b^2)\\bmod97$，约 315k。所有有序输入对随机 50/50 分为 train/test。",
+        "AdamW 使用 $\\beta_1=0.9,\\beta_2=0.98$、learning rate $10^{-3}$、batch 512、gradient clipping 1.0。WD 为 0/0.1/0.2/0.3/0.5/1.0，每条件 3 seeds；训练预算依 WD 从 30k 到 250k 不等。",
+        "checkpoints 间隔 100 或 200 steps，完整参数轨迹最多抽 100 个点做 uncentered PCA。重建 threshold $k^*$ 要求同一 run 的 top-$k$ trajectory directions 同时让全部任务 test accuracy 超过 90%。",
+        "Hessian bottom eigenvalue 以对 $-\\nabla^2\\mathcal L$ 的 power iteration 估计；论文也分别算 per-task Hessian，但没有纳入 cross-task interaction。",
+        "orthogonal deletion 仅在 seed 42、WD=1 做 dose sweep，并用未扰动完整轨迹定义投影 basis；失败指在 dual 50k 或 tri 60k step budget 内未过阈值。"
+      ]
+    },
+    {
+      "title": "核心结果与证据",
+      "paragraphs": [
+        "dual-task 在非零 WD 下平均 grok time 从 $\\lambda=1$ 的约 13k 增至 $\\lambda=0.1$ 的约 98k；乘法多在加法前 67–200 steps，但 $\\lambda=0.1$ 的平均顺序反转，且 100–200 step gap 与采样间隔相当。",
+        "tri-task 在 $\\lambda=1$ 的三 seeds 清楚呈 mul→square→add；其余 WD 表中出现 ties 和 reversals，例如 $\\lambda=0.3$ seed 2024 三者同 step，$\\lambda=0.1$ seed 2024 则 square 最早。",
+        "零 WD 在 50k–250k 预算内没有达到阈值；这说明该设置下 weight decay 强烈影响 timescale/within-budget success，不证明无 WD 永远不会 grok。",
+        "dual-task 的 defect onset 在 15/15 decay×seed runs 中先于 grok，lead fraction 随 WD 为 52.9%、4.9%、32.0%、60.8%、69.9%，呈 V 形；tri-task 的 task-level 27/27 也先发生，但不是独立样本。",
+        "Hessian 最负本征值在强 WD 下通常更深；然而 WD=0 仍约为 $-49.5\\pm15.6$ 而预算内不泛化，只支持“负曲率不充分”，不能从共现建立 necessity 或 mediation。",
+        "同一轨迹的 PCA 重建得到 dual $k^*=5$–10、tri $k^*=3$–8；per-layer SVD、magnitude pruning 和 ±5% uniform scaling 会破坏这些已训练解。结论是对所试变换的 fragility，不是排除所有压缩、蒸馏或等价低维实现。",
+        "transverse deletion 在 1–7% 时延迟，在 10–25% 时预算内失败；dual 50% 删除却恢复，多个小剂量 delay 也非严格单调。观测支持复杂响应，而非简单的 10% 普适 percolation threshold。",
+        "Figure 19 将 query spectral gap 与 query–key commutator 组成轨迹图，但官方 caption 与源图的 tri/dual-task 标注冲突；该图不能承担具体任务顺序的定量证据。"
+      ]
+    },
+    {
+      "title": "有效性与局限",
+      "paragraphs": [
+        "只研究 2–3 个模 97 算术任务和约 300k 参数模型；50/50 withheld-pair generalization 不能外推到自然语言、视觉、科学推理或开放世界 multi-task learning。",
+        "WD 网格只有 6 点、正值仅 5 个、主结果每点 3 seeds，预算又随 WD 改变。文中未拟合所写 $t_{grok}\\propto\\lambda^{-\\alpha}$ 的 $\\alpha$ 或误差，也无有限尺寸、hysteresis、susceptibility，故“phase diagram/critical $\\lambda\\approx0.3$”只是经验分区。",
+        "均值±标准差基于 $n=3$，不是 confidence interval；task order 的 100–200 steps 与 evaluation cadence 相当，且正文的普遍 ordering 叙述超过表格中的 ties/reversals。",
+        "42 task-conditions 来自 dual 15 与 tri 27，但本质仅 15+9=24 条非零-WD 训练轨迹；tri 的三个任务共享模型和 onset，$p=2^{-27}$ 忽略 cluster dependence。",
+        "defect onset rule 未预注册或在 held-out task family 验证；$\\rho\\approx1$ 只说明选定 commutator defect 对事后 PCA space 近正交，不是 Frobenius integrability、invariant manifold 或唯一机制的数学证明。",
+        "Hessian power iteration 有初始化/收敛误差，per-task Hessian 忽略交互；weight decay 同时改变 norm、curvature、path 和 timescale，无法单独识别名为 compression pressure 的 mediator。",
+        "orthogonal deletion 只有一个 seed/WD、使用 future-informed reference basis，并有 budget censoring；删除比例也未证明等于 gradient energy/variance 比例，不能由“删不到 10%”推出“低于 1% 方差必需”。",
+        "full-rank 与特定压缩失败不构成 holographic incompressibility theorem；50% 删除后的单次恢复与 alternate pathway 相容，却没有测出多个 center manifolds 的图、维数或 normal form。",
+        "readout heads 接近正交只涉及输出线性权重，不证明 trunk 内部算法彼此分离或 superposed；Figure 19 的源图 provenance 还存在未解决冲突。本站未审计代码、重算统计或复现训练。"
+      ]
+    },
+    {
+      "title": "复现与资源",
+      "paragraphs": [
+        "代码链接为 https://github.com/skydancerosel/grokking-integrability；arXiv artifact 未 pin commit。首先应锁定代码、data split、seed、checkpoint cadence 和每个 figure 的原始日志，解决 Figure 19 caption–asset 冲突。",
+        "统一各 WD 最大预算或使用 survival/right-censoring 分析；提高 seeds，并按训练 run 而非 task-condition 做 cluster-aware bootstrap/sign test。",
+        "预注册 98%-sustained 与 90%-first-crossing 中唯一主 endpoint，测试 threshold/cadence sensitivity；给 task-order gap 的离散时间不确定性。",
+        "对 WD 做更密集扫描并改变 width/depth/data fraction，检查 crossover 是否随系统尺寸漂移；只有出现相称 scaling 后再讨论 critical point 或 exponent。",
+        "用过去窗口或独立 reference runs 学 PCA basis，做真正 online/held-out defect prediction；比较 centered/uncentered、basis dimension 和随机同能量投影 controls。",
+        "orthogonal deletion 至少跨 seeds、WD、basis 与 budgets 重复，报告实际移除的 gradient norm/energy；用 matched intervention 验证 50% recovery 是否可复现。",
+        "压缩结论需加入 fine-tuning、distillation、alternative basis 与 function-space tests；center-manifold/overparameterization 解释则要系统改变参数冗余并直接测 pathway multiplicity。"
+      ]
+    },
+    {
+      "title": "阅读指南",
+      "paragraphs": [
+        "快速路线：p. 4 看模型、阈值与 Tables 1–2；pp. 8–13 看 Hessian、WD 与 defect lead；pp. 13–19 看 PCA reconstruction 和 deletion；pp. 19–22 看谱图；pp. 30–31 看 limitations。",
+        "物理路线：把 accuracy、spectral gap、commutator 当经验 order parameters，但先检查系统尺寸、阈值、采样间隔、删失与独立实验单位，再决定“相变”语言能走多远。",
+        "AI 路线：区分 parameter trajectory、attention weights、task readout 与 function；低维路径、full-rank matrix 和多算法 representation 是三个不同命题。",
+        "批判路线：重点核对 ordering 表格、$2^{-27}$ 的聚类依赖、future-informed PCA、单 seed deletion、非单调 50% recovery、零 WD 的有限预算，以及 Figure 19 图源冲突。"
+      ]
+    }
+  ],
+  "evidence_refs": [
+    "paper.pdf pp. 3–5, experimental setup and Tables 1–2: small modular-arithmetic system, mixed grok thresholds, WD sweep, checkpoint cadence, staggered-order data and exceptions",
+    "paper.pdf pp. 8–13, Hessian and weight-decay sections: curvature summaries, five positive decay points, finite budgets, defect-onset tables and clustered task conditions",
+    "paper.pdf pp. 13–19, trajectory reconstruction and orthogonal deletion: in-sample PCA thresholds, selected compression failures, single-seed intervention, censoring and nonmonotonic recovery",
+    "paper.pdf pp. 19–22, Equations (9)–(11) and Figure 19: spectral-gap–commutator diagnostics, selected phase trajectory and unresolved caption–asset provenance conflict",
+    "paper.pdf pp. 25–31, synthesis, discussion and limitations: superposition, incompressibility, center-manifold, phase-language and external-generalization claim boundaries",
+    "source PDF SHA-256 f9ed6fbe2553aa75a7ab4ce12e66f2d3f98b0a7e05e45f220f72968a34aced0f",
+    "official arXiv v3 source archive SHA-256 b6c039c407c1db3a026c9d66493bebd1989280c3dd296fcbd8b381ab2891daf6",
+    "MinerU Markdown SHA-256 6c633b124b0e64740c79142588819e05933c630b9f3087453cdbb6eab00b35b7",
+    "Evidence packet SHA-256 396a7121ce796c3e0514ac7bdfa98ecf29b9ca353fe43824f7e134dde6c1ffb2",
+    "Evidence status: full-text, rendered pages and official TeX verified against latest arXiv v3; theoretical-object, phase-transition, threshold, timing, clustered uncertainty, censoring, PCA, Hessian, ablation causality, nonmonotonic response, incompressibility, superposition, center-manifold, external-domain and figure-provenance boundaries recorded; no independent reproduction performed."
+  ]
+}
