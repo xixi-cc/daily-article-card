@@ -1,0 +1,74 @@
+{
+  "arxiv_id": "2509.16447",
+  "source_version": "v3",
+  "source_pdf": "https://arxiv.org/pdf/2509.16447v3",
+  "title_en": "Local Mechanisms of Compositional Generalization in Conditional Diffusion",
+  "title_zh": "条件扩散模型组合泛化的局域机制",
+  "curation_status": "full_text_verified",
+  "card_standard_version": "2.4",
+  "audience_profile": "physics_ai_literate_physicist",
+  "paper_profile": "theory_experiment",
+  "style_reference": "physicist_daily_arxiv",
+  "provenance": {
+    "program": "Collection", "catalog": "Paper Collection", "catalog_record_id": "2509.16447", "catalog_record_ids": ["2509.16447"],
+    "catalog_topic": "Generative Models", "collection_date": "2026-08-30", "sampled_at": "2026-08-31",
+    "selected_by": "ziming_mineru_serial_goal", "sampling_seed": "not_applicable_source_complete", "candidate_count": 464
+  },
+  "verified_metadata": {
+    "arxiv_id": "2509.16447", "version": "v3", "title": "Local Mechanisms of Compositional Generalization in Conditional Diffusion",
+    "authors": ["Arwen Bradley"], "categories": ["cs.LG"], "primary_category": "cs.LG",
+    "published": "2025-09-19T22:02:10Z", "updated": "2026-03-13T00:01:09Z",
+    "abstract": "The paper relates compositional generation to locality of conditional diffusion scores, proves an exact equivalence for a particular projective factorization, and tests the mechanism with controlled CLEVR interventions and preliminary SDXL analysis."
+  },
+  "equation_refs": [
+    {
+      "label": "Local conditional score (Eq. 1)",
+      "latex": "s^t[x\\mid c_J](i):=\\nabla_i\\log p^t[x_{N_i^t}\\mid c_{L_i^t(J)}]",
+      "role": "state that a pixel's score depends only on a local image neighborhood and its locally relevant conditioners",
+      "symbols": {"N_i^t": "spatial neighborhood relevant to pixel i at noise time t", "L_i^t(J)": "subset of conditioners locally relevant to i", "s^t": "conditional diffusion score"},
+      "evidence": "paper.pdf p. 4, Eq. (1)",
+      "interpretation": "Locality is defined relative to neighborhoods and conditioner mappings that may change with noise level; it is not automatic for a generic denoiser."
+    },
+    {
+      "label": "Conditional projective composition (Eq. 2)",
+      "latex": "p(x\\mid c_J):=p(x_{M_J^c}\\mid\\varnothing)\\prod_{j\\in J}p(x_{M_j}\\mid c_j)",
+      "role": "factor the generated image into disjoint conditioned component masks and an unconditioned complement",
+      "symbols": {"M_j": "pixel mask assigned to component j", "M_J^c": "pixels outside all selected component masks", "c_j": "component-level condition"},
+      "evidence": "paper.pdf p. 4, Eq. (2)",
+      "interpretation": "The exact equivalence with LCS relies on this disjoint factorization; overlapping interacting objects need additional structure."
+    },
+    {
+      "label": "Cross-component Hessian sparsity (Eq. 3)",
+      "latex": "\\frac{\\partial^2\\log p(x\\mid c_J)}{\\partial x_i\\,\\partial x_k}=0\\quad(i\\in M_j,\\;k\\in M_{j'},\\;j\\neq j')",
+      "role": "express absence of direct score coupling between distinct projective components",
+      "symbols": {"x_i,x_k": "pixels in different component masks", "log p": "conditional log density"},
+      "evidence": "paper.pdf p. 5, Eq. (3)",
+      "interpretation": "Zero mixed curvature is a stringent structural signature in the chosen coordinates; feature-space extensions require approximate disentanglement assumptions."
+    }
+  ],
+  "figure_refs": [{
+    "label": "Figure 3", "asset_path": "assets/collection-figures/2509.16447/figure-3-cpc-lcs.webp", "section": "核心结果与证据",
+    "role": "visualize the equivalence between disjoint projective components and local score dependencies", "evidence": "paper.pdf p. 5, Figure 3",
+    "alt_text": "示意图将多个条件对象放入互不重叠的图像区域，并显示每个像素的扩散 score 只连接局部像素与相关条件。",
+    "caption": "若条件对象可分到局部、近独立的空间成分，组合分布的因子化会表现为 score 的局域性。",
+    "interpretation": "图示的是充分结构和精确定义，不代表所有文本到图像模型天然满足这种局域性。"
+  }],
+  "cover": {
+    "mode": "source_figure", "asset_path": "assets/collection-figures/2509.16447/figure-3-cpc-lcs.webp", "label": "Figure 3", "visual_type": "schematic",
+    "evidence": "paper.pdf p. 5, Figure 3", "alt_text": "条件投影组合与局部条件 score 对应关系的示意图。",
+    "caption": "组合泛化可被改写为一个局域性问题：远处对象不应无条件地耦合进当前像素的 score。",
+    "selection_rationale": "该图最直接连接论文的概率因子化、score locality 与空间组合直觉。"
+  },
+  "sections": [
+    {"title": "作者信息", "paragraphs": ["Arwen Bradley，Apple，Cupertino。", "本站核验 arXiv:2509.16447v3：初版提交于 2025-09-19，v3 更新于 2026-03-13；主分类 cs.LG，正文 10 页、含附录共 36 页。", "Collection 来源为刘子鸣网站的 Generative Models 条目。"]},
+    {"title": "研究问题", "paragraphs": ["条件扩散模型只在少量对象上训练后，为何有时能生成更多对象，有时却随条件长度增加而失败？可否用模型内部的局域结构解释并因果改善这种 compositional generalization？", "论文把问题分成三步：建立 projective factorization 与 local conditional scores 的精确关系，在 CLEVR 中测量 locality—generalization 相关性，再用局部架构干预检验机制。"]},
+    {"title": "背景", "paragraphs": ["扩散模型学习各噪声时刻的 score，即 log-density 对样本的梯度。若一个像素的 score 只依赖邻域像素和附近条件，那么远处新增对象不必改变其局部生成规则。", "Projective composition 把联合样本投影到互不重叠的组件并相乘。对这种特定因子化，log probability 的加法结构会使跨组件混合 Hessian 消失，从而产生局部 score。", "组合泛化在这里主要指训练于较少 CLEVR 对象、测试于更长对象列表；它不同于语义新组合、复杂遮挡或强相互作用系统中的一般 compositionality。"]},
+    {"title": "给物理学家的 AI 导读", "paragraphs": ["把 score 看成有效力场。LCS 要求局部自由度所受的力，只由有限作用域内的像素和外场决定；CPC 则像把配分权重分解成多个近独立子系统。二者在论文的特定分区下严格等价。", "噪声时间 t 改变有效相关长度：高噪声阶段决定大尺度布局，低噪声阶段补充局部细节。因此成功模型需要的不是所有时刻同一种 locality，而是随 diffusion scale 合理变化的作用域。", "CLEVR 的对象近似独立，使局部相互作用假设特别有利。若对象有遮挡、守恒约束或长程语义关系，简单 patch 因子化可能像忽略边界项一样产生接缝或不一致。", "SDXL 的像素空间 score 有一定 spatial locality，但条件 locality 较弱；作者转向 feature-space disentanglement 寻找近似局域变量。这个步骤更像选择有效自由度，证据目前是启发式而非精确定理。"]},
+    {"title": "模型与方法", "paragraphs": ["作者设计三种 CLEVR conditioner：网格位置标注全部对象、网格仅标一个随机对象、以及对象列表。训练对象数为 1–3，并测试更长条件。", "定义宽松的 Kmax：生成 K 个对象成功率至少 50%，且至少生成 K-2 个对象的概率达到 90%。对象数由 99.74% accuracy 的 ResNet-18 计数器自动评估，每个配置采样 1024 张图。", "作者从不同噪声层测量像素与条件的 influence locality，并与 length generalization 对照；随后构造 local EDM2，每个重叠 patch 只接收局部条件，最后拼接中心区域。", "SDXL 分析分别探测 pixel-space 与 feature-space 的 spatial/conditional locality；feature-space 结论依赖选取表示、正交性和 disentanglement 代理指标。"]},
+    {"title": "核心结果与证据", "paragraphs": ["训练于 1–3 对象时，完整网格条件可泛化到 7 个对象，随机单对象网格仅到 2，对象列表到 3；说明条件表示是否局部对应，会强烈限制长度外推。", "加入局部因果架构后，相同困难数据上的 Exp2L 与 Exp3L 都达到 Kmax=9；这是比单纯 locality correlation 更强的受控干预证据。", "跨训练范围 1、1–3、1–5，完整网格的 Kmax 为 1/7/10，随机单对象为 1/2/3，对象列表为 1/3/6；局部模型 Exp2L 为 5/9/10。", "成功模型通常在高噪声阶段显示条件 locality、低噪声阶段显示 pixel locality。SDXL 显示空间局域性，但像素空间的条件局域性不足；feature-space 结果只提供初步支持。"]},
+    {"title": "有效性与局限", "paragraphs": ["CPC—LCS 的严格等价只覆盖指定的 disjoint masks 与局部 conditioner mapping，不能直接推广为“局域网络必然组合泛化”或任意 compositional distribution 的定理。", "Kmax 是刻意宽松的指标：计数器可能把额外未条件化对象也算入成功；50%/90% 阈值压缩了完整生成分布。", "CLEVR 对象简单且近独立。patch 模型在丰富纹理、遮挡、全局几何或长程语义约束下可能产生边界伪影，论文未在真实数据上证明同等增益。", "SDXL 的训练数据与真实 OOD 边界未知，feature-space 正交性只是近似代理。本站未独立复现 locality probe、CLEVR 采样或局部干预。"]},
+    {"title": "复现与资源", "paragraphs": ["最小复现应固定 CLEVR generator、训练对象范围与随机种子，保存每个条件长度的完整对象数分布，而不只报告 Kmax。", "机制复核需在每个 diffusion time 同时画 pixel influence radius 与 conditioner influence map，并用随机 conditioner permutation 作为负对照。", "因果测试应保持数据、参数量、noise schedule 与采样器一致，只替换全局/局部 receptive field；另报告 patch seam、遗漏和额外对象率。", "本站核验 v3 PDF SHA-256：ab40cbb9e0fe440054d87cef5f80d8403ef6d5e9bcda7b3675f2434e847f4aee。Evidence status: full-text verified; no independent reproduction performed; exact equivalence was checked textually but not rederived end to end."]},
+    {"title": "阅读指南", "paragraphs": ["最短路径：Figure 1 的失败案例 → Eqs. (1)–(3) → Figure 3 → CLEVR Table 1 → local intervention → SDXL limitations。", "物理路径：score 作为有效力、Hessian 作为耦合矩阵、noise time 作为尺度参数；始终检查所选坐标与分区。", "实践路径：先看 Exp2 与 Exp2L 的受控差异，再看 SDXL；不要让真实模型的启发式结果倒过来掩盖定理的狭窄前提。"]}
+  ],
+  "evidence_refs": ["paper.pdf pp. 2–5: problem setup, LCS/CPC definitions, equivalence and Figure 3", "paper.pdf pp. 6–10: CLEVR locality measurements, Kmax table and local-model intervention", "paper.pdf pp. 11–14: SDXL probes and feature-space interpretation", "paper.pdf pp. 15–36: proofs, experimental details, additional figures and limitations", "source PDF SHA-256 ab40cbb9e0fe440054d87cef5f80d8403ef6d5e9bcda7b3675f2434e847f4aee", "Evidence packet SHA-256 98b1666b21298739340f6ceff6ae7a6aadefbae8387d7611467c691b399ece00", "Evidence status: full-text verified; no independent reproduction performed."]
+}

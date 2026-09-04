@@ -1,0 +1,143 @@
+{
+  "arxiv_id": "2509.10414",
+  "source_version": "v4",
+  "source_pdf": "https://arxiv.org/pdf/2509.10414v4",
+  "title_en": "Is In-Context Learning Learning?",
+  "title_zh": "上下文学习真的在学习吗？",
+  "curation_status": "full_text_verified",
+  "card_standard_version": "2.4",
+  "audience_profile": "physics_ai_literate_physicist",
+  "paper_profile": "ai_empirical",
+  "style_reference": "physicist_daily_arxiv",
+  "provenance": {
+    "program": "Collection",
+    "catalog": "Paper Collection",
+    "catalog_record_id": "2509.10414",
+    "catalog_record_ids": ["2509.10414"],
+    "catalog_topic": "Transformer Theory",
+    "collection_date": "2026-08-30",
+    "sampled_at": "2026-08-31",
+    "selected_by": "ziming_mineru_serial_goal",
+    "sampling_seed": "not_applicable_source_complete",
+    "candidate_count": 464
+  },
+  "verified_metadata": {
+    "arxiv_id": "2509.10414",
+    "version": "v4",
+    "title": "Is In-Context Learning Learning?",
+    "authors": ["Adrian de Wynter"],
+    "categories": ["cs.CL", "cs.AI", "cs.LG"],
+    "primary_category": "cs.CL",
+    "published": "2025-09-12T17:12:04Z",
+    "updated": "2026-02-11T17:39:46Z",
+    "abstract": "The paper gives in-context learning a stringent PAC-style framing and tests four language models on nine synthetic or formal tasks, finding gains from demonstrations but strong task, prompt, and distribution-shift dependence."
+  },
+  "equation_refs": [
+    {
+      "label": "Empirical task error (Eq. 1)",
+      "latex": "\\operatorname{error}(f,D)=\\frac{1}{|D|}\\sum_{(x,c(x))\\in D}\\mathbf{1}[f(x)\\neq c(x)]\\leq\\epsilon",
+      "role": "make the paper's strict operational meaning of learning explicit",
+      "symbols": {"f": "model prediction rule", "D": "finite labeled evaluation set", "epsilon": "allowed empirical error"},
+      "evidence": "paper.pdf p. 4, Eq. (1)",
+      "interpretation": "This is a pass criterion on sampled tasks, not evidence that the model has inferred a unique algorithm or learned new parameters during the prompt."
+    },
+    {
+      "label": "ICL conditional prediction (Eq. 4)",
+      "latex": "\\underset{f(x_k)\\in\\{0,1\\}}{\\arg\\max}\\;\\Pr[f(x_k)=c(x_k)\\mid p,\\pi(x_1),\\ldots,\\pi(x_{k-1}),\\tilde\\pi(x_k)]",
+      "role": "separate fixed model parameters from conditioning on prompt examples",
+      "symbols": {"p": "instruction or prompt template", "pi(x_i)": "labeled demonstration encoding", "tilde_pi(x_k)": "unlabeled query encoding"},
+      "evidence": "paper.pdf p. 5, Eq. (4)",
+      "interpretation": "The update is in the conditional distribution induced by context; the experiment does not show gradient-based parameter learning at inference time."
+    },
+    {
+      "label": "Distribution shift control",
+      "latex": "\\delta=\\lVert P-Q\\rVert_{\\infty}",
+      "role": "parameterize how far the test generator Q is moved from the demonstration generator P",
+      "symbols": {"P": "training or demonstration distribution", "Q": "test distribution", "delta": "infinity-norm shift used in the benchmark"},
+      "evidence": "paper.pdf pp. 5–6, experimental protocol",
+      "interpretation": "Delta is a designed benchmark coordinate, not a universal physical distance between arbitrary data distributions."
+    }
+  ],
+  "figure_refs": [
+    {
+      "label": "Figure 2",
+      "asset_path": "assets/collection-figures/2509.10414/figure-2-icl-accuracy.webp",
+      "section": "核心结果与证据",
+      "role": "show shot-count gains and distribution-shift degradation across models and prompt families",
+      "evidence": "paper.pdf p. 8, Figure 2",
+      "alt_text": "三组折线图比较四种语言模型在不同示例数和分布偏移下，使用 modus ponens、description 与 chain-of-thought 提示时的平均正确率。",
+      "caption": "更多 demonstrations 往往提高平均正确率，但并未消除 prompt 依赖和 OOD 衰减。",
+      "interpretation": "每个点汇总 1000 次预测；跨任务平均会掩盖任务间最高约 31 个百分点的差异。"
+    }
+  ],
+  "cover": {
+    "mode": "source_figure",
+    "asset_path": "assets/collection-figures/2509.10414/figure-2-icl-accuracy.webp",
+    "label": "Figure 2",
+    "visual_type": "data_plot",
+    "evidence": "paper.pdf p. 8, Figure 2",
+    "alt_text": "不同模型、提示方式、示例数量与分布偏移下的上下文学习正确率曲线。",
+    "caption": "上下文中的样例确实改变输出统计，但这种适应对任务、提示和分布偏移都很敏感。",
+    "selection_rationale": "该图在同一组坐标中同时呈现更多示例带来的正面证据，以及分布偏移和提示变化造成的主要失效模式。"
+  },
+  "sections": [
+    {"title": "作者信息", "paragraphs": [
+      "Adrian de Wynter，Microsoft 与 University of York。",
+      "本站核验 arXiv:2509.10414v4：初版提交于 2025-09-12，v4 更新于 2026-02-11；论文已被 ICLR 2026 接收，共 39 页。",
+      "Collection 来源为刘子鸣网站的 Transformer Theory 条目。"
+    ]},
+    {"title": "研究问题", "paragraphs": [
+      "语言模型只靠 prompt 中的输入—输出示例改善新样本预测，是否足以在严格、可检验的意义上称为 learning？这种能力在任务变化、提示变化和分布外测试下能否稳定保持？",
+      "作者把争论转成两层问题：先给 ICL 一个近似 PAC 的操作定义，再用统一的大规模实验检验现有模型离这一标准有多远。"
+    ]},
+    {"title": "背景", "paragraphs": [
+      "In-context learning 不更新网络权重，而是让固定模型以 demonstrations 为条件改变下一 token 分布。它可能表现得像在线学习，也可能只是检索、模式匹配或利用 prompt 的表面统计。",
+      "PAC 语言通常讨论一个学习算法从样本中选出低风险假设。本文把这一思想压缩到单次调用：给定同一任务的有限 demonstrations，模型需对新输入达到预设误差，并随样本数增加而可靠改善。",
+      "因此“能做某道题”“平均正确率上升”和“学会可迁移任务规则”是三个不同强度的结论。"
+    ]},
+    {"title": "给物理学家的 AI 导读", "paragraphs": [
+      "可把 prompt 看作给固定多体系统施加的边界条件：参数没有演化，但条件分布改变。观测到响应随 demonstrations 变化，只说明存在 context susceptibility；是否形成可迁移的内部规则还需 OOD 和干预证据。",
+      "示例数相当于有限样本尺寸，delta 相当于把测试系综从制备系综移开。若只在 delta=0 时改善，结果更像 interpolation；随 delta 增大仍保持性能，才更接近对稳定规律的提取。",
+      "CoT、APO 等 prompt 是测量协议的一部分，不是无关包装。不同协议改变平均值和 OOD 斜率，说明被测量的“ICL 能力”并非单一、协议无关的状态变量。",
+      "本文把 learning 门槛设得很高且有意可证伪。它有助于阻止把少量成功案例泛化成一般学习能力，但不等价于证明所有较弱的适应、推断或元学习解释都不存在。"
+    ]},
+    {"title": "模型与方法", "paragraphs": [
+      "作者测试 GPT-4 Turbo、GPT-4o、Mixtral 8x7B Instruct v0.1 与 Phi-3.5 MoE Instruct；每次调用只做一个 next-token prediction，不进行梯度更新或多轮纠错。",
+      "九类任务覆盖 parity、pattern matching、reversal、stack、Hamiltonian path、两种 maze，以及 vending verification/sum。提示包括 modus ponens、description、APO、direct encoding、CoT 与语义扰乱版本。",
+      "示例数通常取 0、2、5、10、20、50、100。训练生成器 P 提供 2000 个样本，五个平衡去重测试集 Q 取不同 delta；受成本限制，每个测试集评估 1000 例。",
+      "标签以 eta=0.05 随机错标，因此真正恢复任务规则的可见正确率上限约为 95%；格式不合规输出记零，并另做 compliance ablation。每个模型累计约 189 万次预测。"
+    ]},
+    {"title": "核心结果与证据", "paragraphs": [
+      "更多 demonstrations 通常提高平均正确率，峰值常出现在 50–100 shot；pattern matching 达到约 94±1%，但 vending sum 约 16±1%，reversal 约 61±11%，任务差异非常大。",
+      "传统专用算法在约一半任务上优于 ICL 的平均表现；形式相近任务的结果可相差最高约 31 个百分点，反对用少数 benchmark 概括一般学习能力。",
+      "所有模型随 delta 增大都呈负斜率。CoT 平均最敏感，斜率约 -1.4；APO 约 -0.5、modus ponens 约 -0.4，GPT-4o 跨设置约 -1.2。",
+      "语义无意义的 prompt 变体有时接近原提示性能。作者据此认为模型可能更多利用提示规律而非语义任务理解；这是与数据一致的解释，但实验没有唯一识别内部机制。"
+    ]},
+    {"title": "有效性与局限", "paragraphs": [
+      "任务多为易自动判分的 synthetic/formal problems，不能直接外推到开放式自然语言、科学推理或真实交互；自然语言消融主要改 instruction，而非系统改变 datapoints 的语义。",
+      "四个模型含闭源服务，版本会漂移；单次调用设计排除了反思、工具和多轮学习，也没有独立复现实验。",
+      "将 learning 定义为严格 PAC-like 成功是有用规范选择，却不是唯一公认定义。结果更直接支持“当前 ICL 在该测试框架下有限且脆弱”，而非“ICL 绝不构成任何形式的学习”。",
+      "跨任务 OLS 斜率和均值会隐藏异质性；把格式不合规记零会混合推理失败与接口失败，尽管作者提供了单独的 compliance 分析。"
+    ]},
+    {"title": "复现与资源", "paragraphs": [
+      "作者代码仓库：https://github.com/adewynter/is-icl-learning 。复核时应固定模型快照、temperature、prompt 字符串、解析器和 API 日期。",
+      "最小复现可选 parity、pattern matching 与 maze 各一项，沿 shot 与 delta 做二维扫描，同时分别报告 task accuracy、format compliance 和置信区间。",
+      "若要检验“学规则”而非“记 prompt 统计”，应加入语义等价重编码、标签置换、训练/test generator 分离和可执行算法 baseline。",
+      "本站核验 v4 PDF SHA-256：f4b019291a14483c06bde450461826adc216fa7122a0a641f8bea4a0ee43ead0。Evidence status: full-text verified; no independent reproduction performed; API outputs, aggregate slopes and mechanism interpretation were not independently reproduced."
+    ]},
+    {"title": "阅读指南", "paragraphs": [
+      "最短路径：Abstract → Section 2 的定义 → Section 3 的数据生成与 delta → Figure 2 → task-level tables → limitations。",
+      "物理路径：把 demonstrations 当边界条件、delta 当 ensemble shift、shot count 当 finite-sample axis；重点看响应是否对测量协议和 OOD 扰动稳定。",
+      "方法路径：先核对 scoring/compliance，再看均值；否则容易把格式错误、任务失败和缺乏分布外迁移混成一个结论。"
+    ]}
+  ],
+  "evidence_refs": [
+    "paper.pdf pp. 3–6: learning definition, conditional-prediction formalism and distribution-shift protocol",
+    "paper.pdf pp. 7–13: models, prompts, shot counts, aggregate accuracy and OOD results",
+    "paper.pdf pp. 14–19: task-level comparisons, semantic ablations and compliance analysis",
+    "paper.pdf pp. 20–39: appendices, prompt details, additional tables and limitations",
+    "source PDF SHA-256 f4b019291a14483c06bde450461826adc216fa7122a0a641f8bea4a0ee43ead0",
+    "Evidence packet SHA-256 dd17228e4fa2030c54455032b4ed51e879044b313104a57009c27123db3aebad",
+    "Evidence status: full-text verified; no independent reproduction performed."
+  ]
+}
