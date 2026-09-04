@@ -1,0 +1,210 @@
+{
+  "arxiv_id": "2602.08064",
+  "source_version": "v2",
+  "source_pdf": "https://arxiv.org/pdf/2602.08064v2",
+  "title_en": "SiameseNorm: Breaking the Barrier to Reconciling Pre/Post-Norm",
+  "title_zh": "SiameseNorm：打通 Pre-Norm 与 Post-Norm 的双流归一化架构",
+  "curation_status": "full_text_verified",
+  "card_standard_version": "2.4",
+  "audience_profile": "physics_ai_literate_physicist",
+  "paper_profile": "ai_empirical",
+  "style_reference": "physicist_daily_arxiv",
+  "provenance": {
+    "program": "Collection",
+    "catalog": "Paper Collection",
+    "catalog_record_id": "2602.08064",
+    "catalog_record_ids": [
+      "2602.08064"
+    ],
+    "catalog_topic": "Machine Learning",
+    "collection_date": "2026-08-30",
+    "sampled_at": "2026-08-31",
+    "selected_by": "ziming_mineru_serial_goal",
+    "sampling_seed": "not_applicable_source_complete",
+    "candidate_count": 464
+  },
+  "verified_metadata": {
+    "arxiv_id": "2602.08064",
+    "version": "v2",
+    "title": "SiameseNorm: Breaking the Barrier to Reconciling Pre/Post-Norm",
+    "authors": [
+      "Tianyu Li",
+      "Dongchen Han",
+      "Zixuan Cao",
+      "Haofeng Huang",
+      "Mengyu Zhou",
+      "Ming Chen",
+      "Erchao Zhao",
+      "Xiaoxi Jiang",
+      "Guanjun Jiang",
+      "Gao Huang"
+    ],
+    "categories": [
+      "cs.LG"
+    ],
+    "primary_category": "cs.LG",
+    "published": "2026-02-08",
+    "updated": "2026-05-21",
+    "abstract": "A two-stream Transformer residual architecture shares each residual update between a normalized Post/Hybrid-Norm-like stream and an identity-bearing Pre-Norm-like stream, aiming to combine stable optimization with stronger use of depth."
+  },
+  "equation_refs": [
+    {
+      "label": "Pre-Norm residual update and gradient highway",
+      "latex": "X_{i+1}=X_i+F_i(\\operatorname{LN}_i(X_i)),\\qquad \\frac{\\partial X_N}{\\partial X_{i+1}}=\\prod_{j=i+1}^{N-1}\\left(I+J_{F_j}J_{\\operatorname{LN}_j}\\right)",
+      "role": "show why every Pre-Norm block retains an explicit identity contribution to the tangent dynamics",
+      "symbols": {
+        "X_i": "hidden state entering block i",
+        "F_i": "attention or MLP residual transformation",
+        "J_F": "Jacobian of the residual transformation",
+        "J_LN": "Jacobian of layer normalization"
+      },
+      "evidence": "paper.pdf p. 3, Eqs. (1)–(4)",
+      "interpretation": "把层号看成离散时间，Pre-Norm 像每一步都含恒等漂移的 map；这给反向扰动一条不必逐层穿过 LN 的路径。它有助于稳定，但不等于 Jacobian 谱必然良态，也不证明深层一定没有表示能力。"
+    },
+    {
+      "label": "Post-Norm Jacobian product",
+      "latex": "X_{i+1}=\\operatorname{LN}_i(X_i+F_i(X_i)),\\qquad \\frac{\\partial X_N}{\\partial X_{i+1}}=\\prod_{j=i+1}^{N-1}J_{\\operatorname{LN}_j}(I+J_{F_j})",
+      "role": "expose the repeated state-dependent normalization factors in Post-Norm gradient propagation",
+      "symbols": {
+        "N": "network depth",
+        "I": "identity map",
+        "J_LN": "local tangent map induced by layer normalization"
+      },
+      "evidence": "paper.pdf p. 3, Eqs. (5)–(7)",
+      "interpretation": "Post-Norm 每一步都对主残差状态重标度，类似离散动力系统中反复乘以依赖当前轨道的切映射；长 Jacobian 乘积可能放大或压缩扰动。‘可能’不是一般性发散定理，实际谱还依赖初始化、残差尺度与训练轨迹。"
+    },
+    {
+      "label": "SiameseNorm two-stream block Jacobian",
+      "latex": "\\frac{\\partial S_{j+1}}{\\partial S_j}=\\begin{bmatrix}J_{\\mathrm{LN}^X_j}(I+J_{F_j})&J_{\\mathrm{LN}^X_j}J_{F_j}J_{\\mathrm{LN}^Y_j}\\\\J_{F_j}&I+J_{F_j}J_{\\mathrm{LN}^Y_j}\\end{bmatrix},\\qquad S_j=(X_j,Y_j)",
+      "role": "show how the coupled state contains both a normalized path and an identity-bearing path while sharing residual blocks",
+      "symbols": {
+        "S_j": "combined state of the two coupled streams",
+        "X_j": "Post/Hybrid-Norm-like stream",
+        "Y_j": "Pre-Norm-like stream",
+        "F_j": "shared residual block"
+      },
+      "evidence": "paper.pdf p. 4, Eqs. (8)–(10)",
+      "interpretation": "右下角保留 $I+J_FJ_{LN}$，但完整矩阵仍有非对角耦合；因此它说明结构上存在 identity-bearing channel，而不是证明整个网络的 singular values 有严格上下界。stop-gradient 变体可化成含精确 $I$ 的块三角形式，但主实验训练的是耦合模型。"
+    }
+  ],
+  "figure_refs": [
+    {
+      "label": "Figure 2",
+      "asset_path": "assets/collection-figures/2602.08064/figure-2-norm-comparison.webp",
+      "section": "核心结果与证据",
+      "role": "compare hidden-state scale, training loss and layer-pruning sensitivity across normalization choices",
+      "evidence": "paper.pdf p. 2, Figure 2; 1.3B models, 100B tokens, learning rate 1e-3",
+      "alt_text": "Three-panel comparison of Pre-Norm, Pre-Norm with EmbedNorm, and SiameseNorm, showing hidden-state magnitude across layers, loss curves, and the loss increase caused by pruning each layer.",
+      "caption": "Figure 2：在同一 1.3B、100B-token、学习率 $10^{-3}$ 设置中，SiameseNorm 抑制主流幅度随深度增长、保持稳定训练，并在逐层删除测试中显示更大的损失增量。",
+      "interpretation": "这组结果支持‘深层 block 被更充分利用’的机制解释，但 pruning sensitivity 只是 layer importance proxy；它不能单独证明表示容量更高，也不能排除双流和辅助缩放带来的其他优化效应。"
+    }
+  ],
+  "cover": {
+    "mode": "source_figure",
+    "asset_path": "assets/collection-figures/2602.08064/figure-2-norm-comparison.webp",
+    "label": "Figure 2",
+    "visual_type": "comparison",
+    "evidence": "paper.pdf p. 2, Figure 2",
+    "alt_text": "Pre-Norm、EmbedNorm 与 SiameseNorm 的隐藏态尺度、训练损失和逐层剪除敏感度比较。",
+    "caption": "双流结构让归一化主流与含恒等路径的伴随流共享残差更新；图中证据是受控经验比较，而非收敛定理。",
+    "selection_rationale": "Figure 2 links the architectural motivation to three measurable consequences and is more informative than a topology diagram alone."
+  },
+  "sections": [
+    {
+      "title": "作者信息",
+      "paragraphs": [
+        "Tianyu Li、Dongchen Han、Zixuan Cao、Haofeng Huang、Mengyu Zhou、Ming Chen、Erchao Zhao、Xiaoxi Jiang、Guanjun Jiang 与 Gao Huang 来自清华大学 Leap Lab、清华交叉信息研究院及阿里巴巴 Qwen Large Model Application Team。",
+        "本站核验 arXiv:2602.08064v2：v1 提交于 2026-02-08，v2 更新于 2026-05-21，主分类 cs.LG，当前 PDF 共 15 页。",
+        "Collection 来源为刘子鸣网站的 Machine Learning 条目；作者公开代码仓库为 https://github.com/Qwen-Applications/SiameseNorm。"
+      ]
+    },
+    {
+      "title": "研究问题",
+      "paragraphs": [
+        "Transformer 的 LayerNorm 应放在残差分支之前还是残差相加之后？Pre-Norm 容易训练，却可能让 residual stream 幅度随深度增长，使后层更新相对变小；Post-Norm 持续控制主流尺度，却让梯度逐层穿过 LN Jacobian，深网络更易不稳定。",
+        "论文问的是一个结构问题：能否让同一个 attention/MLP block 同时接收来自稳定 identity path 与受归一化主路径的优化信号，而不复制主要参数和计算？",
+        "SiameseNorm 的回答是复制 hidden state 为两个耦合流、共享残差 block，并用不同 LN 位置维持两种动力学。核心主张来自预训练、跨深度、MoE、视觉与扩散模型实验，而非严格收敛证明。"
+      ]
+    },
+    {
+      "title": "背景",
+      "paragraphs": [
+        "Residual block 可写成离散时间演化 $X_{i+1}=X_i+\\Delta_i(X_i)$；反向传播则是沿轨道连乘切映射。skip connection 产生的 $I$ 像扰动传播的直通通道，但其他 Jacobian 项仍可改变整体谱。",
+        "LayerNorm 对每个 token 的特征做中心化与尺度归一，并学习仿射参数。它不是简单常数摩擦：其 Jacobian 依赖当前隐藏态，且会移除均值方向、重标度其余方向。",
+        "所谓 effective depth 是经验概念：若删除靠后的层几乎不改变 loss，这些层可能只贡献很小的相对修正。它不同于网络名义层数，也不是严格的信息维数。",
+        "Siamese 在这里指两个状态流共享同一组 residual transformations，不是训练两个独立模型，也不是经典 Siamese network 的相似度学习目标。"
+      ]
+    },
+    {
+      "title": "给物理学家的 AI 导读",
+      "paragraphs": [
+        "最自然的物理图像是非线性离散流及其 tangent dynamics。Pre-Norm 把 identity 加在每一步的主坐标上；Post-Norm 则每一步都施加状态依赖的投影/重标度。训练稳定性取决于长时间 Jacobian 乘积，近似对应有限时间 Lyapunov 行为，但论文没有计算 Lyapunov spectrum。",
+        "双流设计像扩大状态空间后加入两个耦合通道：一个负责尺度受控的表示演化，另一个保留较直接的扰动传播。两个通道通过同一个 $F_j$ 交换信息，所以不能把收益简单归因于 ensemble averaging。",
+        "Figure 2 的 layer-pruning test 类似逐个关闭动力学项并测 observable 响应。更大响应说明该层对当前函数更重要，但也可能来自冗余减少、尺度改变或不同的训练轨迹，并非直接测量‘信息容量’。",
+        "这里的 stability 是有限训练 recipe 下不发散、gradient norm 较平稳；不是热力学稳定性、线性稳定定理或任意深度的收敛保证。"
+      ]
+    },
+    {
+      "title": "模型与方法",
+      "paragraphs": [
+        "作者先比较 Pre-Norm 与 Post-Norm 的 block equations 和反向 Jacobian product，把矛盾定位为 identity-gradient propagation 与 main-path normalization 难以在单流同时保留。",
+        "SiameseNorm 将输入复制成 $X$、$Y$ 两流；语言实验中把 HybridNorm-like 流与 Pre-Norm-like 流耦合，attention/MLP residual block 共享参数。最终融合两个流，因此参数与 FLOPs 理论增量低于 0.1%。",
+        "主要 1.3B dense 模型在 FineWeb-Edu 从头训练 100B tokens，比较 $4\\times10^{-4}$、$10^{-3}$、$2\\times10^{-3}$ 三个学习率；激进设置延长到 350B tokens，并另测 15B 总参数、2B 激活参数的 MoE。总计算量超过 60,000 A100 hours。",
+        "泛化实验包括约 390M 参数、12B tokens 的固定参数深宽比较，DeiT 图像分类和 DiT 图像生成；消融分离 Siamese topology、Depth-wise Scaling、Normalized Input，并测试缩短或取消 warm-up。",
+        "评价量包括训练集平均 PPL、七项下游 accuracy、gradient norm、逐层剪除造成的 C4 validation-loss 变化、ImageNet Top-1 与生成 FID。"
+      ]
+    },
+    {
+      "title": "核心结果与证据",
+      "paragraphs": [
+        "在 1.3B、100B tokens、学习率 $10^{-3}$ 的 Setting B，SiameseNorm 得到 PPL 10.43 与平均下游分数 53.53；Pre-Norm 为 10.84/51.91，Post-Norm 与 HybridNorm 发散。到 $2\\times10^{-3}$ 时，SiameseNorm PPL 10.48、Arithmetic 39.6%，Pre-Norm 为 10.89/28.1%。",
+        "350B-token 激进设置下，SiameseNorm PPL 9.42、平均分 58.70，Pre-Norm 为 9.67/57.17；15A2B MoE 中为 7.76/63.07，对照为 7.92/61.26。作者报告 15B MoE 上训练速度下降 0.5%、activation memory 增加 2%。",
+        "固定约 390M 参数时，10/17/33/80 层的 PPL 改善分别为 1.32/1.54/1.65/2.04；SiameseNorm 最佳点在 33 层，而 Pre-Norm 最佳点在 17 层。跨模态中 DeiT-T/S Top-1 从 72.2/79.8 升至 73.6/81.3，DiT-B/2、L/4 FID 从 42.43/45.21 降至 40.31/41.34。",
+        "关键消融在 $10^{-3}$ 下显示：无 depth scaling 的原始 HybridNorm 发散，ResiDual 为 11.68 且有 loss spike，Siamese topology 为 10.68；加 depth scaling 后原始拓扑为 10.65，完整 SiameseNorm 为 10.43。normalized input 与 depth scaling 都贡献收益，故 10.43 不能归功于 topology 单一因素。",
+        "机制证据包括：HybridNorm gradient norm 可超过 100，SiameseNorm 与 Pre-Norm 在 warm-up 后低于 0.5；SiameseNorm 对逐层删除更敏感；最终融合 LN 权重平均为 Hybrid stream 1.05、Pre stream 0.42。它们相互一致，但仍是相关性与消融证据。"
+      ]
+    },
+    {
+      "title": "有效性与局限",
+      "paragraphs": [
+        "最有说服力的是同一研究内跨学习率、尺度、深度和模态的一致趋势，以及 topology/normalized-input/depth-scaling 消融；这支持方法在所测 recipes 下稳健，不支持对所有 Transformer、优化器或数据分布作普遍结论。",
+        "论文比较多个架构，但最优超参数未必对每个 baseline 分别同等充分调优。学习率既是研究变量又强烈改变排名，因此‘架构更好’与‘更适合这套高学习率 recipe’尚未完全分离。",
+        "Arithmetic 39.6% 相对 Pre-Norm 28.1% 的提升约 41%，但它只是一个 benchmark accuracy；不能单凭此称为一般 sequential reasoning 能力，更不能推断 emergent reasoning mechanism。",
+        "双流增加状态空间、LN 和 activation memory，即使共享主要参数也改变优化几何。报告的 0.5% speed 与 2% memory 来自 15B MoE 设置，不能直接外推到所有硬件、序列长度或实现。",
+        "逐层剪除响应、stream fusion weight 与 logit-lens agreement 都是 proxy。尤其较大的 LN scale 不等于因果贡献，直接投影单流 hidden state 也不等于该流可独立完成任务。",
+        "Appendix A.1 明确承认研究主要是经验性的，没有严格理论解释或收敛保证。block Jacobian 展示 identity-bearing path，但没有界定完整乘积的 singular values。",
+        "本站完成全文与图表核验，未运行作者代码、重新预训练、统计多随机种子方差或独立复现。"
+      ]
+    },
+    {
+      "title": "复现与资源",
+      "paragraphs": [
+        "代码：https://github.com/Qwen-Applications/SiameseNorm。最低成本复核可先实现相同小模型的 Pre-Norm、HybridNorm 与 SiameseNorm，在固定数据顺序和优化器下扫描学习率与 warm-up，并记录 divergence rate、PPL、gradient norm 和 wall-clock memory。",
+        "严格比较应给每个 baseline 独立且等预算的超参数搜索，至少多个 seeds，并同时报告 best-tuned 与 matched-recipe 结果；否则稳定区域更宽可能被误写成全局性能更高。",
+        "机制实验可在相同 checkpoint 上测 block Jacobian singular values、hidden-state RMS、每层 update-to-state ratio 与 layer ablation；对双流做 stop-gradient、交换融合权重和容量匹配对照，区分 identity path、额外状态与辅助 scaling。",
+        "跨模态复现应保留 ImageNet/DiT 的官方评估协议和 FID 样本数，并测不同深度、序列长度及 FlashAttention/kernel 实现下的真实吞吐和峰值显存。",
+        "本站证据包记录官方 PDF、MinerU Markdown 与代表图 hash；MinerU 仅作结构化阅读辅助，公式与页码以 v2 PDF 为准。"
+      ]
+    },
+    {
+      "title": "阅读指南",
+      "paragraphs": [
+        "快速路线：p. 1 Figure 1 看三种拓扑，pp. 3–4 读 Eqs. (1)–(10)，p. 5 Table 1 核对主结果，pp. 7–8 看 depth/cross-modal 与 ablation。",
+        "物理路线：把 layer 当离散时间、Jacobian 当 tangent propagator；然后检查作者从局部 block structure 到全网络 stability 的论证在哪一步仍是经验假说。",
+        "工程路线：先读 Table 1 的 learning-rate sensitivity、Table 3 的组件消融和 Appendix A.4 的训练配置，再评估 0.5% throughput 与 2% activation-memory 代价是否适合自己的系统。",
+        "批判路线：对照 Appendix A.1 的限制，重点追问 baseline tuning、seed variance、proxy 的因果性和未覆盖规模；不要把‘未发散’、‘层更敏感’与‘表示能力更强’视为同义词。"
+      ]
+    }
+  ],
+  "evidence_refs": [
+    "paper.pdf pp. 1–4, Figures 1–2 and Eqs. (1)–(10): architectural motivation, residual dynamics and block Jacobians",
+    "paper.pdf pp. 5–6, Table 1 and Section 4.2: dense/MoE results, learning-rate regimes, 350B-token extension and overhead",
+    "paper.pdf pp. 7–8, Table 2, Figure 4 and Table 3: depth, vision/diffusion generality, warm-up and component ablations",
+    "paper.pdf pp. 8–9, Figures 5–6 and Section 5: gradient, pruning and stream-contribution analyses",
+    "paper.pdf p. 10, Appendix A.1: empirical scope and absence of rigorous convergence guarantees",
+    "source PDF SHA-256 eab3d4e696133d256ee4134fafd3296598156fc20875206f929a125b32809f04",
+    "MinerU Markdown SHA-256 5d19753f84196e3e2c2bcd37f0104aa4cf78c78b253953603acb3a00ea31abb0",
+    "Evidence packet SHA-256 14348b9ecc71f3b392d85d9b01b23b47ec1600f3196a9a82808094c8299d77b1",
+    "Evidence status: full-text verified; no independent reproduction performed."
+  ]
+}

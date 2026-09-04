@@ -1,0 +1,207 @@
+{
+  "arxiv_id": "2602.08287",
+  "source_version": "v1",
+  "source_pdf": "https://arxiv.org/pdf/2602.08287v1",
+  "title_en": "Noise Stability of Transformer Models",
+  "title_zh": "Transformer 模型的噪声稳定性",
+  "curation_status": "full_text_verified",
+  "card_standard_version": "2.4",
+  "audience_profile": "physics_ai_literate_physicist",
+  "paper_profile": "theory_experiment",
+  "style_reference": "physicist_daily_arxiv",
+  "provenance": {
+    "program": "Collection",
+    "catalog": "Paper Collection",
+    "catalog_record_id": "2602.08287",
+    "catalog_record_ids": [
+      "2602.08287"
+    ],
+    "catalog_topic": "Scaling Laws",
+    "collection_date": "2026-08-30",
+    "sampled_at": "2026-08-31",
+    "selected_by": "ziming_mineru_serial_goal",
+    "sampling_seed": "not_applicable_source_complete",
+    "candidate_count": 464
+  },
+  "verified_metadata": {
+    "arxiv_id": "2602.08287",
+    "version": "v1",
+    "title": "Noise Stability of Transformer Models",
+    "authors": [
+      "Themistoklis Haris",
+      "Zihan Zhang",
+      "Yuichi Yoshida"
+    ],
+    "categories": [
+      "cs.LG",
+      "cs.AI",
+      "stat.ML"
+    ],
+    "primary_category": "cs.LG",
+    "published": "2026-02-09",
+    "updated": "2026-02-09",
+    "abstract": "Noise stability under correlated perturbations is used as a spectral simplicity measure for Transformer components and as a training regularizer that advances generalization transitions in small algorithmic and language-model experiments."
+  },
+  "equation_refs": [
+    {
+      "label": "Ornstein-Uhlenbeck noise stability and Hermite spectrum",
+      "latex": "Y=\\rho X+\\sqrt{1-\\rho^2}Z,\\qquad \\operatorname{Stab}_\\rho(f)=\\mathbb E[f(X)f(Y)]=\\sum_{\\alpha\\in\\mathbb N^d}\\rho^{|\\alpha|}\\widetilde f(\\alpha)^2",
+      "role": "measure output overlap under a controlled correlated Gaussian perturbation and expose its degree-by-degree spectral weighting",
+      "symbols": {
+        "X,Z": "independent standard Gaussian inputs",
+        "rho": "input correlation between zero and one",
+        "alpha": "multi-index of a Hermite polynomial",
+        "f_tilde_alpha": "Hermite-Fourier coefficient of the model function"
+      },
+      "evidence": "paper.pdf p. 5, Definition 4.1 and Eqs. (2)–(3)",
+      "interpretation": "OU semigroup 对 $k$ 阶 Hermite mode 乘 $\\rho^k$，因此高 stability 意味着谱质量偏向低阶。它是 ensemble correlation，不是对单个样本的 worst-case robustness，也不自动等于 sparsity、interpretability 或 good generalization。"
+    },
+    {
+      "label": "single-layer ReLU and identity-attention stability",
+      "latex": "\\mathbb E[\\operatorname{ReLU}(X)\\operatorname{ReLU}(Y)]=\\frac{\\sqrt{1-\\rho^2}+\\rho(\\pi-\\arccos\\rho)}{2\\pi},\\qquad \\lim_{d\\to\\infty}\\mathbb E[f(X)_{ij}f(Y)_{ij}]=\\rho\\,\\|(W_V)_{:,j}\\|_2^2+o(1)",
+      "role": "give component-level propagation laws for Gaussian ReLU and a simplified identity-structured attention layer",
+      "symbols": {
+        "d": "embedding dimension taken to infinity",
+        "f": "single attention layer with Gaussian token rows",
+        "W_V": "value projection",
+        "i,j": "output token and feature indices"
+      },
+      "evidence": "paper.pdf pp. 6–7, Theorems 5.1–5.2 and Eq. (4)",
+      "interpretation": "第一式是 arc-cosine kernel；第二式还要求 Gaussian input、$W_QW_K^T=I$ 型结构和高维极限，使 attention matrix 近似 identity。它们是部件级解析基准，不是带 residual、LayerNorm、mask 的训练后深层 Transformer 定理。"
+    },
+    {
+      "label": "signed noise-stability regularizer",
+      "latex": "R_{M,S,\\rho}(X)=(-1)^S\\sum_{i=1}^{C}M(X)_iM(Y)_i,\\qquad \\ell_{\\rm reg}=\\ell(M,X)+\\gamma R_{M,S,\\rho}(X)",
+      "role": "turn output overlap on a correlated discrete-noise copy into a differentiable training objective",
+      "symbols": {
+        "M_X_i": "predicted probability for class i on the clean input",
+        "M_Y_i": "predicted probability on a correlated token-corrupted input",
+        "S": "orientation bit; S equals one rewards overlap",
+        "gamma": "regularization strength"
+      },
+      "evidence": "paper.pdf p. 9, Definition 6.1 and Eqs. (6)–(7)",
+      "interpretation": "$S=1$ 时最小化负 overlap，促使相关输入给出相近输出。每次训练需额外一次 noisy-input forward；它近似鼓励稳定，但没有直接控制 Hermite tail、adversarial perturbation 或 calibrated uncertainty。"
+    }
+  ],
+  "figure_refs": [
+    {
+      "label": "Figure 5",
+      "asset_path": "assets/collection-figures/2602.08287/figure-5-regularization-acceleration.webp",
+      "section": "核心结果与证据",
+      "role": "compare training and validation trajectories with and without noise-stability regularization on two grokking tasks",
+      "evidence": "paper.pdf p. 10, Figure 5; modular addition and noisy sparse parity",
+      "alt_text": "Four panels compare validation accuracy and train-validation loss curves for regularized and unregularized Transformers on modular addition and noisy sparse parity, with the regularized curves generalizing earlier.",
+      "caption": "Figure 5：同一 seed 和其余超参数下，噪声稳定正则使 modular addition 与 noisy sparse parity 的验证跃迁更早出现，迭代数改善约 35–36%。",
+      "interpretation": "曲线支持小模型上的提前 grokking，但没有多 seed error bars；每步多一次 forward，因此迭代减少不等于等比例 wall-clock 或 FLOP 减少。"
+    }
+  ],
+  "cover": {
+    "mode": "source_figure",
+    "asset_path": "assets/collection-figures/2602.08287/figure-5-regularization-acceleration.webp",
+    "label": "Figure 5",
+    "visual_type": "comparison",
+    "evidence": "paper.pdf p. 10, Figure 5",
+    "alt_text": "噪声稳定正则与基线在两个 grokking 任务上的验证精度和损失轨迹比较。",
+    "caption": "相关噪声上的输出一致性可提前小模型的泛化跃迁；这是迭代数证据，不是大模型预训练算力缩减证明。",
+    "selection_rationale": "Figure 5 presents the most actionable empirical consequence of the theory while making the compute and uncertainty caveats easy to state."
+  },
+  "sections": [
+    {
+      "title": "作者信息",
+      "paragraphs": [
+        "Themistoklis Haris 来自 Boston University；Zihan Zhang 与 Yuichi Yoshida 来自日本 National Institute of Informatics。论文标注为 ICLR 2026 conference paper。",
+        "本站核验 arXiv:2602.08287v1：提交于 2026-02-09，是当前唯一版本；主分类 cs.LG，交叉分类 cs.AI、stat.ML，PDF 共 38 页。",
+        "Collection 来源为刘子鸣网站的 Scaling Laws 条目。"
+      ]
+    },
+    {
+      "title": "研究问题",
+      "paragraphs": [
+        "神经网络的 simplicity bias 怎样在连续输入上定义，并与 Transformer 的组件结构和训练行为相连？传统 average sensitivity 只逐个扰动坐标，难以自然覆盖实值域，也可能漏掉多坐标联合变化。",
+        "论文引入 noise stability：给所有输入坐标施加相关噪声，测模型输出重叠；在 Gaussian 空间中，它恰好按次数衰减 Hermite-Fourier modes，因此能读出 low-degree spectral concentration。",
+        "工作包含三层：LLM positional influence 的观察；单层 ReLU/attention 与深层传播的理论；一个鼓励 clean/noisy 输出一致的正则器，以及小型 grokking、WikiText 实验。"
+      ]
+    },
+    {
+      "title": "背景",
+      "paragraphs": [
+        "在 Boolean function analysis 中，低阶 Fourier spectrum 常被当作函数简单性的表征；k-junta 则指只依赖少数输入坐标的函数。spectral concentration 与 coordinate sparsity 相关但不等价。",
+        "OU process $Y=\\rho X+\\sqrt{1-\\rho^2}Z$ 保持 standard Gaussian measure 不变，并让 Hermite degree $k$ 的 mode 衰减为 $\\rho^k$。这像一个对高波数模更强的扩散滤波器。",
+        "grokking 指训练误差早已很低、验证性能却在长延迟后突然改善的现象。这里的‘加速’指验证跃迁发生在更少 optimization iterations，不是模型 forward 更快。",
+        "output correlation 衡量 average-case stability；adversarial robustness、token attribution、causal feature reliance 和 interpretability 是不同对象，需要各自验证。"
+      ]
+    },
+    {
+      "title": "给物理学家的 AI 导读",
+      "paragraphs": [
+        "可把 Hermite expansion 看作 Gaussian measure 下的正交 mode decomposition；OU semigroup 是谱已知的线性演化，$\\rho=e^{-t}$ 时 degree 越高衰减越快。noise stability 因而是带 low-pass kernel 的功率谱总和。",
+        "这一定义避开了‘一次只翻一个 bit’的格点扰动，并能用于实值 embedding。但它依赖选定的输入 measure 与噪声 kernel；换数据流形或 embedding coordinates，数值与解释都会改变。",
+        "单层 attention theorem 类似在随机介质/高维极限下求传递函数：结构化 query-key map 可保留 $\\rho$，无结构 map 还乘上 attention pattern 一致概率。真实网络的 LayerNorm、residual、mask 与非 Gaussian states 会改变传播。",
+        "正则器相当于向 action 加一个让近邻轨道输出对齐的耦合项。它可能平滑函数并改变谱偏置，但较早 grokking 还不能证明因果机制就是 low-degree concentration。"
+      ]
+    },
+    {
+      "title": "模型与方法",
+      "paragraphs": [
+        "作者用 embedding gradient 的 $L^1$ 几何 influence 检查 GPT-2、RoBERTa、Gemma 等模型在 256-token 输入上的位置依赖；约 5–10 个位置各自达到总 influence 的至少十分之一，首尾 token 尤其突出，但所有位置 influence 均非零。",
+        "理论在 Gaussian inputs 上展开：ReLU stability 给出 arc-cosine expression；单层 attention 分 identity-like、low-rank 和 random unstructured query-key products，取 embedding dimension $d\\to\\infty$。",
+        "深层部分先写忽略 distribution shift 的 recurrence，再发展 covariance/stability interval propagation；正文明确说这些 bounds 在训练 Transformer 中是否紧还需经验检查。",
+        "训练正则器构造 correlated token-corrupted copy $Y$，将 clean/noisy class-probability overlap 加入 cross-entropy。正向稳定取 $S=1$，每 iteration 增加一次 model forward。",
+        "实验包括 modulus 113 的 modular addition、长度 10–100 且 $k=2,3$ 的 noisy sparse parity，以及 WikiText-2-v1 Small next-token prediction。对照保持同一 seed 和其他超参数；WikiText 的最佳配置来自 $(\\rho,\\gamma)$ sweep。"
+      ]
+    },
+    {
+      "title": "核心结果与证据",
+      "paragraphs": [
+        "理论核心是 $\\operatorname{Stab}_\\rho(f)=\\sum_\\alpha\\rho^{|\\alpha|}\\tilde f(\\alpha)^2$；由此高 stability 可界定高阶谱尾。Table 1 给出的 tail-mass bounds 比 average-sensitivity bounds 更紧，但它们仍是由观测 proxy 推出的上界，不是直接谱测量。",
+        "对 identity query-key 结构，单层 attention 在 Gaussian 高维极限保留与 $\\rho$ 成正比的 stability；随机无结构情形再乘 attention pattern 在相关输入间保持一致的概率 $s(\\rho)$。这解释了 attention 选择切换造成的额外失稳。",
+        "modular addition 的验证跃迁从约 4500 提前到 3300 iterations，论文称 36% acceleration；noisy sparse parity 约 35%。Figure 5 的训练/验证曲线方向一致，但来自单一受控 seed，未给置信区间。",
+        "WikiText 小实验中，regularized model 约 1000 iterations 达到 70% validation accuracy，基线约 4000，因此称少 75% iterations。配置仅 4 层、$d_{model}=30$、6 heads、sequence length 20、vocabulary 500、1000 training examples、batch 200。",
+        "正则训练的 noise stability 保持较高并伴随较早验证改善，构成机制相关性；但最佳超参经过 sweep，且没有谱随训练的直接完整测量或 intervention 证明 stability 是唯一中介。"
+      ]
+    },
+    {
+      "title": "有效性与局限",
+      "paragraphs": [
+        "OU/Hermite 恒等式和 ReLU kernel 是清楚的数学结果；从这些结果外推到 tokenized、非 Gaussian、训练后的深层 Transformer，需要输入 measure、归一化和层间 distribution assumptions。",
+        "single-layer attention theorem 使用简化的 $W_QW_K^T$ 结构与高维极限，未包含主实验中的 residual connection、LayerNorm、dropout、sinusoidal encoding 和 binary mask。",
+        "深层 recurrence 忽略 distribution shift 时甚至给出与实际数值阻尼不同的 fixed-point 直觉；论文因此改用 interval propagation，但尚未证明 bounds 对训练模型足够紧。",
+        "influence 集中只表示局部梯度 proxy 集中，不证明模型函数是严格 junta，也不保证只看少数 token 可维持语义或鲁棒性；首尾效应还可能来自 attention sink、pooling 或任务格式。",
+        "所有训练曲线看起来使用一个固定 seed，对照无 multi-seed error bars。‘consistent’指所展示任务/设置的趋势，不是统计重复性结论。",
+        "正则器每步增加一次 forward；35–75% 的 iteration reduction 未计额外 FLOPs、hyperparameter sweep 或 wall-clock。尤其 WikiText 结果不能解释为现代 LLM 预训练节省 75% 算力。",
+        "高 noise stability 可能过度平滑需要高频/高敏感结构的目标；noisy parity 的目标 stability 本身会随 $\\rho^k$ 降低，最佳方向与强度是任务依赖的。",
+        "本站完成全文核验，未运行代码、复算证明、重训模型或独立复现。"
+      ]
+    },
+    {
+      "title": "复现与资源",
+      "paragraphs": [
+        "最低成本理论复核：用 normalized Hermite basis 数值验证 Eq. (3)、ReLU arc-cosine kernel 和 identity-attention 极限；扫描 $n,d,\\rho$，报告 $o(1)$ 修正而不只展示一个维度。",
+        "深层检验应逐层记录 empirical covariance matrix、predicted stability interval 与真实 clean/noisy overlap，分别加入 residual、LayerNorm、mask；用 coverage 与 interval width 判断 bound 是否有用。",
+        "训练复现至少使用多个 seeds，预先固定达到验证阈值的定义，同时报告 iterations、extra-forward FLOPs、wall-clock、峰值显存与超参搜索预算；对基线给等预算 tuning。",
+        "机制检验可直接估计训练中 Hermite/high-degree proxy，做固定 stability 但不同 spectrum 的对照，或调整 $S,\\rho,\\gamma$ 测 dose response；再检查较早 grokking 是否由谱变化中介。",
+        "WikiText 只应作为小模型 proof of concept。扩展到真实语言建模需用标准 tokenizer、完整 vocabulary/sequence length 与 perplexity，并检查正则是否损伤 rare-token、long-context 和 calibration 表现。"
+      ]
+    },
+    {
+      "title": "阅读指南",
+      "paragraphs": [
+        "快速路线：p. 5 读 Definition 4.1 与谱展开；pp. 6–8 读单层 theorem 和深层 caveat；pp. 9–10 看 regularizer、Figure 5 与 WikiText 结果。",
+        "物理路线：把 OU semigroup 当可解扩散算符，把 Hermite degree 当 mode index；然后追踪每次从 Gaussian ensemble 到真实 token distribution 的假设跳跃。",
+        "AI 路线：先分清 positional influence、noise stability、spectral concentration 与 grokking 四个量；论文把它们连成假说链，但没有证明它们彼此等价。",
+        "工程路线：直接读 Appendix J.3 的小模型规模和 hyperparameter sweep，再把‘75% fewer iterations’换算成包括额外 forward 与搜索成本的 compute-normalized 指标。"
+      ]
+    }
+  ],
+  "evidence_refs": [
+    "paper.pdf pp. 4–6, Figure 1, Definition 4.1, Lemma 1 and Eqs. (1)–(3): influence observations, OU noise stability and spectral concentration",
+    "paper.pdf pp. 6–8, Theorems 5.1–5.3 and Figures 2–4: ReLU/attention component results and deep-propagation boundary",
+    "paper.pdf pp. 9–10, Definition 6.1, Eqs. (6)–(7) and Figure 5: regularizer, extra-forward cost and grokking experiments",
+    "paper.pdf p. 10 and pp. 36–37, Figures 6 and 12–14, Appendix J.3: WikiText small-model setup, hyperparameter sweep and 70-percent threshold",
+    "paper.pdf pp. 14–18 and appendices: OU background, influence methodology and additional model plots",
+    "source PDF SHA-256 ad005be6c80094fae8f81b8f690dd28a22269208e78d4bf1d3943018cd3c7fc6",
+    "MinerU Markdown SHA-256 51aeed01201a4211120c584803281666724fd5ef0a5e2d11729da6ddf6f89f00",
+    "Evidence packet SHA-256 9a4dd786cdb0dd16153bb0909b054cbda96622a3cd0aabfb13a1c7c584b197ef",
+    "Evidence status: full-text verified against arXiv v1; no independent reproduction performed."
+  ]
+}
