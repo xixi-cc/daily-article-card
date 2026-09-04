@@ -79,8 +79,9 @@ python3 scripts/paper_card_metrics.py audit \
 
 Risk flags identify cards that need more attention, including legacy schema,
 thin prose, minimum evidence, theory cards without equation review, large
-packets, and long papers. They do not establish a scientific error or replace
-the canonical validator.
+packets, long papers, and malformed v2.4 reader bridges. The report also tracks
+audience-profile adoption. These signals do not establish a scientific error
+or replace the canonical validator.
 
 ## Batch boundary
 
@@ -94,3 +95,18 @@ size. Do not start asynchronous prefetch, concurrent MinerU calls, or parallel
 writers unless the campaign explicitly authorizes them. Figure candidates may
 be collected mechanically, but the chosen cover still requires visual review
 against the source PDF.
+
+## Reader-facing quality gate
+
+For every v2.4 card, write the `给物理学家的 AI 导读` section before the
+detailed method section. Assume undergraduate physics and mathematics plus
+introductory AI exposure, but no experience training a current model. The
+bridge should establish the paper-specific input, representation or state,
+trainable or evolving object, objective or update signal, and output or
+observable. Define only the load-bearing AI terms, connect them to physical or
+mathematical language when useful, and state where that connection fails.
+
+During review, ask a reader to explain the decisive equation or figure and the
+claim's data, scale, architecture, or approximation boundary without consulting
+an external AI glossary. A section title and minimum length pass only the
+structural gate; they do not establish explanatory quality.

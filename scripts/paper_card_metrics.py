@@ -160,6 +160,7 @@ def audit_cards(
     items: list[dict[str, Any]] = []
     cover_modes: Counter[str] = Counter()
     profiles: Counter[str] = Counter()
+    audience_profiles: Counter[str] = Counter()
     equation_counts: Counter[int] = Counter()
     figure_counts: Counter[int] = Counter()
     for directory in card_dirs:
@@ -171,6 +172,7 @@ def audit_cards(
                 continue
             card_id = str(card.get("arxiv_id") or card.get("card_id") or path.stem)
             profile = str(card.get("paper_profile", "missing"))
+            audience_profile = str(card.get("audience_profile", "missing"))
             equations = card.get("equation_refs") if isinstance(card.get("equation_refs"), list) else []
             figures = card.get("figure_refs") if isinstance(card.get("figure_refs"), list) else []
             cover = card.get("cover") if isinstance(card.get("cover"), dict) else {}
@@ -184,6 +186,15 @@ def audit_cards(
                 risks.append("missing_or_invalid_profile_review")
             if not cover.get("mode"):
                 risks.append("missing_cover_review")
+            if card_version is not None and card_version >= (2, 4):
+                bridge_sections = [
+                    section
+                    for section in card.get("sections", [])
+                    if isinstance(section, dict)
+                    and section.get("title") in {"给物理学家的 AI 导读", "读者桥梁"}
+                ]
+                if audience_profile != "physics_ai_literate_physicist" or len(bridge_sections) != 1:
+                    risks.append("physicist_reader_bridge_review")
             if section_chars < depth_warning:
                 risks.append("near_depth_floor")
             if profile in THEORY_PROFILES and not equations:
@@ -206,6 +217,7 @@ def audit_cards(
                     risks.append("long_paper_review")
             cover_modes[str(cover.get("mode", "missing"))] += 1
             profiles[profile] += 1
+            audience_profiles[audience_profile] += 1
             equation_counts[len(equations)] += 1
             figure_counts[len(figures)] += 1
             if risks:
@@ -237,6 +249,7 @@ def audit_cards(
             "risk_items": len(items),
             "cover_modes": dict(cover_modes),
             "paper_profiles": dict(profiles),
+            "audience_profiles": dict(audience_profiles),
             "equation_ref_counts": {str(key): value for key, value in equation_counts.items()},
             "figure_ref_counts": {str(key): value for key, value in figure_counts.items()},
         },

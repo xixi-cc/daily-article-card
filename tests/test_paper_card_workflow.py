@@ -93,11 +93,13 @@ class ScaffoldTests(unittest.TestCase):
         card = build_scaffold(
             metadata(), "Collection", "theory_numerics", "核验测试论文", collection_provenance()
         )
-        self.assertEqual(card["card_standard_version"], "2.3")
+        self.assertEqual(card["card_standard_version"], "2.4")
+        self.assertEqual(card["audience_profile"], "physics_ai_literate_physicist")
         self.assertEqual(card["curation_status"], "draft")
         self.assertEqual(card["provenance"]["program"], "Collection")
         self.assertNotIn("selection_record", card)
-        self.assertEqual(len(card["sections"]), 8)
+        self.assertEqual(len(card["sections"]), 9)
+        self.assertIn("给物理学家的 AI 导读", [section["title"] for section in card["sections"]])
         self.assertTrue(all("paragraphs" in section for section in card["sections"]))
 
     def test_daily_scaffold_rejects_non_s_selection(self):
@@ -211,6 +213,25 @@ class MetricsTests(unittest.TestCase):
                     "minimum_evidence_only",
                 },
             )
+
+    def test_risk_audit_routes_malformed_v24_reader_bridge(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            cards = Path(temporary) / "cards"
+            cards.mkdir()
+            card = {
+                "arxiv_id": "2609.00002",
+                "card_standard_version": "2.4",
+                "paper_profile": "ai_empirical",
+                "sections": [{"title": "研究问题", "paragraphs": ["x" * 2100]}],
+                "equation_refs": [],
+                "figure_refs": [],
+                "evidence_refs": ["a", "b", "c", "d"],
+                "cover": {"mode": "title_abstract"},
+            }
+            (cards / "2609.00002.json").write_text(json.dumps(card))
+            report = audit_cards([cards])
+            self.assertIn("physicist_reader_bridge_review", report["items"][0]["risks"])
+            self.assertEqual(report["summary"]["audience_profiles"], {"missing": 1})
 
 
 if __name__ == "__main__":

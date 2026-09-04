@@ -8,7 +8,7 @@ from pathlib import Path
 
 
 ROOT = Path(__file__).resolve().parents[1]
-CURRENT_VERSION = "2.3"
+CURRENT_VERSION = "2.4"
 
 
 def require(path: Path, fragments: tuple[str, ...]) -> list[str]:
@@ -35,7 +35,7 @@ def main() -> int:
 
     errors.extend(require(
         ROOT / "docs" / "CODEX_DAILY_SCREENING_AND_PUBLICATION.md",
-        ("version 2.3 or later", "figure_refs", "cover", "prefer the most important physical visualization"),
+        ("version 2.4 or later", "audience_profile", "figure_refs", "cover", "prefer the most important physical visualization"),
     ))
     errors.extend(require(
         ROOT / "docs" / "PAPER_CARD_STANDARD_INTEGRATION.md",
@@ -43,7 +43,11 @@ def main() -> int:
     ))
     errors.extend(require(
         ROOT / "scripts" / "validate_paper_cards.py",
-        ('version_at_least(card, (2, 3))', "v2.3 requires a structured cover decision", "v2.2 forbids legacy $$ display delimiters"),
+        ('version_at_least(card, (2, 4))', "physics_ai_literate_physicist", "v2.3 requires a structured cover decision", "v2.2 forbids legacy $$ display delimiters"),
+    ))
+    errors.extend(require(
+        ROOT / "scripts" / "create_paper_card_scaffold.py",
+        ("physics_ai_literate_physicist", "给物理学家的 AI 导读"),
     ))
     errors.extend(require(
         ROOT / "scripts" / "build_site.py",

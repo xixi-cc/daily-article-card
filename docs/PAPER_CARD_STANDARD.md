@@ -1,7 +1,7 @@
 # Paper Card Standard
 
-Version: 2.3
-Effective date: 2026-08-26
+Version: 2.4
+Effective date: 2026-09-04
 Status: canonical
 
 This document is the authoritative editorial and evidence standard for physics+AI paper cards. Automation prompts and validators implement parts of this contract, but passing a structural validator alone does not establish scientific quality.
@@ -36,21 +36,27 @@ Use the following common structure. A more specific heading may be used only whe
    - Do not add results or interpretations not supported by the paper.
 3. `背景`
    - The research gap, relation to prior approaches, and classification as pure physics, pure AI, AI for physics, or physics of AI.
-4. `模型与方法`
+4. `给物理学家的 AI 导读`
+   - Write for a physicist who has encountered standard AI ideas but has not done specialist AI research. Do not assume familiarity with current architecture names, benchmark conventions, training recipes, or community shorthand.
+   - Start from one concrete picture of what enters the method, what internal object changes, what signal drives that change, and what observable comes out.
+   - Explain the two to four AI concepts that carry the argument in plain language. For each, state its role in this paper before giving implementation detail.
+   - Connect the AI objects to familiar physical or mathematical language when that connection is genuinely useful, and state where the analogy stops. A loss is not automatically an energy, attention is not automatically an interaction, diffusion-model time is not automatically physical time, and an observed crossover is not automatically a phase transition.
+   - Give the minimum prerequisites and a first equation, figure, or experiment to inspect. Do not turn this section into a generic AI tutorial or glossary dump.
+5. `模型与方法`
    - Physical system, mathematical model, architecture, dataset, objective, governing equations, boundary conditions, approximations, parameter regime, training or experimental protocol, baselines, and compute when relevant.
    - For a theoretical paper, present the minimal load-bearing equation chain rather than replacing the formal structure with verbal paraphrase.
-5. `核心结果与证据` or `核心定理与证据`
+6. `核心结果与证据` or `核心定理与证据`
    - Main quantitative or theoretical results with exact metrics, equations, theorems, scaling laws, phase boundaries, uncertainties, or negative results.
    - Identify supporting page, equation, figure, table, theorem, simulation, or experiment.
    - State whether each central result is proved, perturbative, numerical, experimental, empirical, or interpretive.
    - Explain what changes physically when a control parameter, scale, symmetry, conservation law, or representation is varied.
    - Prefer a decisive figure plus a short physical reading over several bullets that merely restate the same trend.
-6. `有效性与局限`
+7. `有效性与局限`
    - Controlled assumptions, applicability regime, finite-size or dataset limits, architecture and benchmark restrictions, failure modes, unresolved questions, and threats to generalization.
-7. `复现与资源`
+8. `复现与资源`
    - Code, data, checkpoints, simulation parameters, hardware, and reproduction instructions when available.
    - State explicitly when a resource is not provided.
-8. `阅读指南`
+9. `阅读指南`
    - A fast-reading path, deep-reading path, decisive figure, and decisive equation or theorem.
 
 ## 4. Claim-level evidence rules
@@ -112,6 +118,32 @@ Use the user's Daily arXiv tracking voice as the editorial reference, while grou
 
 The Daily arXiv report is a style reference and selection artifact, not evidence for a card claim. The paper and its verified resources remain the source of truth.
 
+### Target-reader quality test
+
+The default reader knows undergraduate physics and mathematics and has seen
+basic AI concepts, but should not need hands-on experience training modern
+models. A successful card lets that reader answer the following without
+consulting an external AI glossary:
+
+- What are the input, representation or state, trainable or evolving object,
+  objective or update signal, and output or observable?
+- Which part is analogous to a familiar physical or mathematical object, and
+  which part is only an analogy?
+- What does the decisive equation or figure say before implementation details
+  are introduced?
+- Which result changes physical understanding or scientific capability, rather
+  than merely improving an AI benchmark number?
+- Under what data, architecture, scale, approximation, or intervention regime
+  does the claim hold?
+
+Define a load-bearing acronym or specialist term at first use. Introduce a
+central equation with the question it answers; follow it with symbol meanings,
+the effect of changing the important variable, and the validity regime. Read a
+central figure through axes, panels, baseline, and control parameter before
+stating the inference. Translate an AI metric into its scientific meaning and
+retain the dataset, split, baseline, uncertainty, and absolute-versus-relative
+change needed to interpret it.
+
 ## 8. Type-specific emphasis
 
 - Pure physics: equations, symmetries, conservation laws, approximation control, phases, scaling, predictions, and experimental or numerical validation.
@@ -150,7 +182,8 @@ A final card must contain:
 - English and Chinese titles;
 - `curation_status: full_text_verified`;
 - verified metadata sufficient for deterministic offline rendering;
-- `card_standard_version: 2.3` or later for newly generated cards; historical cards retain their recorded version until they are substantively revised;
+- `card_standard_version: 2.4` or later for newly generated cards; historical cards retain their recorded version until they are substantively revised;
+- `audience_profile: physics_ai_literate_physicist` and a substantive `给物理学家的 AI 导读` section for cards created under v2.4 or later;
 - `paper_profile` chosen from `theory`, `theory_numerics`, `theory_experiment`, `numerical`, `experiment`, or `ai_empirical`;
 - `style_reference: physicist_daily_arxiv`;
 - a Codex-direct `selection_record` for Daily cards;
@@ -158,7 +191,7 @@ A final card must contain:
 - structured `equation_refs` for the equations actually used; the list may be empty when equations are not needed to explain the paper;
 - structured `figure_refs` for figures actually shown; the list may be empty when no figure improves the physical argument;
 - a structured `cover` following Section 9; cards created under v2.3 or later fail validation when the cover decision is absent or its asset does not resolve;
-- all required sections;
+- all required sections, including at least two focused entries in the v2.4 reader bridge;
 - at least three page-addressable evidence references;
 - an explicit independent-reproduction boundary.
 
@@ -178,7 +211,7 @@ Before publication:
 8. Inspect every newly added figure at card width. Verify its figure number, panels, axes, units, legend, caption, source attribution, and claim strength against the paper.
 9. Audit the cover against the priority ladder. Confirm that a data plot or table has an explicit reason for outranking available visualizations, or that `title_abstract` is used only after confirming no suitable source figure exists.
 10. Verify feed card, detail hero, and standalone cover parity from the same `cover` record.
-11. Inspect representative cards manually for paper-specific scientific depth, symbol definitions, equation-to-prose consistency, figure-to-caption consistency, and physicist-style causal logic. Structural validation and minimum length are necessary but not sufficient.
+11. Inspect representative cards manually for paper-specific scientific depth, symbol definitions, equation-to-prose consistency, figure-to-caption consistency, physicist-style causal logic, and whether an AI-literate non-specialist physicist can follow the input-to-observable chain without an external AI glossary. Structural validation and minimum length are necessary but not sufficient.
 12. Commit one independently auditable batch at a time.
 13. Every completed website update must be pushed to GitHub `origin` without force. Verify that the local `HEAD` equals the target GitHub branch SHA, then verify GitHub Actions, GitHub Pages, the public index, and every new detail URL. A local build, a Sites-only source push, or a green workflow alone is not publication proof.
 14. When OpenAI Sites is also updated, publish the same validated source tree to Sites and verify both deployments. GitHub synchronization is mandatory for every update and is never replaced by the Sites source repository.

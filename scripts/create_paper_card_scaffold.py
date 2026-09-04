@@ -38,6 +38,7 @@ SECTION_TITLES = (
     "作者信息",
     "研究问题",
     "背景",
+    "给物理学家的 AI 导读",
     "模型与方法",
     "核心结果与证据",
     "有效性与局限",
@@ -117,6 +118,7 @@ def build_scaffold(
         "title_zh": title_zh.strip(),
         "curation_status": "draft",
         "card_standard_version": standard_version(),
+        "audience_profile": "physics_ai_literate_physicist",
         "paper_profile": paper_profile,
         "style_reference": "physicist_daily_arxiv",
         **({"selection_record": selection_record} if selection_record is not None else {}),
@@ -130,6 +132,7 @@ def build_scaffold(
         "draft_contract": {
             "install_only_after": "full-text review, source-page checks, figure review, and strict validation",
             "required_boundary": "Evidence status: full-text verified; no independent reproduction performed.",
+            "reader_test": "An AI-literate non-specialist physicist can follow the input-to-observable chain without an external AI glossary.",
         },
     }
 

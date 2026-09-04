@@ -25,6 +25,7 @@ REQUIRED_CORE = {
 }
 QUESTION_HEADINGS = {"研究问题", "摘要"}
 RESULT_HEADINGS = {"核心结果与证据", "核心定理与证据"}
+READER_BRIDGE_HEADINGS = {"给物理学家的 AI 导读", "读者桥梁"}
 FORBIDDEN_PHRASES = (
     "。。。",
     "自动文本抽取",
@@ -223,6 +224,32 @@ def validate_v2_card(card: dict[str, object], arxiv_id: str, program: str = "Dai
                     errors.append(f"{arxiv_id}: title_abstract cover must not set asset_path")
             else:
                 errors.append(f"{arxiv_id}: invalid cover mode {mode!r}")
+
+    if version_at_least(card, (2, 4)):
+        if card.get("audience_profile") != "physics_ai_literate_physicist":
+            errors.append(
+                f"{arxiv_id}: v2.4 requires audience_profile "
+                "physics_ai_literate_physicist"
+            )
+        bridge_sections = [
+            section
+            for section in card.get("sections", [])
+            if isinstance(section, dict) and section.get("title") in READER_BRIDGE_HEADINGS
+        ]
+        if len(bridge_sections) != 1:
+            errors.append(f"{arxiv_id}: v2.4 requires exactly one physicist reader bridge")
+        else:
+            bridge = bridge_sections[0]
+            entries = bridge.get("bullets") or bridge.get("paragraphs")
+            focused_entries = (
+                [item.strip() for item in entries if isinstance(item, str) and item.strip()]
+                if isinstance(entries, list)
+                else []
+            )
+            if len(focused_entries) < 2:
+                errors.append(f"{arxiv_id}: physicist reader bridge needs at least two focused entries")
+            elif sum(len(item) for item in focused_entries) < 80:
+                errors.append(f"{arxiv_id}: physicist reader bridge is too thin")
 
     return errors
 
