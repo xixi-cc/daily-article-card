@@ -1,0 +1,133 @@
+{
+  "arxiv_id": "2602.14495",
+  "source_version": "v2",
+  "source_pdf": "https://arxiv.org/pdf/2602.14495v2",
+  "title_en": "Divine Benevolence is an $x^2$: GLUs scale asymptotically faster than MLPs",
+  "title_zh": "“神圣恩惠”是一个 $x^2$：GLU 的渐近扩展快于 MLP",
+  "curation_status": "full_text_verified",
+  "card_standard_version": "2.4",
+  "audience_profile": "physics_ai_literate_physicist",
+  "paper_profile": "theory_numerics",
+  "style_reference": "physicist_daily_arxiv",
+  "provenance": {"program": "Collection", "catalog": "Paper Collection", "catalog_record_id": "2602.14495", "catalog_record_ids": ["2602.14495"], "catalog_topic": "Machine Learning", "collection_date": "2026-08-30", "sampled_at": "2026-08-31", "selected_by": "ziming_mineru_serial_goal", "sampling_seed": "not_applicable_source_complete", "candidate_count": 464},
+  "verified_metadata": {
+    "arxiv_id": "2602.14495", "version": "v2", "title": "Divine Benevolence is an $x^2$: GLUs scale asymptotically faster than MLPs",
+    "authors": ["Alejandro Francisco Queiruga"], "categories": ["cs.LG"], "primary_category": "cs.LG",
+    "published": "2026-02-16", "updated": "2026-02-24",
+    "abstract": "For shallow smooth one-dimensional function approximation, the paper constructs ReLU MLP and GLU spline-like approximants with second- and third-order RMSE rates and tests them numerically."
+  },
+  "equation_refs": [
+    {
+      "label": "shallow ReLU GLU basis",
+      "latex": "\\mathrm{GLU}(x)=d+\\sum_{i=0}^{n}D_i\\,\\mathrm{ReLU}(G_ix+g_i)(U_ix+u_i)",
+      "role": "show why each active gated unit is quadratic rather than affine in a scalar input",
+      "symbols": {"G_g": "gate slope and bias", "U_u": "second affine factor", "D_i": "output coefficient", "n": "width-like unit count"},
+      "evidence": "paper.pdf p. 1, Equation (2)",
+      "interpretation": "对 ReLU gate，每个激活区间内是两个 affine factors 的乘积，故为二次多项式；这是一层标量构造。GeGLU/SwiGLU 不是严格 piecewise quadratic，不能只凭渐近线性就自动继承证明。"
+    },
+    {
+      "label": "constructive approximation orders",
+      "latex": "L_{\\mathrm{MLP}}\\lesssim \\frac{C_2h^2}{\\sqrt{120}}+O(h^3),\\qquad L_{\\mathrm{GLU}}\\lesssim \\frac{C_3h^3}{\\sqrt{945/2}}+O(h^4),\\qquad h=1/n",
+      "role": "compare achievable global RMSE orders for uniform-knot linear and quadratic spline-like constructions",
+      "symbols": {"L": "continuum RMSE", "h": "uniform cell width", "C_2_C_3": "bounds on target derivatives", "n": "number of cells or width scale"},
+      "evidence": "paper.pdf pp. 3–4, theoretical construction",
+      "interpretation": "这是充分光滑目标上的构造性 upper/achievability rate，不是 minimax lower bound。它证明某种参数化能达到该阶，未证明 MLP 最多只能 $P^{-2}$，也未证明任意训练 GLU 必然 $P^{-3}$。"
+    },
+    {
+      "label": "parameter-count conversion",
+      "latex": "P_{\\mathrm{MLP}}=(d_x+d_y+1)n+d_y,\\qquad P_{\\mathrm{GLU}}=(2d_x+d_y+2)n+d_y",
+      "role": "translate large-width rates into asymptotically linear parameter-count rates",
+      "symbols": {"d_x_d_y": "input and output dimensions", "P": "trainable parameter count", "n": "hidden width"},
+      "evidence": "paper.pdf p. 2",
+      "interpretation": "固定维度且 $n\\to\\infty$ 时 $P\\propto n$，指数保持；有限宽度下非零 bias 与每单元成本会改变拟合斜率和 crossover，不能只比较 neuron count。"
+    }
+  ],
+  "figure_refs": [
+    {
+      "label": "Figure 3", "asset_path": "assets/collection-figures/2602.14495/figure-3-glu-mlp-scaling.webp",
+      "section": "核心结果与证据", "role": "compare fitted log-log RMSE slopes against width and parameter count",
+      "evidence": "paper.pdf p. 5, Figure 3; official v2 source panels",
+      "alt_text": "Paired log-log plots compare MLP and GLU RMSE over widths one through fifty, with fitted slopes near minus two and minus three.",
+      "caption": "Figure 3：单个光滑一维目标、宽度 1–50 的全区间拟合给出 MLP 约 −2、GLU 约 −3 的 slope；没有 fit-window 或置信区间分析。",
+      "interpretation": "不同斜率支持 order-change hypothesis，而不只是常数因子；但把全部小宽度点拟合为‘渐近指数’仍需大 $n$ window、残差与数值精度检验。"
+    }
+  ],
+  "cover": {
+    "mode": "source_figure", "asset_path": "assets/collection-figures/2602.14495/figure-3-glu-mlp-scaling.webp",
+    "label": "Figure 3", "visual_type": "data_plot", "evidence": "paper.pdf p. 5, Figure 3; official v2 source panels",
+    "alt_text": "Log-log function-approximation error curves for shallow MLP and GLU versus width and parameters.",
+    "caption": "一维平滑函数实验呈现约二阶与三阶 RMSE 下降，但尚非一般学习或 LLM scaling law。",
+    "selection_rationale": "The paired data plot exposes the paper's main empirical claim and makes its finite fitting range visible."
+  },
+  "sections": [
+    {"title": "作者信息", "paragraphs": [
+      "Alejandro Francisco Queiruga 为本文唯一作者；官方论文未列机构 affiliation，因此本站不根据姓名或邮箱推断任职。",
+      "本站核验 arXiv:2602.14495v2：v1 提交于 2026-02-16，v2 更新于 2026-02-24；主分类 cs.LG，PDF 12 页，标题与 campaign 一致。",
+      "Collection 来源为刘子鸣网站的 Machine Learning 条目。"
+    ]},
+    {"title": "研究问题", "paragraphs": [
+      "为什么现代 Transformer 常用 GLU/SwiGLU，而不只用普通两层 MLP？论文提出一个 numerical approximation 解释：乘法门控给每个激活区域增加一个多项式阶数。",
+      "在浅层标量 function reconstruction 中，ReLU MLP 是 piecewise linear，ReLU GLU 是 piecewise quadratic；作者问这能否把 RMSE 随参数量的下降从二阶提高到三阶。",
+      "进一步提出 Gated Quadratic Unit（GQU），测试更多 affine factors 是否产生更陡的经验 slope，并探索高维与真实 regression 数据。"
+    ]},
+    {"title": "背景", "paragraphs": [
+      "有限元/样条逼近中，若目标足够光滑，degree-$p$ piecewise polynomial 在规则网格上的误差阶通常由 cell size 的幂控制。这里 hidden width 对应 knot/cell 数。",
+      "MLP 的 ReLU hinge 将输入域切成 affine pieces；GLU 将 gated branch 与另一 affine branch 相乘，在固定 activation pattern 内产生 quadratic term。",
+      "机器学习 scaling law 常讨论 cross-entropy 随模型参数、数据和 compute 的经验幂律。本文的 $L(P)$ 却是 noiseless scalar regression RMSE 随浅层参数量变化，两者同符号但对象不同。",
+      "更高 asymptotic order 不保证有限预算更优：每单元参数成本、误差常数、优化难度、目标光滑度和 crossover 都决定实际效果。"
+    ]},
+    {"title": "给物理学家的 AI 导读", "paragraphs": [
+      "最贴切类比是数值离散阶数：linear element 的局部截断误差由二阶导控制，quadratic element 可消去下一项而由三阶导控制。GLU 的乘法结构相当于提升局部 basis order。",
+      "这不是 thermodynamic scaling 或 neural scaling ansatz 的普遍指数。它是固定维度、固定光滑函数类、$h\\to0$ 的 approximation order，并且只给显式构造。",
+      "upper bound $L\\le CP^{-3}$ 表示存在好 GLU 参数；若要说 GLU 必然或最优是 $P^{-3}$，还需 matching lower bound 和训练算法能找到该解。",
+      "从 width 换成 parameter count 类似改变 lattice spacing 的定义：渐近线性换元不改极限指数，但小系统的 affine offsets 会改变 log-log fit。"
+    ]},
+    {"title": "模型与方法", "paragraphs": [
+      "理论考虑 $x\\in[0,1]$ 的光滑标量目标、无限数据与训练资源、uniform gates $h=1/n$。MLP 逐 cell 插值得到 linear-spline-like construction；GLU 用额外 $U_i,u_i$ 消去二阶 Taylor term。",
+      "主实验拟合 $f(x)=(1+\\cos^2(\\pi x))^{-1}$，在 $[-1,1]$ 上采 10000 点，宽度 1–50；用 float64 CPU Newton、full batch、Jacobi preconditioning、singular-row elimination、line search 与 spline-informed initialization。",
+      "作者同时比较线性/二次 splines，并对 width 与实际参数量分别做 log-log regression。",
+      "GQU 把三个 affine factors 相乘，直觉期望四阶；v2 还在 2D sine、Friedman1–3、Airfoil Self-drag、California Housing 上比较拟合 slope。",
+      "公开 replication URL 为 https://github.com/afqueiruga/divine_scaling；arXiv artifact 未固定 commit，本站未运行代码。"
+    ]},
+    {"title": "核心结果与证据", "paragraphs": [
+      "主一维实验中，MLP 对 width/parameters 的 slopes 为 −2.13/−2.18，GLU 为 −3.08/−3.12，与二阶/三阶构造相符。曲线误差也略低于对应样条，可能来自可移动 knots 与常数项。",
+      "这些 slopes 对全部 $n=1$–50 点一次拟合，未给 large-$n$ window sensitivity、残差、$R^2$、置信区间、重复 runs 或 precision-floor 分析。",
+      "GQU 同一一维目标的 slopes 为约 −3.50/−3.55，而非直觉期待的 −4；论文没有配套四阶构造或 lower bound，因此是 architecture-design hypothesis。",
+      "v2 表中 GLU 在 2D sine、Friedman1–3 与 Airfoil 上比 MLP slope 更陡，但 California Housing 两者均 −0.09；‘维度使指数按 $1/d_x$ 降低’并未一致成立。",
+      "论文提到 15 GLU neurons 可在示例中达到约 50 MLP neurons 的误差；这是单一 finite-scale crossover，且 neuron count 不等于 equal parameter/compute。"
+    ]},
+    {"title": "有效性与局限", "paragraphs": [
+      "推导是特殊 uniform-knot 参数化的 achievability upper bound，没有证明普通 MLP 不能比 $P^{-2}$ 更快，也没有证明训练后的任意 GLU 都达 $P^{-3}$。特殊函数甚至可被有限网络精确表示。",
+      "适用域是充分光滑、noiseless、浅层、标量 1D、ReLU 与 RMSE；未覆盖 depth、classification、cross-entropy、有限数据、compute optimality 或 Transformer/LLM。",
+      "印刷的 MLP recurrence 存在 index/维度疑点：文中 neuron/partition 计数与求和界不一致，一处 $D_i$ 公式疑似将函数值与 slope-like quantity 相减；不妨碍直觉但使逐式证明未闭合。",
+      "实验使用特殊初始化与高精度 Newton，混合了表示能力与专门 optimizer；不能推断标准 SGD/Adam 会找到 spline-optimal solution。",
+      "SwiGLU/GeGLU 不是严格 piecewise quadratic；激活在某区间近似线性不足以证明同一有限域 exponent。",
+      "高维/真实数据缺 dataset splits、normalization、width/fit windows、optimizer、repeats 与 uncertainty；一项数据无优势。结论段还写实验限于 1D，与 v2 新增结果不一致。",
+      "将机制解释为 frontier LLM 中 GLU 胜出的原因仍是 conjecture：论文没有语言模型、深 Transformer 或大规模训练证据。"
+    ]},
+    {"title": "复现与资源", "paragraphs": [
+      "先复现显式 spline construction，逐 cell 检查 continuity、Taylor cancellation、全局 RMSE 积分和参数 index；对印刷 recurrence 给出修正版单元测试。",
+      "slope 报告应预注册 fit windows，画 local effective exponent $-d\\log L/d\\log P$、残差与 precision floor，并对初始化/seed/optimizer 给 bootstrap intervals。",
+      "有限预算比较需同时报告 neurons、parameters、FLOPs、wall time 与 crossover；在 equal-P 和 equal-compute 下比较常数项。",
+      "跨目标测试应系统扫描 Sobolev smoothness、nonsmooth points、noise、dimension 与 anisotropy，加入 adaptive spline、standard MLP、GLU/GeGLU/SwiGLU 和 deeper controls。",
+      "若要支持 LLM 解释，应在同参数/数据/compute Transformer 上改变 FFN gate，拟合 held-out loss 的局部 exponent，并检查优化与数据瓶颈是否掩盖 approximation order。"
+    ]},
+    {"title": "阅读指南", "paragraphs": [
+      "快速路线：pp. 1–2 看 GLU basis 与问题；pp. 3–4 看构造；p. 5 看 Figure 3；pp. 6–8 看 GQU、高维结果和限制。",
+      "数值分析路线：把结果读作 linear/quadratic spline order 的 neural parameterization，重点核对光滑性、leading term、global norm 与 matching lower bound。",
+      "AI 路线：始终区分 representation capacity、optimizer attainability 和 end-to-end LLM scaling；本文主要直接支持第一项的一维切片。",
+      "批判路线：检查 recurrence 索引、fit-window 选择、California Housing 反例、非 ReLU gate 外推，以及 equal-neuron 与 equal-parameter 的差别。"
+    ]}
+  ],
+  "evidence_refs": [
+    "paper.pdf pp. 1–4: shallow MLP/GLU definitions, parameter counts and constructive approximation orders",
+    "paper.pdf pp. 4–6, Figures 2–4: one-dimensional protocol, fitted slopes and spline comparison",
+    "paper.pdf pp. 6–8, Figure 5 and Table 1: GQU, higher-dimensional and real-regression results and exceptions",
+    "official v2 TeX: recurrence indexing, equations, captions, limitations and replication URL",
+    "source PDF SHA-256 7b3e30f90a69ebe870b5f51f39505bd295b8fe7d7eeb03017094c4bf08730846",
+    "official arXiv v2 source archive SHA-256 a12a9a21968f826c38d4711a51629a25c2dbabec58e8755ca1bda0819a65c1bb",
+    "MinerU Markdown SHA-256 0059550e224a1d353fae0a4022bc1c242ce3833221c7ccdecdf81b2ff094bb14",
+    "Evidence packet SHA-256 37a93186b4baa0cc6520381b9ae7d9ffee6be11c5f1028dd9bdf15ae37f8a50c",
+    "Evidence status: full-text and official TeX verified against latest arXiv v2; constructive-bound, finite-scale, optimizer, dimensionality, gate-transfer and LLM-extrapolation boundaries recorded; no independent reproduction performed."
+  ]
+}

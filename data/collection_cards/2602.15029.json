@@ -1,0 +1,213 @@
+{
+  "arxiv_id": "2602.15029",
+  "source_version": "v3",
+  "source_pdf": "https://arxiv.org/pdf/2602.15029v3",
+  "title_en": "Symmetry in language statistics shapes the geometry of model representations",
+  "title_zh": "语言统计的对称性塑造模型表征的几何结构",
+  "curation_status": "full_text_verified",
+  "card_standard_version": "2.4",
+  "audience_profile": "physics_ai_literate_physicist",
+  "paper_profile": "theory_experiment",
+  "style_reference": "physicist_daily_arxiv",
+  "provenance": {
+    "program": "Collection",
+    "catalog": "Paper Collection",
+    "catalog_record_id": "2602.15029",
+    "catalog_record_ids": [
+      "2602.15029"
+    ],
+    "catalog_topic": "Representation Learning",
+    "collection_date": "2026-08-30",
+    "sampled_at": "2026-08-31",
+    "selected_by": "ziming_mineru_serial_goal",
+    "sampling_seed": "not_applicable_source_complete",
+    "candidate_count": 464
+  },
+  "verified_metadata": {
+    "arxiv_id": "2602.15029",
+    "version": "v3",
+    "title": "Symmetry in language statistics shapes the geometry of model representations",
+    "authors": [
+      "Dhruva Karkada",
+      "Daniel J. Korchinski",
+      "Andres Nava",
+      "Matthieu Wyart",
+      "Yasaman Bahri"
+    ],
+    "categories": [
+      "cs.LG",
+      "cond-mat.dis-nn",
+      "cs.CL"
+    ],
+    "primary_category": "cs.LG",
+    "published": "2026-02-16",
+    "updated": "2026-06-29",
+    "abstract": "Translation symmetry in pairwise language statistics yields Fourier eigenmodes in a closed-form word-embedding model; Wikipedia embeddings and selected language-model activations show qualitatively related manifolds."
+  },
+  "equation_refs": [
+    {
+      "label": "normalized co-occurrence and embedding spectrum",
+      "latex": "M^*_{ij}=\\frac{P_{ij}-P_iP_j}{(P_{ij}+P_iP_j)/2}\\approx\\log\\frac{P_{ij}}{P_iP_j},\\qquad W_{i\\mu}=\\Phi_{i\\mu}\\sqrt{|\\Lambda^*_{\\mu\\mu}|}",
+      "role": "connect pairwise corpus statistics to principal directions in the specified closed-form word-embedding model",
+      "symbols": {
+        "P_ij": "probability that tokens i and j co-occur within the defined context window",
+        "M_star": "bounded normalized co-occurrence matrix, approximately PMI near independence",
+        "Phi": "eigenvectors of M star",
+        "Lambda_star": "eigenvalues of M star",
+        "W": "learned word-embedding matrix in the cited model class"
+      },
+      "evidence": "paper.pdf p. 3, Equations (1)–(2)",
+      "interpretation": "这是全文的可解桥梁，但并非任意 Transformer 的训练定律；绝对值还意味着正、负谱分量的处理需按附录条件理解。"
+    },
+    {
+      "label": "translation-symmetric Fourier embedding",
+      "latex": "M^*_{ij}=C(\\operatorname{dist}(x_i,x_j)),\\qquad \\bar w_i=\\sqrt{\\frac{2}{|S|}}[\\sqrt{\\lambda_1}\\cos(k_1^\\top x_i),\\sqrt{\\lambda_1}\\sin(k_1^\\top x_i),\\ldots]",
+      "role": "show why a circulant or convolutional statistics operator produces paired sinusoidal representation coordinates",
+      "symbols": {
+        "x_i": "coordinate of item i on the chosen semantic continuum",
+        "C": "distance-only co-occurrence kernel",
+        "S": "semantic subset such as calendar months",
+        "k_mu": "lattice Fourier wavevectors",
+        "lambda_mu": "kernel eigenvalues setting mode amplitudes"
+      },
+      "evidence": "paper.pdf pp. 4–5, Assumption 3.1 and Equations (3)–(4)",
+      "interpretation": "物理上是平移不变核被 Fourier 模式对角化。正弦/余弦简并对定义一个二维子空间；单条 PCA 轴的符号、相位与旋转并不唯一。"
+    },
+    {
+      "label": "linear coordinate decoding bound",
+      "latex": "\\varepsilon^2(r)=\\frac{\\mathbb E_i\\|\\bar w_{i,r}^\\top\\Omega-x_i\\|^2}{\\mathbb E_i\\|x_i\\|^2},\\qquad \\lim_{|S|\\to\\infty}\\varepsilon^2(r)\\le\\frac{6}{\\pi^2}\\left[\\left(\\frac{r}{\\operatorname{Vol}_D}\\right)^{1/D}-\\frac{\\sqrt D}{2}\\right]^{-1}",
+      "role": "bound the approximation error of an existential linear probe built from the retained low-frequency modes",
+      "symbols": {
+        "r": "number of retained PCA coordinates",
+        "D": "dimension of the latent continuum",
+        "Omega": "linear decoder",
+        "epsilon_squared": "normalized mean-squared coordinate error",
+        "Vol_D": "volume of the D-dimensional unit sphere"
+      },
+      "evidence": "paper.pdf pp. 6–7, Equations (10)–(11), Proposition 4",
+      "interpretation": "在周期晶格、谱按波数单调且大系统等条件下，缺失的高频尾给出 $r^{-1/D}$ 标度；它是存在性上界，不保证用有限样本拟合的 probe 达到该界。"
+    }
+  ],
+  "figure_refs": [
+    {
+      "label": "Figure 1",
+      "asset_path": "assets/collection-figures/2602.15029/figure-1-symmetry-representation-geometry.webp",
+      "section": "核心结果与证据",
+      "role": "compare analytic Fourier manifolds and Gram matrices with Wikipedia embeddings and Gemma 2 2B internal activations",
+      "evidence": "paper.pdf p. 2, Figure 1",
+      "alt_text": "Three rows compare theoretical, Wikipedia word-embedding, and Gemma 2 2B geometries and Gram matrices for calendar months and historical years.",
+      "caption": "Figure 1：月份呈近似闭环，历史年份呈开放波纹曲线；理论曲线的核参数由同一 Wikipedia 统计拟合，word embedding 的月份 PCA 排除 May，月份与年份还采用不同 centering 约定。",
+      "interpretation": "图支持从统计对称性到几何的结构对应，但 Gemma 面板是单模型上的经验类比，并非 Transformer 定理或独立留出预测。"
+    }
+  ],
+  "cover": {
+    "mode": "source_figure",
+    "asset_path": "assets/collection-figures/2602.15029/figure-1-symmetry-representation-geometry.webp",
+    "label": "Figure 1",
+    "visual_type": "data_plot",
+    "evidence": "paper.pdf p. 2, Figure 1",
+    "alt_text": "Theory, Wikipedia embeddings, and Gemma activations compared for periodic and open semantic coordinates.",
+    "caption": "同一张图展示统计核、Fourier 谱与表征流形之间的理论链条及其经验对应。",
+    "selection_rationale": "The author-created overview most directly exposes both the mechanistic proposal and the theory-to-model extrapolation that readers must keep separate."
+  },
+  "sections": [
+    {
+      "title": "作者信息",
+      "paragraphs": [
+        "Dhruva Karkada、Daniel J. Korchinski、Andres Nava、Matthieu Wyart 与 Yasaman Bahri 来自 UC Berkeley、EPFL、Johns Hopkins University 与 Google DeepMind。",
+        "本站核验 arXiv:2602.15029v3：v1 提交于 2026-02-16，v3 更新于 2026-06-29；主分类 cs.LG，交叉分类 cond-mat.dis-nn、cs.CL，PDF 36 页。",
+        "Collection 来源为刘子鸣网站的 Representation Learning 条目。"
+      ]
+    },
+    {
+      "title": "研究问题",
+      "paragraphs": [
+        "为什么月份在语言模型表征中排成圆、历史年份形成带波纹的一维曲线，而时空坐标又能被低维线性 probe 读出？这些形状是模型偶然学到的，还是训练数据统计对称性的谱指纹？",
+        "论文尝试建立一条可计算链条：语料的 pairwise co-occurrence 只依赖潜在距离，因而具有平移对称性；相应矩阵的 Fourier 本征模再决定 word embedding 的 PCA 几何。",
+        "随后作者检验这套几何是否也出现在 Wikipedia 词向量、text embedding 和 LLM hidden states，并用季节性 latent variable 解释删除直接月份关联后结构为何仍可恢复。"
+      ]
+    },
+    {
+      "title": "背景",
+      "paragraphs": [
+        "语言模型把 token、词或上下文映射为高维向量。PCA 图上的圆环、曲线与薄片不是坐标系本身的物理对象；更稳健的量是点间内积组成的 Gram matrix 及其低维子空间。",
+        "PMI 衡量两个词相遇得比独立假设更频繁还是更稀少。作者使用有界的 $M^*$；在接近独立时它近似 PMI，并在所采用的 closed-form embedding 理论中控制主谱模。",
+        "若核只依赖坐标差，离散矩阵就是 circulant 或更一般的 convolution operator。与晶格振动、平稳随机场相同，Fourier 模式天然对角化该算符；周期边界给正弦/余弦简并对，开放边界则改变允许波数。",
+        "线性 probe 只问某个变量能否从表征线性读出；它不自动说明网络实际使用该变量，也不证明这种几何由某个唯一生成机制导致。"
+      ]
+    },
+    {
+      "title": "给物理学家的 AI 导读",
+      "paragraphs": [
+        "把 vocabulary 子集想成潜在晶格，把 $M^*$ 想成两点相关核。平移对称性令本征态成为平面波；按低频截断后，1D 周期坐标在前两个模上投影为圆，加入高次谐波便出现 Lissajous 波纹。",
+        "真正具有坐标不变性的预测是 Gram geometry 或简并本征子空间。PCA 中某个 cosine 轴可旋转成 sine 轴，因而不要把图的绝对朝向、正负号或相位当成神经网络中的独特方向。",
+        "从 word2vec 类矩阵分解到 LLM residual stream 的跳跃类似把可解模型的 universality 猜想外推到复杂多体系统：图形相似很有启发性，但需要 symmetry-breaking corpus intervention 与重新训练才能测试因果普适性。",
+        "删除月份之间的 144 个矩阵元素后仍能重建圆，说明全词表中存在冗余季节信号；但 ski、beach 等 helper words 仍携带季节信息，所以实验删除的是直接耦合，不是把 order parameter 从环境中完全抹除。"
+      ]
+    },
+    {
+      "title": "模型与方法",
+      "paragraphs": [
+        "理论先采用已有的 closed-form word-embedding 结果：对 $M^*$ 做特征分解，embedding 坐标由特征向量和 $|\\lambda|^{1/2}$ 给出。主文为简化展示，先假设目标子矩阵 positive semidefinite 且 $d\\geq\\operatorname{rank}M^*$；附录讨论正负谱。",
+        "Assumption 3.1 给每个语义对象外部坐标 $x_i$，并要求 $P_{ij}/(P_iP_j)$ 只依赖 $\\operatorname{dist}(x_i,x_j)$。均匀周期晶格可直接用 DFT；1D 指数核分别得到周期和开放边界的解析波数、振幅。",
+        "Wikipedia 实验处理 2023-11 英文 dump：保留 337 万篇文章、27.2 亿 tokens、25,000 词 vocabulary，使用最大 16 的对称 context window，再数值对角化测得的 $M^*$。",
+        "Figure 1 将由 Wikipedia 统计拟合的指数核曲线，与词向量及 Gemma 2 2B residual-stream activations 比较；月份用上下文 prompt 消歧，历史年份还受多 token 数字共享影响。",
+        "坐标 probe 对 1900–2020 年做 100 次随机划分，每次 60 个训练、60 个测试 embedding，采用 ridgeless regression；误差条是这些划分的标准差，不是语料重采样或模型训练 seed uncertainty。",
+        "集体效应实验把完整 $25,000\\times25,000$ 的 $M^*$ 中 month-month entries 置为独立基线，再做 rank-1000 分解；另以 embedding-derived affinity 选择季节 helper words，与数字词对照。"
+      ]
+    },
+    {
+      "title": "核心结果与证据",
+      "paragraphs": [
+        "Proposition 1 说明在周期语义晶格和距离核假设下，PCA 坐标为按核谱加权的 Fourier modes；周期指数核预测月份闭环，开放指数核预测历史年份的非整数波数开放曲线。",
+        "Figure 1 中 Wikipedia embedding 与 Gemma 2 2B 对月份、年份的低维流形和 Gram bands 与理论图形大体相符；但 theory parameters 来自同一 Wikipedia 统计拟合，因此这是 in-sample structural agreement，不是 parameter-free prediction。",
+        "Proposition 4 把线性解码解释为坐标函数的截断 Fourier 展开：若谱随波数单调，存在 rank-$r$ probe 使大系统误差上界按 $r^{-1/D}$ 衰减。Wikipedia 年份实验呈相应训练误差下降，并在 ridgeless 插值阈值出现 test double descent。",
+        "Figure 4 中，即使把直接 month-month 元素消去，rank-1000 全词表分解仍恢复近似月份圆序；10 个高季节性 helper words 也可恢复，而 number-word controls 不行。这支持冗余 latent-season signal 的充分性。",
+        "latent-season model 令 $P(i\\mid t)=P(i)[1+g(t-t_i)]$；条件独立平均产生只依赖 $t_i-t_j$ 的 autocorrelation kernel，PMI 因而 circulant。本征值及成对 eigengap 随季节词数 $N$ 增长，使固定数量元素扰动在 $N\\to\\infty$ 时不改变前 $d$ 子空间。"
+      ]
+    },
+    {
+      "title": "有效性与局限",
+      "paragraphs": [
+        "精确定理属于特定浅层 word-embedding matrix factorization，不覆盖 autoregressive Transformer 的优化或 contextual representation；Gemma 结果是 empirical transfer，不是定理验证。",
+        "平移对称性是在预先选择月份、年份、州等 continuum 并赋予外部坐标后提出的强假设。真实 $M^*$ 只有近似 distance dependence；论文未给正式拟合优度、核模型比较或 held-out semantic category。",
+        "简化命题依赖 uniform lattice、PSD 和足够大的 embedding dimension；经验矩阵正负谱秩相近且 $d\\ll V$。附录的 signed-spectrum 扩展仍要求两部分保留相容的对称结构。",
+        "Figure 1 排除词义多义的 May 来确定 word-embedding PCA basis，月份展示 centered Gram、年份展示 uncentered Gram，理论核参数来自目测/拟合统计；这些分析选择使不同面板并非完全相同 estimand。",
+        "矩阵消融是在构造后的 $M^*$ 上置零并 SVD，不是修改原始语料后重训 word2vec 或 LLM；它证明谱模型内部的 redundancy/sufficiency，不能单独证明真实训练因果。",
+        "季节 helper words 用同一 embedding/co-occurrence structure 的 affinity 挑选，缺少 held-out selection；latent model 还假设给定季节后条件独立、均匀中心和对称零均值 modulation，不能由观察到的圆唯一反推出该机制。",
+        "Davis–Kahan 稳健性采用固定 $d$、固定扰动元素数而 $N\\to\\infty$；实际 $V=25,000,d=1,000$ 与 144 个消融元素只作示例，未给 finite-size subspace-angle bound。",
+        "主几何比较没有独立 corpus resamples、模型训练 seeds 或统计置信区间；只研究时空连续属性，层级关系和 contextual adaptation 仍由作者明确列为开放问题。本站未复现代码或逐步形式化检查证明。"
+      ]
+    },
+    {
+      "title": "复现与资源",
+      "paragraphs": [
+        "论文给出代码 https://github.com/dkarkada/symmetry-stats-repgeom 与 Wikimedia Wikipedia 数据集 https://huggingface.co/datasets/wikimedia/wikipedia；arXiv 内未 pin code commit，本站仅核验链接，未独立运行。",
+        "复现应固定 dump、分词、25k vocabulary、context weighting 与 $M^*$ 公式，并保存矩阵/谱 hash；分别报告 kernel fit residual、eigenvalue ordering、degenerate-subspace angles 与 Gram error。",
+        "Figure 1 需逐项记录 May exclusion、prompt、layer、token aggregation、centering、component omission 与拟合参数；对多个 corpus bootstrap、随机种子、模型与语义类别报告不确定性。",
+        "最关键的因果实验是构造保留 unigram 但破坏 seasonal translation symmetry 的 corpus，对 word embedding 与小 Transformer 从头重训；再与只删 month-month 句子、只删 helper signal 的 matched controls 比较。",
+        "有限尺寸稳健性应直接计算 perturbation operator norm、相关 eigengap 与 Davis–Kahan subspace angle，并预注册 helper-word selection，避免在同一统计结构上选择又评估。"
+      ]
+    },
+    {
+      "title": "阅读指南",
+      "paragraphs": [
+        "快速路线：p. 2 看 Figure 1；pp. 3–5 看 $M^*$、平移对称性与 Fourier geometry；pp. 6–8 看线性解码、消融与 latent-season mechanism；p. 9 看讨论和 Limitations。",
+        "物理路线：把 $M^*$ 当相关核，关注边界条件、谱简并、低频截断与有限尺寸；先比较 Gram/subspace，不要执着于单个 PCA 轴的朝向。",
+        "AI 路线：严格区分 closed-form word embedding theorem、Wikipedia matrix experiment 与 Gemma hidden-state observation；它们分别是机制证明、受控数值证据和跨架构经验对应。",
+        "批判路线：重点检查 fitted versus predicted、matrix intervention versus retraining、PSD/rank assumptions、helper selection、finite-$N$ perturbation bound，以及 LLM 因果措辞是否超过证据。"
+      ]
+    }
+  ],
+  "evidence_refs": [
+    "paper.pdf pp. 3–5, Equations (1)–(4), Assumption 3.1 and Proposition 1: normalized co-occurrence factorization and Fourier geometry under explicit lattice, PSD and rank conditions",
+    "paper.pdf pp. 5–7, Corollary 2 and Propositions 3–4: periodic/open exponential kernels and the existential linear-decoding bound",
+    "paper.pdf pp. 2, 11–12 and 18–22, Figures 1, 5 and 6: Wikipedia protocol, fitted symmetry kernels, word-embedding and Gemma comparisons, and analysis choices",
+    "paper.pdf pp. 7–8 and 23–25, Figure 4: matrix-level month ablation, seasonal helper reconstruction, controls and latent-variable construction",
+    "source PDF SHA-256 ca9f4f479381e1295ca3c00e92f25da11e9d9a4eb49f0c116a39ff9953bb7653",
+    "official arXiv v3 source archive SHA-256 e72930ecf8119bb05499bd713d75f3361810c831bae2ec92b020984bce3df876",
+    "MinerU Markdown SHA-256 0321c8557f04c1bd39e20114487628b357c2b6887a90d5e60e066a4353e77d94",
+    "Evidence packet SHA-256 dab2b64f076d57ca037794ece4fcf34163a006e43981933a302631b27bccbe70",
+    "Evidence status: full-text and official TeX verified against latest arXiv v3; word-embedding theorem versus LLM extrapolation, symmetry and spectral assumptions, degeneracy, fitted comparison, matrix versus training intervention, latent identifiability, finite-size robustness, selection and uncertainty boundaries recorded; no independent reproduction performed."
+  ]
+}
