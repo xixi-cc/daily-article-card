@@ -1,0 +1,185 @@
+{
+  "arxiv_id": "2601.12703",
+  "source_version": "v1",
+  "source_pdf": "https://arxiv.org/pdf/2601.12703v1",
+  "title_en": "Towards Spectroscopy: Susceptibility Clusters in Language Models",
+  "title_zh": "走向语言模型光谱学：由 susceptibility 响应发现结构簇",
+  "curation_status": "full_text_verified",
+  "card_standard_version": "2.4",
+  "audience_profile": "physics_ai_literate_physicist",
+  "paper_profile": "theory_numerics",
+  "style_reference": "physicist_daily_arxiv",
+  "provenance": {
+    "program": "Collection",
+    "catalog": "Paper Collection",
+    "catalog_record_id": "2601.12703",
+    "catalog_record_ids": ["2601.12703"],
+    "catalog_topic": "Representation Learning",
+    "collection_date": "2026-08-30",
+    "sampled_at": "2026-08-31",
+    "selected_by": "ziming_mineru_serial_goal",
+    "sampling_seed": "not_applicable_source_complete",
+    "candidate_count": 464
+  },
+  "verified_metadata": {
+    "arxiv_id": "2601.12703",
+    "version": "v1",
+    "title": "Towards Spectroscopy: Susceptibility Clusters in Language Models",
+    "authors": ["Andrew Gordon", "Garrett Baker", "George Wang", "William Snell", "Stan van Wingerden", "Daniel Murfet"],
+    "categories": ["cs.LG"],
+    "primary_category": "cs.LG",
+    "published": "2026-01-19T04:01:17Z",
+    "updated": "2026-01-19T04:01:17Z",
+    "abstract": "The paper measures component-level covariance responses to localized data upweighting in Pythia models, connects the response vectors to modes of the context–continuation distribution, and extracts low-conductance clusters of token functions."
+  },
+  "equation_refs": [
+    {
+      "label": "组件 susceptibility",
+      "latex": "\\chi_{xy}^{C}=-\\operatorname{Cov}_{w\\sim\\pi_{\\rm loc}}[\\phi_C(w),\\ell_{xy}(w)-L(w)]",
+      "role": "measure the first-order response of one component observable when a context–continuation pair is upweighted",
+      "symbols": {
+        "x_y": "context x and next token y",
+        "phi_C": "observable localized to component C, here typically an attention head",
+        "ell_xy": "negative log probability of y after x",
+        "pi_loc": "tempered localized Gibbs posterior around the trained checkpoint"
+      },
+      "evidence": "paper.pdf p. 4, Eq. (2); posterior details in Appendix A.2/B.2",
+      "interpretation": "这不是对输入 activation 的普通 gradient，也不是物理温度下的直接响应；covariance 由 pSGLD 在人为选定的局域后验中估计。它对应对训练数据分布中 $(x,y)$ 权重的小扰动的一阶响应。"
+    },
+    {
+      "label": "token 响应的 mode 分解",
+      "latex": "\\boldsymbol\\chi_{xy}=\\sum_{\\alpha,\\beta}s_{\\alpha\\beta}(xy)\\boldsymbol\\chi_{\\alpha\\beta}-\\bar{\\boldsymbol\\chi}",
+      "role": "express each token-pair response as a linear combination of modes from the SVD of the data conditional distribution",
+      "symbols": {
+        "s_alpha_beta": "propensity of pair xy on a context/continuation mode pair",
+        "chi_alpha_beta": "model component response vector to that distributional mode",
+        "chi_bar": "offset fixed by zero mean under the data distribution"
+      },
+      "evidence": "paper.pdf pp. 5–6, Eqs. (4)–(5) and Lemma B.3",
+      "interpretation": "若两个续写由相似低阶 distribution modes 支持，且模型对这些 modes 有相似响应，它们会在 susceptibility space 靠近。真实 $q(y|x)$ 未知，modes 不被直接求出；cluster 是该机制的候选观测迹象。"
+    },
+    {
+      "label": "图簇 conductance",
+      "latex": "\\operatorname{Cond}(S)=\\frac{w(S,\\bar S)}{\\min[\\operatorname{vol}(S),\\operatorname{vol}(\\bar S)]}",
+      "role": "quantify whether a candidate set has few weighted kNN edges crossing its boundary",
+      "symbols": {
+        "S": "candidate cluster of susceptibility vectors",
+        "w_S_barS": "total self-tuned RBF edge weight across the cut",
+        "vol_S": "sum of graph degrees in S"
+      },
+      "evidence": "paper.pdf p. 6 and Appendix A.1",
+      "interpretation": "低 conductance 是高维响应图上的分离性，不是 UMAP 视觉距离。结果仍依赖 k=45、标准化、RBF 尺度、PageRank 和接受阈值；不同超参可改变 cluster 边界与数量。"
+    }
+  ],
+  "figure_refs": [
+    {
+      "label": "Figure 1",
+      "asset_path": "assets/collection-figures/2601.12703/figure-1-pythia-susceptibility-spectrum.webp",
+      "section": "核心结果与证据",
+      "role": "illustrate the global geometry and examples of functional token clusters among 780,000 response vectors",
+      "evidence": "paper.pdf p. 3, Figure 1 and Table 1",
+      "alt_text": "Pythia-14M 的 78 万个 susceptibility vectors 的三维 UMAP 点云，外围标出自然语言、数学、格式和代码相关的若干 cluster。",
+      "caption": "Figure 1 把 78 万个响应向量投到三维，显示句首、数学变量、括号功能与代码格式等外部结构；正式判簇来自原空间 kNN 图的 conductance。",
+      "interpretation": "UMAP is explicitly illustrative and can distort distances, sizes and separations; no quantitative claim should be read directly from apparent islands in this projection."
+    }
+  ],
+  "cover": {
+    "mode": "source_figure",
+    "asset_path": "assets/collection-figures/2601.12703/figure-1-pythia-susceptibility-spectrum.webp",
+    "label": "Figure 1",
+    "visual_type": "data_plot",
+    "evidence": "paper.pdf p. 3, Figure 1",
+    "alt_text": "Pythia-14M 中 token-context 局域扰动响应的 UMAP 光谱图。",
+    "caption": "相同 token 的不同功能可以分离，不同 token 的共同功能可以聚合；三维图只负责展示。",
+    "selection_rationale": "It communicates the spectroscopy analogy and cluster diversity while allowing the card to foreground that conductance, not visual inspection, supports the clusters."
+  },
+  "sections": [
+    {
+      "title": "作者信息",
+      "paragraphs": [
+        "Andrew Gordon、Garrett Baker、George Wang、William Snell、Stan van Wingerden、Daniel Murfet；作者均署名 Timaeus。",
+        "本站核验 arXiv:2601.12703v1：提交并更新于 2026-01-19；分类 cs.LG；共 68 页，其中大量附录列出全部 clusters 与方法细节。",
+        "Collection 来源为刘子鸣网站的 Representation Learning 条目。"
+      ]
+    },
+    {
+      "title": "研究问题",
+      "paragraphs": [
+        "物理光谱学用外界扰动和响应谱反推内部结构。论文问：若把训练分布中的某个“context x 后出现 token y”微小上调，模型各 attention heads 如何响应；这些响应向量能否暴露模型学到的功能模式？",
+        "作者不直接按 activation 或 token identity 聚类，而在 checkpoint 附近的 Gibbs posterior 中测 observable–loss covariance，再对 78 万个 susceptibility vectors 建图聚类。",
+        "“spectral line”是受数学分解支持的类比，但不是实际频率谱：probe 是数据权重扰动，response 是参数后验 covariance，mode 来自条件分布 SVD。"
+      ]
+    },
+    {
+      "title": "背景",
+      "paragraphs": [
+        "mechanistic interpretability 希望把网络组件与可理解功能对应。activation clustering 容易按表面 token 分组；SAE 则用稀疏字典把激活拆成 features，但 feature 数量、尺度和 monosemanticity 也依赖训练选择。",
+        "susceptibility 借用 fluctuation–response 思路：局域后验中，某组件 observable 与特定样本相对平均 loss 的 covariance，给出重新加权该样本时组件期望的一阶变化。",
+        "条件矩阵 $q(y|x)$ 的 SVD 把语言统计分成 context 与 continuation modes。若模型内部已形成对某 mode 的结构，其 mode susceptibility 应大；共享 propensity 的 token pairs 因而产生相似 response profile。"
+      ]
+    },
+    {
+      "title": "给物理学家的 AI 导读",
+      "paragraphs": [
+        "最接近统计物理的是 covariance response，而不是 UMAP：在局域 Gibbs measure 中，改变某个数据项的耦合常数，observable 的线性响应由与该项能量/损失的 connected correlation 给出，负号来自 loss convention。",
+        "但这里的“ensemble”由 pSGLD、temperature、localization 和 checkpoint 人为定义，并非平衡物质的客观热系综；susceptibility 会随 posterior prescription 改变。把它当作一种 Bayesian/local landscape probe 更准确。",
+        "SVD modes 类似选择一组 collective coordinates，而 510 个 clusters 类似谱线家族。论文没有直接重建完整 mode spectrum，也未证明每个 cluster 对应一个唯一电路；它观察到的是 token probes 在 component-response space 的稳定近邻结构。"
+      ]
+    },
+    {
+      "title": "模型与方法",
+      "paragraphs": [
+        "从 13 个 Pile subsets 各采样 60,000 个序列，共 780,000 个 $(x,y)$；对 Pythia-14M 用 preconditioned SGLD 在 checkpoint 附近采样，每个 attention head 的 observable 与 per-token excess loss 做 covariance，拼成 H 维向量。",
+        "响应矩阵先逐列零均值/单位方差，再逐行去均值以投影掉 uniform mode；随后构建 k=45 的 symmetrized kNN graph，边权为局域尺度自适应 RBF。",
+        "iterated local clustering 从随机 seed 做 personalized PageRank，扫描 minimum-conductance prefix；过大的 main body 和孤立点被剔除，剩余低 conductance sets 作为 clusters。cluster labels 由 Claude Opus 4.5 生成并人工复核。",
+        "UMAP 只用于图示。SAE 对照用 Pythia-70M 的 feature activations；跨尺度检验则把 14M cluster 固定，在 31M 至 1.4B susceptibility graph 上重新测 conductance。"
+      ]
+    },
+    {
+      "title": "核心结果与证据",
+      "paragraphs": [
+        "算法在 Pythia-14M 中给出 510 个 clusters，覆盖 grammar、formatting、bigrams、math、code 与其他类别。随机抽查 30 簇时，多数簇超过 90% 的 token-context pairs 可由单一主题描述。",
+        "相同 token 可因功能分离：例如 * 作为乘法落入 C15/C57，作为 Markdown 强调标记落入 C504；不同 tokens 也可因功能聚合，如 will/must/should/would 在相似语法位置进入 C63。",
+        "510 簇中有 259 个（50.8%）在 Pythia-70M SAE 中找到 activation-frequency 至少 80% 的匹配 feature；matched-feature baselines 几乎都低于 5%。这是显著跨方法一致性，但不是 feature 与 cluster 一一同一。",
+        "把 14M clusters 放到更大 Pythia 的 susceptibility graph 中，其 conductance 到 1.4B 仍显著低于 random sets 的约 1，说明相似 token sets 保持邻近；直接在大模型重跑 clustering 却只得到 241–358 簇。",
+        "HTML、代码块与数学排版等 clusters 还能按相邻 token/context 形成 linked networks，提示固定 context-length 的 modes 之间存在序列关系；论文未把这些网络验证成执行任务所必需的 causal circuits。"
+      ]
+    },
+    {
+      "title": "有效性与局限",
+      "paragraphs": [
+        "优点是响应量有明确的数据扰动含义，mode decomposition 给出为何按功能聚类的理论解释，正式 cluster criterion 位于原高维图而非低维可视化，并用 context sensitivity、functional grouping、SAE 和尺度迁移交叉检查。",
+        "研究仅覆盖 Pile-trained Pythia family，主结果是 14M，小于今天的 frontier models。到 1.4B 的低 conductance 只说明预先定义的 token set 保持相干，不等于可扩展地发现同样多或更抽象的新结构。",
+        "pSGLD susceptibility 昂贵且依赖 temperature、localization、preconditioner、samples 和 observable。局域后验未必充分遍历非凸 basin；计算误差与后验选择会传入距离和 clusters。",
+        "cluster 数和边界依赖标准化、kNN、conductance/PageRank thresholds 与 iterative removal。作者报告合理变化下较稳，但 510 不是模型固有、无超参的“能级数”。",
+        "SAE 比较跨模型尺寸：14M susceptibility clusters 对 70M SAE features；50.8% 可能受词料、feature threshold 与 SAE availability 影响。匹配表明两种方法看到相似规律，不证明同一内部变量或因果作用。",
+        "UMAP 会改变局域/全局几何，作者明确不以它支撑结论。cluster label 的 LLM+人工流程带解释者先验；“interpretable”与“多数符合主题”也不等于该模式对 prediction behavior 必要。"
+      ]
+    },
+    {
+      "title": "复现与资源",
+      "paragraphs": [
+        "复现需固定 arXiv v1、Pythia checkpoint/tokenizer、13 个 Pile subsets 与 60k sampling seeds、pSGLD posterior/temperature/localization、component observable、k=45 graph 和 PageRank/conductance thresholds。",
+        "最小复现可先在小样本上预注册少量功能对：同一 * 的乘法/Markdown、不同 modal verbs；比较 raw activation、loss gradient、susceptibility 与 shuffled-loss baseline 的 nearest-neighbor purity。",
+        "完整复现应报告 SGLD convergence、多 chain 误差、cluster stability/adjusted mutual information、matched random controls 和 wall-clock/GPU cost；再换 tokenizer、corpus 与非 Pythia architecture 测试。本站未运行 pSGLD。"
+      ]
+    },
+    {
+      "title": "阅读指南",
+      "paragraphs": [
+        "先读 Eq. (2)，明确 covariance 对哪一个 posterior、observable 和 data perturbation 求；再读 Eq. (5)，区分 data propensity 与 model response 两个因子。",
+        "看 Figure 1 时只把它当地图索引，然后转到 Section 3.2 的 conductance、Tables 2–3 的同 token 分离/异 token 聚合，以及 Appendix A 的 kNN/PageRank 参数。",
+        "最后审查 SAE 与 scaling：最有判别力的后续实验是对 frontier-scale、不同训练分布的模型做预算可行的 susceptibility，并用 activation patching 或 targeted retraining 验证 cluster 对行为是否具有可干预因果作用。"
+      ]
+    }
+  ],
+  "evidence_refs": [
+    "paper.pdf pp. 3–7: susceptibility definition, distribution-mode decomposition, Figure 1 and conductance clustering",
+    "paper.pdf pp. 7–12: functional grouping, 510 clusters, linked networks, SAE comparison, scaling and limitations",
+    "paper.pdf appendices A–I: pSGLD and graph hyperparameters, derivations, larger-model tests, SAE protocol and complete cluster catalogue",
+    "source PDF SHA-256 29f0ade77d76a41d15b877979cb9354fb8c9cde99359f446918da42f745c90da",
+    "MinerU Markdown SHA-256 8156d5b6945419239a489f8a6a80c1b173a521d99d664c332d91260bd35196e9",
+    "Evidence packet SHA-256 3383ecf9a62f6604dd55130b18848d55c4f84a8c62008a7eebac8272b2741a15",
+    "Evidence status: full-text verified; no independent reproduction performed."
+  ]
+}

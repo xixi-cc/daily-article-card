@@ -1,0 +1,103 @@
+{
+  "arxiv_id": "2601.18699",
+  "source_version": "v2",
+  "source_pdf": "https://arxiv.org/pdf/2601.18699v2",
+  "title_en": "Mechanistic Analysis of Catastrophic Forgetting in Large Language Models During Continual Fine-tuning",
+  "title_zh": "大语言模型持续微调中灾难性遗忘的机制分析：一份高风险证据审读",
+  "curation_status": "full_text_verified",
+  "card_standard_version": "2.4",
+  "audience_profile": "physics_ai_literate_physicist",
+  "paper_profile": "ai_empirical",
+  "style_reference": "physicist_daily_arxiv",
+  "provenance": {
+    "program": "Collection",
+    "catalog": "Paper Collection",
+    "catalog_record_id": "2601.18699",
+    "catalog_record_ids": ["2601.18699"],
+    "catalog_topic": "Mechanistic Interpretability",
+    "collection_date": "2026-08-30",
+    "sampled_at": "2026-08-31",
+    "selected_by": "ziming_mineru_serial_goal",
+    "sampling_seed": "not_applicable_source_complete",
+    "candidate_count": 464
+  },
+  "verified_metadata": {
+    "arxiv_id": "2601.18699",
+    "version": "v2",
+    "title": "Mechanistic Analysis of Catastrophic Forgetting in Large Language Models During Continual Fine-tuning",
+    "authors": ["Gustav Olaf Yunus Laitinen-Fredriksson Lundstrom-Imanov"],
+    "categories": ["cs.LG", "cs.CL"],
+    "primary_category": "cs.LG",
+    "published": "2026-01-26T17:15:10Z",
+    "updated": "2026-06-13T16:39:39Z",
+    "abstract": "The paper reports a drift-localization diagnostic using CKA and MoE routing changes and proposes projecting gradients away from historical activation subspaces; its unusually broad frontier-model experiments lack sufficient public provenance for independent authentication."
+  },
+  "equation_refs": [
+    {
+      "label": "表示与路由漂移指标",
+      "latex": "\\mathrm{CKA}(X^l,Y^l)=\\frac{\\mathrm{HSIC}(X^lX^{l\\top},Y^lY^{l\\top})}{\\sqrt{\\mathrm{HSIC}(X^lX^{l\\top},X^lX^{l\\top})\\mathrm{HSIC}(Y^lY^{l\\top},Y^lY^{l\\top})}},\\quad \\mathrm{RGD}=\\frac1{|\\mathcal D|}\\sum_x D_{JS}(g_A(x)\\|g_{A\\to B}(x))",
+      "role": "flag layers whose activation geometry or MoE expert routing changes strongly after sequential fine-tuning",
+      "symbols": {"X_l_Y_l": "baseline and adapted layer activations on a calibration set", "HSIC": "Hilbert-Schmidt independence criterion", "g_A": "expert routing distribution before adaptation", "D_JS": "Jensen-Shannon divergence"},
+      "evidence": "paper.pdf p. 4, Eqs. (1)–(2) and Algorithm 1",
+      "interpretation": "CKA/RGD measure change, not harmful forgetting by themselves. RADL labels a layer vulnerable when hand-set thresholds are crossed; causal localization requires the separately claimed activation-patching recovery, whose complete logs and artifacts are unavailable here."
+    },
+    {
+      "label": "闭源模型的语义输出漂移",
+      "latex": "\\mathrm{SOD}(x)=1-\\frac{\\langle\\Phi(P_A),\\Phi(P_{A\\to B})\\rangle}{\\|\\Phi(P_A)\\|_2\\|\\Phi(P_{A\\to B})\\|_2}",
+      "role": "replace inaccessible internal measurements with cosine distance between embeddings of sampled API outputs",
+      "symbols": {"P_A": "reported output distribution before continual adaptation", "Phi": "sentence embedding of top-k sampled outputs", "SOD": "semantic output drift"},
+      "evidence": "paper.pdf p. 4, Eq. (3)",
+      "interpretation": "API output embedding drift can reflect sampling noise, endpoint/version changes or prompt effects, and is not an internal mechanistic observable.论文仅对该项说明 N=5，无法支撑精细的闭源机制比较。"
+    },
+    {
+      "label": "Low-Rank Circuit Projection",
+      "latex": "P_{\\rm proj}=I-U_kU_k^\\top,\\qquad W_{t+1}=W_t-\\eta(\\nabla_W\\mathcal L\\,P_{\\rm proj})",
+      "role": "remove gradient components lying in the leading SVD subspace of historical activations for selected circuits",
+      "symbols": {"U_k": "top-k left singular vectors of cached historical activations", "P_proj": "orthogonal-complement projector", "eta": "fine-tuning step size", "W": "weights in RADL-selected modules"},
+      "evidence": "paper.pdf pp. 8–9, Eqs. (4)–(5) and Figure 6",
+      "interpretation": "投影提供 stability–plasticity trade-off，却只在所选 activation metric 下保护 historical subspace。$k/d$、calibration data 与乘法方向决定结果；一次 SVD 不等于证明该子空间就是唯一功能电路。"
+    }
+  ],
+  "figure_refs": [
+    {
+      "label": "Figure 6",
+      "asset_path": "assets/collection-figures/2601.18699/figure-6-low-rank-circuit-projection.webp",
+      "section": "模型与方法",
+      "role": "illustrate projecting a target-task update into the orthogonal complement of a historical activation subspace",
+      "evidence": "paper.pdf p. 9, Figure 6",
+      "alt_text": "示意图展示历史激活经 SVD 定义受保护低秩子空间，目标任务梯度被投影到其正交补后才更新权重。",
+      "caption": "LRCP 的核心是限制更新方向，而非冻结整个模型：保留历史子空间的同时让正交方向承担新任务适配。",
+      "interpretation": "This is an author schematic, not measured evidence that the chosen subspace contains the claimed circuit or that projected updates are causal and sufficient."
+    }
+  ],
+  "cover": {
+    "mode": "source_figure",
+    "asset_path": "assets/collection-figures/2601.18699/figure-6-low-rank-circuit-projection.webp",
+    "label": "Figure 6",
+    "visual_type": "schematic",
+    "evidence": "paper.pdf p. 9, Figure 6",
+    "alt_text": "历史激活低秩子空间及其正交补上的梯度投影。",
+    "caption": "用历史激活定义需要保护的方向，再把持续微调限制在其正交补。",
+    "selection_rationale": "It presents the technically reusable idea without visually amplifying the paper's unauthenticated frontier-model benchmark claims."
+  },
+  "sections": [
+    {"title": "作者信息", "paragraphs": ["Gustav Olaf Yunus Laitinen-Fredriksson Lundstrom-Imanov；论文署名 Linköping University STIMA。", "本站核验 arXiv:2601.18699v2：初次提交于 2026-01-26，更新于 2026-06-13；分类 cs.LG、cs.CL；PDF 含 1 页 Highlights 加 12 页正文。", "Collection 来源为刘子鸣网站的 Mechanistic Interpretability 条目。全文来源已核验，但下述模型访问、实验过程和表格没有独立 provenance 验证。"]},
+    {"title": "研究问题", "paragraphs": ["持续从任务 A 微调到 B/C 时，哪些层、attention heads 或 MoE routers 的变化与旧任务能力下降最相关？能否只保护这些局部电路的历史表示，而不是冻结或正则化全网？", "论文提出 RADL：用 activation CKA 下降与 routing JS divergence 上升筛出高漂移层；再用 activation patching 声称建立恢复关联，并据此对这些层应用 LRCP。", "思路本身是清楚的 stability–plasticity 方案；但论文同时声称评测 20 个 mid-2026 frontier models，而 PDF 缺少足以认证这些昂贵实验的仓库、checkpoint、日志、硬件与数据 receipt，结论必须按未验证作者报告处理。"]},
+    {"title": "背景", "paragraphs": ["catastrophic forgetting 指顺序学习新分布后旧任务性能显著下降。参数距离大不必然代表功能丢失，激活相似也不保证行为保存，因此需要 behavior、representation 与 intervention 多层证据。", "CKA 比较两组 activation Gram geometry；MoE 的 gate drift 比较专家选择分布。二者适合定位变化，却不能单独说明该变化造成 forgetting。", "orthogonal gradient projection 用历史数据张成的子空间限制新梯度，类似 GPM/OGP。LRCP 的变化是先用漂移指标局部选层、一次性 SVD，从而声称减少全网和在线分解成本。"]},
+    {"title": "给物理学家的 AI 导读", "paragraphs": ["可把旧任务相关 activation directions 看作一组近似慢模或受保护子空间。新任务产生的 generalized force（gradient）被分成平行与正交分量，删去平行分量以避免移动旧结构。", "但 SVD 的大 singular directions 只是 calibration ensemble 下的方差主轴，不自动是 conserved quantities 或真正 causal modes；低方差方向也可能承载关键功能。", "CKA/RGD profile 像序参量随深度的空间图，activation patching 才接近局部干预。若 patching protocol、controls 和原始曲线不可复核，就不能从“中层漂移峰”升级为已建立机制。"]},
+    {"title": "模型与方法", "paragraphs": ["开放权重部分比较适配前后逐层 CKA，对 MoE 再测 expert-routing JS divergence；RADL 以阈值组合标出 drift blocks。作者还报告 weight Frobenius drift、attention entropy 与 activation patching。", "闭源部分用相同 prompt 参数采样 top-k outputs，经 sentence embedding 后算 cosine drift；这只能做 black-box behavioral proxy。", "LRCP 对历史 activation matrix 做一次 SVD，保留 $U_k$，再把 selected modules 的 gradients 右乘 $I-U_kU_k^T$。作者以 $k/d$ 调节 retention 与 adaptation。", "任务顺序声称为 coding→math→reasoning，并覆盖 10 open-weight 与 10 closed-source models；但 PDF 未给出可用 repository URL、确切 commits、checkpoint、训练配置、完整样本规模或可审计日志。"]},
+    {"title": "核心结果与证据", "paragraphs": ["作者报告开放权重模型的 mid-layer CKA 为 0.412–0.612，MoE routing drift 较大，并把 peak forgetting 定位于中层 MLP/router；PDF 描述 activation patching recovery，但没有提供足够逐层数值与 artifacts 供独立审计。", "Table 4 对所谓 Llama 4 Scout 报告：standard fine-tuning 后 Task A/B 为 35.1/76.8%；LRCP 为 74.8/75.1%，1.09× overhead、1.62% active parameters。$k/d=0.20$ 被报告为折中点。", "论文摘要声称最多保留 94.2% ancestral capability，但正文的指标定义、聚合方式与可复核 provenance 不足，本站不把该数字视为已建立结果。", "rank sweep 报告从 0.05 提至 0.40 时 Task A retention 增加而 Task B adaptation 降低，符合投影维数增加的预期；这类单表趋势仍需要代码、seeds、置信区间与 matched compute 重现。", "因此本卡的可靠结论分两层：LRCP 的数学构造可从全文核验；模型 cohort、漂移曲线、表格优势与因果定位只能记录为 author-stated claims。"]},
+    {"title": "有效性与局限", "paragraphs": ["方法层面的优点是同时尝试 behavioral loss、representation geometry、routing、patching 和 targeted mitigation，并把 rank 选择呈现为 stability–plasticity trade-off。", "最大问题是 provenance：声称公开代码/补充材料，却无可用 URL；无 commit、checkpoint、activation cache、API response log、硬件/训练账单或复现实验 receipt，无法认证对所列大模型的访问和微调。", "模型名称与规格包含多项难以从本 PDF 认证的 mid-2026 frontier claims，部分引用格式/来源异常。仅凭 arXiv PDF 不能排除版本混淆、占位引用、生成性错误或不可复现实验。", "闭源 SOD 明确受 API non-determinism/version drift 影响，N=5 只对 semantic-output drift 被提及。top-k sampling 和 embedding model 又引入额外方差，不能称为闭源内部 representation measurement。", "CKA/RGD 与旧任务下降的相关性不等于因果；activation patching 需要 layer-matched、magnitude、distribution-shift controls。LRCP 成功也可能来自一般正则化，而非准确保护被识别的电路。", "`full_text_verified` 只表示本站核验了 v2 PDF 全文和页面证据，不表示独立复现、事实认证或科学结论通过同行验证。"]},
+    {"title": "复现与资源", "paragraphs": ["在作者补充可访问资源前，最低 provenance 要求是：官方模型/checkpoint identifiers、许可与访问日期、训练数据/任务定义、所有 seeds、每层 activations、patching hooks、SVD orientation、完整 logs 和表格生成脚本。", "低成本机制复现可先用真正公开的小 MoE：顺序训练 A→B，预注册旧任务 score；分别测 CKA/RGD、随机层 patching、RADL层 patching，并对 LRCP、全层 OGP、LoRA、replay 做 matched-compute 比较。", "必须报告均值/置信区间、projection rank、calibration size、SVD cost、训练吞吐和 terminal performance；若无法复现 Table 4，应保留失败而非用相似模型替代。本站未运行这些实验。"]},
+    {"title": "阅读指南", "paragraphs": ["先读 Eqs. (1)–(5) 与 Figure 6，抽取可独立理解的诊断和投影构造；把所有具体模型数字暂时放入“待 provenance 审计”栏。", "再读 Tables 1–5，逐项寻找 sample size、seed、uncertainty、task split、checkpoint 和 artifact link；缺失项本身是判断证据等级的内容。", "最后检查 activation patching 是否真正区分漂移相关与功能因果。最关键的下一步不是扩展到更多模型，而是在一个公开模型上提供端到端、可重放的最小证据链。"]}
+  ],
+  "evidence_refs": [
+    "paper.pdf pp. 4–5: CKA, routing drift, semantic-output drift and RADL definitions",
+    "paper.pdf pp. 6–10: author-reported cohort tables, activation-patching claims, LRCP, Table 4 and rank sensitivity",
+    "paper.pdf pp. 10–13: API/version limitations, absent repository locator, references and author information",
+    "source PDF SHA-256 88370bc59ab4db15c0f80f6ba5f40664cd9f1c5a0487c886123a949b4d942c64",
+    "MinerU Markdown SHA-256 42d24ed753043467633b0ac8f73d7aea86d749a6ac9382898ecbb94aa606baa1",
+    "Evidence packet SHA-256 7fa45745a00f3c1ef3943f04bd872cb39f050b26662afb2f99663d0f1a4e8e7d",
+    "Evidence status: source full text verified; all empirical and model-access claims remain unverified author reports; no independent reproduction performed."
+  ]
+}

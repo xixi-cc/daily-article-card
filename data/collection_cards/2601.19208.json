@@ -1,0 +1,66 @@
+{
+  "arxiv_id": "2601.19208",
+  "source_version": "v2",
+  "source_pdf": "https://arxiv.org/pdf/2601.19208v2",
+  "title_en": "How Do Transformers Learn to Associate Tokens: Gradient Leading Terms Bring Mechanistic Interpretability",
+  "title_zh": "Transformer 如何学会 token 关联：用梯度主导项解析早期训练",
+  "curation_status": "full_text_verified",
+  "card_standard_version": "2.4",
+  "audience_profile": "physics_ai_literate_physicist",
+  "paper_profile": "theory_numerics",
+  "style_reference": "physicist_daily_arxiv",
+  "provenance": {
+    "program": "Collection", "catalog": "Paper Collection", "catalog_record_id": "2601.19208", "catalog_record_ids": ["2601.19208"], "catalog_topic": "Learning Theory", "collection_date": "2026-08-30", "sampled_at": "2026-08-31", "selected_by": "ziming_mineru_serial_goal", "sampling_seed": "not_applicable_source_complete", "candidate_count": 464
+  },
+  "verified_metadata": {
+    "arxiv_id": "2601.19208", "version": "v2", "title": "How Do Transformers Learn to Associate Tokens: Gradient Leading Terms Bring Mechanistic Interpretability", "authors": ["Shawn Im", "Changdae Oh", "Zhen Fang", "Sharon Li"], "categories": ["cs.CL", "cs.LG"], "primary_category": "cs.CL", "published": "2026-01-27T10:22:46Z", "updated": "2026-05-12T05:04:41Z", "abstract": "The ICLR 2026 paper expands early gradient-descent dynamics of an attention-only language model and expresses output, value, attention and position weights through corpus-level bigram, interchangeability and context mappings."
+  },
+  "equation_refs": [
+    {
+      "label": "早期权重的阶次分离",
+      "latex": "W_O=s\\eta\\bar B+O(s^2\\eta^2),\\quad V^{(l)}=\\binom{s}{2}\\eta^2\\bar\\Phi^\\top\\bar B^\\top+O(s^3\\eta^3)",
+      "role": "show that output and value weights appear at different orders and inherit explicit corpus statistics",
+      "symbols": {"s": "number of early gradient steps", "eta": "learning rate", "B_bar": "row-centered next-token bigram mapping", "Phi_bar": "centered context/prefix mapping"},
+      "evidence": "paper.pdf p. 4, Theorem 4.1, Eqs. (5)–(6); detailed proof Appendix D",
+      "interpretation": "output mapping 先在 $O(\\eta)$ 出现，value 在 $O(\\eta^2)$ 出现。误差界只覆盖受限的 $s\\eta$、序列长度、词表和小/零初始化区域；不是收敛后权重的精确闭式。"
+    },
+    {
+      "label": "attention 与位置的更高阶主项",
+      "latex": "W^{(l)}=\\left[3\\binom{s}{4}+2\\binom{s}{3}\\right]\\eta^4\\bar Q+O(s^5\\eta^5T),\\quad P^{(l)}=\\left[3\\binom{s}{4}+2\\binom{s}{3}\\right]\\eta^4\\Delta+O(s^5\\eta^5T)",
+      "role": "characterize token–token attention association and relative-position preference as fourth-order training effects",
+      "symbols": {"Q_bar": "composition of bigram, interchangeability and context mappings for token attention", "Delta": "corresponding relative-position statistic", "T": "sequence length"},
+      "evidence": "paper.pdf pp. 4–6, Eqs. (7)–(8) and Figure 2",
+      "interpretation": "attention score 的结构比 output/value 晚出现，说明不同参数块有时间尺度层级。$O(s^5\\eta^5T)$ 随训练和长度增长，超过 early regime 后高阶项可改变甚至主导机制。"
+    },
+    {
+      "label": "三类语料映射",
+      "latex": "\\bar B_{ij}=\\mathcal P_t(e_i)\\left[\\mathcal P_t(e_j|e_i)-|\\mathcal V|^{-1}\\right],\\qquad \\Sigma_{\\bar B,ij}\\propto\\mathcal P_t(e_i)\\mathcal P_t(e_j)\\sum_k\\mathcal P_t(e_k^{\\leftarrow}|e_i)\\mathcal P_t(e_k^{\\leftarrow}|e_j)",
+      "role": "separate direct next-token association from similarity of tokens that share preceding-token distributions",
+      "symbols": {"B_bar": "centered bigram mapping", "Sigma_B": "interchangeability mapping", "P_t": "empirical corpus probability", "Phi_bar": "additional long-context co-occurrence mapping composed downstream"},
+      "evidence": "paper.pdf pp. 5–6, Eqs. (9)–(11)",
+      "interpretation": "bigram 是局部转移统计；interchangeability 衡量两 token 是否拥有相似前驱；context mapping 汇总更长前缀共现。论文称其为 semantic association，但这些首先是分布统计，不等于人类语义或事实因果关系。"
+    }
+  ],
+  "figure_refs": [{"label": "Figure 2", "asset_path": "assets/collection-figures/2601.19208/figure-2-three-association-mappings.webp", "section": "模型与方法", "role": "diagram how bigram, token-interchangeability and context mappings compose into each attention-only transformer weight", "evidence": "paper.pdf p. 5, Figure 2", "alt_text": "示意图展示 bigram、token interchangeability 与 context 三种语料统计如何组合进 output、value、attention 和 relative-position 权重。", "caption": "Figure 2 把早期训练拆成三块统计积木：直接相邻、共享前驱的可互换性，以及更长上下文关联；不同权重以不同阶次组合它们。", "interpretation": "This is a theorem map for the simplified attention-only model, not an empirical circuit diagram of a full converged LLM."}],
+  "cover": {"mode": "source_figure", "asset_path": "assets/collection-figures/2601.19208/figure-2-three-association-mappings.webp", "label": "Figure 2", "visual_type": "schematic", "evidence": "paper.pdf p. 5, Figure 2", "alt_text": "三种 token 关联映射及其在 Transformer 参数中的组合。", "caption": "梯度展开把早期 Transformer 权重写成语料统计的低阶组合。", "selection_rationale": "It is the clearest bridge between the formal expansion and an AI-literate physicist's intuition about effective couplings and perturbative orders."},
+  "sections": [
+    {"title": "作者信息", "paragraphs": ["Shawn Im、Changdae Oh、Zhen Fang、Sharon Li；University of Wisconsin–Madison 与 University of Technology Sydney。论文标注 ICLR 2026。", "本站核验 arXiv:2601.19208v2：初次提交于 2026-01-27，更新于 2026-05-12；分类 cs.CL、cs.LG；共 39 页。", "Collection 来源为刘子鸣网站的 Learning Theory 条目。"]},
+    {"title": "研究问题", "paragraphs": ["当 attention-based language model 从近零初始化开始做梯度下降时，bird–flew、car–truck 这类 token association 最初怎样进入 output、value、query-key 和 positional weights？", "论文不从训练好的模型倒推单个 circuit，而是对早期梯度动力学做 leading-term expansion，把每块权重写成 corpus statistics 的闭式组合，并给 remainder bound。", "核心命题是“关联的萌芽可解析”；它不等于完整解释模型收敛后的语义、事实知识或生成行为。"]},
+    {"title": "背景", "paragraphs": ["distributional semantics 认为词义部分来自出现环境。Transformer 训练把 next-token cross-entropy 的统计梯度累积进权重，因此早期权重应直接反映低阶 token co-occurrence。", "此前理论常去掉 causal mask、position 或 residual，或只研究单步/合成数据。本文保留 causal masking、relative position 和 residual stream，但仍采用 one-hot vocabulary-width、attention-only 架构。", "mechanistic interpretability 通常在终态做 probe/patching；training-dynamics 分析则问某结构从哪一个梯度阶次产生，可给出更明确的来源，但适用时间窗更窄。"]},
+    {"title": "给物理学家的 AI 导读", "paragraphs": ["这是围绕小参数/短时间的微扰展开：$s\\eta$ 类似演化时间，output、value、attention 分别在一阶、二阶、四阶出现，像有效耦合在不同 perturbative order 被生成。", "bigram、interchangeability、context mappings 可看作由语料 ensemble 计算的低阶关联核；矩阵乘积对应信息沿两步统计关系传播，例如先把 token 映射到可互换类，再连接长上下文。", "高 cosine similarity 只说明两个矩阵方向或 covariance geometry 很接近。若主项范数远大于 remainder，它有解释力；但 cosine 不检验幅值、behavior sufficiency、唯一性或高阶项的物理意义。"]},
+    {"title": "模型与方法", "paragraphs": ["理论模型是 L-layer、single-head attention-only transformer，输入为 one-hot tokens，含 residual、causal mask 与可学习 relative-position vector；用 full-batch cross-entropy 和固定步长 gradient descent。", "作者从零初始化推导前若干步，再推广到方差极小的 Gaussian initialization。多层定理要求例如 $L\\leq\\sqrt T/4$、$T\\geq60$、$|\\mathcal V|\\geq500$，训练步数受 $s\\lesssim\\eta^{-1}\\min(1/(12L),5/(8\\sqrt T))$ 限制。", "TinyStories 实验训练 3-layer attention model，比较实际权重与理论矩阵；另以 BPE vocabulary 10,000 复查。Pythia-1.4B 分析则以 OpenWebText/FineWeb 估计 leading features，并比较 embedding/attention covariance matrices。", "Pythia 含 multi-head attention 和 MLP，故作者没有验证其完整权重等于定理公式，而是比较相关结构，并做去除 MLP、individual heads 和 leading-direction projection 等附加分析。"]},
+    {"title": "核心结果与证据", "paragraphs": ["Theorem 4.1 给出层级：$W_O$ 的主项是 centered bigram；$V$ 是 context 与 bigram 的组合；query-key $W$ 和 relative position $P$ 在更高阶由 interchangeability、context 与 bigram 复合产生。", "TinyStories 主实验报告前三类 weight matrices 的跨训练最小 cosine similarity 分别为 0.999496、0.999169、0.998486，说明所测早期窗口内理论方向紧贴实际权重。BPE 附加实验也为 0.999914、0.998800、0.997891。", "定性例子显示 bird query 经组合映射对 flew 等合理 context/output 获得高分；但这种解释由 corpus association 构造，不能判定模型是否具有人类层面的 bird 概念。", "Pythia-1.4B 的 embedding/attention covariance 在早期 checkpoint 与理论 feature 高相似，随后逐渐漂移，早层先离开；individual-head 分析提示中层 heads 较早 specialization。这里验证的是 covariance structure，不是 theorem 对真实架构的精确误差界。", "附录将各 weight 对应 leading direction 投影移除后测 loss；output leading term 影响最大、attention 最小，与其出现阶次吻合。这是功能干预证据，但一次大范围方向删除不能唯一定位具体 semantic association。"]},
+    {"title": "有效性与局限", "paragraphs": ["优点是把语料统计、梯度阶次、具体权重块和误差界连接起来，并同时用 toy training、BPE、Pythia covariance、MLP ablation 与 projection intervention 检查。", "严格定理针对 attention-only、single-head、早期、小/零初始化与受限步数；one-hot dimension 等于 vocabulary。标准 LLM 的 embeddings、LayerNorm、MLP、multi-head、optimizer、batch noise 和长程训练均改变动力学。", "Pythia 实验只说协方差矩阵相似，不能据此断言真实 weights 满足闭式公式。高 cosine 忽略尺度；common high-dimensional covariance 或数据估计偏差也可能抬高相似度。", "bigram/interchangeability/context 是作者选择的统计分解，描述 association 不等于完整 semantics。语法、composition、polysemy、rare tokens 和高阶训练结构可能需要额外 basis functions。", "early features 后来仍部分保留是经验观察，不是定理保证。随着 $s\\eta$ 和 T 增大，remainder bound 变松；收敛时哪部分主项仍 causal/necessary 需要逐 checkpoint intervention。", "TinyStories 的 65,536 条、长度 201 样本和 Pythia 的前 100k 文本构成有限估计；卡片未见独立重复 seeds 的 uncertainty 汇总。"]},
+    {"title": "复现与资源", "paragraphs": ["论文入口：https://openreview.net/forum?id=11pY7uIZ3H 。复现需固定 arXiv v2、TinyStories filtering、65,536×201 样本、词表/one-hot 或 BPE、第一 batch 的理论矩阵、初始化、learning rate 与 checkpoints。", "最小复现应逐步保存 $W_O,V,W,P$，同时报告 cosine、Frobenius relative error 与 theorem bound；分别随机打乱 bigrams、前驱和长 context，验证三种 basis 对应项按预测消失。", "Pythia 复现需固定 checkpoint、OpenWebText/FineWeb 样本、tokenizer、layer/head covariance 定义，并把 MLP ablation 与 leading-direction removal 配对 random-direction/matched-norm controls。本站未运行训练。"]},
+    {"title": "阅读指南", "paragraphs": ["先看 Figure 2，给三种 mappings 各写一个普通语言例子；再回到 Eqs. (5)–(8)，标出每个权重首次出现的 $\\eta$ 阶次和 remainder。", "读实验时把三种对象分开：TinyStories 的实际 weight cosine、Pythia 的 covariance cosine、projection removal 的 loss effect；它们支持的命题强度不同。", "最后读 Appendix D 的 $s,L,T,|V|$ 条件。最关键的后续工作是把 perturbative dictionary 扩展到 LayerNorm+MLP+multi-head+Adam，并检验哪些 leading components 在收敛模型中仍对具体行为必要。"]}
+  ],
+  "evidence_refs": [
+    "paper.pdf pp. 4–7: early-stage theorems, remainder bounds and three association mappings",
+    "paper.pdf pp. 8–11: TinyStories cosine results, qualitative interpretation and Pythia-1.4B covariance validation",
+    "paper.pdf appendices: BPE, projection intervention, dataset details and zero/small-initialization proofs",
+    "source PDF SHA-256 8cbc5304aea2af69da8098a394f6fa05a8dd49b0228685bdccf0afb25030e7a4",
+    "MinerU Markdown SHA-256 2fffd639d290d415b4c4de63ba0d6934c6dbdb3c32a64008b2b86b66abd9ba4e",
+    "Evidence packet SHA-256 aaaa098aa43b050a7ce6882c88470130b8a1554c891bb8e69c411c5da65e9bef",
+    "Evidence status: full-text verified; no independent reproduction performed."
+  ]
+}
