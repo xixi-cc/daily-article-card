@@ -1,0 +1,105 @@
+{
+  "arxiv_id": "2301.13703",
+  "source_version": "v2",
+  "source_pdf": "https://arxiv.org/pdf/2301.13703",
+  "title_en": "Dissecting the Effects of SGD Noise in Distinct Regimes of Deep Learning",
+  "title_zh": "剖析深度学习不同区间中的 SGD 噪声效应",
+  "curation_status": "full_text_verified",
+  "card_standard_version": "2.3",
+  "paper_profile": "theory_experiment",
+  "style_reference": "physicist_daily_arxiv",
+  "provenance": {
+    "program": "Collection", "catalog": "Paper Collection", "catalog_record_id": "2301.13703",
+    "catalog_record_ids": ["2301.13703"], "catalog_topic": "Scaling Laws", "collection_date": "2026-08-30",
+    "sampled_at": "2026-08-31", "selected_by": "ziming_mineru_serial_goal",
+    "sampling_seed": "not_applicable_source_complete", "candidate_count": 464
+  },
+  "verified_metadata": {
+    "arxiv_id": "2301.13703", "version": "v2",
+    "title": "Dissecting the Effects of SGD Noise in Distinct Regimes of Deep Learning",
+    "authors": ["Antonio Sclocchi", "Mario Geiger", "Matthieu Wyart"],
+    "categories": ["cs.LG", "cond-mat.dis-nn"], "primary_category": "cs.LG",
+    "published": "2023-01-31T15:22:24Z", "updated": "2023-05-30T12:21:35Z",
+    "comment": "25 pages, 21 figures, added analysis in feature-learning"
+  },
+  "sections": [
+    {
+      "title": "作者信息",
+      "paragraphs": ["作者：Antonio Sclocchi、Mario Geiger、Matthieu Wyart。arXiv:2301.13703v2，共 25 页、21 图。论文以 MNIST/CIFAR 深网和可解析 perceptron 对照，研究 SGD noise、初始化尺度和训练集大小的联合标度。"]
+    },
+    {
+      "title": "研究问题",
+      "paragraphs": [
+        "“SGD 噪声有利于泛化”并非无条件成立：网络可处于 α≫1 的 lazy regime 或 α≪1 的 feature-learning regime，比较还会受训练预算和何时停止影响。作者问：以有效温度 T=η/B 表示 minibatch 噪声时，T 在哪些训练区间改善或损害测试误差？噪声何时开始真正改变最终模型？",
+        "工作特别检验一个动力学解释：SGD 噪声在训练后期增加非信息方向的权重；为了把最靠近 decision boundary 的样本也拟合到零 hinge loss，网络被迫同时增长更强的有用 signal 并训练更久。"
+      ]
+    },
+    {
+      "title": "模型与方法",
+      "paragraphs": [
+        "作者用带可调输出/初始化尺度 α 的全连接网络和 CNN，分别在 parity-MNIST 与 CIFAR-10 二分类上训练 hinge loss；扫描 α、SGD 温度 T=η/B 和训练集大小 P，训练到所有样本被拟合。α 大时参数相对变化小、接近 kernel/lazy regime，α 小时发生 feature learning。",
+        "观测量包括 test error、相对总权重变化 Δw、达到零训练误差的连续时间 t*=η×steps，以及输入梯度在真实判别方向与正交方向的分量。经验标度写成 Δw∼T^δP^γ、t*∼TP^b，噪声起效温度写成 T_c∼P^{-a}。",
+        "perceptron 对照令标签 y=sign(x₁)，并控制 decision boundary 附近的样本密度指数 χ。此时 w₁ 是信息 signal，w⊥ 是噪声分量，可直接检查数据最小 margin、训练时长和指数如何随 χ 改变。"
+      ]
+    },
+    {
+      "title": "核心结果与证据",
+      "paragraphs": [
+        "Figure 1 的 (α,T) phase diagrams 显示效应依赖区间：在 lazy regime 增大 T 可让网络离开 lazy 状态并降低误差；在本来已进行 feature learning 的小 α 区，继续加噪可能提高误差。减小 α 和增大 T 都能增大参数运动，却可能对性能产生相反影响，因此不能把“离开 lazy”当成充分解释。",
+        "在 lazy MNIST 与 CIFAR 实验中，横轴按 TP^{0.5} 重标后 T_c 附近的数据塌缩，提示 T_c∼P^{-0.5}。更一般地，T_c 是模型依赖的 P 幂律；lazy regime 由 Δw=O(1) 与 Δw∼T^δP^γ 推出 a=γ/δ，feature regime 则由低温 P 标度与高温 T、P 标度交叉确定。拟合指数误差约 ±0.2。",
+        "训练曲线显示改变 P 主要推迟最后训练误差归零，而早期动力学相近。perceptron 中 ||w⊥|| 随 T 增长且基本不依赖 P，w₁ 和 t* 必须随靠近边界的最难样本增长；改变边界附近密度 χ 会改变标度指数，支持“后期 stopping + margin statistics”机制而非单一 flat-minimum 解释。"
+      ]
+    },
+    {
+      "title": "有效性与局限",
+      "paragraphs": [
+        "实验使用 hinge loss 并训练到首次零 loss；cross-entropy、固定 epochs、weight decay、momentum/Adam、data augmentation 或 learning-rate schedule 会改变 stopping 与有效温度。T=η/B 的连续温度近似要求 batch/step-size 区间受控，Figure 1 黑点区域还包含不收敛运行。",
+        "MNIST/CIFAR 是特定二分类子任务，网络深度与参数化有限；标度区间和指数由有限 P、T 拟合，作者也强调非普适性。perceptron 解释能分解 signal/noise，但它没有 feature learning，不能证明深网中所有 SGD 效应均由同一机制产生。"
+      ]
+    },
+    {
+      "title": "复现与资源",
+      "paragraphs": [
+        "原文：https://arxiv.org/abs/2301.13703。官方 PDF SHA-256：3c3306d373f9e770abac96eafef3195ac0318e1106dfd0551571ce509f2fa0df。",
+        "复现需冻结 MNIST/CIFAR 类别划分、网络与 α 参数化、hinge margin、P、B、η/T 网格、零训练误差 stopping、失败运行判据和多随机种子；对每组同时保存 test error、Δw、t*、输入梯度分解，并公开指数拟合窗口与不确定度。Evidence status: full-text verified; no independent reproduction performed."
+      ]
+    },
+    {
+      "title": "阅读指南",
+      "paragraphs": ["先读 pp. 1–3 的问题设定和 Figure 1 phase diagram；再看 pp. 4–6 的 T_c、Δw、t* 数据塌缩与 Table 1；用 pp. 6–9 的 signal/noise 几何和 perceptron 检验机制；最后读 p. 9 结论及附录的 feature-regime、架构和拟合细节。"]
+    }
+  ],
+  "cover": {
+    "mode": "source_figure", "asset_path": "assets/collection-figures/2301.13703/figure-1-sgd-phase-diagram.webp",
+    "label": "Figure 1(a)", "visual_type": "phase_diagram", "evidence": "paper.pdf p. 3, Figure 1(a)",
+    "alt_text": "MNIST 全连接网络的测试误差在初始化尺度 α 与 SGD 温度 T 平面上的彩色相图，上方黑点表示不收敛。",
+    "caption": "SGD 温度的作用随 lazy/feature-learning 区间变化；过高温度还会越过收敛边界。",
+    "selection_rationale": "Figure 1(a) 把论文最关键的条件性结论压缩在一张二维图中，比单一温度扫描更能防止“噪声总是有益”的误读。"
+  },
+  "figure_refs": [
+    {
+      "label": "Figure 1(a)", "asset_path": "assets/collection-figures/2301.13703/figure-1-sgd-phase-diagram.webp",
+      "section": "核心结果与证据", "role": "map test error and non-convergence across initialization scale and SGD temperature",
+      "evidence": "paper.pdf p. 3, Figure 1(a)", "alt_text": "横轴 α、纵轴 T 的 MNIST 测试误差相图。",
+      "caption": "低误差区、lazy/feature 变化与最大稳定温度边界同时可见。",
+      "interpretation": "Noise cannot be assigned one universal generalization effect without specifying initialization regime and convergence boundary."
+    }
+  ],
+  "equation_refs": [
+    {
+      "label": "SGD onset scaling", "latex": "T_c\\sim P^{-a},\\qquad \\Delta w\\sim T^{\\delta}P^{\\gamma},\\quad t^*\\sim TP^b",
+      "role": "connect the temperature at which SGD changes the trained model to data-set-size-dependent training dynamics",
+      "symbols": {"T_c": "noise-onset temperature", "P": "training-set size", "Delta w": "relative total weight variation", "t^*": "learning-rate times steps to zero hinge loss", "a,b,gamma,delta": "model- and regime-dependent exponents"},
+      "evidence": "paper.pdf pp. 2–3, Eqs. (1)–(2)",
+      "interpretation": "In the lazy regime, setting the parameter change to order one gives a=gamma/delta; the numerical exponent is not universal."
+    }
+  ],
+  "evidence_refs": [
+    "paper.pdf pp. 1–3: training-regime definitions, empirical scaling laws and Figure 1 phase diagrams",
+    "paper.pdf pp. 4–6: MNIST/CIFAR T_c collapse, weight variation, training time and fitted exponents",
+    "paper.pdf pp. 6–9: signal/noise mechanism, hardest samples and perceptron test",
+    "paper.pdf p. 9 and appendices: conclusions, feature-regime checks, architectures and additional sweeps",
+    "source PDF SHA-256 3c3306d373f9e770abac96eafef3195ac0318e1106dfd0551571ce509f2fa0df",
+    "Evidence status: full-text verified; no independent reproduction performed."
+  ]
+}

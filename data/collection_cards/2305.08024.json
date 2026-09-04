@@ -1,0 +1,107 @@
+{
+  "arxiv_id": "2305.08024",
+  "source_version": "v2",
+  "source_pdf": "https://arxiv.org/pdf/2305.08024",
+  "title_en": "Grasping Extreme Aerodynamics on a Low-Dimensional Manifold",
+  "title_zh": "在低维流形上刻画极端空气动力学",
+  "curation_status": "full_text_verified",
+  "card_standard_version": "2.3",
+  "paper_profile": "numerical",
+  "style_reference": "physicist_daily_arxiv",
+  "provenance": {
+    "program": "Collection", "catalog": "Paper Collection", "catalog_record_id": "2305.08024",
+    "catalog_record_ids": ["2305.08024"], "catalog_topic": "Reduced-Order Modeling",
+    "collection_date": "2026-08-30", "sampled_at": "2026-08-31",
+    "selected_by": "ziming_mineru_serial_goal", "sampling_seed": "not_applicable_source_complete", "candidate_count": 464
+  },
+  "verified_metadata": {
+    "arxiv_id": "2305.08024", "version": "v2",
+    "title": "Grasping Extreme Aerodynamics on a Low-Dimensional Manifold",
+    "authors": ["Kai Fukami", "Kunihiko Taira"],
+    "categories": ["physics.flu-dyn"], "primary_category": "physics.flu-dyn",
+    "published": "2023-05-13T00:00:00Z", "updated": "2023-09-29T00:00:00Z",
+    "comment": "18 pages; data and sample code publicly available"
+  },
+  "sections": [
+    {
+      "title": "作者信息",
+      "paragraphs": ["作者：Kai Fukami、Kunihiko Taira（UCLA）。arXiv:2305.08024v2。论文将二维强涡旋—翼型直接数值模拟与物理量增强 autoencoder 结合，寻找跨阵风参数的三维极端气动流形。"]
+    },
+    {
+      "title": "研究问题",
+      "paragraphs": [
+        "强阵风撞击小型飞行器会引发大尺度分离、附加涡结构和剧烈升力变化；涡强、尺度、位置与迎角组成高维参数空间。作者问：这些看似各异的非线性流场能否压缩到极低维坐标，同时保留重构流场和气动力所需的信息？",
+        "目标是数据驱动的 reduced-order representation，不是从低维坐标导出新的闭合控制方程。实时估计、控制和安全飞行是潜在下游用途，本文未做飞行闭环验证。"
+      ]
+    },
+    {
+      "title": "模型与方法",
+      "paragraphs": [
+        "模型问题为 Re=100 的二维不可压 NACA 0012 翼型，迎角 20°–60°。上游 Taylor 型涡旋由 gust ratio G∈[−10,10]、相对直径 L∈[0.5,2] 与垂向位置 y0/c∈[−0.5,0.5] 描述；DNS 产生约 2.88×10^4 网格点、1.26×10^5 时刻的涡量快照。",
+        "比较三种三维表示：PCA、普通卷积 nonlinear autoencoder，以及 lift-augmented autoencoder。后者在重构涡量 q 的损失外加入升力系数 CL 的辅助 decoder 和加权误差，迫使 latent vector 同时编码流场与动力载荷；权重 β=0.05 由 L-curve 选择。",
+        "训练主要覆盖随机单涡 G∈[−4,4]。作者用 latent trajectories、vorticity reconstruction 和结构相似度 SSIM 检查插值，并测试 |G|>4、加噪、双涡和多涡等分布外情况。"
+      ]
+    },
+    {
+      "title": "核心结果与证据",
+      "paragraphs": [
+        "Figure 4 显示 PCA 的三维轨迹混叠，普通 nonlinear autoencoder 虽改善重构但不同迎角的 undisturbed limit cycles 仍挤在一起；加入 lift 后，各迎角基线轨道按气动力有序分离，受扰轨迹围绕它们形成连贯的三维 manifold。",
+        "仅三个 latent variables 即可重构强涡入射、翼面分离和尾迹结构，并同步估计 lift。补充实验中，对训练未见的水平/垂直双涡配置，lift-augmented model 的重构 SSIM 超过 0.90，而 PCA 无法捕捉来流涡与尾迹响应。",
+        "作者还展示噪声、|G|>4 extrapolation 和多涡极端扰动的连续 latent 轨迹，支持 manifold 捕捉了共通动力学。然而“universal”应理解为在该模拟族和测试扰动内的经验泛化，不是对真实大气所有涡结构的证明。"
+      ]
+    },
+    {
+      "title": "有效性与局限",
+      "paragraphs": [
+        "DNS 是二维、低 Reynolds 数、固定翼型和单一不可压模型；真实小飞行器涉及三维湍流、结构耦合、传感噪声、不同翼型与更高 Re。训练/测试都来自同一数值求解器，尚无风洞或飞行数据 domain shift 验证。",
+        "三维 latent manifold 的坐标受网络训练和旋转/缩放自由度影响，不具有唯一物理定义。lift augmentation 会优先保留与 CL 相关的信息，可能牺牲其他载荷或局部结构；SSIM 与升力误差也不足以保证用于控制时的稳定性和可观测性。"
+      ]
+    },
+    {
+      "title": "复现与资源",
+      "paragraphs": [
+        "原文：https://arxiv.org/abs/2305.08024。数据：https://doi.org/10.17605/OSF.IO/7VSH8。代码：https://github.com/kfukami/Observable-AE。官方 PDF SHA-256：7c3386a584103ebd8e53ecf2bc7abc2bdd16e9beeb00fb0582b5231494816834。",
+        "复现需固定 DNS 网格/时间步、参数采样与 train/test case split、涡量归一化、三维 bottleneck、β=0.05、optimizer seed 和 SSIM 实现；应分别报告流场、CL、插值与每类 extrapolation 误差。Evidence status: full-text verified; no independent reproduction performed."
+      ]
+    },
+    {
+      "title": "阅读指南",
+      "paragraphs": ["先读 pp. 1–4 的流动物理、参数范围和 Figure 2；再读 pp. 4–6 的 autoencoder、Figure 4 和三维流形；随后看 pp. 6–9 的 extrapolation 与多涡测试；最后查 Methods/Appendix 的 DNS、网络结构、损失和 SSIM，核对三维/真实飞行边界。"]
+    }
+  ],
+  "cover": {
+    "mode": "source_figure", "asset_path": "assets/collection-figures/2305.08024/figure-4-lift-augmented-manifold.webp",
+    "label": "Figure 4", "visual_type": "trajectory", "evidence": "paper.pdf p. 5, Figure 4",
+    "alt_text": "三幅三维 latent 轨迹图依次比较 PCA、普通非线性自编码器与升力增强自编码器；最后一幅按迎角分离出规则轨道。",
+    "caption": "升力辅助目标将不同迎角的基线极限环和受扰轨迹组织成可辨识的三维气动流形。",
+    "selection_rationale": "Figure 4 是论文主张的直接对照：相同三维瓶颈下，物理量增强目标改变了 latent geometry。"
+  },
+  "figure_refs": [
+    {
+      "label": "Figure 4", "asset_path": "assets/collection-figures/2305.08024/figure-4-lift-augmented-manifold.webp",
+      "section": "核心结果与证据", "role": "compare latent organization across linear, nonlinear and physics-augmented compression",
+      "evidence": "paper.pdf p. 5, Figure 4", "alt_text": "PCA、普通 autoencoder 与 lift-augmented autoencoder 的三维 latent trajectories。",
+      "caption": "加入 lift decoder 后，迎角 20°–60° 的 undisturbed states 在 latent space 中有序分离。",
+      "interpretation": "The geometry is learned from a specific 2D DNS family and is not a coordinate-invariant proof of a universal physical manifold."
+    }
+  ],
+  "equation_refs": [
+    {
+      "label": "Lift-augmented reconstruction objective",
+      "latex": "w^*=\\arg\\min_w\\left(\\lVert q-\\hat q\\rVert_2+\\beta\\lVert C_L-\\hat C_L\\rVert_2\\right),\\qquad \\beta=0.05",
+      "role": "force the three-dimensional latent state to retain both vorticity and aerodynamic-load information",
+      "symbols": {"q": "reference vorticity field", "q_hat": "decoded vorticity field", "C_L": "lift coefficient", "C_L_hat": "decoded lift", "beta": "lift-loss weight", "w": "network parameters"},
+      "evidence": "paper.pdf Methods, Eq. (3)",
+      "interpretation": "The auxiliary observable shapes the representation toward lift-relevant physics rather than guaranteeing retention of every flow feature."
+    }
+  ],
+  "evidence_refs": [
+    "paper.pdf pp. 1–4: extreme gust model, DNS parameters and force/flow responses",
+    "paper.pdf pp. 4–6: autoencoder design, PCA baseline and three-variable manifold",
+    "paper.pdf pp. 6’: reconstruction and extrapolation to noisy, stronger and multiple gusts",
+    "paper.pdf Methods and Appendix: loss, architecture, SSIM and reconstruction details",
+    "paper.pdf Data/Code availability: OSF data and Observable-AE repository",
+    "source PDF SHA-256 7c3386a584103ebd8e53ecf2bc7abc2bdd16e9beeb00fb0582b5231494816834",
+    "Evidence status: full-text verified; no independent reproduction performed."
+  ]
+}

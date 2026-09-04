@@ -1,0 +1,231 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Physics-Inspired Interpretability Of Machine Learning Models - physics+AI Collection 随机精选</title>
+    <meta name="description" content="作者：Maximilian P. Niroomand、David J. Wales（University of Cambridge）。arXiv:2304.02381v2，发表于 ICLR 2023 Physics for Machine Learning Workshop。短文把分子 energy-landscape 的 disconnectivity graph 与 order-parameter 思路移植到小型神经网络 loss landscapes。" />
+    <link rel="canonical" href="https://xixi-cc.github.io/daily-article-card/collection-papers/2304.02381/" />
+    <script type="application/ld+json">{"@context": "https://schema.org", "@type": "Article", "headline": "Physics-Inspired Interpretability Of Machine Learning Models", "description": "作者：Maximilian P. Niroomand、David J. Wales（University of Cambridge）。arXiv:2304.02381v2，发表于 ICLR 2023 Physics for Machine Learning Workshop。短文把分子 energy-landscape 的 disconnectivity graph 与 order-parameter 思路移植到小型神经网络 loss landscapes。", "url": "https://xixi-cc.github.io/daily-article-card/collection-papers/2304.02381/", "mainEntityOfPage": "https://xixi-cc.github.io/daily-article-card/collection-papers/2304.02381/", "inLanguage": "zh-CN", "author": {"@type": "Person", "name": "Xineng Cao", "alternateName": ["Xixi Cao", "曹溪能"], "url": "https://xixi-cc.github.io/"}, "isBasedOn": "https://arxiv.org/abs/2304.02381"}</script>
+    <script>
+      (function() {
+        try {
+          var themePreference = window.localStorage.getItem('color-theme') || 'system';
+          var systemUsesDarkTheme = window.matchMedia('(prefers-color-scheme: dark)').matches;
+          var resolvedTheme = themePreference === 'system'
+            ? (systemUsesDarkTheme ? 'dark' : 'light')
+            : themePreference;
+          document.documentElement.dataset.theme = resolvedTheme;
+          document.documentElement.dataset.themePreference = themePreference;
+          document.documentElement.style.colorScheme = resolvedTheme;
+        } catch (error) {
+          document.documentElement.dataset.theme = 'light';
+          document.documentElement.dataset.themePreference = 'system';
+        }
+      })();
+    </script>
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='18' fill='%23111827'/%3E%3Ctext x='50%25' y='55%25' text-anchor='middle' dominant-baseline='middle' font-size='30' font-family='Arial, sans-serif' fill='white'%3EV%3C/text%3E%3C/svg%3E" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700;800&family=Noto+Sans+SC:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <script>document.documentElement.classList.add('math-pending');</script>
+    <script>
+      window.MathJax = {
+        tex: {
+          inlineMath: [['$', '$'], ['\\(', '\\)']],
+          displayMath: [['$$', '$$'], ['\\[', '\\]']],
+          processEscapes: true
+        },
+        options: {
+          skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+        },
+        chtml: {
+          scale: 1,
+          displayAlign: 'center'
+        },
+        startup: {
+          ready: function() {
+            MathJax.startup.defaultReady();
+            MathJax.startup.promise.then(function() {
+              document.documentElement.classList.remove('math-pending');
+              document.documentElement.dataset.mathReady = 'true';
+            });
+          }
+        }
+      };
+    </script>
+    <script defer src="../../assets/vendor/mathjax/tex-chtml.js"></script>
+    <link rel="stylesheet" href="../../assets/style.css" />
+  </head>
+  <body class="detail-page" data-paper-id="2304.02381" data-paper-program="collection">
+    <div class="page-noise"></div>
+    <div class="page-blur page-blur-a"></div>
+    <div class="page-blur page-blur-b"></div>
+
+    <header class="header detail-page-header">
+      <div class="container">
+        <div class="detail-page-topbar">
+          <a class="back-link" href="../../collection.html">返回列表</a>
+          <div class="detail-topbar-actions">
+            <span class="detail-site-name">physics+AI Collection 随机精选</span>
+            <button id="detail-favorite" class="detail-favorite-button" type="button" aria-pressed="false">☆ 收藏</button>
+            <button class="theme-toggle" type="button" data-theme-toggle aria-label="当前主题：设备，点击切换主题" title="当前主题：设备">
+  <span class="theme-toggle-icons" aria-hidden="true">
+    <svg class="theme-toggle-icon theme-toggle-icon-light" viewBox="0 0 24 24" fill="none">
+      <circle cx="12" cy="12" r="3.5" stroke="currentColor" stroke-width="1.8"/>
+      <path d="M12 2.5v2M12 19.5v2M2.5 12h2M19.5 12h2M5.3 5.3l1.4 1.4M17.3 17.3l1.4 1.4M18.7 5.3l-1.4 1.4M6.7 17.3l-1.4 1.4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+    </svg>
+    <svg class="theme-toggle-icon theme-toggle-icon-dark" viewBox="0 0 24 24" fill="none">
+      <path d="M20 15.2A8.1 8.1 0 0 1 8.8 4a8.2 8.2 0 1 0 11.2 11.2z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>
+    </svg>
+    <svg class="theme-toggle-icon theme-toggle-icon-system" viewBox="0 0 24 24" fill="none">
+      <rect x="3" y="4" width="18" height="13" rx="2.5" stroke="currentColor" stroke-width="1.8"/>
+      <path d="M8 21h8M12 17v4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+    </svg>
+  </span>
+  <span class="theme-toggle-label" data-theme-toggle-label>设备</span>
+</button>
+          </div>
+        </div>
+
+        <div class="detail-hero-grid">
+          <div class="detail-hero-cover"><figure class="paper-figure-card paper-figure-card-detail">
+  <img class="paper-figure-image" src="../../assets/collection-figures/2304.02381/figure-1-disconnectivity-conserved-weights.webp" alt="checkerboard 网络的 disconnectivity tree，若干低能分支着色，并附三幅突出 conserved edges 的小网络图。" loading="lazy" onclick="window.openPaperFigureImage && window.openPaperFigureImage(this)" />
+  <figcaption class="paper-figure-caption">loss minima 先按 barrier 组织成 basin groups，再寻找组内跨解保持稳定的连接。</figcaption>
+</figure></div>
+          <div class="detail-hero-copy">
+            <p class="eyebrow">Collection 全文卡</p>
+            <h1 class="detail-page-title">Physics-Inspired Interpretability Of Machine Learning Models</h1>
+            <p class="detail-page-title-zh">物理启发的机器学习模型可解释性</p>
+            <div class="detail-meta">Paper Collection · Machine Learning · <a href="https://arxiv.org/abs/2304.02381" target="_blank" rel="noopener noreferrer">原文</a></div>
+            <p class="detail-summary">作者：Maximilian P. Niroomand、David J. Wales（University of Cambridge）。arXiv:2304.02381v2，发表于 ICLR 2023 Physics for Machine Learning Workshop。短文把分子 energy-landscape 的 disconnectivity graph 与 order-parameter 思路移植到小型神经网络 loss landscapes。</p>
+            <div class="detail-micro-meta">
+              <span class="meta-pill">AI 基础理论</span>
+              <span class="meta-pill">AI 实证</span>
+              <span class="meta-pill">#Machine Learning</span><span class="meta-pill">#机器学习</span><span class="meta-pill">#人工智能</span>
+              <span class="meta-pill">10 分钟读完</span>
+              <span class="meta-pill">7 张阅读卡</span>
+              <span class="meta-pill">作者：Maximilian P. Niroomand、David J. Wales（Universit…</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <main class="container detail-layout">
+      <div class="detail-shell">
+        <article id="detail-body" class="reading-flow"><section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 01</span>
+    <span class="reading-step-note">作者信息</span>
+  </div>
+  <h2>作者信息</h2>
+  <div class="reading-card-content"><ul><li>作者：Maximilian P. Niroomand、David \(J\). Wales（University of Cambridge）。arXiv:2304.02381v2，发表于 ICLR 2023 Physics for Machine Learning Workshop。短文把分子 energy-landscape 的 disconnectivity graph 与 order-parameter 思路移植到小型神经网络 loss landscapes。</li></ul></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 02</span>
+    <span class="reading-step-note">研究问题</span>
+  </div>
+  <h2>研究问题</h2>
+  <div class="reading-card-content"><ul><li>常见 feature importance 往往围绕一个训练解的权重或输入梯度，但过参数网络存在大量功能相近的局部 minima，单点解释可能依赖偶然 parameterization。作者问：能否先按 transition-state barriers 组织整片 loss landscape，再找同一 minima group 中跨解保持不变的 weights，把它们视为驱动决策的候选 order parameters？</li><li>这里的“可解释性”是定位稳定关联的输入连接，不等同于完整因果解释。方法假设 conserved raw weights 能跨 minima 对齐；隐藏单元 permutation、scale symmetry 或 reparameterization 会破坏这种直接比较。</li></ul></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 03</span>
+    <span class="reading-step-note">模型与方法</span>
+  </div>
+  <h2>模型与方法</h2>
+  <div class="reading-card-content"><ul><li>流程先用 energy-landscape optimization 收集 loss minima 和连接它们的一阶 transition states。disconnectivity graph 的叶节点是 minima，分支合并高度表示连接 basin 所需越过的最低 barrier；在某一 level 下共享祖先的 minima 构成 group。</li><li>对 group 中每个 network weight 计算跨 minima 标准差；若 \(\sigma\)(w)<\(n\)（实验取 \(n=0.01\)），就标为 conserved。再把这些边映射回 input–hidden–output 网络，检查它们是否集中连接某个输入 feature。</li><li>实验用单隐藏层小网络处理二维 synthetic checkerboard 和匿名、PCA-reduced 的 29 维 credit-card fraud 数据。最佳解 AUC 均超过 0.95；验证通过随机置换 conserved weights，并与置换同 cardinality 的随机 weight set 比较性能下降。</li></ul><figure class="evidence-figure">
+  <button class="evidence-figure-image-button" type="button" aria-label="放大查看 Figure 1" onclick="window.openPaperFigureImage && window.openPaperFigureImage(this.querySelector('img'))">
+    <img class="paper-figure-image evidence-figure-image" src="../../assets/collection-figures/2304.02381/figure-1-disconnectivity-conserved-weights.webp" alt="disconnectivity graph 与三个 minima 对应的彩色稳定连接。" loading="lazy" />
+  </button>
+  <figcaption>
+    <strong>Figure 1</strong> · 不同 basin groups 可保存不同 weight subsets，提示任务存在多种局部机制实现。
+    <span class="evidence-figure-reading">物理解读：Conservation is coordinate- and threshold-dependent and must be checked against parameter symmetries and functional interventions.</span>
+    <span class="evidence-figure-source">来源：paper.pdf p. 3, Figure 1</span>
+  </figcaption>
+</figure></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 04</span>
+    <span class="reading-step-note">核心结果与证据</span>
+  </div>
+  <h2>核心结果与证据</h2>
+  <div class="reading-card-content"><ul><li>Figure 1 展示 checkerboard 模型的 disconnectivity graph：不同 minima groups 具有不同颜色的 conserved edges，且两个真实输入节点都在不同 group 的稳定连接中出现。它说明 landscape 可能支持多种实现同一任务的机制，而不是唯一 feature circuit。</li><li>credit-card 图中一组包含 global minimum 的 minima 共享指向 input node 6 的 conserved weights。置换这些 weights 比置换任意同样数量的随机 weights 更强地降低性能，支持其功能重要性；但原数据匿名且经 PCA，作者只能定位第 6 个分量，不能给出可读业务含义。</li><li>论文只报告两个小任务和少量图示，没有系统给出 group 数、minima sampling coverage、置换效应分布或与 saliency/SHAP 等基线的定量比较。“适用于任意 architecture”明确被作者写作待验证建议，而非结果。</li></ul></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 05</span>
+    <span class="reading-step-note">有效性与局限</span>
+  </div>
+  <h2>有效性与局限</h2>
+  <div class="reading-card-content"><ul><li>完整枚举深网 minima/transition states 极其昂贵，disconnectivity graph 对采样算法、起点、barrier search 和重复解去重敏感。原始 weight 坐标受 neuron permutation、sign/scale symmetry 影响；若不先做 symmetry alignment，同一函数可能看似不 conserved。</li><li>阈值 \(n=0.01\) 依赖参数尺度，没有跨层归一化或统计显著性解释。permutation ablation 会把权重移到分布外位置，性能下降不一定等于该 feature 的独立因果作用；更稳健的检验需 retraining、conditional interventions 和 matched random controls。fraud 数据的类别不平衡与 split protocol 也未在主文充分展开。</li></ul></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 06</span>
+    <span class="reading-step-note">复现与资源</span>
+  </div>
+  <h2>复现与资源</h2>
+  <div class="reading-card-content"><ul><li>原文：https://arxiv.org/abs/2304.02381。官方 PDF SHA-256：e61dfc2c033e969d0a942de8c71a1cf1dcad7cf2ef71304441fc91bcb53cc7f0。论文引用 Cambridge energy-landscape 工具传统，但主文未给出完整可执行代码仓库。</li><li>复现需冻结网络拓扑、数据 split/preprocessing、loss、minima search、transition-state search、symmetry/duplicate handling、disconnectivity level、\(n=0.01\) 与 permutation seed；报告 minima coverage、barrier graph、conserved-set stability和 matched ablation distribution。Evidence status: full-text verified; no independent reproduction performed.</li></ul></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 07</span>
+    <span class="reading-step-note">阅读指南</span>
+  </div>
+  <h2>阅读指南</h2>
+  <div class="reading-card-content"><ul><li>先读 pp. 1–2 的 energy/loss landscape 类比和 disconnectivity graph 定义；再读 \(p\). 3 的 minima grouping、\(\sigma\)(w)<\(n\) 规则与 checkerboard Figure 1；随后看 \(p\). 4 credit-card Figure 2 与 permutation ablation；最后用 pp. 4–5 Discussion 核对作者对规模扩展的保留表述。</li></ul></div>
+</section></article>
+        <aside id="detail-toc" class="detail-toc hidden" aria-label="内容目录">
+          <p class="detail-toc-title">阅读目录</p>
+          <nav id="detail-toc-nav" class="detail-toc-nav"></nav>
+        </aside>
+      </div>
+      <nav class="paper-nav"><a class="paper-nav-link paper-nav-prev" href="../../collection-papers/2303.16852/"><span class="paper-nav-label">← 上一篇</span><span class="paper-nav-title">Diffusion Schrödinger Bridge Matching</span></a>
+      <a class="paper-nav-link paper-nav-next" href="../../collection-papers/2304.02637/"><span class="paper-nav-label">下一篇 →</span><span class="paper-nav-title">GenPhys: From Physical Processes to Generative Models</span></a></nav>
+      <section id="comments" class="comments-panel" aria-labelledby="comments-title">
+        <div class="comments-heading">
+          <div>
+            <p class="eyebrow">Discussion</p>
+            <h2 id="comments-title">评论与讨论</h2>
+          </div>
+          <a href="https://github.com/xixi-cc/xixi-research-comments/discussions" target="_blank" rel="noopener noreferrer">在 GitHub 查看</a>
+        </div>
+        <p class="comments-note">评论公开保存在 GitHub Discussions；阅读无需登录，发表评论需要 GitHub 账号。</p>
+        <script src="https://giscus.app/client.js"
+                data-repo="xixi-cc/xixi-research-comments"
+                data-repo-id="R_kgDOUIl8MQ"
+                data-category="Announcements"
+                data-category-id="DIC_kwDOUIl8Mc4DEftB"
+                data-mapping="specific"
+                data-term="collection:2304.02381"
+                data-strict="1"
+                data-reactions-enabled="1"
+                data-emit-metadata="0"
+                data-input-position="top"
+                data-theme="preferred_color_scheme"
+                data-lang="zh-CN"
+                data-loading="lazy"
+                crossorigin="anonymous"
+                async></script>
+        <noscript><p>请启用 JavaScript，或直接前往 GitHub Discussions 参与讨论。</p></noscript>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <div class="container">
+        <p>内容来自 <a href="https://arxiv.org" target="_blank" rel="noopener noreferrer">arXiv.org</a>；原创解读采用 CC BY-NC 4.0。<a href="../../rights.html">许可与引用</a></p>
+      </div>
+    </footer>
+
+    <script src="../../assets/theme.js"></script>
+    <script src="../../assets/media.js"></script>
+    <script src="../../assets/paper.js"></script>
+    <!-- Cloudflare Web Analytics -->
+<script type="module" src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon='{"token":"73522e5dee9b42b0be84b4847e4dd502"}'></script>
+<!-- End Cloudflare Web Analytics -->
+  </body>
+</html>

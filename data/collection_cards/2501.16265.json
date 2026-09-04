@@ -1,0 +1,128 @@
+{
+  "arxiv_id": "2501.16265",
+  "source_version": "v2",
+  "source_pdf": "https://arxiv.org/pdf/2501.16265",
+  "title_en": "Training Dynamics of In-Context Learning in Linear Attention",
+  "title_zh": "线性注意力中上下文学习的训练动力学",
+  "curation_status": "full_text_verified",
+  "card_standard_version": "2.3",
+  "style_reference": "physicist_daily_arxiv",
+  "paper_profile": "theory_numerics",
+  "provenance": {
+    "program": "Collection",
+    "catalog": "Paper Collection",
+    "catalog_record_id": "2501.16265",
+    "catalog_record_ids": [
+      "2501.16265"
+    ],
+    "catalog_topic": "Training Dynamics",
+    "collection_date": "2026-08-30",
+    "sampled_at": "2026-08-31",
+    "selected_by": "ziming_mineru_serial_goal",
+    "sampling_seed": "not_applicable_source_complete",
+    "candidate_count": 464
+  },
+  "verified_metadata": {
+    "arxiv_id": "2501.16265",
+    "version": "v2",
+    "title": "Training Dynamics of In-Context Learning in Linear Attention",
+    "authors": [
+      "Yedi Zhang",
+      "Aaditya K. Singh",
+      "Peter E. Latham",
+      "Andrew Saxe"
+    ],
+    "categories": [
+      "cs.LG"
+    ],
+    "primary_category": "cs.LG",
+    "published": "2025-01-27",
+    "updated": "2025-05-27",
+    "comment": ""
+  },
+  "sections": [
+    {
+      "title": "作者信息",
+      "paragraphs": [
+        "Yedi Zhang、Aaditya K. Singh、Peter E. Latham 与 Andrew Saxe。作者研究多头线性自注意力在上下文线性回归任务中的梯度流，并比较合并与分离键—查询两种参数化，arXiv:2501.16265v2。"
+      ]
+    },
+    {
+      "title": "研究问题",
+      "paragraphs": [
+        "Transformer 的 ICL 能力为何会在训练中突然出现，又为何有时会逐步改善？论文把问题缩减到可解析的线性注意力，追踪权重、固定点、损失平台与模型实际执行的上下文算法。",
+        "核心比较是参数化本身是否改变优化几何：理论常用的合并键—查询矩阵，与更接近实际注意力的分离低秩键和查询，表达能力可相近但训练路径可能完全不同。",
+        "论文还区分最终函数与获得该函数的时间顺序：即使两个模型最终都能表达线性映射，训练中先学到哪些数据方向、停留在哪些平台以及何时发生能力突变，仍由参数连接结构决定。"
+      ]
+    },
+    {
+      "title": "模型与方法",
+      "paragraphs": [
+        "对合并参数化，作者证明其等价于以三次统计量为输入的两层全连接线性网络；在白协方差、小初始化等条件下分析梯度流、两个固定点与逃逸时间，并给出时间过程解。",
+        "对分离的秩一键和查询，模型映射为具有特定卷积连接的三层线性网络。作者刻画指数多个鞍点，把高维动力学约化为标量 ODE，并用多头数值轨迹核对平台高度、权重增长和特征方向。"
+      ]
+    },
+    {
+      "title": "核心结果与证据",
+      "paragraphs": [
+        "合并参数化从零附近不稳定固定点逃逸后一次性落到全局极小流形，出现单次陡峭损失下降；Figure 1 显示线性注意力与等价 MLP 的损失轨迹重合。",
+        "分离参数化呈现逐个鞍点跃迁的多次损失突降；新头依次对齐输入协方差的主方向。训练中的 ICL 算法因此近似主成分回归，使用的主成分数随训练时间增加，而合并情形最终对应最小二乘。",
+        "理论平台值与模拟吻合，但软最大注意力仅做了经验延伸，不能把线性模型中的完整结论直接移植到实际大模型。"
+      ]
+    },
+    {
+      "title": "有效性与局限",
+      "paragraphs": [
+        "解析结果依赖线性回归、梯度流、数据协方差及初始化结构；有限步长、噪声、非线性 MLP、残差与 softmax 会引入新的尺度和耦合。",
+        "固定点计数与主成分顺序刻画的是受控模型，不等于自然语言 ICL 的完整机制。数值吻合支持推导但不是跨架构外推证据，本卡未独立复现。",
+        "协方差谱简并时主成分的学习顺序未必唯一，head permutation 与尺度对称也会使参数轨迹存在等价表示；复核应比较函数空间预测而不只逐参数对齐。"
+      ]
+    },
+    {
+      "title": "复现与资源",
+      "paragraphs": [
+        "原文：https://arxiv.org/abs/2501.16265；主要结果复现代码：https://github.com/yedizhang/linattn-icl 。复核应固定维数、context length、heads、协方差谱、初始化尺度、学习率/连续时间映射与随机种子。",
+        "应同时保存损失平台、每个头的权重范数和协方差特征向量对齐度，并分别验证合并、秩一分离及低秩分离参数化。",
+        "官方 v2 PDF 共 40 页，SHA-256：7149120cccaed6bee1bacd49d784a2451bd6e465f2adc5cd18939fd432f99c8b。Evidence status: full-text verified; no independent reproduction performed."
+      ]
+    },
+    {
+      "title": "阅读指南",
+      "paragraphs": [
+        "先看 Figure 1 与第 3 节理解单次突降，再读第 4 节的鞍点链和 Figure 3；随后检查附录中的梯度流方程、固定点证明及更高维/context-length 扫描。",
+        "阅读时把三类陈述分开：严格解析的特殊协方差情形、一般分离参数化的 ansatz/约化，以及 softmax 注意力的经验观察；它们的证据强度并不相同，也应分别核对适用假设、数值误差与外推边界。"
+      ]
+    }
+  ],
+  "cover": {
+    "mode": "source_figure",
+    "asset_path": "assets/collection-figures/2501.16265/figure-1-linear-attention-equivalence.webp",
+    "label": "Figure 1",
+    "visual_type": "schematic",
+    "evidence": "paper.pdf p. 4, Figure 1",
+    "alt_text": "合并键查询的多头线性注意力与两层线性网络之间的等价示意，右侧比较两者训练损失。",
+    "caption": "合并键—查询参数化的线性注意力等价于以三次特征为输入的两层线性网络。",
+    "selection_rationale": "该图把论文最关键的结构等价与突降损失轨迹放在同一画面中，直接连接模型参数化、可解析动力学与数值验证，最适合作为阅读入口。"
+  },
+  "figure_refs": [
+    {
+      "label": "Figure 1",
+      "asset_path": "assets/collection-figures/2501.16265/figure-1-linear-attention-equivalence.webp",
+      "section": "模型与方法",
+      "role": "connect the merged attention parametrization to its equivalent linear network and loss trajectory",
+      "evidence": "paper.pdf p. 4, Figure 1",
+      "alt_text": "合并键查询的多头线性注意力与两层线性网络之间的等价示意，右侧比较两者训练损失。",
+      "caption": "合并键—查询参数化的线性注意力等价于以三次特征为输入的两层线性网络。",
+      "interpretation": "The equivalence explains why the controlled merged model admits a single abrupt transition; it does not establish the same dynamics for full softmax transformers."
+    }
+  ],
+  "equation_refs": [],
+  "evidence_refs": [
+    "paper.pdf pp. 1–4: task, parametrizations and merged-model equivalence",
+    "paper.pdf pp. 5–12: fixed points, abrupt drop and least-squares ICL",
+    "paper.pdf pp. 12–20: separate key-query saddle dynamics and principal-component regression",
+    "paper.pdf pp. 21–40: discussion, reproducibility and proofs",
+    "source PDF SHA-256 7149120cccaed6bee1bacd49d784a2451bd6e465f2adc5cd18939fd432f99c8b",
+    "Evidence status: full-text verified; no independent reproduction performed."
+  ]
+}

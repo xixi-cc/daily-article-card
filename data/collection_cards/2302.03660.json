@@ -1,0 +1,132 @@
+{
+  "arxiv_id": "2302.03660",
+  "source_version": "v3",
+  "source_pdf": "https://arxiv.org/pdf/2302.03660",
+  "title_en": "Flow Matching on General Geometries",
+  "title_zh": "一般几何上的流匹配",
+  "curation_status": "full_text_verified",
+  "card_standard_version": "2.3",
+  "paper_profile": "theory_experiment",
+  "style_reference": "physicist_daily_arxiv",
+  "provenance": {
+    "program": "Collection",
+    "catalog": "Paper Collection",
+    "catalog_record_id": "2302.03660",
+    "catalog_record_ids": ["2302.03660"],
+    "catalog_topic": "Generative Models",
+    "collection_date": "2026-08-30",
+    "sampled_at": "2026-08-31",
+    "selected_by": "ziming_mineru_serial_goal",
+    "sampling_seed": "not_applicable_source_complete",
+    "candidate_count": 464
+  },
+  "verified_metadata": {
+    "arxiv_id": "2302.03660",
+    "version": "v3",
+    "title": "Flow Matching on General Geometries",
+    "authors": ["Ricky T. Q. Chen", "Yaron Lipman"],
+    "categories": ["cs.LG", "cs.AI", "stat.ML"],
+    "primary_category": "cs.LG",
+    "published": "2023-02-07T18:21:24Z",
+    "updated": "2024-02-26T17:52:00Z",
+    "comment": "ICLR 2024"
+  },
+  "sections": [
+    {
+      "title": "作者信息",
+      "paragraphs": [
+        "作者：Ricky T. Q. Chen、Yaron Lipman。arXiv:2302.03660v3，发表于 ICLR 2024。论文提出 Riemannian Flow Matching（RFM），把 conditional flow matching 从欧氏空间推广到球面、环面、双曲空间和一般三角网格流形。"
+      ]
+    },
+    {
+      "title": "研究问题",
+      "paragraphs": [
+        "流形数据的生成模型必须让样本始终留在几何空间中。已有 Riemannian diffusion 方法训练时往往需要 SDE 模拟、score 近似或 divergence 估计；一般曲面上的 geodesic 又可能昂贵、非光滑或在边界附近退化。作者问：能否直接回归一个切向量场，在简单几何上免模拟，并在任意 mesh 上仍保持可计算？",
+        "目标是学习 continuous normalizing flow Φ:M→M，把简单 base distribution p 推到数据分布 q。RFM 的训练目标只匹配速度场，不需在训练损失中计算 divergence；精确 likelihood 评估仍需沿 ODE 累积分歧度，不能把“训练不算 divergence”理解为整个模型永远不算。"
+      ]
+    },
+    {
+      "title": "模型与方法",
+      "paragraphs": [
+        "RFM 先定义从 x₀∼p 到单个训练样本 x₁∼q 的 conditional probability path p_t(x|x₁) 和向量场 u_t(x|x₁)，再用 L_RCFM=E||v_t(x)−u_t(x|x₁)||²_g 回归神经向量场。条件目标与难以显式求出的边缘目标具有相同参数梯度，因此可用独立的 x₀、x₁、t 样本训练。",
+        "关键构造是 premetric d(x,y)：只需非负、d(x,y)=0 当且仅当 x=y，并在第二个点附近对第一变量光滑。令轨迹满足 d(x_t,x₁)=κ(t)d(x₀,x₁)，可写出沿 −∇d 方向的闭式 target vector field。若 d 是 geodesic distance，简单流形上的 exponential/log maps 给出解析轨迹。",
+        "一般 mesh 上作者用 Laplace–Beltrami eigenpairs 构造 spectral distances，重点是 biharmonic distance；一次谱分解后，距离及梯度可在线计算，并避免 geodesic cut locus 的全局非光滑。网络输出先投影到 tangent space；复杂曲面上的 x_t 仍通过目标 ODE 数值模拟。"
+      ]
+    },
+    {
+      "title": "核心结果与证据",
+      "paragraphs": [
+        "Figure 1 对比球面 geodesic 和猫形 mesh 上 biharmonic premetric 诱导的流线，直观展示同一回归框架如何由用户指定距离适配不同几何。Figure 3 进一步显示 geodesic contour 在一般曲面上昂贵且不光滑，biharmonic contour 更平滑；diffusion distance 则依赖时间尺度 τ。",
+        "球面上的地球/气候数据和 2D、7D torus 蛋白角度数据中，RFM 的 test NLL 与强基线相当或更优，火山和火灾等高集中分布提升较明显；表格结果报告 5 次运行标准差。高维 torus 实验用于展示维度扩展，mesh 实验则覆盖高曲率、非平凡拓扑和边界。",
+        "一般几何训练是 tractable 而非 simulation-free：每个训练样本仍需解从 x₀ 到当前 t 的目标 ODE。论文的“zero approximation error”只适用于有闭式 geodesic 的简单几何；spectral distance 路线还包含有限 eigenbasis、离散 mesh 和 ODE solver 误差。"
+      ]
+    },
+    {
+      "title": "有效性与局限",
+      "paragraphs": [
+        "方法假设 complete、connected、smooth Riemannian manifold；实际 mesh 有离散化、边界和数值法向误差。premetric 不必是 metric，这扩大可用范围，但不同 spectral weighting 会改变轨迹与优化难度；有限谱截断可能抹去小尺度结构。",
+        "一般流形的逐样本 ODE 模拟仍是串行成本，复杂 mesh 的 eigenfunction solver 也可能昂贵且占内存。实验数据集与 mesh 规模有限；NLL 和可视化不能证明任意高维非欧几何上都稳定。论文未消除 sampling 时对 learned ODE 的积分成本。"
+      ]
+    },
+    {
+      "title": "复现与资源",
+      "paragraphs": [
+        "原文：https://arxiv.org/abs/2302.03660；代码：https://github.com/facebookresearch/riemannian-fm。官方 PDF SHA-256：5860a6f32978550acdbca99d82a1e4af6020ae76220e62951d92f8b43ac880ab。",
+        "复现需冻结 manifold/mesh、base measure、train/test split、premetric、Laplace–Beltrami 离散化、eigenpair 数与 solver、t/κ schedule、x₀/x₁ sampling、tangent projection、ODE tolerances、network/optimizer 和 likelihood divergence estimator；报告多种子 NLL、训练时间和失败轨迹。Evidence status: full-text verified; no independent reproduction performed."
+      ]
+    },
+    {
+      "title": "阅读指南",
+      "paragraphs": [
+        "先读 pp. 1–3 的 CNF/conditional flow matching 定义；再逐式核对 §3 的 premetric path 与 target field；用 pp. 5–7 的 geodesic、biharmonic 和 Figure 3 理解一般几何扩展；最后看 pp. 7–9 实验以及 Appendix D–E 的 diffusion 对照和明确局限。"
+      ]
+    }
+  ],
+  "cover": {
+    "mode": "source_figure",
+    "asset_path": "assets/collection-figures/2302.03660/figure-1-general-geometry-flows.webp",
+    "label": "Figure 1",
+    "visual_type": "comparison",
+    "evidence": "paper.pdf p. 1, Figure 1",
+    "alt_text": "球面和猫形三角网格上分别绘制由 geodesic 与 biharmonic premetric 定义的彩色流线。",
+    "caption": "同一 flow-matching 构造可由不同 premetric 在简单球面与复杂 mesh 上定义目标轨迹。",
+    "selection_rationale": "Figure 1 最直接表达论文的核心设计自由度：几何通过 premetric 进入，而训练仍是统一的向量场回归。"
+  },
+  "figure_refs": [
+    {
+      "label": "Figure 1",
+      "asset_path": "assets/collection-figures/2302.03660/figure-1-general-geometry-flows.webp",
+      "section": "模型与方法",
+      "role": "contrast geodesic and spectral-premetric flows on simple and general manifolds",
+      "evidence": "paper.pdf p. 1, Figure 1",
+      "alt_text": "球面上的绿色 geodesic 与猫形 mesh 上绕行边界的绿色 biharmonic 流线。",
+      "caption": "简单流形可用闭式 geodesic；一般曲面用谱距离避免直接在线求最短路。",
+      "interpretation": "The premetric controls conditional paths; only the simple-geometry branch is simulation-free during training."
+    }
+  ],
+  "equation_refs": [
+    {
+      "label": "Riemannian conditional flow-matching loss",
+      "latex": "\\mathcal L_{\\mathrm{RCFM}}(\\theta)=\\mathbb E_{t,x_1\\sim q,x\\sim p_t(\\cdot|x_1)}\\left[\\|v_t(x;\\theta)-u_t(x|x_1)\\|_g^2\\right]",
+      "role": "train a tangent vector field from tractable conditional targets instead of the intractable marginal field",
+      "symbols": {
+        "v_t": "learned time-dependent tangent vector field",
+        "u_t(x|x_1)": "conditional target field ending at training point x_1",
+        "p_t(x|x_1)": "conditional probability path",
+        "g": "Riemannian metric",
+        "q": "data distribution"
+      },
+      "evidence": "paper.pdf p. 3, Eq. (8)",
+      "interpretation": "Its gradient matches the marginal RFM objective under the stated conditional-path construction, enabling sample-wise regression."
+    }
+  ],
+  "evidence_refs": [
+    "paper.pdf pp. 1–3: problem, CNF preliminaries and conditional RFM objective",
+    "paper.pdf pp. 3–5: premetric path construction and closed-form target vector field",
+    "paper.pdf pp. 5–7: geodesic and spectral distances, mesh implementation and Figure 3",
+    "paper.pdf pp. 7–9: sphere, torus, high-dimensional and mesh experiments",
+    "paper.pdf appendices D–E: diffusion-model comparison and general-geometry limitations",
+    "source PDF SHA-256 5860a6f32978550acdbca99d82a1e4af6020ae76220e62951d92f8b43ac880ab",
+    "Evidence status: full-text verified; no independent reproduction performed."
+  ]
+}

@@ -1,0 +1,26 @@
+{
+  "arxiv_id": "2306.01128",
+  "source_version": "v2",
+  "source_pdf": "https://arxiv.org/pdf/2306.01128",
+  "title_en": "Learning Transformer Programs",
+  "title_zh": "学习 Transformer 程序",
+  "curation_status": "full_text_verified",
+  "card_standard_version": "2.3",
+  "paper_profile": "ai_empirical",
+  "style_reference": "physicist_daily_arxiv",
+  "provenance": {"program": "Collection", "catalog": "Paper Collection", "catalog_record_id": "2306.01128", "catalog_record_ids": ["2306.01128"], "catalog_topic": "Mechanistic Interpretability", "collection_date": "2026-08-30", "sampled_at": "2026-08-31", "selected_by": "ziming_mineru_serial_goal", "sampling_seed": "not_applicable_source_complete", "candidate_count": 464},
+  "verified_metadata": {"arxiv_id": "2306.01128", "version": "v2", "title": "Learning Transformer Programs", "authors": ["Dan Friedman", "Alexander Wettig", "Danqi Chen"], "categories": ["cs.LG"], "primary_category": "cs.LG", "published": "2023-06-02T00:00:00Z", "updated": "2023-10-31T00:00:00Z", "comment": "24 pages; intrinsically interpretable Transformer programs and experiments"},
+  "sections": [
+    {"title": "作者信息", "paragraphs": ["作者为 Dan Friedman、Alexander Wettig 与 Danqi Chen（Princeton University / Princeton Language and Intelligence）。arXiv:2306.01128v2。工作从 RASP/Tracr 出发，让 Transformer 在训练后可确定性地转成离散 Python 程序。"]},
+    {"title": "研究问题", "paragraphs": ["后验电路分析通常需要大量人工判断且难以得到完整、忠实的算法描述。论文问：能否把可解释性直接写入模型参数化，使梯度训练所得网络本身就位于可反编译为人类可读程序的子空间？", "目标不是解释任意预训练大模型，而是训练一类受约束的新模型，并测试这种可解释性与任务性能、序列长度和程序简洁性之间的权衡。"]},
+    {"title": "模型与方法", "paragraphs": ["Transformer Program 把 residual stream 划分为命名离散变量的正交子空间；每个模块只读固定变量并写入独立地址。categorical attention 用离散的 query-key 谓词和 hard attention，MLP 变成有限查找表。", "训练时对变量选择、谓词和离散操作采用 Gumbel-Softmax 连续松弛并退火；完成后取最大似然离散权重，再映射成 RASP 风格 Python。生成程序与离散 Transformer 功能等价，可用普通调试器追踪。", "评估覆盖玩具 in-context learning、RASP 算法任务、CoNLL-2003 NER 和文本分类，并与参数规模相近的标准 Transformer 或基线比较。"]},
+    {"title": "核心结果与证据", "paragraphs": ["玩具 in-context task 学到由两个 attention heads 组成的 induction-like 程序，held-out 测试达到完美准确率；Figure 1 概括从训练模型到等价程序的流程。", "在多项 RASP 任务上可以获得可读程序，但随着序列长度和词表扩大，Transformer Programs 比标准 Transformer 退化更快；最困难设置的差距超过 50 个百分点，说明离散优化/结构限制仍是主要瓶颈。", "CoNLL-2003 与文本分类实验显示受约束模型能达到合理性能并支持代码级错误分析，但论文没有在现代大语言模型规模、开放生成或安全审计场景验证。"]},
+    {"title": "有效性与局限", "paragraphs": ["功能等价仅指训练后离散 Transformer 与导出的程序；连续松弛训练阶段并不等价。人类可读也不自动意味着简洁：模型可能使用冗余模块、死代码或仅对训练长度成立的规则。", "方法要求预先定义变量、最大 cardinality、可用模块和组成语言，表达能力受到 hard attention 与有限查找表限制。实验规模小，最长输入和 NLP 基准远小于通用 LLM，不能外推为对现有黑箱模型的解释方案。"]},
+    {"title": "复现与资源", "paragraphs": ["原文：https://arxiv.org/abs/2306.01128。官方 PDF SHA-256：8ea4656d55cc8d6535ac7041c833b74e2b298b5ed6f40a7eb49f744d3d100b46。论文附脚注给出代码仓库，Appendix B 记录各实验配置。", "复现应固定词表/最大长度、层头数、Gumbel 温度退火、随机种子与程序抽取版本；同时逐输入比较网络与 Python 输出，并报告准确率、程序大小、死代码、训练失败率及长度外推。Evidence status: full-text verified; no independent reproduction performed."]},
+    {"title": "阅读指南", "paragraphs": ["先读 pp. 1–2 的问题与 Figure 1；pp. 3–6 给出 disentangled residual stream、离散模块和程序抽取；pp. 6–10 是任务结果与局限，Appendices A–C 包含操作细节、超参数和更多程序分析。"]}
+  ],
+  "cover": {"mode": "source_figure", "asset_path": "assets/collection-figures/2306.01128/figure-1-transformer-program.webp", "label": "Figure 1", "visual_type": "schematic", "evidence": "paper.pdf p. 2, Figure 1", "alt_text": "受约束 Transformer 从数据训练、离散化并转换为等价可读 Python 程序的流程图。", "caption": "Transformer Programs 将可训练网络限制在可确定性反编译的程序空间。", "selection_rationale": "Figure 1 直接呈现论文区别于后验解释的核心设计和输出形式。"},
+  "figure_refs": [{"label": "Figure 1", "asset_path": "assets/collection-figures/2306.01128/figure-1-transformer-program.webp", "section": "模型与方法", "role": "summarize training, discretization and program extraction", "evidence": "paper.pdf p. 2, Figure 1", "alt_text": "从受约束 Transformer 到功能等价程序的整体流程。", "caption": "模型经离散化后被转成可由标准调试工具检查的 Python 程序。", "interpretation": "Equivalence is between the extracted discrete model and program, not between an arbitrary pretrained Transformer and this program."}],
+  "equation_refs": [{"label": "Discrete program extraction", "latex": "\\bar{\\theta}^{*}=\\operatorname*{arg\\,max}_{\\theta}p(\\theta\\mid\\Phi)", "role": "choose a single discrete Transformer program after optimizing a relaxed distribution", "symbols": {"theta": "discrete program weights", "Phi": "parameters of the relaxed categorical distributions", "bar theta star": "maximum-probability discrete model"}, "evidence": "paper.pdf p. 6, Section 3.2", "interpretation": "Taking the mode yields a deterministic program but can expose a gap between relaxed training and discrete performance."}],
+  "evidence_refs": ["paper.pdf pp. 1–2: motivation and end-to-end Transformer Program overview", "paper.pdf pp. 3–6: residual-stream constraints, categorical attention, relaxation and extraction", "paper.pdf pp. 6–10: algorithmic/NLP experiments and discussion", "paper.pdf Appendix B: implementation and training configurations", "paper.pdf Appendix C: ablations, scaling behavior and generated-code analysis", "source PDF SHA-256 8ea4656d55cc8d6535ac7041c833b74e2b298b5ed6f40a7eb49f744d3d100b46", "Evidence status: full-text verified; no independent reproduction performed."]
+}

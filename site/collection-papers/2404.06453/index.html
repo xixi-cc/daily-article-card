@@ -1,0 +1,231 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>PURE: Turning Polysemantic Neurons Into Pure Features by Identifying Relevant Circuits - physics+AI Collection 随机精选</title>
+    <meta name="description" content="作者 Maximilian Dreyer、Erblina Purelku、Johanna Vielhaben、Wojciech Samek 与 Sebastian Lapuschkin，来自 Fraunhofer HHI、TU Berlin 与 BIFOLD。论文提出 post-hoc 方法 PURE，在 pretrained ResNet 中按 active circuit 拆解 polysemantic neuron。arXiv:2404.06453v1。" />
+    <link rel="canonical" href="https://xixi-cc.github.io/daily-article-card/collection-papers/2404.06453/" />
+    <script type="application/ld+json">{"@context": "https://schema.org", "@type": "Article", "headline": "PURE: Turning Polysemantic Neurons Into Pure Features by Identifying Relevant Circuits", "description": "作者 Maximilian Dreyer、Erblina Purelku、Johanna Vielhaben、Wojciech Samek 与 Sebastian Lapuschkin，来自 Fraunhofer HHI、TU Berlin 与 BIFOLD。论文提出 post-hoc 方法 PURE，在 pretrained ResNet 中按 active circuit 拆解 polysemantic neuron。arXiv:2404.06453v1。", "url": "https://xixi-cc.github.io/daily-article-card/collection-papers/2404.06453/", "mainEntityOfPage": "https://xixi-cc.github.io/daily-article-card/collection-papers/2404.06453/", "inLanguage": "zh-CN", "author": {"@type": "Person", "name": "Xineng Cao", "alternateName": ["Xixi Cao", "曹溪能"], "url": "https://xixi-cc.github.io/"}, "isBasedOn": "https://arxiv.org/abs/2404.06453"}</script>
+    <script>
+      (function() {
+        try {
+          var themePreference = window.localStorage.getItem('color-theme') || 'system';
+          var systemUsesDarkTheme = window.matchMedia('(prefers-color-scheme: dark)').matches;
+          var resolvedTheme = themePreference === 'system'
+            ? (systemUsesDarkTheme ? 'dark' : 'light')
+            : themePreference;
+          document.documentElement.dataset.theme = resolvedTheme;
+          document.documentElement.dataset.themePreference = themePreference;
+          document.documentElement.style.colorScheme = resolvedTheme;
+        } catch (error) {
+          document.documentElement.dataset.theme = 'light';
+          document.documentElement.dataset.themePreference = 'system';
+        }
+      })();
+    </script>
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='18' fill='%23111827'/%3E%3Ctext x='50%25' y='55%25' text-anchor='middle' dominant-baseline='middle' font-size='30' font-family='Arial, sans-serif' fill='white'%3EV%3C/text%3E%3C/svg%3E" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700;800&family=Noto+Sans+SC:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <script>document.documentElement.classList.add('math-pending');</script>
+    <script>
+      window.MathJax = {
+        tex: {
+          inlineMath: [['$', '$'], ['\\(', '\\)']],
+          displayMath: [['$$', '$$'], ['\\[', '\\]']],
+          processEscapes: true
+        },
+        options: {
+          skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+        },
+        chtml: {
+          scale: 1,
+          displayAlign: 'center'
+        },
+        startup: {
+          ready: function() {
+            MathJax.startup.defaultReady();
+            MathJax.startup.promise.then(function() {
+              document.documentElement.classList.remove('math-pending');
+              document.documentElement.dataset.mathReady = 'true';
+            });
+          }
+        }
+      };
+    </script>
+    <script defer src="../../assets/vendor/mathjax/tex-chtml.js"></script>
+    <link rel="stylesheet" href="../../assets/style.css" />
+  </head>
+  <body class="detail-page" data-paper-id="2404.06453" data-paper-program="collection">
+    <div class="page-noise"></div>
+    <div class="page-blur page-blur-a"></div>
+    <div class="page-blur page-blur-b"></div>
+
+    <header class="header detail-page-header">
+      <div class="container">
+        <div class="detail-page-topbar">
+          <a class="back-link" href="../../collection.html">返回列表</a>
+          <div class="detail-topbar-actions">
+            <span class="detail-site-name">physics+AI Collection 随机精选</span>
+            <button id="detail-favorite" class="detail-favorite-button" type="button" aria-pressed="false">☆ 收藏</button>
+            <button class="theme-toggle" type="button" data-theme-toggle aria-label="当前主题：设备，点击切换主题" title="当前主题：设备">
+  <span class="theme-toggle-icons" aria-hidden="true">
+    <svg class="theme-toggle-icon theme-toggle-icon-light" viewBox="0 0 24 24" fill="none">
+      <circle cx="12" cy="12" r="3.5" stroke="currentColor" stroke-width="1.8"/>
+      <path d="M12 2.5v2M12 19.5v2M2.5 12h2M19.5 12h2M5.3 5.3l1.4 1.4M17.3 17.3l1.4 1.4M18.7 5.3l-1.4 1.4M6.7 17.3l-1.4 1.4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+    </svg>
+    <svg class="theme-toggle-icon theme-toggle-icon-dark" viewBox="0 0 24 24" fill="none">
+      <path d="M20 15.2A8.1 8.1 0 0 1 8.8 4a8.2 8.2 0 1 0 11.2 11.2z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>
+    </svg>
+    <svg class="theme-toggle-icon theme-toggle-icon-system" viewBox="0 0 24 24" fill="none">
+      <rect x="3" y="4" width="18" height="13" rx="2.5" stroke="currentColor" stroke-width="1.8"/>
+      <path d="M8 21h8M12 17v4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+    </svg>
+  </span>
+  <span class="theme-toggle-label" data-theme-toggle-label>设备</span>
+</button>
+          </div>
+        </div>
+
+        <div class="detail-hero-grid">
+          <div class="detail-hero-cover"><figure class="paper-figure-card paper-figure-card-detail">
+  <img class="paper-figure-image" src="../../assets/collection-figures/2404.06453/figure-1-pure-circuits.webp" alt="原 neuron 的最高激活 patches 混有迷宫和毛茸茸的狗；PURE 拆出的 virtual neuron 2a 只显示狗，2b 只显示迷宫。" loading="lazy" onclick="window.openPaperFigureImage && window.openPaperFigureImage(this)" />
+  <figcaption class="paper-figure-caption">按 circuit connectivity 聚类后，一个多义 neuron 被表示成两个 post-hoc virtual features。</figcaption>
+</figure></div>
+          <div class="detail-hero-copy">
+            <p class="eyebrow">Collection 全文卡</p>
+            <h1 class="detail-page-title">PURE: Turning Polysemantic Neurons Into Pure Features by Identifying Relevant Circuits</h1>
+            <p class="detail-page-title-zh">PURE：通过识别相关回路把多义神经元拆成纯特征</p>
+            <div class="detail-meta">Paper Collection · Mechanistic Interpretability · <a href="https://arxiv.org/abs/2404.06453" target="_blank" rel="noopener noreferrer">原文</a></div>
+            <p class="detail-summary">作者 Maximilian Dreyer、Erblina Purelku、Johanna Vielhaben、Wojciech Samek 与 Sebastian Lapuschkin，来自 Fraunhofer HHI、TU Berlin 与 BIFOLD。论文提出 post-hoc 方法 PURE，在 pretrained ResNet 中按 active circuit 拆解 polysemantic neuron。arXiv:2404.06453v1。</p>
+            <div class="detail-micro-meta">
+              <span class="meta-pill">AI 方法与系统</span>
+              <span class="meta-pill">AI 实证</span>
+              <span class="meta-pill">#Mechanistic Interpretability</span><span class="meta-pill">#计算机视觉</span><span class="meta-pill">#人工智能</span>
+              <span class="meta-pill">12 分钟读完</span>
+              <span class="meta-pill">7 张阅读卡</span>
+              <span class="meta-pill">作者 Maximilian Dreyer、Erblina Purelku、Johanna Vielha…</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <main class="container detail-layout">
+      <div class="detail-shell">
+        <article id="detail-body" class="reading-flow"><section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 01</span>
+    <span class="reading-step-note">作者信息</span>
+  </div>
+  <h2>作者信息</h2>
+  <div class="reading-card-content"><ul><li>作者 Maximilian Dreyer、Erblina Purelku、Johanna Vielhaben、Wojciech Samek 与 Sebastian Lapuschkin，来自 Fraunhofer HHI、TU Berlin 与 BIFOLD。论文提出 post-hoc 方法 PURE，在 pretrained ResNet 中按 active circuit 拆解 polysemantic neuron。arXiv:2404.06453v1。</li></ul></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 02</span>
+    <span class="reading-step-note">研究问题</span>
+  </div>
+  <h2>研究问题</h2>
+  <div class="reading-card-content"><ul><li>单 neuron 的 maximally activating images 往往混有无关语义，例如同一 unit 同时响应 hairy dogs 与 maze patterns。只按 activation magnitude 对样本聚类，得到的是输入外观群组，不一定定位到网络内部实现各语义的不同 subgraphs。</li><li>PURE 假设每个‘pure feature’对应独特 functional circuit，而 polysemanticity 来自多个 circuits 共享目标 node。研究问题是：能否用对目标 neuron 的 partial backward attribution，按 lower-layer functional connectivity 聚类，从一个实际 neuron 定义多个可在测试时激活的 virtual neurons？</li></ul></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 03</span>
+    <span class="reading-step-note">模型与方法</span>
+  </div>
+  <h2>模型与方法</h2>
+  <div class="reading-card-content"><ul><li>把 circuit 表示为跨相邻 layers 的 relevance-message DAG。对目标 neuron 的 \(n_{\mathrm{ref}}=100\) 个最高激活 ImageNet test samples，使用 Layer-wise Relevance Propagation (LRP) 把该 neuron activation 逐层分配到 lower neurons；聚合 messages 得到每个样本的 circuit/node-attribution vector。</li><li>对 reference attribution vectors 做 \(k\)-means，文中常取两个 clusters。每个 cluster 定义一个 virtual pure neuron 及其 reference centroid；新 test sample 先计算同类 attribution vector，再分配给最近 circuit。为生成 feature visualization，作者裁剪 neuron-relevant image patches。</li><li>实验扫描 ImageNet-pretrained ResNet-34/50/101 的 penultimate-layer neurons。评估以 CLIP embedding 衡量 purified reference sets 内部距离、clusters 间距离，并用 DINOv2 作替代 foundation embedding；对照包括按原 neuron activations 或 image embeddings 直接聚类。</li></ul></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 04</span>
+    <span class="reading-step-note">核心结果与证据</span>
+  </div>
+  <h2>核心结果与证据</h2>
+  <div class="reading-card-content"><ul><li>Figure 1 的 neuron 2 同时由 maze 与 hairy-dog patches 激活；PURE 识别两组 circuits 后，virtual neuron 2a 的 top patches 主要是 dogs，2b 主要是 maze。Figure 3 给出不同 polysemanticity 程度下的 UMAP/reference sets，展示 purification 不是只在单一例子上定义。</li><li>Figure 4 报告用 CLIP feature-visualization distance 衡量时，PURE 在若干设置下得到更紧的 within-cluster 与更分离的 semantics，并优于 activation-based clustering；作者也指出收益对 semantics 是否 localized、目标 neuron 和 cluster choice 有差异。</li><li>方法没有修改原模型或声称发现唯一因果 circuit：virtual neurons 是 post-hoc sample assignment。它的价值在于把‘目标 neuron 激活了什么’换成‘激活目标 neuron 时，下游到上游的 functional connectivity 属于哪一类’。</li></ul><figure class="evidence-figure">
+  <button class="evidence-figure-image-button" type="button" aria-label="放大查看 Figure 1" onclick="window.openPaperFigureImage && window.openPaperFigureImage(this.querySelector('img'))">
+    <img class="paper-figure-image evidence-figure-image" src="../../assets/collection-figures/2404.06453/figure-1-pure-circuits.webp" alt="混合 top patches 与两组 purified patches 的横向比较。" loading="lazy" />
+  </button>
+  <figcaption>
+    <strong>Figure 1</strong> · 该例是定性展示；总体比较由 Figure 4 的 embedding distances 给出。
+    <span class="evidence-figure-reading">物理解读：The virtual neurons are defined by post-hoc circuit assignment and do not create new independently trained model units.</span>
+    <span class="evidence-figure-source">来源：paper.pdf p. 1, Figure 1</span>
+  </figcaption>
+</figure></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 05</span>
+    <span class="reading-step-note">有效性与局限</span>
+  </div>
+  <h2>有效性与局限</h2>
+  <div class="reading-card-content"><ul><li>核心假设——每个 monosemantic feature 有唯一/可聚类 circuit——未由实验普遍证明；同一语义可能由多个冗余 circuits 实现，不同语义也可能共享大部分路径。\(k\)-means 和预设 cluster number 会把连续变化强制离散化。</li><li>所谓 interpretability improvement 主要由 CLIP/DINOv2 embeddings 代理，而不是 human rating 或 controlled ground-truth concepts。Foundation models 自身的 bias、texture sensitivity 与 semantic geometry 会进入评价；作者在 Limitations 中明确提出需要 human feedback。</li><li>实验仅覆盖 ImageNet ResNets 的 penultimate layer；向 Transformers/LLMs、早期 convolution layers 或 recurrent computation 外推未经验证。每个 test sample 需要 partial backward pass，计算成本高于 activation clustering。本卡未独立复现。</li></ul></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 06</span>
+    <span class="reading-step-note">复现与资源</span>
+  </div>
+  <h2>复现与资源</h2>
+  <div class="reading-card-content"><ul><li>原文：https://arxiv.org/abs/2404.06453；代码：https://github.com/maxdreyer/PURE。官方 \(v_{1}\) PDF SHA-256：720dbdcb4ee86059153430d337df315d0111ebe528d6839a0ea145b748aa3266。</li><li>复现先固定 torchvision model/version、ImageNet split 与 target neurons，保存 top-100 samples；对每样本运行相同 LRP rule 到指定 lower layer，标准化 attribution vectors 后分别做 circuit-\(k\)-means、activation clustering 与 image-embedding clustering。评估需同时报告 CLIP、DINOv2、cluster stability、多 seed 和人工盲评，避免只挑成功 neuron。Evidence status: full-text verified; no independent reproduction performed.</li></ul></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 07</span>
+    <span class="reading-step-note">阅读指南</span>
+  </div>
+  <h2>阅读指南</h2>
+  <div class="reading-card-content"><ul><li>先看 Figure 1 明确输出是 virtual units，而非网络结构重写；再读 Figure 2 的 preprocessing/test assignment。Eq. (1) 只是 relevance propagation 的局部规则，pure-feature claim 依赖后续 attribution clustering。最后用 Limitations 校准 CLIP-based interpretability 指标。</li></ul></div>
+</section></article>
+        <aside id="detail-toc" class="detail-toc hidden" aria-label="内容目录">
+          <p class="detail-toc-title">阅读目录</p>
+          <nav id="detail-toc-nav" class="detail-toc-nav"></nav>
+        </aside>
+      </div>
+      <nav class="paper-nav"><a class="paper-nav-link paper-nav-prev" href="../../collection-papers/2404.04312/"><span class="paper-nav-label">← 上一篇</span><span class="paper-nav-title">Half-Space Feature Learning in Neural Networks</span></a>
+      <a class="paper-nav-link paper-nav-next" href="../../collection-papers/2404.07009/"><span class="paper-nav-label">下一篇 →</span><span class="paper-nav-title">A Mathematical Theory for Learning Semantic Languages by Abstract Learners</span></a></nav>
+      <section id="comments" class="comments-panel" aria-labelledby="comments-title">
+        <div class="comments-heading">
+          <div>
+            <p class="eyebrow">Discussion</p>
+            <h2 id="comments-title">评论与讨论</h2>
+          </div>
+          <a href="https://github.com/xixi-cc/xixi-research-comments/discussions" target="_blank" rel="noopener noreferrer">在 GitHub 查看</a>
+        </div>
+        <p class="comments-note">评论公开保存在 GitHub Discussions；阅读无需登录，发表评论需要 GitHub 账号。</p>
+        <script src="https://giscus.app/client.js"
+                data-repo="xixi-cc/xixi-research-comments"
+                data-repo-id="R_kgDOUIl8MQ"
+                data-category="Announcements"
+                data-category-id="DIC_kwDOUIl8Mc4DEftB"
+                data-mapping="specific"
+                data-term="collection:2404.06453"
+                data-strict="1"
+                data-reactions-enabled="1"
+                data-emit-metadata="0"
+                data-input-position="top"
+                data-theme="preferred_color_scheme"
+                data-lang="zh-CN"
+                data-loading="lazy"
+                crossorigin="anonymous"
+                async></script>
+        <noscript><p>请启用 JavaScript，或直接前往 GitHub Discussions 参与讨论。</p></noscript>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <div class="container">
+        <p>内容来自 <a href="https://arxiv.org" target="_blank" rel="noopener noreferrer">arXiv.org</a>；原创解读采用 CC BY-NC 4.0。<a href="../../rights.html">许可与引用</a></p>
+      </div>
+    </footer>
+
+    <script src="../../assets/theme.js"></script>
+    <script src="../../assets/media.js"></script>
+    <script src="../../assets/paper.js"></script>
+    <!-- Cloudflare Web Analytics -->
+<script type="module" src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon='{"token":"73522e5dee9b42b0be84b4847e4dd502"}'></script>
+<!-- End Cloudflare Web Analytics -->
+  </body>
+</html>

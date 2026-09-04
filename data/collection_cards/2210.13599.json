@@ -1,0 +1,144 @@
+{
+  "arxiv_id": "2210.13599",
+  "source_version": "v1",
+  "source_pdf": "https://arxiv.org/pdf/2210.13599",
+  "title_en": "Noise Injection as a Probe of Deep Learning Dynamics",
+  "title_zh": "以噪声注入探测深度学习动力学",
+  "curation_status": "full_text_verified",
+  "card_standard_version": "2.3",
+  "paper_profile": "theory_experiment",
+  "style_reference": "physicist_daily_arxiv",
+  "provenance": {
+    "program": "Collection",
+    "catalog": "Paper Collection",
+    "catalog_record_id": "2210.13599",
+    "catalog_record_ids": [
+      "2210.13599"
+    ],
+    "catalog_topic": "Training Dynamics",
+    "collection_date": "2026-08-30",
+    "sampled_at": "2026-08-31",
+    "selected_by": "ziming_mineru_serial_goal",
+    "sampling_seed": "not_applicable_source_complete",
+    "candidate_count": 464
+  },
+  "verified_metadata": {
+    "arxiv_id": "2210.13599",
+    "version": "v1",
+    "title": "Noise Injection as a Probe of Deep Learning Dynamics",
+    "authors": [
+      "Noam Levi",
+      "Itay Bloch",
+      "Marat Freytsis",
+      "Tomer Volansky"
+    ],
+    "categories": [
+      "cs.LG",
+      "cond-mat.stat-mech",
+      "cs.AI",
+      "stat.ML"
+    ],
+    "primary_category": "cs.LG",
+    "published": "2022-10-24T20:51:59Z",
+    "updated": "2022-10-24T20:51:59Z",
+    "comment": "11 pages, 3 figures; Physics4ML Workshop, ICLR 2023"
+  },
+  "sections": [
+    {
+      "title": "作者信息",
+      "paragraphs": [
+        "作者：Noam Levi、Itay Bloch、Marat Freytsis、Tomer Volansky。arXiv:2210.13599v1，共 11 页、3 图，发表于 ICLR 2023 Physics4ML Workshop proceedings。团队来自 Tel-Aviv University、UC Berkeley 与 Rutgers University。"
+      ]
+    },
+    {
+      "title": "研究问题",
+      "paragraphs": [
+        "训练深网时，损失和准确率只给出宏观结果，难以识别内部动力学。作者提出把独立随机噪声通过可训练连接注入隐藏层：如果网络能主动压低与任务无关的噪声连接，那么这些 Noise Injection Weights（NIWs）的演化可作为受控探针。",
+        "核心问题是：NIW 如何依赖噪声强度、学习率、批量大小和网络曲率演化；一个可解线性模型能否预测非线性 MLP 中出现的训练相位；NIW 衰减是否与未扰动损失的时间尺度相关。"
+      ]
+    },
+    {
+      "title": "模型与方法",
+      "paragraphs": [
+        "Noise Injection Node 每个训练 epoch/样本产生零均值独立噪声 ε，并通过额外可训练向量 W_NI 加到指定隐藏层激活；优化器和原网络权重照常用 SGD 更新。测试准确率在 ε=0 时评估，因此 NIN 是训练探针而非推理输入。",
+        "作者对含噪损失按 εW_NI 在隐藏激活处作展开，得到 NIW 更新由随机梯度项和与局部 Hessian 相关的二阶衰减项共同控制。随后分析两层标量线性回归，推导数据权重、NIW 与噪声尺度 σ_ε 的耦合离散动力学。",
+        "数值实验在 Fashion-MNIST 上训练 ReLU MLP，比较 MSE 与交叉熵，并扫描 σ_ε。Figure 1 给出网络接法、固定/重采样噪声的衰减轨迹，以及用 NIW 与损失时间尺度划分的 decoupled、decay、catapult、divergent 四个区间。"
+      ]
+    },
+    {
+      "title": "核心结果与证据",
+      "paragraphs": [
+        "在线性模型中，小噪声使 NIW 与数据权重近似解耦；中等噪声带来稳定衰减；更大噪声先把系统推入 catapult 区，NIW 降低后才恢复学习；过强噪声导致发散。相位边界不是噪声强度的普适常数，还随初始化、学习率、批量大小与网络而变。",
+        "Fashion-MNIST MLP 在 MSE 与交叉熵下复现相似的四相结构。衰减区中，无论每轮重采样 NIN 还是固定噪声值，NIW 都被压低，说明结果不只来自无法记忆每个噪声样本。部分设置下 NIW 范数与 ε=0 损失具有相近衰减趋势。",
+        "这些结果支持 NIN 作为训练动力学探针的可行性，但没有证明 NIW 能普遍预测泛化。Figure 1 中时间尺度相关性来自特定三层 MLP/Fashion-MNIST 设置；线性理论只定性捕捉更复杂网络的部分行为。"
+      ]
+    },
+    {
+      "title": "有效性与局限",
+      "paragraphs": [
+        "解析推导依赖小扰动展开和简单线性模型；ReLU MLP 的相位对应是经验类比。作者指出，有界非线性不会产生同样的损失发散，卷积、循环和 Transformer 架构可能具有更复杂的动力学。",
+        "NIN 本身改变了优化景观和最终落点，因而不是完全被动的测量仪器。额外参数、噪声分布、注入层、批量随机性与学习率都可能混杂 NIW 信号；实验没有进行跨任务、大规模架构或系统泛化检验，也未证明通过 NIW 识别无关特征的后续应用。"
+      ]
+    },
+    {
+      "title": "复现与资源",
+      "paragraphs": [
+        "原文：https://arxiv.org/abs/2210.13599。官方 PDF SHA-256：b2fa6765b78e64dd792cb7b50038f0a7edc240b8bfaf1e0640b88ef0f03d842d。附录列出模型、数据预处理与各图参数。",
+        "复现需固定 NIN 注入层与维数、ε 分布及是否逐轮重采样、σ_ε、W_NI 初始化、学习率、批量大小、损失、网络深宽和 Fashion-MNIST 划分；应同时画数据权重、NIW、ε=0/含噪损失、训练/测试准确率与相位边界。Evidence status: full-text verified; no independent reproduction performed."
+      ]
+    },
+    {
+      "title": "阅读指南",
+      "paragraphs": [
+        "先看 Figure 1 明确 NIN 是额外可训练噪声通道；再读 §2 的损失展开和梯度/Hessian 项；随后用 §3 线性模型理解四个相位与两个时间尺度；最后对照 Figures 2–3 的 MLP 数据和 §5 局限，避免把定性相位复现解读为普适泛化理论。"
+      ]
+    }
+  ],
+  "cover": {
+    "mode": "source_figure",
+    "asset_path": "assets/collection-figures/2210.13599/figure-1-noise-injection-node.webp",
+    "label": "Figure 1",
+    "visual_type": "comparison",
+    "evidence": "paper.pdf p. 2, Figure 1",
+    "alt_text": "噪声节点接入深度网络的结构、噪声权重与损失的训练轨迹，以及随噪声强度变化的四个动力学区间。",
+    "caption": "可训练噪声连接把受控扰动转化为动力学探针，并随噪声强度跨越四个训练相位。",
+    "selection_rationale": "Figure 1 同时给出 NIN 的结构定义、代表性轨迹和相位图，是连接方法、观测量与主要结论的最完整来源图。"
+  },
+  "figure_refs": [
+    {
+      "label": "Figure 1",
+      "asset_path": "assets/collection-figures/2210.13599/figure-1-noise-injection-node.webp",
+      "section": "模型与方法",
+      "role": "define the trainable noise probe and summarize its dynamical regimes",
+      "evidence": "paper.pdf p. 2, Figure 1",
+      "alt_text": "NIN 架构、权重/损失衰减曲线和 decoupled、decay、catapult、divergent 相位图。",
+      "caption": "NIW 的响应在不同 σ_ε 下从近似解耦过渡到衰减、弹射和发散。",
+      "interpretation": "The diagram motivates a probe; the phase boundaries remain architecture- and hyperparameter-dependent."
+    }
+  ],
+  "equation_refs": [
+    {
+      "label": "Leading noise-weight update",
+      "latex": "W_{\\mathrm{NI}}^{(t+1)}=W_{\\mathrm{NI}}^{(t)}-\\eta\\frac{\\sigma_\\epsilon\\Phi}{\\sqrt{|\\mathcal B|}}\\sqrt{\\langle g_{\\ell_{\\mathrm{NI}}}^2\\rangle}-\\frac{\\eta\\sigma_\\epsilon^2}{2}\\langle\\mathcal H_{\\ell_{\\mathrm{NI}}}\\rangle W_{\\mathrm{NI}}^{(t)}+\\cdots",
+      "role": "separate stochastic-gradient forcing from curvature-dependent suppression of the injected-noise connection",
+      "symbols": {
+        "W_NI": "trainable noise-injection weight",
+        "sigma_epsilon": "standard deviation of injected noise",
+        "g": "loss gradient at the injection-layer activation",
+        "H": "loss Hessian at the same activation",
+        "eta": "SGD learning rate"
+      },
+      "evidence": "paper.pdf pp. 2–3, Eqs. (2)–(3)",
+      "interpretation": "Noise both drives stochastic fluctuations and produces a systematic curvature-linked decay of NIWs."
+    }
+  ],
+  "evidence_refs": [
+    "paper.pdf pp. 1–2: NIN motivation, architecture and Figure 1",
+    "paper.pdf pp. 2–3: noise expansion and NIW gradient/Hessian dynamics",
+    "paper.pdf pp. 3–5: linear toy model and four noise-strength phases",
+    "paper.pdf pp. 5–6: NIW/loss time-scale relation and conclusions",
+    "paper.pdf appendices A–C: cross-entropy phase plot, experimental settings and expansion details",
+    "source PDF SHA-256 b2fa6765b78e64dd792cb7b50038f0a7edc240b8bfaf1e0640b88ef0f03d842d",
+    "Evidence status: full-text verified; no independent reproduction performed."
+  ]
+}

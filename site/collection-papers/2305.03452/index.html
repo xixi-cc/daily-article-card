@@ -1,0 +1,227 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>A technical note on bilinear layers for interpretability - physics+AI Collection 随机精选</title>
+    <meta name="description" content="作者：Lee Sharkey（Conjecture）。arXiv:2305.03452v1。本文是以代数推导为主的技术笔记：研究 bilinear MLP 能否把 transformer 中难以线性化的前馈层纳入 circuits 数学框架。" />
+    <link rel="canonical" href="https://xixi-cc.github.io/daily-article-card/collection-papers/2305.03452/" />
+    <script type="application/ld+json">{"@context": "https://schema.org", "@type": "Article", "headline": "A technical note on bilinear layers for interpretability", "description": "作者：Lee Sharkey（Conjecture）。arXiv:2305.03452v1。本文是以代数推导为主的技术笔记：研究 bilinear MLP 能否把 transformer 中难以线性化的前馈层纳入 circuits 数学框架。", "url": "https://xixi-cc.github.io/daily-article-card/collection-papers/2305.03452/", "mainEntityOfPage": "https://xixi-cc.github.io/daily-article-card/collection-papers/2305.03452/", "inLanguage": "zh-CN", "author": {"@type": "Person", "name": "Xineng Cao", "alternateName": ["Xixi Cao", "曹溪能"], "url": "https://xixi-cc.github.io/"}, "isBasedOn": "https://arxiv.org/abs/2305.03452"}</script>
+    <script>
+      (function() {
+        try {
+          var themePreference = window.localStorage.getItem('color-theme') || 'system';
+          var systemUsesDarkTheme = window.matchMedia('(prefers-color-scheme: dark)').matches;
+          var resolvedTheme = themePreference === 'system'
+            ? (systemUsesDarkTheme ? 'dark' : 'light')
+            : themePreference;
+          document.documentElement.dataset.theme = resolvedTheme;
+          document.documentElement.dataset.themePreference = themePreference;
+          document.documentElement.style.colorScheme = resolvedTheme;
+        } catch (error) {
+          document.documentElement.dataset.theme = 'light';
+          document.documentElement.dataset.themePreference = 'system';
+        }
+      })();
+    </script>
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='18' fill='%23111827'/%3E%3Ctext x='50%25' y='55%25' text-anchor='middle' dominant-baseline='middle' font-size='30' font-family='Arial, sans-serif' fill='white'%3EV%3C/text%3E%3C/svg%3E" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700;800&family=Noto+Sans+SC:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <script>document.documentElement.classList.add('math-pending');</script>
+    <script>
+      window.MathJax = {
+        tex: {
+          inlineMath: [['$', '$'], ['\\(', '\\)']],
+          displayMath: [['$$', '$$'], ['\\[', '\\]']],
+          processEscapes: true
+        },
+        options: {
+          skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+        },
+        chtml: {
+          scale: 1,
+          displayAlign: 'center'
+        },
+        startup: {
+          ready: function() {
+            MathJax.startup.defaultReady();
+            MathJax.startup.promise.then(function() {
+              document.documentElement.classList.remove('math-pending');
+              document.documentElement.dataset.mathReady = 'true';
+            });
+          }
+        }
+      };
+    </script>
+    <script defer src="../../assets/vendor/mathjax/tex-chtml.js"></script>
+    <link rel="stylesheet" href="../../assets/style.css" />
+  </head>
+  <body class="detail-page" data-paper-id="2305.03452" data-paper-program="collection">
+    <div class="page-noise"></div>
+    <div class="page-blur page-blur-a"></div>
+    <div class="page-blur page-blur-b"></div>
+
+    <header class="header detail-page-header">
+      <div class="container">
+        <div class="detail-page-topbar">
+          <a class="back-link" href="../../collection.html">返回列表</a>
+          <div class="detail-topbar-actions">
+            <span class="detail-site-name">physics+AI Collection 随机精选</span>
+            <button id="detail-favorite" class="detail-favorite-button" type="button" aria-pressed="false">☆ 收藏</button>
+            <button class="theme-toggle" type="button" data-theme-toggle aria-label="当前主题：设备，点击切换主题" title="当前主题：设备">
+  <span class="theme-toggle-icons" aria-hidden="true">
+    <svg class="theme-toggle-icon theme-toggle-icon-light" viewBox="0 0 24 24" fill="none">
+      <circle cx="12" cy="12" r="3.5" stroke="currentColor" stroke-width="1.8"/>
+      <path d="M12 2.5v2M12 19.5v2M2.5 12h2M19.5 12h2M5.3 5.3l1.4 1.4M17.3 17.3l1.4 1.4M18.7 5.3l-1.4 1.4M6.7 17.3l-1.4 1.4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+    </svg>
+    <svg class="theme-toggle-icon theme-toggle-icon-dark" viewBox="0 0 24 24" fill="none">
+      <path d="M20 15.2A8.1 8.1 0 0 1 8.8 4a8.2 8.2 0 1 0 11.2 11.2z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>
+    </svg>
+    <svg class="theme-toggle-icon theme-toggle-icon-system" viewBox="0 0 24 24" fill="none">
+      <rect x="3" y="4" width="18" height="13" rx="2.5" stroke="currentColor" stroke-width="1.8"/>
+      <path d="M8 21h8M12 17v4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+    </svg>
+  </span>
+  <span class="theme-toggle-label" data-theme-toggle-label>设备</span>
+</button>
+          </div>
+        </div>
+
+        <div class="detail-hero-grid">
+          <div class="detail-hero-cover"><article class="note-cover note-cover-title-abstract" style="--cover-from: #6f4cc9; --cover-to: #c57be8; --cover-spot: #efd9ff; --cover-ink: #fdf7ff; --cover-muted: rgba(253, 247, 255, 0.82); --cover-chip: rgba(253, 247, 255, 0.16); --cover-stroke: rgba(253, 247, 255, 0.24)">
+  <div class="note-cover-mesh"></div>
+  <div class="note-cover-title-shell">
+    <span class="note-cover-kicker">TITLE · ABSTRACT</span>
+    <h1 class="note-cover-title">A technical note on bilinear layers for interpretability</h1>
+    <p class="note-cover-title-zh">用于可解释性的双线性层技术笔记</p>
+    <p class="note-cover-abstract">双线性层把非线性压缩为可显式读取的三阶张量：每个输出都是输入特征两两交互项的可加和。这个精确代数结构为同时含 attention 与 MLP 的 transformer circuits 提供了分析入口，但尚未证明实际大模型因此更可解释或更安全。</p>
+  </div>
+</article></div>
+          <div class="detail-hero-copy">
+            <p class="eyebrow">Collection 全文卡</p>
+            <h1 class="detail-page-title">A technical note on bilinear layers for interpretability</h1>
+            <p class="detail-page-title-zh">用于可解释性的双线性层技术笔记</p>
+            <div class="detail-meta">Paper Collection · Mechanistic Interpretability · <a href="https://arxiv.org/abs/2305.03452" target="_blank" rel="noopener noreferrer">原文</a></div>
+            <p class="detail-summary">作者：Lee Sharkey（Conjecture）。arXiv:2305.03452v1。本文是以代数推导为主的技术笔记：研究 bilinear MLP 能否把 transformer 中难以线性化的前馈层纳入 circuits 数学框架。</p>
+            <div class="detail-micro-meta">
+              <span class="meta-pill">AI 基础理论</span>
+              <span class="meta-pill">理论</span>
+              <span class="meta-pill">#Mechanistic Interpretability</span><span class="meta-pill">#机器学习</span><span class="meta-pill">#Transformer</span>
+              <span class="meta-pill">7 分钟读完</span>
+              <span class="meta-pill">7 张阅读卡</span>
+              <span class="meta-pill">作者：Lee Sharkey（Conjecture）。arXiv:2305.03452v1。本文是以代…</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <main class="container detail-layout">
+      <div class="detail-shell">
+        <article id="detail-body" class="reading-flow"><section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 01</span>
+    <span class="reading-step-note">作者信息</span>
+  </div>
+  <h2>作者信息</h2>
+  <div class="reading-card-content"><ul><li>作者：Lee Sharkey（Conjecture）。arXiv:2305.03452v1。本文是以代数推导为主的技术笔记：研究 bilinear MLP 能否把 transformer 中难以线性化的前馈层纳入 circuits 数学框架。</li></ul></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 02</span>
+    <span class="reading-step-note">研究问题</span>
+  </div>
+  <h2>研究问题</h2>
+  <div class="reading-card-content"><ul><li>标准 MLP 的 elementwise ReLU/GELU 让网络可以在 superposition 中表示大量特征，却也使 feature construction 难以用线性代数拆解。作者问：若把 MLP 改为双线性门控结构，能否用有限阶张量精确写出其非线性，并追踪输入特征之间的组合？</li><li>论文的目标是提供可分析架构和候选研究语言，不是证明 bilinear transformers 已经更安全、更可解释，亦未展示大模型上的机制发现实验。</li></ul></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 03</span>
+    <span class="reading-step-note">模型与方法</span>
+  </div>
+  <h2>模型与方法</h2>
+  <div class="reading-card-content"><ul><li>bilinear layer 定义为 (W1x)⊙(W2x)。它没有额外 elementwise activation，但因两条线性投影相乘而对输入仍是二次非线性的；SwiGLU 可视为在其中一路再加入 Swish 的近邻结构。</li><li>作者构造三阶张量 B，其中 \(B_{\mathrm{ijk}}=W1_{\mathrm{ij}}\) \(W2_{\mathrm{ik}}\)，使输出可写为 \(x\) 与 B 的两次 tensor contraction。于是层的全部二次交互被集中到一个 \(m\)×\(n\)×\(n\) 张量，可继续代入 residual stream、attention 的 QK/OV 路径表达。</li><li>对输入 \(x=\Sigma_{i}\) \(a_{i}\) \(d_{i}\) 展开后，输出成为 Σ_iΣ_j \(a_{i}\) \(a_{j}\) \(d_{i}\)·B·\(d_{j}\)。作者据此把 bilinear feature construction 称为 additively pairwise nonlinear，并与标准 MLP 中难以拆成成对和的 full nonlinearity 对比。</li></ul></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 04</span>
+    <span class="reading-step-note">核心结果与证据</span>
+  </div>
+  <h2>核心结果与证据</h2>
+  <div class="reading-card-content"><ul><li>最坚实的结果是代数恒等式：双线性层可以由线性 tensor contractions 和一个由 \(W_{1}\)、\(W_{2}\) 构成的三阶张量精确表示，不需要近似或局部线性化。这使包含 attention 与 bilinear MLP 的一层 transformer 能写成可枚举的 path/tensor 项。</li><li>第二个结果是 feature interaction 的可加成对分解：任意稀疏或稠密特征组合的输出都由各对输入特征的二次项求和得到。它降低了交互阶数，但项数仍可随活跃特征数平方增长，张量本身也可能庞大。</li><li>论文关于“理解 feature construction 可替代枚举指数多特征”的论述是研究设想。没有训练实验、可解释性 benchmark、SwiGLU 对照或 tensor decomposition 的经验验证，性能接近标准 MLP 的依据来自既有工作而非本文新实验。</li></ul></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 05</span>
+    <span class="reading-step-note">有效性与局限</span>
+  </div>
+  <h2>有效性与局限</h2>
+  <div class="reading-card-content"><ul><li>可代数分解不自动等于人类可解释：B 的维数为输出宽度乘输入宽度平方，坐标基、superposition 与张量分解非唯一性仍会阻碍语义读取。pairwise interaction 也可能由大量相消项组成，难以形成稳定的机制故事。</li><li>架构替换会改变模型表达、优化和归纳偏置；笔记没有证明在相同 compute/data 下达到现代 SwiGLU 模型的质量，也没有说明训练所得 B 具有低秩、稀疏或可识别结构。因此安全推断和 learning-dynamics 分析都应视为未来工作。</li></ul></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 06</span>
+    <span class="reading-step-note">复现与资源</span>
+  </div>
+  <h2>复现与资源</h2>
+  <div class="reading-card-content"><ul><li>原文：https://arxiv.org/abs/2305.03452。官方 PDF SHA-256：e993dac84dd326c1582363502d7406e5f31a2ea3db17c81e9dd47cb53d0d7100。主文未提供配套实验代码；核心推导可用小维度随机矩阵逐元素核对。</li><li>复核应先检查 \(B_{\mathrm{ijk}}=W1_{\mathrm{ij}}\) \(W2_{\mathrm{ik}}\) 与两次 contraction 的轴顺序，再对随机 \(x\) 比较直接 Hadamard 乘积和张量表达；进一步实验需报告参数匹配、训练损失、低秩/稀疏性及 feature-basis 稳定性。Evidence status: full-text verified; no independent reproduction performed.</li></ul></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 07</span>
+    <span class="reading-step-note">阅读指南</span>
+  </div>
+  <h2>阅读指南</h2>
+  <div class="reading-card-content"><ul><li>先读 pp. 1–2 的动机和 bilinear 定义；重点核对 pp. 2–3 的 Eqs. (2)–(3) 与 \(B_{\mathrm{ijk}}\) 构造；再读 pp. 3–5 的 transformer-circuit 展开；最后看 pp. 6–8 的 feature construction 分解和 Conclusion，区分已证恒等式与推测性安全主张。</li></ul></div>
+</section></article>
+        <aside id="detail-toc" class="detail-toc hidden" aria-label="内容目录">
+          <p class="detail-toc-title">阅读目录</p>
+          <nav id="detail-toc-nav" class="detail-toc-nav"></nav>
+        </aside>
+      </div>
+      <nav class="paper-nav"><a class="paper-nav-link paper-nav-prev" href="../../collection-papers/2305.01582/"><span class="paper-nav-label">← 上一篇</span><span class="paper-nav-title">Interpretable Machine Learning for Science with PySR and SymbolicRegression.jl</span></a>
+      <a class="paper-nav-link paper-nav-next" href="../../collection-papers/2305.05465/"><span class="paper-nav-label">下一篇 →</span><span class="paper-nav-title">The Emergence of Clusters in Self-Attention Dynamics</span></a></nav>
+      <section id="comments" class="comments-panel" aria-labelledby="comments-title">
+        <div class="comments-heading">
+          <div>
+            <p class="eyebrow">Discussion</p>
+            <h2 id="comments-title">评论与讨论</h2>
+          </div>
+          <a href="https://github.com/xixi-cc/xixi-research-comments/discussions" target="_blank" rel="noopener noreferrer">在 GitHub 查看</a>
+        </div>
+        <p class="comments-note">评论公开保存在 GitHub Discussions；阅读无需登录，发表评论需要 GitHub 账号。</p>
+        <script src="https://giscus.app/client.js"
+                data-repo="xixi-cc/xixi-research-comments"
+                data-repo-id="R_kgDOUIl8MQ"
+                data-category="Announcements"
+                data-category-id="DIC_kwDOUIl8Mc4DEftB"
+                data-mapping="specific"
+                data-term="collection:2305.03452"
+                data-strict="1"
+                data-reactions-enabled="1"
+                data-emit-metadata="0"
+                data-input-position="top"
+                data-theme="preferred_color_scheme"
+                data-lang="zh-CN"
+                data-loading="lazy"
+                crossorigin="anonymous"
+                async></script>
+        <noscript><p>请启用 JavaScript，或直接前往 GitHub Discussions 参与讨论。</p></noscript>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <div class="container">
+        <p>内容来自 <a href="https://arxiv.org" target="_blank" rel="noopener noreferrer">arXiv.org</a>；原创解读采用 CC BY-NC 4.0。<a href="../../rights.html">许可与引用</a></p>
+      </div>
+    </footer>
+
+    <script src="../../assets/theme.js"></script>
+    <script src="../../assets/media.js"></script>
+    <script src="../../assets/paper.js"></script>
+    <!-- Cloudflare Web Analytics -->
+<script type="module" src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon='{"token":"73522e5dee9b42b0be84b4847e4dd502"}'></script>
+<!-- End Cloudflare Web Analytics -->
+  </body>
+</html>

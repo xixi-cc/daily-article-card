@@ -1,0 +1,108 @@
+{
+  "arxiv_id": "2304.09576",
+  "source_version": "v2",
+  "source_pdf": "https://arxiv.org/pdf/2304.09576",
+  "title_en": "Leveraging the two timescale regime to demonstrate convergence of neural networks",
+  "title_zh": "借助双时间尺度机制证明神经网络收敛",
+  "curation_status": "full_text_verified",
+  "card_standard_version": "2.3",
+  "paper_profile": "theory_experiment",
+  "style_reference": "physicist_daily_arxiv",
+  "provenance": {
+    "program": "Collection", "catalog": "Paper Collection", "catalog_record_id": "2304.09576",
+    "catalog_record_ids": ["2304.09576"], "catalog_topic": "Training Dynamics",
+    "collection_date": "2026-08-30", "sampled_at": "2026-08-31",
+    "selected_by": "ziming_mineru_serial_goal", "sampling_seed": "not_applicable_source_complete",
+    "candidate_count": 464
+  },
+  "verified_metadata": {
+    "arxiv_id": "2304.09576", "version": "v2",
+    "title": "Leveraging the two timescale regime to demonstrate convergence of neural networks",
+    "authors": ["Pierre Marion", "Raphaël Berthier"],
+    "categories": ["math.OC", "cs.LG", "stat.ML"], "primary_category": "math.OC",
+    "published": "2023-04-19T09:35:12Z", "updated": "2023-10-25T09:48:16Z",
+    "comment": "NeurIPS 2023; 34 pages, 10 figures"
+  },
+  "sections": [
+    {
+      "title": "作者信息",
+      "paragraphs": ["作者：Pierre Marion（Sorbonne Université / CNRS / LPSM）、Raphaël Berthier（EPFL）。arXiv:2304.09576v2，NeurIPS 2023。论文用慢–快动力学把两层网络的非凸训练化约为“快速拟合外层、缓慢移动特征”的问题。"]
+    },
+    {
+      "title": "研究问题",
+      "paragraphs": [
+        "浅层神经网络的 loss 对内层位置是非凸的，常见理论通过无限宽 NTK 或 mean-field 极限规避有限宽特征学习。作者问：对有限个神经元，若让外层权重比内层位置更快地更新，能否严格证明 gradient flow 到达 global optimum？",
+        "主定理只针对一维分段常数目标、平滑阶跃型激活和平方损失。论文的一般贡献是双时间尺度分解思路，而非已证明深网络或任意数据上的普适收敛。"
+      ]
+    },
+    {
+      "title": "模型与方法",
+      "paragraphs": [
+        "网络写为 f(x;a,u)=a0+Σj a_j g(x;u_j)。外层参数 a 以通常速度沿梯度下降，内层位置 u 的速度乘以 ε。当 ε≪1 时，对固定 u，a 几乎瞬时追踪线性最佳拟合 a*(u)；在慢时间 τ=εt 上，u 再降低 profile loss L(a*(u),u)。",
+        "具体例子用 g(x;u_j)=σ((x-u_j)/η) 拟合 [0,1] 上的分段常数函数。在 Heaviside 极限中，只有每个跳跃点两侧最近的神经元会移动，其余神经元保持不动；这把全局动力学分解成若干个局部两神经元系统。",
+        "证明先处理 ε→0 的双时间尺度极限，再控制有限 η 和小而正的 ε 带来的扰动。定理需要随机初始化在每个常数区间中有足够神经元，并对宽度 m、平滑尺度 η 和时间尺度比 ε 给出显式条件。"
+      ]
+    },
+    {
+      "title": "核心结果与证据",
+      "paragraphs": [
+        "Theorem 1 表明：对给定精度 ξ 和失败概率 δ，当 m 足以覆盖目标的各个常数段，且 η、ε 满足定理上界时，gradient flow 以至少 1−δ 的概率在有限时间内把 L2 误差降到 ξ 以下。m 不随目标精度趋于无穷，因此捕捉到有限宽的 feature learning。",
+        "Figure 2 给出机制图：蓝色目标的每个跳跃附近，只有最近的橙色拟合节点被驱动到跳跃位置。这是双时间尺度下稀疏特征移动的核心图像，不是独立的实验证明。",
+        "数值部分显示，在 ε=2×10^−5 的一次遍历 SGD 中，轨迹近似双时间尺度 gradient-flow limit，神经元覆盖每个跳跃；将其他设定保持不变而取 ε=1 时，会形成无神经元区域并遗漏跳跃。这些 SGD 结果是实验支持，主定理本身是 gradient flow 结果。"
+      ]
+    },
+    {
+      "title": "有效性与局限",
+      "paragraphs": [
+        "全局收敛是条件性结论：目标必须一维且分段常数，激活是小 η 的 sigmoid-like 平滑阶跃，损失是人口 L2 平方损失，初始位置均匀随机且覆盖每个目标区间。Appendix D 还给出了初始神经元全落在错误区域时停在局部 minimum 的反例。",
+        "论文没有证明有限样本 SGD、ReLU 或高维设定的同等定理；这些部分只有数值实验和证明思路。双时间尺度还以更多迭代换取可分析性，不应仅以最终 loss 忽略 wall-clock 成本。"
+      ]
+    },
+    {
+      "title": "复现与资源",
+      "paragraphs": [
+        "原文：https://arxiv.org/abs/2304.09576。代码：https://github.com/PierreMarion23/two-timescale-nn。官方 PDF SHA-256：3a55d2be709d86d63af4cc564368baf5c18d93db1a0da7cd0e8c1cb35cd882c1。",
+        "复现时应分开 gradient-flow 理论轨迹与 finite-step SGD，固定目标跳跃、m、初始位置、η、ε、step size、batch size 和噪声 seed；同时报告最终 L2 误差、神经元位置、迭代次数与 wall-clock。Evidence status: full-text verified; no independent reproduction performed."
+      ]
+    },
+    {
+      "title": "阅读指南",
+      "paragraphs": ["先读 pp. 1–3 的设定和 Theorem 1；再读 pp. 5–6 的双时间尺度极限及 Figure 2；随后看 pp. 8–10 的 SGD 对比；最后查 Appendix C 的参数和 Appendix D 的反例与 SGD 证明边界。"]
+    }
+  ],
+  "cover": {
+    "mode": "source_figure", "asset_path": "assets/collection-figures/2304.09576/figure-2-two-timescale-neurons.webp",
+    "label": "Figure 2", "visual_type": "schematic", "evidence": "paper.pdf p. 6, Figure 2",
+    "alt_text": "蓝色分段常数目标与橙色拟合曲线，虚线标出神经元位置，箭头指向跳跃点。",
+    "caption": "双时间尺度极限中，只有紧邻目标跳跃的神经元移动并对齐。",
+    "selection_rationale": "Figure 2 直接呈现快速外层拟合如何将慢变内层动力学局部化。"
+  },
+  "figure_refs": [
+    {
+      "label": "Figure 2", "asset_path": "assets/collection-figures/2304.09576/figure-2-two-timescale-neurons.webp",
+      "section": "模型与方法", "role": "visualize local neuron motion around target discontinuities",
+      "evidence": "paper.pdf p. 6, Figure 2", "alt_text": "目标跳跃两侧的最近神经元向跳跃点移动。",
+      "caption": "profile loss 分解为跳跃点附近的局部项，导致稀疏的特征移动。",
+      "interpretation": "This is a mechanism sketch in the Heaviside limit, not evidence of universal behavior for arbitrary networks."
+    }
+  ],
+  "equation_refs": [
+    {
+      "label": "Two-timescale limit",
+      "latex": "a=a^*(u),\\qquad \\frac{du}{d\\tau}=-\\nabla_u L(a^*(u),u),\\qquad \\tau=\\varepsilon t",
+      "role": "eliminate the fast outer-layer variables and expose the slow feature dynamics",
+      "symbols": {"a": "outer-layer coefficients", "u": "inner-layer positions", "a^*(u)": "best linear fit for fixed positions", "tau": "slow time", "epsilon": "inner-to-outer learning-rate ratio", "L": "population square loss"},
+      "evidence": "paper.pdf p. 5, Eq. (5)",
+      "interpretation": "The reduced system is exact only in the singular limit; finite positive epsilon requires a perturbation bound."
+    }
+  ],
+  "evidence_refs": [
+    "paper.pdf pp. 1–3: shallow-network setting, gradient flow and Theorem 1",
+    "paper.pdf pp. 5–6: two-timescale reduction, local loss decomposition and Figure 2",
+    "paper.pdf pp. 7–8: convergence in the singular limit and finite-epsilon perturbation",
+    "paper.pdf pp. 8–10: SGD comparisons inside and outside the two-timescale regime",
+    "paper.pdf Appendix C–D: experimental parameters, nonuniform-initialization counterexample and SGD proof boundary",
+    "source PDF SHA-256 3a55d2be709d86d63af4cc564368baf5c18d93db1a0da7cd0e8c1cb35cd882c1",
+    "Evidence status: full-text verified; no independent reproduction performed."
+  ]
+}

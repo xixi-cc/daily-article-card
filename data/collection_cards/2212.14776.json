@@ -1,0 +1,131 @@
+{
+  "arxiv_id": "2212.14776",
+  "source_version": "v3",
+  "source_pdf": "https://arxiv.org/pdf/2212.14776",
+  "title_en": "On the Interpretability of Attention Networks",
+  "title_zh": "论注意力网络的可解释性",
+  "curation_status": "full_text_verified",
+  "card_standard_version": "2.3",
+  "paper_profile": "ai_empirical",
+  "style_reference": "physicist_daily_arxiv",
+  "provenance": {
+    "program": "Collection",
+    "catalog": "Paper Collection",
+    "catalog_record_id": "2212.14776",
+    "catalog_record_ids": ["2212.14776"],
+    "catalog_topic": "AI Agents",
+    "collection_date": "2026-08-30",
+    "sampled_at": "2026-08-31",
+    "selected_by": "ziming_mineru_serial_goal",
+    "sampling_seed": "not_applicable_source_complete",
+    "candidate_count": 464
+  },
+  "verified_metadata": {
+    "arxiv_id": "2212.14776",
+    "version": "v3",
+    "title": "On the Interpretability of Attention Networks",
+    "authors": ["Lakshmi Narayan Pandey", "Rahul Vashisht", "Harish G. Ramaswamy"],
+    "categories": ["cs.LG"],
+    "primary_category": "cs.LG",
+    "published": "2022-12-30T15:31:22Z",
+    "updated": "2023-05-14T04:12:01Z",
+    "comment": "ACML 2022, PMLR Volume 189"
+  },
+  "sections": [
+    {
+      "title": "作者信息",
+      "paragraphs": [
+        "作者：Lakshmi Narayan Pandey、Rahul Vashisht、Harish G. Ramaswamy，来自 IIT Madras。arXiv:2212.14776v3，发表于 ACML 2022 / PMLR 189。论文把注意力解释问题约化为可客观评分的 selective dependence classification（SDC）。"
+      ]
+    },
+    {
+      "title": "研究问题",
+      "paragraphs": [
+        "注意力热图常被当作模型“理由”，但预测准确并不保证注意力落在真正决定标签的输入片段上。真实任务通常没有唯一 ground-truth rationale，导致忠实性难以量化。作者问：能否构造一个标签只依赖一个已知片段的分类问题，分别测量预测准确率和片段选择是否正确？",
+        "论文研究的是一种狭义、可操作的 interpretability：focus network 是否给真实 foreground segment 最高分。它不等同于因果解释、反事实充分性，也不证明人类可读热图完整描述了网络内部推理。"
+      ]
+    },
+    {
+      "title": "模型与方法",
+      "paragraphs": [
+        "SDC 把一个 foreground segment 与 m−1 个 background segments 拼成 mosaic，标签只由 foreground 的类别决定。Focus-Classify Attention Model（FCAM）先用 f 对每段打分并 softmax 得到 α，再将加权段向量送给分类器 g。",
+        "可解释性指标 focus truthfulness（FT）定义为真实 foreground 的 f 分数超过全部 background 分数的概率。作者从分布可分性与模型容量出发构造三类 error modes，展示准确 FCAM 如何借助错误片段、混合后的可分性或分类器非线性而保持低 FT。",
+        "实验包含低维合成 SDC 和 CIFAR-SDC：后者以 CIFAR-10 的前三类为 foreground、其余七类为 background，每个 mosaic 有 9 个图块；训练 40,000 个样本、测试 10,000 个。比较 softmax、entropy regularization、sparsemax、spherical softmax 与 hard attention，并报告 accuracy、FT、NNZ、到 one-hot 的距离及 entropy。"
+      ]
+    },
+    {
+      "title": "核心结果与证据",
+      "paragraphs": [
+        "Figure 1 的狗图给出直观反例：原始 attention 与把权重截成 sparse top-20 都聚焦狗，而一个随机稀疏向量却可能把视觉高亮移到无关街景；“稀疏”本身并不保证注意力正确。作者用已知 bounding box 的 overlap 指标量化这一差异。",
+        "构造例中存在 100% 分类准确但 FT 仅约 67% 的 FCAM，直接反驳 accuracy⇒attention correctness。另两种 error modes 表明，即使 foreground/background 不可由 focus family 分开，或 focus 选择不忠实，分类器仍可能利用 attended mixture 完成任务。",
+        "CIFAR-SDC 上各算法测试准确率约 95%，vanilla softmax 的 FT 已约 80%；sparsemax 与 spherical softmax 的 FT 提升超过 10 个百分点，而 entropy regularization 没有明显改善。hard attention 的 FT 较高但准确率下降，合成任务上更差且训练成本更高。结果为 3 次运行平均，不能据此断言所有稀疏注意力方法普遍更忠实。"
+      ]
+    },
+    {
+      "title": "有效性与局限",
+      "paragraphs": [
+        "SDC 人为保证唯一 foreground index，因此 FT 可客观定义；自然语言、视觉问答或多对象图像常有多个充分证据、冗余线索和标签噪声，ground truth attention 未必唯一。CIFAR-SDC 仍是半合成拼贴任务，不能代表 Transformer 自注意力或长序列推理。",
+        "FT 只检查真实片段是否得最高分，不验证移除该片段后的预测变化，也不排除分类器同时利用 background。实验规模、三次运行和所选 CNN/focus families 限制了统计外推；Figure 1 的 bounding-box overlap 也只是空间定位指标。"
+      ]
+    },
+    {
+      "title": "复现与资源",
+      "paragraphs": [
+        "原文：https://arxiv.org/abs/2212.14776；PMLR 版本：https://proceedings.mlr.press/v189/pandey23a.html。官方 PDF SHA-256：bce22600474513c61b8c47701d19275bb465dae909f1ede1598521dcf0ba57da。",
+        "复现需固定 foreground/background 类别、m=9、40k/10k mosaic 采样、focus/classifier 架构、α 聚合层、softmax 变体与正则强度，并以多种子同时报告 accuracy、FT、NNZ、Dist 和 entropy。Evidence status: full-text verified; no independent reproduction performed."
+      ]
+    },
+    {
+      "title": "阅读指南",
+      "paragraphs": [
+        "先看 pp. 3–4 的 Figure 1 与 overlap 分析，理解“看起来稀疏”和“选中真片段”的区别；再读 §3 的 SDC/FCAM/FT 定义；重点核对 pp. 6–10 的三类 error modes；最后读 pp. 11–13 的 CIFAR-SDC 设置、Figure 6、Table 2 与结论。"
+      ]
+    }
+  ],
+  "cover": {
+    "mode": "source_figure",
+    "asset_path": "assets/collection-figures/2212.14776/figure-1-attention-counterfactuals.webp",
+    "label": "Figure 1",
+    "visual_type": "comparison",
+    "evidence": "paper.pdf p. 3, Figure 1",
+    "alt_text": "一张含狗的街景，以及模型注意力、随机稀疏注意力和截断后注意力的三幅热图。",
+    "caption": "稀疏注意力可以聚焦目标，也可以同样稀疏却落在无关区域；稀疏不等于忠实。",
+    "selection_rationale": "Figure 1 用同一输入直观分离了 attention sparsity 与 ground-truth localization，是全文问题意识的最佳入口。"
+  },
+  "figure_refs": [
+    {
+      "label": "Figure 1",
+      "asset_path": "assets/collection-figures/2212.14776/figure-1-attention-counterfactuals.webp",
+      "section": "核心结果与证据",
+      "role": "contrast model, random-sparse and truncated attention against an object bounding box",
+      "evidence": "paper.pdf p. 3, Figure 1",
+      "alt_text": "狗的真实框与三种注意力热图并排比较。",
+      "caption": "随机稀疏 α 仍可产生清晰热区，却不对应负责输出 dog 的目标区域。",
+      "interpretation": "Visual concentration alone is insufficient; evaluation needs a task with a known responsible segment."
+    }
+  ],
+  "equation_refs": [
+    {
+      "label": "Focus truthfulness",
+      "latex": "\\operatorname{FT}[f]=\\mathbb E\\left[\\mathbf 1\\left(f(X_m)>\\max\\{f(X_1),\\ldots,f(X_{m-1})\\}\\right)\\right]",
+      "role": "measure how often the focus model ranks the true foreground segment above every background segment",
+      "symbols": {
+        "f": "focus scoring network",
+        "X_m": "known foreground segment",
+        "X_1,...,X_{m-1}": "background segments",
+        "m": "number of mosaic segments"
+      },
+      "evidence": "paper.pdf p. 6, §3.2",
+      "interpretation": "FT is identifiable in SDC because the data generator records the unique foreground segment; it is separate from classification accuracy."
+    }
+  ],
+  "evidence_refs": [
+    "paper.pdf pp. 1–4: interpretability question, Figure 1 and attention-overlap motivation",
+    "paper.pdf pp. 5–6: SDC data generator, FCAM and focus-truthfulness definition",
+    "paper.pdf pp. 6–10: three accuracy-without-interpretability error modes",
+    "paper.pdf pp. 11–13: CIFAR-SDC protocol, sparsity baselines, FT results and conclusion",
+    "paper.pdf appendices: synthetic experiment details and additional tables/figures",
+    "source PDF SHA-256 bce22600474513c61b8c47701d19275bb465dae909f1ede1598521dcf0ba57da",
+    "Evidence status: full-text verified; no independent reproduction performed."
+  ]
+}

@@ -1,0 +1,97 @@
+{
+  "arxiv_id": "2305.03452",
+  "source_version": "v1",
+  "source_pdf": "https://arxiv.org/pdf/2305.03452",
+  "title_en": "A technical note on bilinear layers for interpretability",
+  "title_zh": "用于可解释性的双线性层技术笔记",
+  "curation_status": "full_text_verified",
+  "card_standard_version": "2.3",
+  "paper_profile": "theory",
+  "style_reference": "physicist_daily_arxiv",
+  "provenance": {
+    "program": "Collection", "catalog": "Paper Collection", "catalog_record_id": "2305.03452",
+    "catalog_record_ids": ["2305.03452"], "catalog_topic": "Mechanistic Interpretability",
+    "collection_date": "2026-08-30", "sampled_at": "2026-08-31",
+    "selected_by": "ziming_mineru_serial_goal", "sampling_seed": "not_applicable_source_complete", "candidate_count": 464
+  },
+  "verified_metadata": {
+    "arxiv_id": "2305.03452", "version": "v1",
+    "title": "A technical note on bilinear layers for interpretability",
+    "authors": ["Lee Sharkey"],
+    "categories": ["cs.LG"], "primary_category": "cs.LG",
+    "published": "2023-05-05T00:00:00Z", "updated": "2023-05-05T00:00:00Z",
+    "comment": "12-page technical note; no conventional paper figures"
+  },
+  "sections": [
+    {
+      "title": "作者信息",
+      "paragraphs": ["作者：Lee Sharkey（Conjecture）。arXiv:2305.03452v1。本文是以代数推导为主的技术笔记：研究 bilinear MLP 能否把 transformer 中难以线性化的前馈层纳入 circuits 数学框架。"]
+    },
+    {
+      "title": "研究问题",
+      "paragraphs": [
+        "标准 MLP 的 elementwise ReLU/GELU 让网络可以在 superposition 中表示大量特征，却也使 feature construction 难以用线性代数拆解。作者问：若把 MLP 改为双线性门控结构，能否用有限阶张量精确写出其非线性，并追踪输入特征之间的组合？",
+        "论文的目标是提供可分析架构和候选研究语言，不是证明 bilinear transformers 已经更安全、更可解释，亦未展示大模型上的机制发现实验。"
+      ]
+    },
+    {
+      "title": "模型与方法",
+      "paragraphs": [
+        "bilinear layer 定义为 (W1x)⊙(W2x)。它没有额外 elementwise activation，但因两条线性投影相乘而对输入仍是二次非线性的；SwiGLU 可视为在其中一路再加入 Swish 的近邻结构。",
+        "作者构造三阶张量 B，其中 B_ijk=W1_ij W2_ik，使输出可写为 x 与 B 的两次 tensor contraction。于是层的全部二次交互被集中到一个 m×n×n 张量，可继续代入 residual stream、attention 的 QK/OV 路径表达。",
+        "对输入 x=Σ_i a_i d_i 展开后，输出成为 Σ_iΣ_j a_i a_j d_i·B·d_j。作者据此把 bilinear feature construction 称为 additively pairwise nonlinear，并与标准 MLP 中难以拆成成对和的 full nonlinearity 对比。"
+      ]
+    },
+    {
+      "title": "核心结果与证据",
+      "paragraphs": [
+        "最坚实的结果是代数恒等式：双线性层可以由线性 tensor contractions 和一个由 W1、W2 构成的三阶张量精确表示，不需要近似或局部线性化。这使包含 attention 与 bilinear MLP 的一层 transformer 能写成可枚举的 path/tensor 项。",
+        "第二个结果是 feature interaction 的可加成对分解：任意稀疏或稠密特征组合的输出都由各对输入特征的二次项求和得到。它降低了交互阶数，但项数仍可随活跃特征数平方增长，张量本身也可能庞大。",
+        "论文关于“理解 feature construction 可替代枚举指数多特征”的论述是研究设想。没有训练实验、可解释性 benchmark、SwiGLU 对照或 tensor decomposition 的经验验证，性能接近标准 MLP 的依据来自既有工作而非本文新实验。"
+      ]
+    },
+    {
+      "title": "有效性与局限",
+      "paragraphs": [
+        "可代数分解不自动等于人类可解释：B 的维数为输出宽度乘输入宽度平方，坐标基、superposition 与张量分解非唯一性仍会阻碍语义读取。pairwise interaction 也可能由大量相消项组成，难以形成稳定的机制故事。",
+        "架构替换会改变模型表达、优化和归纳偏置；笔记没有证明在相同 compute/data 下达到现代 SwiGLU 模型的质量，也没有说明训练所得 B 具有低秩、稀疏或可识别结构。因此安全推断和 learning-dynamics 分析都应视为未来工作。"
+      ]
+    },
+    {
+      "title": "复现与资源",
+      "paragraphs": [
+        "原文：https://arxiv.org/abs/2305.03452。官方 PDF SHA-256：e993dac84dd326c1582363502d7406e5f31a2ea3db17c81e9dd47cb53d0d7100。主文未提供配套实验代码；核心推导可用小维度随机矩阵逐元素核对。",
+        "复核应先检查 B_ijk=W1_ij W2_ik 与两次 contraction 的轴顺序，再对随机 x 比较直接 Hadamard 乘积和张量表达；进一步实验需报告参数匹配、训练损失、低秩/稀疏性及 feature-basis 稳定性。Evidence status: full-text verified; no independent reproduction performed."
+      ]
+    },
+    {
+      "title": "阅读指南",
+      "paragraphs": ["先读 pp. 1–2 的动机和 bilinear 定义；重点核对 pp. 2–3 的 Eqs. (2)–(3) 与 B_ijk 构造；再读 pp. 3–5 的 transformer-circuit 展开；最后看 pp. 6–8 的 feature construction 分解和 Conclusion，区分已证恒等式与推测性安全主张。"]
+    }
+  ],
+  "cover": {
+    "mode": "title_abstract",
+    "abstract_text": "双线性层把非线性压缩为可显式读取的三阶张量：每个输出都是输入特征两两交互项的可加和。这个精确代数结构为同时含 attention 与 MLP 的 transformer circuits 提供了分析入口，但尚未证明实际大模型因此更可解释或更安全。",
+    "selection_rationale": "原文没有常规编号图或可靠图注；采用标题摘要封面可避免把 MinerU 抽取的公式碎片误标为论文插图。"
+  },
+  "figure_refs": [],
+  "equation_refs": [
+    {
+      "label": "Third-order tensor form of a bilinear layer",
+      "latex": "(W_1x)\\odot(W_2x)=x\\cdot_{12}B\\cdot_{21}x,\\qquad B_{ijk}=(W_1)_{ij}(W_2)_{ik}",
+      "role": "represent the quadratic layer exactly using linear tensor contractions",
+      "symbols": {"x": "input vector", "W_1": "first input projection", "W_2": "second input projection", "B": "third-order interaction tensor", "odot": "elementwise product"},
+      "evidence": "paper.pdf pp. 2–3, Eqs. (2)–(3)",
+      "interpretation": "The identity is exact, but the resulting tensor need not be sparse, low rank or semantically identifiable."
+    }
+  ],
+  "evidence_refs": [
+    "paper.pdf pp. 1–2: superposition motivation and bilinear-layer definition",
+    "paper.pdf pp. 2–3: tensor contraction, elementwise expansion and B tensor construction",
+    "paper.pdf pp. 3–5: extension of the transformer-circuits algebra to bilinear MLPs",
+    "paper.pdf pp. 6–8: pairwise feature-interaction decomposition and speculative analysis proposals",
+    "paper.pdf p. 8: conclusion and future-work boundaries",
+    "source PDF SHA-256 e993dac84dd326c1582363502d7406e5f31a2ea3db17c81e9dd47cb53d0d7100",
+    "Evidence status: full-text verified; no independent reproduction performed."
+  ]
+}

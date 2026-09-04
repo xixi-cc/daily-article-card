@@ -1,0 +1,119 @@
+{
+  "arxiv_id": "2505.24333",
+  "source_version": "v3",
+  "source_pdf": "https://arxiv.org/pdf/2505.24333",
+  "title_en": "Two failure modes of deep transformers and how to avoid them: a unified theory of signal propagation at initialisation",
+  "title_zh": "深层 Transformer 的两种初始化失效模式及规避：信号传播统一理论",
+  "curation_status": "full_text_verified",
+  "card_standard_version": "2.3",
+  "paper_profile": "theory_numerics",
+  "style_reference": "physicist_daily_arxiv",
+  "verified_metadata": {
+    "arxiv_id": "2505.24333",
+    "version": "v3",
+    "title": "Two failure modes of deep transformers and how to avoid them: a unified theory of signal propagation at initialisation",
+    "authors": [
+      "Alessio Giorlandino",
+      "Sebastian Goldt"
+    ],
+    "affiliations": [
+      "International School of Advanced Studies (SISSA)"
+    ],
+    "categories": [
+      "stat.ML"
+    ],
+    "primary_category": "stat.ML",
+    "updated": "2026-02-09",
+    "comment": "PDF title page states arXiv:2505.24333v3 [stat.ML] 9 Feb 2026 and ICLR 2026."
+  },
+  "provenance": {
+    "program": "Collection",
+    "catalog": "Paper Collection",
+    "catalog_record_id": "2505.24333",
+    "catalog_record_ids": [
+      "2505.24333"
+    ],
+    "catalog_topic": "Transformer Initialization and Signal Propagation",
+    "collection_date": "2026-08-30",
+    "sampled_at": "2026-08-31",
+    "selected_by": "ziming_mineru_serial_goal",
+    "sampling_seed": "not_applicable_source_complete",
+    "candidate_count": 464
+  },
+  "cover": {
+    "mode": "source_figure",
+    "asset_path": "assets/collection-figures/2505.24333/figure-1-trainability-diagram.webp",
+    "label": "Figure 1",
+    "visual_type": "phase_diagram",
+    "evidence": "paper.pdf pp. 1--2, Figure 1",
+    "alt_text": "深 BERT 的初始化相图区分 rank collapse、entropy collapse 与可训练区域。",
+    "caption": "Figure 1 将 residual strength alpha 和 query/key variance beta 划分为 rank collapse、entropy collapse 与 trainable 区域。",
+    "selection_rationale": "Figure 1 直接展示论文给初始化实践的核心输出：必须同时避开 token 表征趋同的 rank collapse 和 attention 饱和的 entropy collapse。"
+  },
+  "figure_refs": [
+    {
+      "label": "Figure 1",
+      "asset_path": "assets/collection-figures/2505.24333/figure-1-trainability-diagram.webp",
+      "section": "核心结果与证据",
+      "role": "summarize initialization failure modes and the trainability region",
+      "evidence": "paper.pdf pp. 1--2, Figure 1; MinerU image 03d137c93fb601b197586b2c952b2c5eb25f5e3e1c6b257bace88cec0d21a8ed.jpg",
+      "alt_text": "相图及 token cosine similarity、TinyStories loss 对比。",
+      "caption": "综合图包含理论相图和有限模型实验；不是所有 Transformer 变体的通用超参数表。",
+      "interpretation": "The diagram follows the paper's architecture and large-width signal-propagation assumptions; finite-size, optimizer and causal-model effects are separately discussed."
+    }
+  ],
+  "equation_refs": [
+    {
+      "label": "Token similarity order parameter",
+      "latex": "\\rho=\\cos(z_i,z_j)",
+      "role": "track rank collapse through pairwise token-representation similarity",
+      "symbols": {
+        "z_i,z_j": "token embeddings",
+        "rho": "average cosine similarity"
+      },
+      "evidence": "paper.pdf pp. 1--3, Sections 1--3",
+      "interpretation": "Rank collapse corresponds to rho approaching one; the theory additionally tracks attention entropy and backward gradients."
+    }
+  ],
+  "evidence_refs": [
+    "paper.pdf pp. 1--3, Figure 1--2: rank/entropy collapse and one-layer phase transition",
+    "paper.pdf pp. 3--5, Figure 3: entropy/gradient behavior and beta transition",
+    "paper.pdf pp. 5--7, Figure 4: depth propagation and gain-controlled variant",
+    "source PDF SHA-256 69afc244a0bca0a1d8b9537cdde64e62d7f923b6da4f48bc58548219aaf34be2; 27 pages; full MinerU extraction verified",
+    "Evidence status: full-text verified; no independent reproduction performed."
+  ],
+  "sections": [
+    {
+      "title": "作者信息",
+      "content": "Alessio Giorlandino 与 Sebastian Goldt 来自 SISSA。PDF 为 arXiv:2505.24333v3 [stat.ML]（2026-02-09），ICLR 2026。论文研究深 Transformer 在训练前的初始化信号传播。"
+    },
+    {
+      "title": "研究问题",
+      "content": "错误初始化会使 self-attention 产生两种不同问题：rank collapse 将所有 token 映射到近同一表征；entropy collapse 则让 attention 过度饱和、随机聚焦少数 token，训练不稳定。作者问如何以架构参数精确预测并同时避开它们。 两种风险不能互相抵消。"
+    },
+    {
+      "title": "背景",
+      "content": "全连接网络的 edge-of-chaos 理论追踪两个输入的相似性；Transformer 还要处理序列 token、attention softmax、layer norm、skip 和 MLP。已有缩放规则不能给出包含常数的完整深度初始化处方。 因而仅用单一方差缩放不足以判断深层注意力是否稳定。"
+    },
+    {
+      "title": "模型与方法",
+      "content": "论文在大宽度下解析 token cosine similarity、attention entropy 和反向梯度，通过与 Random Energy Model 的对应精确处理 attention。以 query/key weight scale beta 与 attention residual strength alpha 建立单层/多层 update map，再用算法生成 trainability diagrams；在 BERT/TinyStories 上检验。 具体地，作者以平均平方 token 范数 q、不同 token 的平均 overlap p 以及 rho=p/q 压缩表示几何；对每个 block 迭代 q、p 的更新。查询/键初始化取 sigma_Q^2=sigma_K^2=beta*sqrt(log T)/d，并用 REM 的配分函数处理 softmax 的大偏差，而不是把 softmax 分子、分母分别取平均。临界尺度为 beta_c(q,p)=sqrt[2/(q(q-p))]；注意力行的二阶 inverse participation ratio 用来区分离域与局域 attention。残差则以 alpha_SA、alpha_MLP 的平方项加入 q、p 更新，最后扫描 beta 与 alpha 生成有限深度 trainability diagram。"
+    },
+    {
+      "title": "核心结果与证据",
+      "content": "Figure 1 显示低 beta 的均匀 attention 会产生 rank collapse，高 beta 的饱和 attention 产生 entropy collapse，中间配合足够 alpha 可训练。Figure 2 给单层 beta--rho 相图及有限宽仿真，Figure 3 显示大 beta 时 attention entropy 迅速趋零、低 beta 时 query gradient 消失。理论还预测 residual/gain 控制可阻断随深度 rho 到一的趋势，Figure 4 检验这一点。 单层结果给出清楚的两侧机制：beta<beta_c 时 attention 近乎均匀，输出趋向 token 平均，rho 饱和到 1；beta>beta_c 时 token 多样性未立即消失，但 IPR 非零，少数随机 key 主导，Shannon entropy 降低。Figure 2 用 d=512、T=1024 的模拟确认相图并显示临界附近的有限尺寸偏差。Figure 3 的单层 TinyStories masked-LM 实验取 beta_c(rho=0)=sqrt(2)，高 beta 的熵很快接近零；其 query-gradient 图在不同 T=2048/4096/8192、d=256/512/1024 下支持低 beta 梯度消失。Figure 1 的 60 层 BERT 则以 beta约0.02 的小方差和 alpha_SA=1.5或2 作为可训练案例，alpha_SA=1.0 为 rank-collapse 案例；另以 12 层、beta=1.8 分离 entropy-collapse 的训练失败。"
+    },
+    {
+      "title": "有效性与局限",
+      "content": "强项是把两类常被混淆的故障放到同一解析框架，并同时含前向和梯度条件。边界来自所用 Transformer、初始化分布和大宽度近似；有限尺寸在相变附近偏离，训练后动态不等同于初始化图。不同 causal/autoregressive 位置和优化器需另行检查。 结论描述的是初始化附近的平均信号传播；它没有取代以多种序列长度、随机种子和下游任务所做的稳健性检验。 临界结果是 d,T 同时趋大、非因果序列并具有近似 simplex token 几何时的预测；有限 T 在 beta_c/2 之后已出现非 Gaussian 波动，论文明确将临界附近视为渐变 crossover。因果 Transformer 的早期 token 只有有限历史，不能用 q、p 两个量完整描述，理论主要近似较晚位置。高 beta 的 entropy collapse 也不能单靠增大 skip connection 消除。gain-controlled attention 的 30 层 TinyStories 结果被作者称为 preliminary，尚未构成大规模模型或不同数据集上的稳定性结论。"
+    },
+    {
+      "title": "复现与资源",
+      "content": "复核可对给定 T、d、depth、alpha、beta 在随机初始化时测 token cosine、attention Shannon entropy 和 query gradient，再与 update map 比较。训练验证需固定 TinyStories、BERT 配置、learning rate 与 seeds，分开报告 rank/entropy 失败。本文卡未运行代码。 记录每层曲线而非只报末层，可以分辨渐进性 rank collapse 与单层 attention 饱和。 对 Figure 3 的最小复现，论文附录指定 1-layer、1-head masked-LM，TinyStories 掩码概率0.15、embedding dimension 768、AdamW learning rate 5e-4、batch size 64、1 epoch、weight decay 0.01、warmup ratio 0.05，并固定标准初始化给非 Q/K 权重。对 Figure 1 的 BERT 对照，使用 ReLU、6 attention heads、embedding dimension 600、absolute positions，并分别固定 beta、alpha_SA、alpha_MLP=1。数值检查还应记录每层 rho、attention entropy/IPR、Q gradient Frobenius norm 与训练 loss，而非只报告最终 loss；同时扫描 T、d 检验有限尺寸漂移。"
+    },
+    {
+      "title": "阅读指南",
+      "content": "先读 Figure 1 分清两个 collapse；再读单层 Figure 2--3 了解 beta 的双侧风险；最后看深度传播与 gain-controlled 方案。不要将蓝色区域理解为任意训练设置的性能保证，它是初始化信号稳定性条件。 可把两条边界分别当成表示退化与注意力退化的诊断门槛。 这也是图的用途。 需交叉阅读。"
+    }
+  ]
+}

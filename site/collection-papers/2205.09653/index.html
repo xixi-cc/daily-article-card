@@ -1,0 +1,231 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Self-Consistent Dynamical Field Theory of Kernel Evolution in Wide Neural Networks - physics+AI Collection 随机精选</title>
+    <meta name="description" content="作者：Blake Bordelon、Cengiz Pehlevan。arXiv:2205.09653v3，NeurIPS 2022 camera-ready，全文 55 页。论文建立无限宽 feature-learning 网络的自洽 dynamical mean-field theory（DMFT）。" />
+    <link rel="canonical" href="https://xixi-cc.github.io/daily-article-card/collection-papers/2205.09653/" />
+    <script type="application/ld+json">{"@context": "https://schema.org", "@type": "Article", "headline": "Self-Consistent Dynamical Field Theory of Kernel Evolution in Wide Neural Networks", "description": "作者：Blake Bordelon、Cengiz Pehlevan。arXiv:2205.09653v3，NeurIPS 2022 camera-ready，全文 55 页。论文建立无限宽 feature-learning 网络的自洽 dynamical mean-field theory（DMFT）。", "url": "https://xixi-cc.github.io/daily-article-card/collection-papers/2205.09653/", "mainEntityOfPage": "https://xixi-cc.github.io/daily-article-card/collection-papers/2205.09653/", "inLanguage": "zh-CN", "author": {"@type": "Person", "name": "Xineng Cao", "alternateName": ["Xixi Cao", "曹溪能"], "url": "https://xixi-cc.github.io/"}, "isBasedOn": "https://arxiv.org/abs/2205.09653"}</script>
+    <script>
+      (function() {
+        try {
+          var themePreference = window.localStorage.getItem('color-theme') || 'system';
+          var systemUsesDarkTheme = window.matchMedia('(prefers-color-scheme: dark)').matches;
+          var resolvedTheme = themePreference === 'system'
+            ? (systemUsesDarkTheme ? 'dark' : 'light')
+            : themePreference;
+          document.documentElement.dataset.theme = resolvedTheme;
+          document.documentElement.dataset.themePreference = themePreference;
+          document.documentElement.style.colorScheme = resolvedTheme;
+        } catch (error) {
+          document.documentElement.dataset.theme = 'light';
+          document.documentElement.dataset.themePreference = 'system';
+        }
+      })();
+    </script>
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='18' fill='%23111827'/%3E%3Ctext x='50%25' y='55%25' text-anchor='middle' dominant-baseline='middle' font-size='30' font-family='Arial, sans-serif' fill='white'%3EV%3C/text%3E%3C/svg%3E" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700;800&family=Noto+Sans+SC:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <script>document.documentElement.classList.add('math-pending');</script>
+    <script>
+      window.MathJax = {
+        tex: {
+          inlineMath: [['$', '$'], ['\\(', '\\)']],
+          displayMath: [['$$', '$$'], ['\\[', '\\]']],
+          processEscapes: true
+        },
+        options: {
+          skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+        },
+        chtml: {
+          scale: 1,
+          displayAlign: 'center'
+        },
+        startup: {
+          ready: function() {
+            MathJax.startup.defaultReady();
+            MathJax.startup.promise.then(function() {
+              document.documentElement.classList.remove('math-pending');
+              document.documentElement.dataset.mathReady = 'true';
+            });
+          }
+        }
+      };
+    </script>
+    <script defer src="../../assets/vendor/mathjax/tex-chtml.js"></script>
+    <link rel="stylesheet" href="../../assets/style.css" />
+  </head>
+  <body class="detail-page" data-paper-id="2205.09653" data-paper-program="collection">
+    <div class="page-noise"></div>
+    <div class="page-blur page-blur-a"></div>
+    <div class="page-blur page-blur-b"></div>
+
+    <header class="header detail-page-header">
+      <div class="container">
+        <div class="detail-page-topbar">
+          <a class="back-link" href="../../collection.html">返回列表</a>
+          <div class="detail-topbar-actions">
+            <span class="detail-site-name">physics+AI Collection 随机精选</span>
+            <button id="detail-favorite" class="detail-favorite-button" type="button" aria-pressed="false">☆ 收藏</button>
+            <button class="theme-toggle" type="button" data-theme-toggle aria-label="当前主题：设备，点击切换主题" title="当前主题：设备">
+  <span class="theme-toggle-icons" aria-hidden="true">
+    <svg class="theme-toggle-icon theme-toggle-icon-light" viewBox="0 0 24 24" fill="none">
+      <circle cx="12" cy="12" r="3.5" stroke="currentColor" stroke-width="1.8"/>
+      <path d="M12 2.5v2M12 19.5v2M2.5 12h2M19.5 12h2M5.3 5.3l1.4 1.4M17.3 17.3l1.4 1.4M18.7 5.3l-1.4 1.4M6.7 17.3l-1.4 1.4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+    </svg>
+    <svg class="theme-toggle-icon theme-toggle-icon-dark" viewBox="0 0 24 24" fill="none">
+      <path d="M20 15.2A8.1 8.1 0 0 1 8.8 4a8.2 8.2 0 1 0 11.2 11.2z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>
+    </svg>
+    <svg class="theme-toggle-icon theme-toggle-icon-system" viewBox="0 0 24 24" fill="none">
+      <rect x="3" y="4" width="18" height="13" rx="2.5" stroke="currentColor" stroke-width="1.8"/>
+      <path d="M8 21h8M12 17v4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+    </svg>
+  </span>
+  <span class="theme-toggle-label" data-theme-toggle-label>设备</span>
+</button>
+          </div>
+        </div>
+
+        <div class="detail-hero-grid">
+          <div class="detail-hero-cover"><figure class="paper-figure-card paper-figure-card-detail">
+  <img class="paper-figure-image" src="../../assets/collection-figures/2205.09653/figure-1-dmft.webp" alt="训练损失、隐藏场分布、特征核与梯度核随时间和宽度的 DMFT—有限网络对比。" loading="lazy" onclick="window.openPaperFigureImage && window.openPaperFigureImage(this)" />
+  <figcaption class="paper-figure-caption">自洽 DMFT 在固定特征学习强度下预测有限宽网络的双时间核动力学。</figcaption>
+</figure></div>
+          <div class="detail-hero-copy">
+            <p class="eyebrow">Collection 全文卡</p>
+            <h1 class="detail-page-title">Self-Consistent Dynamical Field Theory of Kernel Evolution in Wide Neural Networks</h1>
+            <p class="detail-page-title-zh">宽神经网络核演化的自洽动力学场论</p>
+            <div class="detail-meta">Paper Collection · Training Dynamics · <a href="https://arxiv.org/abs/2205.09653" target="_blank" rel="noopener noreferrer">原文</a></div>
+            <p class="detail-summary">作者：Blake Bordelon、Cengiz Pehlevan。arXiv:2205.09653v3，NeurIPS 2022 camera-ready，全文 55 页。论文建立无限宽 feature-learning 网络的自洽 dynamical mean-field theory（DMFT）。</p>
+            <div class="detail-micro-meta">
+              <span class="meta-pill">AI for Science</span>
+              <span class="meta-pill">理论与数值</span>
+              <span class="meta-pill">#Training Dynamics</span><span class="meta-pill">#机器学习</span><span class="meta-pill">#无序系统与神经网络</span>
+              <span class="meta-pill">7 分钟读完</span>
+              <span class="meta-pill">7 张阅读卡</span>
+              <span class="meta-pill">作者：Blake Bordelon、Cengiz Pehlevan。arXiv:2205.09653v…</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <main class="container detail-layout">
+      <div class="detail-shell">
+        <article id="detail-body" class="reading-flow"><section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 01</span>
+    <span class="reading-step-note">作者信息</span>
+  </div>
+  <h2>作者信息</h2>
+  <div class="reading-card-content"><ul><li>作者：Blake Bordelon、Cengiz Pehlevan。arXiv:2205.09653v3，NeurIPS 2022 camera-ready，全文 55 页。论文建立无限宽 feature-learning 网络的自洽 dynamical mean-field theory（DMFT）。</li></ul></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 02</span>
+    <span class="reading-step-note">研究问题</span>
+  </div>
+  <h2>研究问题</h2>
+  <div class="reading-card-content"><ul><li>静态 NTK 极限把表示冻结，难以描述 rich feature learning。作者问：在宽度趋于无穷、但特征学习强度 γ0 保持有限时，能否用少量随层与双时间变化的 kernel order parameters 完整决定隐藏活动、反向梯度、NTK 和输出动力学？</li><li>还需检验常见近似——静态 NTK、gradient independence 和低阶 perturbation——在何处失效，以及自洽解是否仍能匹配有限宽网络。</li></ul></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 03</span>
+    <span class="reading-step-note">模型与方法</span>
+  </div>
+  <h2>模型与方法</h2>
+  <div class="reading-card-content"><ul><li>对每层定义前向特征核 \(\Phi\)^l_{μα}(\(t\),s)、梯度核 \(G^{l}\) 以及响应核 \(A^{l}\)、\(B^{l}\)；它们是不同样本与训练时刻间隐藏活动/梯度内积的确定性极限。所有核共同确定有效随机场分布和输出误差动力学。</li><li>路径积分/鞍点推导产生自洽方程：已知核可采样隐藏场，已知隐藏场又可重新估计核。深线性网络化为代数矩阵方程；非线性网络用 alternating Monte Carlo 迭代求解。\(\gamma0\to 0\) 恢复 lazy NTK，\(\gamma0\approx 1\) 进入显著 feature evolution，并与 Tensor Programs 的递归随机过程一致。</li><li>实验将 DMFT 与宽度 \(N\) 的 tanh MLP 比较，并检查静态 NTK等近似；CIFAR boat-vs-plane CNN 使用 ReLU、MSE、global average pooling，比较 \(N=250\)/500 在固定 \(\gamma0=\gamma\)/\(\sqrt N\) 下的损失、分类误差和末层特征核。</li></ul></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 04</span>
+    <span class="reading-step-note">核心定理与证据</span>
+  </div>
+  <h2>核心定理与证据</h2>
+  <div class="reading-card-content"><ul><li>Figure 1 中，DMFT 同时匹配训练损失、初末 preactivation 分布、各层 \(\Phi\)/G 核与时间轨迹。核 alignment 随宽度增加，在约 \(N\approx 500\) 后接近一致；误差条来自 10 次重复。</li><li>理论在 \(\gamma0\to 0\) 连续回到静态 NTK，在较大 γ0 捕获加速且非线性的 feature learning 轨迹。论文展示静态 NTK、gradient-independence 和 leading-order perturbation 会在强 feature-learning 区域偏离，而完整自洽采样仍准确。</li><li>CIFAR CNN 结果表明固定 γ0 时不同通道宽度具有相似 loss/kernel dynamics，支持所选无限宽缩放；但仅是二分类、小宽度集合与特定参数化下的数值检验。</li></ul><figure class="evidence-figure">
+  <button class="evidence-figure-image-button" type="button" aria-label="放大查看 Figure 1" onclick="window.openPaperFigureImage && window.openPaperFigureImage(this.querySelector('img'))">
+    <img class="paper-figure-image evidence-figure-image" src="../../assets/collection-figures/2205.09653/figure-1-dmft.webp" alt="九面板 DMFT 与网络动力学比较。" loading="lazy" />
+  </button>
+  <figcaption>
+    <strong>Figure 1</strong> · 宽度增加时 Φ/G 核与 DMFT alignment 提升。
+    <span class="evidence-figure-reading">物理解读：Agreement validates the scaling and solver in controlled MLP experiments, not all modern architectures.</span>
+    <span class="evidence-figure-source">来源：paper.pdf Figure 1</span>
+  </figcaption>
+</figure></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 05</span>
+    <span class="reading-step-note">有效性与局限</span>
+  </div>
+  <h2>有效性与局限</h2>
+  <div class="reading-card-content"><ul><li>DMFT 是无限宽、特定参数化和梯度流/相应离散扩展下的理论；有限宽涨落、mini-batch 噪声、现代归一化/注意力与实际优化器可能改变动力学。自洽 Monte Carlo 比静态 NTK 更通用，也更昂贵，且数值迭代本身需收敛诊断。</li><li>Figure 1 的主 MLP 只用 10 个 CIFAR 样本，CNN 只取前两类；因此它验证核动力学而非完整 CIFAR10 泛化。理论能预测给定训练过程中的 kernel evolution，不自动给出 representation 语义、最优架构或有限样本泛化定理。</li></ul></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 06</span>
+    <span class="reading-step-note">复现与资源</span>
+  </div>
+  <h2>复现与资源</h2>
+  <div class="reading-card-content"><ul><li>原文：https://arxiv.org/abs/2205.09653。PDF SHA-256：43b5f7262917ff751f8f4fe8660128973f6daace657eca1837451a4013bff92b。附录含 JAX 代码与实验细节。</li><li>复现需固定深度、宽度、参数化、\(\gamma\)/γ0、激活、初始化、全批梯度下降、DMFT Monte Carlo 样本数与停止准则；逐层报告 \(\Phi\)/G/A/B、alignment、有限宽重复和近似误差。Evidence status: full-text verified; no independent reproduction performed.</li></ul></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 07</span>
+    <span class="reading-step-note">阅读指南</span>
+  </div>
+  <h2>阅读指南</h2>
+  <div class="reading-card-content"><ul><li>先读引言区分 lazy 与 rich regime；再看核 order parameters 和自洽闭环；随后逐面板读 Figure 1，把分布、核、时间轨迹和宽度收敛对应起来；最后比较静态 NTK/gradient-independence/perturbation 的失效区及 CIFAR CNN 的外推边界。</li></ul></div>
+</section></article>
+        <aside id="detail-toc" class="detail-toc hidden" aria-label="内容目录">
+          <p class="detail-toc-title">阅读目录</p>
+          <nav id="detail-toc-nav" class="detail-toc-nav"></nav>
+        </aside>
+      </div>
+      <nav class="paper-nav"><a class="paper-nav-link paper-nav-prev" href="../../collection-papers/2205.07331/"><span class="paper-nav-label">← 上一篇</span><span class="paper-nav-title">Sobolev Acceleration and Statistical Optimality for Learning Elliptic Equations via Gradient Descent</span></a>
+      <a class="paper-nav-link paper-nav-next" href="../../collection-papers/2205.11916/"><span class="paper-nav-label">下一篇 →</span><span class="paper-nav-title">Large Language Models are Zero-Shot Reasoners</span></a></nav>
+      <section id="comments" class="comments-panel" aria-labelledby="comments-title">
+        <div class="comments-heading">
+          <div>
+            <p class="eyebrow">Discussion</p>
+            <h2 id="comments-title">评论与讨论</h2>
+          </div>
+          <a href="https://github.com/xixi-cc/xixi-research-comments/discussions" target="_blank" rel="noopener noreferrer">在 GitHub 查看</a>
+        </div>
+        <p class="comments-note">评论公开保存在 GitHub Discussions；阅读无需登录，发表评论需要 GitHub 账号。</p>
+        <script src="https://giscus.app/client.js"
+                data-repo="xixi-cc/xixi-research-comments"
+                data-repo-id="R_kgDOUIl8MQ"
+                data-category="Announcements"
+                data-category-id="DIC_kwDOUIl8Mc4DEftB"
+                data-mapping="specific"
+                data-term="collection:2205.09653"
+                data-strict="1"
+                data-reactions-enabled="1"
+                data-emit-metadata="0"
+                data-input-position="top"
+                data-theme="preferred_color_scheme"
+                data-lang="zh-CN"
+                data-loading="lazy"
+                crossorigin="anonymous"
+                async></script>
+        <noscript><p>请启用 JavaScript，或直接前往 GitHub Discussions 参与讨论。</p></noscript>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <div class="container">
+        <p>内容来自 <a href="https://arxiv.org" target="_blank" rel="noopener noreferrer">arXiv.org</a>；原创解读采用 CC BY-NC 4.0。<a href="../../rights.html">许可与引用</a></p>
+      </div>
+    </footer>
+
+    <script src="../../assets/theme.js"></script>
+    <script src="../../assets/media.js"></script>
+    <script src="../../assets/paper.js"></script>
+    <!-- Cloudflare Web Analytics -->
+<script type="module" src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon='{"token":"73522e5dee9b42b0be84b4847e4dd502"}'></script>
+<!-- End Cloudflare Web Analytics -->
+  </body>
+</html>

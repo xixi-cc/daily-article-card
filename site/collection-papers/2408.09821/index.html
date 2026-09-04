@@ -1,0 +1,231 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Symplectic Neural Networks Based on Dynamical Systems - physics+AI Collection 随机精选</title>
+    <meta name="description" content="Benjamin K. Tapley，来自 SINTEF Digital Department of Mathematics and Cybernetics。论文从 Hamiltonian ODE 的 geometric integrators 构造 SympNets，讨论通用逼近、线性表示、非消失梯度与 symbolic Hamiltonian regression。arXiv:2408.09821v1。" />
+    <link rel="canonical" href="https://xixi-cc.github.io/daily-article-card/collection-papers/2408.09821/" />
+    <script type="application/ld+json">{"@context": "https://schema.org", "@type": "Article", "headline": "Symplectic Neural Networks Based on Dynamical Systems", "description": "Benjamin K. Tapley，来自 SINTEF Digital Department of Mathematics and Cybernetics。论文从 Hamiltonian ODE 的 geometric integrators 构造 SympNets，讨论通用逼近、线性表示、非消失梯度与 symbolic Hamiltonian regression。arXiv:2408.09821v1。", "url": "https://xixi-cc.github.io/daily-article-card/collection-papers/2408.09821/", "mainEntityOfPage": "https://xixi-cc.github.io/daily-article-card/collection-papers/2408.09821/", "inLanguage": "zh-CN", "author": {"@type": "Person", "name": "Xineng Cao", "alternateName": ["Xixi Cao", "曹溪能"], "url": "https://xixi-cc.github.io/"}, "isBasedOn": "https://arxiv.org/abs/2408.09821"}</script>
+    <script>
+      (function() {
+        try {
+          var themePreference = window.localStorage.getItem('color-theme') || 'system';
+          var systemUsesDarkTheme = window.matchMedia('(prefers-color-scheme: dark)').matches;
+          var resolvedTheme = themePreference === 'system'
+            ? (systemUsesDarkTheme ? 'dark' : 'light')
+            : themePreference;
+          document.documentElement.dataset.theme = resolvedTheme;
+          document.documentElement.dataset.themePreference = themePreference;
+          document.documentElement.style.colorScheme = resolvedTheme;
+        } catch (error) {
+          document.documentElement.dataset.theme = 'light';
+          document.documentElement.dataset.themePreference = 'system';
+        }
+      })();
+    </script>
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='18' fill='%23111827'/%3E%3Ctext x='50%25' y='55%25' text-anchor='middle' dominant-baseline='middle' font-size='30' font-family='Arial, sans-serif' fill='white'%3EV%3C/text%3E%3C/svg%3E" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700;800&family=Noto+Sans+SC:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <script>document.documentElement.classList.add('math-pending');</script>
+    <script>
+      window.MathJax = {
+        tex: {
+          inlineMath: [['$', '$'], ['\\(', '\\)']],
+          displayMath: [['$$', '$$'], ['\\[', '\\]']],
+          processEscapes: true
+        },
+        options: {
+          skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+        },
+        chtml: {
+          scale: 1,
+          displayAlign: 'center'
+        },
+        startup: {
+          ready: function() {
+            MathJax.startup.defaultReady();
+            MathJax.startup.promise.then(function() {
+              document.documentElement.classList.remove('math-pending');
+              document.documentElement.dataset.mathReady = 'true';
+            });
+          }
+        }
+      };
+    </script>
+    <script defer src="../../assets/vendor/mathjax/tex-chtml.js"></script>
+    <link rel="stylesheet" href="../../assets/style.css" />
+  </head>
+  <body class="detail-page" data-paper-id="2408.09821" data-paper-program="collection">
+    <div class="page-noise"></div>
+    <div class="page-blur page-blur-a"></div>
+    <div class="page-blur page-blur-b"></div>
+
+    <header class="header detail-page-header">
+      <div class="container">
+        <div class="detail-page-topbar">
+          <a class="back-link" href="../../collection.html">返回列表</a>
+          <div class="detail-topbar-actions">
+            <span class="detail-site-name">physics+AI Collection 随机精选</span>
+            <button id="detail-favorite" class="detail-favorite-button" type="button" aria-pressed="false">☆ 收藏</button>
+            <button class="theme-toggle" type="button" data-theme-toggle aria-label="当前主题：设备，点击切换主题" title="当前主题：设备">
+  <span class="theme-toggle-icons" aria-hidden="true">
+    <svg class="theme-toggle-icon theme-toggle-icon-light" viewBox="0 0 24 24" fill="none">
+      <circle cx="12" cy="12" r="3.5" stroke="currentColor" stroke-width="1.8"/>
+      <path d="M12 2.5v2M12 19.5v2M2.5 12h2M19.5 12h2M5.3 5.3l1.4 1.4M17.3 17.3l1.4 1.4M18.7 5.3l-1.4 1.4M6.7 17.3l-1.4 1.4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+    </svg>
+    <svg class="theme-toggle-icon theme-toggle-icon-dark" viewBox="0 0 24 24" fill="none">
+      <path d="M20 15.2A8.1 8.1 0 0 1 8.8 4a8.2 8.2 0 1 0 11.2 11.2z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>
+    </svg>
+    <svg class="theme-toggle-icon theme-toggle-icon-system" viewBox="0 0 24 24" fill="none">
+      <rect x="3" y="4" width="18" height="13" rx="2.5" stroke="currentColor" stroke-width="1.8"/>
+      <path d="M8 21h8M12 17v4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+    </svg>
+  </span>
+  <span class="theme-toggle-label" data-theme-toggle-label>设备</span>
+</button>
+          </div>
+        </div>
+
+        <div class="detail-hero-grid">
+          <div class="detail-hero-cover"><figure class="paper-figure-card paper-figure-card-detail">
+  <img class="paper-figure-image" src="../../assets/collection-figures/2408.09821/figure-2-bea-map.webp" alt="原 Hamiltonian 向数值 map 的虚线、向精确 flow 的实线，以及通过 backward error analysis 连接 modified 和 inverse-modified Hamiltonians 的点线关系图。" loading="lazy" onclick="window.openPaperFigureImage && window.openPaperFigureImage(this)" />
+  <figcaption class="paper-figure-caption">Backward error analysis 解释 learned symplectic map 对应哪个 modified Hamiltonian。</figcaption>
+</figure></div>
+          <div class="detail-hero-copy">
+            <p class="eyebrow">Collection 全文卡</p>
+            <h1 class="detail-page-title">Symplectic Neural Networks Based on Dynamical Systems</h1>
+            <p class="detail-page-title-zh">基于动力系统的辛神经网络</p>
+            <div class="detail-meta">Paper Collection · Scientific Machine Learning · <a href="https://arxiv.org/abs/2408.09821" target="_blank" rel="noopener noreferrer">原文</a></div>
+            <p class="detail-summary">Benjamin K. Tapley，来自 SINTEF Digital Department of Mathematics and Cybernetics。论文从 Hamiltonian ODE 的 geometric integrators 构造 SympNets，讨论通用逼近、线性表示、非消失梯度与 symbolic Hamiltonian regression。arXiv:2408.09821v1。</p>
+            <div class="detail-micro-meta">
+              <span class="meta-pill">AI for Science</span>
+              <span class="meta-pill">理论与数值</span>
+              <span class="meta-pill">#Scientific Machine Learning</span><span class="meta-pill">#机器学习</span><span class="meta-pill">#数值分析</span>
+              <span class="meta-pill">10 分钟读完</span>
+              <span class="meta-pill">7 张阅读卡</span>
+              <span class="meta-pill">Benjamin K. Tapley，来自 SINTEF Digital Department of…</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <main class="container detail-layout">
+      <div class="detail-shell">
+        <article id="detail-body" class="reading-flow"><section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 01</span>
+    <span class="reading-step-note">作者信息</span>
+  </div>
+  <h2>作者信息</h2>
+  <div class="reading-card-content"><ul><li>Benjamin \(K\). Tapley，来自 SINTEF Digital Department of Mathematics and Cybernetics。论文从 Hamiltonian ODE 的 geometric integrators 构造 SympNets，讨论通用逼近、线性表示、非消失梯度与 symbolic Hamiltonian regression。arXiv:2408.09821v1。</li></ul></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 02</span>
+    <span class="reading-step-note">研究问题</span>
+  </div>
+  <h2>研究问题</h2>
+  <div class="reading-card-content"><ul><li>学习 Hamiltonian flow map 时，普通网络可能破坏 symplectic form，长时迭代产生能量与相空间几何漂移。作者问：能否把每层直接设计成可学习的 symplectic integrator，使整个网络严格保辛，并覆盖广泛 Hamiltonian diffeomorphisms？</li><li>进一步目标是利用 backward error analysis：一个 symplectic numerical map 可视为某个 modified Hamiltonian 的精确/近似流，从训练出的层参数反推出原 Hamiltonian 的符号多项式。</li></ul></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 03</span>
+    <span class="reading-step-note">模型与方法</span>
+  </div>
+  <h2>模型与方法</h2>
+  <div class="reading-card-content"><ul><li>Hamiltonian dynamics 满足 qdot=\(\partial H\)/\(\partial p\)、pdot=-\(\partial H\)/\(\partial q\)，flow Jacobian 保持 \(J\)。SympNet 由显式可逆 shear/splitting layers 复合，每层对应 separable Hamiltonian 的精确流，因此无需在 loss 中软惩罚 symplecticity。</li><li>G-, P- 等 variants 采用不同可学习 generator/partition。论文证明相应网络在 Hamiltonian diffeomorphism 空间的 universal approximation，并证明 P-SympNet 可精确表示 quadratic Hamiltonian 产生的任意 linear symplectic map。层 Jacobian 结构给出梯度不消失性质。</li><li>Figure 2 区分原 Hamiltonian \(H\)、数值方法 \(\Phi_{h}\)、modified \(H\)-tilde 与 inverse-modified \(H\)-bar；BEA 将 learned map 与可解释 Hamiltonian series 连接。实验覆盖 Hénon–Heiles、FPU、linear systems 与 double pendulum。</li></ul><figure class="evidence-figure">
+  <button class="evidence-figure-image-button" type="button" aria-label="放大查看 Figure 2" onclick="window.openPaperFigureImage && window.openPaperFigureImage(this.querySelector('img'))">
+    <img class="paper-figure-image evidence-figure-image" src="../../assets/collection-figures/2408.09821/figure-2-bea-map.webp" alt="H、H tilde、H bar、数值 map Phi_h 和 exact flow phi_h 之间的箭头图。" loading="lazy" />
+  </button>
+  <figcaption>
+    <strong>Figure 2</strong> · 虚线为 numerical method，实线为 exact flow，点线为 BEA。
+    <span class="evidence-figure-reading">物理解读：Symbolic regression recovers a step-size-dependent modified object unless the inverse modification is explicitly accounted for.</span>
+    <span class="evidence-figure-source">来源：paper.pdf p. 7, Figure 2</span>
+  </figcaption>
+</figure></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 04</span>
+    <span class="reading-step-note">核心结果与证据</span>
+  </div>
+  <h2>核心结果与证据</h2>
+  <div class="reading-card-content"><ul><li>理论上，层复合严格保辛，通用逼近结果说明表达性并非简单由结构约束牺牲；P-SympNet 的线性表示定理特别强，因为不靠无限宽近似。非消失梯度是结构性结论，但不等于所有优化条件良好。</li><li>Figures 3–6 把 train/test error 对 training time 或 layer count 作图；在作者测试的系统上，新 variants 常以更低训练代价达到比既有 SympNet/HNN baselines 低数个数量级的误差。不同任务的最优架构并不随参数量单调改善。</li><li>BEA symbolic regression 在 polynomial systems 上恢复 corrected Hamiltonian coefficients；Figure 2 强调恢复对象可能是数值 map 的 modified/inverse-modified Hamiltonian，必须按 step size order 解释，而非把网络参数直接当真实 \(H\)。</li></ul></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 05</span>
+    <span class="reading-step-note">有效性与局限</span>
+  </div>
+  <h2>有效性与局限</h2>
+  <div class="reading-card-content"><ul><li>通用逼近针对 Hamiltonian diffeomorphisms 与规定 domain/regularity；非 Hamiltonian、dissipative、受约束或带噪系统需要不同结构。真实观测若不是 canonical coordinates，symplectic form 也未必是标准 \(J\)。</li><li>数值比较横跨不同架构与 hyperparameters，‘orders of magnitude’依赖任务、时间步与搜索预算；需要 matched parameter、wall-clock 和 tuning budgets。长时 rollout、energy error 和 invariant preservation应与 one-step error并报。</li><li>BEA 是渐近展开，step size 不够小时 series 可能失效；symbolic recovery 只在 polynomial systems 与已知 coordinate setting验证。本卡未独立复现。</li></ul></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 06</span>
+    <span class="reading-step-note">复现与资源</span>
+  </div>
+  <h2>复现与资源</h2>
+  <div class="reading-card-content"><ul><li>原文：https://arxiv.org/abs/2408.09821。官方 \(v_{1}\) PDF SHA-256：5a729599d833ee7eedface241902ee23c572ede5c28fba67327acbd6bdd4fd63。</li><li>复现应从同一初值/step-size生成 train/test flow pairs，核查每层和整体 Jacobian 的 \(M^{\mathrm{TJM}}-J\) residual，并同时报告 one-step、长时 rollout、energy drift、wall-clock 与参数量。Symbolic regression 需逐 BEA order 报 recovered monomials、系数误差和对 \(h\) 的缩放。Evidence status: full-text verified; no independent reproduction performed.</li></ul></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 07</span>
+    <span class="reading-step-note">阅读指南</span>
+  </div>
+  <h2>阅读指南</h2>
+  <div class="reading-card-content"><ul><li>先读 symplectic map 与 splitting integrator，再看各 SympNet layer 的精确流构造。Figure 2 是理解 BEA 的关键；随后读 universal/linear representation theorems，最后用 Figures 3–7 检查 accuracy、cost 和参数恢复。</li></ul></div>
+</section></article>
+        <aside id="detail-toc" class="detail-toc hidden" aria-label="内容目录">
+          <p class="detail-toc-title">阅读目录</p>
+          <nav id="detail-toc-nav" class="detail-toc-nav"></nav>
+        </aside>
+      </div>
+      <nav class="paper-nav"><a class="paper-nav-link paper-nav-prev" href="../../collection-papers/2408.09523/"><span class="paper-nav-label">← 上一篇</span><span class="paper-nav-title">Understanding Transformer Architecture through Continuous Dynamics: A Partial Differential Equation Perspective</span></a>
+      <a class="paper-nav-link paper-nav-next" href="../../collection-papers/2408.10147/"><span class="paper-nav-label">下一篇 →</span><span class="paper-nav-title">In-Context Learning with Representations: Contextual Generalization of Trained Transformers</span></a></nav>
+      <section id="comments" class="comments-panel" aria-labelledby="comments-title">
+        <div class="comments-heading">
+          <div>
+            <p class="eyebrow">Discussion</p>
+            <h2 id="comments-title">评论与讨论</h2>
+          </div>
+          <a href="https://github.com/xixi-cc/xixi-research-comments/discussions" target="_blank" rel="noopener noreferrer">在 GitHub 查看</a>
+        </div>
+        <p class="comments-note">评论公开保存在 GitHub Discussions；阅读无需登录，发表评论需要 GitHub 账号。</p>
+        <script src="https://giscus.app/client.js"
+                data-repo="xixi-cc/xixi-research-comments"
+                data-repo-id="R_kgDOUIl8MQ"
+                data-category="Announcements"
+                data-category-id="DIC_kwDOUIl8Mc4DEftB"
+                data-mapping="specific"
+                data-term="collection:2408.09821"
+                data-strict="1"
+                data-reactions-enabled="1"
+                data-emit-metadata="0"
+                data-input-position="top"
+                data-theme="preferred_color_scheme"
+                data-lang="zh-CN"
+                data-loading="lazy"
+                crossorigin="anonymous"
+                async></script>
+        <noscript><p>请启用 JavaScript，或直接前往 GitHub Discussions 参与讨论。</p></noscript>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <div class="container">
+        <p>内容来自 <a href="https://arxiv.org" target="_blank" rel="noopener noreferrer">arXiv.org</a>；原创解读采用 CC BY-NC 4.0。<a href="../../rights.html">许可与引用</a></p>
+      </div>
+    </footer>
+
+    <script src="../../assets/theme.js"></script>
+    <script src="../../assets/media.js"></script>
+    <script src="../../assets/paper.js"></script>
+    <!-- Cloudflare Web Analytics -->
+<script type="module" src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon='{"token":"73522e5dee9b42b0be84b4847e4dd502"}'></script>
+<!-- End Cloudflare Web Analytics -->
+  </body>
+</html>

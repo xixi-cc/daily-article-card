@@ -1,0 +1,231 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Position Coupling: Improving Length Generalization of Arithmetic Transformers Using Task Structure - physics+AI Collection 随机精选</title>
+    <meta name="description" content="Hanseul Cho、Jaeyoung Cha、Pranjal Awasthi、Srinadh Bhojanapalli、Anupam Gupta 与 Chulhee Yun，来自 KAIST、Google Research 与 NYU。论文发表于 NeurIPS 2024，提出 position coupling。arXiv:2405.20671v2。" />
+    <link rel="canonical" href="https://xixi-cc.github.io/daily-article-card/collection-papers/2405.20671/" />
+    <script type="application/ld+json">{"@context": "https://schema.org", "@type": "Article", "headline": "Position Coupling: Improving Length Generalization of Arithmetic Transformers Using Task Structure", "description": "Hanseul Cho、Jaeyoung Cha、Pranjal Awasthi、Srinadh Bhojanapalli、Anupam Gupta 与 Chulhee Yun，来自 KAIST、Google Research 与 NYU。论文发表于 NeurIPS 2024，提出 position coupling。arXiv:2405.20671v2。", "url": "https://xixi-cc.github.io/daily-article-card/collection-papers/2405.20671/", "mainEntityOfPage": "https://xixi-cc.github.io/daily-article-card/collection-papers/2405.20671/", "inLanguage": "zh-CN", "author": {"@type": "Person", "name": "Xineng Cao", "alternateName": ["Xixi Cao", "曹溪能"], "url": "https://xixi-cc.github.io/"}, "isBasedOn": "https://arxiv.org/abs/2405.20671"}</script>
+    <script>
+      (function() {
+        try {
+          var themePreference = window.localStorage.getItem('color-theme') || 'system';
+          var systemUsesDarkTheme = window.matchMedia('(prefers-color-scheme: dark)').matches;
+          var resolvedTheme = themePreference === 'system'
+            ? (systemUsesDarkTheme ? 'dark' : 'light')
+            : themePreference;
+          document.documentElement.dataset.theme = resolvedTheme;
+          document.documentElement.dataset.themePreference = themePreference;
+          document.documentElement.style.colorScheme = resolvedTheme;
+        } catch (error) {
+          document.documentElement.dataset.theme = 'light';
+          document.documentElement.dataset.themePreference = 'system';
+        }
+      })();
+    </script>
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='18' fill='%23111827'/%3E%3Ctext x='50%25' y='55%25' text-anchor='middle' dominant-baseline='middle' font-size='30' font-family='Arial, sans-serif' fill='white'%3EV%3C/text%3E%3C/svg%3E" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700;800&family=Noto+Sans+SC:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <script>document.documentElement.classList.add('math-pending');</script>
+    <script>
+      window.MathJax = {
+        tex: {
+          inlineMath: [['$', '$'], ['\\(', '\\)']],
+          displayMath: [['$$', '$$'], ['\\[', '\\]']],
+          processEscapes: true
+        },
+        options: {
+          skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+        },
+        chtml: {
+          scale: 1,
+          displayAlign: 'center'
+        },
+        startup: {
+          ready: function() {
+            MathJax.startup.defaultReady();
+            MathJax.startup.promise.then(function() {
+              document.documentElement.classList.remove('math-pending');
+              document.documentElement.dataset.mathReady = 'true';
+            });
+          }
+        }
+      };
+    </script>
+    <script defer src="../../assets/vendor/mathjax/tex-chtml.js"></script>
+    <link rel="stylesheet" href="../../assets/style.css" />
+  </head>
+  <body class="detail-page" data-paper-id="2405.20671" data-paper-program="collection">
+    <div class="page-noise"></div>
+    <div class="page-blur page-blur-a"></div>
+    <div class="page-blur page-blur-b"></div>
+
+    <header class="header detail-page-header">
+      <div class="container">
+        <div class="detail-page-topbar">
+          <a class="back-link" href="../../collection.html">返回列表</a>
+          <div class="detail-topbar-actions">
+            <span class="detail-site-name">physics+AI Collection 随机精选</span>
+            <button id="detail-favorite" class="detail-favorite-button" type="button" aria-pressed="false">☆ 收藏</button>
+            <button class="theme-toggle" type="button" data-theme-toggle aria-label="当前主题：设备，点击切换主题" title="当前主题：设备">
+  <span class="theme-toggle-icons" aria-hidden="true">
+    <svg class="theme-toggle-icon theme-toggle-icon-light" viewBox="0 0 24 24" fill="none">
+      <circle cx="12" cy="12" r="3.5" stroke="currentColor" stroke-width="1.8"/>
+      <path d="M12 2.5v2M12 19.5v2M2.5 12h2M19.5 12h2M5.3 5.3l1.4 1.4M17.3 17.3l1.4 1.4M18.7 5.3l-1.4 1.4M6.7 17.3l-1.4 1.4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+    </svg>
+    <svg class="theme-toggle-icon theme-toggle-icon-dark" viewBox="0 0 24 24" fill="none">
+      <path d="M20 15.2A8.1 8.1 0 0 1 8.8 4a8.2 8.2 0 1 0 11.2 11.2z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>
+    </svg>
+    <svg class="theme-toggle-icon theme-toggle-icon-system" viewBox="0 0 24 24" fill="none">
+      <rect x="3" y="4" width="18" height="13" rx="2.5" stroke="currentColor" stroke-width="1.8"/>
+      <path d="M8 21h8M12 17v4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+    </svg>
+  </span>
+  <span class="theme-toggle-label" data-theme-toggle-label>设备</span>
+</button>
+          </div>
+        </div>
+
+        <div class="detail-hero-grid">
+          <div class="detail-hero-cover"><figure class="paper-figure-card paper-figure-card-detail">
+  <img class="paper-figure-image" src="../../assets/collection-figures/2405.20671/figure-2-position-coupling.webp" alt="653、零填充后的049与逆序答案207的 token 下方标注位置编号，相同数位通过连线共享 position ID。" loading="lazy" onclick="window.openPaperFigureImage && window.openPaperFigureImage(this)" />
+  <figcaption class="paper-figure-caption">Position coupling 把相同十进制 significance 的输入与输出 digits 显式对齐。</figcaption>
+</figure></div>
+          <div class="detail-hero-copy">
+            <p class="eyebrow">Collection 全文卡</p>
+            <h1 class="detail-page-title">Position Coupling: Improving Length Generalization of Arithmetic Transformers Using Task Structure</h1>
+            <p class="detail-page-title-zh">位置耦合：利用任务结构提升算术 Transformer 的长度泛化</p>
+            <div class="detail-meta">Paper Collection · Length Generalization · <a href="https://arxiv.org/abs/2405.20671" target="_blank" rel="noopener noreferrer">原文</a></div>
+            <p class="detail-summary">Hanseul Cho、Jaeyoung Cha、Pranjal Awasthi、Srinadh Bhojanapalli、Anupam Gupta 与 Chulhee Yun，来自 KAIST、Google Research 与 NYU。论文发表于 NeurIPS 2024，提出 position coupling。arXiv:2405.20671v2。</p>
+            <div class="detail-micro-meta">
+              <span class="meta-pill">AI 基础理论</span>
+              <span class="meta-pill">理论与实验</span>
+              <span class="meta-pill">#Length Generalization</span><span class="meta-pill">#机器学习</span><span class="meta-pill">#人工智能</span>
+              <span class="meta-pill">9 分钟读完</span>
+              <span class="meta-pill">7 张阅读卡</span>
+              <span class="meta-pill">Hanseul Cho、Jaeyoung Cha、Pranjal Awasthi、Srinadh Bh…</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <main class="container detail-layout">
+      <div class="detail-shell">
+        <article id="detail-body" class="reading-flow"><section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 01</span>
+    <span class="reading-step-note">作者信息</span>
+  </div>
+  <h2>作者信息</h2>
+  <div class="reading-card-content"><ul><li>Hanseul Cho、Jaeyoung Cha、Pranjal Awasthi、Srinadh Bhojanapalli、Anupam Gupta 与 Chulhee Yun，来自 KAIST、Google Research 与 NYU。论文发表于 NeurIPS 2024，提出 position coupling。arXiv:2405.20671v2。</li></ul></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 02</span>
+    <span class="reading-step-note">研究问题</span>
+  </div>
+  <h2>研究问题</h2>
+  <div class="reading-card-content"><ul><li>标准 absolute positions 把同一数位在不同操作数与答案中的 token 视为不同位置，模型必须从有限长度数据中自行发现个位、十位等对齐关系。作者问：把任务结构直接编码进 position IDs，能否显著延长算术 Transformer 的 extrapolation range？</li><li>目标不只是经验 trick；论文还比较无 positional information 的一层 Transformer 与采用 coupled positions 的构造表达能力，寻找长度泛化所需结构信号。</li></ul></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 03</span>
+    <span class="reading-step-note">模型与方法</span>
+  </div>
+  <h2>模型与方法</h2>
+  <div class="reading-card-content"><ul><li>Position coupling 先把输入 token 按任务相关性分组，再让同组 token 共享 position ID。十进制加法中，两个 operand 与输出中相同 significance 的 digits 获得相同 ID；配合 reversed response 与 zero padding，使 carry computation 从低位向高位与 causal generation 对齐。</li><li>Figure 2 用 653+\(49=702\) 展示：653、049 与 reversed 207 的同数位 token 通过相同 ID 相连。训练中随机选择起始 position，减少模型依赖某个绝对编号。</li><li>实验用 decoder-only Transformers，训练 1–30 位加法并测试更长位数；消融层数、heads、训练长度、padding/reversal、position randomization，并扩展到 \(N\)×2 multiplication 与二维任务。理论部分构造一层 attention/MLP 实现 carry 与 digit prediction。</li></ul><figure class="evidence-figure">
+  <button class="evidence-figure-image-button" type="button" aria-label="放大查看 Figure 2" onclick="window.openPaperFigureImage && window.openPaperFigureImage(this.querySelector('img'))">
+    <img class="paper-figure-image evidence-figure-image" src="../../assets/collection-figures/2405.20671/figure-2-position-coupling.webp" alt="加法三个数字串的同数位 token 共享灰色 position IDs。" loading="lazy" />
+  </button>
+  <figcaption>
+    <strong>Figure 2</strong> · Reversed sum 与 zero padding 使 causal 输出顺序和 carry 方向一致。
+    <span class="evidence-figure-reading">物理解读：The alignment is supplied by the task designer; the model is not discovering digit significance from scratch.</span>
+    <span class="evidence-figure-source">来源：paper.pdf p. 4, Figure 2</span>
+  </figcaption>
+</figure></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 04</span>
+    <span class="reading-step-note">核心结果与证据</span>
+  </div>
+  <h2>核心结果与证据</h2>
+  <div class="reading-card-content"><ul><li>Figure 1 报告 position coupling 模型在训练 1–30 位后，对最长 200 位加法仍取得超过 95% exact match，约为训练最大长度的 6.67 倍；多种 vanilla/relative positional baselines 更早退化。结果使用多次实验的 median 与 95% interval。</li><li>Figure 3–6 显示训练长度、层数和数据格式都会影响外推；reversal 与 zero padding 本身不足以达到同等范围，coupling 是关键增益。Attention probe 显示 heads 对齐相同 significance 和 carry-related token，与设计结构一致。</li><li>理论证明在有限精度/宽度等设定下，一层 coupled-position Transformer 可处理指数于表示规模的加法长度；另一方面，一层且完全没有 positional information 的 Transformer 不能解决全部加法实例。后者不是对所有其他位置编码的下界。</li></ul></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 05</span>
+    <span class="reading-step-note">有效性与局限</span>
+  </div>
+  <h2>有效性与局限</h2>
+  <div class="reading-card-content"><ul><li>方法需要事先知道任务的 token correspondence；它把加法数位结构作为强 inductive bias 注入模型，不能直接说明 Transformer 从自然文本自主学习算法。不同运算、符号格式或 tokenizer 需要重新设计 coupling。</li><li>200 位结果是合成 exact arithmetic；数据分布、采样、精度和 autoregressive error accumulation 与真实数学推理不同。理论构造的宽度、参数尺度和有限精度条件不等于实验模型训练必然找到该算法。</li><li>无位置下界只排除一个弱 baseline，不能证明 position coupling 最优；RoPE、relative/recursive positions、external scratchpad 等可提供别的结构。附录很长且包含大量配置表，本卡未独立复现。</li></ul></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 06</span>
+    <span class="reading-step-note">复现与资源</span>
+  </div>
+  <h2>复现与资源</h2>
+  <div class="reading-card-content"><ul><li>原文：https://arxiv.org/abs/2405.20671；代码：https://github.com/HanseulJo/position-coupling。官方 \(v_{2}\) PDF SHA-256：1cae6d3b99ca8f48c32067628f31146ba1d2c2a0109c6f036215d42ff85c724d。</li><li>复现应固定 tokenizer、operand-length distribution、reverse/padding protocol、position-ID sampling、模型深度与精度；每个 test length 至少报告多 seeds exact match 与 confidence interval，并检查 per-digit/carry errors。加入 shuffled coupling、unique IDs 与 unseen start-position controls。Evidence status: full-text verified; no independent reproduction performed.</li></ul></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 07</span>
+    <span class="reading-step-note">阅读指南</span>
+  </div>
+  <h2>阅读指南</h2>
+  <div class="reading-card-content"><ul><li>先看 Figure 2 理解 position IDs 如何对齐数位，再看 Figure 1 的长度曲线。§4 与 Figures 3–7 给出关键消融和 attention probe；§5–6 再读理论构造与无位置限制，注意两者假设并不覆盖所有 positional schemes。</li></ul></div>
+</section></article>
+        <aside id="detail-toc" class="detail-toc hidden" aria-label="内容目录">
+          <p class="detail-toc-title">阅读目录</p>
+          <nav id="detail-toc-nav" class="detail-toc-nav"></nav>
+        </aside>
+      </div>
+      <nav class="paper-nav"><a class="paper-nav-link paper-nav-prev" href="../../collection-papers/2405.20605/"><span class="paper-nav-label">← 上一篇</span><span class="paper-nav-title">Searching for internal symbols underlying deep learning</span></a>
+      <a class="paper-nav-link paper-nav-next" href="../../collection-papers/2406.02154/"><span class="paper-nav-label">下一篇 →</span><span class="paper-nav-title">Learning Hamiltonian neural Koopman operator and simultaneously sustaining and discovering conservation law</span></a></nav>
+      <section id="comments" class="comments-panel" aria-labelledby="comments-title">
+        <div class="comments-heading">
+          <div>
+            <p class="eyebrow">Discussion</p>
+            <h2 id="comments-title">评论与讨论</h2>
+          </div>
+          <a href="https://github.com/xixi-cc/xixi-research-comments/discussions" target="_blank" rel="noopener noreferrer">在 GitHub 查看</a>
+        </div>
+        <p class="comments-note">评论公开保存在 GitHub Discussions；阅读无需登录，发表评论需要 GitHub 账号。</p>
+        <script src="https://giscus.app/client.js"
+                data-repo="xixi-cc/xixi-research-comments"
+                data-repo-id="R_kgDOUIl8MQ"
+                data-category="Announcements"
+                data-category-id="DIC_kwDOUIl8Mc4DEftB"
+                data-mapping="specific"
+                data-term="collection:2405.20671"
+                data-strict="1"
+                data-reactions-enabled="1"
+                data-emit-metadata="0"
+                data-input-position="top"
+                data-theme="preferred_color_scheme"
+                data-lang="zh-CN"
+                data-loading="lazy"
+                crossorigin="anonymous"
+                async></script>
+        <noscript><p>请启用 JavaScript，或直接前往 GitHub Discussions 参与讨论。</p></noscript>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <div class="container">
+        <p>内容来自 <a href="https://arxiv.org" target="_blank" rel="noopener noreferrer">arXiv.org</a>；原创解读采用 CC BY-NC 4.0。<a href="../../rights.html">许可与引用</a></p>
+      </div>
+    </footer>
+
+    <script src="../../assets/theme.js"></script>
+    <script src="../../assets/media.js"></script>
+    <script src="../../assets/paper.js"></script>
+    <!-- Cloudflare Web Analytics -->
+<script type="module" src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon='{"token":"73522e5dee9b42b0be84b4847e4dd502"}'></script>
+<!-- End Cloudflare Web Analytics -->
+  </body>
+</html>

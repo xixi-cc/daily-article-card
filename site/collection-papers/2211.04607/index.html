@@ -1,0 +1,231 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>First principles physics-informed neural network for quantum wavefunctions and eigenvalue surfaces - physics+AI Collection 随机精选</title>
+    <meta name="description" content="作者：Marios Mattheakis、Gabriel R. Schleder、Daniel T. Larson、Efthimios Kaxiras，均来自 Harvard University。arXiv:2211.04607v3，工作发表于 NeurIPS 2022 Machine Learning and the Physical Sciences workshop。" />
+    <link rel="canonical" href="https://xixi-cc.github.io/daily-article-card/collection-papers/2211.04607/" />
+    <script type="application/ld+json">{"@context": "https://schema.org", "@type": "Article", "headline": "First principles physics-informed neural network for quantum wavefunctions and eigenvalue surfaces", "description": "作者：Marios Mattheakis、Gabriel R. Schleder、Daniel T. Larson、Efthimios Kaxiras，均来自 Harvard University。arXiv:2211.04607v3，工作发表于 NeurIPS 2022 Machine Learning and the Physical Sciences workshop。", "url": "https://xixi-cc.github.io/daily-article-card/collection-papers/2211.04607/", "mainEntityOfPage": "https://xixi-cc.github.io/daily-article-card/collection-papers/2211.04607/", "inLanguage": "zh-CN", "author": {"@type": "Person", "name": "Xineng Cao", "alternateName": ["Xixi Cao", "曹溪能"], "url": "https://xixi-cc.github.io/"}, "isBasedOn": "https://arxiv.org/abs/2211.04607"}</script>
+    <script>
+      (function() {
+        try {
+          var themePreference = window.localStorage.getItem('color-theme') || 'system';
+          var systemUsesDarkTheme = window.matchMedia('(prefers-color-scheme: dark)').matches;
+          var resolvedTheme = themePreference === 'system'
+            ? (systemUsesDarkTheme ? 'dark' : 'light')
+            : themePreference;
+          document.documentElement.dataset.theme = resolvedTheme;
+          document.documentElement.dataset.themePreference = themePreference;
+          document.documentElement.style.colorScheme = resolvedTheme;
+        } catch (error) {
+          document.documentElement.dataset.theme = 'light';
+          document.documentElement.dataset.themePreference = 'system';
+        }
+      })();
+    </script>
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='18' fill='%23111827'/%3E%3Ctext x='50%25' y='55%25' text-anchor='middle' dominant-baseline='middle' font-size='30' font-family='Arial, sans-serif' fill='white'%3EV%3C/text%3E%3C/svg%3E" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700;800&family=Noto+Sans+SC:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <script>document.documentElement.classList.add('math-pending');</script>
+    <script>
+      window.MathJax = {
+        tex: {
+          inlineMath: [['$', '$'], ['\\(', '\\)']],
+          displayMath: [['$$', '$$'], ['\\[', '\\]']],
+          processEscapes: true
+        },
+        options: {
+          skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+        },
+        chtml: {
+          scale: 1,
+          displayAlign: 'center'
+        },
+        startup: {
+          ready: function() {
+            MathJax.startup.defaultReady();
+            MathJax.startup.promise.then(function() {
+              document.documentElement.classList.remove('math-pending');
+              document.documentElement.dataset.mathReady = 'true';
+            });
+          }
+        }
+      };
+    </script>
+    <script defer src="../../assets/vendor/mathjax/tex-chtml.js"></script>
+    <link rel="stylesheet" href="../../assets/style.css" />
+  </head>
+  <body class="detail-page" data-paper-id="2211.04607" data-paper-program="collection">
+    <div class="page-noise"></div>
+    <div class="page-blur page-blur-a"></div>
+    <div class="page-blur page-blur-b"></div>
+
+    <header class="header detail-page-header">
+      <div class="container">
+        <div class="detail-page-topbar">
+          <a class="back-link" href="../../collection.html">返回列表</a>
+          <div class="detail-topbar-actions">
+            <span class="detail-site-name">physics+AI Collection 随机精选</span>
+            <button id="detail-favorite" class="detail-favorite-button" type="button" aria-pressed="false">☆ 收藏</button>
+            <button class="theme-toggle" type="button" data-theme-toggle aria-label="当前主题：设备，点击切换主题" title="当前主题：设备">
+  <span class="theme-toggle-icons" aria-hidden="true">
+    <svg class="theme-toggle-icon theme-toggle-icon-light" viewBox="0 0 24 24" fill="none">
+      <circle cx="12" cy="12" r="3.5" stroke="currentColor" stroke-width="1.8"/>
+      <path d="M12 2.5v2M12 19.5v2M2.5 12h2M19.5 12h2M5.3 5.3l1.4 1.4M17.3 17.3l1.4 1.4M18.7 5.3l-1.4 1.4M6.7 17.3l-1.4 1.4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+    </svg>
+    <svg class="theme-toggle-icon theme-toggle-icon-dark" viewBox="0 0 24 24" fill="none">
+      <path d="M20 15.2A8.1 8.1 0 0 1 8.8 4a8.2 8.2 0 1 0 11.2 11.2z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>
+    </svg>
+    <svg class="theme-toggle-icon theme-toggle-icon-system" viewBox="0 0 24 24" fill="none">
+      <rect x="3" y="4" width="18" height="13" rx="2.5" stroke="currentColor" stroke-width="1.8"/>
+      <path d="M8 21h8M12 17v4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+    </svg>
+  </span>
+  <span class="theme-toggle-label" data-theme-toggle-label>设备</span>
+</button>
+          </div>
+        </div>
+
+        <div class="detail-hero-grid">
+          <div class="detail-hero-cover"><figure class="paper-figure-card paper-figure-card-detail">
+  <img class="paper-figure-image" src="../../assets/collection-figures/2211.04607/figure-1-ab-initio-pinn.webp" alt="电子与核坐标通过原子轨道、LCAO、神经基函数、门控和能量支路产生连续波函数与能量。" loading="lazy" onclick="window.openPaperFigureImage && window.openPaperFigureImage(this)" />
+  <figcaption class="paper-figure-caption">网络把已知原子轨道和对称性作为骨架，只让神经分支学习 LCAO 修正与参数化能量。</figcaption>
+</figure></div>
+          <div class="detail-hero-copy">
+            <p class="eyebrow">Collection 全文卡</p>
+            <h1 class="detail-page-title">First principles physics-informed neural network for quantum wavefunctions and eigenvalue surfaces</h1>
+            <p class="detail-page-title-zh">用于量子波函数与本征值曲面的第一性原理物理信息神经网络</p>
+            <div class="detail-meta">Paper Collection · Generative Models · <a href="https://arxiv.org/abs/2211.04607" target="_blank" rel="noopener noreferrer">原文</a></div>
+            <p class="detail-summary">作者：Marios Mattheakis、Gabriel R. Schleder、Daniel T. Larson、Efthimios Kaxiras，均来自 Harvard University。arXiv:2211.04607v3，工作发表于 NeurIPS 2022 Machine Learning and the Physical Sciences workshop。</p>
+            <div class="detail-micro-meta">
+              <span class="meta-pill">AI for Science</span>
+              <span class="meta-pill">理论与实验</span>
+              <span class="meta-pill">#Generative Models</span><span class="meta-pill">#机器学习</span><span class="meta-pill">#计算物理</span>
+              <span class="meta-pill">7 分钟读完</span>
+              <span class="meta-pill">7 张阅读卡</span>
+              <span class="meta-pill">作者：Marios Mattheakis、Gabriel R. Schleder、Daniel T…</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <main class="container detail-layout">
+      <div class="detail-shell">
+        <article id="detail-body" class="reading-flow"><section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 01</span>
+    <span class="reading-step-note">作者信息</span>
+  </div>
+  <h2>作者信息</h2>
+  <div class="reading-card-content"><ul><li>作者：Marios Mattheakis、Gabriel R. Schleder、Daniel \(T\). Larson、Efthimios Kaxiras，均来自 Harvard University。arXiv:2211.04607v3，工作发表于 NeurIPS 2022 Machine Learning and the Physical Sciences workshop。</li></ul></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 02</span>
+    <span class="reading-step-note">研究问题</span>
+  </div>
+  <h2>研究问题</h2>
+  <div class="reading-card-content"><ul><li>传统电子结构计算通常对每个核构型分别求解离散本征问题；势能面和力再由插值或有限差分得到。作者问：能否让一个 PINN 同时输出随核间距 R 连续变化的波函数 \(\psi\)(\(r\),R) 与能量 E(R)，直接满足含 Coulomb 奇点的 Schrödinger 方程，并通过自动微分得到力？</li><li>验证对象是最简单的分子离子 H₂⁺ 单电子基态。论文展示的是第一性原理方程约束下的参数化求解原型，不是面向一般多电子体系的成熟量子化学替代方案。</li></ul></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 03</span>
+    <span class="reading-step-note">模型与方法</span>
+  </div>
+  <h2>模型与方法</h2>
+  <div class="reading-card-content"><ul><li>输入为电子坐标 \(r\) 和两个核位置 \(R_{i}\)。Atomic Unit 先构造满足核尖点结构的 1s 轨道 \(\phi_{i}=exp(-|r-R_{i}|)\)，LCAO 单元给出对称基线 \(\psi_{\mathrm{LCAO}}\)=φ₁+φ₂；Basis 网络学习修正 \(N\)(\(r\),R)，Gate 网络学习只依赖 R 的权重 \(f\)(R)，组成 \(\psi=\psi_{\mathrm{LCAO}}\)+\(f\)∘\(N\)。</li><li>Energy Unit 单独输出连续标量 E(R)。损失由方程残差 ⟨(Hψ-Eψ)²⟩ 和远场边界项组成；网络通过 LCAO/对称化嵌入反演对称性与核尖点先验。训练后冻结波函数分支，只微调能量单元以降低 E(R) 误差。</li><li>训练每轮在 \(r\)∈[-18,18]、\(r_{\mathrm{cut}}=17.5\)、R∈[0.2,3] 重新采样 10⁶ 个 collocation points，主训练 5×10³ epochs，随后用更小学习率微调 E。论文代码基于 PyTorch。</li></ul><figure class="evidence-figure">
+  <button class="evidence-figure-image-button" type="button" aria-label="放大查看 Figure 1" onclick="window.openPaperFigureImage && window.openPaperFigureImage(this.querySelector('img'))">
+    <img class="paper-figure-image evidence-figure-image" src="../../assets/collection-figures/2211.04607/figure-1-ab-initio-pinn.webp" alt="H₂⁺ 参数化 PINN 的多支路结构。" loading="lazy" />
+  </button>
+  <figcaption>
+    <strong>Figure 1</strong> · ψ_LCAO 与 f(R)N(r,R) 相加形成波函数，独立 Energy Unit 输出 E(R)。
+    <span class="evidence-figure-reading">物理解读：The architecture embeds known cusp/asymptotic structure; accuracy still depends on residual sampling and optimization.</span>
+    <span class="evidence-figure-source">来源：paper.pdf p. 3, Figure 1</span>
+  </figcaption>
+</figure></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 04</span>
+    <span class="reading-step-note">核心结果与证据</span>
+  </div>
+  <h2>核心结果与证据</h2>
+  <div class="reading-card-content"><ul><li>Figure 1 显示网络不是黑箱直接拟合 \(\psi\)：原子轨道、LCAO、反演对称修正、R 门控和能量支路分别承担已知物理结构。该结构使输出在空间与核间距上连续可微，并保留核位置附近的波函数尖点。</li><li>在 H₂⁺ 上，神经波函数相对 LCAO 修正了核间区域形状；能量曲线与参考解接近。Figure 3 比较 E(R) 及相对误差，并展示用 autograd 求 dE/dR 的力；在斜率快速变化区域，自动微分比有限差分更平滑，避免差分步长误差。</li><li>作者报告在 NVIDIA Tesla \(V_{100}\) 上训练少于 5 分钟，但该数字针对单电子、低维模型和特定硬件。连续曲面与解析导数是方法的主要优势；本工作没有证明对多电子反对称性、电子相关或大分子仍具同样精度和成本。</li></ul></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 05</span>
+    <span class="reading-step-note">有效性与局限</span>
+  </div>
+  <h2>有效性与局限</h2>
+  <div class="reading-card-content"><ul><li>实验只有 H₂⁺ 基态，空间范围、R 区间和 collocation 分布均人工限定。H₂⁺ 的 LCAO、对称性和尖点结构已知且易编码；推广到多核多电子体系需要处理费米反对称、电子相关、归一化、激发态正交与指数增长的构型空间。</li><li>方程残差在随机采样点较小不保证全域误差或变分上界；论文没有系统的网格收敛、随机种子、误差条或与高精度量子化学方法的统一成本比较。E 与 \(\psi\) 分支分阶段训练可能造成残差和能量最优的不一致，自动微分给出的是 learned E(R) 的精确导数，而非真实力的无误差估计。</li></ul></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 06</span>
+    <span class="reading-step-note">复现与资源</span>
+  </div>
+  <h2>复现与资源</h2>
+  <div class="reading-card-content"><ul><li>原文：https://arxiv.org/abs/2211.04607；代码：https://github.com/mariosmat/PINN_for_quantum_wavefunction_surfaces。官方 PDF SHA-256：8d959cef31467c6e72913236e451f62239c011ea780398ec63724fd6710c528b。</li><li>复现需固定原子单位、H₂⁺ 几何、\(r\)/R 采样域与重采样策略、\(r_{\mathrm{cut}}\)、网络深宽、对称化、Gate/LCAO 初始化、损失权重、两阶段学习率和 reference solver；同时报告 PDE/边界残差、\(\psi\)/E 网格误差、归一化、力误差和训练成本。Evidence status: full-text verified; no independent reproduction performed.</li></ul></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 07</span>
+    <span class="reading-step-note">阅读指南</span>
+  </div>
+  <h2>阅读指南</h2>
+  <div class="reading-card-content"><ul><li>先读式 (1) 明确 H₂⁺ Hamiltonian 与核坐标约定；再沿 Figure 1 追踪 LCAO、Basis、Gate、Energy 四条支路；随后核对式 (3) 的 PDE 与边界损失；最后用 Figures 2–3 分开检查波函数形状、能量误差和 autograd 力，并把推广多电子体系视为开放问题。</li></ul></div>
+</section></article>
+        <aside id="detail-toc" class="detail-toc hidden" aria-label="内容目录">
+          <p class="detail-toc-title">阅读目录</p>
+          <nav id="detail-toc-nav" class="detail-toc-nav"></nav>
+        </aside>
+      </div>
+      <nav class="paper-nav"><a class="paper-nav-link paper-nav-prev" href="../../collection-papers/2211.03595/"><span class="paper-nav-label">← 上一篇</span><span class="paper-nav-title">From Denoising Diffusions to Denoising Markov Models</span></a>
+      <a class="paper-nav-link paper-nav-next" href="../../collection-papers/2211.05641/"><span class="paper-nav-label">下一篇 →</span><span class="paper-nav-title">Regression as Classification: Influence of Task Formulation on Neural Network Features</span></a></nav>
+      <section id="comments" class="comments-panel" aria-labelledby="comments-title">
+        <div class="comments-heading">
+          <div>
+            <p class="eyebrow">Discussion</p>
+            <h2 id="comments-title">评论与讨论</h2>
+          </div>
+          <a href="https://github.com/xixi-cc/xixi-research-comments/discussions" target="_blank" rel="noopener noreferrer">在 GitHub 查看</a>
+        </div>
+        <p class="comments-note">评论公开保存在 GitHub Discussions；阅读无需登录，发表评论需要 GitHub 账号。</p>
+        <script src="https://giscus.app/client.js"
+                data-repo="xixi-cc/xixi-research-comments"
+                data-repo-id="R_kgDOUIl8MQ"
+                data-category="Announcements"
+                data-category-id="DIC_kwDOUIl8Mc4DEftB"
+                data-mapping="specific"
+                data-term="collection:2211.04607"
+                data-strict="1"
+                data-reactions-enabled="1"
+                data-emit-metadata="0"
+                data-input-position="top"
+                data-theme="preferred_color_scheme"
+                data-lang="zh-CN"
+                data-loading="lazy"
+                crossorigin="anonymous"
+                async></script>
+        <noscript><p>请启用 JavaScript，或直接前往 GitHub Discussions 参与讨论。</p></noscript>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <div class="container">
+        <p>内容来自 <a href="https://arxiv.org" target="_blank" rel="noopener noreferrer">arXiv.org</a>；原创解读采用 CC BY-NC 4.0。<a href="../../rights.html">许可与引用</a></p>
+      </div>
+    </footer>
+
+    <script src="../../assets/theme.js"></script>
+    <script src="../../assets/media.js"></script>
+    <script src="../../assets/paper.js"></script>
+    <!-- Cloudflare Web Analytics -->
+<script type="module" src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon='{"token":"73522e5dee9b42b0be84b4847e4dd502"}'></script>
+<!-- End Cloudflare Web Analytics -->
+  </body>
+</html>

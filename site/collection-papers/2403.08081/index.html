@@ -1,0 +1,231 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Mechanics of Next Token Prediction with Self-Attention - physics+AI Collection 随机精选</title>
+    <meta name="description" content="作者 Yingcong Li、Yixiao Huang、M. Emrullah Ildiz、Ankit Singh Rawat 与 Samet Oymak，来自 University of Michigan、City University of Hong Kong 与 Google Research。论文研究 single-layer self-attention 在 next-token objective 下的 gradient-descent implicit bias。arXiv:2403.08081v1，AISTATS 2024。" />
+    <link rel="canonical" href="https://xixi-cc.github.io/daily-article-card/collection-papers/2403.08081/" />
+    <script type="application/ld+json">{"@context": "https://schema.org", "@type": "Article", "headline": "Mechanics of Next Token Prediction with Self-Attention", "description": "作者 Yingcong Li、Yixiao Huang、M. Emrullah Ildiz、Ankit Singh Rawat 与 Samet Oymak，来自 University of Michigan、City University of Hong Kong 与 Google Research。论文研究 single-layer self-attention 在 next-token objective 下的 gradient-descent implicit bias。arXiv:2403.08081v1，AISTATS 2024。", "url": "https://xixi-cc.github.io/daily-article-card/collection-papers/2403.08081/", "mainEntityOfPage": "https://xixi-cc.github.io/daily-article-card/collection-papers/2403.08081/", "inLanguage": "zh-CN", "author": {"@type": "Person", "name": "Xineng Cao", "alternateName": ["Xixi Cao", "曹溪能"], "url": "https://xixi-cc.github.io/"}, "isBasedOn": "https://arxiv.org/abs/2403.08081"}</script>
+    <script>
+      (function() {
+        try {
+          var themePreference = window.localStorage.getItem('color-theme') || 'system';
+          var systemUsesDarkTheme = window.matchMedia('(prefers-color-scheme: dark)').matches;
+          var resolvedTheme = themePreference === 'system'
+            ? (systemUsesDarkTheme ? 'dark' : 'light')
+            : themePreference;
+          document.documentElement.dataset.theme = resolvedTheme;
+          document.documentElement.dataset.themePreference = themePreference;
+          document.documentElement.style.colorScheme = resolvedTheme;
+        } catch (error) {
+          document.documentElement.dataset.theme = 'light';
+          document.documentElement.dataset.themePreference = 'system';
+        }
+      })();
+    </script>
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='18' fill='%23111827'/%3E%3Ctext x='50%25' y='55%25' text-anchor='middle' dominant-baseline='middle' font-size='30' font-family='Arial, sans-serif' fill='white'%3EV%3C/text%3E%3C/svg%3E" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700;800&family=Noto+Sans+SC:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <script>document.documentElement.classList.add('math-pending');</script>
+    <script>
+      window.MathJax = {
+        tex: {
+          inlineMath: [['$', '$'], ['\\(', '\\)']],
+          displayMath: [['$$', '$$'], ['\\[', '\\]']],
+          processEscapes: true
+        },
+        options: {
+          skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+        },
+        chtml: {
+          scale: 1,
+          displayAlign: 'center'
+        },
+        startup: {
+          ready: function() {
+            MathJax.startup.defaultReady();
+            MathJax.startup.promise.then(function() {
+              document.documentElement.classList.remove('math-pending');
+              document.documentElement.dataset.mathReady = 'true';
+            });
+          }
+        }
+      };
+    </script>
+    <script defer src="../../assets/vendor/mathjax/tex-chtml.js"></script>
+    <link rel="stylesheet" href="../../assets/style.css" />
+  </head>
+  <body class="detail-page" data-paper-id="2403.08081" data-paper-program="collection">
+    <div class="page-noise"></div>
+    <div class="page-blur page-blur-a"></div>
+    <div class="page-blur page-blur-b"></div>
+
+    <header class="header detail-page-header">
+      <div class="container">
+        <div class="detail-page-topbar">
+          <a class="back-link" href="../../collection.html">返回列表</a>
+          <div class="detail-topbar-actions">
+            <span class="detail-site-name">physics+AI Collection 随机精选</span>
+            <button id="detail-favorite" class="detail-favorite-button" type="button" aria-pressed="false">☆ 收藏</button>
+            <button class="theme-toggle" type="button" data-theme-toggle aria-label="当前主题：设备，点击切换主题" title="当前主题：设备">
+  <span class="theme-toggle-icons" aria-hidden="true">
+    <svg class="theme-toggle-icon theme-toggle-icon-light" viewBox="0 0 24 24" fill="none">
+      <circle cx="12" cy="12" r="3.5" stroke="currentColor" stroke-width="1.8"/>
+      <path d="M12 2.5v2M12 19.5v2M2.5 12h2M19.5 12h2M5.3 5.3l1.4 1.4M17.3 17.3l1.4 1.4M18.7 5.3l-1.4 1.4M6.7 17.3l-1.4 1.4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+    </svg>
+    <svg class="theme-toggle-icon theme-toggle-icon-dark" viewBox="0 0 24 24" fill="none">
+      <path d="M20 15.2A8.1 8.1 0 0 1 8.8 4a8.2 8.2 0 1 0 11.2 11.2z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>
+    </svg>
+    <svg class="theme-toggle-icon theme-toggle-icon-system" viewBox="0 0 24 24" fill="none">
+      <rect x="3" y="4" width="18" height="13" rx="2.5" stroke="currentColor" stroke-width="1.8"/>
+      <path d="M8 21h8M12 17v4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+    </svg>
+  </span>
+  <span class="theme-toggle-label" data-theme-toggle-label>设备</span>
+</button>
+          </div>
+        </div>
+
+        <div class="detail-hero-grid">
+          <div class="detail-hero-cover"><figure class="paper-figure-card paper-figure-card-detail">
+  <img class="paper-figure-image" src="../../assets/collection-figures/2403.08081/figure-1-hard-soft-retrieval.webp" alt="Self-attention 先从输入序列中硬检索与最后 token 相关的高优先级 tokens，再对它们软组合以预测下一个 token。" loading="lazy" onclick="window.openPaperFigureImage && window.openPaperFigureImage(this)" />
+  <figcaption class="paper-figure-caption">单层自注意力的极限机制被拆成 hard retrieval 与 soft composition。</figcaption>
+</figure></div>
+          <div class="detail-hero-copy">
+            <p class="eyebrow">Collection 全文卡</p>
+            <h1 class="detail-page-title">Mechanics of Next Token Prediction with Self-Attention</h1>
+            <p class="detail-page-title-zh">自注意力下一词预测的机制</p>
+            <div class="detail-meta">Paper Collection · Transformer Theory · <a href="https://arxiv.org/abs/2403.08081" target="_blank" rel="noopener noreferrer">原文</a></div>
+            <p class="detail-summary">作者 Yingcong Li、Yixiao Huang、M. Emrullah Ildiz、Ankit Singh Rawat 与 Samet Oymak，来自 University of Michigan、City University of Hong Kong 与 Google Research。论文研究 single-layer self-attention 在 next-token objective 下的 gradient-descent implicit bias。arXiv:2403.08081v1，AISTATS 2024。</p>
+            <div class="detail-micro-meta">
+              <span class="meta-pill">AI 基础理论</span>
+              <span class="meta-pill">理论与实验</span>
+              <span class="meta-pill">#Transformer Theory</span><span class="meta-pill">#机器学习</span><span class="meta-pill">#人工智能</span>
+              <span class="meta-pill">11 分钟读完</span>
+              <span class="meta-pill">7 张阅读卡</span>
+              <span class="meta-pill">作者 Yingcong Li、Yixiao Huang、M. Emrullah Ildiz、Ankit…</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <main class="container detail-layout">
+      <div class="detail-shell">
+        <article id="detail-body" class="reading-flow"><section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 01</span>
+    <span class="reading-step-note">作者信息</span>
+  </div>
+  <h2>作者信息</h2>
+  <div class="reading-card-content"><ul><li>作者 Yingcong Li、Yixiao Huang、\(M\). Emrullah Ildiz、Ankit Singh Rawat 与 Samet Oymak，来自 University of Michigan、City University of Hong Kong 与 Google Research。论文研究 single-layer self-attention 在 next-token objective 下的 gradient-descent implicit bias。arXiv:2403.08081v1，AISTATS 2024。</li></ul></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 02</span>
+    <span class="reading-step-note">研究问题</span>
+  </div>
+  <h2>研究问题</h2>
+  <div class="reading-card-content"><ul><li>给定训练序列及其 next-token labels，一个 self-attention layer 究竟学到什么关系？作者不把注意力图直接当解释，而是问训练权重的发散方向与有限残差是否分别对应可验证的算法步骤。</li><li>目标是证明两步 automaton：hard retrieval 从 context 中排除低优先级 token；soft composition 在同级候选间分配非零概率并形成 convex combination。优先级不是人为赋值，而由训练数据诱导的 token-priority graph 及其 strongly connected components (SCCs) 定义。</li></ul></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 03</span>
+    <span class="reading-step-note">模型与方法</span>
+  </div>
+  <h2>模型与方法</h2>
+  <div class="reading-card-content"><ul><li>模型是一层 self-attention 加固定/一般 linear classifier，以 sequence 最后 token 作为 query，使用 next-token likelihood 或一般单调 loss 训练 attention matrix W。作者按最后 token \(k\) 为训练样本构造一组 directed token-priority graphs G^(\(k\))：若某 token 在带标签样本中应压过另一 token，就形成有向 priority relation；互相可达的 tokens 属于同一 SCC。</li><li>Graph-SVM 在不同 SCC 之间施加 \(margin\ge 1\)，在 SCC 内施加 score \(difference=0\)。权重空间分为 cyclic subspace \(S_{\mathrm{fin}}\) 与其正交补：GD 的归一化方向收敛到最小范数 \(W^{\mathrm{svm}}\)，编码 SCC 的拓扑次序；投影到 \(S_{\mathrm{fin}}\) 的有限部分收敛到 \(W^{\mathrm{fin}}\)，编码同一 SCC 内的 soft allocation。</li><li>论文分别分析 convex log-likelihood setting、regularization path 与 acyclic datasets；数值实验随机生成 vocab/embeddings/sequences，追踪 W 与 \(W^{\mathrm{svm}}\) 的 correlation 及有限投影误差，并扩展到大 vocabulary \(K=10000\)。</li></ul></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 04</span>
+    <span class="reading-step-note">核心结果与证据</span>
+  </div>
+  <h2>核心结果与证据</h2>
+  <div class="reading-card-content"><ul><li>Figure 1 总结测试时算法：由 last input token 选择关联的 TPG，attention 对 context 中最高 priority SCC 做近似硬检索，再在入选 token 间 soft composition 得到 next-token distribution。</li><li>Theorem 2 在 full-row-rank embedding、可分图约束、特定 classifier 与 log loss 等假设下给出全局结果：||W(\(\tau\))|| 发散，归一化方向趋于 \(W^{\mathrm{svm}}\)/||\(W^{\mathrm{svm}}\)||，而 \(\Pi_{\mathrm{Sfin}}\) W(\(\tau\)) 趋于唯一有限最优 \(W^{\mathrm{fin}}\)。由此 W(\(\tau\))≈\(C\)(\(\tau\))\(W_{\mathrm{hard}}\)+\(W_{\mathrm{soft}}\)，\(C\)→∞。</li><li>Figure 4 的 100 个随机实例中，4000 iterations 后方向 correlation 约 0.987，finite-component distance 小于 0.01。附录在 \(K=10000\)、\(n=16\)、\(T=64\)、\(d=128\) 下报告平均 correlation 0.987、soft error 0.025；这是合成设定对理论 decomposition 的数值核查。</li></ul><figure class="evidence-figure">
+  <button class="evidence-figure-image-button" type="button" aria-label="放大查看 Figure 1" onclick="window.openPaperFigureImage && window.openPaperFigureImage(this.querySelector('img'))">
+    <img class="paper-figure-image evidence-figure-image" src="../../assets/collection-figures/2403.08081/figure-1-hard-soft-retrieval.webp" alt="按 priority levels 选择 context token 并形成 next-token convex combination 的流程。" loading="lazy" />
+  </button>
+  <figcaption>
+    <strong>Figure 1</strong> · Hard retrieval 选择最高 SCC；soft composition 保留 SCC 内概率结构。
+    <span class="evidence-figure-reading">物理解读：The priority levels are defined from the training-set token graph and should not be read as universal semantic importance.</span>
+    <span class="evidence-figure-source">来源：paper.pdf p. 1, Figure 1</span>
+  </figcaption>
+</figure></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 05</span>
+    <span class="reading-step-note">有效性与局限</span>
+  </div>
+  <h2>有效性与局限</h2>
+  <div class="reading-card-content"><ul><li>理论对象是 single-layer、single-head-like attention 与线性分类头，不含多层 residual/MLP、layer normalization、learned embeddings 或真实语言的巨大冗余。TPG 从带 next-token labels 的有限训练集构造，它描述样本优先关系，不等同于语义知识图谱。</li><li>全局 GD 结论依赖 log loss 带来的 convexity、embedding rank、classifier 与 separability assumptions；一般非凸 loss 主要通过 regularization path 或更受限的 acyclic case 处理。norm 发散与无限训练极限也不同于 weight decay、early stopping 的实际模型。</li><li>SCC 内的 soft composition 由有限最优项刻画，但同级概率可能对 sample counts、head 和表示选择敏感。实验是合成验证，不证明大型语言模型逐层实现同一 automaton；本卡未独立复现。</li></ul></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 06</span>
+    <span class="reading-step-note">复现与资源</span>
+  </div>
+  <h2>复现与资源</h2>
+  <div class="reading-card-content"><ul><li>原文：https://arxiv.org/abs/2403.08081。官方 \(v_{1}\) PDF SHA-256：e69c945c154b39c534cb1e81b318798d3e8059baaf4d89a23ba84f3cd9c2285a。正文给出 TPG/Graph-SVM、GD 和 regularization-path theorems；附录含 gradients、辅助 lemmas 与扩展实验。</li><li>复现应从小型随机 dataset 开始：按 last token 建 TPG 并求 SCC 与 Graph-SVM，训练同一 attention matrix；同时记录 normalized Frobenius correlation、\(\Pi_{\mathrm{Sfin}}\) projection error、attention mass 落在最高 SCC 的比例和 SCC 内分布误差。需单独报告违反 rank/separability 或使用有限 weight decay 时的偏差。Evidence status: full-text verified; no independent reproduction performed.</li></ul></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 07</span>
+    <span class="reading-step-note">阅读指南</span>
+  </div>
+  <h2>阅读指南</h2>
+  <div class="reading-card-content"><ul><li>先看 Figures 1–2 把 hard/soft 与 SCC 对上；再读 Graph-SVM definition 和 Theorem 2 的 assumptions。实验曲线只用于核查 decomposition，不应跳过有限项。最后读 Discussion，确认多层多头和 MLP 仍是开放扩展。</li></ul></div>
+</section></article>
+        <aside id="detail-toc" class="detail-toc hidden" aria-label="内容目录">
+          <p class="detail-toc-title">阅读目录</p>
+          <nav id="detail-toc-nav" class="detail-toc-nav"></nav>
+        </aside>
+      </div>
+      <nav class="paper-nav"><a class="paper-nav-link paper-nav-prev" href="../../collection-papers/2403.03375/"><span class="paper-nav-label">← 上一篇</span><span class="paper-nav-title">Complexity Matters: Dynamics of Feature Learning in the Presence of Spurious Correlations</span></a>
+      <a class="paper-nav-link paper-nav-next" href="../../collection-papers/2403.15297/"><span class="paper-nav-label">下一篇 →</span><span class="paper-nav-title">Sphere Neural-Networks for Rational Reasoning</span></a></nav>
+      <section id="comments" class="comments-panel" aria-labelledby="comments-title">
+        <div class="comments-heading">
+          <div>
+            <p class="eyebrow">Discussion</p>
+            <h2 id="comments-title">评论与讨论</h2>
+          </div>
+          <a href="https://github.com/xixi-cc/xixi-research-comments/discussions" target="_blank" rel="noopener noreferrer">在 GitHub 查看</a>
+        </div>
+        <p class="comments-note">评论公开保存在 GitHub Discussions；阅读无需登录，发表评论需要 GitHub 账号。</p>
+        <script src="https://giscus.app/client.js"
+                data-repo="xixi-cc/xixi-research-comments"
+                data-repo-id="R_kgDOUIl8MQ"
+                data-category="Announcements"
+                data-category-id="DIC_kwDOUIl8Mc4DEftB"
+                data-mapping="specific"
+                data-term="collection:2403.08081"
+                data-strict="1"
+                data-reactions-enabled="1"
+                data-emit-metadata="0"
+                data-input-position="top"
+                data-theme="preferred_color_scheme"
+                data-lang="zh-CN"
+                data-loading="lazy"
+                crossorigin="anonymous"
+                async></script>
+        <noscript><p>请启用 JavaScript，或直接前往 GitHub Discussions 参与讨论。</p></noscript>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <div class="container">
+        <p>内容来自 <a href="https://arxiv.org" target="_blank" rel="noopener noreferrer">arXiv.org</a>；原创解读采用 CC BY-NC 4.0。<a href="../../rights.html">许可与引用</a></p>
+      </div>
+    </footer>
+
+    <script src="../../assets/theme.js"></script>
+    <script src="../../assets/media.js"></script>
+    <script src="../../assets/paper.js"></script>
+    <!-- Cloudflare Web Analytics -->
+<script type="module" src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon='{"token":"73522e5dee9b42b0be84b4847e4dd502"}'></script>
+<!-- End Cloudflare Web Analytics -->
+  </body>
+</html>

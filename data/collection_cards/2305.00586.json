@@ -1,0 +1,107 @@
+{
+  "arxiv_id": "2305.00586",
+  "source_version": "v5",
+  "source_pdf": "https://arxiv.org/pdf/2305.00586",
+  "title_en": "How does GPT-2 compute greater-than?: Interpreting mathematical abilities in a pre-trained language model",
+  "title_zh": "GPT-2 如何计算大于关系？预训练语言模型数学能力的机制解释",
+  "curation_status": "full_text_verified",
+  "card_standard_version": "2.3",
+  "paper_profile": "ai_empirical",
+  "style_reference": "physicist_daily_arxiv",
+  "provenance": {
+    "program": "Collection", "catalog": "Paper Collection", "catalog_record_id": "2305.00586",
+    "catalog_record_ids": ["2305.00586"], "catalog_topic": "Mechanistic Interpretability",
+    "collection_date": "2026-08-30", "sampled_at": "2026-08-31",
+    "selected_by": "ziming_mineru_serial_goal", "sampling_seed": "not_applicable_source_complete", "candidate_count": 464
+  },
+  "verified_metadata": {
+    "arxiv_id": "2305.00586", "version": "v5",
+    "title": "How does GPT-2 compute greater-than?: Interpreting mathematical abilities in a pre-trained language model",
+    "authors": ["Michael Hanna", "Ollie Liu", "Alexandre Variengien"],
+    "categories": ["cs.CL"], "primary_category": "cs.CL",
+    "published": "2023-05-01T00:00:00Z", "updated": "2023-11-02T00:00:00Z",
+    "comment": "26 pages; GPT-2 Small mechanistic-interpretability study"
+  },
+  "sections": [
+    {
+      "title": "作者信息",
+      "paragraphs": ["作者：Michael Hanna、Ollie Liu、Alexandre Variengien。arXiv:2305.00586v5。论文以 GPT-2 Small 的年份补全为案例，用 path patching 从行为现象追踪到 attention heads、MLPs 与神经元级机制。"]
+    },
+    {
+      "title": "研究问题",
+      "paragraphs": [
+        "GPT-2 Small 面对“The war lasted from 1732 to 17”时，会偏向输出大于 32 的两位年份。作者问：这种有限的 greater-than 行为由哪些内部路径实现，各组件如何把起始年份信息变成输出 logits？",
+        "研究对象不是一般算术能力。任务使用固定自然语言模板、特定 BPE 可编码年份与 GPT-2 Small；模型输出还明显受真实世界事件持续时间和训练语料统计影响。"
+      ]
+    },
+    {
+      "title": "模型与方法",
+      "paragraphs": [
+        "数据由 120 个可持续名词、世纪 XX 与两位起始年份 YY 组合而成，并排除无法按预期 tokenization 的年份。核心指标是大于 YY 的候选年份总概率减去不大于 YY 的总概率；另用 YY+1 与 YY−1 的概率差衡量 cutoff sharpness。",
+        "path patching 将指定组件—路径上的 activation 替换为配对的“01-dataset”值，同时保持其他路径正常，由性能变化定位因果相关边。迭代过程先找直接影响 logits 的组件，再沿 MLP 与 attention 输入向上游追踪。",
+        "最终候选回路包含 MLPs 8–11、若干中后层 attention heads 及上游年份表征路径。作者用大规模 ablation 验证回路 sufficiency/faithfulness，并用 logit lens 和神经元分析解释 late MLPs 如何提升大于输入年份的 token logits。"
+      ]
+    },
+    {
+      "title": "核心结果与证据",
+      "paragraphs": [
+        "在 10,000 个模板样本上，完整 GPT-2 Small 的 probability difference 为 81.7%（SD 19.3%），cutoff sharpness 为 6.0%（SD 7.2%）。概率热图显示 YY 附近的清晰下三角边界，但高概率通常只延伸到起始年份后的约 15–20 年。",
+        "Figure 5 汇总候选回路及 patching 验证：late MLPs 8–11 是输出端主要贡献者，attention heads 把 YY token 信息送入这些 MLPs；保留候选路径、腐化其余输入后仍复现 greater-than 型概率热图。附录扩展的完整回路达到 71.5% probability difference，约为主回路结果的 98.3%，cutoff sharpness 为 10.5%。",
+        "神经元级分析发现 MLP 10 的一组神经元对数字 token 产生近似阈值式 logit 贡献；其他上下文任务也会激活同一回路。不过该机制在某些不需要 greater-than 的随机序列中仍偏向递增，说明“跨上下文激活”既是复用证据也是系统性错误。"
+      ]
+    },
+    {
+      "title": "有效性与局限",
+      "paragraphs": [
+        "path patching 给出相对于指定腐化输入和路径集合的因果干预证据，但不保证回路最小、唯一或完整。01-dataset 可能产生特殊分布差异；阈值、路径粒度和对 query/key/value 的处理都会改变结果。",
+        "结论局限于 124M 参数 GPT-2 Small、合成模板和简单二位数比较。模型的 cutoff 并非精确数学函数，且上下文泛化与训练语料记忆无法由这些实验完全区分；更大模型、更多措辞和真正算术任务需要独立验证。"
+      ]
+    },
+    {
+      "title": "复现与资源",
+      "paragraphs": [
+        "原文：https://arxiv.org/abs/2305.00586。代码：https://github.com/hannamw/gpt2-greater-than。官方 PDF SHA-256：c23636a032c05443bd82984c6e8949d1b24f8b84ae4afa3a9ca634abbc7d15d1。",
+        "复现需固定 GPT-2 Small checkpoint、rust-circuit 版本、年份 token 过滤、10,000 样本生成 seed、01 配对、path set、patch 粒度与评估位置；同时报告完整模型、partial circuit 与 full circuit 的两个指标。Evidence status: full-text verified; no independent reproduction performed."
+      ]
+    },
+    {
+      "title": "阅读指南",
+      "paragraphs": ["先读 pp. 1–3 的任务、数据和概率热图；再读 pp. 4–6 的 path patching、Figure 5 与回路验证；随后看 pp. 6–9 的组件语义和 MLP 神经元机制；最后读 pp. 9–10、Conclusion 及 Appendices A–B，核对跨任务激活、错误行为和完整回路。"]
+    }
+  ],
+  "cover": {
+    "mode": "source_figure", "asset_path": "assets/collection-figures/2305.00586/figure-5-greater-than-circuit.webp",
+    "label": "Figure 5", "visual_type": "schematic", "evidence": "paper.pdf p. 6, Figure 5",
+    "alt_text": "左侧是年份比较回路组件，中间显示正常输入与 01 输入在回路中的 patch 路径，右侧是 patched GPT-2 的年份概率热图。",
+    "caption": "attention heads 传递起始年份，late MLPs 形成大于阈值的输出偏置。",
+    "selection_rationale": "Figure 5 同时给出候选机制、因果干预设计与输出行为，是全文证据链的核心。"
+  },
+  "figure_refs": [
+    {
+      "label": "Figure 5", "asset_path": "assets/collection-figures/2305.00586/figure-5-greater-than-circuit.webp",
+      "section": "核心结果与证据", "role": "connect circuit components, path patching and the recovered output pattern",
+      "evidence": "paper.pdf p. 6, Figure 5", "alt_text": "年份比较回路、输入 patch 方案与输出概率三角热图。",
+      "caption": "候选回路保留了 YY 阈值以上年份概率较高的模式。",
+      "interpretation": "Circuit faithfulness is conditional on the task distribution and the chosen 01-input intervention."
+    }
+  ],
+  "equation_refs": [
+    {
+      "label": "Probability-difference metric",
+      "latex": "\\Delta p(YY)=\\sum_{y>YY}p_y-\\sum_{y\\leq YY}p_y",
+      "role": "quantify whether GPT-2 assigns more probability to valid end years than invalid ones",
+      "symbols": {"YY": "two-digit start-year suffix", "y": "candidate two-digit completion", "p_y": "model probability of candidate y", "Delta p": "greater-than behavior score"},
+      "evidence": "paper.pdf p. 3, Section 2",
+      "interpretation": "A high score is behavioral evidence for this template, not proof of an abstract comparator."
+    }
+  ],
+  "evidence_refs": [
+    "paper.pdf pp. 1–3: year-span task, tokenization filters and baseline metrics",
+    "paper.pdf pp. 4–6: path patching, circuit components and Figure 5",
+    "paper.pdf pp. 6–9: circuit semantics, MLP/neuron analysis and related tasks",
+    "paper.pdf pp. 9–10: cross-context interpretation and stated limitations",
+    "paper.pdf Appendix A–B: failure modes and full-circuit reconstruction",
+    "source PDF SHA-256 c23636a032c05443bd82984c6e8949d1b24f8b84ae4afa3a9ca634abbc7d15d1",
+    "Evidence status: full-text verified; no independent reproduction performed."
+  ]
+}

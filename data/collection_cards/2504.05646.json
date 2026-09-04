@@ -1,0 +1,130 @@
+{
+  "arxiv_id": "2504.05646",
+  "source_version": "v2",
+  "source_pdf": "https://arxiv.org/pdf/2504.05646",
+  "title_en": "Lattice: Learning to Efficiently Compress the Memory",
+  "title_zh": "Lattice：学习高效压缩记忆",
+  "curation_status": "full_text_verified",
+  "card_standard_version": "2.3",
+  "paper_profile": "theory_experiment",
+  "style_reference": "physicist_daily_arxiv",
+  "provenance": {
+    "program": "Collection",
+    "catalog": "Paper Collection",
+    "catalog_record_id": "2504.05646",
+    "catalog_record_ids": [
+      "2504.05646"
+    ],
+    "catalog_topic": "Machine Learning",
+    "collection_date": "2026-08-30",
+    "sampled_at": "2026-08-31",
+    "selected_by": "ziming_mineru_serial_goal",
+    "sampling_seed": "not_applicable_source_complete",
+    "candidate_count": 464
+  },
+  "verified_metadata": {
+    "arxiv_id": "2504.05646",
+    "version": "v2",
+    "title": "Lattice: Learning to Efficiently Compress the Memory",
+    "authors": [
+      "Mahdi Karami",
+      "Razvan Pascanu",
+      "Vahab Mirrokni"
+    ],
+    "categories": [
+      "cs.LG",
+      "cs.AI"
+    ],
+    "primary_category": "cs.LG",
+    "published": "2025-04-08",
+    "updated": "2025-12-30",
+    "comment": ""
+  },
+  "sections": [
+    {
+      "title": "作者信息",
+      "paragraphs": [
+        "Mahdi Karami、Razvan Pascanu 与 Vahab Mirrokni 提出 Lattice，把 KV cache 压缩写成在线优化和状态依赖正交更新，arXiv:2504.05646v2。"
+      ]
+    },
+    {
+      "title": "研究问题",
+      "paragraphs": [
+        "attention KV cache 随序列增长；若 K-V 矩阵近低秩，能否在线压缩到固定数量 memory slots，同时避免新 token 覆盖旧信息？",
+        "目标是亚二次/固定状态推理，并保留并行训练；更新规则还应可解释为只写入当前记忆尚未包含的新颖成分。"
+      ]
+    },
+    {
+      "title": "模型与方法",
+      "paragraphs": [
+        "把 cache compression 建模为在线低秩优化，每步用一次 gradient descent 得到 state/input-dependent gates；将输入投影到各 slot 的正交补后更新。",
+        "推导高效 recurrence，并用 chunk-wise parallel approximation 加速训练；在语言建模和 associative recall 上跨 context length、模型大小和 memory slots 比较线性注意力/RNN 基线。"
+      ]
+    },
+    {
+      "title": "核心结果与证据",
+      "paragraphs": [
+        "Figure 1 显示标准 superposition 把完整 h 写入而产生干扰，Lattice 只加正交分量；门控决定各 slot 写入强度。",
+        "报告中 Lattice 用明显较少 memory 在语言建模与 recall 上优于强基线，并保持长 context 性能，支持低秩/新颖性假设。",
+        "固定 slots 最终仍会饱和；正交于当前状态不等于任务相关，chunk approximation 也可能积累误差。"
+      ]
+    },
+    {
+      "title": "有效性与局限",
+      "paragraphs": [
+        "基准与训练分布有限，真实长文档的稀有精确记忆、跨段检索和生成质量可能不同；低秩结构随层/任务变化。",
+        "应比较等参数、等 FLOPs、等 wall-clock 与真实 cache bytes，不能只按理论复杂度或 slot 数判断。",
+        "论文给出的图形、相关性或有限规模干预只支持其明示范围；跨数据、架构、模型规模与训练制度时需要重新验证。本卡未独立复现，不能把受控实验直接提升为普适机制。",
+        "对结论做强审计时，应设置能产生相似表面指标的替代机制、匹配参数量与计算预算、报告失败案例和置信区间，并检查阈值、归一化、样本选择及评价器是否预先偏向作者假说。",
+        "若论文声称发现机制，还应要求前向预测新的干预结果，而不只事后解释已有曲线；至少应在未用于选择假说的数据、不同随机种子和合理替代基线上保持。",
+        "此外应明确负结果的含义：未观察到效应可能来自统计功效、测量误差或实现差异，不能自动当作理论反证；观察到效应也需排除共同原因。"
+      ]
+    },
+    {
+      "title": "复现与资源",
+      "paragraphs": [
+        "原文：https://arxiv.org/abs/2504.05646。官方 v2 PDF 共 28 页，SHA-256：dad3cb9fc84fe3aa668840a8b46030e3ab4d158bcf791f269c308a885b708c5f。",
+        "复现需固定 slots、state dimension、gate/normalization、orthogonal projection epsilon、chunk size、context curriculum、baseline cache budget 和 seeds；保存 recall-by-distance。",
+        "建议保存所有随机种子、逐样本指标、完整训练/干预轨迹、代码与模型版本，并区分静态拟合、因果干预和独立复现。Evidence status: full-text verified; no independent reproduction performed."
+      ]
+    },
+    {
+      "title": "阅读指南",
+      "paragraphs": [
+        "先看 Figure 1 理解更新几何，再读 online objective 与 chunk 近似；实验按相同内存预算比较，而不只看 perplexity。",
+        "先核对 Figure 1 中被测对象、坐标和控制条件，再追到正文定义、评价指标、消融和限制；理论、数值、解释与外推四类陈述应分别标记。"
+      ]
+    }
+  ],
+  "cover": {
+    "mode": "source_figure",
+    "asset_path": "assets/collection-figures/2504.05646/figure-1-lattice-update.webp",
+    "label": "Figure 1",
+    "visual_type": "schematic",
+    "evidence": "paper.pdf p. 2, Figure 1",
+    "alt_text": "新 token 被投影到当前 memory state 的正交补，再以门控强度写入固定 slots。",
+    "caption": "Lattice 只把相对当前状态的新颖正交成分写入记忆，减少干扰。",
+    "selection_rationale": "Figure 1 用几何向量直接对比 Lattice 的正交更新和标准线性注意力叠加，解释固定 memory slots 如何保留新信息并抑制冗余。"
+  },
+  "figure_refs": [
+    {
+      "label": "Figure 1",
+      "asset_path": "assets/collection-figures/2504.05646/figure-1-lattice-update.webp",
+      "section": "模型与方法",
+      "role": "contrast orthogonal novelty writes with standard superposition memory updates",
+      "evidence": "paper.pdf p. 2, Figure 1",
+      "alt_text": "新 token 被投影到当前 memory state 的正交补，再以门控强度写入固定 slots。",
+      "caption": "Lattice 只把相对当前状态的新颖正交成分写入记忆，减少干扰。",
+      "interpretation": "Orthogonal updates reduce local redundancy under a low-rank assumption; task relevance and very-long-context saturation need empirical checks."
+    }
+  ],
+  "equation_refs": [],
+  "evidence_refs": [
+    "paper.pdf pp. 1–5: online compression and geometry",
+    "paper.pdf pp. 6–13: recurrence and efficient approximation",
+    "paper.pdf pp. 14–21: language and recall experiments",
+    "paper.pdf pp. 22–28: ablations and theory",
+    "source PDF SHA-256 dad3cb9fc84fe3aa668840a8b46030e3ab4d158bcf791f269c308a885b708c5f",
+    "Evidence status: full-text verified; no independent reproduction performed."
+  ]
+}

@@ -1,0 +1,145 @@
+{
+  "arxiv_id": "2212.07469",
+  "source_version": "v2",
+  "source_pdf": "https://arxiv.org/pdf/2212.07469",
+  "title_en": "Learning threshold neurons via the \"edge of stability\"",
+  "title_zh": "通过“稳定性边缘”学习阈值神经元",
+  "curation_status": "full_text_verified",
+  "card_standard_version": "2.3",
+  "paper_profile": "theory_experiment",
+  "style_reference": "physicist_daily_arxiv",
+  "provenance": {
+    "program": "Collection",
+    "catalog": "Paper Collection",
+    "catalog_record_id": "2212.07469",
+    "catalog_record_ids": [
+      "2212.07469"
+    ],
+    "catalog_topic": "Training Dynamics",
+    "collection_date": "2026-08-30",
+    "sampled_at": "2026-08-31",
+    "selected_by": "ziming_mineru_serial_goal",
+    "sampling_seed": "not_applicable_source_complete",
+    "candidate_count": 464
+  },
+  "verified_metadata": {
+    "arxiv_id": "2212.07469",
+    "version": "v2",
+    "title": "Learning threshold neurons via the \"edge of stability\"",
+    "authors": [
+      "Kwangjun Ahn",
+      "Sébastien Bubeck",
+      "Sinho Chewi",
+      "Yin Tat Lee",
+      "Felipe Suarez",
+      "Yi Zhang"
+    ],
+    "categories": [
+      "cs.LG",
+      "cs.AI",
+      "math.OC"
+    ],
+    "primary_category": "cs.LG",
+    "published": "2022-12-14T19:27:03Z",
+    "updated": "2023-10-19T12:00:54Z",
+    "comment": "31 pages, 13 figures, Published at NeurIPS 2023"
+  },
+  "sections": [
+    {
+      "title": "作者信息",
+      "paragraphs": [
+        "作者：Kwangjun Ahn、Sébastien Bubeck、Sinho Chewi、Yin Tat Lee、Felipe Suarez、Yi Zhang。arXiv:2212.07469v2，发表于 NeurIPS 2023。论文用可解析的两层 ReLU 简化模型研究大步长梯度下降。"
+      ]
+    },
+    {
+      "title": "研究问题",
+      "paragraphs": [
+        "许多神经网络优化理论把学习率取得极小，使离散梯度下降近似连续梯度流；实践中的大学习率却会让最大 Hessian 特征值贴近 2/η，并伴随损失非单调与参数振荡。作者问：这种 edge of stability（EoS）是否不只是数值副作用，而会改变网络学到的函数？",
+        "具体任务是带高斯噪声的 1-sparse binary classification。要获得有用的 threshold-like ReLU，第一层偏置 b 必须从零变成负值。论文寻找步长相变：小步长是否几乎学不到偏置，而超过阈值后离散振荡是否能把 b 推到 O(1) 的负值。"
+      ]
+    },
+    {
+      "title": "模型与方法",
+      "paragraphs": [
+        "输入写成 x^(i)=λy^(i)e_{j(i)}+ξ^(i)，网络把所有坐标上的正、负 ReLU 共享两个输出权重 a⁺、a⁻ 和偏置 b。作者先数值展示学习率对最终偏置、测试精度、损失振荡与 sharpness 的影响，再把初期训练约化为 A=d(a⁻+a⁺) 与 b 的二维 mean model。",
+        "mean model 的 A 更新具有 2d²η 的有效步长，而 b 更新较慢；平滑 ReLU g(b)=E[ReLU(Z+b)] 把两者耦合。这构成快慢系统：A 在 EoS 区跨过零点反复弹跳，振荡包络缓慢推动 b 下降；梯度流区则存在近似守恒量，使 b 基本留在零附近。",
+        "分析先处理一般双线性目标 ℓ(xy)，证明梯度流区的最终 sharpness 接近初始化给出的值，而 EoS 区接近 2/η；再把技术迁移到 mean model，并用有限样本 ReLU 网络和更宽两层网络实验检查简化机制。"
+      ]
+    },
+    {
+      "title": "核心结果与证据",
+      "paragraphs": [
+        "Figure 1 在 d=200、n=300、λ=3 的任务上显示清晰转折：η 增大后最终偏置从约 −0.2 快速下降，测试准确率从约 58% 上升；放大图中的竖虚线是理论阈值 η=8π/d²。结果按固定总时间 iteration×η 比较，因此不是大学习率仅仅跑了更长连续时间。",
+        "对 mean model，η=(8−δ)π/d² 时 Theorem 3 给出 b∞ 只到 O(1/d²)，不能形成 threshold neuron；η=(8+δ)π/d² 时，在非退化迭代假设下 Theorem 4 给出 b∞≤g⁻¹(2/√((8+δ)π))=−Ωδ(1)。这把是否进入 EoS 与是否学出负偏置直接联系起来。",
+        "更完整的 over-parameterized two-layer network 实验也观察到偏置下降、sharpness 贴近稳定边界及 accuracy 改善。不过严格定理覆盖的是单神经元原型和 mean model，完整网络结果主要是机制一致的数值证据，不是同等强度的全局收敛定理。"
+      ]
+    },
+    {
+      "title": "有效性与局限",
+      "paragraphs": [
+        "阈值 8π/d² 来自特定归一化、对称初始化、logistic/symmetric loss 与初期 mean-model 近似；改变宽度、数据分布、参数化、优化器或尺度会改变临界学习率。EoS 定理还要求损失满足光滑/衰减条件，mean-model EoS 结论带有 A_t 不恰好为零的非退化假设。",
+        "训练任务是人工 sparse-coding 分类，threshold neuron 的归纳偏置在该任务上有用；测试准确率提升不能推广为大学习率总能提高真实深网泛化。模型没有覆盖 minibatch noise、momentum、Adam、feature hierarchy 或长期多相训练，也未独立复现实验。"
+      ]
+    },
+    {
+      "title": "复现与资源",
+      "paragraphs": [
+        "原文：https://arxiv.org/abs/2212.07469。官方 PDF SHA-256：25ac821a8df07253a2be28b91c009bb0c0c4931cf30c4be45b7ae7303398b2b2。PDF 为 v2；MinerU 仅用于结构化提取，结论与页码仍以原 PDF 为准。",
+        "复现 Figure 1 需固定 d=200、n=300、λ=3、Gaussian noise、a⁻/a⁺∼N(0,1/(2d))、b=0、logistic loss、每个 η 下相同 iteration×η=10，并报告多随机种子、最终偏置/准确率和理论线 η=8π/d²。Evidence status: full-text verified; no independent reproduction performed."
+      ]
+    },
+    {
+      "title": "阅读指南",
+      "paragraphs": [
+        "先看 pp. 1–4 的 Figures 1–4，确认步长相变、振荡与 sharpness 同时出现；再读 §2 的双线性原型及两个 sharpness 定理；随后读 §3 的 mean-model 方程 (5) 和 Theorems 3–4；最后用附录中的证明条件及更完整网络实验区分严格结论与机制外推。"
+      ]
+    }
+  ],
+  "cover": {
+    "mode": "source_figure",
+    "asset_path": "assets/collection-figures/2212.07469/figure-1-threshold-eos.webp",
+    "label": "Figure 1",
+    "visual_type": "data_plot",
+    "evidence": "paper.pdf p. 1, Figure 1",
+    "alt_text": "最终偏置和测试准确率随学习率变化的两幅曲线；放大图以绿色虚线标出理论相变阈值。",
+    "caption": "越过约 8π/d² 的步长阈值后，偏置明显变负，同时测试准确率开始上升。",
+    "selection_rationale": "Figure 1 直接并列展示论文最核心的函数学习效应与预测阈值，比单独的损失振荡轨迹更能概括主张。"
+  },
+  "figure_refs": [
+    {
+      "label": "Figure 1",
+      "asset_path": "assets/collection-figures/2212.07469/figure-1-threshold-eos.webp",
+      "section": "核心结果与证据",
+      "role": "show the learning-rate phase transition in learned bias and test accuracy",
+      "evidence": "paper.pdf p. 1, Figure 1",
+      "alt_text": "学习率横轴上的最终偏置曲线与最终测试准确率曲线。",
+      "caption": "绿色虚线对应 η=8π/d²；曲线在其附近离开小步长平台。",
+      "interpretation": "The transition is empirical for the finite network and is theoretically established for the associated mean model under its stated assumptions."
+    }
+  ],
+  "equation_refs": [
+    {
+      "label": "Mean-model gradient descent",
+      "latex": "A_{t+1}=A_t-2d^2\\eta\\,\\ell'_{\\mathrm{sym}}(A_tg(b_t))g(b_t),\\qquad b_{t+1}=b_t-\\eta\\,\\ell'_{\\mathrm{sym}}(A_tg(b_t))A_tg'(b_t)",
+      "role": "expose the fast A dynamics and slow bias dynamics that produce the EoS threshold",
+      "symbols": {
+        "A_t": "rescaled symmetric output weight d(a_t^-+a_t^+)",
+        "b_t": "shared first-layer bias",
+        "g(b)": "Gaussian-smoothed ReLU E[ReLU(Z+b)]",
+        "eta": "gradient-descent step size",
+        "d": "input dimension"
+      },
+      "evidence": "paper.pdf p. 8, Eq. (5)",
+      "interpretation": "The factor 2d² makes the A coordinate reach the discrete-time stability boundary while b evolves slowly, enabling oscillations to create an order-one negative bias."
+    }
+  ],
+  "evidence_refs": [
+    "paper.pdf pp. 1–4: motivating sparse-coding task, Figure 1 phase transition and EoS diagnostics",
+    "paper.pdf pp. 4–7: bilinear prototype, gradient-flow and EoS sharpness theorems",
+    "paper.pdf pp. 8–11: mean-model reduction, critical step size and Theorems 3–4",
+    "paper.pdf pp. 11–13: conclusions, scope and directions",
+    "paper.pdf appendices B–E: wider-network experiments, technical assumptions and proofs",
+    "source PDF SHA-256 25ac821a8df07253a2be28b91c009bb0c0c4931cf30c4be45b7ae7303398b2b2",
+    "Evidence status: full-text verified; no independent reproduction performed."
+  ]
+}
