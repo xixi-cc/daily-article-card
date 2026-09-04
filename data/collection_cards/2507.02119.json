@@ -1,0 +1,173 @@
+{
+  "arxiv_id": "2507.02119",
+  "source_version": "v2",
+  "source_pdf": "https://arxiv.org/pdf/2507.02119v2",
+  "title_en": "Scaling Collapse Reveals Universal Dynamics in Compute-Optimally Trained Neural Networks",
+  "title_zh": "尺度坍缩揭示计算最优神经网络的普适训练动力学",
+  "curation_status": "full_text_verified",
+  "card_standard_version": "2.4",
+  "audience_profile": "physics_ai_literate_physicist",
+  "paper_profile": "theory_numerics",
+  "style_reference": "physicist_daily_arxiv",
+  "provenance": {
+    "program": "Collection",
+    "catalog": "Paper Collection",
+    "catalog_record_id": "2507.02119",
+    "catalog_record_ids": ["2507.02119"],
+    "catalog_topic": "Machine Learning",
+    "collection_date": "2026-08-30",
+    "sampled_at": "2026-08-31",
+    "selected_by": "ziming_mineru_serial_goal",
+    "sampling_seed": "not_applicable_source_complete",
+    "candidate_count": 464
+  },
+  "verified_metadata": {
+    "arxiv_id": "2507.02119",
+    "version": "v2",
+    "title": "Scaling Collapse Reveals Universal Dynamics in Compute-Optimally Trained Neural Networks",
+    "authors": ["Shikai Qiu", "Lechao Xiao", "Andrew Gordon Wilson", "Jeffrey Pennington", "Atish Agarwala"],
+    "categories": ["cs.LG"],
+    "primary_category": "cs.LG",
+    "published": "2025-07-02T20:03:34Z",
+    "abstract": "Across width-scaled Transformers and MLPs, the paper normalizes compute-optimal loss trajectories and reports collapse onto task- and schedule-specific curves. With learning-rate decay, cross-model variation falls below the within-model seed noise floor; a sum-of-power-laws argument and a perturbative SGD-noise model explain parts of this behavior.",
+    "comment": "ICML 2025; v2 updated 2025-07-07; code: https://github.com/shikaiqiu/supercollapse"
+  },
+  "equation_refs": [
+    {
+      "label": "Normalized reducible loss (Eq. 1)",
+      "latex": "\\ell(x,p,\\omega)=\\frac{L(x t^\\star(p),p,\\omega)-\\widehat L}{L(t^\\star(p),p,\\omega)-\\widehat L},\\qquad x\\in[0,1]",
+      "role": "put models of different sizes and training horizons on common horizontal and vertical scales",
+      "symbols": {"p": "parameter count", "omega": "random seed", "t_star": "estimated compute-optimal training horizon", "L_hat": "offset set to fitted irreducible loss L0"},
+      "evidence": "paper.pdf p. 3, Eq. (1)",
+      "interpretation": "Every realization is divided by its own final reducible loss, so ell(1)=1 and Delta(1)=0 by construction; agreement away from the endpoint is the nontrivial observation."
+    },
+    {
+      "label": "Collapse deviation and seed noise (Eqs. 2–3)",
+      "latex": "\\Delta(x)=\\frac{\\sqrt{\\mathbb V_{p,\\omega}[\\ell(x,p,\\omega)]}}{\\mathbb E_{p,\\omega}[\\ell(x,p,\\omega)]},\\qquad \\sigma(x,p)=\\frac{\\sqrt{\\mathbb V_\\omega[\\mathcal L(x t^\\star(p),p,\\omega)]}}{\\mathbb E_\\omega[\\mathcal L(x t^\\star(p),p,\\omega)]}",
+      "role": "compare variation across the scaling ladder with ordinary run-to-run fluctuation",
+      "symbols": {"Delta": "relative variation across sizes and seeds after normalization", "sigma": "per-size relative seed noise", "mathcal_L": "reducible loss L-L0"},
+      "evidence": "paper.pdf p. 3, Eqs. (2)–(3)",
+      "interpretation": "The paper calls the regime Delta<sigma supercollapse. Delta mixes seed and size variation, whereas sigma is conditioned on one size."
+    },
+    {
+      "label": "Late-time variance prediction (Eq. 24)",
+      "latex": "\\widetilde\\Delta^2(\\tau)=\\overline{\\mathcal L}^{-2}(\\tau)g(\\tau)^\\top\\eta(\\tau)\\overline\\Sigma(\\tau)g(\\tau)\\,\\delta\\tau+O(\\delta\\tau^2)",
+      "role": "connect the tightening of normalized curves to learning-rate-dependent SGD noise",
+      "symbols": {"eta": "instantaneous learning rate", "Sigma_bar": "mean preconditioned gradient covariance", "g": "mean gradient", "delta_tau": "remaining gradient-flow time"},
+      "evidence": "paper.pdf p. 9, Eq. (24); Appendix H",
+      "interpretation": "Under additional linear-regression-like scaling assumptions this yields Delta proportional to sqrt(eta(1-tau_hat)); it is a perturbative late-time result, not an exact law for nonlinear Adam training."
+    }
+  ],
+  "figure_refs": [
+    {
+      "label": "Figure 1",
+      "asset_path": "assets/collection-figures/2507.02119/figure-1-supercollapse.webp",
+      "section": "核心结果与证据",
+      "role": "summarize compute-optimal scaling, collapse, the noise-floor comparison and the SGD-noise prediction",
+      "evidence": "paper.pdf p. 2, Figure 1",
+      "alt_text": "六联图：不同宽度模型的原始损失曲线、归一化曲线坍缩、跨模型偏差与种子噪声、不同学习率日程，以及噪声模型对损失曲线和坍缩质量的预测。",
+      "caption": "Figure 1 把实验定义与解释模型放在一起：终点归一化后的曲线重合，学习率衰减阶段的坍缩偏差降到种子噪声以下。",
+      "interpretation": "最右端必然重合；真正应检查的是更早训练区间、不同数据/架构及错误缩放对照是否仍给出同一结构。"
+    }
+  ],
+  "cover": {
+    "mode": "source_figure",
+    "asset_path": "assets/collection-figures/2507.02119/figure-1-supercollapse.webp",
+    "label": "Figure 1",
+    "visual_type": "data_plot",
+    "evidence": "paper.pdf p. 2, Figure 1",
+    "alt_text": "计算最优缩放曲线、归一化尺度坍缩及其与种子噪声和学习率衰减关系的六联图。",
+    "caption": "尺度坍缩把不同规模网络的整段训练轨迹映到共同曲线；“超”指跨规模残差低于单一规模的种子噪声。",
+    "selection_rationale": "该图同时回答现象是什么、如何量化以及作者如何解释，最适合作为物理读者进入全文的路线图。"
+  },
+  "sections": [
+    {
+      "title": "作者信息",
+      "paragraphs": [
+        "Shikai Qiu 与 Andrew Gordon Wilson 来自 New York University；Lechao Xiao、Jeffrey Pennington 与 Atish Agarwala 来自 Google DeepMind。",
+        "本文使用 arXiv:2507.02119v2，主分类 cs.LG；初版提交于 2025-07-02，v2 更新于 2025-07-07，并发表于 ICML 2025。",
+        "Collection 来源为刘子鸣网站的 Machine Learning 条目；作者公开了实验代码。"
+      ]
+    },
+    {
+      "title": "研究问题",
+      "paragraphs": [
+        "当参数量 p 与训练时长 t 按计算最优关系一起增大时，不同规模神经网络的整条训练曲线是否存在共同的无量纲形状，而不只是最终 loss 遵循 scaling law？",
+        "作者进一步问：学习率衰减为何让曲线重合得比随机种子噪声还紧，以及这种坍缩能否成为超参数缩放是否正确的诊断量。"
+      ]
+    },
+    {
+      "title": "背景",
+      "paragraphs": [
+        "传统 neural scaling law 主要连接最终 loss、参数量、数据量和计算量；这里研究的是完整训练轨迹。不同规模模型的训练时长不同，直接比较原始坐标通常看不到动力学是否同构。",
+        "物理中的 data collapse 会用系统尺寸和临界指数把多条曲线缩放到单一函数。本文采用相似策略，但控制参数是模型大小和训练 compute，观测量是减去不可约项后的 test loss。",
+        "compute-optimal 在本文主要指训练 horizon t*(p) 从恒定学习率实验的 Pareto frontier 拟合而来，不代表 learning rate、batch size、width/depth 比例等所有超参数都做了全局联合优化。"
+      ]
+    },
+    {
+      "title": "给物理学家的 AI 导读",
+      "paragraphs": [
+        "输入–状态–输出链为：给定一组随宽度扩展的网络与数据流，Adam 更新参数；每一步输出 test loss L(t,p,omega)，再把时间除以各规模的估计最优 horizon、把 reducible loss 除以该次运行的最终值。这里没有把模型内部激活当作动力学变量。",
+        "最接近有限尺寸缩放的对应是：p 类似系统尺寸，x=t/t*(p) 是无量纲时间，ell 是缩放后的观测量，Delta 衡量未坍缩的残差。但论文没有识别临界点、相关长度或临界指数，因此“universality”应理解为所测 scaling ladders 上的经验尺度不变性。",
+        "supercollapse 不是 loss 低于噪声，而是归一化曲线的跨规模相对偏差 Delta 低于同一规模不同种子的相对波动 sigma。按每条随机轨迹自己的终点归一化等价于利用时间相关性作 control variate，会主动消去一部分共同噪声。",
+        "证据阶梯是：三类任务上的经验重合 → 恒定学习率与衰减日程对照 → 故意错误的 muP/data exponent 使坍缩破坏 → sum-of-powers 条件推导 → SGD 噪声近似预测多个 schedule。最后两层解释为什么会发生，但没有把经验现象升级为所有神经网络的定理。"
+      ]
+    },
+    {
+      "title": "模型与方法",
+      "paragraphs": [
+        "Transformer 实验包括 CIFAR-5M 灰度像素 next-token prediction 与字符级 Lichess 棋谱 prediction；模型固定 3 blocks、宽度 768–2048、约 10M–80M parameters，采用 muP 初始化与学习率缩放及 Adam。另训练 7-layer、宽度 384–2048 的 MLP 拟合 power-law Fourier target。",
+        "作者先用恒定学习率、5 seeds 的期望 loss–compute Pareto frontier 拟合 t*(p)=(p/p0)^gamma，并用 c=6tp 估算 FLOPs；同一 t*(p) 随后复用于其他学习率日程。",
+        "归一化使用拟合的 irreducible loss L0，并以每个 seed 自己的终点 loss 作分母。collapse deviation Delta 对 p 与 seed 共同取方差，noise floor sigma 则只对 seed 取方差。",
+        "理论部分先研究 L=L0+t^-mu+p^-nu 等 sum-of-power-laws，再将 SGD 写成带 gradient covariance 的随机动力学；用一条恒定学习率参考轨迹及测得的 Tr(Sigma) 预测其他日程。"
+      ]
+    },
+    {
+      "title": "核心结果与证据",
+      "paragraphs": [
+        "在 CIFAR-5M、Lichess 和合成回归的 compute-optimal scaling ladders 上，归一化 reducible-loss 曲线在模型规模间近似重合。恒定学习率下 Delta 与 sigma 同量级；所有测试的衰减到零日程在衰减阶段出现 Delta<sigma，部分区间可覆盖训练后半程。",
+        "Figure 1 展示 CIFAR-5M 的主要证据。注意 ell(1)=1、Delta(1)=0 是定义强制的；结果的内容在于终点之前较长区间仍紧密重合，以及这一结构在其他任务与 schedule 上重现。",
+        "负对照更具诊断意义：MLP 不按 muP 而对不同宽度使用相同学习率时，坍缩破坏；Lichess 的 data exponent 从估计最优 1.02 改为 1.2 时，即使最终 scaling law 只稍变，整条轨迹也明显分离。",
+        "若 loss 是训练时间与模型规模幂律项的平衡和，计算最优条件可消去归一化曲线中的 p 依赖。更一般的多项和只保证渐近结果，而且反命题未必成立。",
+        "SGD-noise 模型用同一 alpha≈0.21 预测 CIFAR-5M 不同 schedules、sizes 与 horizons 的 loss curves；MLP 附录用 alpha≈0.26。近终点分析给出 Delta 与 sqrt(eta(1-tau_hat)) 的标度关系，解释学习率衰减为何压低剩余噪声。"
+      ]
+    },
+    {
+      "title": "有效性与局限",
+      "paragraphs": [
+        "实验最大模型约 80M parameters，任务是灰度像素、棋谱字符和合成回归；它们是可负担的 proof of concept，不能直接证明 frontier LLM、混合数据或大规模 distributed training 也具有同一坍缩。",
+        "终点自归一化既是方法关键也是解释边界：它保证最后一点完美重合，并利用同一路径的时间相关噪声。因而 Delta<sigma 不能读成模型间差异在未经处理的观测上低于实验噪声。",
+        "t*(p) 来自恒定学习率下 5-seed Pareto fit，随后迁移到其他 schedules；作者也明确说 compute-optimal 主要是 horizon。collapse 破坏能提示 scaling recipe 不一致，但尚未证明最大化 collapse 等价于全局最优训练配置。",
+        "power-law 必要性定理要求 compute-optimal point 位于 loss curve 内部；实验所用 eta 在有限时间降到零时，最优点可能在边界，作者将该证明扩展留作开放问题。",
+        "随机动力学解释依赖 slowly varying Hessian、扰动展开以及固定 Adam preconditioner 等近似；有限步长 Edge of Stability、learning-rate/batch/Hessian coupling 和 schedule 改变参数轨迹都可能违反这些假设。",
+        "跨任务曲线并不坍缩到同一个数值函数，而是每个 task/schedule family 各有 universal curve。“普适”目前指所测试族内部的尺度一致性，不是已确定的 RG universality class。"
+      ]
+    },
+    {
+      "title": "复现与资源",
+      "paragraphs": [
+        "代码仓库：https://github.com/shikaiqiu/supercollapse。最小复现应先选一个小型 width ladder，以至少 5 seeds 的恒定学习率曲线独立拟合 L0 与 gamma，再冻结这些量评估未参与拟合的 schedules。",
+        "必须同时报告原始 loss、ell、Delta、各 p 的 sigma 和置信区间；去掉最后若干百分比训练区间复算，检查结果是否只由强制终点重合驱动。",
+        "关键消融包括 expected-final-loss 与 per-realization-final-loss 两种归一化、muP 与固定跨宽度学习率、gamma 扫描，以及训练时长/宽度/深度不同 scaling ladders。",
+        "本站核验的 v2 PDF SHA-256：414a3e6ea7689eed5ace0f16f6546e973ac74a42a15c01f15f554ef7d14d949e。Evidence status: full-text verified; no independent reproduction performed; scaling collapse and SGD-noise predictions not independently reproduced."
+      ]
+    },
+    {
+      "title": "阅读指南",
+      "paragraphs": [
+        "最短路径：Figure 1 → Eqs. (1)–(3) → Figure 4 的错误缩放对照 → Eq. (24) → Discussion 与 Appendix G limitations。",
+        "物理路径：先把 ell、Delta、sigma 与有限尺寸缩放的 scaling function、collapse residual、sample fluctuation 对照，再读 Section 3.1 的幂律平衡和 Appendix E 的边界条件。",
+        "AI 实践路径：重点看 t*(p) 如何估计、muP 如何跨宽度传递超参数，以及 collapse 是否比 final loss 更早暴露 scaling recipe 错误；不要把小模型结论直接外推到昂贵训练。"
+      ]
+    }
+  ],
+  "evidence_refs": [
+    "paper.pdf pp. 1–4: definition of scaling ladder, compute-optimal horizon, normalized loss, collapse deviation and supercollapse",
+    "paper.pdf pp. 4–5: suboptimal parameterization/data exponent controls and sum-of-power-laws motivation",
+    "paper.pdf pp. 5–9: power-law balance, SGD-noise model, schedule prediction and variance-reduction mechanism",
+    "paper.pdf pp. 12–17: datasets, optimizer details, random seeds, Pareto-frontier fitting and additional fits",
+    "paper.pdf pp. 20–22: theorem boundary condition, perturbative derivation and model limitations",
+    "source PDF SHA-256 414a3e6ea7689eed5ace0f16f6546e973ac74a42a15c01f15f554ef7d14d949e",
+    "Evidence status: full-text verified; no independent reproduction performed; scaling collapse and SGD-noise predictions not independently reproduced."
+  ]
+}
