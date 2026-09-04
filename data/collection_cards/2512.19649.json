@@ -1,0 +1,194 @@
+{
+  "arxiv_id": "2512.19649",
+  "source_version": "v2",
+  "source_pdf": "https://arxiv.org/pdf/2512.19649v2",
+  "title_en": "Deep Legendre Transform",
+  "title_zh": "深度 Legendre 变换",
+  "curation_status": "full_text_verified",
+  "card_standard_version": "2.4",
+  "audience_profile": "physics_ai_literate_physicist",
+  "paper_profile": "theory_numerics",
+  "style_reference": "physicist_daily_arxiv",
+  "provenance": {
+    "program": "Collection",
+    "catalog": "Paper Collection",
+    "catalog_record_id": "2512.19649",
+    "catalog_record_ids": ["2512.19649"],
+    "catalog_topic": "AI for Science",
+    "collection_date": "2026-08-30",
+    "sampled_at": "2026-08-31",
+    "selected_by": "ziming_mineru_serial_goal",
+    "sampling_seed": "not_applicable_source_complete",
+    "candidate_count": 464
+  },
+  "verified_metadata": {
+    "arxiv_id": "2512.19649",
+    "version": "v2",
+    "title": "Deep Legendre Transform",
+    "authors": ["Aleksey Minabutdinov", "Patrick Cheridito"],
+    "categories": ["cs.LG", "math.OC"],
+    "primary_category": "cs.LG",
+    "published": "2025-12-22T18:22:11Z",
+    "updated": "2026-01-18T18:17:33Z",
+    "abstract": "The paper converts the exact Fenchel identity evaluated along the gradient map into supervised targets for neural approximations of convex conjugates, adds measure-specific a posteriori error estimates and inverse sampling, and benchmarks the method in dimensions up to 100 and on a Hamilton–Jacobi example."
+  },
+  "equation_refs": [
+    {
+      "label": "Legendre–Fenchel 共轭与梯度像",
+      "latex": "f^*(y)=\\sup_{x\\in C}\\{\\langle x,y\\rangle-f(x)\\},\\qquad f^*(\\nabla f(x))=\\langle x,\\nabla f(x)\\rangle-f(x)",
+      "role": "replace a pointwise maximization or inverse-gradient calculation with an exact value identity on D=grad f(C)",
+      "symbols": {
+        "f": "differentiable convex function on an open convex domain C",
+        "f_star": "convex conjugate of f",
+        "C": "primal domain",
+        "D": "image of C under the gradient map"
+      },
+      "evidence": "paper.pdf pp. 1–4, Eqs. (1.1), (1.4) and (2.1)",
+      "interpretation": "Fenchel–Young equality guarantees the second identity even when the gradient map is not one-to-one: any preimage of y gives the same conjugate value. DLT learns only on the reachable image D."
+    },
+    {
+      "label": "DLT 的监督损失",
+      "latex": "\\min_{\\theta}\\sum_{x\\in X_{\\rm train}}[g_\\theta(\\nabla f(x))+f(x)-\\langle x,\\nabla f(x)\\rangle]^2",
+      "role": "train a function of the dual variable using targets computable from f and its gradient without knowing f-star",
+      "symbols": {
+        "g_theta": "MLP, ResNet, ICNN or KAN approximation to f-star",
+        "X_train": "sampled primal points in C",
+        "grad f(x)": "dual-space network input",
+        "theta": "trainable model parameters"
+      },
+      "evidence": "paper.pdf pp. 3–4, Eqs. (1.5) and (2.2)",
+      "interpretation": "训练标签在每个样本点上由恒等式精确给出；最终函数误差仍由采样覆盖、网络表达能力和优化误差决定。ICNN 保证输出凸，而表现最好的 ResNet 不保证凸性。"
+    },
+    {
+      "label": "无需真解的后验 L2 误差",
+      "latex": "\\frac1N\\sum_{x\\in X_{\\rm test}}[g(\\nabla f(x))+f(x)-\\langle x,\\nabla f(x)\\rangle]^2\\to\\|g-f^*\\|_{L^2(D,\\nu)}^2,\\quad\\nu=(\\nabla f)_\\#\\mu",
+      "role": "estimate approximation error from held-out primal samples even when the conjugate has no closed form",
+      "symbols": {
+        "mu": "sampling distribution on C",
+        "nu": "push-forward distribution on D",
+        "X_test": "independent draws from mu",
+        "N": "test-sample count"
+      },
+      "evidence": "paper.pdf p. 5, Eq. (3.1), and Appendix A",
+      "interpretation": "这是相对于特定 push-forward measure 的均方误差及其 Monte Carlo 估计，不是 D 上逐点一致误差，也不会自动覆盖梯度映射很少访问的区域。"
+    }
+  ],
+  "figure_refs": [
+    {
+      "label": "Figure 1",
+      "asset_path": "assets/collection-figures/2512.19649/figure-1-quadratic-over-linear.webp",
+      "section": "核心结果与证据",
+      "role": "show a nonseparable example with unknown closed-form conjugate, the distortion under the gradient map, and measured error/time through dimension 100",
+      "evidence": "paper.pdf p. 7, Figure 1",
+      "alt_text": "二维 half-normal 原始样本与梯度映射后的弯曲点云，并列维数 2 至 100 的 L2 误差和训练时间表。",
+      "caption": "即使真共轭函数未知，隐式 Fenchel 恒等式仍可在梯度像上的 held-out 样本估计误差；运行时间随维数增加但未出现网格爆炸。",
+      "interpretation": "The estimator is exact for the sampled push-forward measure in the large-test-set limit. The finite table does not prove dimension-independent complexity or uniform accuracy over D."
+    },
+    {
+      "label": "Figure 2",
+      "asset_path": "assets/collection-figures/2512.19649/figure-2-inverse-sampling.webp",
+      "section": "模型与方法",
+      "role": "visualize why uniform primal sampling becomes nonuniform in dual space and how an approximate inverse gradient map restores coverage",
+      "evidence": "paper.pdf p. 9, Figure 2",
+      "alt_text": "负对数函数的六面板比较：上排直接采样在 dual domain 边缘聚集且拟合偏离，下排逆采样覆盖均匀并与解析共轭曲线重合。",
+      "caption": "梯度映射会扭曲采样测度；先学习近似逆映射，可把训练点重新分配到真正关心的 dual-space 区域。",
+      "interpretation": "Inverse sampling improves the chosen uniform target distribution but requires a second network and substantially more total training time."
+    }
+  ],
+  "cover": {
+    "mode": "source_figure",
+    "asset_path": "assets/collection-figures/2512.19649/figure-2-inverse-sampling.webp",
+    "label": "Figure 2",
+    "visual_type": "comparison",
+    "evidence": "paper.pdf p. 9, Figure 2",
+    "alt_text": "直接 primal sampling 与近似逆梯度 sampling 在 dual domain 覆盖和共轭函数拟合上的对照。",
+    "caption": "学习共轭函数之前，先问清楚梯度映射把采样密度搬到了哪里。",
+    "selection_rationale": "It exposes the central measure-theoretic issue and the purpose of the auxiliary inverse network more clearly than a raw accuracy table."
+  },
+  "sections": [
+    {
+      "title": "作者信息",
+      "paragraphs": [
+        "Aleksey Minabutdinov、Patrick Cheridito；ETH Zurich 的 Center of Economic Research、Department of Mathematics 与 RiskLab。",
+        "本站核验 arXiv:2512.19649v2：初稿提交于 2025-12-22，当前版本更新于 2026-01-18；分类 cs.LG、math.OC；NeurIPS 2025 poster，共 31 页。",
+        "Collection 来源为刘子鸣网站的 AI for Science 条目。"
+      ]
+    },
+    {
+      "title": "研究问题",
+      "paragraphs": [
+        "Legendre–Fenchel 变换要求对每个 dual variable 求一次全局上确界。若每维取 N 个网格点，经典离散方法的存储或计算通常含 $N^d$，很快受维数灾难限制。",
+        "论文问：当原函数 f 和梯度 $\\nabla f$ 可计算、但 $f^*$ 与逆梯度不可得时，能否直接学习整个 dual-space 函数，同时获得不依赖解析真解的误差估计？",
+        "DLT 用 Fenchel–Young 等号生成监督对；作者还学习近似逆梯度来控制 dual-space 采样分布，并探索 Hamilton–Jacobi 的 Hopf 公式与 KAN symbolic regression。"
+      ]
+    },
+    {
+      "title": "背景",
+      "paragraphs": [
+        "热力学中 Legendre 变换用共轭变量替换自然变量，例如从能量表示切换到自由能；Hamilton–Jacobi 理论和最优控制中，共轭则把非线性演化转为 dual-space 运算。凸分析允许非严格凸和非可逆梯度，因此用集合值 preimage 理解更稳妥。",
+        "Fenchel–Young 不等式 $f(x)+f^*(y)\\geq\\langle x,y\\rangle$ 在 $y=\\nabla f(x)$ 时取等号。由此可用 $(\\nabla f(x),\\langle x,\\nabla f(x)\\rangle-f(x))$ 生成精确训练对，而无需为每个 y 再做内层优化。",
+        "但 $x\\sim\\mu$ 经 $\\nabla f$ 推到 dual space 后一般不是均匀分布。模型学得好不好总是相对于采样测度而言；这正是论文增加 inverse sampling 的原因。"
+      ]
+    },
+    {
+      "title": "给物理学家的 AI 导读",
+      "paragraphs": [
+        "DLT 不是让神经网络重新发现 Legendre 变换定义，而是把一个已知恒等式变成 regression dataset。网络的作用是用有限参数压缩高维函数，而数学恒等式负责提供无噪声 label。",
+        "如果把 $y=\\nabla f(x)$ 看成从状态变量到共轭力的坐标变换，Figure 2 展示 Jacobian 如何把均匀点云挤到 dual domain 的边缘。辅助网络 $h_\\vartheta(y)$ 近似一个 generalized inverse，用目标 y 反向产生合适的 x。",
+        "误差证书是统计意义的：独立 test samples 上的残差就是 $f^*$ 误差，因为等式在梯度像上成立。它不需要真解，却只评价所选 $\\nu$ 加权的区域；稀有区域和 $D$ 之外仍可能未知。"
+      ]
+    },
+    {
+      "title": "模型与方法",
+      "paragraphs": [
+        "主网络 $g_\\theta:D\\to\\mathbb R$ 可选 MLP、ResNet、ICNN 或 KAN。MLP/ResNet 通常拟合更灵活；ICNN 通过非负隐藏权重与 convex activation 保证输出对 y 凸，但约束会带来优化或表达代价。",
+        "若直接从 C 采样导致 $\\nabla f(X)$ 严重偏斜，先训练两层 GELU 网络 $h_\\vartheta$，联合压低 $h_\\vartheta(\\nabla f(x))-x$ 与 $\\nabla f(h_\\vartheta(y))-y$。随后从目标分布抽 y，经 h 映回 C，再训练和测试 g。",
+        "后验误差以独立 Monte Carlo average 估计，并在附录给出置信区间。实验用 Python 3.11.12、Adam、NVIDIA T4 与 Xeon CPU；比较 MLP、ResNet、两类 ICNN、固定 N=10 网格的 Lucet 方法、DGM 和 KAN。"
+      ]
+    },
+    {
+      "title": "核心结果与证据",
+      "paragraphs": [
+        "在三种已知解析共轭、d=10 和 50 的基准上，DLT 与直接用 $f^*(y)$ 作 label 的训练时间和 RMSE 同量级。例如 quadratic 的 ResNet 在 d=50 为 $2.92\\times10^{-3}$，直接学习为 $3.25\\times10^{-3}$；这验证隐式 label 没有引入额外近似偏差。",
+        "固定每维 N=10 时，negative-log 的 Lucet 在 d=8 需约 1960 s、1530 MB、RMSE 29.3；DLT ResNet 为 26.22 s、1.1 MB、RMSE 0.133。d=10 的 Lucet 未报告，DLT 为 32.09 s、RMSE 0.132。该比较展示网格标度，但低维 Lucet 可用更细网格，不能据此概括所有经典凸优化方法。",
+        "对严重扭曲的 negative-log 映射，inverse sampling 在 d=10 把 L2 error 从 3.18 降到 0.0407，在 d=100 从 54.4 降到 3.06；代价是总训练时间分别约 40:38 和 97:10，而直接采样为 14:41 和 26:10。",
+        "quadratic-over-linear 共轭没有闭式真解，Figure 1 仍通过隐式残差给出 d=2–100 的误差估计：d=2 为 $6.38\\times10^{-4}$，d=50 为 $6.00\\times10^{-2}$，d=100 为 $3.68\\times10^{-2}$。非单调有限样本结果不应解读为误差随维数必然改善。",
+        "Time-DLT 在 quadratic Hamilton–Jacobi 例子中，d=30、t=2 的 L2 error 为 0.128，而 DGM 为 1.21；但作者明确使用了已知的 $g^*$，只学习外层共轭。KAN 在二维三类、预设 polynomial/exp/log basis 的 symbolic regression 中恢复了解析式至舍入误差。"
+      ]
+    },
+    {
+      "title": "有效性与局限",
+      "paragraphs": [
+        "训练 target 与后验残差来自精确 Fenchel 恒等式，这是方法最扎实的部分；数值误差仍包含有限 test set、网络容量、非凸优化与浮点误差，置信区间不等于确定性上界。",
+        "DLT 要求 f 在开凸域 C 上可微且凸，并且只能近似 $D=\\nabla f(C)$ 上的 $f^*$；D 可能严格小于 $\\operatorname{dom}f^*$。不可微势、非凸自由能和相共存下的多分支结构不在本文算法保证内。",
+        "神经网络避免显式 $N^d$ 网格，却没有给出维数无关的逼近复杂度定理。表中的维数至多 100、函数结构较规则；一般高维耦合函数仍可能需要指数级容量或样本。",
+        "ResNet 数值最好但不保证 convexity；ICNN 保证凸却在部分表格明显更差。inverse sampling 依赖第二个近似网络，映回 C 的失败点被丢弃，可能再次改变有效测度。",
+        "HJ 双共轭可能累积两次近似误差，且主实验使用解析 $g^*$；KAN 的“精确式”来自二维、已知候选基函数集合的 symbolic regression，不是任意函数自动发现定律。"
+      ]
+    },
+    {
+      "title": "复现与资源",
+      "paragraphs": [
+        "官方代码：https://github.com/lexmar07/Deep-Legendre-Transform 。应固定 arXiv v2，并记录 primal/dual 采样分布、网络种类、训练与 test sizes、随机种子和 inverse-map rejection 规则。",
+        "最小复现先用 quadratic、negative-log 和 negative-entropy 检查 DLT 与 direct-learning parity；再重做 Figure 2/Table 4，分别核验 dual-space 覆盖、inverse-map error、g 的 L2 error 与两阶段总时间。",
+        "若用于物理问题，还应单独验证 f 的凸性与可微域、目标 dual measure、边界行为和 $D$ 是否覆盖关心的热力学或控制变量；本站未运行代码或独立复算表格。"
+      ]
+    },
+    {
+      "title": "阅读指南",
+      "paragraphs": [
+        "物理读者先读式 (1.1)、(2.1) 和 (2.2)，把“共轭变换”与“学习已知恒等式生成的数据”分开；接着读第 3 节，确认误差范数由哪一个测度定义。",
+        "再看 Figure 2 和第 4 节理解 inverse sampling；Tables 2–4 分别回答隐式 label 是否损失精度、相对固定网格如何标度、校正测度要付出多少成本。HJ 与 KAN 是应用展示，不是主定理。",
+        "进一步值得研究：能否对强凸或具有已知 Hessian 界的 f 给出非渐近、uniform error；能否处理不可微凸势；以及如何让凸性保证与 ResNet 的实际精度兼得。"
+      ]
+    }
+  ],
+  "evidence_refs": [
+    "paper.pdf pp. 1–5: Fenchel formulation, DLT loss, push-forward error identity and inverse-gradient sampling",
+    "paper.pdf pp. 6–10: direct-learning parity, unknown-conjugate example, grid comparison, inverse sampling, HJ and KAN results",
+    "paper.pdf p. 10 and appendices A–B: stated domain limitations, confidence intervals and additional experiments",
+    "source PDF SHA-256 afe33aacd151e2deb99bb3cff94749e3f2289850c4552dc580f16effabd32a50",
+    "Evidence packet SHA-256 dab1da59ecd86ab8254149d58a89ff0e05dd79c6cbf531ca2f47960398aed0a9",
+    "Evidence status: full-text verified; no independent reproduction performed."
+  ]
+}

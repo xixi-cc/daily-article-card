@@ -1,0 +1,185 @@
+{
+  "arxiv_id": "2512.16902",
+  "source_version": "v2",
+  "source_pdf": "https://arxiv.org/pdf/2512.16902v2",
+  "title_en": "In-Context Algebra",
+  "title_zh": "上下文中的代数",
+  "curation_status": "full_text_verified",
+  "card_standard_version": "2.4",
+  "audience_profile": "physics_ai_literate_physicist",
+  "paper_profile": "ai_empirical",
+  "style_reference": "physicist_daily_arxiv",
+  "provenance": {
+    "program": "Collection",
+    "catalog": "Paper Collection",
+    "catalog_record_id": "2512.16902",
+    "catalog_record_ids": ["2512.16902"],
+    "catalog_topic": "Representation Learning",
+    "collection_date": "2026-08-30",
+    "sampled_at": "2026-08-31",
+    "selected_by": "ziming_mineru_serial_goal",
+    "sampling_seed": "not_applicable_source_complete",
+    "candidate_count": 464
+  },
+  "verified_metadata": {
+    "arxiv_id": "2512.16902",
+    "version": "v2",
+    "title": "In-Context Algebra",
+    "authors": ["Eric Todd", "Jannik Brinkmann", "Rohit Gandikota", "David Bau"],
+    "categories": ["cs.CL", "cs.LG"],
+    "primary_category": "cs.CL",
+    "published": "2025-12-18T18:56:50Z",
+    "updated": "2026-02-25T14:49:31Z",
+    "abstract": "The paper randomizes the mapping from vocabulary symbols to elements of finite algebraic structures in every sequence, then uses targeted counterfactual datasets and causal interventions to identify copying, identity recognition, and closure-based cancellation mechanisms in a small transformer."
+  },
+  "equation_refs": [
+    {
+      "label": "每条序列独立的符号绑定",
+      "latex": "\\varphi_s:H_s\\to V,\\qquad s=\\text{\"}v_{x_1}v_{y_1}=v_{z_1},\\ldots,v_{x_k}v_{y_k}=v_{z_k}\\text{\"}",
+      "role": "turn group products into token facts while changing every token's algebraic referent between sequences",
+      "symbols": {
+        "H_s": "union of finite-group elements sampled for sequence s",
+        "V": "16 variable-token vocabulary",
+        "phi_s": "one-to-one random element-to-token assignment within s",
+        "k": "number of contextual facts"
+      },
+      "evidence": "paper.pdf pp. 2–3, Section 2 and Eq. (1)",
+      "interpretation": "同一 token 在不同序列中不保留固定含义，因此模型不能仅从 embedding 读出乘法表；它仍可能利用上下文中的重复和有限群公理。"
+    },
+    {
+      "label": "激活 patching 的平均间接效应",
+      "latex": "\\operatorname{AIE}(\\mathcal D,l,h)=\\frac1{|\\mathcal D|}\\sum_{s\\in\\mathcal D}[P(v_{\\rm target}\\mid a^{(l,h)}_{s_{\\rm clean}}\\to s_{\\rm corrupt})-P(v_{\\rm target}\\mid s_{\\rm corrupt})]",
+      "role": "measure how much replacing one head's activation restores the clean-sequence target probability",
+      "symbols": {
+        "D": "targeted clean/corrupt sequence pairs",
+        "l,h": "transformer layer and attention-head index",
+        "a": "activation patched at the final predictive token",
+        "v_target": "correct answer token"
+      },
+      "evidence": "paper.pdf pp. 5–6, Eqs. (4)–(5)",
+      "interpretation": "AIE 是特定干预、位置与数据分布下的因果中介量；高值定位必要或充分贡献，但不能证明该 head 在所有输入上独自实现完整算法。"
+    },
+    {
+      "label": "闭包子空间的 interchange intervention",
+      "latex": "P\\!\\left(v_{\\rm CF}\\mid[Wa_s^l+(I-W)a_{s'}^l]\\to a_{s'}^l\\right),\\qquad v_{\\rm CF}=S_{\\rm closure}(s)-S_{\\rm cancel}(s')",
+      "role": "train a low-dimensional subspace whose transfer should produce a prespecified counterfactual set-difference answer",
+      "symbols": {
+        "W": "learned projection onto a candidate causal subspace",
+        "a_s_l": "layer-l activation from sequence s",
+        "S_closure": "tokens inferred to belong to the same group",
+        "S_cancel": "tokens excluded by cancellation facts",
+        "v_CF": "counterfactual target token"
+      },
+      "evidence": "paper.pdf p. 8, Eq. (7), and appendices F.1–F.2",
+      "interpretation": "高 interchange accuracy 支持该子空间可控制所定义的集合变量；维数约等于 16-token vocabulary，并不自动等于抽象群表示的内禀维数。"
+    }
+  ],
+  "figure_refs": [
+    {
+      "label": "Figure 1",
+      "asset_path": "assets/collection-figures/2512.16902/figure-1-in-context-algebra-generation.webp",
+      "section": "模型与方法",
+      "role": "show how sampled finite groups are rebound to a fresh vocabulary and converted into a different fact sequence on every example",
+      "evidence": "paper.pdf p. 2, Figure 1",
+      "alt_text": "三步流程图：抽取有限群，为群元素随机分配互不重叠的 token，再生成乘法事实序列；下一序列重新抽群并重新绑定符号。",
+      "caption": "符号的含义只在一条序列内固定；跨序列重绑定切断了 token embedding 与具体群元素之间的长期对应。",
+      "interpretation": "The design removes fixed symbol semantics but not all shortcuts: repeated or reversed facts remain available, so the paper constructs targeted no-copy distributions to isolate additional mechanisms."
+    }
+  ],
+  "cover": {
+    "mode": "source_figure",
+    "asset_path": "assets/collection-figures/2512.16902/figure-1-in-context-algebra-generation.webp",
+    "label": "Figure 1",
+    "visual_type": "schematic",
+    "evidence": "paper.pdf p. 2, Figure 1",
+    "alt_text": "从有限群抽样、序列内随机符号绑定到乘法事实串生成的流程图。",
+    "caption": "每道题都重新给符号命名，迫使模型从上下文关系而非固定 embedding 推断规则。",
+    "selection_rationale": "It makes the experimental control that supports every later reasoning claim visible before readers encounter the interpretability interventions."
+  },
+  "sections": [
+    {
+      "title": "作者信息",
+      "paragraphs": [
+        "Eric Todd、Jannik Brinkmann、Rohit Gandikota、David Bau；Northeastern University 与 TU Clausthal。",
+        "本站核验 arXiv:2512.16902v2：初稿提交于 2025-12-18，当前版本更新于 2026-02-25；分类 cs.CL、cs.LG；ICLR 2026 论文，共 35 页。",
+        "Collection 来源为刘子鸣网站的 Representation Learning 条目。"
+      ]
+    },
+    {
+      "title": "研究问题",
+      "paragraphs": [
+        "语言模型做算术时，答案可能已由固定 token embedding 的几何结构编码。若每条序列都把同一批 token 随机重绑定到不同群元素，Transformer 还能否仅凭上下文恢复乘法关系？",
+        "更重要的问题不是最终 accuracy，而是模型实际用了什么算法：逐字复制、交换律、单位元、结合律，还是依靠闭包与消去律排除候选？",
+        "论文构造不同有限群的合成语言模型任务，再用专门控制某一种规则可用性的分布、activation patching、logit lens、PCA steering 与子空间 interchange intervention 拆分机制。"
+      ]
+    },
+    {
+      "title": "背景",
+      "paragraphs": [
+        "有限群同时满足闭包、结合律、单位元和逆元；交换律只适用于 Abelian 群。给出若干 $xy=z$ 事实后，可以直接查表，也可从 $xy=xz\\Rightarrow y=z$ 的消去律排除不可能答案。",
+        "普通语言模型的词向量给每个 token 一个跨样本固定坐标。这里的随机双射 $\\varphi_s$ 类似每个样本都施加一次未知 gauge relabeling：可观测的是关系结构，不是标签本身。",
+        "机制可解释性中的 activation patching 把 clean 样本的中间态替换进 corrupt 样本，观察目标概率变化。它比相关性 probe 更接近因果检验，但结论仍受干预位置、对照分布和 mediator 选择限制。"
+      ]
+    },
+    {
+      "title": "给物理学家的 AI 导读",
+      "paragraphs": [
+        "把每条上下文想成一张局部乘法表：网络必须先判断哪些符号属于同一闭合集，再用少数已见等式缩小答案集合。这里所谓“symbolic”是输入标签可任意置换而策略仍工作，并非网络显式执行通用群论证明器。",
+        "作者把候选算法先变成可检验的数据分布。例如 no-copy 集合同时移除 $xy=z$ 与反序 $yx=z$，避免把交换复制误当抽象推理；identity、cancellation 和 associativity 分布则让相应规则成为主要可行路径。",
+        "内部证据分三个强度：attention 或 PCA 只显示相关结构；logit contribution 说明对输出的直接方向；patching、steering 和预先规定反事实答案的 interchange intervention 才检验可控的因果作用。"
+      ]
+    },
+    {
+      "title": "模型与方法",
+      "paragraphs": [
+        "训练分布含阶数不超过 10 的 cyclic 与 dihedral groups。每条序列抽取若干群，把群元素一一映射到 16 个变量 token，再串联 200 个乘法事实；主模型为 4 层、每层 8 heads、hidden size 1024 的 autoregressive Transformer。",
+        "模型以 next-token objective、batch size 128、AdamW、学习率 $10^{-5}$ 和 1000-step warmup 训练；通常在 30k–75k steps 达到约 99% evaluation accuracy。主评估排除 verbatim 与 commutative copying，并另测训练中未作单位元的 token。",
+        "机制分析先算规则在自然序列上的 coverage，再对 400 条专门序列测准确率。head patching 用 200 对 clean/corrupt 样本定位复制头；closure 与 elimination 则在最终 attention 输出学习 16 维子空间，用 2000 个反事实 pair 训练。"
+      ]
+    },
+    {
+      "title": "核心结果与证据",
+      "paragraphs": [
+        "上下文从 50 增至 200 facts 时准确率整体上升；在 200 facts 下约 90% 普通 query 可逐字复制，而 50 facts 时约 45%。移除原序和逆序重复后，模型仍在训练群及未见过的阶 8 群上接近满分，但 quasigroup 最多约 50%、magma 接近零。",
+        "规则 coverage 的 AUC 为：verbatim copying 67.9%、commutative copying 再解释 12.1%、identity 4.2%、closure cancellation 2.7%、associativity 3.6%，合计 90.4%；模型 accuracy AUC 为 92.4%。在 no-copy 子集中，三种后续规则解释 84.7%，模型为 87.3%，仍有约 2.6 个百分点未解释。",
+        "针对性分布上，k=100 时 copy、commute、identity 与 cancellation accuracy 分别为 100%、99%、100%、92%，而 associativity 仅 56.5%；正文也报告 k=50 cancellation 为 97%、associativity 为 60.2%。因此“学会代数”主要由多种局部策略拼合，不等于完整掌握所有群公理。",
+        "layer 3 head 6 的 copying AIE 为 0.91，其他 head 均低于 0.08；同一 head 在 commutative copying 上 AIE 约 0.48。identity 行为由 query promotion 与 identity demotion 共同产生，并可用 PCA 方向 steering 与伪 identity facts 双向操纵。",
+        "closure 子空间在最终 attention 输出用 16 维即可达约 99.9% intervention accuracy；elimination 子空间若含 identity facts 仅约 75%，排除后才接近满分。这一失败模式反而支持 identity 与 cancellation 并非同一单机制。"
+      ]
+    },
+    {
+      "title": "有效性与局限",
+      "paragraphs": [
+        "随机重绑定很好地去除了固定 token 含义，no-copy 对照也关闭了最明显捷径；未见群、semigroup/quasigroup/magma 的层级退化进一步说明性能依赖可迁移的代数性质，而不只是训练表记忆。",
+        "不过任务是 18-token 词表、阶数至多 10、至多 200 个合成事实的小型封闭世界；结果不能直接推出 pretrained LLM 会对自然语言、连续量或开放式数学证明采用相同电路。",
+        "coverage 来自研究者预先列出的五种算法，模型 AUC 高出 2.0%–2.6% 已表明枚举不完备。多个算法可在同一序列同时给出正确答案，专门分布降低但不能消除所有等价策略。",
+        "PCA、probe 与 attention pattern 本身不是机制证明；patching 和 subspace steering 更强，但 learned projection 可能携带相关的复合信息。约 16 维与 16 个变量 token 对齐，不应被夸大为群表示论的普适内禀维数。",
+        "训练阶段顺序在多个 seed 和容量设置中定性复现，但阶段边界由有限 checkpoint metrics 识别；所谓 phase transition/grokking 是训练曲线中的突变描述，不是热力学极限中的相变判定。"
+      ]
+    },
+    {
+      "title": "复现与资源",
+      "paragraphs": [
+        "作者公开代码和数据：algebra.baulab.info。版本核验为 arXiv v2；实现基于 nanoGPT、PyTorch、NNsight 与 SymPy，并使用 RoPE。",
+        "论文报告训练使用 A100 80GB 或 A6000 48GB，分析在 A6000 workstation 上运行。复现要固定群采样概率、序列长度、每序列重绑定 seed、copy holdout 规则和最佳-checkpoint 选择，否则 coverage 与阶段位置会改变。",
+        "优先复现的最小链条是 Figure 2 的 no-copy 泛化、Figure 3 的规则 coverage、Figure 13 的单-head AIE，以及 Figures 17–19 的预注册反事实子空间目标；本站未运行代码或重新训练模型。"
+      ]
+    },
+    {
+      "title": "阅读指南",
+      "paragraphs": [
+        "先看 Figure 1 和第 2 节，确认跨序列随机重绑定具体排除了什么；再看 Figure 2 的 no-copy 与 unseen-structure 泛化，不要从总体 accuracy 直接跳到“符号推理”。",
+        "第 4 节与 Figure 3 给出假设算法及 coverage，第 5 节依次提高证据强度：head patching、identity steering、closure/elimination interchange intervention。Figure 6 的学习次序应最后阅读。",
+        "对物理读者最有价值的后续问题是：在扩大群阶、token 数和关系噪声后，子空间维数如何标度？模型学到的是对 label permutation 的等变算法，还是有限训练分布上的稀疏启发式？"
+      ]
+    }
+  ],
+  "evidence_refs": [
+    "paper.pdf pp. 2–5: randomized symbol-binding task, no-copy evaluation, unseen structures and algorithmic coverage",
+    "paper.pdf pp. 5–10: activation patching, copying head, identity steering, closure/elimination subspaces and skill stages",
+    "paper.pdf appendices C–F: architecture, training compute, seed/capacity checks, generalization tables and intervention details",
+    "source PDF SHA-256 ef56181a816c7a41b02a6ac15eecb6c628525950cdde539261b928c4cc1620d6",
+    "Evidence packet SHA-256 9cdba35fe4e196e090ea067c303b1987c6f193853334f22819a74d78db383155",
+    "Evidence status: full-text verified; no independent reproduction performed."
+  ]
+}

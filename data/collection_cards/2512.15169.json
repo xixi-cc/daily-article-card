@@ -1,0 +1,184 @@
+{
+  "arxiv_id": "2512.15169",
+  "source_version": "v1",
+  "source_pdf": "https://arxiv.org/pdf/2512.15169v1",
+  "title_en": "Understanding NTK Variance in Implicit Neural Representations",
+  "title_zh": "理解隐式神经表示中的 NTK 方差",
+  "curation_status": "full_text_verified",
+  "card_standard_version": "2.4",
+  "audience_profile": "physics_ai_literate_physicist",
+  "paper_profile": "theory_experiment",
+  "style_reference": "physicist_daily_arxiv",
+  "provenance": {
+    "program": "Collection",
+    "catalog": "Paper Collection",
+    "catalog_record_id": "2512.15169",
+    "catalog_record_ids": ["2512.15169"],
+    "catalog_topic": "Learning Theory",
+    "collection_date": "2026-08-30",
+    "sampled_at": "2026-08-31",
+    "selected_by": "ziming_mineru_serial_goal",
+    "sampling_seed": "not_applicable_source_complete",
+    "candidate_count": 464
+  },
+  "verified_metadata": {
+    "arxiv_id": "2512.15169",
+    "version": "v1",
+    "title": "Understanding NTK Variance in Implicit Neural Representations",
+    "authors": ["Chengguang Ou", "Yixin Zhuang"],
+    "categories": ["cs.LG"],
+    "primary_category": "cs.LG",
+    "published": "2025-12-17T08:06:47Z",
+    "updated": "2025-12-17T08:06:47Z",
+    "abstract": "The paper decomposes the initialization-time neural tangent kernel variance of coordinate MLPs into energy and pairwise-similarity factors, then uses the decomposition to motivate Fourier encoding, spherical or Top-K normalization, and Hadamard modulation for implicit neural representations."
+  },
+  "equation_refs": [
+    {
+      "label": "冻结 NTK 下的模态衰减",
+      "latex": "\\dot{\\mathbf u}(t)=-H(\\mathbf u(t)-\\mathbf y),\\qquad \\|\\mathbf u(k)-\\mathbf y\\|_2^2\\simeq\\sum_i(1-\\eta\\lambda_i)^{2k}[\\mathbf v_i^\\top(\\mathbf u(0)-\\mathbf y)]^2",
+      "role": "connect each NTK eigenvalue to the learning rate of one data-space error mode",
+      "symbols": {
+        "H": "neural tangent kernel at initialization",
+        "lambda_i,v_i": "eigenvalue and eigenvector of H",
+        "u,y": "network predictions and training targets",
+        "eta": "gradient-descent step size"
+      },
+      "evidence": "paper.pdf pp. 4 and 7, Sections 3.1–3.2 and Theorem 3",
+      "interpretation": "小本征值对应慢模态，因此谱的分散可提示 spectral bias；等式的直接动力学含义依赖 kernel 近似冻结，有限宽网络只在文中给定的早期或 NTK 稳定区间内受控。"
+    },
+    {
+      "label": "基线 NTK 方差代理",
+      "latex": "v_\\lambda=\\frac1n\\operatorname{Tr}(H^2)-\\mu_\\lambda^2\\approx\\frac{a^4R_x^4\\bar S_{\\rm bl}^2}{nm^2}\\sum_{i\\ne j}\\tau^{\\rm bl}_{x,ij}\\tau^{\\rm bl}_{s,ij}",
+      "role": "factor eigenvalue dispersion into input similarity, hidden-gate overlap and an activation-energy scale",
+      "symbols": {
+        "mu_lambda,v_lambda": "mean and variance of the NTK eigenvalues",
+        "tau_x": "squared-cosine similarity between input coordinates",
+        "tau_s": "normalized overlap of active ReLU gates",
+        "S_bar_bl": "typical hidden activation or gate energy",
+        "m,n": "network width and number of samples"
+      },
+      "evidence": "paper.pdf pp. 4–5, Eqs. (3)–(5)",
+      "interpretation": "迹恒等式给出的谱矩是精确的；右侧乘积分解还使用样本间对角量近似相同，并吸收了数据集相关的常数量级因子。"
+    },
+    {
+      "label": "归一化 Hadamard 模型的四因子代理",
+      "latex": "v_\\lambda\\approx\\frac{a^4R_x^4\\bar S^2\\bar P^2}{nm^2}\\sum_{i\\ne j}\\tau_{x,ij}\\tau_{s,ij}\\tau_{p,ij}\\tau_{q,ij}",
+      "role": "separate the spectral effect of positional encoding, normalization, modulation overlap and their alignment",
+      "symbols": {
+        "tau_x": "encoded-input similarity",
+        "tau_s": "normalized hidden-feature similarity",
+        "tau_p": "Hadamard modulation similarity",
+        "tau_q": "alignment between hidden and modulation pair structures",
+        "S_bar,P_bar": "typical hidden and modulation energies"
+      },
+      "evidence": "paper.pdf pp. 8–9, Proposition 2 and Theorem 4",
+      "interpretation": "四个非负因子使架构干预可被逐项分析；但更小的原始方差并不单独等价于更小条件数，因为整体谱尺度和最小本征值也必须同时检查。"
+    }
+  ],
+  "figure_refs": [
+    {
+      "label": "Figure 1",
+      "asset_path": "assets/collection-figures/2512.15169/figure-1-ntk-conditioning-comparison.webp",
+      "section": "核心结果与证据",
+      "role": "contrast the NTK matrix, spectrum, training curve and reconstruction of a plain ReLU INR with the normalized Hadamard design",
+      "evidence": "paper.pdf p. 2, Figure 1",
+      "alt_text": "上下两行分别展示普通 ReLU MLP 与归一化 Hadamard 网络的 NTK 热图、本征值谱、训练曲线和重建图像。",
+      "caption": "位置编码、归一化和乘性调制共同削弱样本间对齐；图示把这一谱变化与更快收敛和更清晰重建并列呈现。",
+      "interpretation": "This is a mechanism overview rather than an isolated ablation. The numerical factor attribution comes from Tables 1–2, while downstream robustness is assessed separately in Figures 2–3 and Tables 3–4."
+    }
+  ],
+  "cover": {
+    "mode": "source_figure",
+    "asset_path": "assets/collection-figures/2512.15169/figure-1-ntk-conditioning-comparison.webp",
+    "label": "Figure 1",
+    "visual_type": "comparison",
+    "evidence": "paper.pdf p. 2, Figure 1",
+    "alt_text": "普通坐标 MLP 与归一化 Hadamard INR 的核矩阵、谱、训练和重建对比。",
+    "caption": "改变架构，就是在重塑哪些坐标点通过 NTK 彼此耦合。",
+    "selection_rationale": "It gives a physicist the shortest visual path from architecture to kernel spectrum, relaxation rates and observable reconstruction quality."
+  },
+  "sections": [
+    {
+      "title": "作者信息",
+      "paragraphs": [
+        "Chengguang Ou、Yixin Zhuang；Fuzhou University。",
+        "本站核验 arXiv:2512.15169v1：提交于 2025-12-17；分类 cs.LG，共 58 页。",
+        "Collection 来源为刘子鸣网站的 Learning Theory 条目。"
+      ]
+    },
+    {
+      "title": "研究问题",
+      "paragraphs": [
+        "隐式神经表示（INR）用坐标到信号值的网络表示图像或连续场，但普通坐标 MLP 往往先拟合低频、后拟合高频。已有 NTK 解释指出不同核本征模的衰减率不同，却没有直接说明位置编码、归一化和乘性调制各自改变了谱的哪一部分。",
+        "论文问：能否把 NTK 本征值方差拆成少数具有架构含义的因子，并据此解释乃至设计缓解 spectral bias 的 INR？",
+        "作者给出输入相似度、隐藏特征重叠、能量尺度与 Hadamard 调制相似度的分解，并构造 normalized Hadamard 网络及 TopK-SP 变体做 CT 重建与 4× 超分辨率实验。"
+      ]
+    },
+    {
+      "title": "背景",
+      "paragraphs": [
+        "在无限宽或充分过参数、参数移动较小的区间，网络训练可近似为固定核下的线性松弛。若把训练误差投影到 NTK 本征向量上，第 i 个分量大致按 $(1-\\eta\\lambda_i)^k$ 衰减；小 $\\lambda_i$ 模态最慢。",
+        "对物理读者，可以把 H 看成数据点空间上的正定动力学算符，而非真实空间的 Hamiltonian。谱宽意味着一组松弛时间尺度差异很大，但单看未归一化方差仍不足以确定条件数或最慢弛豫率。",
+        "INR 的位置编码先改变坐标点间的几何相似度；球面归一化控制隐藏态范数；逐通道 Hadamard 调制再改变不同样本共享通道的方式。论文把三者统一写入核的谱矩。"
+      ]
+    },
+    {
+      "title": "给物理学家的 AI 导读",
+      "paragraphs": [
+        "这里的 NTK 是网络输出对参数梯度的 Gram 矩阵：$H_{ij}=\\langle\\nabla_\\theta f(x_i),\\nabla_\\theta f(x_j)\\rangle$。它度量一次参数更新会让两个样本的预测怎样协同变化，类似线性响应矩阵。",
+        "论文的关键不是简单地“让所有本征值一样”，而是削弱造成巨大非对角耦合的相似度因子。Fourier features 改写输入相关函数，归一化去掉随活跃神经元数增长的能量放大，调制则加入两个小于 1 的重叠因子。",
+        "读数值表时要同时看 $v_\\lambda$、尺度归一化后的 $\\tilde v_\\lambda$、$\\mu_\\lambda$ 和最终 PSNR。原始方差可因整体缩小 H 而变小，却不必然让学习更快；论文的重建实验为谱代理和任务性能之间补上经验联系。"
+      ]
+    },
+    {
+      "title": "模型与方法",
+      "paragraphs": [
+        "基线是只训练第一层权重的两层过参数 ReLU 坐标 MLP。作者从核矩阵的迹和 Frobenius 范数出发，把本征值方差写成所有样本对的输入余弦相似度、ReLU gate 重叠和隐藏能量乘积。",
+        "实用网络把坐标映射为随机 Fourier features，每层执行线性变换、ReLU、球面归一化和逐通道调制。可解析的两层版本固定编码输入与调制系数，只更新第一层权重，由此得到 $\\tau_x\\tau_s\\tau_p\\tau_q$ 四因子谱方差代理。",
+        "TopK-SP 只保留绝对值最大的 K 个隐藏坐标再做 $\\ell_2$ 归一化。理论比较需要均匀网格、足够大的 Fourier 维数与带宽、弱跨样本相关、sub-Gaussian 隐藏变量以及 $K\\gtrsim\\log m$ 等条件。"
+      ]
+    },
+    {
+      "title": "核心结果与证据",
+      "paragraphs": [
+        "在 200 个采样点、epoch 1000 的消融中，普通 base 的 PSNR 为 22.77 dB；加入 RFF 得 33.22 dB，RFF 加球面归一化得 38.01 dB，normalized Hadamard 得 43.28 dB。对应的初始化 NTK 统计按预期显示输入相似度、隐藏能量或调制重叠被分别压低。",
+        "TopK-SP 的配对比较更直接：RFF+Norm 从 38.01 升至 41.27 dB，Hada 从约 43.27 升至 45.32 dB；后者的尺度归一化谱方差 $\\tilde v_\\lambda$ 从 $9.10\\times10^{-4}$ 降至 $4.53\\times10^{-4}$。这些仍是同一实验设置内的相关证据，不是对因果链每一环的独立验证。",
+        "CT 重建使用 326×435 切片和 100 个等距测量，图 2 报告 normalized Hadamard 为 32.7 dB、五次运行标准误差 0.177；4× 超分辨率在约 133k 参数时为 27.68 dB，而 BW-ReLU 为 27.10 dB。",
+        "跨 16 张图像的结果中，normalized Hadamard 在 DIV2K 为 $36.12\\pm3.91$ dB，在 TEXT 为 $51.71\\pm3.37$ dB，均高于表中 BSpline-W、WIRE、SIREN 和 ReLU；这里的 ± 是跨图像标准差，不应与图 2–3 的五次运行标准误差混用。"
+      ]
+    },
+    {
+      "title": "有效性与局限",
+      "paragraphs": [
+        "严格部分包括固定初始化核的谱动力学、谱矩恒等式，以及在明示假设下的 RFF、Hadamard 和 TopK 界。把有限宽深网络解释为该核模型，则依赖过参数、小学习率、核漂移受控和早期训练等 NTK 条件。",
+        "方差代理用样本间近似恒定的对角能量和数据集相关常数做 mean-field 化；RFF 结论针对二维均匀网格，TopK 结论依赖弱相关与 sub-Gaussian 假设，不能直接外推到任意坐标分布或 feature-learning 强烈的网络。",
+        "较小本征值方差不等于自动改善条件数：若谱整体缩小，最小本征值也可能变小。论文同时报告均值、归一化方差、训练曲线和 PSNR，提供一致但尚非唯一机制的证据。",
+        "实验只覆盖二维 CT 与 4× 图像超分辨率；跨数据结果为 16 张图像，未展示更高维场、视频、NeRF 或大规模超参数稳健性，也未独立复现。"
+      ]
+    },
+    {
+      "title": "复现与资源",
+      "paragraphs": [
+        "版本固定为 arXiv v1。复现应先重建 Table 1 的 200 点初始化核统计与 epoch-1000 PSNR，再做 Table 2 的 Norm/TopK 成对比较；这比只重现最终图像更能检验提出的机制。",
+        "下游设置至少需要记录 Fourier bandwidth 与维数、网络宽度和层数、TopK 的 K、学习率、初始化、测量采样、参数预算，以及 Table 4 中 16 张 DIV2K/TEXT 图像的选择。",
+        "论文正文与附录给出理论和实验设置，但本站未发现可核验的官方代码链接；当前卡片为全文与 PDF 证据核验，不代表代码复现或重新计算 NTK 谱。"
+      ]
+    },
+    {
+      "title": "阅读指南",
+      "paragraphs": [
+        "先读第 3 节的冻结核动力学和式 (3)–(5)，建立“误差模态—本征值—松弛时间”的对应；再读第 4.3 节的四因子分解，理解每个架构操作实际控制什么。",
+        "随后用 Tables 1–2 检查因子和 PSNR 是否同向变化，再看 Figures 2–3 与 Tables 3–4 判断收益能否越过单一样本。理论细节可按需查附录 B–E。",
+        "最值得追问的是：在会显著 feature-learn 的有限宽网络中，这些初始化谱因子能预测多长时间？若用条件数、最小本征值或与目标对齐的谱权重替代单一方差，结论是否仍保持？"
+      ]
+    }
+  ],
+  "evidence_refs": [
+    "paper.pdf pp. 4–9 and appendices A–E: NTK dynamics, exact spectral moments, variance proxies and their assumptions",
+    "paper.pdf pp. 10–13: initialization ablations, TopK comparison, CT and super-resolution results",
+    "paper.pdf pp. 13 and final appendices: 16-image aggregate results, references and theoretical boundary conditions",
+    "source PDF SHA-256 5405420a94b8dc32e2362f2a7afec0007d1605c36520c8ff4f4238e7956ac2b7",
+    "Evidence packet SHA-256 13c090dd609a8cc7f5bb76141f8cbddc484dd8454ded5dc0a94b525011073563",
+    "Evidence status: full-text verified; no independent reproduction performed."
+  ]
+}
