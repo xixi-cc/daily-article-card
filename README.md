@@ -25,7 +25,7 @@
 
 本项目不在 GitHub Actions 中调用外部 LLM API，也不需要 ModelScope token。Codex 直接完成 arXiv 检索、筛选、全文卡片写作、验证与发布；GitHub Actions 只执行确定性图片处理、构建和 Pages 部署。
 
-Codex 的端到端筛选和发布合同见 [`docs/CODEX_DAILY_SCREENING_AND_PUBLICATION.md`](docs/CODEX_DAILY_SCREENING_AND_PUBLICATION.md)。论文卡片的 canonical 编辑、公式、证据、数据与发布标准见 [`docs/PAPER_CARD_STANDARD.md`](docs/PAPER_CARD_STANDARD.md)；所有制卡入口与校验、渲染、部署消费者见 [`docs/PAPER_CARD_STANDARD_INTEGRATION.md`](docs/PAPER_CARD_STANDARD_INTEGRATION.md)。Paper Collection 的长期补卡与 Daily feed 是两个独立数据流；Collection 卡不得进入 Daily 时间线或继承日报评级。
+Codex 的端到端筛选和发布合同见 [`docs/CODEX_DAILY_SCREENING_AND_PUBLICATION.md`](docs/CODEX_DAILY_SCREENING_AND_PUBLICATION.md)。论文卡片的 canonical 编辑、公式、证据、数据与发布标准见 [`docs/PAPER_CARD_STANDARD.md`](docs/PAPER_CARD_STANDARD.md)；所有制卡入口与校验、渲染、部署消费者见 [`docs/PAPER_CARD_STANDARD_INTEGRATION.md`](docs/PAPER_CARD_STANDARD_INTEGRATION.md)。分层证据包、确定性草稿、阶段指标与小批量策略见 [`docs/PAPER_CARD_WORKFLOW_OPTIMIZATION.md`](docs/PAPER_CARD_WORKFLOW_OPTIMIZATION.md)。Paper Collection 的长期补卡与 Daily feed 是两个独立数据流；Collection 卡不得进入 Daily 时间线或继承日报评级。
 
 ## 本地构建
 
@@ -48,6 +48,9 @@ cd site && python -m http.server 8000
 - `scripts/build_paper_image_fallback_queue.py`：生成截图兜底队列
 - `scripts/render_paper_image_fallbacks.mjs`：渲染兜底截图
 - `scripts/register_paper_image_fallbacks.py`：登记论文图片
+- `scripts/paper_card_evidence_layers.py`：把完整证据包拆为小型核心层与无损按需层
+- `scripts/create_paper_card_scaffold.py`：生成带 Daily / Collection 来源约束的草稿 JSON
+- `scripts/paper_card_metrics.py`：记录各阶段耗时与 token，并生成结构风险审计
 - `scripts/build_site.py`：生成主页、数据、详情页和封面
 - `site/`：GitHub Pages 静态产物
 

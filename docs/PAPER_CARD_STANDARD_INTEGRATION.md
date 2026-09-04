@@ -13,6 +13,9 @@ Current required version: 2.3
 | `data/curated_cards/*.json` | Daily card sources | New cards include `card_standard_version`, `equation_refs`, `figure_refs`, and `cover` |
 | `data/collection_cards/*.json` | Collection card sources | New or substantively revised cards follow the same card standard but retain Collection provenance |
 | `scripts/validate_paper_cards.py` | Structural and evidence gate | Reject malformed v2.3 covers, unresolved figure assets, and raw or unbalanced TeX |
+| `scripts/paper_card_evidence_layers.py` | Lossless evidence routing | Keep an exact full packet while providing a bounded core and explicit on-demand reading routes |
+| `scripts/create_paper_card_scaffold.py` | Deterministic draft initialization | Create only provenance-aware v2.3 drafts; never mark them installable or scientifically verified |
+| `scripts/paper_card_metrics.py` | Stage measurement and risk routing | Record duration, token, and artifact hashes; route review without treating heuristics as scientific verdicts |
 | `scripts/build_site.py` and `scripts/math_typography.py` | Feed, detail page, and standalone cover renderer | Derive all three surfaces from the same structured `cover` record, normalize unmistakable inline notation, and package local MathJax |
 | `.github/workflows/deploy.yml` | GitHub Pages build gate | Run the synchronization check and card validator before deployment |
 | GitHub `origin` | Canonical public source and Pages trigger | Every completed website update must be pushed without force and local `HEAD` must equal the target branch SHA |
