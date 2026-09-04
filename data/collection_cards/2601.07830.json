@@ -1,0 +1,199 @@
+{
+  "arxiv_id": "2601.07830",
+  "source_version": "v1",
+  "source_pdf": "https://arxiv.org/pdf/2601.07830v1",
+  "title_en": "Optimal Learning Rate Schedule for Balancing Effort and Performance",
+  "title_zh": "平衡学习成本与表现的最优学习率日程",
+  "curation_status": "full_text_verified",
+  "card_standard_version": "2.4",
+  "audience_profile": "physics_ai_literate_physicist",
+  "paper_profile": "theory_numerics",
+  "style_reference": "physicist_daily_arxiv",
+  "provenance": {
+    "program": "Collection",
+    "catalog": "Paper Collection",
+    "catalog_record_id": "2601.07830",
+    "catalog_record_ids": ["2601.07830"],
+    "catalog_topic": "AI Agents",
+    "collection_date": "2026-08-30",
+    "sampled_at": "2026-08-31",
+    "selected_by": "ziming_mineru_serial_goal",
+    "sampling_seed": "not_applicable_source_complete",
+    "candidate_count": 464
+  },
+  "verified_metadata": {
+    "arxiv_id": "2601.07830",
+    "version": "v1",
+    "title": "Optimal Learning Rate Schedule for Balancing Effort and Performance",
+    "authors": ["Valentina Njaradi", "Rodrigo Carrasco-Davis", "Peter Latham", "Andrew Saxe"],
+    "categories": ["cs.LG", "cs.NE", "q-bio.NC"],
+    "primary_category": "cs.LG",
+    "published": "2026-01-12T18:59:07Z",
+    "updated": "2026-01-12T18:59:07Z",
+    "abstract": "The paper formulates learning speed as an optimal-control variable with an explicit quadratic effort cost, derives an undiscounted closed-loop schedule from the remaining attainable performance gap, and studies approximate future-performance estimation through episodic memory."
+  },
+  "equation_refs": [
+    {
+      "label": "带学习率控制的梯度流",
+      "latex": "\\frac{d\\mathbf w}{dt}=\\mu(t)\\nabla_{\\mathbf w}P(\\mathbf w(t))",
+      "role": "treat the scalar learning rate as the sole control that changes how fast parameters move along the performance gradient",
+      "symbols": {
+        "w": "all trainable parameters",
+        "P": "task performance, often a shifted negative loss in simulations",
+        "mu_t": "nonnegative continuous learning-speed control"
+      },
+      "evidence": "paper.pdf p. 3, Eq. (1)",
+      "interpretation": "架构和任务被吸收到 $P(\\mathbf w)$，所以公式形式广；但推导假定连续 gradient flow、可微且梯度 Lipschitz，只控制一个全局标量 $\\mu$。ReLU、离散更新和 optimizer state 不在精确定理内。"
+    },
+    {
+      "label": "表现减学习成本的控制目标",
+      "latex": "\\mu^*=\\arg\\max_{\\mu}\\int_t^T d\\tau\\,\\gamma^{\\tau-t}[P(\\mathbf w(\\tau))-C(\\mu(\\tau))],\\qquad C(\\mu)=\\beta\\mu^2",
+      "role": "define optimality as cumulative internal reward rather than final validation loss alone",
+      "symbols": {
+        "gamma": "time-discount factor in [0,1]",
+        "T": "fixed learning horizon",
+        "beta": "coefficient pricing faster learning",
+        "C_mu": "assumed effort or resource cost of learning speed"
+      },
+      "evidence": "paper.pdf pp. 3–4, Eqs. (2)–(4)",
+      "interpretation": "所谓“最优”完全相对于这个 utility。若常规训练把 learning rate 本身视为免费，只关心终点 accuracy/compute wall time，目标函数已经变了，下面的 schedule 便不是通用优化处方。"
+    },
+    {
+      "label": "无折扣闭环最优学习率",
+      "latex": "\\mu^*(t)=\\sqrt{\\frac{P(T)-P(t)}{\\beta}}",
+      "role": "set current learning effort by the gap between present performance and performance expected at the optimal horizon",
+      "symbols": {
+        "P_t": "currently observed performance",
+        "P_T": "final performance under the optimal policy, usually not known online",
+        "beta": "quadratic effort-cost scale",
+        "mu_star": "closed-loop optimal control for gamma=1"
+      },
+      "evidence": "paper.pdf p. 4, Eq. (5); derivation pp. 12–14",
+      "interpretation": "性能差距大时 front-load effort，接近终点时减速。公式的简洁性来自 $\\gamma=1$ 与二次成本；最大实际困难是 $P(T)$ 是反事实最优策略下的未来表现，必须由 oracle、memory 或模型估计。"
+    },
+    {
+      "label": "情景记忆的终点表现估计",
+      "latex": "\\widehat P(T\\mid t)=\\sum_{h=1}^{H}w_h(t)P_h(T),\\qquad w_h(t)\\propto k(\\mathcal T_o(t),\\mathcal T_h(t))",
+      "role": "approximate the unknown final performance by weighting stored learning trajectories similar to the partial current trajectory",
+      "symbols": {
+        "T_o": "observed prefix of the current performance trajectory",
+        "T_h": "stored historical trajectory h",
+        "w_h": "normalized Gaussian-kernel similarity weight",
+        "H": "number of remembered learning episodes"
+      },
+      "evidence": "paper.pdf p. 6, Eq. (6); Methods pp. 14–15",
+      "interpretation": "这是作者提出的 meta-learning approximation，不是 HJB 解的一部分。它只有在新任务与记忆库共享可比较的 trajectory geometry 时才可能可靠；分布外任务和高波动轨迹会产生系统误差。"
+    }
+  ],
+  "figure_refs": [
+    {
+      "label": "Figure 2",
+      "asset_path": "assets/collection-figures/2601.07830/figure-2-closed-loop-learning-rate-results.webp",
+      "section": "核心结果与证据",
+      "role": "compare the analytical closed-loop controller with numerical meta-optimization, fixed schedules and estimation-error variants",
+      "evidence": "paper.pdf p. 5, Figure 2",
+      "alt_text": "八个面板展示 teacher-student 与 MNIST 的闭环学习率、累计内部奖励、几类学习策略和终点表现估计误差对收益及总努力的影响。",
+      "caption": "Figure 2 支持“先快学、后减速”在作者定义的表现减二次努力成本目标下优于固定率；所示设置中，终点表现估计误差在约 20% 内仍超过最佳 flat strategy。",
+      "interpretation": "The numerical comparison validates the derived objective on selected simulations; it neither identifies a biological effort cost nor establishes superior final test accuracy for conventional deep-learning training."
+    }
+  ],
+  "cover": {
+    "mode": "source_figure",
+    "asset_path": "assets/collection-figures/2601.07830/figure-2-closed-loop-learning-rate-results.webp",
+    "label": "Figure 2",
+    "visual_type": "data_plot",
+    "evidence": "paper.pdf p. 5, Figure 2",
+    "alt_text": "闭环最优学习率与数值优化、固定率及其他 effort profiles 的比较。",
+    "caption": "当前表现离预计终点越远，规范控制器越愿意支付学习成本；差距闭合后逐步休息。",
+    "selection_rationale": "It contains the main analytical-versus-numerical validation and makes the objective, baselines, noise and forecast-error dependence visible in one place."
+  },
+  "sections": [
+    {
+      "title": "作者信息",
+      "paragraphs": [
+        "Valentina Njaradi、Rodrigo Carrasco-Davis、Peter Latham、Andrew Saxe；主要单位为 UCL Gatsby Computational Neuroscience Unit、Sainsbury Wellcome Centre 与 Princeton Neuroscience Institute。",
+        "本站核验 arXiv:2601.07830v1：提交并更新于 2026-01-12；分类 cs.LG、cs.NE、q-bio.NC；共 25 页。",
+        "Collection 来源为刘子鸣网站的 AI Agents 条目。"
+      ]
+    },
+    {
+      "title": "研究问题",
+      "paragraphs": [
+        "若更快学习能更早获得高表现，却要付出认知努力、能量、资源或不稳定性成本，一个生物或人工 agent 应如何随时间调节 learning rate？",
+        "作者把 learning rate 当作 optimal-control signal，最大化整个学习期内“performance 减 effort cost”的积分，而不是只优化终点 loss。核心结果是在无时间折扣和二次成本下得到只依赖当前与预计终点表现的闭环公式。",
+        "论文的重点是 normative account：给定目标函数，最优 agent 应怎样做。它没有证明大脑真的实现该 HJB controller，也不主张 Eq. (5) 是 Adam/SGD 在常规 benchmark 上的普适最佳 scheduler。"
+      ]
+    },
+    {
+      "title": "背景",
+      "paragraphs": [
+        "固定 learning rate 决定梯度更新步幅；工程 schedule 常按 epoch 预设 warmup、decay 或 cosine。closed-loop schedule 则根据训练中的 state feedback 动态更新控制量。",
+        "HJB 方程把“从当前权重出发，今后能得到多少累计 reward”编码成 value function。一般情形很难解析；本文利用 learning dynamics 与 performance gradient 同向，在 $\\gamma=1$ 时将最优控制化简为 remaining performance gap。",
+        "生物学习中的 effort 可能包括能量、时间机会成本和 cognitive control。作者用 $C=\\beta\\mu^2$ 把这些压缩成凸标量成本，以获得可解析 benchmark，而不是从神经代谢数据拟合出的经验定律。"
+      ]
+    },
+    {
+      "title": "给物理学家的 AI 导读",
+      "paragraphs": [
+        "把参数 $\\mathbf w$ 看成高维状态，learning rate $\\mu(t)$ 是沿 performance gradient 推进的 mobility。增大 mobility 加速弛豫，但 action 中加入 $\\beta\\mu^2$ 后，最快轨迹不再免费；问题变成有限时域的变分/最优控制。",
+        "闭环式 $\\mu^2=(P_T-P_t)/\\beta$ 很像能量差决定可用速度：剩余可收获的 performance gap 越大，越值得提前支付控制成本。这里 $P_T$ 不是热力学 state function，而是最优策略下的未知反事实终点。",
+        "因此 oracle $P_T$ 是隐藏难点。episodic memory 用相似历史轨迹做 kernel regression，相当于从 ensemble of past relaxations 估计当前轨迹的 asymptote；当任务分布漂移或早期曲线 degeneracy 很强时，估计会失灵。"
+      ]
+    },
+    {
+      "title": "模型与方法",
+      "paragraphs": [
+        "模型假定 $P(\\mathbf w)$ 连续可微、梯度对权重 Lipschitz，参数按 gradient flow 演化；agent 只能调一个非负 scalar $\\mu(t)$。无折扣 $\\gamma=1$、凸 cost 可导出一般隐式条件，二次 cost 给出 Eq. (5)。",
+        "作者用 teacher-student 两层 tanh 网络、downsampled MNIST 两层 softplus 网络和线性 perceptron 检验 closed/open-loop schedule。数值基准通过 JAX 对整个学习率函数 differentiating-through-training 做 meta-optimization。",
+        "episodic-memory 实验顺序训练 1000 个随机 teacher-student 实例；对当前 performance prefix whitening 后，以 Gaussian-kernel similarity 加权历史终点，逐步更新 $\\widehat P(T|t)$。",
+        "线性 perceptron 可进一步解出 open-loop $\\mu(t)=\\theta\\tan[\\sigma^2\\theta(T-t)]$，其中 $\\theta$ 由自洽终端条件决定；$\\gamma<1$ 时无同样简单闭式，作者用 homotopy–Padé 近似。"
+      ]
+    },
+    {
+      "title": "核心结果与证据",
+      "paragraphs": [
+        "Eq. (5) 预测 learn fast, rest later：初期 $P(T)-P(t)$ 大，学习率高；表现上升后 gap 缩小，学习率下降；plateau 时保持当前学习率而非自动加码，达到预计终点时降至零。",
+        "Figure 2 的 teacher-student gradient-flow 示例中，解析 closed-loop schedule 与数值 meta-optimization 对齐，并比最佳固定学习率取得更高累计 internal reward。MNIST 的 mini-batch SGD 使 feedback schedule 有噪声，但在所示实验仍优于 fixed baseline。",
+        "策略比较显示，front-loaded profile 的形状比精确 effort amplitude 更关键；作者报告在该设置中，即使 $P(T)$ 的相对估计误差约为 ±20%，最优形状仍超过最佳 flat strategy，误差更大则可更差。",
+        "随着 episodic memory 增大且本轮已观察轨迹变长，终点预测的 bias/variance 收缩；高波动 trajectory 仍较难预测。这支持 memory estimator 在同分布 episodes 中逐渐改善，不等于任意新任务的 few-shot generalization。",
+        "线性模型解析结果和参数扫描给出：较低 $\\beta$、较高 task difficulty 与较弱时间折扣通常提高学习率；在 nonlinear dynamics 下，强 discount 还能改变 schedule shape。"
+      ]
+    },
+    {
+      "title": "有效性与局限",
+      "paragraphs": [
+        "理论把 objective、dynamics、control 和未知量写得清楚，并用解析解、数值最优控制、noisy SGD 与 memory approximation 分层验证；这比仅凭经验比较 cosine/step decay 更可解释。",
+        "“optimal”依赖累计 $P-C$。常规机器学习通常把 learning rate 当无直接成本的超参数并重视 terminal/generalization performance、wall-clock 或 energy；改变 cost 或 horizon 会改变答案，论文也明确说它不是 conventional optimizer prescription。",
+        "精确闭式要求 $\\gamma=1$、continuous scalar control、gradient flow、平滑 performance 与单任务固定 horizon。ReLU、momentum/Adam state、discrete step stability、nonmonotonic validation metric 和多控制通道都需重新分析。",
+        "多数 simulation 使用从数值最优化 episode 得到的 ground-truth $P(T)$；MNIST 则搜索使 closed-loop cumulative reward 最大的终点值。真正在线 agent 不拥有这个 oracle，memory estimator 的成功又依赖过去任务分布。",
+        "二次 effort cost 的生物形式未知，动物实验比较仅是 reward-rate 曲线的定性相似，不能反推出 rats 的 $\\beta$、discount 或 learning-rate controller。neuromodulator 对应关系是可检验猜想而非机制证据。",
+        "单一 scalar learning rate 不能表达多任务 attention allocation、layer-wise plasticity 或选择学什么；极难任务时公式可要求不现实的初始 effort，hard cap、quit threshold 与资源约束尚未进入解。"
+      ]
+    },
+    {
+      "title": "复现与资源",
+      "paragraphs": [
+        "论文未在正文给出可核验的官方代码仓库。复现应固定 arXiv v1、performance shift、episode horizon、Euler step、$\\beta/\\gamma$、teacher/student initialization、mini-batch sequence 与 meta-optimization convergence。",
+        "最小复现可从线性 regression 开始：数值积分 gradient flow，解 $\\theta$ 的自洽方程，对比 open-loop tangent、closed-loop Eq. (5) 与对 $\\mu(t)$ 直接自动微分的最优曲线，并逐项积分 performance 和 cost。",
+        "机器学习扩展应同时报告累计 $P-C$、终点 test loss、wall-clock/energy 和 instability；加入 Adam、ReLU、离散步长、noisy/sparse feedback 及 out-of-distribution memory episodes，避免只证明原 objective。本站未独立复现。"
+      ]
+    },
+    {
+      "title": "阅读指南",
+      "paragraphs": [
+        "先读 Eqs. (1)–(5)，在纸上写出控制量、状态方程、reward、cost、horizon 与 $\\gamma=1$；读懂 objective 后再讨论“最优”，否则很容易把规范结论误当 scheduler benchmark。",
+        "再看 Figure 2，把解析公式、numerical meta-optimization、best fixed baseline 和估错 $P(T)$ 四种证据分开；随后读 Methods 4.1，确认 closed-loop 简化来自哪些假设。",
+        "最后读 Figure 3、discounting 和 Scope and limitations。最有判别力的后续实验是预先测量 resource/effort cost，在未知 $P(T)$、分布漂移和有限反馈下比较 controller，并检验累计 utility 的提升是否伴随可接受的终点泛化。"
+      ]
+    }
+  ],
+  "evidence_refs": [
+    "paper.pdf pp. 3–6: gradient-flow control objective, quadratic effort cost, Eq. (5), Figure 2 and episodic-memory estimator",
+    "paper.pdf pp. 7–12: perceptron open-loop solution, discounting, animal comparison, discussion and explicit scope limitations",
+    "paper.pdf pp. 12–17: HJB derivation, memory kernel, analytical dynamics, numerical implementation and meta-optimization",
+    "source PDF SHA-256 3cf9d0e799a5a419c2ebe3465326c05c9bb310802045e775e3620ad2af426cdb",
+    "MinerU Markdown SHA-256 47683f6f5999e61e4131d3ed4ad36ba0b67759a9cdd9b5ebc3d5c17dc0aa8d54",
+    "Evidence packet SHA-256 ee3a4473d1276958ac814344e1dd626f279fd4ce55a055856e52dfb05c19a1ae",
+    "Evidence status: full-text verified; no independent reproduction performed."
+  ]
+}

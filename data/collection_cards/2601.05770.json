@@ -1,0 +1,187 @@
+{
+  "arxiv_id": "2601.05770",
+  "source_version": "v3",
+  "source_pdf": "https://arxiv.org/pdf/2601.05770v3",
+  "title_en": "Weights to Code: Extracting Interpretable Algorithms from the Discrete Transformer",
+  "title_zh": "从权重到代码：由离散 Transformer 抽取可解释算法",
+  "curation_status": "full_text_verified",
+  "card_standard_version": "2.4",
+  "audience_profile": "physics_ai_literate_physicist",
+  "paper_profile": "ai_empirical",
+  "style_reference": "physicist_daily_arxiv",
+  "provenance": {
+    "program": "Collection",
+    "catalog": "Paper Collection",
+    "catalog_record_id": "2601.05770",
+    "catalog_record_ids": ["2601.05770"],
+    "catalog_topic": "Representation Learning",
+    "collection_date": "2026-08-30",
+    "sampled_at": "2026-08-31",
+    "selected_by": "ziming_mineru_serial_goal",
+    "sampling_seed": "not_applicable_source_complete",
+    "candidate_count": 464
+  },
+  "verified_metadata": {
+    "arxiv_id": "2601.05770",
+    "version": "v3",
+    "title": "Weights to Code: Extracting Interpretable Algorithms from the Discrete Transformer",
+    "authors": ["Yifan Zhang", "Wei Bi", "Kechi Zhang", "Dongming Jin", "Jie Fu", "Zhi Jin"],
+    "categories": ["cs.LG", "cs.CL"],
+    "primary_category": "cs.LG",
+    "published": "2026-01-09T12:49:41Z",
+    "updated": "2026-05-29T09:26:26Z",
+    "abstract": "The ICML 2026 paper designs a purpose-built Discrete Transformer whose scalar routing and bounded-fan-in arithmetic modules can be identified by hypothesis tests and symbolic regression, then assembled into executable Python programs."
+  },
+  "equation_refs": [
+    {
+      "label": "离散读取与可追加残差流",
+      "latex": "\\mathbf u=S(\\mathbf W_{\\rm read},\\tau)\\mathbf h_l,\\qquad \\mathbf h_{l+1}=\\operatorname{Concat}(\\mathbf h_l,\\mathbf o_l)",
+      "role": "select a small set of named scalar operands and retain every new intermediate as a traceable variable",
+      "symbols": {
+        "h_l": "list-like numerical residual stream at layer l",
+        "W_read": "learned logits selecting input variables",
+        "S": "temperature-controlled sampling operator",
+        "u": "low-dimensional operands presented to one module"
+      },
+      "evidence": "paper.pdf p. 3, Eqs. (1)–(2)",
+      "interpretation": "标准 Transformer 用高维向量叠加表示许多特征；本文反而把 residual stream 约束成可命名标量清单，并让模块只读取少量变量。可解释性主要来自这项 architecture prior，而非事后魔法。"
+    },
+    {
+      "label": "Numerical Attention 路由器",
+      "latex": "o_{\\rm attn}=S\\!\\left(\\frac{\\mathbf K\\mathbf q}{\\sqrt{d_{\\rm attn}}}+\\mathbf b_{\\rm rel},\\tau\\right)^\\top\\mathbf v",
+      "role": "make an attention head converge toward a deterministic pointer over raw scalar values",
+      "symbols": {
+        "q_K": "piecewise-linear encodings of selected scalar query and keys",
+        "b_rel": "T5-style relative-position bias",
+        "v": "identity-projected scalar history",
+        "tau": "annealed temperature controlling soft-to-discrete selection"
+      },
+      "evidence": "paper.pdf p. 3, Eqs. (3)–(5)",
+      "interpretation": "attention 被限制为搬运信息，不负责一般 feature mixing；抽取器只需检验 fixed-offset 或 windowed-extremum 等路由假设。超出预设 hypothesis class 的 head 可能无法命名。"
+    },
+    {
+      "label": "低扇入算术算子与输出",
+      "latex": "o_{\\rm mlp}=\\mathbf W_2\\sigma(\\mathbf W_1\\mathbf u+\\mathbf b_1)+b_2,\\qquad \\hat y=\\mathbf w_{\\rm out}^\\top\\mathbf h_{\\rm final}",
+      "role": "isolate each arithmetic transformation so symbolic regression can replace it with a closed-form expression",
+      "symbols": {
+        "u": "typically two selected scalar operands",
+        "o_mlp": "one scalar intermediate",
+        "sigma": "nonlinearity such as ReLU",
+        "w_out": "linear coefficients used as the backward-tracing entry point"
+      },
+      "evidence": "paper.pdf pp. 3–4, Eqs. (6)–(7)",
+      "interpretation": "PySR 拟合的是每个小模块的 input-output 数据，不是直接符号化整个网络。最终程序忠实度由模块拟合、head 分类、输出权重剪枝和测试域共同决定，不保证找到唯一的生成算法。"
+    }
+  ],
+  "figure_refs": [
+    {
+      "label": "Figure 1",
+      "asset_path": "assets/collection-figures/2601.05770/figure-1-discrete-transformer-to-code.webp",
+      "section": "模型与方法",
+      "role": "show the full path from annealed discrete search through module identification to synthesized Python",
+      "evidence": "paper.pdf p. 2, Figure 1",
+      "alt_text": "流程图展示离散 Transformer 先以温度退火形成稀疏路由与算术模块，再用 hypothesis testing 和 symbolic regression 抽取组件，最后合成为 parity-last2 Python 程序。",
+      "caption": "Figure 1 的关键不是把普通 Transformer 自动反编译，而是训练时就把信息路由和数值运算限制成可离散识别的计算图。",
+      "interpretation": "The diagram is a method schematic illustrated on parity_last2; it does not itself measure extraction fidelity or establish applicability to pretrained LLMs."
+    }
+  ],
+  "cover": {
+    "mode": "source_figure",
+    "asset_path": "assets/collection-figures/2601.05770/figure-1-discrete-transformer-to-code.webp",
+    "label": "Figure 1",
+    "visual_type": "schematic",
+    "evidence": "paper.pdf p. 2, Figure 1",
+    "alt_text": "从离散搜索、组件解释到可执行 Python 的三阶段算法抽取流程。",
+    "caption": "先把网络约束成可读计算图，再从权重和激活中恢复路由与公式。",
+    "selection_rationale": "It makes the architecture-first nature of the claim visible and prevents readers from mistaking the method for post-hoc decompilation of arbitrary LLMs."
+  },
+  "sections": [
+    {
+      "title": "作者信息",
+      "paragraphs": [
+        "Yifan Zhang、Wei Bi、Kechi Zhang、Dongming Jin、Jie Fu、Zhi Jin；作者单位包括北京大学、快手与相关研究机构。论文标注 ICML 2026。",
+        "本站核验 arXiv:2601.05770v3：初次提交于 2026-01-09，当前版本更新于 2026-05-29；分类 cs.LG、cs.CL；共 20 页。",
+        "Collection 来源为刘子鸣网站的 Representation Learning 条目。"
+      ]
+    },
+    {
+      "title": "研究问题",
+      "paragraphs": [
+        "能否让一个 Transformer 从示例中学会算法后，不靠预先给定 target program，直接从训练好的权重和激活恢复出人可读、可执行的 Python？",
+        "普通 Transformer 的高维 residual stream 存在 superposition，路由、算术与多个 feature 混在方向中，整网 symbolic regression 搜索空间过大。本文选择在训练阶段改变 architecture，让内部计算先变成可分解对象。",
+        "因此论文回答的是“怎样设计一个适合算法抽取的 Transformer testbed”，不是“怎样从任意已有 LLM 中恢复真实源码”。其 extracted code 逼近模型行为，也不自动等于数据生成者心中的唯一算法。"
+      ]
+    },
+    {
+      "title": "背景",
+      "paragraphs": [
+        "program synthesis 通常从 formal specification 构造满足约束的程序；algorithm extraction 则把已经学会任务的神经网络当作待逆向的实验对象，希望从其内部机制恢复程序。MIPS 已在 RNN 上用离散 latent state 和 symbolic regression 演示这一范式。",
+        "mechanistic interpretability 常遇到两类困难：representation entanglement 让一个 neuron/direction 不对应单一变量；即使局部组件可描述，也要知道哪些组件真的通向最终输出。",
+        "本文借用 RASP/Transformer Programs 的思路，把 attention 变成 pointer，把 MLP 拆成低输入维数的算术单元，并保留 append-only scalar stream，使全局网络近似一张有命名中间量的 directed computation graph。"
+      ]
+    },
+    {
+      "title": "给物理学家的 AI 导读",
+      "paragraphs": [
+        "这更像为 inverse problem 重新设计仪器，而不是仅改进反演算法：若内部自由度被强制成少量标量、耦合扇入受限且信息通道离散，测得的 response 才容易对应一个局部算子。",
+        "Numerical Attention 类似可识别的 wiring matrix，只负责从某个时空位置取数；Numerical MLP 类似局域 constitutive law，用 PySR 从低维输入输出样本拟合公式。沿 output 反向追踪，则像从 observable 的依赖图剔除不连通自由度。",
+        "代价是 expressivity：一般 Transformer 可在分布式表示中并行编码复杂全局量，而 bounded-fan-in、bounded-depth 图要聚合长序列，所需层数可能随系统尺寸增长。可解释性不是免费获得的。"
+      ]
+    },
+    {
+      "title": "模型与方法",
+      "paragraphs": [
+        "每层读取当前 scalar residual variables。Numerical Attention 用 PLE 编码 query/key、relative positional bias 和 identity value projection，温度退火后成为 fixed-offset 或 windowed-extrema pointer；Numerical MLP 通常只读两个标量并输出一个新标量。",
+        "sampling 从 Gumbel-Softmax 平滑插值到 Gumbel-Sparsemax；温度 $\\tau$ 几何地由 10.0 降到 0.1，使早期探索逐渐转成稀疏、近确定选择。任务用 MSE、AdamW、50 epochs、batch 512，主 grid search 为 1/2 layers、2/3 heads、2/3 sub-MLPs。",
+        "抽取时先在 validation attention matrices 上检验 offset/extremum hypotheses，再给每个 sub-MLP 收集低维 input-output pairs 并运行 PySR。最后从线性 output head 的非小权重出发，反向展开依赖直到 raw inputs，输出 Python。",
+        "训练集含一百万样本，默认输入输出序列长 10；每任务三 seeds 并选择 validation 最佳 checkpoint。五个连续任务包括 exponential moving average、free-fall height、linear/quadratic drop 与 damped harmonic oscillator。"
+      ]
+    },
+    {
+      "title": "核心结果与证据",
+      "paragraphs": [
+        "Table 1 中多数离散任务的 extracted program 在四舍五入后 accuracy 为 1.00 且 RMSE 很低；例如 sum_last2 为 1.00 / $8.22\\times10^{-5}$，parity_last2 为 1.00 / $1.21\\times10^{-6}$。",
+        "并非全部成功：div_3 为 accuracy 0.67、RMSE 0.469；magnetic 为 0.02、RMSE 10.6；balanced_parenthesis 为 0.98、RMSE 0.145；bit_addition 为 0.99、RMSE 0.149。保留这些失败比“多数 1.00”更能标出容量和优化边界。",
+        "抽出的 parity_last2 简化为 $y_t=x_t+x_{t-1}-2x_tx_{t-1}$；max/min 用 ReLU identity 重构。它们说明网络内部程序可与常见算法代数等价，而不必逐行复现人工参考实现。",
+        "连续 dynamics 是相对 MIPS 的覆盖扩展，因为内部标量不必量化成有限 state。论文报告这些新增任务的低 extraction RMSE，但任务仍是短序列、已知形式族附近的 benchmark，不是从 noisy experimental data 自动发现新定律。",
+        "架构干预可改变学到的等价算法：移除 sub-MLP 后 extrema 改由 windowed attention copy；遮蔽 spring 的近期历史后得到更高阶 recurrence。结果支持 inductive bias 可控地选择 solution path。"
+      ]
+    },
+    {
+      "title": "有效性与局限",
+      "paragraphs": [
+        "强点在于 extraction 输出是真正可执行的程序，并同时报告 prediction 与 program fidelity；router/operator 分离、backward trace 和 architecture interventions 使证据比单纯 probe 或 feature visualization 更接近机制。",
+        "然而对象是专门设计并从头训练的小型 Discrete Transformer。标准 pretrained Transformer/LLM 没有 scalar append-only stream、identity values 或 bounded-fan-in sub-MLPs，本文没有展示把它们事后转换并保持能力。",
+        "head 解释依赖 fixed-offset、windowed-extrema 等人工 hypothesis classes；附录可加入 equality retrieval 和 prefix mean，但开放世界中仍可能漏掉未知路由。unmatched head 被判作 orphan/noise 需依赖最终 dependency trace。",
+        "PySR 用默认设置、nonlinear task 添加 ReLU，且 output-head magnitude threshold 是 heuristic。低 held-out RMSE 证明 behavior fidelity，不证明公式在训练域外正确，也不证明抽取程序是唯一 ground-truth mechanism。",
+        "表达力被主动限制：广域 aggregation 或 state propagation 可能要求 depth 随 sequence length 增长。主实验多为长度 10、一百万合成样本、三 seeds；在更长、更噪、更高维科学序列上的 scaling 未建立。",
+        "多数任务成功但 magnetic/div_3 明显失败，bit addition 和括号任务也非完美。论文建立的是 controlled proof of concept；“weights to code”不能理解成普适、形式化验证过的神经反编译器。"
+      ]
+    },
+    {
+      "title": "复现与资源",
+      "paragraphs": [
+        "论文当前版本未在正文给出可核验的官方代码仓库链接。复现需固定 arXiv v3、任务生成器、train/validation/test split、architecture grid、temperature schedule、output pruning threshold、PySR version/operators/seed 42。",
+        "最小复现从 sum_last2 与 parity_last2 开始：分别核验 fixed-offset head、低维 MLP input-output 数据、PySR expression、符号简化与 Python 在 held-out 长度 10 序列上的逐点一致性。",
+        "更有信息量的复现应把长度从 10 外推到 20/50/100，区分原模型误差与抽取误差；再用未列入 hypothesis class 的 router、不同等价公式和观测噪声做盲测。本站未运行训练或代码抽取。"
+      ]
+    },
+    {
+      "title": "阅读指南",
+      "paragraphs": [
+        "先看 Figure 1 和 Section 3，问清哪些可解释性是 architectural constraint，哪些是 extraction algorithm 的贡献；这能避免把结论外推到普通 LLM。",
+        "再沿 Eq. (2)→(5)→(6)→(7) 追踪一个 scalar：先被离散选择，再被 pointer 搬运或小 MLP 变换，最后进入 output。随后读 sum/parity 的 extracted code，检查符号简化是否保留模型行为。",
+        "最后对照 Table 1 的失败项、Section 7 和 architecture robustness。最关键的后续问题是：在长序列与未知算子族上，能否保持原模型能力、自动扩充 hypotheses，并给 extracted program 提供域外误差界。"
+      ]
+    }
+  ],
+  "evidence_refs": [
+    "paper.pdf pp. 2–5: architecture, annealed discrete sampling, numerical routers/operators and program extraction",
+    "paper.pdf pp. 5–8 and p. 20: benchmark protocol, Table 1, extracted algorithms, controllability and limitations",
+    "paper.pdf appendices: sampling interpolation, unmatched heads, pruning, training details, robustness and full task definitions",
+    "source PDF SHA-256 fb1580d31302647daac0b1810376ef928646061cf7b56dfed9d41b4b5de1e60d",
+    "MinerU Markdown SHA-256 a6691e79bf71d5ac58f034a28b6045877fb14e4567f0a12a6a108b7d940fe9d3",
+    "Evidence packet SHA-256 e49d14047d53fe7faa4e9dc930bc94740b945275afe5f81321acc2ab491c70ff",
+    "Evidence status: full-text verified; no independent reproduction performed."
+  ]
+}

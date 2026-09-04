@@ -1,0 +1,185 @@
+{
+  "arxiv_id": "2601.05647",
+  "source_version": "v1",
+  "source_pdf": "https://arxiv.org/pdf/2601.05647v1",
+  "title_en": "Transformer Is Inherently a Causal Learner",
+  "title_zh": "Transformer 天生是因果学习器吗？从预测梯度读出时滞结构",
+  "curation_status": "full_text_verified",
+  "card_standard_version": "2.4",
+  "audience_profile": "physics_ai_literate_physicist",
+  "paper_profile": "theory_numerics",
+  "style_reference": "physicist_daily_arxiv",
+  "provenance": {
+    "program": "Collection",
+    "catalog": "Paper Collection",
+    "catalog_record_id": "2601.05647",
+    "catalog_record_ids": ["2601.05647"],
+    "catalog_topic": "Representation Learning",
+    "collection_date": "2026-08-30",
+    "sampled_at": "2026-08-31",
+    "selected_by": "ziming_mineru_serial_goal",
+    "sampling_seed": "not_applicable_source_complete",
+    "candidate_count": 464
+  },
+  "verified_metadata": {
+    "arxiv_id": "2601.05647",
+    "version": "v1",
+    "title": "Transformer Is Inherently a Causal Learner",
+    "authors": ["Xinyue Wang", "Stephen Wang", "Biwei Huang"],
+    "categories": ["cs.LG", "cs.AI"],
+    "primary_category": "cs.LG",
+    "published": "2026-01-09T09:10:04Z",
+    "updated": "2026-01-09T09:10:04Z",
+    "abstract": "The paper proves a conditional-distribution sensitivity criterion for identifying lagged parents under explicit assumptions, approximates it with transformer LRP attributions, and benchmarks graph recovery mainly on synthetic multivariate time series."
+  },
+  "equation_refs": [
+    {
+      "label": "时滞结构因果模型",
+      "latex": "X_{i,t}=f_i(\\mathrm{Pa}(i,t),U_t,N_{i,t}),\\qquad \\mathrm{Pa}(i,t)\\subseteq\\{X_{j,t-\\ell}\\}",
+      "role": "define the graph whose directed, lag-resolved parent edges the method seeks to recover",
+      "symbols": {
+        "X_i_t": "variable i at time t",
+        "Pa_i_t": "direct lagged parents within the chosen window L",
+        "U_t": "unobserved processes allowed only under the paper's conditional-exogeneity restriction",
+        "N_i_t": "mutually independent exogenous noise"
+      },
+      "evidence": "paper.pdf p. 4, Section 3.1",
+      "interpretation": "这里的 causal graph 是带方向和时滞的 SCM，不是任意同时相关网络。识别结论还要求 conditional exogeneity、无瞬时作用、窗口覆盖全部父节点、faithfulness 与正则性。"
+    },
+    {
+      "label": "Score-gradient energy 识别判据",
+      "latex": "H_{j,i}^{\\ell}=\\mathbb E\\!\\left[\\left(\\partial_{x_{j,t-\\ell}}\\log p(X_{i,t}\\mid X_{<t})\\right)^2\\right],\\qquad j\\xrightarrow{\\ell}i\\iff H_{j,i}^{\\ell}>0",
+      "role": "characterize a lagged parent by whether the full conditional distribution changes with that input",
+      "symbols": {
+        "H_j_i_l": "population score-gradient energy for candidate edge j at lag ell into i",
+        "p_X_i_t": "true next-step conditional density, not merely a point forecast",
+        "ell": "positive causal lag contained in the observation window"
+      },
+      "evidence": "paper.pdf p. 4, Theorem 1",
+      "interpretation": "平方梯度能量能感知均值、方差和高阶矩变化；但“梯度非零等价于结构边”只在 A1–A4 下成立。离开这些假设，它首先是预测敏感度，不自动成为 intervention 语义的因果证据。"
+    },
+    {
+      "label": "LRP 近似与稀疏图读出",
+      "latex": "\\widetilde G_{j,i}^{(\\ell)}=\\mathbb E[|R_{ij}^{(\\ell)}(X)|],\\qquad R_{ij}^{(\\ell)}=\\sum_{m=1}^{M}\\sum_{h=1}^{H}\\mathrm{LRP}^{(m,h)}(\\widehat f_\\theta,X_t^{(i)},X_{t-\\ell}^{(j)})",
+      "role": "turn a trained decoder-only transformer's sample-level relevance into edge scores before top-k or threshold binarization",
+      "symbols": {
+        "R_i_j_l": "LRP relevance assigned to candidate input variable and lag",
+        "M_H": "numbers of transformer layers and attention heads",
+        "G_tilde": "sample-averaged practical edge score",
+        "f_theta": "trained autoregressive predictor"
+      },
+      "evidence": "paper.pdf p. 5, Eq. (2) and graph-binarization paragraph",
+      "interpretation": "理论量是精确 conditional score/gradient energy，实验读出却是 LRP 的绝对值平均再 top-k；两者不能视为同一个有限样本估计量。top-k 还注入了每个 target 的父节点数或稀疏度先验。"
+    }
+  ],
+  "figure_refs": [
+    {
+      "label": "Figure 2",
+      "asset_path": "assets/collection-figures/2601.05647/figure-2-f1-across-regimes.webp",
+      "section": "核心结果与证据",
+      "role": "compare lagged-graph F1 across dimensionality, lag, nonlinearity and non-stationarity regimes",
+      "evidence": "paper.pdf p. 6, Figure 2",
+      "alt_text": "Figure 2 的五个面板比较 decoder-only transformer 与八类基线在总体、节点数、最大时滞、非线性形式和非平稳域数变化时的因果图 F1。",
+      "caption": "Figure 2 中 DOT 的跨设置平均 F1 为 0.62，高于次优 DYNOTEARS 的 0.37；缺失点代表 timeout，平均值排除了这些失败任务。",
+      "interpretation": "各点来自合成生成器且只有三个 seeds；总体均值并非所有方法在完全相同任务集合上的平均，不能单凭 0.62 对 0.37 推出真实科学数据上的普遍优势。"
+    }
+  ],
+  "cover": {
+    "mode": "source_figure",
+    "asset_path": "assets/collection-figures/2601.05647/figure-2-f1-across-regimes.webp",
+    "label": "Figure 2",
+    "visual_type": "data_plot",
+    "evidence": "paper.pdf p. 6, Figure 2",
+    "alt_text": "Transformer 因果图读出法与传统方法在多类合成时序设置中的 F1 对比。",
+    "caption": "预测模型的 relevance 可以读出时滞图，但优势建立在合成任务、识别假设与稀疏化规则之上。",
+    "selection_rationale": "This is the main quantitative comparison and simultaneously exposes scaling trends, timeout omissions and the synthetic evaluation boundary."
+  },
+  "sections": [
+    {
+      "title": "作者信息",
+      "paragraphs": [
+        "Xinyue Wang、Stephen Wang、Biwei Huang；作者单位包括 UC San Diego Halıcıoğlu Data Science Institute 与 ABEL Intelligence, Inc.。",
+        "本站核验 arXiv:2601.05647v1：提交并更新于 2026-01-09；分类 cs.LG、cs.AI；共 33 页。",
+        "Collection 来源为刘子鸣网站的 Representation Learning 条目。"
+      ]
+    },
+    {
+      "title": "研究问题",
+      "paragraphs": [
+        "一个只为 next-step forecasting 训练的 decoder-only transformer，是否已经在权重和激活中编码了多变量时序的直接时滞父节点？如果编码了，能否不用另加结构学习目标就把图读出来？",
+        "论文把问题拆成两层：population 理论上，用条件分布对历史输入的 score gradient 判断边；工程上，用 LRP relevance 近似均值预测梯度，再经 top-k 得到二值图。",
+        "标题中的“inherently”不是无条件命题。更准确的结论是：当数据满足指定 SCM 与可识别条件、预测器充分拟合且 attribution/calibration 有效时，预测敏感度可以承载时滞结构信息。"
+      ]
+    },
+    {
+      "title": "背景",
+      "paragraphs": [
+        "Granger causality 问加入变量 j 的过去是否改进 i 的预测；结构因果则问 j 是否真的出现在 i 的生成方程中。二者通常不等价：共同原因、瞬时耦合、遗漏时滞或精确抵消都可能把预测依赖与直接机制拆开。",
+        "Theorem 1 用 A1 conditional exogeneity、A2 无瞬时作用、A3 lag window 覆盖和 A4 faithfulness 搭桥，使完整条件分布的梯度零性与结构边对应。Gaussian 同方差下，score 判据可退化为 conditional mean 的梯度能量。",
+        "attention weight 不是输入对输出的作用量，因为多层 value projection、residual 与 MLP 会混合路径。因此作者选择沿网络反传 relevance，而不是把大 attention 直接标成因果边。"
+      ]
+    },
+    {
+      "title": "给物理学家的 AI 导读",
+      "paragraphs": [
+        "可把未知动力系统看成离散时间的随机演化律：每个观测量 $X_{i,t}$ 只受有限历史自由度控制。Transformer 是高容量 propagator 拟合器，而梯度能量像 susceptibility，测量改变某个过去坐标后整个下一步概率律是否响应。",
+        "但 susceptibility 非零本身不等于微观因果。只有排除 hidden common drivers、instantaneous coupling 与窗口截断，并假定真实作用不会在分布中精确抵消时，响应坐标才可解释为直接 parent；这对应物理反问题中的 identifiability 条件。",
+        "实践中的 LRP 更像经过模型与归因规则滤波的 response proxy。随后 top-k 又像按已知 coordination number 截断相互作用图：有助于降噪，却把稀疏度先验写进答案，不能与理论上的 $H>0$ 判据混同。"
+      ]
+    },
+    {
+      "title": "模型与方法",
+      "paragraphs": [
+        "输入是长度 L 的 p 变量窗口，展平成带 node/time embeddings 的 tokens；decoder-only transformer 用 causal mask 和 teacher forcing 做 autoregressive prediction。主实验采用 64 维 embedding、4 heads、1 或 4 layers、Adam、学习率 $10^{-3}$、batch 256 与 MSE。",
+        "训练后，作者对 target i 与候选 $(j,\\ell)$ 聚合各层各头 LRP relevance，跨样本取绝对值平均。主比较按每个 target 选择 top-k parents；另测相对 $1/(Lp)$ 的 uniform threshold。",
+        "合成器分别扫描节点数 10/25/50、最大 lag、线性与多类非线性、2/5/10 个结构域、噪声类型与 latent variables；样本量包含 $5\\times10^4$、$10^5$、$10^6$。基线覆盖 PCMCI、DYNOTEARS、VAR-LiNGAM、NTS-NOTEARS、TCDF 与 Granger tests。"
+      ]
+    },
+    {
+      "title": "核心结果与证据",
+      "paragraphs": [
+        "Figure 2 的跨实验平均 F1：DOT 0.62，DYNOTEARS 0.37，NTS-NOTEARS 0.35，PCMCI-parcorr 与 TCDF 各 0.26，pairwise Granger 0.18，multivariate Granger 0.17，VAR-LiNGAM 0.13，random 0.04。",
+        "DOT 在节点更多、lag 更长、函数更非线性以及多域非平稳设置中保持较高 F1；随样本增加通常改善。作者把这种 trend 解释为预测式表示学习可随数据规模扩展，同时也承认 vanilla transformer 在单一非线性生成器和 heterogeneous mixture 上 data-hungry。",
+        "理论贡献比“transformer 特有能力”更一般：任何能拟合正确 conditional density 的模型都可计算 score-gradient energy。Transformer 的贡献是统一、可扩展的估计器与 contextual representation，而不是识别定理唯一所需的架构。",
+        "Figure 2 每种方法运行三个 seeds，缺失结果表示 numerical instability 或 timeout；面板 A 排除 timeout 后再平均。因此 0.62 对 0.37 是描述所报告成功运行的摘要，不是带失败惩罚的 matched-task aggregate。",
+        "附录还在 CausalTime 的 air-quality、traffic、medical 数据上用 prior summary graph 评估 AUROC/AUPRC，并显示 current time-series foundation model 可作 noisy zero-shot discoverer；作者明确认为其尚未达到真实应用的实用程度。"
+      ]
+    },
+    {
+      "title": "有效性与局限",
+      "paragraphs": [
+        "优点是先给出结构化识别条件，再把 conditional-density criterion、Gaussian 特例、transformer attribution 和图评测连接起来；并保留 latent、instantaneous、threshold sensitivity 与数据效率问题，而非只报告最佳曲线。",
+        "理论对象 $H$、Gaussian mean-gradient $G$ 与实际 LRP score $\\widetilde G$ 是三层不同量。LRP 的有限样本偏差、模型 misspecification 与 optimization error 没有被定理消除，所以“证明 causal learner”不能直接套到任意现成 transformer。",
+        "A1–A4 是强边界：任意 latent confounding、同时作用、窗口太短或 unfaithfulness 都可产生伪边或漏边。作者建议用 PCMCI+ 等后处理，但这意味着 transformer 单独并未解决这些违反假设的情形。",
+        "top-k 主结果利用了 parent count/相近 in-degree 先验；附录显示 k 改变 precision-recall，variable-degree 图上 global top-k 可能更稳。真实数据没有 ground-truth lag graph 时，k 与 uncertainty calibration 更难选择。",
+        "主证据来自可控合成数据，三 seeds 且不同基线存在 timeout。CausalTime 的 prior graph 也不等同于干预验证；论文没有在真实物理系统上证明 recovered edge 对 intervention 或 out-of-distribution control 有效。",
+        "“foundation-model scaling”主要是方向性证据：本篇主要训练小型 transformer，Chronos2 zero-shot 结构仍 suboptimal；不能外推为大型语言模型普遍具有可靠因果发现能力。"
+      ]
+    },
+    {
+      "title": "复现与资源",
+      "paragraphs": [
+        "项目页：https://www.charonwangg.com/project/transformers-scale-discovery 。复现应固定 arXiv v1、模拟器参数、每个 regime 的 graph/noise seeds、baseline timeout budget、transformer depth、样本量与 LRP implementation。",
+        "最小复现先做线性 Gaussian、无 latent、无瞬时边且真实 maximum lag 已知的 5–10 节点系统；同时计算 exact predictor gradient、autograd gradient 与 LRP rank，验证三者何时一致，再盲选 threshold。",
+        "严谨扩展应把 timeout 计为失败并给 matched-task aggregate/置信区间；在 variable in-degree、遗漏 lag、latent confounder、contemporaneous edges 下绘制 precision-recall 与 calibration，最后用可干预物理系统检验边。本站未独立训练或复现。"
+      ]
+    },
+    {
+      "title": "阅读指南",
+      "paragraphs": [
+        "先读 Section 3.1 的 A1–A4 和 Theorem 1，把“结构边→条件分布响应”的逻辑条件写在 Figure 2 旁边；不要从标题直接开始。",
+        "再读 Eq. (2) 与 binarization：逐项区分 true conditional density、learned predictor、LRP attribution 和 top-k adjacency，检查每次替换增加了什么近似或先验。",
+        "最后看 Figures 2–6 与附录的 k sensitivity、Chronos2 和 CausalTime。最关键的后续检验是：在研究者不知道真实 sparsity、存在 hidden variables 且可做少量 intervention 时，方法是否仍能给出校准的不确定度和可证伪的新边。"
+      ]
+    }
+  ],
+  "evidence_refs": [
+    "paper.pdf pp. 4–5: lagged SCM, assumptions A1–A4, Theorem 1, transformer objective, LRP extraction and binarization",
+    "paper.pdf pp. 6–10: simulation regimes, F1 comparisons, scaling trends, latent and instantaneous-effect remedies",
+    "paper.pdf appendices: theorem proof, simulator and model configuration, k sensitivity, foundation-model and CausalTime extensions",
+    "source PDF SHA-256 3a4a731e5a60cb1d34ab50fd82f8a4215de9e5f2843c601a60ba69dd9053727a",
+    "MinerU Markdown SHA-256 6e7805b56e7a75af1a738306efa0776906939141a145ce292a8e7d36f5e7ded7",
+    "Evidence packet SHA-256 91889d537155664e6a3abae6509b3797bca4c4fbdd968b7ee9230dc23d7a08db",
+    "Evidence status: full-text verified; no independent reproduction performed."
+  ]
+}
