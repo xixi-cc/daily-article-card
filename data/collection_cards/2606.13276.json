@@ -1,0 +1,180 @@
+{
+  "arxiv_id": "2606.13276",
+  "source_version": "v1",
+  "source_pdf": "https://arxiv.org/pdf/2606.13276v1",
+  "title_en": "Different Layers, Different Manifolds: Module-Wise Weight-Space Geometry in Transformer Optimization",
+  "title_zh": "不同模块，不同流形：Transformer 优化中的模块级权重空间几何",
+  "curation_status": "full_text_verified",
+  "card_standard_version": "2.4",
+  "audience_profile": "physics_ai_literate_physicist",
+  "paper_profile": "theory_experiment",
+  "style_reference": "physicist_daily_arxiv",
+  "provenance": {
+    "program": "Collection",
+    "catalog": "Paper Collection",
+    "catalog_record_id": "2606.13276",
+    "catalog_record_ids": ["2606.13276"],
+    "catalog_topic": "Representation Learning",
+    "collection_date": "2026-08-30",
+    "sampled_at": "2026-08-31",
+    "selected_by": "ziming_mineru_serial_goal",
+    "sampling_seed": "not_applicable_source_complete",
+    "candidate_count": 464
+  },
+  "verified_metadata": {
+    "arxiv_id": "2606.13276",
+    "version": "v1",
+    "title": "Different Layers, Different Manifolds: Module-Wise Weight-Space Geometry in Transformer Optimization",
+    "authors": ["Kirato Yoshihara"],
+    "categories": ["cs.LG", "cs.AI"],
+    "primary_category": "cs.LG",
+    "published": "2026-06-11",
+    "updated": "2026-06-11",
+    "abstract": "The paper compares Stiefel and diagonal-Gram manifold assignments for attention and MLP projection matrices in one GPT-2-small/OpenWebText training run per reported configuration, and relates DGram attention instability to an available weight-scale pathway."
+  },
+  "equation_refs": [
+    {
+      "label": "Stiefel versus DGram constraints",
+      "latex": "W^\\top W=I\\quad(\\mathrm{Stiefel}),\\qquad\\operatorname{Off}(W^\\top W)=0\\quad(\\mathrm{DGram})",
+      "role": "distinguish fixed orthonormal column scales from merely orthogonal columns with free norms",
+      "symbols": {"W": "managed projection matrix", "I": "identity Gram matrix", "Off": "operator retaining off-diagonal entries"},
+      "evidence": "paper.pdf p. 2, constraint definitions, and official v1 TeX",
+      "interpretation": "Stiefel 固定所有受约束 singular values；DGram 只消除 column overlap，Gram diagonal 仍可增长，因此保留 scale degree of freedom。"
+    },
+    {
+      "label": "Attention-logit norm bound",
+      "latex": "Z=\\frac{XW_QW_K^\\top X^\\top}{\\sqrt d},\\qquad\\|Z\\|_2\\le\\frac{\\|X\\|_2^2\\|W_Q\\|_2\\|W_K\\|_2}{\\sqrt d}",
+      "role": "show how projection singular values can amplify pre-softmax logits",
+      "symbols": {"X": "token representation matrix", "WQ_WK": "query and key projections", "d": "head dimension", "Z": "pre-softmax attention logits"},
+      "evidence": "paper.pdf pp. 3–4 and official v1 TeX",
+      "interpretation": "这是 upper bound 与可行通道，不是观测到的 mediation：论文未直接记录 logits、entropy 或 gradient flow。"
+    },
+    {
+      "label": "Softmax gradient-degeneracy contrast",
+      "latex": "\\|J_{\\mathrm{softmax}}(z)\\|_F\\ge c(T,d,R)>0\\;\\text{ under bounded-input Stiefel assumptions},\\qquad\\inf_{W_Q,W_K\\in\\mathrm{DGram}}\\|J_{\\mathrm{softmax}}(z)\\|_F=0",
+      "role": "contrast a bounded weight-induced logit range with DGram-feasible arbitrarily saturated directions",
+      "symbols": {"Jsoftmax": "softmax Jacobian", "T": "sequence length", "R": "input norm bound", "c": "assumption-dependent positive lower bound"},
+      "evidence": "paper.pdf pp. 3–4 and proofs pp. 10–15; official v1 TeX",
+      "interpretation": "DGram 命题是 existence result，不是所有 DGram weights 都饱和；Stiefel 只移除 weight-scale 路径，也不保证完整训练稳定。"
+    }
+  ],
+  "figure_refs": [
+    {
+      "label": "Figure 1 validation-loss trajectories",
+      "asset_path": "assets/collection-figures/2606.13276/figure-01-validation-loss-curves.webp",
+      "section": "核心结果与证据",
+      "role": "compare training stability and late validation loss across five attention/MLP manifold assignments",
+      "evidence": "paper.pdf p. 3, Figure 1; official vector source val_loss_curves.pdf",
+      "alt_text": "Validation-loss curves show two configurations with DGram attention becoming unstable and three stable configurations with close final losses.",
+      "caption": "Figure 1：共享超参数下，两种 DGram-attention 配置失稳；Stiefel-attention + DGram-MLP 的单次曲线终值最低。",
+      "interpretation": "曲线来自 seed 1337，稳定配置之间差距很小且无 run-to-run uncertainty；不能视为统计排名。"
+    }
+  ],
+  "cover": {
+    "mode": "source_figure",
+    "asset_path": "assets/collection-figures/2606.13276/figure-01-validation-loss-curves.webp",
+    "label": "Figure 1 manifold-assignment comparison",
+    "visual_type": "comparison",
+    "evidence": "paper.pdf p. 3, Figure 1; official vector source",
+    "alt_text": "Module-wise manifold assignments lead to different stability outcomes in one GPT-2-small pretraining comparison.",
+    "caption": "同一训练设置中，attention 是否采用 DGram 与失稳轨迹相伴。",
+    "selection_rationale": "It presents both the robust qualitative observation and the modest, uncertain stable-run gap."
+  },
+  "sections": [
+    {
+      "title": "作者信息",
+      "paragraphs": [
+        "作者为 Kirato Yoshihara。",
+        "本站核验 arXiv:2606.13276v1：提交于 2026-06-11，是当前唯一版本；主分类 cs.LG，另属 cs.AI，PDF 15 页。",
+        "Collection 来源为刘子鸣网站的 Representation Learning 条目；本站检查全文、官方 TeX 与代表图，没有运行训练或代码。"
+      ]
+    },
+    {
+      "title": "研究问题",
+      "paragraphs": [
+        "若用 manifold-constrained Muon 优化 Transformer，attention 与 MLP projections 是否应使用相同权重几何？",
+        "论文比较 Stiefel 与 DGram 在两个 module types 上的五种组合，并用 singular-value 轨迹和 softmax-Jacobian 命题解释 DGram attention 的失稳通道。",
+        "实验支持共享设置下的模块差异；不支持逐 layer 的最优几何、DGram attention 必然失稳或 Hetero 配置普遍性能更好。"
+      ]
+    },
+    {
+      "title": "背景",
+      "paragraphs": [
+        "Muon 对矩阵梯度做近似 spectral normalization；Manifold Muon 进一步让权重沿约束流形的 tangent direction 更新并 retraction。",
+        "Stiefel manifold 要求列正交归一，直接固定矩阵谱；DGram 只要求不同列正交，允许各列 norm 与 singular value 改变。",
+        "attention logits 含 $W_QW_K^\\top$，projection scale 会成乘积放大；MLP 的 GELU 则逐 coordinate 作用，没有 softmax simplex 上的全局竞争。",
+        "softmax saturation 意味着 probabilities 接近 one-hot、Jacobian 变小；但要证明它导致训练失败，还需直接测量 logit 与 gradient 的时间序列。"
+      ]
+    },
+    {
+      "title": "给物理学家的 AI 导读",
+      "paragraphs": [
+        "这里的 manifold 是参数允许驻留的几何子空间。Stiefel 像固定每个模的振幅，DGram 只禁止模之间重叠而留下径向自由度。",
+        "$\\sigma_{max}$ 增长类似 relevant radial mode：在 attention 中通过 query-key 双线性项放大，随后把 softmax 推入低 susceptibility 区域。",
+        "理论链条分三层：geometry 允许 scale growth；norm bound 允许 logit inflation；softmax analysis 允许 Jacobian degeneration。实验只同时看到谱增长与 loss 失稳。",
+        "因此当前证据是 plausible mechanism，而非完成了 singular growth→saturation→gradient failure 的 mediation measurement。",
+        "标题写 Different Layers，但 intervention 实际按所有 attention 与所有 MLP matrix 的 module type 分配，并未逐深度层搜索 manifold。"
+      ]
+    },
+    {
+      "title": "模型与方法",
+      "paragraphs": [
+        "GPT-2-small-style 模型约 124M parameters、12 层/12 头、$d=768$、context 1024、vocabulary 50304，从头在 OpenWebText 做 next-token training。",
+        "五组为 unconstrained Muon、All-Stiefel、All-DGram、Hetero（Stiefel attention + DGram MLP）与 Hetero-Inv；其他参数用 AdamW。",
+        "训练 50000 iterations、batch 64、每步 65536 tokens，约 3.277 billion token presentations；每 1000 步用 200 minibatches 评估。",
+        "manifold/Muon peak LR 0.02、momentum 0.95；AdamW peak LR $6\\times10^{-4}$；warmup 1000 steps 后 cosine decay，global clipping 1.0。",
+        "DGram-managed weights 不用 weight decay 或其他显式 scale control；所有报告配置共享一套超参数和 random seed 1337。"
+      ]
+    },
+    {
+      "title": "核心结果与证据",
+      "paragraphs": [
+        "最终 validation loss 为 unconstrained 3.3855、All-Stiefel 3.3679、Hetero 3.3544；All-DGram 与 Hetero-Inv 按预设规则被判 unstable。",
+        "Hetero 相对 All-Stiefel 只低 0.0135，相对 unconstrained 低 0.0311；单 seed 且无 error bars，不能判定可复现性能优势。",
+        "Figure 1 显示含 DGram attention 的两条曲线失稳，含 Stiefel attention 的三条保持稳定；这是共享设置内的清楚定性对照。",
+        "Figure 2 中 DGram-attention 组的跨 matrices 最大 $\\sigma_{max}$ 在失稳前快速增长；Hetero 的 DGram MLP spectrum 也增长但没有失稳。",
+        "命题证明 DGram 存在任意大 singular-value 可行方向并可使 softmax Jacobian 任意小，Stiefel 在 bounded inputs 下阻断这条 weight-induced amplification 路径。"
+      ]
+    },
+    {
+      "title": "有效性与局限",
+      "paragraphs": [
+        "表格和曲线实际呈现一个 seed，没有 repeated-seed dispersion、confidence interval、significance test 或 compute budget。",
+        "共享超参数是受控比较，但不是各方法 tuned optimum；尤其 DGram 无 scale regularization，故不能说它的 attention 版本不可稳定。",
+        "记录的是每个 parameter group 跨所有 matrices 的最大 singular value，无法定位首先失稳的具体层或 projection。",
+        "logit scale、attention entropy 与 gradient flow 没有直接测量，所以 empirical causal chain 尚未闭合。",
+        "理论的 DGram 结果是存在性命题；Stiefel 下的 lower bound 也依赖 bounded-input assumptions，不保证 full transformer optimization。",
+        "只有一个 GPT-2-small scale、dataset、training budget 与 implementation，不能外推大型模型、其他 architectures 或长训练。"
+      ]
+    },
+    {
+      "title": "复现与资源",
+      "paragraphs": [
+        "代码链接为 https://github.com/kiratoyoshihara/module-wise-manifold-muon；本站未执行或审计 repository 与 checkpoint。",
+        "复现需固定 commit、OpenWebText preprocessing、seed 1337、bfloat16、exact optimizer partition、retraction、20 次 dual-ascent 与 instability rules。",
+        "至少增加 independent seeds，并分别 tune LR、momentum、weight decay/scale control；稳定运行需报告 final loss distribution 而非单点。",
+        "机制验证应逐 matrix/layer 记录 $\\sigma_{max}$、logit range、attention entropy 与 softmax Jacobian/gradient norm，做时间滞后和 targeted scale-control rescue。",
+        "若声称 layer-wise geometry，应在不同深度独立交换 constraints，而不只按 attention/MLP module family 整组切换。"
+      ]
+    },
+    {
+      "title": "阅读指南",
+      "paragraphs": [
+        "快速路线：pp. 2–3 看五种 assignments、Table 1 与 Figure 1；pp. 3–4 看 spectral mechanism；pp. 10–15 看证明。",
+        "物理路线：关注 manifold tangent/retraction、径向 scale mode、operator-norm amplification 与 softmax susceptibility。",
+        "AI 路线：区分 attention/MLP 参数组、Muon/AdamW partition，以及权重谱、logit 与 optimization stability 三层变量。",
+        "批判路线：重点检查 single seed、untuned shared hyperparameters、DGram 缺 scale control、max-over-matrices aggregation 与未测 mediation。"
+      ]
+    }
+  ],
+  "evidence_refs": [
+    "paper.pdf pp. 2–4 and official v1 TeX: Stiefel/DGram definitions, five module assignments, Table 1, Figures 1–2 and attention-logit/softmax mechanism",
+    "paper.pdf pp. 5–9 and official v1 TeX: GPT-2-small/OpenWebText setup, optimizer partition, seed 1337, 50k-step schedule, scale-control confound and instability criteria",
+    "paper.pdf pp. 10–15 and official v1 TeX: DGram singular-scale existence construction, softmax Jacobian degeneration and bounded-input Stiefel contrast",
+    "source PDF SHA-256 f05e821a7c62c1a2fdb6adc6527a587d2e430b7a755e6b5308a488c2b69ffd26",
+    "official arXiv v1 source archive SHA-256 427ea0a5470880973e4cb56a263f8f4d4b86454a7f716a047da348bc64e3aea6",
+    "MinerU Markdown SHA-256 ce3ca14548176e3cc6f5039bb8e65fdd1494b2d354d75f6b0c5278e7e263639f",
+    "Evidence packet SHA-256 83fe765ca2b901112d11f3ddf1ef2291fa9fbf9ed68f2017ef7c9ddf87381f47",
+    "Evidence status: full text, matching v1 TeX and official Figure 1 verified; module-versus-layer, single-seed, tuning/scale-control, aggregation, existence-versus-universality and causal-mediation boundaries recorded; code not audited; no independent reproduction performed."
+  ]
+}

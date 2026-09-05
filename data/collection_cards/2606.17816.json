@@ -1,0 +1,130 @@
+{
+  "arxiv_id": "2606.17816",
+  "source_version": "v1",
+  "source_pdf": "https://arxiv.org/pdf/2606.17816v1",
+  "title_en": "Conservation Laws for Modern Neural Architectures",
+  "title_zh": "现代神经网络架构的守恒律",
+  "curation_status": "full_text_verified",
+  "card_standard_version": "2.4",
+  "audience_profile": "physics_ai_literate_physicist",
+  "paper_profile": "theory_experiment",
+  "style_reference": "physicist_daily_arxiv",
+  "provenance": {
+    "program": "Collection", "catalog": "Paper Collection", "catalog_record_id": "2606.17816", "catalog_record_ids": ["2606.17816"],
+    "catalog_topic": "Machine Learning", "collection_date": "2026-08-30", "sampled_at": "2026-08-31", "selected_by": "ziming_mineru_serial_goal", "sampling_seed": "not_applicable_source_complete", "candidate_count": 464
+  },
+  "verified_metadata": {
+    "arxiv_id": "2606.17816", "version": "v1", "title": "Conservation Laws for Modern Neural Architectures",
+    "authors": ["Viet-Hoang Tran", "Vinh Khanh Bui", "Tan Lai Ngoc", "Nam Nguyen", "Tuan Dam", "Tan M. Nguyen"],
+    "categories": ["cs.LG", "cs.AI"], "primary_category": "cs.LG", "published": "2026-06-16", "updated": "2026-06-16",
+    "abstract": "The paper characterizes data-independent C1 invariants for several isolated modern neural modules under Euclidean gradient flow, then tracks their approximate drift under finite-step SGD in small vision and language models."
+  },
+  "equation_refs": [
+    {
+      "label": "Gradient-flow conservation law", "latex": "\\dot\\theta(t)=-\\nabla L_{\\mathcal D}(\\theta(t)),\\qquad h(\\theta(t))=h(\\theta(0))\\;\\;\\forall t,\\mathcal D",
+      "role": "define an architecture-level invariant that holds for every initialization and dataset",
+      "symbols": {"theta": "module parameters", "L_D": "empirical loss on dataset D", "h": "C1 conserved scalar"},
+      "evidence": "paper.pdf pp. 2–3, Equation (1) and definition, and official v1 TeX",
+      "interpretation": "对任意 dataset 的要求隔离了 architecture/Euclidean-flow geometry，但比固定训练集守恒更强；dataset-specific invariants 会被排除。"
+    },
+    {
+      "label": "Vanilla-MHA characteristic invariants", "latex": "Q_i^\\top Q_i-K_i^\\top K_i=\\mathrm{const},\\qquad V_i^\\top V_i-O_i^\\top O_i=\\mathrm{const}",
+      "role": "identify per-head balanced Gram differences preserved by the isolated attention-map gradient flow",
+      "symbols": {"i": "attention head", "Q_K": "query and key projection matrices", "V_O": "value and output projection matrices"},
+      "evidence": "paper.pdf pp. 5–6 and official v1 MHA theorem/TeX",
+      "interpretation": "这是指定 parameterization 的 isolated MHA map；bias、fused/tied weights、LayerNorm、residual composition 或 preconditioned optimizer 会改变动力学。"
+    },
+    {
+      "label": "Discrete-SGD drift bound", "latex": "\\mathbb E|h(\\theta_k)-h(\\theta_0)|\\le\\frac{C_hC_L}{2}\\sum_{i=0}^{k-1}\\tau_i^2",
+      "role": "bound how an exact gradient-flow invariant can drift under finite stochastic steps",
+      "symbols": {"tau_i": "step size", "C_h": "Hessian bound for h", "C_L": "expected loss-gradient bound", "k": "optimization step"},
+      "evidence": "paper.pdf p. 8 and official v1 TeX, citing prior Proposition 5.1",
+      "interpretation": "constant step 给上界 $O(\\tau^2k)$；这是有界性假设下的 upper bound，不是精确 SGD 守恒，也不能仅靠有限曲线确认 asymptotic exponent。"
+    }
+  ],
+  "figure_refs": [
+    {
+      "label": "Figure 2a ImageNet MHA conservation error", "asset_path": "assets/collection-figures/2606.17816/figure-02a-imagenet-mha-conservation.webp", "section": "核心结果与证据",
+      "role": "show block-level MHA invariant drift versus SGD steps at three learning rates",
+      "evidence": "paper.pdf p. 8, Figure 2a; official vector source step_mha.pdf",
+      "alt_text": "ImageNet multi-head-attention conservation error grows with optimization steps and is larger for higher learning rates.",
+      "caption": "Figure 2a：ImageNet ViT 的 MHA conservation error 随 steps 增长，较大学习率对应较大漂移。",
+      "interpretation": "单 panel 的近线性与排序和 $\\sum\\tau_i^2$ bound 相容，但未拟合 slope/exponent、CI 或 goodness-of-fit。"
+    }
+  ],
+  "cover": {
+    "mode": "source_figure", "asset_path": "assets/collection-figures/2606.17816/figure-02a-imagenet-mha-conservation.webp", "label": "Figure 2a MHA drift", "visual_type": "data_plot",
+    "evidence": "paper.pdf p. 8, Figure 2a; official vector source", "alt_text": "Finite-step MHA invariants drift more at larger SGD learning rates.",
+    "caption": "连续梯度流的精确 invariant 在有限步 SGD 中产生学习率依赖漂移。", "selection_rationale": "It directly connects the formal conservation law to the paper's practical finite-step test."
+  },
+  "sections": [
+    {"title": "作者信息", "paragraphs": [
+      "作者为 Viet-Hoang Tran、Vinh Khanh Bui、Tan Lai Ngoc、Nam Nguyen、Tuan Dam 与 Tan M. Nguyen。",
+      "本站核验 arXiv:2606.17816v1：提交于 2026-06-16，是当前唯一版本；主分类 cs.LG，另属 cs.AI，PDF 34 页。",
+      "Collection 来源为刘子鸣网站的 Machine Learning 条目；本站检查全文、官方 TeX 与 Figure 2a，未独立核验证明或重跑实验。"
+    ]},
+    {"title": "研究问题", "paragraphs": [
+      "现代模块的 Euclidean gradient flow 是否存在由 parameterization 强制的守恒量？GELU/SiLU、SwiGLU、attention 与 MoE 的答案有何不同？",
+      "论文用参数梯度张成空间的正交补刻画所有 data-independent $C^1$ invariants，并在 SGD 训练中追踪离散漂移。",
+      "完整性只适用于论文明确给出的 isolated maps 与假设；不覆盖完整深层 Transformer、LayerNorm/residuals 或 Adam。"
+    ]},
+    {"title": "背景", "paragraphs": [
+      "过参数化网络有 parameter symmetries；在梯度流下，它们可能对应 balancedness 一类守恒量，约束优化可达区域并影响 implicit bias。",
+      "这里守恒不是 loss 不变，而是参数函数 $h(\\theta)$ 沿所有可能 dataset 诱导的 gradient-flow trajectories 不变。",
+      "若所有 output-loss gradients 张成完整 output space，守恒条件等价于 $\\nabla h$ 与模型输出的全部参数切向方向正交。",
+      "有限步梯度下降沿 Euler chord 而非连续轨迹移动，因此二阶 truncation 累积成近似 conservation error。"
+    ]},
+    {"title": "给物理学家的 AI 导读", "paragraphs": [
+      "把参数空间中的训练速度场看作由所有 data/output forces 张成的 distribution；守恒量的 gradient 属于其 annihilator。",
+      "MHA 中 $Q/K$ 与 $V/O$ 的 Gram differences 类似成对自由度之间的 charge balance；SwiGLU 也在输入/输出 factors 间保持 norm difference。",
+      "GELU/SiLU 缺少相应连续 rescaling symmetry，所以在该强定义下只有常数守恒律；这不排除近似慢变量。",
+      "RoPE 把 $Q/K$ symmetry 限制到二维 rotary blocks，故全 Gram invariant 弱化为 blockwise Frobenius-norm differences。",
+      "离散误差的 $\\tau^2$ 来自局部二阶偏离；momentum、adaptive preconditioning、weight decay 与 clipping 会改变 vector field，不能沿用同一 charge。"
+    ]},
+    {"title": "模型与方法", "paragraphs": [
+      "理论对象含 one-hidden-layer GELU/SiLU/SwiGLU FFNs、vanilla/正弦/RoPE MHA，以及 dense softmax、normalized-sigmoid 与 sparse top-$k$ MoE。",
+      "SwiGLU 每 hidden unit 的特征量为 $\\|A_{:,i}\\|^2-\\|C_{i,:}\\|^2$；MoE 还出现 gating rows 总和，并继承每 expert invariants。",
+      "sparse top-$k$ 证明要求 $k>1$，通过 differentiable routing regions 与 density argument 延伸；top-1 明确不在范围。",
+      "实验以零 weight decay 的 SGD 训练 CIFAR-10/ImageNet ViTs 和 PTB/WikiText-103 的 Qwen-3-style dense/sparse MoE，每配置三种学习率。",
+      "正文称每配置 10 个 independent seeds；block error 是多个 invariants 相对初值偏差的平均。"
+    ]},
+    {"title": "核心结果与证据", "paragraphs": [
+      "论文证明所定义 GELU/SiLU two-matrix FFNs 只有常数 $C^1$ conservation laws；SwiGLU 保留逐 hidden-unit norm-difference level sets。",
+      "vanilla MHA 逐 head 保留 $Q/K$ 与 $V/O$ Gram differences；RoPE 的 $Q/K$ 部分变为 rotary-block Frobenius differences，$V/O$ 不变。",
+      "dense softmax MoE 保留各 SwiGLU expert invariants 与 gating rows 的总和；normalized-sigmoid 和 top-$k>1$ sparse variants 共享相应约束。",
+      "Figure 2a 中 ImageNet MHA block error 随 steps 与 learning rate 增加；其他 panels 对 SwiGLU、RoPE 与 MoE gating 报告类似定性行为。",
+      "这些曲线与 $O(\\tau^2k)$ bound 相容，但论文没有拟合 exponent、给 scaling CI 或正式检验 $\\tau^2$ 比例。"
+    ]},
+    {"title": "有效性与局限", "paragraphs": [
+      "任意 dataset、full output-gradient span 与 $C^1/C^2$ regularity 是强假设；固定数据可能存在额外 conserved quantities。",
+      "理论分析 isolated modules；LayerNorm 的非 meromorphic structure、deep composition、residuals、biases 和实际 parameter tying 不在完整刻画内。",
+      "SGD 只得到 expectation upper bound；Adam/AdamW、momentum、clipping 与 optimizer state 均未由 exact theorem 覆盖。",
+      "平均 block error 可能掩盖 worst-case layer/law，接近零的初值 denominator 也会放大 relative metric。",
+      "正文虽称 10 seeds，但没有 scaling slope 的 CI、goodness-of-fit 或 formal model comparison；有限横轴不能建立 big-O asymptotics。",
+      "实验只测 invariant drift，没有证明这些守恒律因果改善 generalization、optimization speed 或 learned representation。"
+    ]},
+    {"title": "复现与资源", "paragraphs": [
+      "代码链接为 https://github.com/Vincent2303/Conservation-Laws-for-Modern-Neural-Architectures；本站未执行或审计 commit。",
+      "理论复核应逐模块验证 parameterization、loss-gradient span 与 connected-component 条件，并单列 RoPE blocks 和 top-$k$ routing boundaries。",
+      "实验需保存每层每条 invariant 的 absolute/relative drift、initial denominator、10-seed trajectories 与 exact learning-rate schedule。",
+      "scaling test 应独立扫 constant $\\tau$ 与 $k$，拟合 $\\tau$ exponent 和 time exponent，给 CI、residuals 与 finite-range sensitivity。",
+      "实际优化扩展应分别加入 momentum、Adam preconditioner、weight decay、LayerNorm 和 residual composition，重新推导或只称 empirical quasi-invariant。"
+    ]},
+    {"title": "阅读指南", "paragraphs": [
+      "快速路线：pp. 2–4 看定义/正交刻画；pp. 4–8 看 FFN、MHA、MoE 定理；p. 8 看 Figure 2 与离散 bound。",
+      "物理路线：把 gradient distribution、annihilator、Noether-like balance、connected level sets 与 Euler drift 分开理解。",
+      "AI 路线：逐一核对 isolated module parameterization，尤其 RoPE、SwiGLU 与 top-$k$ gating 的范围。",
+      "批判路线：检查 any-dataset 定义、LayerNorm/deep-composition exclusion、SGD bound 与 optimizer mismatch、平均 metric 和未拟合 scaling。"
+    ]}
+  ],
+  "evidence_refs": [
+    "paper.pdf pp. 2–4 and official v1 TeX: data-independent C1 definition, full output-loss-gradient span and orthogonality characterization",
+    "paper.pdf pp. 4–8 and official v1 TeX: GELU/SiLU/SwiGLU, vanilla/RoPE MHA and dense/sparse MoE characteristic level sets and exclusions",
+    "paper.pdf p. 8 and appendix hyperparameters/official Figure 2a: finite-step drift bound, block metric, datasets, SGD settings and reported 10-seed protocol",
+    "source PDF SHA-256 4d709405186f450c8eacab2ef6643535382b0514a53e053bb716ef1ede801714",
+    "official arXiv v1 source archive SHA-256 3d24927848e1fd782f3449651df22baf52f72dc30c6acc2dc5a9a9a321bb0dc5",
+    "MinerU Markdown SHA-256 91c6ecb443dade2ba8d2a066f2acd17f9286569387acc9f5c289e01aaf255582",
+    "Evidence packet SHA-256 e9a6d2c2b5227c0e16f76629fabdeececc2e31c958e898798390eb4e6131d74b",
+    "Evidence status: full text, official v1 TeX and Figure 2a verified; data-independent/isolated-map, connected-component, top-1, deep-composition/LayerNorm, discrete-optimizer, metric and scaling-causality boundaries recorded; no independent reproduction performed."
+  ]
+}
