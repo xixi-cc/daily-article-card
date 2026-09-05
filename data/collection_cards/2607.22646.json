@@ -1,0 +1,138 @@
+{
+  "arxiv_id": "2607.22646",
+  "source_version": "v1",
+  "source_pdf": "https://arxiv.org/pdf/2607.22646v1",
+  "title_en": "Extracting Algorithms in Pre-trained LLMs: A Case on Hidden Markov Models",
+  "title_zh": "从预训练大语言模型中提取算法：隐马尔可夫模型案例",
+  "curation_status": "full_text_verified",
+  "card_standard_version": "2.4",
+  "audience_profile": "physics_ai_literate_physicist",
+  "paper_profile": "theory_experiment",
+  "style_reference": "physicist_daily_arxiv",
+  "provenance": {
+    "program": "Collection", "catalog": "Paper Collection", "catalog_record_id": "2607.22646", "catalog_record_ids": ["2607.22646"],
+    "catalog_topic": "Mechanistic Interpretability", "collection_date": "2026-08-30", "sampled_at": "2026-08-31", "selected_by": "ziming_mineru_serial_goal", "sampling_seed": "not_applicable_source_complete", "candidate_count": 464
+  },
+  "verified_metadata": {
+    "arxiv_id": "2607.22646", "version": "v1", "title": "Extracting Algorithms in Pre-trained LLMs: A Case on Hidden Markov Models",
+    "authors": ["Yijia Dai", "Zhaolin Gao", "Yahya Sattar", "Jennifer J. Sun", "Sarah Dean"],
+    "categories": ["cs.AI", "cs.LG"], "primary_category": "cs.AI", "published": "2026-06-24", "updated": "2026-06-24",
+    "abstract": "The paper compares pretrained LLM behavior with candidate hidden-Markov prediction algorithms, proves idealized Transformer representability for finite-window procedures, and combines PCA-ridge decoding with activation interventions to test candidate belief states in Qwen3 models."
+  },
+  "equation_refs": [
+    {
+      "label": "Bayesian HMM filtering", "latex": "b_t=\\frac{\\operatorname{diag}(Bu_t)A^\\top b_{t-1}}{\\|\\operatorname{diag}(Bu_t)A^\\top b_{t-1}\\|_1},\\qquad b_0=\\pi",
+      "role": "define the oracle latent-state posterior updated from each one-hot observation",
+      "symbols": {"A": "hidden-state transition matrix", "B": "emission matrix", "u_t": "one-hot observed symbol", "b_t": "posterior belief over hidden states"},
+      "evidence": "paper.pdf HMM background and algorithm definitions; official v1 TeX appendix_hmm_background.tex",
+      "interpretation": "这是已知 $A,B$ 时的 Bayes filter。预训练 LLM 并未获得这些参数；行为接近 oracle、或 residual stream 可解码 $b_t$，都不等于证明它在执行这条唯一递推。"
+    },
+    {
+      "label": "Principal Activations Probe decoder", "latex": "\\hat r_{\\ell,t}=M_\\ell U_\\ell^\\top(x_{\\ell,t}-\\bar x_\\ell)+c_\\ell",
+      "role": "decode a candidate algorithmic representation from the top-k PCA subspace of a layer residual stream",
+      "symbols": {"x_lt": "residual activation at layer l and position t", "U_l": "top-k PCA directions", "M_l_c_l": "ridge decoder and offset", "r_hat": "decoded belief or operator state"},
+      "evidence": "paper.pdf p. 7, Equation (3), and official v1 TeX section_llm_internal.tex",
+      "interpretation": "高 held-out $R^2$ 只表示 candidate variable 在所选线性子空间中可读；信息可能是旁路、冗余或未被输出 computation 使用。"
+    },
+    {
+      "label": "Minimum-norm probe-inverse intervention", "latex": "\\Delta x=U_\\ell M_\\ell^+(r_t^{\\mathrm{tgt}}-\\hat r_{\\ell,t}^{\\mathrm{src}})",
+      "role": "construct the smallest PCA-subspace edit that moves the decoded candidate state from a source history toward a target history",
+      "symbols": {"M_plus": "Moore–Penrose pseudoinverse", "r_tgt": "candidate state implied by target history", "r_src_hat": "decoded source state", "Delta_x": "residual-stream patch"},
+      "evidence": "paper.pdf p. 7, Equation (4), and official v1 TeX",
+      "interpretation": "成功 patch 表明该构造方向对输出变化具有有限 sufficiency；它可能 off-manifold，也不证明 variable 必要、唯一、自然被模型沿此方向更新或构成完整 circuit。"
+    }
+  ],
+  "figure_refs": [
+    {
+      "label": "Figure 12 candidate-belief interventions", "asset_path": "assets/collection-figures/2607.22646/figure-12-algorithmic-beliefs-causal-effects.webp", "section": "核心结果与证据",
+      "role": "compare held-out probe R2 and probe-inverse interchange accuracy across candidate beliefs, layers, positions, and two HMM regimes",
+      "evidence": "paper.pdf p. 10, Figure 12; official source figs/probe_inverse_alg_multi_target_cfg23_cfg51_k8.png",
+      "alt_text": "Layer-by-position heatmaps compare Bigram, Spectral, and Soft n-gram belief decodability and intervention accuracy in belief- and observation-dominated HMMs.",
+      "caption": "Figure 12：candidate belief 的可解码性与干预有效性并不等价，优选算法还随 HMM regime 改变。",
+      "interpretation": "Soft n-gram 在所测 candidates 中最持续有效，但图展示的是 Qwen3-1.7B、两个突出 regimes、k=8 和条件筛选过的 intervention pairs，并非唯一算法识别。"
+    }
+  ],
+  "cover": {
+    "mode": "source_figure", "asset_path": "assets/collection-figures/2607.22646/figure-12-algorithmic-beliefs-causal-effects.webp", "label": "Figure 12 PAP interventions", "visual_type": "data_plot",
+    "evidence": "paper.pdf p. 10, Figure 12; official raster source", "alt_text": "Decoding and intervention heatmaps for three candidate HMM algorithms across two regimes.",
+    "caption": "读得出一种 belief，不代表模型因果使用它；PAP 将 probe 与 intervention 并列检验。", "selection_rationale": "It captures the paper's most important methodological distinction and displays regime dependence rather than only positive probing evidence."
+  },
+  "sections": [
+    {"title": "作者信息", "paragraphs": [
+      "作者为 Yijia Dai、Zhaolin Gao、Yahya Sattar、Jennifer J. Sun 与 Sarah Dean。",
+      "本站核验 arXiv:2607.22646v1：提交于 2026-06-24，是当前唯一版本；分类 cs.AI、cs.LG，PDF 83 页。",
+      "Collection 来源为刘子鸣网站的 Mechanistic Interpretability 条目；本站核验官方 PDF、TeX 与 Figure 12。提交 checklist 称代码将在接收后提供，当前官方 TeX 未给 repository URL。"
+    ]},
+    {"title": "研究问题", "paragraphs": [
+      "不给模型 HMM 参数、只输入离散 observation sequence 时，预训练 LLM 的 next-symbol prediction 更像 Bayesian filter、moment-based spectral learner，还是有限窗口 n-gram learner？",
+      "论文分三层回答：先比较 behavior 与候选 algorithms，再证明 idealized Transformer 可表示某些候选程序，最后在 residual stream 中做 decoding 和 activation patching。",
+      "Principal Activations Probe（PAP）在 top PCA subspace 拟合 candidate state，再以 pseudoinverse 构造最小 latent edit，检验输出是否朝 candidate-implied target 移动。",
+      "behavioral agreement、representability、decodability 与 causal sufficiency 是不同证据层级；任何一层都不能单独恢复唯一程序。"
+    ]},
+    {"title": "背景", "paragraphs": [
+      "有限 HMM 以隐态 Markov chain 生成观测。已知参数时，Bayesian filter 递推 posterior；未知参数时，可用 EM、spectral moments 或 finite-window frequency/gradient methods 在线估计。",
+      "论文设计 75 个四 hidden-state HMM configurations，系统扫 transition/emission entropy 与 alphabet size，使 memory、mixing 与 observation ambiguity 可控。",
+      "候选包括 oracle、spectral predictors、linear/nonlinear n-grams、Baum–Welch、bigram/trigram；n-gram 与 spectral variants 还需 tuning window、regularization 或 smoothing。",
+      "机制解释中，linear probe 只检查信息存在；activation patching 更接近干预，但 edit 是否位于自然 activation manifold 仍需审查。"
+    ]},
+    {"title": "给物理学家的 AI 导读", "paragraphs": [
+      "可把 LLM 当未知 driven dynamical system，HMM observation 是外场；候选算法定义不同 coarse-grained state variables，如 posterior belief、moments 或有限窗口统计量。",
+      "behavioral curve 类似比较不同有效理论的 response function：多个 ansatz 都能拟合有限 observable，并不意味着微观动力学唯一。",
+      "PCA-ridge probe 相当于在 residual phase space 中找 candidate order parameter；高 $R^2$ 表示可测，却不保证它出现在决定输出的 relevant direction。",
+      "probe-inverse patch 像沿 order-parameter conjugate direction 加扰动，再看输出 susceptibility；响应支持有限因果 sufficiency，不给必要性或完整机制。",
+      "Transformer existence theorem 类似证明某类电路可嵌入架构，而不是证明预训练把参数调到了那条电路；expressivity 与 learned mechanism 必须分开。"
+    ]},
+    {"title": "模型与方法", "paragraphs": [
+      "75 个 HMM 使用 $M=4$ hidden states；transition/emission normalized entropy 取 0、0.25、0.5、0.75、1，alphabet size 取 2、4、8。每配置生成 4096 条长度 4097 sequences。",
+      "十二个 open-weight Qwen/Llama/Gemma/OLMo checkpoints 覆盖 0.6B–8B，不 fine-tune；符号固定映射到 vocabulary tokens，logits 只在这些 tokens 上重归一化。",
+      "behavior 在 contexts 4、8、…、4096 比较 top-1 accuracy 与到 oracle distribution 的 Hellinger distance。常数 observation 的零熵 edge case 中多数 LLM 失败，作者将其排除，主分析用余下 74 配置。",
+      "理论用 one-hot window 的 Kronecker feature $\\phi^{(n)}\\in\\mathbb R^{N^n}$ 与 stacked linear feature $\\psi^{(n)}\\in\\mathbb R^{nN}$ 构造 finite-window predictors。",
+      "PAP 对 Qwen3-1.7B 的 28 layers、每配置 4096 条长度 2049 sequences 做 80/20 sequence split；PCA ranks 扫 $M$ 的幂，ridge probe 在 train 拟合、test 评估。",
+      "intervention 选 1024 个 source-target history pairs，条件是候选算法的 argmax states 不同；以到 candidate target distribution 的 KL 与 interchange intervention accuracy（IIA）评估。"
+    ]},
+    {"title": "核心结果与证据", "paragraphs": [
+      "没有单一候选在全部 HMM settings 与 context lengths 上复现 LLM；行为比较把重点收缩到 Linear n-gram、Non-linear n-gram 与 Spectral，后两类 n-gram 合称 Soft n-gram。",
+      "Qwen 收敛最一致；Llama/Gemma 在高 entropy 下保留较大 gap，Llama3.1-8B 在 context 4096 急降，OLMo2-1B/7B 长 context 退化且总体最差，显示显著 family heterogeneity。",
+      "理论证明在 hard-attention/approximation assumptions 下，若 full-batch logistic-regression gradient steps $T=O(\\log n)$，深度 $O(\\log n)$ 的 idealized Transformer 可模拟更新；一般深度为 $O(\\log n+T)$。",
+      "Kronecker feature 维数 $N^n$ 可指数增长，softmax 只在 finite domain 上任意逼近 hard attention；这不是 efficient learning 或 pretrained implementation 证明。",
+      "一个 one-layer/one-head、$d=64$ 的小 Transformer 在单个固定 HMM 上学到近期 window，并接近 finite-window predictor；但主文称 $M=N=3$，appendix 又称 3 hidden/12 observations，来源不一致。",
+      "Figure 12 显示 Bigram belief 在两 regimes 都高度可解码，但在 belief-dominated regime 干预无效、observation-dominated regime 有效；这是 probe $R^2$ 不等于 causal use 的直接反例。",
+      "Soft n-gram 在所测 candidates 中干预最一致；belief-dominated 示例中 LLM 约 position 64 接近 Linear n-gram，Spectral/Oracle 到 4096 仍分离；observation-dominated 示例则三者约 position 1024 接近 Oracle。",
+      "OLMo2-1B 可有高 Oracle-belief $R^2$ 而 full-residual patch 仍失败；Qwen3-4B 重复显示类似 layer-position pattern，但只是同 family 两个规模。"
+    ]},
+    {"title": "有效性与局限", "paragraphs": [
+      "固定 token mapping、restricted logits、小有限 HMM family 与 synthetic prompts 是受控选择；没有 natural language、科学时间序列、continuous state 或 out-of-family HMM 测试。",
+      "候选匹配是有限 ansatz comparison；测试的 Baum–Welch baseline 不符不能排除所有 approximate、hybrid 或 internal EM-like computation。",
+      "existential construction 只证明理想 Transformer 可以表示 procedure，不证明 pretrained checkpoints 学到相应 weights、以同样复杂度执行或使用唯一算法。",
+      "PAP patch 可能 off-manifold；full/PCA patches 还搬运无关信息。成功只给 sufficiency，失败也可能由 probe inverse 不准，而非 variable 完全未被使用。",
+      "4096 sequences 改善配置内估计，却不会把 75 designed HMMs、12 fixed checkpoints 或同 sequence 的相关 positions 变成 population replicates。",
+      "1024 intervention pairs 按 candidate argmax disagreement 条件筛选，IIA 只描述该子集；没有 CI、hypothesis tests、multiple-comparison correction 或 probe-seed replications。",
+      "分析单位是 layer residual stream，未定位到 head、neuron、edge 或唯一 circuit；IIA 还丢弃 argmax 相同但 distribution 不同的变化。"
+    ]},
+    {"title": "复现与资源", "paragraphs": [
+      "提交时没有公开代码链接；复现需固定十二个 checkpoint revisions、token IDs、75 HMM matrices/seeds、sequence splits、context grid 与 restricted-logit normalization。",
+      "behavior baseline 应保存全部 hyperparameter searches：n-gram window/regularization、spectral smoothing 与 Baum–Welch 十 restarts/200 iterations。",
+      "probe 需按 sequence 分割并嵌套 bootstrap HMM/configuration/model 层级，报告 PCA rank、ridge penalty、$R^2$/MSE 的 uncertainty 与 held-out family transfer。",
+      "intervention 应同时报告 unconditioned 与 disagreement-conditioned pairs、KL/IIA effect distributions、random-direction、norm-matched、on-manifold generative controls。",
+      "机制必要性要加入 ablation/erasure、counterfactual mediation 与多层组合 patch，并检验 outputs 是否在不搬运其他 residual information 时仍变化。",
+      "理论复核应逐项标注 exact hard attention、finite-domain softmax approximation、MLP approximation、$T$ dependence 与 $N^n$ resource cost，避免把存在性写成效率。"
+    ]},
+    {"title": "阅读指南", "paragraphs": [
+      "快速路线：pp. 2–6 看 HMM task、candidate behavior 与理论；pp. 7–10 看 PAP、Figure 12 与 regimes；appendix 查 83 页细节。",
+      "物理路线：把 candidate state 当 coarse variable，把 probe 当 measurement，把 activation patch 当 conjugate perturbation；始终区分 decodability 与 dynamical relevance。",
+      "AI 路线：按 behavior → representability → held-out probe → intervention 四层证据阅读，不要跳到“提取了精确算法”。",
+      "批判路线：检查 excluded zero-entropy case、family heterogeneity、M/N source mismatch、hard-attention assumptions、selected intervention pairs、OLMo counterexample 与代码缺失。"
+    ]}
+  ],
+  "evidence_refs": [
+    "paper.pdf pp. 2–6 and official v1 TeX: 75-HMM construction, twelve-model behavioral protocol, candidate algorithms, excluded constant case and representability constructions",
+    "paper.pdf pp. 7–10 and official v1 TeX: PAP decoder/inverse equations, Qwen3-1.7B sequence split, intervention selection, KL/IIA and Figure 12 regime comparison",
+    "paper.pdf appendices: baseline tuning, one-layer trained Transformer, 3-versus-12 observation inconsistency, Qwen3-4B/OLMo controls, probe ranks and theoretical approximation assumptions",
+    "source PDF SHA-256 2df48b8d756b3ff14f752c6adf63519c8e467e97801e9715e4609eda0399b2c0",
+    "official arXiv v1 source archive SHA-256 9c1e00654d199322553187c89d9f239feb64003b811e03f9cd4c2342828e0164",
+    "MinerU Markdown SHA-256 352b10ec1e7beecd71c6d182159998d6c420f37f95fea686d1ae759f2b8c98c1",
+    "Evidence packet SHA-256 291ac97c62c58322f32353b844e2260e2112f0d0e3b7d5f60f1f76156b50ddb1",
+    "Representative Figure 12 WebP SHA-256 da0f8811febd56a2d68c6f1127d0e147b1ce74a913a206f056f42352be4e427d",
+    "Evidence status: full 83-page text, official v1 TeX and Figure 12 verified; synthetic-scope, ansatz/uniqueness, existence/efficiency, decodability/causality, off-manifold, selected-pair/statistical, regime/model-family, localization and code-availability boundaries recorded; no independent reproduction performed."
+  ]
+}

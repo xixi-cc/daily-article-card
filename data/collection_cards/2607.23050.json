@@ -1,0 +1,136 @@
+{
+  "arxiv_id": "2607.23050",
+  "source_version": "v1",
+  "source_pdf": "https://arxiv.org/pdf/2607.23050v1",
+  "title_en": "The Entropic Bound for Transformers: Why Static Rank Fails and Attention-Native Rank Recovers",
+  "title_zh": "Transformer 的熵界：静态秩为何失效，注意力原生秩如何恢复",
+  "curation_status": "full_text_verified",
+  "card_standard_version": "2.4",
+  "audience_profile": "physics_ai_literate_physicist",
+  "paper_profile": "theory_experiment",
+  "style_reference": "physicist_daily_arxiv",
+  "provenance": {
+    "program": "Collection", "catalog": "Paper Collection", "catalog_record_id": "2607.23050", "catalog_record_ids": ["2607.23050"],
+    "catalog_topic": "Learning Theory", "collection_date": "2026-08-30", "sampled_at": "2026-08-31", "selected_by": "ziming_mineru_serial_goal", "sampling_seed": "not_applicable_source_complete", "candidate_count": 464
+  },
+  "verified_metadata": {
+    "arxiv_id": "2607.23050", "version": "v1", "title": "The Entropic Bound for Transformers: Why Static Rank Fails and Attention-Native Rank Recovers",
+    "authors": ["Byeong Hoon Yoon"],
+    "categories": ["cs.LG"], "primary_category": "cs.LG", "published": "2026-07-25", "updated": "2026-07-25",
+    "abstract": "The paper proves a conditional numerical-rank threshold for a fixed linear token mixer, shows why this static rank does not transfer to an input-conditioned attention mixer, and reports small matched Gaussian teacher–student experiments in which a kernel-rank notion produces an empirical loss knee."
+  },
+  "equation_refs": [
+    {
+      "label": "Entropy effective rank", "latex": "R_{\\mathrm{eff}}(M)=\\exp\\left[-\\sum_i p_i\\log p_i\\right],\\qquad p_i=\\frac{\\sigma_i}{\\sum_j\\sigma_j}",
+      "role": "turn a singular-value spectrum into a continuous count of appreciably occupied modes",
+      "symbols": {"sigma_i": "singular values of M", "p_i": "normalized singular-value weights", "R_eff": "noninteger entropy effective rank"},
+      "evidence": "paper.pdf p. 3, Equation (1), and official v1 TeX",
+      "interpretation": "这是谱分布的 exponential Shannon entropy，类似有效参与态数；它通常不是 integer matrix rank。文中还用平方奇异值的 energy rank，两种定义不可悄然互换。"
+    },
+    {
+      "label": "Attention-native task rank", "latex": "r_{\\mathrm{attn}}^*(\\varepsilon;D)=\\min\\{\\operatorname{rank}(K):\\exists V,\\mathbb E\\|Y-\\operatorname{Attn}_{K,V}(X)\\|^2\\le\\varepsilon\\}",
+      "role": "define capacity through the smallest kernel rank that achieves a target risk within a specified attention family",
+      "symbols": {"K": "query–key kernel matrix", "V": "value map", "epsilon": "risk threshold", "D": "task distribution"},
+      "evidence": "paper.pdf p. 5, Equation (6), and official v1 TeX",
+      "interpretation": "该 rank 属于指定 model class 与 data distribution，不是 parameter count 或 architecture-independent intrinsic dimension；linear-QK 与 softmax-QK 还定义不同函数族。"
+    },
+    {
+      "label": "Conditional rank-deficiency lower bound", "latex": "L_r^*\\ge\\sigma^2Td+c\\sum_{j=r+1}^{r^*}\\lambda_j(A^*)^2,\\qquad c=\\lambda_{\\min}(\\Sigma_X)\\sigma_{\\min}(V^*)^2",
+      "role": "show that omitting any required spectral modes leaves excess risk above the isotropic noise floor in the fixed linear surrogate",
+      "symbols": {"r_star": "target mixer rank", "sigma2_T_d": "noise-floor risk", "Sigma_X": "input covariance", "V_star": "nondegenerate target value map"},
+      "evidence": "paper.pdf p. 7, Theorem 5/Equation (7), and official v1 TeX",
+      "interpretation": "谱隙使 rank threshold 像尖锐 capacity transition；结论依赖 full-rank covariance、independent isotropic noise、gap 与 nondegenerate $V^*$。证明是紧凑 sketch，不是一般 softmax Transformer 定理。"
+    }
+  ],
+  "figure_refs": [
+    {
+      "label": "Figure 1 paper logic", "asset_path": "assets/collection-figures/2607.23050/figure-01-paper-logic.webp", "section": "核心结果与证据",
+      "role": "summarize the transition from a fixed-operator rank theorem through failure under input conditioning to matched attention-native numerical recovery",
+      "evidence": "paper.pdf p. 2, Figure 1; official TikZ source in main.tex",
+      "alt_text": "A flow diagram moves from a successful static linear rank bound, through failure after input-conditioned mixing, to an attention-native matched teacher–student rank experiment.",
+      "caption": "Figure 1：固定 mixer 的静态秩界不能直接移植到 $XKX^\\top$；换到匹配 attention family 后，小型合成实验重新出现 loss knee。",
+      "interpretation": "流程中的“恢复”是 T≤16、d≤32 matched Gaussian tasks 上的五-seed numerical pattern，不是对任意 softmax Transformer 的证明。"
+    }
+  ],
+  "cover": {
+    "mode": "source_figure", "asset_path": "assets/collection-figures/2607.23050/figure-01-paper-logic.webp", "label": "Figure 1 entropic-bound logic", "visual_type": "schematic",
+    "evidence": "paper.pdf p. 2, Figure 1; official TikZ", "alt_text": "Conceptual progression from static rank to attention-native rank.",
+    "caption": "有意义的容量变量必须与 input-conditioned attention 算子本身匹配。", "selection_rationale": "It makes the theorem-to-counterexample-to-empirical-recovery structure explicit and prevents conflating the three evidence levels."
+  },
+  "sections": [
+    {"title": "作者信息", "paragraphs": [
+      "作者为 Byeong Hoon Yoon。",
+      "本站核验 arXiv:2607.23050v1：提交于 2026-07-25，是当前唯一版本；主分类 cs.LG，PDF 11 页。",
+      "Collection 来源为刘子鸣网站的 Learning Theory 条目；本站检查官方 PDF、TeX 与 Figure 1。arXiv comment 称含复现脚本，但官方 v1 source archive 只有 TeX/Bib，未找到文中 `exp_attn_native.py`。"
+    ]},
+    {"title": "研究问题", "paragraphs": [
+      "能否在训练前从数据谱推断任务需要多少 attention capacity？用静态 token-mixing matrix 的 rank 衡量，在 mixer 依赖输入 $X$ 后为何失效？",
+      "论文先研究 $Y=A^*XV^*+E$ 的固定线性 surrogate，证明达到 noise floor 所需的最小 numerical rank。",
+      "随后把模型改成 linear-QK 或 softmax-QK attention，以 kernel $K$ 的最小 rank 定义 attention-native capacity，并做 matched teacher–student 数值实验。",
+      "核心边界是：前一部分有条件 theorem，attention-native 部分主要是有限合成实验；二者不能合并成通用 Transformer 熵界。"
+    ]},
+    {"title": "背景", "paragraphs": [
+      "矩阵 rank 统计非零 singular modes；effective rank 用谱熵或能量参与率平滑地统计显著 modes，避免数值噪声把 rank 推满。",
+      "若 target mixer 有清晰 spectral gap，低于真实 rank 的模型无法表示尾部 modes，因此 excess risk 在临界 rank 前保持正值、到临界点降至 noise floor。",
+      "attention 的 mixer 不是固定 $A$，而是随样本变为 $XKX^\\top$ 或 $\\mathrm{softmax}(XKX^\\top)$；固定 operator 的 spectrum 不再是同一个 observable。",
+      "因此论文把“任务 rank”改为在指定 attention class 中实现目标 risk 所需的最小 kernel rank。"
+    ]},
+    {"title": "给物理学家的 AI 导读", "paragraphs": [
+      "可把谱 modes 看作独立预测通道，effective rank 是 occupied-mode order parameter；spectral gap 让 capacity onset 类似有限系统中的 sharp crossover。",
+      "固定 $A$ 时，删掉一个 singular mode 会留下由输入 covariance 与 value-map coupling 加权的不可约残差。noise floor 类似不可消除的热噪声背景。",
+      "换到 $XKX^\\top$ 后，interaction kernel 被 instantaneous configuration dressing；拿静态 $A^*$ 的 rank 比较，类似用裸耦合谱预测态依赖有效算子。",
+      "matched teacher–student 让 teacher 与 student 共享同一算子 family，因此 rank-$r^*$ 可达性部分由构造保证；有信息的是优化能否恢复，以及 rank-deficient penalty 是否形成 knee。",
+      "entropy effective rank 2.43 与 numerical rank 4 可以同时成立：前者描述谱权重集中，后者描述严格非零 mode 数，物理意义不同。"
+    ]},
+    {"title": "模型与方法", "paragraphs": [
+      "线性 surrogate 设 $X\\in\\mathbb R^{T\\times d}$、$Y=A^*XV^*+E$，假设 zero-mean full-rank input covariance、independent isotropic noise、$A^*$ 在 $r^*$ 处有非零 gap、$V^*$ 非退化。",
+      "固定模型 ladder 从 B0 的 static $A=PQ^\\top$ 到 B1 linear-QK、B1c unrestricted full-rank $K$、B2 softmax-QK，再到含 residual/LayerNorm/FFN 的 B3。",
+      "attention-native teachers 的 $K^*$ rank 取 1、2、3、4、6、8；$T=16,d=32,n=3000,\\sigma=0.05$，五 seeds。rank sweeps 用 full-batch Adam 1500 steps。",
+      "overparameterized recovery 设 student rank $d$、训练 2500 steps，并报告 learned $R_{\\mathrm{eff}}(K)$；另从数据估计 kernel-side 或 realized-mixer ranks。",
+      "真实语料诊断用 English、Shakespeare、Python、Linux C、JSON、ABC music 六个 character corpora，二层四头模型、width 64/128/256、五 seeds，共 18 corpus-size cells。"
+    ]},
+    {"title": "核心结果与证据", "paragraphs": [
+      "线性合成任务 $T=16,d=12,r^*=3$ 中，constrained rank 1/2 excess risks 为 28.451/8.832，rank 3 降至约 0.0002，至 rank 6 保持约 0.0001–0.0002；MP-corrected effective rank 为 2.97。",
+      "固定-target ladder 在 rank $r^*$ 的 excess risk：B0 为 0.00，而 B1/B1c/B2/B3 为 69.37/69.05/68.67/51.86。B1c 即便 full-rank 仍失败，表明该构造中的 mismatch 来自 input-conditioned form，而非仅 softmax 或低 rank。",
+      "matched attention-native tasks 中，对 $r^*>1$，rank $r^*-1$ excess 约为 linear teachers 437–578、softmax teachers 1.95–2.63；到 $r^*$ 均约 -0.002 至 0，形成经验 knee。",
+      "learned $R_{\\mathrm{eff}}(K)$ 对 linear teachers 为 1.03/1.93/2.93/3.91/5.87/7.84，对 softmax teachers 为 1.45/2.39/3.37/4.31/6.22/8.15，seed CV≤0.003；是 approximate tracking，不是整数 rank 精确恢复。",
+      "data-only estimation 对 linear-QK 可恢复 numerical rank，但 energy ranks 例如真实 rank 8 时为 7.32 或 8.24；softmax-QK estimator numerical rank 饱和 17–23，kernel/mixer energy ranks 也不等于 $r^*$。",
+      "六 character corpora 中 data-predicted 与 static-kernel effective rank 的 Pearson/Spearman 为 -0.272/-0.275；final loss 与 measured rank Pearson 为 -0.79，但没有 CI、p-value 或 hierarchical analysis。",
+      "spectral-profile test 的 sharp/power-law/flat teacher/recovered energy ranks 为 3.57/3.57、2.43/2.44、4.00/4.00；rank-3 penalty 对 power-law 仅 15.63，显著弱于 sharp 244.48。"
+    ]},
+    {"title": "有效性与局限", "paragraphs": [
+      "rank-deficiency theorem 只针对 fixed linear mixer，并依赖 covariance、noise、gap 与 $V^*$ assumptions；紧凑 proof 对联合优化 $A,V$ 的 identifiability/geometry 处理未被本站独立证明。",
+      "finite-sample gradient-descent concentration 部分明确留待 extended version，Marchenko–Pastur correction 是 asymptotic/heuristic claim 加数值支持。",
+      "attention-native 没有与 Theorems 5–7 同等级的 deficiency theorem；正结果来自 matched Gaussian teachers，achievability 部分由相同 model class 设计。",
+      "实验仅 $T\\le16,d\\le32,r^*\\le8$、五 seeds；CV 只量化 learned effective rank 重复性，不是 excess-risk 或新 task family 的 uncertainty。",
+      "natural-corpus 18 cells 共享六 corpora 与三 widths，缺 raw cell values、corpus-length matching、CI 和分层统计；不能声称自然语言 scaling law。",
+      "没有单一 architecture-agnostic data-only estimator：linear-QK 与 softmax 下有用 observable 会改变，effective rank 也不等于 integer rank。",
+      "官方 source 缺少声称的复现脚本，且未报告硬件、runtime、raw per-seed values 或充分 convergence diagnostics。"
+    ]},
+    {"title": "复现与资源", "paragraphs": [
+      "应先获得文中 `exp_attn_native.py` 与 exact environment；当前官方 v1 source archive 没有该脚本，因此本站未运行 reproduction command。",
+      "线性 theorem 数值检查需保存 $A^*,V^*,\\Sigma_X$、noise draws、singular spectrum、rank constraints 与 train/test risk，并分别报告 numerical/energy/entropy/stable rank。",
+      "attention-native sweep 应对每个 $r^*$ 报五-seed raw curves、rank-$r^*-1/r^*$ excess CI、optimization failure rate 与 initialization sensitivity。",
+      "为避免 matched-class circularity，应加入 misspecified teachers、non-Gaussian/correlated inputs、无 spectral gap、不同 sequence lengths 和 held-out operator families。",
+      "real-corpus 分析需匹配 token count/entropy，增加 corpora 与 widths，使用 mixed-effects model，并预注册 data-side rank estimator 与 primary correlation。",
+      "若要外推到 pretrained LLM，应从 frozen activations/attention operators 定义可重复 observable，再验证它是否预测 scaling、loss 或 intervention response，而非只沿用小 teacher rank。"
+    ]},
+    {"title": "阅读指南", "paragraphs": [
+      "快速路线：pp. 2–5 看 Figure 1、rank definitions 与 static-transfer failure；pp. 7–9 看 theorem assumptions、attention tables 和 corpus diagnostics。",
+      "物理路线：区分 numerical rank、谱熵参与数、spectral gap、noise floor 与 input-dressed operator。",
+      "AI 路线：逐级分开 fixed linear surrogate、linear QK、softmax QK、full block 与真实 character Transformer。",
+      "批判路线：检查 theorem/proof-sketch 边界、matched teacher bias、effective-vs-integer rank、18-cell statistics、脚本缺失和生产规模外推。"
+    ]}
+  ],
+  "evidence_refs": [
+    "paper.pdf pp. 2–5 and official v1 TeX: Figure 1 logic, effective/stable/intrinsic rank definitions, fixed linear and attention-native capacity definitions, architecture ladder",
+    "paper.pdf pp. 7–9 and official v1 TeX: conditional deficiency/achievability theorems, incomplete finite-sample GD statement, synthetic tables and data-only estimators",
+    "paper.pdf pp. 4/9–10 and appendix: naive-transfer numbers, matched teacher–student settings, five-seed effective ranks, six-corpus correlations and spectral-profile ablation",
+    "source PDF SHA-256 ff8413e69aa9a8813747e6d78dde13f3c3999c83e2f69150f4d5fbb6a1e891ac",
+    "official arXiv v1 source archive SHA-256 fdc7ea2621fd276ed193a69bf17ffcd2088ef2eeb92dd6a9857183e0bb4d0e42",
+    "MinerU Markdown SHA-256 7f39fbfe8f5543b61b45df8dc99117e8d180e08cf04b5c38628ac4e265e78a39",
+    "Evidence packet SHA-256 87bcaad6fbda1469547aae0fca3542176d8cd0ec5f17f3af18318568e9b4e435",
+    "Representative Figure 1 WebP SHA-256 8eede9f0f88497fc1d77046b6310218d321632f68c9f3f69295ae278ae62a2a3",
+    "Evidence status: full text, official v1 TeX, Figure 1 and tables verified; linear-surrogate assumptions/proof, incomplete finite-sample, matched-teacher, effective/integer-rank, data-estimator, natural-corpus statistics, scale and missing-code boundaries recorded; no independent reproduction performed."
+  ]
+}
