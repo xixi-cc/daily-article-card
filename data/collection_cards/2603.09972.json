@@ -1,0 +1,197 @@
+{
+  "arxiv_id": "2603.09972",
+  "source_version": "v1",
+  "source_pdf": "https://arxiv.org/pdf/2603.09972v1",
+  "title_en": "From Data Statistics to Feature Geometry: How Correlations Shape Superposition",
+  "title_zh": "从数据统计到特征几何：相关性如何塑造叠加表征",
+  "curation_status": "full_text_verified",
+  "card_standard_version": "2.4",
+  "audience_profile": "physics_ai_literate_physicist",
+  "paper_profile": "theory_experiment",
+  "style_reference": "physicist_daily_arxiv",
+  "provenance": {
+    "program": "Collection",
+    "catalog": "Paper Collection",
+    "catalog_record_id": "2603.09972",
+    "catalog_record_ids": ["2603.09972"],
+    "catalog_topic": "Representation Learning",
+    "collection_date": "2026-08-30",
+    "sampled_at": "2026-08-31",
+    "selected_by": "ziming_mineru_serial_goal",
+    "sampling_seed": "not_applicable_source_complete",
+    "candidate_count": 464
+  },
+  "verified_metadata": {
+    "arxiv_id": "2603.09972",
+    "version": "v1",
+    "title": "From Data Statistics to Feature Geometry: How Correlations Shape Superposition",
+    "authors": ["Lucas Prieto", "Edward Stevinson", "Melih Barsbey", "Tolga Birdal", "Pedro A. M. Mediano"],
+    "categories": ["cs.LG", "cs.AI", "cs.CV"],
+    "primary_category": "cs.LG",
+    "published": "2026-03-10",
+    "updated": "2026-03-10",
+    "abstract": "In tied-weight autoencoders and toy tasks, the paper relates feature co-occurrence structure to learned weight geometry, constructive cross-feature interference and post-hoc value subspaces."
+  },
+  "equation_refs": [
+    {
+      "label": "tied-weight reconstruction decomposition",
+      "latex": "\\tilde f_i=w_i^\\top Wf=\\|w_i\\|^2f_i+\\sum_{j\\ne i}(w_i^\\top w_j)f_j",
+      "role": "separate a feature's self-signal from cross-feature interference in a tied encoder-decoder Gram map",
+      "symbols": {
+        "f": "binary feature-presence vector",
+        "W": "m by V tied feature matrix",
+        "w_i": "column associated with feature i",
+        "cross_terms": "context-dependent interference from co-active features"
+      },
+      "evidence": "paper.pdf pp. 3–5, reconstruction/interference identities",
+      "interpretation": "cross terms 可在相关 context 中与 target 同号而帮助重构；这是 tied $W^TW$ geometry 的直接结果，不自动适用于 untied encoder/decoder 或 LLM residual features。"
+    },
+    {
+      "label": "centered PCA solution",
+      "latex": "P_m=U_mU_m^\\top,\\qquad U_m=\\operatorname{eig}_{top\\ m}(\\operatorname{Cov}[f]),\\qquad \\|P_m\\|_F^2=m",
+      "role": "connect the optimal rank-m centered linear autoencoder to leading covariance eigenvectors and state the exact projector norm",
+      "symbols": {
+        "Cov_f": "centered covariance of input features",
+        "U_m": "top-m orthonormal eigenvectors",
+        "P_m": "orthogonal projector implemented by the ideal linear autoencoder",
+        "m": "bottleneck dimension"
+      },
+      "evidence": "paper.pdf pp. 4–5, PCA and projector argument",
+      "interpretation": "正文把 $E[ff^T]$ 称 covariance，但它未中心化；bias/centering 后才可直接使用 PCA。$\\|P_m\\|_F^2=m$ 精确，竞争 ReLU solution norm≈d 与 weight-decay selection 则是启发式。"
+    },
+    {
+      "label": "linear-superposition criterion",
+      "latex": "R_i^2=1-\\frac{\\sum_n(f_i^{(n)}-\\hat f_i^{(n)})^2}{\\sum_n(f_i^{(n)}-\\bar f_i)^2},\\qquad R_i^2\\ge1-\\epsilon",
+      "role": "classify whether one feature is linearly decodable from its learned representation according to the paper's formal definition",
+      "symbols": {
+        "R_i_squared": "linear decoder coefficient of determination",
+        "epsilon": "unspecified tolerance in the formal definition",
+        "R_0_5": "later empirical threshold whose relation to epsilon is not clarified",
+        "n": "validation samples"
+      },
+      "evidence": "paper.pdf pp. 3 and 7, superposition definitions and word classification",
+      "interpretation": "epsilon 从未指定；后文用 R=0.5 分类 4,073 nonlinear/522 linear words，与 $R^2\\ge1-\\epsilon$ 的正式判据关系不明。"
+    }
+  ],
+  "figure_refs": [
+    {
+      "label": "Figure 4 correlations to learned geometry",
+      "asset_path": "assets/collection-figures/2603.09972/figure_4_correlation_to_geometry.webp",
+      "section": "核心结果与证据",
+      "role": "connect month co-occurrence, data PCA, learned-weight PCA and one concrete constructive-interference decomposition",
+      "evidence": "paper.pdf p. 6, Figure 4",
+      "alt_text": "Four panels show correlations among month words, matching principal geometry in data and tied weights, and cross-terms that improve one reconstruction.",
+      "caption": "Figure 4：月份 co-occurrence 的 PCA 几何出现在 learned tied weights 中，并以一个 Christmas/month context 展示 constructive interference。它是 seed-specific/qualitative evidence，不是 nonlinear training 的一般定理。",
+      "interpretation": "图直观串起 statistics→geometry→interference，但 WikiText context 未做保持 marginals 的 causal manipulation，UMAP/PCA 也不确定唯一 representation。"
+    }
+  ],
+  "cover": {
+    "mode": "source_figure",
+    "asset_path": "assets/collection-figures/2603.09972/figure_4_correlation_to_geometry.webp",
+    "label": "Figure 4 correlation and geometry",
+    "visual_type": "comparison",
+    "evidence": "paper.pdf p. 6, Figure 4",
+    "alt_text": "Feature correlations, principal axes and constructive cross-feature interference are shown side by side.",
+    "caption": "相关数据的 PCA 几何映射到 tied weights，并可产生 constructive interference；因果与外推范围有限。",
+    "selection_rationale": "The four-panel figure is the densest bridge from empirical correlations through learned geometry to a concrete reconstruction mechanism."
+  },
+  "sections": [
+    {
+      "title": "作者信息",
+      "paragraphs": [
+        "作者为 Lucas Prieto、Edward Stevinson、Melih Barsbey、Tolga Birdal 与 Pedro A. M. Mediano。",
+        "本站核验 arXiv:2603.09972v1：提交于 2026-03-10；分类 cs.LG、cs.AI、cs.CV，PDF 21 页。",
+        "Collection 来源为刘子鸣网站的 Representation Learning 条目。"
+      ]
+    },
+    {
+      "title": "研究问题",
+      "paragraphs": [
+        "当 feature 数 V 远大于 hidden dimension m 时，模型必须 superpose 多个 features。数据中的 co-occurrence correlation 会怎样决定 learned directions、干扰符号与 linear/nonlinear decodability？",
+        "论文从 tied linear autoencoder/PCA 出发，提出相关 features 可共享 principal subspace，cross terms 不一定是 noise，反而可在常见 context 中 constructive 地补强重构。",
+        "BOWS WikiText、月份/Beatles examples、toy integer/city tasks 与 value-subspace ablations 支持这一图景；weight-decay selection、阈值统计、真实 LLM/SAE transfer 尚未建立。"
+      ]
+    },
+    {
+      "title": "背景",
+      "paragraphs": [
+        "superposition 指比表示维度更多的 features 共用 directions。正交不是唯一理想：若 features 相关且共同出现，nonorthogonal cross terms 可成为 context-dependent signal。",
+        "tied autoencoder 的 decoder 等于 encoder transpose，因此有效线性 map 是 Gram/projector $W^TW$；weight geometry 与 reconstruction algebra 被结构性绑定。",
+        "centered linear autoencoder 的 rank-m optimum 等于 PCA projector。若 data covariance 低 rank≤m，linear reconstruction residual 可为零，即使 individual feature columns 不互相正交。",
+        "nonlinear-superposition 应明确判据、decoder class 与 tolerance。R² threshold 改变分类计数，不能省略 epsilon 或在 R/R² 间切换。"
+      ]
+    },
+    {
+      "title": "给物理学家的 AI 导读",
+      "paragraphs": [
+        "把 feature covariance 看作二点相关函数，其 leading eigenmodes 决定低维集体坐标。autoencoder 像保留最大 variance 的 normal modes，而非给每个 microscopic feature 一根正交轴。",
+        "cross term $(w_i^Tw_j)f_j$ 类似耦合场：平均看可能是 interference，但在 correlated phase-space region 中可与 self term同号，降低 conditional reconstruction error。",
+        "projector 的 Frobenius norm²=m 是严格谱事实；论文进一步说 weight decay 会偏好它而不是 norm≈d 的 ReLU filtering solution，但后者的构造、loss trade-off 与 nonlinear optimization basin 未定理化。",
+        "UMAP 或 Gemini-generated semantic labels 只帮助可视化，不是几何/机制证据。需要在保持 marginals 的情况下干预 correlations，才能识别 data statistics 的因果作用。"
+      ]
+    },
+    {
+      "title": "模型与方法",
+      "paragraphs": [
+        "BOWS 将 WikiText-103 chunks 编码为 V=10,000 binary presence vectors，chunk size c=20；报告 1,621,198 train 与 180,133 validation samples。",
+        "训练 tied autoencoders，比较 feature correlation、data PCA、weight PCA、reconstruction self/cross terms、linear decoder R² 与 weight decay；示例包括 months、Beatles contexts。",
+        "toy tasks 用 structured integer/city-like value codes，fit probes 得 post-hoc subspace，再做保留/移除该 subspace 的 intervention；另有小 Transformer/OpenWebText replication。",
+        "main figures 常标 seed1 或 seed42，未报告完整 seed count/CIs/tests。arXiv bundle 声称 supplementary code 但实际无 executable code；external GitHub 未在本卡审计。"
+      ]
+    },
+    {
+      "title": "核心结果与证据",
+      "paragraphs": [
+        "months 的 reported linear-decoder R²=0.98±0.00015，且没有两个月 directions 正交；± 数值含义、seeds 或 CI 未说明。",
+        "含 Beatles 的 validation samples 中 81% 在 correlated context 的 reconstruction 优于 one-hot condition，说明 cross-context 可帮助该 feature；chunk dependence 与 context leakage 未量化。",
+        "一个 m=800 model 按未澄清的 R=0.5 threshold 把 4,073 words 归为 nonlinear-superposition、522 归为 linear-superposition；不能与 formal epsilon criterion无缝对应。",
+        "Figure 4 将 month correlation/data PCA 与 learned W PCA 并列，并对 Christmas reconstruction 展示 cross terms 与 target self-signal 同向，是最清晰的 constructive-interference example。",
+        "value-code subspace retained/full 的 MAP accuracy 为 93.16%/97.94%，modular accuracy 93.99%/100%；移除 subspace 后为 22.43%/3.11%。",
+        "该 ablation 支持 post-hoc subspace 对 task 的 approximate relevance/sufficiency/necessity，但无法排除 off-manifold effects，也不唯一指定 neurons/heads 等 computation units。"
+      ]
+    },
+    {
+      "title": "有效性与局限",
+      "paragraphs": [
+        "$\\Sigma=E[ff^T]$ 被称 covariance 但未中心化；bias argument 又中心化 f，PCA/rank statement 必须使用 consistent centered covariance。",
+        "residual/eigenvalue 公式缺 expectation 并混用 sample residual 与 matrix norm；不能按 printed shorthand 当严格 identity。",
+        "projector norm=m 精确，但 ReLU filtering norm≈d 与 weight-decay preference 是 heuristic comparison，没有控制 reconstruction trade-off 或证明 nonlinear training selection。",
+        "superposition tolerance epsilon 未给，后续 R=0.5 与 R²≥1-epsilon 不一致；4,073/522 counts 对阈值敏感。",
+        "UMAP projection-dependent，categories 由 Gemini 生成再人工修订；main evidence 多为 seed1/42，无 uncertainty。±0.00015 的 statistical unit 未定义。",
+        "WikiText chunks 相关，split 未排除 adjacent-context leakage；没有随机重排/生成干预在保持 marginals 时改变 pair correlations。",
+        "appendix 对 city embedding dimension 写 200 与 50 两个值，linear-probe equation RHS 因 TeX comment 缺失，exact protocol/source display 有矛盾。",
+        "tied BOWS autoencoder 将 Gram geometry 写入 architecture；不能直接外推 untied AEs、activation-trained SAEs 或 pretrained production LLM features。"
+      ]
+    },
+    {
+      "title": "复现与资源",
+      "paragraphs": [
+        "明确 centering/bias，分别计算 $E[ff^T]$ 与 Cov[f]；逐式检查 PCA residual 与 expected reconstruction identity，修复缺期望/范数混用。",
+        "预注册 epsilon/R² threshold，画 classification count versus threshold；多 seeds 报 principal-angle stability、R² CIs 与 weight-decay response。",
+        "对 correlation 做 causal factorial：保持 unigram marginals/feature frequency 和 chunk size，shuffle pairings 或 synthetic tune covariance eigenvalues，观察 W geometry/interference。",
+        "公平比较 tied/untied、linear/ReLU、L1/weight decay 与 SAE dictionaries；匹配 bottleneck、parameter norm与 reconstruction loss，避免 architecture-baked conclusion。",
+        "subspace intervention 加 random same-dimension/energy controls、basis rotations、off-manifold checks，并测 behavior/logits/loss；不要由 post-hoc probe basis 宣称唯一 units。",
+        "先向作者核实 city dimension/probe equation；arXiv v1 bundle 无 promised executable code，若使用 external repo需 pin commit/environment/data hashes。"
+      ]
+    },
+    {
+      "title": "阅读指南",
+      "paragraphs": [
+        "快速路线：pp. 3–5 看 BOWS/tied algebra/PCA；pp. 5–7 看 Figure 4、months/Beatles；pp. 7–9 看 superposition counts/value coding/ablation。",
+        "物理路线：把 covariance eigenspace 当 collective modes，把 Gram cross term 当 correlation-conditioned coupling；注意 centering 与 norm identity。",
+        "AI 路线：区分 feature geometry、linear decodability、SAE dictionary 与 causal computation units；tied architecture 是强 inductive bias。",
+        "批判路线：重点核对 Sigma centering、residual formula、weight-decay heuristic、epsilon/R mismatch、seed statistics、chunk leakage、city/probe source errors 与 LLM transfer。"
+      ]
+    }
+  ],
+  "evidence_refs": [
+    "paper.pdf pp. 3–5: BOWS construction, tied W-transpose-W reconstruction, self/cross interference, centered-PCA scope, projector norm and heuristic weight-decay argument",
+    "paper.pdf pp. 5–9: Figure 4, month/Beatles examples, threshold-dependent linear/nonlinear counts, toy value-code probes and subspace ablations",
+    "official TeX appendix: city embedding dimension 200/50 conflict, malformed commented-out probe equation, seed-specific assets and absent bundled executable code",
+    "source PDF SHA-256 f63d87fbb74487199ffa60bfb83807b829b46249f661eed19b35cf5db88f5b8a",
+    "official arXiv v1 source archive SHA-256 cefa1df1ae339fd14a022ec232d569854d4c1375bcd5aa67880e9cdfb1868c1f",
+    "MinerU Markdown SHA-256 cc82d2fe13afa37873677f8396f59660419d3c6608f8be211a62d733faa61c42",
+    "Evidence packet SHA-256 71bb9d0fd139e276490b66b0cafeadb42aa513fed54803a0567db79555a2ac17",
+    "Evidence status: full text, rendered pages and official TeX verified against latest arXiv v1; centered-covariance/residual algebra, exact projector versus heuristic selection, unspecified superposition tolerance, seed/statistical, chunk-correlation, source-dimension/probe, subspace causality and tied-AE/LLM extrapolation boundaries recorded; no independent reproduction performed."
+  ]
+}

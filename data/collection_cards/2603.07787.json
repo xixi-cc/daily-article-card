@@ -1,0 +1,197 @@
+{
+  "arxiv_id": "2603.07787",
+  "source_version": "v1",
+  "source_pdf": "https://arxiv.org/pdf/2603.07787v1",
+  "title_en": "Vision Transformers that Never Stop Learning",
+  "title_zh": "永不停止学习的视觉 Transformer",
+  "curation_status": "full_text_verified",
+  "card_standard_version": "2.4",
+  "audience_profile": "physics_ai_literate_physicist",
+  "paper_profile": "ai_empirical",
+  "style_reference": "physicist_daily_arxiv",
+  "provenance": {
+    "program": "Collection",
+    "catalog": "Paper Collection",
+    "catalog_record_id": "2603.07787",
+    "catalog_record_ids": ["2603.07787"],
+    "catalog_topic": "Transformer Theory",
+    "collection_date": "2026-08-30",
+    "sampled_at": "2026-08-31",
+    "selected_by": "ziming_mineru_serial_goal",
+    "sampling_seed": "not_applicable_source_complete",
+    "candidate_count": 464
+  },
+  "verified_metadata": {
+    "arxiv_id": "2603.07787",
+    "version": "v1",
+    "title": "Vision Transformers that Never Stop Learning",
+    "authors": ["Caihao Sun", "Mingqi Yuan", "Shiyuan Wang", "Jiayu Chen"],
+    "categories": ["cs.LG"],
+    "primary_category": "cs.LG",
+    "published": "2026-03-08",
+    "updated": "2026-03-08",
+    "abstract": "The paper diagnoses declining new-task acquisition in task-incremental ViTs and proposes ARROW, a low-rank recent-gradient preconditioner that improves reported average acquisition point estimates on CIFAR-100 and ImageNet-R partitions."
+  },
+  "equation_refs": [
+    {
+      "label": "average acquisition through time",
+      "latex": "\\operatorname{AAT}=\\frac1T\\sum_{t=1}^T A_t^{acq}",
+      "role": "average the model's acquisition accuracy when each new task is learned across a task stream",
+      "symbols": {
+        "T": "number of sequential tasks",
+        "A_t_acq": "reported acquisition accuracy for task t at the protocol's evaluation time",
+        "AAT": "headline continual-plasticity metric",
+        "retention": "past-task performance, whose timing and handling are not fully specified"
+      },
+      "evidence": "paper.pdf pp. 4–5 and metric appendix",
+      "interpretation": "AAT 强调新任务 acquisition；若每 task 的 class count 随 stream length 改变，跨 10/20/25 或 20/40/50 tasks 比较会混入任务难度。"
+    },
+    {
+      "label": "recent-gradient second moment",
+      "latex": "C_t=\\frac1W\\sum_{i=t-W+1}^{t}g_i g_i^\\top",
+      "role": "construct a rank-at-most-W positive semidefinite operator from a temporal window of recent gradients",
+      "symbols": {
+        "g_i": "gradient vector at recent optimization step i",
+        "W": "history window, selected as 20",
+        "C_t": "uncentered temporal second moment",
+        "rank": "at most W before numerical degeneracy"
+      },
+      "evidence": "paper.pdf pp. 8–9, ARROW definition",
+      "interpretation": "$C_t$ 不是 subtract-mean covariance，也未证明近似 Hessian/Fisher；“curvature-aware/second-order”只能作几何类比。"
+    },
+    {
+      "label": "ARROW preconditioned update",
+      "latex": "\\Delta\\theta_t=-\\eta(\\alpha I+\\beta C_t)^{-1}g_t",
+      "role": "suppress steps along directions repeatedly represented in the recent-gradient span relative to its orthogonal complement",
+      "symbols": {
+        "alpha": "isotropic damping, selected as 0.001",
+        "beta": "history strength, selected as 0.9",
+        "eta": "base step multiplier",
+        "theta": "selected ViT parameters, best reported scope being the last block"
+      },
+      "evidence": "paper.pdf pp. 8–9, ARROW and Woodbury form",
+      "interpretation": "在 $C_t$ eigenbasis 中方向缩放为 $(\\alpha+\\beta\\lambda)^{-1}$；Woodbury 只把 inverse 降到 W 维系统，不使 storage/Gram/solve 开销消失。"
+    }
+  ],
+  "figure_refs": [
+    {
+      "label": "Figure 1 taskwise plasticity and ARROW intuition",
+      "asset_path": "assets/collection-figures/2603.07787/figure_1_plasticity_and_arrow.webp",
+      "section": "核心结果与证据",
+      "role": "show taskwise accuracy curves and the conceptual landscape interpretation of recent-gradient preconditioning",
+      "evidence": "paper.pdf p. 2, Figure 1; official source panels figures/fig1/fig1a_v3.pdf and fig1b_v4.pdf",
+      "alt_text": "One panel compares vanilla, TRAC and ARROW taskwise acquisition; another sketches an optimization landscape with directions modified by ARROW.",
+      "caption": "Figure 1：ARROW/TRAC/vanilla 的 taskwise accuracy 与概念性 landscape。曲线无 uncertainty；右侧曲率图不是实测 Hessian surface，只是 preconditioner intuition。",
+      "interpretation": "图支持 reported task-sequence pattern，不建立 local diagnostic→plasticity 的 causal path，也不解决 task construction 与 AAT timing ambiguity。"
+    }
+  ],
+  "cover": {
+    "mode": "source_figure",
+    "asset_path": "assets/collection-figures/2603.07787/figure_1_plasticity_and_arrow.webp",
+    "label": "Figure 1 plasticity and ARROW",
+    "visual_type": "comparison",
+    "evidence": "paper.pdf p. 2, Figure 1; official source vector panels",
+    "alt_text": "ARROW is compared with continual-learning baselines and illustrated as anisotropic gradient rescaling.",
+    "caption": "任务流 acquisition 曲线与 ARROW 几何示意；后者不是测得的 curvature landscape。",
+    "selection_rationale": "The overview jointly communicates the empirical goal and the optimizer's intended geometric interpretation while exposing the absence of uncertainty."
+  },
+  "sections": [
+    {
+      "title": "作者信息",
+      "paragraphs": [
+        "作者为 Caihao Sun、Mingqi Yuan、Shiyuan Wang 与 Jiayu Chen，来自 University of Hong Kong、Hong Kong Polytechnic University、TU Dresden 与 INFIFOR。",
+        "本站核验 arXiv:2603.07787v1：提交于 2026-03-08；主分类 cs.LG，PDF 26 页。官方 metadata 写 Mingqi Yuan，TeX 写 Minqi Yuan，本卡采用官方 metadata。",
+        "Collection 来源为刘子鸣网站的 Transformer Theory 条目。"
+      ]
+    },
+    {
+      "title": "研究问题",
+      "paragraphs": [
+        "ViT 连续学习许多 supervised tasks 时，新任务 acquisition 会逐渐下降。哪些 blocks/modules 的表示与优化轨迹伴随 plasticity loss？能否用轻量预条件器保持新任务可学性？",
+        "论文报告 deeper blocks/FFNs 的 effective rank、activation rate 等指标恶化，并提出 ARROW：用最近 W 个 gradients 的低秩二阶矩对当前 gradient 各向异性重缩放。",
+        "一个 heavily tuned ARROW configuration 在六个 CIFAR-100/ImageNet-R partitions 给最高 listed AAT point estimates；但 diagnostics 非因果、统计与协议不足，不能支持“永不停止”或通用 continual Transformer 结论。"
+      ]
+    },
+    {
+      "title": "背景",
+      "paragraphs": [
+        "continual learning 至少分 acquisition、retention 与 transfer。每任务重新初始化只能给当下新任务学习的 upper reference，不保留过去任务，不能当作全流性能上界。",
+        "task-incremental 通常允许 task ID 或独立 heads；class-incremental 要在统一 label space 中区分所有 classes，难度不同。本文属于 supervised task partitions，协议细节需明确。",
+        "effective rank 描述 singular spectrum 是否集中；FAU/FDU 按本文定义是在 unit-example pairs 上 active/inactive 的比例，不等于一批永久 dormant neurons。",
+        "recent gradient outer products 形成可低秩处理的 PSD operator。它像 natural-gradient/curvature preconditioner，但只有在 likelihood 与 estimator assumptions 下才可称 Fisher/Hessian approximation。"
+      ]
+    },
+    {
+      "title": "给物理学家的 AI 导读",
+      "paragraphs": [
+        "把 $C_t$ 看成最近驱动力方向的时间平均 dyadic tensor。其高 eigenvalue subspace 是优化反复走过的方向；inverse preconditioner 相对抑制这些 modes，并放大 orthogonal complement。",
+        "这可类比避免系统锁入已形成的 stiff directions，但 $C_t$ 未中心化，混合了 mean drift 与 fluctuations；它不等于 local energy Hessian。",
+        "rank/norm/activation 与 accuracy 同时变化类似观察 order parameters 共变，无法决定哪个是 causally relevant。freeze block 又同时改变 degrees of freedom 与 optimization path。",
+        "“stream 更长”同时意味着每 task classes 更少：CIFAR100 的 10/20/25 tasks 即每 task 10/5/4 classes。因此 AAT 上升可能来自单任务变容易，不是 plasticity 随时间改善。"
+      ]
+    },
+    {
+      "title": "模型与方法",
+      "paragraphs": [
+        "diagnostics 在 ViT-B/16 任务流中记录 AAT、effective rank、weight norm、activation rate，并按 block/FFN/Q/K/V projection 看层间差异与 freezing responses。",
+        "ARROW 保存 W=20 recent gradients，构造 $C_t$；用 Woodbury 在 gradient-history span 内解 W×W system，best row 采用 RMS-like warm-up、α=0.001、β=0.9 并应用于 last block。",
+        "benchmark 把 CIFAR-100 分成 10/20/25 tasks，把 ImageNet-R 分成 20/40/50 tasks；比较 vanilla、rehearsal/prompt/regularization baselines 与 TRAC/ARROW。",
+        "hyperparameters 广泛在 CIFAR-100 10-task condition 调整。论文没有清晰 code URL、per-task epochs/steps、batch size、pretraining/init、base optimizer rates、class order 或 task-head protocol。"
+      ]
+    },
+    {
+      "title": "核心结果与证据",
+      "paragraphs": [
+        "CIFAR diagnostic 报 vanilla AAT 0.590，并称相对 per-task reinitialization upper bound 降 14.9%；但 AAT evaluation time、retention/task-head handling 与百分比 denominator 不够清楚。",
+        "local probes 显示 deeper blocks/FFNs effective rank 更低、weight norms 更高、activation rates 更低，V projection 比 Q/K 更不稳定；这些是 co-trajectories，不是 mediation evidence。",
+        "CIFAR-100 ARROW AAT 在 10/20/25 tasks 为 64.21/73.52/73.89，TRAC 为 63.58/73.32/72.19；前两项仅高 0.63/0.20 points。",
+        "ImageNet-R ARROW 在 20/40/50 tasks 为 37.20/37.59/43.40；最大 listed gain 是 20-task 相对 next-best L2P 30.83，提高 6.37 points。",
+        "正文另称 CIFAR-100 有 200 个 five-class tasks，这需 1,000 class slots，与 100 类及后文 10/20/25 disjoint partitions 冲突；未说明 reuse/permutation 或 Figure 1 的关系。",
+        "论文称一张 RTX 4090、training time/memory comparable to vanilla，但无 numeric runtime/memory table；低秩法仍需 O(dW) storage、O(dW²) Gram work 和 W×W solve。"
+      ]
+    },
+    {
+      "title": "有效性与局限",
+      "paragraphs": [
+        "AAT 的 acquisition/retention timing、task-ID/head protocol 不清；per-task reset 只衡量 isolated new-task learnability，不是保留旧任务的 continual upper bound。",
+        "200×5-class CIFAR statement 内部不可能作为 disjoint partition，削弱 Figure 1/diagnostic 的可解释性；只能信任明确列出的 10/20/25 partitions。",
+        "FDU 是 inactive unit-example rate，不表示固定 dormant units；effective-rank 公式中的 normalized spectrum $p_i$ 也未完整定义。",
+        "rank/norm/FAU 与 performance 是相关性。block freezing 同时减少 capacity 与改变 optimization，没有证明 FFN collapse 或 deep-attention instability 导致 plasticity loss。",
+        "$C_t$ 是 uncentered temporal gradient second moment，不是已验证 curvature estimator。Woodbury 代数正确，但不为 causal geometry story 提供证据。",
+        "ablation 缺文字所述 α=1,β=0 的联合 first-order control；各 rows 同时改变 α、β、block scope 与有效 step scaling，无法识别 individual component necessity。",
+        "main table 无 seed counts、CIs 或 tests；Figure 3 称 mean±SD 但不报 runs。小于 1 point 的 gains 无 ranking stability evidence。",
+        "广泛 tuning 似复用 CIFAR-100 10-task report，无 held-out selection 或 multiplicity correction。结果不覆盖 class-incremental、language models、foundation-model updates、RL 或 indefinite streams。"
+      ]
+    },
+    {
+      "title": "复现与资源",
+      "paragraphs": [
+        "先发布 exact task class lists/order、task-ID/head handling、AAT evaluation checkpoint、retention matrix、reset reference 和 Figure 1 的合法 stream construction。",
+        "固定 pretrained ViT/base optimizer、per-task epochs/steps、batch/preprocessing/seeds；多个 class orders 运行并报告 acquisition-retention Pareto、mean±CI 与 paired comparisons。",
+        "诊断指标补定义 $p_i$，区分 per-example inactive rate 与 persistently dormant units；用 intervention 恢复 rank/activation 而保持 capacity，检验是否改善 acquisition。",
+        "做正交 2×2 controls：β=0 与 β>0、α matched effective step、same block scope；加入 α=1,β=0 first-order row及等 compute TRAC/RMS baselines。",
+        "直接比较 $C_t$ 与 Hessian-vector/Fisher/centered covariance 的 subspace angles 与 predictive value；若不匹配，只称 recent-gradient preconditioner。",
+        "记录 O(dW)/O(dW²)/solve 的 wall-clock、VRAM 与 scaling。论文无 code link/充分训练细节，当前不能独立复现主表。"
+      ]
+    },
+    {
+      "title": "阅读指南",
+      "paragraphs": [
+        "快速路线：pp. 4–7 看 plasticity metrics/diagnostics；pp. 8–9 看 ARROW equations；pp. 9–11 看 tuning、ablation 与 comparison table。",
+        "物理路线：把 $C_t$ 当 time-averaged dyadic drive tensor，而不是 Hessian；区分 mean drift、fluctuation covariance 与 true curvature。",
+        "AI 路线：先澄清 task-/class-incremental、acquisition/retention 与 task difficulty，再解释 AAT。",
+        "批判路线：重点核对 200-task contradiction、AAT timing、FDU/effective rank、missing first-order control、seed uncertainty、tuning reuse、compute table 与 protocol completeness。"
+      ]
+    }
+  ],
+  "evidence_refs": [
+    "paper.pdf pp. 4–8 and metric appendix: AAT/reinitialization diagnostic, effective-rank and unit-example activation definitions, layer/module co-trajectories and inconsistent 200-task CIFAR statement",
+    "paper.pdf pp. 8–11: ARROW recent-gradient operator, Woodbury implementation, hyperparameter/ablation design and six benchmark partition point estimates",
+    "official arXiv metadata versus TeX: Mingqi Yuan in metadata, Minqi Yuan in source; official metadata retained",
+    "source PDF SHA-256 2ca49766de65c7d3cae106df712954fb4c58b977ed991939bdbec89ad66403fc",
+    "official arXiv v1 source archive SHA-256 2a2dde89048f2c098aec9dc3ac343bcc80db70b3ad1c465638cff124cc3708a2",
+    "MinerU Markdown SHA-256 76a51c88a616d43a4cf05452c10890c532254fa6f708b0b7bb973d10f0bb358f",
+    "Evidence packet SHA-256 4184915801d3ab1b428e4c7962187a19723f862258bb589c9ccf07b51e3eced5",
+    "Evidence status: full text, rendered pages and official TeX verified against latest arXiv v1; task-count contradiction, acquisition/retention, inactive-rate/effective-rank, class-per-task confound, uncentered gradient moment, ablation isolation, seed/statistical, tuning, compute and general continual-learning boundaries recorded; no independent reproduction performed."
+  ]
+}

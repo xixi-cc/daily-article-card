@@ -1,0 +1,184 @@
+{
+  "arxiv_id": "2603.08455",
+  "source_version": "v1",
+  "source_pdf": "https://arxiv.org/pdf/2603.08455v1",
+  "title_en": "The Boiling Frog Threshold: Criticality and Blindness in World Model-Based Anomaly Detection Under Gradual Drift",
+  "title_zh": "温水煮青蛙阈值：渐进漂移下基于世界模型的异常检测临界性与盲区",
+  "curation_status": "full_text_verified",
+  "card_standard_version": "2.4",
+  "audience_profile": "physics_ai_literate_physicist",
+  "paper_profile": "ai_empirical",
+  "style_reference": "physicist_daily_arxiv",
+  "provenance": {
+    "program": "Collection",
+    "catalog": "Paper Collection",
+    "catalog_record_id": "2603.08455",
+    "catalog_record_ids": ["2603.08455"],
+    "catalog_topic": "World Models",
+    "collection_date": "2026-08-30",
+    "sampled_at": "2026-08-31",
+    "selected_by": "ziming_mineru_serial_goal",
+    "sampling_seed": "not_applicable_source_complete",
+    "candidate_count": 464
+  },
+  "verified_metadata": {
+    "arxiv_id": "2603.08455",
+    "version": "v1",
+    "title": "The Boiling Frog Threshold: Criticality and Blindness in World Model-Based Anomaly Detection Under Gradual Drift",
+    "authors": ["Zhe Hong"],
+    "categories": ["cs.AI", "cs.LG"],
+    "primary_category": "cs.AI",
+    "published": "2026-03-09",
+    "updated": "2026-03-09",
+    "abstract": "A next-state-prediction world model and three prediction-error detector families are tested under synthetic linear and sinusoidal observation drift in four MuJoCo agents, revealing detector-dependent threshold-like transitions and selected non-detection cases."
+  },
+  "equation_refs": [
+    {
+      "label": "synthetic observation drift",
+      "latex": "\\tilde o_t=o_t+\\epsilon\\,g(t)\\,v,\\qquad g_{lin}(t)=t-t_0,\\quad g_{sin}(t)=\\sin[2\\pi f(t-t_0)]",
+      "role": "inject an axis-aligned gradual perturbation after a baseline segment using either growing or oscillatory time dependence",
+      "symbols": {
+        "o_t": "clean proprioceptive velocity observation",
+        "v": "chosen drift direction whose construction is under-specified",
+        "epsilon": "drift intensity swept over 16 values",
+        "f": "single sinusoidal frequency, fixed to 0.01"
+      },
+      "evidence": "paper.pdf pp. 2–3, gradual-drift protocol",
+      "interpretation": "只测试 synthetic axis-aligned additive drift；未覆盖自然非平稳性、视觉 drift、频率谱或 adversarially optimized perturbations。"
+    },
+    {
+      "label": "world-model prediction error",
+      "latex": "PE_t=\\|o_{t+1}-\\hat f_\\theta(o_t,a_t)\\|_2^2",
+      "role": "turn one-step next-state mismatch into the scalar time series monitored by anomaly detectors",
+      "symbols": {
+        "f_theta": "three-layer MLP next-state predictor",
+        "a_t": "PPO action",
+        "PE_t": "squared prediction error",
+        "detectors": "z-score, percentile/window and distribution-index summaries"
+      },
+      "evidence": "paper.pdf pp. 2–3, world-model and detector definitions",
+      "interpretation": "零均值 sinusoidal input 不推出平方误差平均为零：非线性 predictor、cross term 与 $\\epsilon^2g^2$ 均可保留频率/能量信息。"
+    }
+  ],
+  "figure_refs": [
+    {
+      "label": "Figure 1 detection rate versus drift intensity",
+      "asset_path": "assets/collection-figures/2603.08455/figure_1_sigmoid_threshold.webp",
+      "section": "核心结果与证据",
+      "role": "display detector firing rates over drift intensity for four MuJoCo environments",
+      "evidence": "paper.pdf p. 4, Figure 1; official source asset fig_sigmoid_main.png",
+      "alt_text": "Four panels show anomaly-detection rate versus drift intensity for HalfCheetah, Hopper, Walker2d and Ant under several detector settings.",
+      "caption": "Figure 1：四环境 detection-rate curves 呈不同 threshold-like shapes。Ant 上升较缓且约饱和于 0.86–0.88，而非 100%；这直接限制“所有环境统一 sharp 0→100% sigmoid”的措辞。",
+      "interpretation": "图支持 detector/environment-dependent crossover，但 epsilon-star 提取规则、Wilson intervals 与 nested-seed uncertainty 未显示，不能称 universal critical point。"
+    }
+  ],
+  "cover": {
+    "mode": "source_figure",
+    "asset_path": "assets/collection-figures/2603.08455/figure_1_sigmoid_threshold.webp",
+    "label": "Figure 1 threshold-like detection curves",
+    "visual_type": "comparison",
+    "evidence": "paper.pdf p. 4, Figure 1; official source PNG",
+    "alt_text": "Detection probabilities change with drift intensity in environment- and detector-dependent ways.",
+    "caption": "渐进漂移下的 detector-dependent crossover；Ant 面板不支持 universal 0→100% sigmoid。",
+    "selection_rationale": "The central figure is the most direct evidence for both the threshold-like claim and its visible lack of universality across environments."
+  },
+  "sections": [
+    {
+      "title": "作者信息",
+      "paragraphs": [
+        "作者为 Zhe Hong；arXiv 页面未在论文正文明确列出机构。",
+        "本站核验 arXiv:2603.08455v1：提交于 2026-03-09；分类 cs.AI、cs.LG，PDF 12 个物理页。",
+        "Collection 来源为刘子鸣网站的 World Models 条目。"
+      ]
+    },
+    {
+      "title": "研究问题",
+      "paragraphs": [
+        "agent 用 world-model prediction error 监控环境变化时，缓慢 drift 是否存在一个从几乎不报到大量报警的 threshold？某些周期漂移或灾难性行为能否在 PE detector 下仍不可见？",
+        "论文在四个 MuJoCo-v5 locomotion environments 训练 PPO，再拟合 one-step MLP dynamics predictor，向 velocity observations 注入 linear/sinusoidal drift，并比较 z-score、percentile 与 distribution-index detectors。",
+        "结果支持特定 protocol 中的 detector/environment-dependent crossover 与若干 non-detection case；epsilon-star 未定义、统计/conditions 有矛盾，不能推出 universal criticality、PE 无信息或一般 safety blindness。"
+      ]
+    },
+    {
+      "title": "背景",
+      "paragraphs": [
+        "world model 在此仅是监督训练的 one-step next-state MLP，不是 latent RSSM、Transformer simulator 或生成式 planning model。PE 混合 model error、observation noise、policy visitation 与 drift。",
+        "阈值 detector 把连续 observable 通过 window/percentile/z-score 转成 binary firing。sharpness 可由 thresholding 本身产生，不必代表系统内部 thermodynamic criticality。",
+        "检测率是 episodes/seeds 上的事件概率；如果 8 episodes 嵌套在同一 seed/model/policy 中，它们不是 80 个完全独立 Bernoulli replicates。",
+        "critical point 需 operational definition，例如 sigmoid 50% crossing、maximum slope 或 change point，并给 fit uncertainty/sensitivity。论文未说明 epsilon-star 如何提取。"
+      ]
+    },
+    {
+      "title": "给物理学家的 AI 导读",
+      "paragraphs": [
+        "可以把 PE_t 看作 nonequilibrium response observable，epsilon 是外部 drive。detector threshold 将连续 response 映射为 order-parameter-like detection rate，但这不自动产生真正相变。",
+        "不同 environments 的 policy、dynamics 与 baseline PE 分布不同，所以所谓 epsilon-star 是 detector×environment 的 operating point，不是 world model 的材料常数。",
+        "正弦 perturbation 的时间平均为零，只消除线性均值项；平方 observable 有 $\\epsilon^2\\sin^2$ DC component，非线性/phase lag 还产生 harmonics。三种摘要 detector 未触发不等于原 PE spectrum 无信息。",
+        "Hopper collapse-before-alarm 可视作 competing first-passage times，但 baseline collapse 已约 50%；必须做 survival/competing-risk analysis 才能把 detection timing 解释为 causal safety failure。"
+      ]
+    },
+    {
+      "title": "模型与方法",
+      "paragraphs": [
+        "四个 agents 各训练 PPO 10^6 steps，再训练三层 MLP next-state predictor；episode 先 300 baseline steps，随后 drift 到 step 1,000。",
+        "epsilon 取 16 个值从 $10^{-4}$ 到 0.5；linear drift 随时间增长，sinusoid 只用 frequency 0.01。论文称每 condition 10 seeds×8 episodes=80。",
+        "detectors 包括多种 z-score/window、percentile 与 distribution-index parameter grids。visible methods 未完整列出 percentile within-window rule、EMA coefficient、DI subset 或 Experiment B 六配置。",
+        "capacity check 只把同一三层 MLP hidden width 从 128 改为 512/1024，并配 z-score normalization；不是对 world-model classes 的系统 sweep。"
+      ]
+    },
+    {
+      "title": "核心结果与证据",
+      "paragraphs": [
+        "论文报 DI epsilon-star ranges：HalfCheetah 0.0003–0.004、Hopper 0.007–0.012、Walker2d 0.0003–0.003、Ant 0.0001–0.001；但无 extraction rule/fit artifacts，当前不可重算。",
+        "Figure 1 中 HalfCheetah/Hopper/Walker2d 有较明显 S-shaped rise，Ant 较渐进且最多约 87%，因此只支持 heterogeneous threshold-like transitions。",
+        "单个 HalfCheetah epsilon=0.01 spectral example 中，linear drift PE power 为 baseline 201.6×，sinusoid 为 0.8×；单 case 不证明所有 sinusoid 不可检测。",
+        "Hopper epsilon=0.05 报 drift 后约 25 steps collapse 且 detector 未触发；但 near-zero epsilon baseline collapse rate 已约 50%，事件归因与 detection conditioning 不清。",
+        "DI parameter 的 log-linear power-law fit 每环境 R² 为 0.97/0.95/0.89/0.78，跨环境 global R² 仅 0.45，反而显示 mapping 不统一。",
+        "HalfCheetah width 128/512/1024 baseline MSE 0.254/0.163/0.145，authors 称 threshold 位置近似不变；只说明此窄 family 的观察，不证明 capacity independence。"
+      ]
+    },
+    {
+      "title": "有效性与局限",
+      "paragraphs": [
+        "epsilon-star 无 50% crossing/interpolation/sigmoid-fit 定义，且 cited epsilon_star_analysis.json 不在 source；阈值与 regression 不能从 paper 重建。",
+        "Figure 1 的 Ant panel 与 universal sharp 0→100% claim 冲突。criticality 也没有 finite-size scaling、susceptibility divergence 或非解析证据。",
+        "DI grid 由五 z×五 W 应有 25 组合，Experiment A 却称九 DI configurations/576 conditions，selection rule 缺失；Experiment B 六 detector settings 也未枚举。",
+        "percentile detector 同时写 five-step window 与 no temporal aggregation，within-window decision rule 缺失，影响 exact reproduction。",
+        "论文称 Wilson 95% intervals，但 Figure 1/Table 2 未显示。统计单位应以 10 independent seeds 为层级，80 nested episodes 不可无条件当独立 trials。",
+        "三 detector families 对一个 frequency 失败不能推出 PE time series 无 extractable information，更不能量化 any detector blindness；spectral/matched-filter/change-point detector 未试。",
+        "alpha 被解释为 tail heaviness、partial PE/partial epsilon 被称 missing environment variable，均未实际估计 tail index 或导数，是 mechanism speculation。",
+        "Walker2d correction 以非零 epsilon=1e-4 当 baseline FPR；algebraic correction 不能识别 detector-independent true threshold。结论也不覆盖 vision、natural drift 或真实 safety deployment。"
+      ]
+    },
+    {
+      "title": "复现与资源",
+      "paragraphs": [
+        "补齐 PPO/world-model hyperparameters、train/transition split、observation normalization、drift direction、EMA/window rules、all detector grids、epsilon-star algorithm 与 raw seed trajectories。",
+        "以 seed 为 independent cluster，用 hierarchical binomial/mixed model 或 cluster bootstrap；显示 Wilson/cluster CIs，并对 sigmoid、isotonic、change-point fits 做 model comparison。",
+        "预定义 epsilon-star 为 50% crossing 或 maximum derivative，报告 interpolation/fit CI；对 Ant 检验 plateau<1 的 generalized logistic，而不强制 100%。",
+        "sinusoid 扫频率/amplitude/phase，比较 time-domain threshold、spectral power、matched filter、CUSUM 与 learned detector；报告 raw PE PSD/ROC，而非由三失败法推出无信息。",
+        "Hopper 用 survival curves 与 competing risks 比较 baseline/drift collapse、alarm time；不以 only-successful-detection episodes 计算 CBA。",
+        "source 无 cited regression JSON、实验代码或 raw observations；还缺关键 protocol，因此当前只能重现概念，不能精确重算 threshold table。"
+      ]
+    },
+    {
+      "title": "阅读指南",
+      "paragraphs": [
+        "快速路线：pp. 2–3 看 protocol/detectors；p. 4 看 Figure 1；pp. 5–7 看 sinusoid、CBA、regression/capacity；pp. 8–12 看 limits/appendix plots。",
+        "物理路线：区分 continuous response、thresholded detection probability 与 true criticality；检查 finite-size/fit definition 和独立统计单元。",
+        "AI 路线：区分 one-step MLP PE、detector blindness、agent failure 与 causal safety claim；world model 一词不代表所有 architectures。",
+        "批判路线：优先核对 epsilon-star、Ant saturation、9-versus-25 DI grid、576 count、six configs、Wilson intervals、nested episodes 与 missing artifacts。"
+      ]
+    }
+  ],
+  "evidence_refs": [
+    "paper.pdf pp. 2–4: PPO/MLP world-model protocol, linear/sinusoidal drift, detector grids, condition counts, epsilon-star table and Figure 1",
+    "paper.pdf pp. 5–7 and appendix Figures 3–5: selected PE spectrum, Hopper collapse timing, DI regressions, capacity check and Walker2d correction",
+    "official arXiv v1 source inventory: all five figure assets present, but cited epsilon_star_analysis.json, experiment code and raw observations absent",
+    "source PDF SHA-256 23cb7b20967b377eab7c459347269e20108f1f489f023aefe79060cc3076090c",
+    "official arXiv v1 source archive SHA-256 1e0dc6ddb8b85f22058749b6661e1fdfd3a5303619f49d5be79765732017fbc8",
+    "MinerU Markdown SHA-256 30c67c42bbd8e77daf6790d7cb799b2afd25d1b430c0f32394e058d6f6f545fb",
+    "Evidence packet SHA-256 e998f015b429129107f1439121049a4f529c2ec8fd7224c9b2f36b420ce5f605",
+    "Evidence status: full text, rendered pages and official TeX verified against latest arXiv v1; undefined epsilon-star, nonuniversal curve, detector/condition contradictions, nested statistical unit, sinusoid squared-error logic, causal/capacity/safety and synthetic-MuJoCo extrapolation boundaries recorded; no independent reproduction performed."
+  ]
+}
