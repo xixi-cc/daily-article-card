@@ -1,0 +1,199 @@
+{
+  "arxiv_id": "2604.03764",
+  "source_version": "v1",
+  "source_pdf": "https://arxiv.org/pdf/2604.03764v1",
+  "title_en": "Automated Attention Pattern Discovery at Scale in Large Language Models",
+  "title_zh": "大语言模型中大规模自动化注意力模式发现",
+  "curation_status": "full_text_verified",
+  "card_standard_version": "2.4",
+  "audience_profile": "physics_ai_literate_physicist",
+  "paper_profile": "ai_empirical",
+  "style_reference": "physicist_daily_arxiv",
+  "provenance": {
+    "program": "Collection",
+    "catalog": "Paper Collection",
+    "catalog_record_id": "2604.03764",
+    "catalog_record_ids": ["2604.03764"],
+    "catalog_topic": "Mechanistic Interpretability",
+    "collection_date": "2026-08-30",
+    "sampled_at": "2026-08-31",
+    "selected_by": "ziming_mineru_serial_goal",
+    "sampling_seed": "not_applicable_source_complete",
+    "candidate_count": 464
+  },
+  "verified_metadata": {
+    "arxiv_id": "2604.03764",
+    "version": "v1",
+    "title": "Automated Attention Pattern Discovery at Scale in Large Language Models",
+    "authors": ["Jonathan Katzy", "Razvan-Mihai Popescu", "Erik Mekkes", "Arie van Deursen", "Maliheh Izadi"],
+    "categories": ["cs.LG", "cs.AI"],
+    "primary_category": "cs.LG",
+    "published": "2026-04-04",
+    "updated": "2026-04-04",
+    "abstract": "The TMLR 2026 paper trains a masked autoencoder on StarCoder2 attention matrices, clusters its embeddings per head, predicts balanced completion correctness from cluster identities, and ablates adaptively selected heads."
+  },
+  "equation_refs": [
+    {
+      "label": "log-rescaled attention image",
+      "latex": "\\widetilde A_{ij}=\\log(A_{ij}+\\varepsilon),\\qquad 1\\leq j\\leq i\\leq256",
+      "role": "compress the heavy intensity imbalance of one causal attention matrix before masked-image reconstruction",
+      "symbols": {
+        "A_ij": "attention weight from query position i to key position j",
+        "epsilon": "small numerical offset implicit in stable log scaling",
+        "A_tilde": "single-channel triangular image supplied to AP-MAE",
+        "256": "fixed truncated token context"
+      },
+      "evidence": "paper.pdf pp. 3–5, AP-MAE preprocessing and Figure 1; operational form of the described natural-log transform",
+      "interpretation": "log 是 monotonic、保留权重排序，但会改变 Euclidean reconstruction geometry；AP-MAE 学到的是这种预处理后的 image statistics，不是原 attention operator 的全部作用。"
+    },
+    {
+      "label": "per-head discovery pipeline",
+      "latex": "z=E_{\\mathrm{AP-MAE}}(\\widetilde A)\\in\\mathbb R^{512},\\quad u=\\operatorname{UMAP}_h(z)\\in\\mathbb R^8,\\quad c=\\operatorname{HDBSCAN}_h(u)",
+      "role": "embed each attention matrix and assign an unsupervised cluster separately for every model head",
+      "symbols": {
+        "E_AP_MAE": "trained masked-autoencoder encoder using the CLS representation",
+        "h": "specific layer-head identity",
+        "z": "512-dimensional attention-pattern embedding",
+        "u": "head-specific eight-dimensional UMAP coordinate",
+        "c": "head-specific HDBSCAN cluster or noise assignment"
+      },
+      "evidence": "paper.pdf pp. 6–8, pattern-discovery pipeline and clustering scale",
+      "interpretation": "cluster label 只在单个 head 的 UMAP geometry 内定义；跨 head 的同号 cluster 不构成共享 taxonomy，且结果可依赖 UMAP/HDBSCAN seed 与 hyperparameters。"
+    },
+    {
+      "label": "net intervention outcome",
+      "latex": "\\Delta N_{\\mathrm{correct}}=N_{\\mathrm{incorrect}\\to\\mathrm{correct}}-N_{\\mathrm{correct}\\to\\mathrm{incorrect}}",
+      "role": "measure whether zeroing a selected set of attention-head outputs produces a net gain on a constructed balanced cohort",
+      "symbols": {
+        "N_I_to_C": "originally incorrect cases changed to the correct token",
+        "N_C_to_I": "originally correct cases damaged by intervention",
+        "Delta_N_correct": "net change among 1000 original-correct plus 1000 original-incorrect cases",
+        "head_set": "adaptively selected SHAP-ranked heads at a chosen cutoff"
+      },
+      "evidence": "paper.pdf pp. 12–14, intervention definition and Figure 7",
+      "interpretation": "+271 等于该构造 cohort 的 +13.55 percentage points；它不是自然任务分布上的 calibration，也未经过独立 confirmatory head-selection holdout。"
+    }
+  ],
+  "figure_refs": [
+    {
+      "label": "Figure 2a discovered attention-pattern examples",
+      "asset_path": "assets/collection-figures/2604.03764/attention-pattern-cluster-examples.webp",
+      "section": "核心结果与证据",
+      "role": "show five selected groups of attention matrices assigned to different unsupervised per-head clusters",
+      "evidence": "paper.pdf p. 8, Figure 2(a); official source Images/pattern_examples-5.pdf",
+      "alt_text": "Rows of causal attention heatmaps exhibit selected vertical, diagonal, block and local motifs grouped by the learned clustering pipeline.",
+      "caption": "Figure 2(a)：AP-MAE embedding 经 per-head UMAP/HDBSCAN 后得到的代表性 cluster examples。视觉相似支持 recurring motifs，但未给 cluster prevalence、stability 或人工语义一致性。",
+      "interpretation": "这些是筛选过的 qualitative exemplars，不是经过标注验证的 induction/rare-token 等机制类别，也不证明 cluster 分离度。"
+    }
+  ],
+  "cover": {
+    "mode": "source_figure",
+    "asset_path": "assets/collection-figures/2604.03764/attention-pattern-cluster-examples.webp",
+    "label": "Figure 2a attention motifs",
+    "visual_type": "data_plot",
+    "evidence": "paper.pdf p. 8, Figure 2(a); official source figure",
+    "alt_text": "Selected attention heatmaps illustrate recurring patterns discovered by an unsupervised embedding and clustering pipeline.",
+    "caption": "自动聚类得到的注意力热图 motifs；cluster 是数据驱动分组，不是机制名称。",
+    "selection_rationale": "It directly displays what the discovery pipeline calls a pattern while allowing the semantic and stability limits to remain visible."
+  },
+  "sections": [
+    {
+      "title": "作者信息",
+      "paragraphs": [
+        "作者为 Jonathan Katzy、Razvan-Mihai Popescu、Erik Mekkes、Arie van Deursen 与 Maliheh Izadi，来自 Delft University of Technology；论文标注 Published in TMLR (02/2026)。",
+        "本站核验 arXiv:2604.03764v1：提交于 2026-04-04，是抽取时唯一版本；主分类 cs.LG，PDF 27 页。",
+        "Collection 来源为刘子鸣网站的 Mechanistic Interpretability 条目。"
+      ]
+    },
+    {
+      "title": "研究问题",
+      "paragraphs": [
+        "Transformer 每次生成会产生数百到数千张 $256\\times256$ attention matrices。能否用 image representation learning 自动压缩、聚类这些矩阵，并从海量 patterns 中筛出与正确预测相关、值得进一步机制分析的 heads？",
+        "论文训练 Attention Pattern Masked Autoencoder（AP-MAE），再对每个 StarCoder2 head 的 embeddings 独立做 UMAP/HDBSCAN；cluster identities 进入 CatBoost 预测 Java completion 是否正确。",
+        "SHAP-ranked heads 随后被集体置零以观察 token accuracy 变化。结果说明这一 pipeline 可做 scalable triage 和 selected-set intervention，但没有自动给出机制解释或普适 attention taxonomy。"
+      ]
+    },
+    {
+      "title": "背景",
+      "paragraphs": [
+        "attention matrix 的每行是一个 query 对此前 keys 的 normalized weights。它可呈对角、竖线、局部 block 等形状，但权重图本身不等于 information flow，因为 value vectors、output projection、residual stream 与 downstream nonlinearities 仍决定功能。",
+        "masked autoencoder 通过遮住 image patches 并重建像素来学 representation。把 attention 当单通道图像能复用视觉模型，但引入 patch size、log scaling 和 reconstruction metric 的 inductive bias。",
+        "UMAP 是 nonlinear dimensionality reduction，HDBSCAN 是 density clustering；两者适合探索，却可能随 seed、neighbors、minimum cluster size 和 density geometry 改变。",
+        "SHAP 衡量 classifier feature 与预测的 association。在相关 heads 和 adaptively chosen clusters 下，它不是某 head 对 LLM correctness 的因果贡献。"
+      ]
+    },
+    {
+      "title": "给物理学家的 AI 导读",
+      "paragraphs": [
+        "可以把每张 attention map 看成一个高维场 configuration，AP-MAE encoder 把它映到 512 维 coarse variables；聚类是在该 learned order-parameter space 中寻找 recurring phases。",
+        "但 pipeline 为每个 head 单独拟合 UMAP/HDBSCAN，相当于每个空间点使用不同坐标系和 phase boundary。没有 alignment 就不能把不同 heads 的 cluster IDs 当同一相。",
+        "数千万 matrices 来自同一批 code examples、layers、heads 和三个同家族模型，是强嵌套观测，不是数千万 independent experiments。有效样本量由文件、prompt 和 model realization 的层级决定。",
+        "分类后再按 SHAP extremes 搜索 ablation cutoff 类似先扫描许多 observables 再报告最大响应；若没有独立 confirmation 或 multiple-testing control，winner's curse 会放大效果。",
+        "head zeroing 是有限幅度、off-distribution perturbation。小规模改善和大规模崩溃说明 selected computation 有因果影响，但无法直接分解个体 head 的语义或证明 minimal circuit。"
+      ]
+    },
+    {
+      "title": "模型与方法",
+      "paragraphs": [
+        "AP-MAE 以 ViT-L 为基础，encoder hidden width 512、24 layers，decoder 8 layers；输入是截断到 256 tokens 的 causal triangular attention image，使用 natural-log intensity scaling。",
+        "训练数据来自 StarCoder2 3B/7B/15B 的 correct Java generations，每次 generation 在各 layer 抽 25% heads；总计约 7200 万 matrices、150000 batches，8×A100、低于 100 GPU-hours。",
+        "下游包含 11 tasks/baselines，每个 model-task 取 10000 inputs，correct/incorrect 各半且不再 subsample heads。每个 head 约 110000 embeddings，先 512→8 UMAP 再 HDBSCAN。",
+        "总 pattern samples 为 3B 7920 万、7B 1.267 亿、15B 2.112 亿；每个模型最多 1920 个独立 clustering pipelines。cluster categorical features 进入 CatBoost。",
+        "作者以 classifier SHAP 排序 heads，分 positive、negative、near-zero 和 random groups，逐步将 1 到最多 800 个 attention-head outputs 置零；每 condition 使用 1000 原正确加 1000 原错误案例。"
+      ]
+    },
+    {
+      "title": "核心结果与证据",
+      "paragraphs": [
+        "三种 StarCoder2 sizes 的 cross-model AP-MAE reconstruction loss（×$10^{-3}$）约 7.07–10.05，说明同架构家族、同 code domain、同 256-token format 内的 size transfer 较平稳；未测试跨 architecture/domain。",
+        "Figure 2 展示 recurring vertical、diagonal、block-like motifs，但 cluster 由 per-head unsupervised pipeline 定义；论文未报告 seeds、hyperparameter perturbation、adjusted Rand index 或人工 ontology agreement。",
+        "balanced correct/incorrect CatBoost accuracy 约 55%–70%；identifier、boolean literal、string literal 等接近 random-masking baseline，最强 15B end-of-line 只略高于 70%。",
+        "best end-of-line intervention 在 15B 的 2000-case constructed cohort 净增 271 个正确，即 +13.55 percentage points；string literal 在 3B 最大 +112。继续增加 zeroed heads 会迅速使表现崩溃。",
+        "global intervention error bars 是不同 tasks 的 variability，不是 repeated training/intervention seeds 的 confidence intervals。",
+        "这些结果提供 collective selected-head causal evidence：某些 ablations 会改变行为；它们没有验证每个 cluster 的语义，也没有证明所选集合是必要、充分或最小电路。"
+      ]
+    },
+    {
+      "title": "有效性与局限",
+      "paragraphs": [
+        "AP-MAE 只在 correct generations 上训练，classifier 却比较 balanced correct/incorrect，存在 representation-training distribution shift；balanced accuracy 不对应自然错误率或 calibration。",
+        "论文未说明按 source file/repository 做 grouped split，也未说明在 classifier 每个 CV fold 内重新拟合 UMAP/HDBSCAN；若先全量拟合，validation 带 transductive preprocessing，嵌套 samples 也非独立。",
+        "正文称 10-fold CV 使用 90/10/10 split，比例总和为 110%，无法自洽；卡片不把窄 95% intervals 当成已充分确认的泛化误差。",
+        "head、cluster、task、SHAP extremes 和 zeroing cutoff 搜索范围很大，却无 multiple-testing/FDR correction、cluster stability 或 independent confirmatory intervention holdout。",
+        "attention pattern cluster 与 correctness 的关联不等于机制。置零 selected head outputs 是因果扰动，但不能识别 cluster semantics、individual-head necessity 或作者提出的 resource-race/secondary-circuit 解释。",
+        "外部范围限于 Java、固定 256-token contexts、指定 completion tasks 与 StarCoder2 3B–15B；未测试 natural language、长 context、其他 architectures 或训练 checkpoints。"
+      ]
+    },
+    {
+      "title": "复现与资源",
+      "paragraphs": [
+        "固定 StarCoder2 checkpoints、Java corpus/repository split、mask positions、tokenizer、AP-MAE checkpoint 与全部 UMAP/HDBSCAN seeds/hyperparameters；按 source repository 分组隔离 train/test。",
+        "在每个 outer CV fold 内重新拟合 embedding reduction、clustering、CatBoost 和 SHAP selection，另留完全未接触的 confirmatory intervention set。",
+        "对 clusters 做多 seeds/hyperparameters stability、bootstrap prevalence、silhouette/density diagnostics，并用盲化人工 motif labels 报 agreement；跨 heads 先做 embedding/cluster alignment。",
+        "统计单位以 code file/prompt 和 model run 分层，报告 grouped-bootstrap intervals；对大量 head/task/cutoff hypotheses 做 preregistration 或 FDR control。",
+        "ablation 加入 activation patching、matched random/magnitude heads、single-head dose response 与 recovery tests，区分语义机制、冗余和一般 capacity damage。",
+        "代码 https://github.com/AISE-TUDelft/AP-MAE ，预训练模型 https://huggingface.co/collections/AISE-TUDelft/ap-mae ；本站未运行，应 pin commit/model revision 和数据 manifest。"
+      ]
+    },
+    {
+      "title": "阅读指南",
+      "paragraphs": [
+        "快速路线：pp. 3–6 看 AP-MAE 与 cross-model reconstruction；pp. 6–9 看 11 tasks、per-head clustering 和 Figure 2；pp. 9–14 看 correctness classification、SHAP 与 interventions。",
+        "物理路线：把 attention maps 当 field snapshots、embedding/clustering 当 coarse graining；重点检查每个 head 的坐标系是否稳定、观测是否独立。",
+        "AI 路线：始终区分 attention weights、pattern embeddings、cluster IDs、classifier SHAP 与 head-output ablation，它们是五层不同对象。",
+        "批判路线：核查 correct-only representation training、90/10/10 矛盾、非 nested CV、adaptive multiplicity、constructed cohort denominator 和 collective-versus-individual causality。"
+      ]
+    }
+  ],
+  "evidence_refs": [
+    "paper.pdf pp. 3–6 and official main.tex: AP-MAE input transform, architecture, training scale, compute and cross-model reconstruction numbers",
+    "paper.pdf pp. 6–9 and official main.tex: 11 tasks, three StarCoder2 model/head counts, sample totals, per-head UMAP/HDBSCAN definition and qualitative cluster interpretation",
+    "paper.pdf pp. 9–11: CatBoost features, balanced correctness labels, cross-validation wording, accuracy range, SHAP selection and unresolved 90/10/10 split inconsistency",
+    "paper.pdf pp. 12–14: zero-head interventions, constructed 2000-example denominator, +271/+112 results, task-level error bars, mechanism speculation and explicit limitations",
+    "source PDF SHA-256 14922d14363093cd8e3758f2d64a02032a8f637e7015f01a2a893e7c9ee9520f",
+    "official arXiv v1 source archive SHA-256 3f2faa5020532e9bb59e1b5ac090b194711968701c2b42faf91491fdddb600c5",
+    "MinerU Markdown SHA-256 84532d0d4c157ec8cdc5032b90313099212aa37b02d94a8b6a4b933bf64c6619",
+    "Evidence packet SHA-256 33b0c7d28bf059bd3d4a3a25af4324b4f479dd3390b5c1a867ed689a1999243f",
+    "Evidence status: full text, rendered pages and official TeX verified against latest arXiv v1; attention-weight/function, per-head cluster semantics/stability, nesting, distribution shift, CV leakage, split inconsistency, multiplicity, SHAP association, collective intervention and external-validity boundaries recorded; no independent reproduction performed."
+  ]
+}

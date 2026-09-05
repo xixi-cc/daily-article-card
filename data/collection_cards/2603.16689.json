@@ -1,0 +1,197 @@
+{
+  "arxiv_id": "2603.16689",
+  "source_version": "v2",
+  "source_pdf": "https://arxiv.org/pdf/2603.16689v2",
+  "title_en": "Predictive Statistics Shape Emergent World Representations of Grid Walkers",
+  "title_zh": "预测统计量塑造网格游走者中涌现的世界表征",
+  "curation_status": "full_text_verified",
+  "card_standard_version": "2.4",
+  "audience_profile": "physics_ai_literate_physicist",
+  "paper_profile": "theory_experiment",
+  "style_reference": "physicist_daily_arxiv",
+  "provenance": {
+    "program": "Collection",
+    "catalog": "Paper Collection",
+    "catalog_record_id": "2603.16689",
+    "catalog_record_ids": ["2603.16689"],
+    "catalog_topic": "Representation Learning",
+    "collection_date": "2026-08-30",
+    "sampled_at": "2026-08-31",
+    "selected_by": "ziming_mineru_serial_goal",
+    "sampling_seed": "not_applicable_source_complete",
+    "candidate_count": 464
+  },
+  "verified_metadata": {
+    "arxiv_id": "2603.16689",
+    "version": "v2",
+    "title": "Predictive Statistics Shape Emergent World Representations of Grid Walkers",
+    "authors": ["Sasha Brenner", "Thomas R. Knösche", "Nico Scherf"],
+    "categories": ["cs.LG"],
+    "primary_category": "cs.LG",
+    "published": "2026-03-17",
+    "updated": "2026-06-05",
+    "abstract": "The paper uses exactly solvable constrained T=20 grid walks to compare analytic predictive statistics with hidden-state geometry in trained small transformers and recurrent networks."
+  },
+  "equation_refs": [
+    {
+      "label": "next-step moment expansion",
+      "latex": "P(\\Delta\\mid s_t)=\\frac14[1+\\langle\\Delta u\\rangle\\Delta u+\\langle\\Delta v\\rangle\\Delta v+\\langle\\Delta u\\Delta v\\rangle\\Delta u\\Delta v]",
+      "role": "express any four-direction next-step distribution through three independent moments",
+      "symbols": {
+        "s_t": "observed step prefix through time t",
+        "Delta": "one of four diagonalized lattice-step symbols",
+        "Delta_u_Delta_v": "two binary step coordinates",
+        "angle_brackets": "conditional expectation under the exact walker process"
+      },
+      "evidence": "paper.pdf pp. 3–4, Eq. (1) and official main.tex",
+      "interpretation": "四分类 probability simplex 有三个自由度，因此三 moments 是 next-step law 的精确坐标；它们不一定保留区分相同一步分布、不同长程未来的完整 world state。"
+    },
+    {
+      "label": "effective-field softmax",
+      "latex": "P(\\Delta\\mid s_t)=\\frac{e^{-\\mathbf q_t\\cdot\\boldsymbol\\Delta_*}}{\\sum_{\\Delta'}e^{-\\mathbf q_t\\cdot\\boldsymbol\\Delta'_*}},\\qquad \\boldsymbol\\Delta_*=(\\Delta u,\\Delta v,\\Delta u\\Delta v)",
+      "role": "parametrize the exact next-token distribution by a three-component predictive field",
+      "symbols": {
+        "q_t": "constraint-dependent effective field",
+        "Delta_star": "three sufficient basis functions of a step",
+        "s_t": "full prefix",
+        "normalizer": "sum over the four allowed step symbols"
+      },
+      "evidence": "paper.pdf p. 4, Eqs. (2)–(3) and official main.tex",
+      "interpretation": "$\\mathbf q_t$ 对下一步充分，但不总对完整未来充分；最终 LayerNorm 后可线性读出它几乎由 linear logits readout 构造性保证。"
+    },
+    {
+      "label": "uniform-attention position estimator",
+      "latex": "\\frac1t\\sum_{i=1}^{t}\\mathbf a_{c_i}\\simeq A\\frac1t\\sum_{i=1}^{t}\\boldsymbol\\Delta_{c_i}=A\\frac{\\mathbf x_t}{t}",
+      "role": "approximate the trained first attention head as an additive causal average that writes normalized position",
+      "symbols": {
+        "a_ci": "token-dependent value-write main effect",
+        "c_i": "step token at position i",
+        "A": "fitted linear map from step displacement to value write",
+        "x_t": "net lattice displacement after t steps"
+      },
+      "evidence": "paper.pdf pp. 8–9, Eq. (6), Figure 4 and attention decomposition",
+      "interpretation": "该式是代表性已训练模型的近似机制，不是所有模型的 exact algorithm；token-position interaction 很小，但 time code 仍有约 6% 的第二主成分。"
+    }
+  ],
+  "figure_refs": [
+    {
+      "label": "Figure 3 probes and cross-variant geometry",
+      "asset_path": "assets/collection-figures/2603.16689/figure3-probes-and-cka.webp",
+      "section": "核心结果与证据",
+      "role": "summarize bidirectional affine probes, held-out state-class encoding and pre/post-MLP cross-variant CKA",
+      "evidence": "paper.pdf p. 7, Figure 3; official source figs/fig_r2_universality_combined.pdf",
+      "alt_text": "Probe scores and CKA matrices show a low-dimensional shared post-attention grid coordinate geometry that becomes more task-specific after the MLP.",
+      "caption": "Figure 3：post-attention activations 可由 $[x_t/t,y_t/t,\\log t]$ 近似张成并跨 walker 对齐；经过 MLP 后 geometry 更接近 task-specific predictive field。",
+      "interpretation": "probe 与 CKA 证明线性可访问性、低维 span 和 association，不证明该坐标 causally necessary、唯一或由 objective 必然产生。"
+    }
+  ],
+  "cover": {
+    "mode": "source_figure",
+    "asset_path": "assets/collection-figures/2603.16689/figure3-probes-and-cka.webp",
+    "label": "Figure 3 world-to-task geometry",
+    "visual_type": "data_plot",
+    "evidence": "paper.pdf p. 7, Figure 3; official source figure",
+    "alt_text": "Linear probes and representation-similarity matrices compare transformer stages across constrained grid walkers.",
+    "caption": "共享的 post-attention 坐标系在 MLP 后分化为各任务的预测几何。",
+    "selection_rationale": "It combines the paper's strongest geometry evidence and makes the claimed two-stage factorization directly inspectable."
+  },
+  "sections": [
+    {
+      "title": "作者信息",
+      "paragraphs": [
+        "作者为 Sasha Brenner（Max Planck Institute for Human Cognitive and Brain Sciences、Leipzig University）、Thomas R. Knösche（Max Planck Institute）与 Nico Scherf（Max Planck Institute、ScaDS.AI）；后两位 equal contribution。",
+        "本站核验 arXiv:2603.16689v2：初次提交于 2026-03-17，最新版更新于 2026-06-05；主分类 cs.LG，PDF 24 页。",
+        "Collection 来源为刘子鸣网站的 Representation Learning 条目。"
+      ]
+    },
+    {
+      "title": "研究问题",
+      "paragraphs": [
+        "autoregressive model 只被训练预测下一 token，却常出现类似空间、棋盘或 latent state 的内部表征。这些表示由数据的预测统计量强迫出来，还是由 architecture 偏好塑造？",
+        "论文构造三种 $T=20$ constrained grid walkers。完整时空状态 $(t,x_t,y_t)$ 足以预测全部未来，而三维 effective field $\\mathbf q_t$ 只需支撑下一步，因此可把 world statistic 与 immediate-task statistic 分开。",
+        "有限小 Transformer 在 attention 后显露共享坐标 $[x_t/t,y_t/t,\\log t]$，随后 MLP 把它折叠到各 walker 的 $\\mathbf q_t$；RNN 同样最优却没有如此干净的 stage separation。"
+      ]
+    },
+    {
+      "title": "背景",
+      "paragraphs": [
+        "一个 sufficient statistic 保留预测目标所需的全部信息。对完整未来充分的统计量可以比只预测下一步所需的 minimal statistic 更丰富。",
+        "三种 walker 共享二维方格世界，却有不同 constraints：固定单 endpoint、两个可能 endpoints、或需绕开 obstacles。论文用 dynamic programming 精确枚举 prefix probabilities 与条件转移。",
+        "linear decoding 问 target 能否从 activation 读出；reverse encoding 问低维 target 能解释 activation 的多少方差。后者高且 target 维数远小于 hidden width，才支持 activation 主要位于该低维 affine span。",
+        "linear CKA 比较两组 representations 的 variance-weighted linear geometry。高 CKA 是相似性，不是 neuron-by-neuron identity，也不证明相同算法或因果功能。"
+      ]
+    },
+    {
+      "title": "给物理学家的 AI 导读",
+      "paragraphs": [
+        "grid walker 是有限时域、带终点条件的 Markov bridge；对 endpoint conditioned walk，下一步 law 可写成离散 Doob $h$-transform。这里 ground truth partition counts 和 transition probabilities 都可精确求出。",
+        "$\\mathbf q_t$ 类似三分量有效场：它与 step observables $(\\Delta u,\\Delta v,\\Delta u\\Delta v)$ 耦合并决定局部 Boltzmann-like softmax，但不同微观/时空状态可投影到同一个局部场。",
+        "$[x_t/t,y_t/t,\\log t]$ 则像 coarse-grained state coordinates：它保留位置和时间，足以参数化未来 path ensemble。attention 的近均匀平均自然计算累计位移除以时间。",
+        "论文所称 world representation 是 toy process 中的 operational sufficient coordinates，不是具有物体、因果规律和反事实动力学的一般 world model。",
+        "Transformer 与 RNN 达到相同 Bayes floor 却采用不同 factorization，说明 objective 约束可计算内容，architecture 则选择把统计量如何显式组织进 hidden space。"
+      ]
+    },
+    {
+      "title": "模型与方法",
+      "paragraphs": [
+        "Walker L 回到原点，Walker D 的终点是 $(-4,0)$ 或 $(4,0)$，Walker O 回到原点但需避开四个障碍；三者均 $T=20$，context length $K=8$。",
+        "decoder-only Transformers 覆盖 3 walkers × 2 depths × 2 head counts × 3 head widths，共 36 configurations；训练以 exact process 抽样 prefix，用 AdamW 最小化 next-token cross-entropy。",
+        "validation 对所有 possible prefixes 按精确概率加权，直接计算 in-distribution expected loss，并以真实 conditional entropy 归一化；这控制 optimization，不测试 generalization。",
+        "作者在 residual hooks 对 $\\mathbf q_t$ 与 $\\mathbf z_t=[x_t/t,y_t/t,\\log t]$ 做双向 OLS。encoding 用 state-mean activations 并以 state classes 做 10-fold CV；decoding 的 folds 则随机划分 raw rows。",
+        "跨 walker 用 common state support 上的 state-mean linear CKA；另训练 60 个 LSTM/GRU configurations 比较相同 statistic 是否以相同几何 stage 出现。"
+      ]
+    },
+    {
+      "title": "核心结果与证据",
+      "paragraphs": [
+        "36 个 Transformers 的 exact expected validation loss 都在 normalized conditional-entropy floor 的 $1.5\\times10^{-4}$ 内；这是精确 in-distribution optimization 检查，不是 OOD accuracy。",
+        "Figure 3 的 selected-run reverse fit 在 post-attention 达 $R^2=0.86$–$0.99$；完整 36-model held-out state-class encoding sweep 为 0.842–0.991 post-attention，而 post-MLP 约 0.078–0.856。",
+        "well-trained variants 的 selected-run state-mean CKA 在 post-attention 为 0.95–0.97；Walker L 对 O-1L 从 post-attention 0.82 降到 post-MLP 0.43，符合先共享世界坐标、后任务特化的描述。",
+        "代表性 attention decomposition 近似 uniform/additive；token-position interaction 小于 centered write variance 的 $2\\times10^{-5}$。但 time-centroid 第二 PC 仍约占 6%，所以 $\\log t$ 只是主导 scalar proxy。",
+        "LN-final 的 $\\mathbf q_t$ 几乎完美可读并非独立机制发现，因为 logits 是 activation 的线性 readout，而 $\\mathbf q_t$ 又是 centered logits 的固定线性变换。",
+        "60 个 LSTM/GRU 多数也达到 prediction floor，并可解码 $\\mathbf z_t$ 与 $\\mathbf q_t$；但这些坐标只解释 recurrent hidden variance 的一部分，支持 factorization 依 architecture 而变。"
+      ]
+    },
+    {
+      "title": "有效性与局限",
+      "paragraphs": [
+        "解析公式描述随机游走过程；没有定理保证 gradient training 必然涌现该表示，也没有证明所观察坐标是 unique、minimal 或 causally necessary。",
+        "每个 architecture/task configuration 只报告一个 trained model。36-model sweep 不是同一配置的 independent seeds，grouped CKA pairs 也不能替代 seed-level uncertainty。",
+        "exact validation 枚举训练分布，作者明确说它不测 generalization；未测试更长 horizon、不同 endpoints/obstacles、noise、自然语言或真实物理环境。",
+        "encoding CV hold out state classes，decoding CV 却随机切 raw rows，因而相同 $(x_t,t)$ target 可跨 decoding folds；不能把 decoding 分数称为 held-out-state generalization。",
+        "近 uniform attention 和 Eq. (6) 都是 approximate；剩余 time dimension、其他 heads/layers 与非线性变换未通过 activation patching 或 ablation 证明必要性。",
+        "prediction 与 token-by-token generation 在这里高度耦合，因为给定 emitted step 后 state transition 是 deterministic；更一般 partial-observation dynamics 未必保留同一几何。"
+      ]
+    },
+    {
+      "title": "复现与资源",
+      "paragraphs": [
+        "先从 dynamic-programming path counts 重建全部 prefix probabilities、$\\mathbf q_t$ 和 conditional-entropy floor；逐 walker 检查 normalization、impossible steps 与 obstacle states。",
+        "同一 architecture/task 至少重复多个 initialization、data-order 和 optimizer seeds，以 run 为顶层单位报告 loss、probe $R^2$、CKA 与 mechanism residual 的区间。",
+        "probe 同时采用 held-out state classes、held-out times 和 held-out constraint settings；在 raw-row versus state-mean weighting 下报告差异，避免重复路径造成 pseudoreplication。",
+        "用 activation patching、坐标-direction ablation、attention-pattern intervention 和 matched random subspaces 测 $[x/t,y/t,\\log t]$ 是否被 downstream MLP 实际使用。",
+        "系统扫描 $T$、context length、endpoint/obstacle distribution 与 noisy/partial observations，区分插值、length extrapolation 与 constraint transfer。",
+        "论文代码为 https://github.com/sashabrenner/predictive-statistics-shape-world-representations ；本站未运行，应 pin commit、environment、seed 和 exact dataset-generation configuration。"
+      ]
+    },
+    {
+      "title": "阅读指南",
+      "paragraphs": [
+        "快速路线：pp. 3–5 看 exact walker statistics；pp. 6–9 看 Figure 3、两向 probes、CKA 与 attention mechanism；p. 10 看讨论和边界。",
+        "物理路线：从 Appendix 的 path-count recursion 和 Doob transform 入手，再比较 local effective field $\\mathbf q_t$ 与 full-future state coordinates。",
+        "AI 路线：区分 decoding、reverse encoding 和 CKA；特别注意 LN-final readout 的构造性以及 Transformer/RNN factorization 差异。",
+        "批判路线：检查 single run per configuration、validation 非 generalization、decoding fold 定义、approximate attention equation 和缺失 causal ablation。"
+      ]
+    }
+  ],
+  "evidence_refs": [
+    "paper.pdf pp. 3–6 and official main.tex: constrained-walker definitions, dynamic-programming distribution, effective-field Eqs. (1)–(5), architectures and exact validation",
+    "paper.pdf pp. 6–9 and official Figure 3/4 sources: bidirectional probes, state-class folds, CKA grouping, attention approximation and residual time component",
+    "paper.pdf pp. 10, 20–24 and appendix TeX: limitations, recurrent baselines, training settings, conditional-entropy normalization and model counts",
+    "source PDF SHA-256 5ff82b7dba70c91ceafd81e0d214d1715e42b715a1117cc382966313b1921502",
+    "official arXiv v2 source archive SHA-256 23906e01a8350d5370afb85904e250bb27f1130cf9558b91b3e89f8222f95cf3",
+    "MinerU Markdown SHA-256 898f0ba2580b59c4b9de00bea1632a1504795f081bd2b74d58b46380cd195c97",
+    "Evidence packet SHA-256 5575cf18893f457b6d3e46725c6a5fd67e3534057f256dfcb7cef2fbc42b501d",
+    "Evidence status: full text, rendered pages and official TeX verified against latest arXiv v2; analytic-process versus learned-representation, probe/use, CKA, architecture, seed, fold, exact-validation/generalization, approximate-mechanism and world-model-scope boundaries recorded; no independent reproduction performed."
+  ]
+}

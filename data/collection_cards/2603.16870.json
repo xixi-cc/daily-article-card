@@ -1,0 +1,198 @@
+{
+  "arxiv_id": "2603.16870",
+  "source_version": "v3",
+  "source_pdf": "https://arxiv.org/pdf/2603.16870v3",
+  "title_en": "Demystifying Video Reasoning",
+  "title_zh": "解构视频推理",
+  "curation_status": "full_text_verified",
+  "card_standard_version": "2.4",
+  "audience_profile": "physics_ai_literate_physicist",
+  "paper_profile": "ai_empirical",
+  "style_reference": "physicist_daily_arxiv",
+  "provenance": {
+    "program": "Collection",
+    "catalog": "Paper Collection",
+    "catalog_record_id": "2603.16870",
+    "catalog_record_ids": ["2603.16870"],
+    "catalog_topic": "AI Agents",
+    "collection_date": "2026-08-30",
+    "sampled_at": "2026-08-31",
+    "selected_by": "ziming_mineru_serial_goal",
+    "sampling_seed": "not_applicable_source_complete",
+    "candidate_count": 464
+  },
+  "verified_metadata": {
+    "arxiv_id": "2603.16870",
+    "version": "v3",
+    "title": "Demystifying Video Reasoning",
+    "authors": ["Ruisi Wang", "Zhongang Cai", "Fanyi Pu", "Junxiang Xu", "Wanqi Yin", "Maijunxian Wang", "Ran Ji", "Chenyang Gu", "Bo Li", "Ziqi Huang", "Hokin Deng", "Dahua Lin", "Ziwei Liu", "Lei Yang"],
+    "categories": ["cs.CV", "cs.AI"],
+    "primary_category": "cs.CV",
+    "published": "2026-03-17",
+    "updated": "2026-07-31",
+    "abstract": "The paper interprets decoded diffusion trajectories, performs noise and hidden-state interventions in video generators, and proposes a multi-seed hidden-feature ensemble as a training-free proof of concept."
+  },
+  "equation_refs": [
+    {
+      "label": "flow-matching interpolation",
+      "latex": "x_s=(1-s)x_0+s x_1,\\qquad x_1\\sim\\mathcal N(0,I)",
+      "role": "define the idealized path between clean video latent and Gaussian noise used to interpret denoising progress",
+      "symbols": {
+        "x_0": "clean data latent",
+        "x_1": "Gaussian noise latent",
+        "s": "continuous noise or flow time",
+        "x_s": "intermediate noisy latent"
+      },
+      "evidence": "paper.pdf p. 5, Eq. (1) and official TeX",
+      "interpretation": "这是 flow-matching 的训练路径表达，不是显式 reasoning state equation；同一 $x_s$ 同时混有语义、运动与噪声。"
+    },
+    {
+      "label": "decoded clean-prediction diagnostic",
+      "latex": "\\hat x_0=x_s-\\sigma_s v_\\theta(x_s,s,c)",
+      "role": "construct an interpretable estimate of the final clean latent at each diffusion step",
+      "symbols": {
+        "v_theta": "prompt-conditioned learned velocity field",
+        "c": "conditioning prompt",
+        "sigma_s": "schedule-dependent noise scale",
+        "x_hat_0": "instantaneous model prediction decoded for inspection"
+      },
+      "evidence": "paper.pdf p. 5, Eq. (2) and official TeX",
+      "interpretation": "$\\hat x_0$ 并不是实际 sampler 经过的 latent，而是每一步的诊断性 clean prediction；其视觉歧义不能自动等同于算法搜索或内部思维链。"
+    },
+    {
+      "label": "training-free hidden-feature ensemble",
+      "latex": "\\bar U^{(l)}=\\frac1M\\sum_{m=1}^{M}U_m^{(l)},\\qquad s=0,\\quad l\\in\\{20,\\ldots,29\\}",
+      "role": "average middle-layer hidden trajectories from multiple initial-noise seeds during the first diffusion step",
+      "symbols": {
+        "M": "number of independent forward trajectories, default three",
+        "U_m_l": "hidden representation for seed m at layer l",
+        "U_bar": "averaged representation written back into the trajectories",
+        "l": "chosen middle-layer window"
+      },
+      "evidence": "paper.pdf pp. 11–12, TFE method and official sec/5_training_free_method.tex",
+      "interpretation": "TFE 不训练 weights，但默认运行三条 forward trajectories；training-free 不等于 compute-free，且直接平均 hidden states 未被证明对应 Bayesian model averaging。"
+    }
+  ],
+  "figure_refs": [
+    {
+      "label": "Figure 3 step-versus-frame noise intervention",
+      "asset_path": "assets/collection-figures/2603.16870/figure3-noise-perturbation.webp",
+      "section": "核心结果与证据",
+      "role": "compare destructive noise placed on all frames at one denoising step with noise on one frame across all steps and trace CKA propagation",
+      "evidence": "paper.pdf p. 6, Figure 3; official source figures/noise_injection_v2.pdf",
+      "alt_text": "Two Gaussian corruption schemes produce different benchmark-score degradation and denoising-step CKA propagation, with strongest sensitivity in middle steps.",
+      "caption": "Figure 3：单个 step 的全帧替换使 VBVR 分数从 0.685 降至 0.3 以下，而单帧跨所有 steps 的替换约为 0.55–0.62；两种 corruption 的破坏规模与恢复机会并不匹配。",
+      "interpretation": "该干预证明 sampler 对 step-wide off-manifold corruption 更敏感，但不能唯一断言被破坏的是 reasoning，而非整体去噪、感知、运动或一致性。"
+    }
+  ],
+  "cover": {
+    "mode": "source_figure",
+    "asset_path": "assets/collection-figures/2603.16870/figure3-noise-perturbation.webp",
+    "label": "Figure 3 corruption sensitivity",
+    "visual_type": "data_plot",
+    "evidence": "paper.pdf p. 6, Figure 3; official source figure",
+    "alt_text": "Video diffusion performance and feature similarity respond differently to step-wide and frame-wise Gaussian corruption.",
+    "caption": "扩散步与视频帧两个轴上的破坏性干预，以及它们沿去噪轨迹传播的差异。",
+    "selection_rationale": "It is the paper's strongest quantitative intervention, provided its unmatched and off-manifold nature is stated alongside it."
+  },
+  "sections": [
+    {
+      "title": "作者信息",
+      "paragraphs": [
+        "作者为 Ruisi Wang、Zhongang Cai、Fanyi Pu、Junxiang Xu、Wanqi Yin、Maijunxian Wang、Ran Ji、Chenyang Gu、Bo Li、Ziqi Huang、Hokin Deng、Dahua Lin、Ziwei Liu 与 Lei Yang；机构包括 SenseTime Research、Nanyang Technological University、UC Berkeley、UC San Diego 与 Carnegie Mellon University。",
+        "本站核验 arXiv:2603.16870v3：初次提交于 2026-03-17，最新版更新于 2026-07-31；主分类 cs.CV，PDF 33 页。",
+        "Collection 来源为刘子鸣网站的 AI Agents 条目。"
+      ]
+    },
+    {
+      "title": "研究问题",
+      "paragraphs": [
+        "能完成迷宫、物体移动与空间关系任务的视频 diffusion model，究竟沿视频 frames 逐帧推理，还是沿 denoising steps 迭代形成答案？哪些 DiT layers 对结果更敏感？",
+        "论文把每步 $\\hat x_0$ 解码成可视化 hypothesis，称由多种早期候选逐步收敛的现象为 Chain-of-Steps；再用 Gaussian corruption、activation maps 与 layer swaps 寻找关键 step/layer。",
+        "最后提出 TFE：在第一 diffusion step 对三条不同噪声 seed 的中层 hidden trajectories 求平均。它是利用经验观察的 proof of concept，而不是已经识别的推理算法。"
+      ]
+    },
+    {
+      "title": "背景",
+      "paragraphs": [
+        "视频生成有两个不同轴：frame index 是输出时空结构，diffusion step 是整段 latent 从噪声到样本的迭代计算。bidirectional video attention 可在每个 denoising step 同时更新多帧。",
+        "benchmark-level video reasoning 通常按生成结果是否满足迷宫、对象恒常、计数或空间约束评分。高分可来自相关生成 heuristics，并不直接观测 symbolic proof、search tree 或 causal state。",
+        "CKA 衡量两组 activations 的表示相似性；corruption 后 CKA 变化说明信息状态偏离 reference，但没有给偏离分量赋予 reasoning semantics。",
+        "activation 的 channel-wise $L_2$ norm 只显示 magnitude 在时空 tokens 的分布。将亮区称为 perception、memory 或 action 需要额外语义与因果证据。"
+      ]
+    },
+    {
+      "title": "给物理学家的 AI 导读",
+      "paragraphs": [
+        "把 sampler 看成非平衡 relaxation：frame 是系统的空间/时间自由度，denoising index 则是外加演化参数。观察结构沿后者凝聚，并不意味着它执行与人类同构的离散推理。",
+        "$\\hat x_0(s)$ 类似根据当前 coarse state 外推的终态 estimator。它适合画 order-parameter trajectory，但 estimator 中出现双峰或叠影，可能只是 posterior ambiguity 或 decoder artifact。",
+        "一次把所有 frames 替换为 Gaussian noise，相当于对整个系统施加强 quench；只反复破坏一个 frame 是局域 defect。两者响应不同并不能单独区分时间轴承载的 computation。",
+        "layer swapping 更接近受控响应实验：固定其他计算，只把某层 state 换成另一 object condition，并观察 outcome flip。它为特定 grounding decision 提供因果影响，但还不是必要性或充分性证明。",
+        "TFE 是多 realization 后对 hidden field 做 arithmetic mixing。其效果随 ensemble size 非单调，表明不同 seeds 未必是可无损叠加的独立估计量。"
+      ]
+    },
+    {
+      "title": "模型与方法",
+      "paragraphs": [
+        "主要分析 Wan2.2-I2V-A14B，并补充 Wan2.1、LTX2.3；每个 diffusion step 解码 $\\hat x_0$，从 VBVR-Bench 与 real-world videos 中人工检查 200 个例子。",
+        "step corruption 在指定 diffusion step 将所有 frames 的 latent 换成 iid Gaussian；frame corruption 则在全部 steps 中替换一个指定 frame。用 VBVR score 和相对未破坏运行的 CKA dissimilarity 测响应。",
+        "层级分析提取 40 个 DiT blocks 的 $B\\times N\\times5120$ hidden states，重排为空间-时间 grid 后计算 token $L_2$ maps。",
+        "object grounding swap 以空背景、两种 object configurations 构造 paired forwards，在某一 layer 用 alternative hidden state 替换 original；覆盖十个 category pairs、五个 seeds，统计 final target flip。",
+        "TFE 默认三种 initial-noise seeds，在 $s=0$ 和 layers 20–29 平均 hidden representations；评估 VBVR-Bench、V-Reason、MME-CoF 与 RISE-Video。"
+      ]
+    },
+    {
+      "title": "核心结果与证据",
+      "paragraphs": [
+        "200 个人工检查样本中 72% 被标为 multi-path 或 superposition exploration；论文未报告多标注者 agreement、抽样分层或置信区间，因此这是作者操作性分类的 prevalence。",
+        "Figure 3 中 step-wide corruption 把 VBVR 从 0.685 降至 0.3 以下，frame-wise corruption 约保留 0.55–0.62；CKA propagation 和 score sensitivity 在 steps 20–30 附近最大。",
+        "十类 object pairs × 五 seeds 的 layer swaps 呈中层峰值，约 layers 15–35 更易使 grounding outcome 翻转。这是该受控任务的因果影响证据。",
+        "默认三-seed TFE 把 VBVR-Wan2.2 总分从 0.685 提至 0.716；Table 2 的 12 个 model-benchmark pairs 中 11 个上升，但 VBVR-LTX2.3 的 V-Reason 从 3.61 降到 3.19。",
+        "ensemble size 1/2/3/4/5/6 的分数为 0.685/0.688/0.716/0.729/0.720/0.675；六 seeds 低于 baseline，故不能声称更多 trajectories 单调改善。",
+        "layer-window ablation 为 0–9: 0.688、0–39: 0.690、20–29: 0.716。frame-count 结果也非单调；50→4-step distilled hybrid 从 0.685 降到 0.605。"
+      ]
+    },
+    {
+      "title": "有效性与局限",
+      "paragraphs": [
+        "step 与 frame corruption 不匹配：前者一次毁掉全视频 latent，后者只毁一个 frame 且可在后续/相邻信息中恢复；Gaussian replacement 又严重 off-manifold，不能干净定位 reasoning axis。",
+        "decoded $\\hat x_0$ 是推理中不存在的诊断量；视觉上的多路径、self-correction、working memory 与 perception-before-action 主要来自 selected qualitative examples。",
+        "$L_2$ activation energy 不包含语义。layer swap 对 object grounding 是有意义的 causal test，但没有证明中层对所有 benchmark reasoning 必要或充分。",
+        "benchmark tables 是 point estimates，缺少 SD、confidence interval、significance tests；本文也未重述每个 benchmark 的 task counts 与 evaluator reliability。",
+        "TFE 默认三条完整 forward trajectories，却没有 compute-matched output ensemble、random hidden mixing 或相同 wall-clock baseline；硬件、runtime、memory 和 energy 均未报告。",
+        "三 backbones 和四 benchmarks 的非单调/负结果限制 model-agnostic 说法；结论不能外推到 autoregressive video、其他 diffusion families、真实规划、causal world models 或 general intelligence。"
+      ]
+    },
+    {
+      "title": "复现与资源",
+      "paragraphs": [
+        "固定每个 backbone checkpoint、scheduler、prompt、seed、decoder 与 benchmark evaluator；同时记录每种 intervention 的 latent norm、noise SNR 和 recovery steps。",
+        "设计 matched perturbations：相同被替换元素数/能量的 step slabs、frame slabs、随机 spacetime masks 和 on-manifold swaps，比较 reasoning、perception、motion 与 visual-quality metrics。",
+        "人工标注采用盲化、多 annotators 和预定义 rubric，报告 agreement 与 binomial intervals；把 posterior ambiguity、decoder ghosting 与真正候选路径分开。",
+        "layer causal tests 加入 necessity ablation、sufficiency patch、matched random layers/directions 与多 tasks/backbones；flip rate 以 object pair 和 seed 为层级单位统计。",
+        "TFE 与 output Best-of-M、latent averaging at random layers/steps、单轨迹额外 compute 和相同 GPU-seconds baselines 比较，报告 wall-clock、VRAM 与能耗。",
+        "项目页 https://www.wruisi.com/demystifying_video_reasoning ；本站未运行代码或独立复现，复现需 pin 公开 repository commit 与所有模型/evaluator revisions。"
+      ]
+    },
+    {
+      "title": "阅读指南",
+      "paragraphs": [
+        "快速路线：pp. 5–7 看 $\\hat x_0$、人工现象与 Figure 3 corruption；pp. 9–11 看 activation maps/layer swaps；pp. 11–12 看 TFE。",
+        "物理路线：把 denoising 看作 relaxation coordinate，把 clean prediction 当终态 estimator；重点比较 global quench 与 local defect 是否 matched。",
+        "AI 路线：区分生成 benchmark 成功、视觉 hypothesis、representation similarity 和 causal output flip，四者证据强度不同。",
+        "批判路线：先检查 off-manifold unmatched corruption，再看 layer-swap 的窄任务范围、TFE 三倍 forward cost、无 uncertainty 和 non-monotone ablations。"
+      ]
+    }
+  ],
+  "evidence_refs": [
+    "paper.pdf pp. 5–8 and official sec/3_chain_of_step_arxiv.tex: Eqs. (1)–(2), decoded-clean diagnostic, manual prevalence, noise interventions, score collapse and CKA interpretation",
+    "paper.pdf pp. 9–11, 17–18 and official sec/4_emergent_behaviors.tex: activation-energy maps, layer-swap definition, ten object-category pairs, five seeds and flip-rate scope",
+    "paper.pdf pp. 11–12, 17 and official tables/TeX: TFE definition, multi-benchmark scores, seed/window ablations and missing uncertainty/compute reporting",
+    "paper.pdf p. 21 and appendix TeX: non-monotone frame-count results and 50-to-4-step distilled hybrid",
+    "source PDF SHA-256 ed75d2f3d5c005a4c218f44bd0aeccedcded4e8aae8f92f437fc7e029dad27e2",
+    "official arXiv v3 source archive SHA-256 3bb0fd2e2661171c5793ba0c096758110ae467b04ff98fca9f494d78bfa21eac",
+    "MinerU Markdown SHA-256 7b470b228362eec21d9262adb70844302a479208720452851ddd6637a8092d66",
+    "Evidence packet SHA-256 798a03bed863ead624f1af02bdce669ae32de9bcca9de96c6b88e41cf25637cd",
+    "Evidence status: full text, rendered pages and official TeX verified against latest arXiv v3; diagnostic-versus-inference, off-manifold/matched-corruption, qualitative-label, activation-semantics, layer-causality, benchmark uncertainty, TFE-compute, non-monotonicity and generalization boundaries recorded; no independent reproduction performed."
+  ]
+}
