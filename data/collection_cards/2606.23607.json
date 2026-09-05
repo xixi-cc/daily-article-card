@@ -1,0 +1,138 @@
+{
+  "arxiv_id": "2606.23607",
+  "source_version": "v1",
+  "source_pdf": "https://arxiv.org/pdf/2606.23607v1",
+  "title_en": "Scaling Linear Mode Connectivity and Merging to Billion Parameter Pretrained Transformers",
+  "title_zh": "将线性模式连通性与模型合并扩展到十亿参数预训练 Transformer",
+  "curation_status": "full_text_verified",
+  "card_standard_version": "2.4",
+  "audience_profile": "physics_ai_literate_physicist",
+  "paper_profile": "theory_experiment",
+  "style_reference": "physicist_daily_arxiv",
+  "provenance": {
+    "program": "Collection", "catalog": "Paper Collection", "catalog_record_id": "2606.23607", "catalog_record_ids": ["2606.23607"],
+    "catalog_topic": "Machine Learning", "collection_date": "2026-08-30", "sampled_at": "2026-08-31", "selected_by": "ziming_mineru_serial_goal", "sampling_seed": "not_applicable_source_complete", "candidate_count": 464
+  },
+  "verified_metadata": {
+    "arxiv_id": "2606.23607", "version": "v1", "title": "Scaling Linear Mode Connectivity and Merging to Billion Parameter Pretrained Transformers",
+    "authors": ["Tianyi Li", "Zhiqiang Shen"],
+    "categories": ["cs.LG", "cs.AI"], "primary_category": "cs.LG", "published": "2026-06-22", "updated": "2026-06-22",
+    "abstract": "The paper learns functionality-preserving coordinate transformations for both endpoints of compatible pretrained Transformer pairs, reducing sampled linear-interpolation loss barriers up to 7B parameters while retaining important limits in endpoint performance, downstream transfer, compute cost, and cross-family generality."
+  },
+  "equation_refs": [
+    {
+      "label": "Sampled loss barrier", "latex": "\\mathcal B=\\max_{\\lambda}\\mathcal L(\\Theta_\\lambda)-\\frac12[\\mathcal L(\\Theta_A)+\\mathcal L(\\Theta_B)]",
+      "role": "quantify the highest loss excess along the evaluated interpolation points relative to the two endpoint losses",
+      "symbols": {"Theta_lambda": "interpolated parameter vector", "lambda": "path coordinate in [0,1]", "L": "task-domain loss"},
+      "evidence": "paper.pdf p. 6, experimental setup equation, and official v1 TeX src/4_exp.tex",
+      "interpretation": "这是沿离散采样点估计的 barrier；ViT 的 $\\lambda$ 间隔为 0.1。低采样 barrier 不保证点间连续曲线也低，也不等价于 midpoint 保留所有 endpoint 能力。"
+    },
+    {
+      "label": "Dual learned interpolation", "latex": "\\Theta_{\\mathrm{interp}}=\\lambda\\,\\pi_A(\\Theta_A)+(1-\\lambda)\\,\\pi_B(\\Theta_B),\\qquad \\lambda\\in[0,1]",
+      "role": "let both checkpoints move by function-preserving transformations toward a shared linear path",
+      "symbols": {"pi_A_pi_B": "learned symmetry transformations", "Theta_A_Theta_B": "compatible pretrained endpoints", "lambda": "uniformly sampled mixing coefficient during optimization"},
+      "evidence": "paper.pdf p. 5, Dual Learned Matching equation/Algorithm 1, and official v1 TeX src/3_method.tex",
+      "interpretation": "两端函数在变换后保持不变，但路径中间点不是 symmetry transform。双端形式可吸收到相对变换加公共 gauge；它增加的是优化 parameterization，而不是新的 symmetry capacity。"
+    },
+    {
+      "label": "Function-preserving QK basis change", "latex": "W'_{Q,i}=W_{Q,i}M_{Q,i},\\qquad W'_{K,i}=W_{K,i}M_{Q,i}^{-\\top}",
+      "role": "change the internal basis of an attention head while leaving its query–key dot products invariant",
+      "symbols": {"W_Q_W_K": "query and key projections of head i", "M_Q": "invertible within-head transformation", "minus_T": "inverse transpose"},
+      "evidence": "paper.pdf pp. 3–4, Equations (11)–(12) in the normalization/attention derivation, and official v1 TeX",
+      "interpretation": "因为 $M M^{-1}$ 在 $QK^\\top$ 中抵消，endpoint attention logits 不变。这类 gauge freedom 解释不同参数坐标为何能表示同一函数，却不证明优化一定找到全局最佳对齐。"
+    }
+  ],
+  "figure_refs": [
+    {
+      "label": "Figure 1 loss barriers and scaling", "asset_path": "assets/collection-figures/2606.23607/figure-01-loss-barriers-scaling.webp", "section": "核心结果与证据",
+      "role": "compare raw and matched ViT paths, show Pythia interpolation curves across sizes, and summarize descriptive Pythia scaling",
+      "evidence": "paper.pdf p. 2, Figure 1; official vector source figures/intro_interpolation_curves_v2.pdf",
+      "alt_text": "Three panels show reduced ViT-S interpolation loss after dual matching, Pythia path curves at four scales, and endpoint-versus-midpoint scaling trends.",
+      "caption": "Figure 1：功能保持对齐显著降低特定 ViT/Pythia checkpoint 对的采样线性路径 loss barrier。",
+      "interpretation": "图支持方法可计算到 billion-scale Pythia，并展示低 barrier；它没有显示 OLMo-7B 的较差结果、全部下游指标或重复实验不确定性。"
+    }
+  ],
+  "cover": {
+    "mode": "source_figure", "asset_path": "assets/collection-figures/2606.23607/figure-01-loss-barriers-scaling.webp", "label": "Figure 1 LMC scaling", "visual_type": "data_plot",
+    "evidence": "paper.pdf p. 2, Figure 1; official vector source", "alt_text": "Loss-barrier curves before and after learned symmetry alignment across ViT and Pythia scales.",
+    "caption": "对齐隐藏的参数坐标后，某些独立预训练模型之间出现低损失直线路径。", "selection_rationale": "It jointly shows the alignment effect, interpolation-path observable, and reported scaling regime central to the paper."
+  },
+  "sections": [
+    {"title": "作者信息", "paragraphs": [
+      "作者为 Tianyi Li 与 Zhiqiang Shen。",
+      "本站核验 arXiv:2606.23607v1：提交于 2026-06-22，是当前唯一版本；分类 cs.LG、cs.AI，PDF 18 页。",
+      "Collection 来源为刘子鸣网站的 Machine Learning 条目；本站检查官方 PDF、TeX、Figure 1 和实验表格，未执行代码或独立复现实验。"
+    ]},
+    {"title": "研究问题", "paragraphs": [
+      "两个独立预训练、架构兼容的 Transformer 即使实现相近函数，也可能因 neuron permutation、head basis 与 residual-space gauge 不同而在权重空间相距很远。",
+      "能否先用不改变 endpoint function 的参数变换对齐两套坐标，再用一条简单直线连接并合并它们？这种方法能否扩展到十亿参数？",
+      "论文提出 LMC-DM：同时学习两端的连续 symmetry transformations，以插值 minibatch loss 为目标；离散 head/FFN permutations 由 weight matching 初始化后固定。",
+      "被验证的是若干特定 compatible checkpoint pairs 上的低采样 loss path，不是异构模型、任意模型对或能力组合的普适合并定理。"
+    ]},
+    {"title": "背景", "paragraphs": [
+      "Linear mode connectivity 指两个参数解之间存在低损失路径；最简单情形是权重直线插值。原始坐标下的高 barrier 可能只是隐藏单元标签不同。",
+      "传统 weight matching 以参数相似度寻找 permutation；learned matching 则以 task loss 优化一端的连续变换，但固定另一端可能造成不利优化几何。",
+      "Transformer 的冗余比普通 MLP 丰富：normalization 可吸收入相邻权重，residual stream 可整体旋转/缩放，attention heads 可置换，QK 与 OV 内部也有可逆基变换。",
+      "这些变换保持 endpoint function，却改变参数坐标；论文利用这一 gauge orbit 寻找更低 barrier 的 chord。"
+    ]},
+    {"title": "给物理学家的 AI 导读", "paragraphs": [
+      "可以把功能等价的参数看作同一物理态的不同 gauge representatives。直接连接两个任意 representatives，直线可能离开低能谷；先 gauge-fix 可缩短穿越高损失区的距离。",
+      "LMC-DM 让两端各自沿 symmetry orbit 移动，再在共享坐标系取 chord；endpoint observable 不变，中间点却通常不在任何一端的 gauge orbit 上。",
+      "loss barrier 类似路径最高自由能减去 endpoints 平均值，但论文只在有限 $\\lambda$ 网格上观测，不能保证连续 supremum。",
+      "dual parameterization 最终可吸收到单个相对变换与公共 gauge，所以性能改善更像 overparameterized optimization geometry，而不是扩大可表示的等价类。",
+      "低 WikiText loss path 是 domain-specific observable；若 midpoint 的 PIQA/SciQ/ARC-E 明显下降，就不能把低 barrier 解释为完整能力守恒。"
+    ]},
+    {"title": "模型与方法", "paragraphs": [
+      "方法先吸收 RMSNorm/LayerNorm 参数，再初始化 residual-space SVD alignment、circuit-based head matching 与 FFN permutations。",
+      "连续变量包括全局 residual rotation/scaling、head-internal QK/OV transforms 与 FFN scaling；默认用 Cayley 参数化 orthogonal transforms，以 Cayley/Cholesky 的 polar 形式参数化 invertible transforms。",
+      "训练时每步采样 $\\lambda\\sim U(0,1)$ 与 minibatch，对双端变换后的线性插值模型求 loss，并更新两端 symmetry variables；head/FFN 离散 permutations 保持固定。",
+      "视觉实验为 compatible ViT-S/B/L pairs、ImageNet-1K，路径间隔 0.1；语言实验含 Pythia 14M 至 6.9B、HF 1.8B 与 OLMo-7B。",
+      "Pythia endpoints 是相同架构的 original-Pile 与 deduplicated-Pile checkpoints；symmetry learning 使用 WikiText-103、sequence length 512，因此不是 data-free merging。",
+      "ViT 与较小 Pythia 用单张 A6000、数小时至一天；Pythia-6.9B/OLMo-7B 用四张 A6000、约一天，训练 20k steps。"
+    ]},
+    {"title": "核心结果与证据", "paragraphs": [
+      "Table 2 中 LMC-DM 在 ViT-S/B/L 的 sampled barriers 为 1.11/0.82/0.66，在 Pythia 14M/160M/410M/1B 为 0.86/0.18/0.37/0.23，均低于所测 learned-matching baselines。",
+      "相应 Learned Matching 数值为 ViT 2.18/2.00/1.23、Pythia 1.26/0.39/0.57/0.42；这支持双端优化在这些单对实验中的经验优势。",
+      "Appendix Table 5 报告 Pythia-6.9B barrier 0.18，midpoint WikiText PPL 15.71，而 endpoints 为 13.22/12.98。",
+      "同为约 7B 的 OLMo-7B barrier 却为 1.53，midpoint PPL 51.80，endpoints 为 10.83/11.61；规模本身不能解释可合并性。",
+      "ViT-L 路径 top-1 最低仍为 69.40%，但 endpoints 为 85.82%/82.97%；最差点比较弱 endpoint 低 13.57 percentage points，不能称 endpoint-level preservation。",
+      "Pythia-1B midpoint 的 PIQA/SciQ/ARC-E 为 56.42/64.40/37.16，原始 endpoint 为 70.95/83.90/56.73；低 WikiText barrier 没有自动转化为无损下游行为。",
+      "在 ViT-B/Pythia-160M 上，dual-absorbed barriers 为 0.82/0.18，single-absorbed 为 1.05/0.27；去除 OV 或 QK+OV symmetry 会恶化 barrier。"
+    ]},
+    {"title": "有效性与局限", "paragraphs": [
+      "实验要求 endpoints 架构、维度、tokenization 与 objective 兼容；异构架构和 symmetry parameterization 覆盖不全是明确限制。",
+      "headline tables 没有报告 random seeds、error bars、confidence intervals 或 endpoint-pair dispersion；每行看起来只有一对命名 checkpoints。",
+      "barrier 是离散路径采样近似，ViT 明确以 0.1 为间隔；点间连续最大值可能更高。训练期间 evaluation barrier 还使用测试/验证集子集。",
+      "LMC-DM 需要目标域 minibatches、20k–100k optimization steps 和最高四张 A6000 一天，不是零数据、简单算术平均或可忽略成本的方法。",
+      "OLMo-7B 的 1.53 barrier、ViT-L 的显著 worst-point degradation 与 Pythia 下游零样本差距共同限制“十亿参数均可低损失合并”的说法。",
+      "功能保持 symmetry 只保证 transformed endpoints 等价；它不保证优化找到全局 alignment，也不证明 midpoint 组合两端不同能力。",
+      "Cayley 不覆盖含 eigenvalue $-1$ 的 orthogonal transforms；文中 exp 参数化也只覆盖具有 real logarithm 的部分 $GL^+$ 元素。"
+    ]},
+    {"title": "复现与资源", "paragraphs": [
+      "复现需固定每一对 Hugging Face/timm checkpoint revision、数据 split、tokenizer、sequence construction、插值网格、loss reduction 与精度。",
+      "先逐 symmetry 做 endpoint function-equivalence unit tests，覆盖 RMSNorm/LayerNorm absorption、global residual transform、head permutation、QK/OV 与 FFN transform。",
+      "报告 raw、weight matching、single learned matching、enhanced LM 与 LMC-DM 的多 seed curves，并将 symmetry initialization、优化器与超参数预算匹配。",
+      "连续路径验证应加密 $\\lambda$ 网格或自适应搜索局部峰值；同时报告 midpoint 与 worst-point 的 domain loss、perplexity、accuracy 和多个下游任务。",
+      "规模结论应在同一 family 中重复多个 endpoint pairs，并把 Pythia 与 OLMo 差异分解为训练语料、normalization、architecture 与 optimization budget。",
+      "若目标是实际 merging，还需测试安全性、calibration、capability retention、forgetting、数据泄漏与 serving cost，而不能只依赖 WikiText barrier。"
+    ]},
+    {"title": "阅读指南", "paragraphs": [
+      "快速路线：p. 2 看 Figure 1；pp. 3–5 看 symmetry 与 LMC-DM；pp. 6–9 看主表和 ablations；pp. 11–12 看 7B 与 downstream 限制。",
+      "物理路线：用 gauge orbit、coordinate fixing、loss-landscape chord 与离散路径采样理解方法，但不要把 symmetry 变换误作连续动力学。",
+      "AI 路线：区分 function-preserving endpoint alignment、low-loss interpolation、weight averaging、model merging 与 capability composition 五个层级。",
+      "批判路线：重点核对 OLMo-7B、ViT worst point、Pythia downstream gaps、数据/算力成本、单 checkpoint pair 和缺失 uncertainty。"
+    ]}
+  ],
+  "evidence_refs": [
+    "paper.pdf pp. 2–6 and official v1 TeX: Figure 1, Transformer symmetry classes, dual learned interpolation, optimization algorithm and sampled loss-barrier definition",
+    "paper.pdf pp. 6–9, Tables 2–4 and official TeX: ViT/Pythia barriers, parameterization comparison, QK/OV and single-versus-dual ablations",
+    "paper.pdf pp. 10–12, Appendix Tables 5 and 7/8: 6.9B/7B compute and barrier results, ViT path minima and downstream zero-shot gaps",
+    "paper.pdf appendix and official v1 TeX: endpoint checkpoint identities, data/step budgets, symmetry absorption proof, parameterization coverage and evaluation protocol",
+    "source PDF SHA-256 88f07b3ace45f34d14e75c2b554d757385dfe9aeab3da1c41cfc4ee143e0f5f7",
+    "official arXiv v1 source archive SHA-256 d988acc79db64837ff40565d31a82b7661fcce9a8bd26c3057389756286eec81",
+    "MinerU Markdown SHA-256 36f2131631778113894568bd95a8f8cc67b3af0d464dd93b3eddb53c8210bc94",
+    "Evidence packet SHA-256 a12b1a95b869e92534420dcfdbceb6824043b145cf20a499ae07fd7b549d4e39",
+    "Representative Figure 1 WebP SHA-256 7c34661800ded49a4d6a54e2d0d124adb54a1f3b8fb7c8830621a67f94ecc569",
+    "Evidence status: full text, official v1 TeX, tables and Figure 1 verified; compatible-pair/symmetry-capacity, sampled-path, data/compute, endpoint/downstream, OLMo-family, single-pair/statistical and deployment boundaries recorded; no independent reproduction performed."
+  ]
+}

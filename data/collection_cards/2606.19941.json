@@ -1,0 +1,133 @@
+{
+  "arxiv_id": "2606.19941",
+  "source_version": "v1",
+  "source_pdf": "https://arxiv.org/pdf/2606.19941v1",
+  "title_en": "Compositionality Emerges in a Narrow Depth-Connectivity Regime: Architecture Constraints and Solution Manifolds",
+  "title_zh": "组合性出现在狭窄的深度—连接度区域：架构约束与解流形",
+  "curation_status": "full_text_verified",
+  "card_standard_version": "2.4",
+  "audience_profile": "physics_ai_literate_physicist",
+  "paper_profile": "theory_experiment",
+  "style_reference": "physicist_daily_arxiv",
+  "provenance": {
+    "program": "Collection", "catalog": "Paper Collection", "catalog_record_id": "2606.19941", "catalog_record_ids": ["2606.19941"],
+    "catalog_topic": "Machine Learning", "collection_date": "2026-08-30", "sampled_at": "2026-08-31", "selected_by": "ziming_mineru_serial_goal", "sampling_seed": "not_applicable_source_complete", "candidate_count": 464
+  },
+  "verified_metadata": {
+    "arxiv_id": "2606.19941", "version": "v1", "title": "Compositionality Emerges in a Narrow Depth-Connectivity Regime: Architecture Constraints and Solution Manifolds",
+    "authors": ["Dat H. Do", "Rushi Shah", "Duc V. Le", "Dianbo Liu"],
+    "categories": ["cs.LG"], "primary_category": "cs.LG", "published": "2026-06-18", "updated": "2026-06-18",
+    "abstract": "The paper studies whether similarity-pruned coordinate MLPs trained to reconstruct individual images show a depth-dependent increase in a vision-language-model-judged single-weight perturbation score, and proposes a solution-volume explanation under restrictive assumptions."
+  },
+  "equation_refs": [
+    {
+      "label": "EMC2 perturbation score", "latex": "\\mathrm{CompositionalScore}=\\frac{N_{\\mathrm{comp}}}{N_{\\ne 0}}",
+      "role": "define the paper's operational fraction of nonzero weights whose individual perturbation preserves VLM-judged semantic identity",
+      "symbols": {"N_comp": "perturbed weights receiving a yes judgment", "N_nonzero": "all nonzero weights swept individually"},
+      "evidence": "paper.pdf p. 5, Equation (1), and official v1 TeX",
+      "interpretation": "这里的 compositional 是操作性标签：固定幅度改单个权重后，Qwen3-VL-4B-Thinking 是否仍判断为同一对象。它同时依赖权重尺度、扰动幅度和 judge，不是可组合参数的真值比例。"
+    },
+    {
+      "label": "Activation-similarity pruning", "latex": "S_{kj}=\\frac{\\langle\\mathbf f_k^{(i)},\\mathbf f_j^{(i)}\\rangle}{\\|\\mathbf f_k^{(i)}\\|_2\\|\\mathbf f_j^{(i)}\\|_2},\\qquad p(k)=\\arg\\max_{j\\ne k}S_{kj},\\qquad \\mathcal P_i=\\{S_{k,p(k)}>\\tau\\}",
+      "role": "identify highly similar within-layer neuron feature maps before iterative removal and retraining",
+      "symbols": {"f_k_i": "feature map of neuron k in layer i", "S_kj": "cosine similarity", "tau": "threshold set to the inverse active-neuron count"},
+      "evidence": "paper.pdf p. 5, Equation (2), algorithm description, and official v1 TeX",
+      "interpretation": "这不是只改变 adjacency 的受控实验：冗余对来自训练后 activation，每对随机删一个 neuron，随后再训练，因此 connectivity、selection history 与 optimization 共同变化。"
+    },
+    {
+      "label": "Proposed compositional solution-volume ratio", "latex": "\\rho(W,L)=\\frac{\\operatorname{vol}(\\mathcal M_\\varepsilon^{\\mathrm{comp}})}{\\operatorname{vol}(\\mathcal M_\\varepsilon)},\\qquad \\rho(W,L)\\le\\frac{W!}{(W-P)!W^{P(L-1)}}",
+      "role": "state the proposed geometric proxy for how architecture width and depth bias the accessible solution set",
+      "symbols": {"W": "network width", "L": "depth", "P": "number of target primitives", "M_epsilon": "epsilon-loss solution set"},
+      "evidence": "paper.pdf pp. 7–8, Equations (4)–(5), appendix Equations (8)–(10), and official v1 TeX",
+      "interpretation": "该比值缺少完整的有界 measure/tube 定义。更直接地，固定 $P$ 时分子 $W!/(W-P)!\\sim W^P$，正文展示的 bound 是 $W^{-P(L-2)}$，不是其宣称的 $W^{-P(L-1)}$；附录又使用 $W^{PL}$，所以宽度指数尚未成立。"
+    }
+  ],
+  "figure_refs": [
+    {
+      "label": "Figure 3 depth ablation", "asset_path": "assets/collection-figures/2606.19941/figure-03-depth-score.webp", "section": "核心结果与证据",
+      "role": "show EMC2-Bench score versus local depth offset for Adam and Muon on three target images",
+      "evidence": "paper.pdf p. 4, Figure 3; official vector source images/quantitative_depth.pdf",
+      "alt_text": "Six depth-ablation curves compare Adam and Muon on skull, butterfly, and apple targets, with each curve peaking at the zero depth offset.",
+      "caption": "Figure 3：三个目标在作者选定中心附近的深度扫描都于 offset 0 达峰，Muon 曲线高于 Adam。",
+      "interpretation": "共同峰值支持这三个逐图像任务中的局部最优深度；目标相关的中心、仅三个样本且无 error bars，不足以称为普适相变或深度定律。"
+    }
+  ],
+  "cover": {
+    "mode": "source_figure", "asset_path": "assets/collection-figures/2606.19941/figure-03-depth-score.webp", "label": "Figure 3 depth regime", "visual_type": "data_plot",
+    "evidence": "paper.pdf p. 4, Figure 3; official vector source", "alt_text": "Depth-ablation score curves for three image-specific coordinate MLPs.",
+    "caption": "组合性扰动分数在三个目标的局部深度扫描中呈现窄峰。", "selection_rationale": "It is the most direct evidence for the paper's central narrow-depth-regime claim while visibly exposing the small target set."
+  },
+  "sections": [
+    {"title": "作者信息", "paragraphs": [
+      "作者为 Dat H. Do、Rushi Shah、Duc V. Le 与 Dianbo Liu。",
+      "本站核验 arXiv:2606.19941v1：提交于 2026-06-18，是当前唯一版本；主分类 cs.LG，PDF 45 页。",
+      "Collection 来源为刘子鸣网站的 Machine Learning 条目；本站检查官方 PDF、TeX、Figure 3 与完整证据包，未重跑训练或校准视觉语言模型 judge。"
+    ]},
+    {"title": "研究问题", "paragraphs": [
+      "当一个小型 MLP 为单幅图像学习坐标到颜色的映射时，稀疏连接与网络深度能否让中间特征更像可复用的组成部件？",
+      "论文将单个非零权重逐一扰动，再用视觉语言模型判断生成图是否仍保持原语义，以此构造 EMC2-Bench score。",
+      "随后比较 similarity pruning、优化器与深度，并用组合解在低损失解集中的体积占比解释所谓 sweet spot。",
+      "问题范围很窄：它不直接测试语言模型、foundation model、未见过的 primitive 组合或标准 OOD systematic generalization。"
+    ]},
+    {"title": "背景", "paragraphs": [
+      "组合表示希望复杂对象由相对独立、可重用的 primitive 组成；在神经网络中，这常被讨论为 modularity、disentanglement 或 monosemantic features。",
+      "这里的网络是 CPPN 风格 coordinate MLP：输入像素坐标 $(x,y)$、径向距离与 bias，输出 HSV 并转换为 RGB；每次只拟合一张固定目标图。",
+      "作者对比 Picbreeder 的进化网络与 SGD 网络，观察前者常有较清晰的中间图样，于是尝试通过 pruning 与 depth 复现这种结构。",
+      "但看起来像部件的 activation map 与能在新组合中系统复用的 representation 不是同一个命题，本文主要测量前者附近的扰动鲁棒性。"
+    ]},
+    {"title": "给物理学家的 AI 导读", "paragraphs": [
+      "可把每个权重视作控制生成图像的耦合常数：逐个改变它并询问宏观对象是否保持，相当于画一个离散的局部响应图。",
+      "EMC2 score 不是 susceptibility 本身，因为所有权重采用相同 additive $\\delta$，没有按局部曲率或参数尺度无量纲化；judge 还把连续响应压成 yes/no。",
+      "similarity pruning 类似先以观测到的场分布合并冗余自由度，再进行 relaxation；因此最后状态依赖选择规则、随机删点和重新优化，不能只归因于稀疏拓扑。",
+      "Figure 3 的窄峰更像有限参数窗口中的 empirical optimum：要称 phase transition，至少还需系统尺寸扫描、order parameter、波动或有限尺寸标度。",
+      "解流形体积比的直觉类似态空间 measure，但在无界参数空间中必须指定 cutoff、坐标 measure 或低损失 tube；否则 uniform probability 与 volume 可能没有定义。"
+    ]},
+    {"title": "模型与方法", "paragraphs": [
+      "MLP 以 LeCun initialization、学习率 $3\\times10^{-3}$ 训练 100,000 个 MSE steps；论文称 A100 40GB 上每次运行少于一小时。",
+      "EMC2-Bench 遍历所有非零权重，令 $w'=w+\\delta$，重新渲染，再以固定 prompt 询问 Qwen3-VL-4B-Thinking 是否仍是同一对象；Picbreeder 用 $\\delta=0.5$，其他目标用 1.0。",
+      "similarity pruning 计算同层 neuron feature maps 的 cosine similarity，以当前 active-neuron 数的倒数为阈值；对冗余对随机删除一个 neuron、置零关联权重并迭代 fine-tune。",
+      "深度先由 Picbreeder 图像的 PNG compression ratio 拟合线性 heuristic，给出预测中心与 $\\pm6$ 搜索带，随后仍以实测 score 选择 optimum。",
+      "实验比较 Adam、Muon 与 Muon NS20，并在固定参数预算下对照 Lottery Ticket Hypothesis、Wanda 和 LLM-Pruner。"
+    ]},
+    {"title": "核心结果与证据", "paragraphs": [
+      "Table 1 的 Skull/Butterfly/Apple 三列中，Lottery Ticket、Wanda 与 LLM-Pruner 均为 0；SP-Adam 为 0.05/0.07/0.07，SP-Muon 为 0.12/0.21/0.21，SP-Muon-NS20 为 0.18/0.28/0.24。",
+      "同表的 Picbreeder 网络达到 0.63/0.86/0.57，说明本文训练方法虽优于所测 pruning baselines，仍未复现进化网络在该 judge/扰动协议下的分数。",
+      "Figure 3 在深度 offset $-3$ 到 $+3$ 内显示三个目标都在 0 达峰，且 Muon 高于 Adam；这是三项任务的局部经验事实。",
+      "PNG compression heuristic 可缩小候选深度区间，但最终 optimum 仍由同一搜索程序找到，不能视为独立预测检验。",
+      "理论提出浅于 $L^*=\\lceil\\log_2(P+1)\\rceil$ 无法承载平衡二叉组合、过宽过深会稀释组合解；该结论依赖 bounded-arity target DAG、精确 primitive identification 等强假设。"
+    ]},
+    {"title": "有效性与局限", "paragraphs": [
+      "中心指标依赖固定 additive perturbation 与单个 Qwen3-VL judge；论文没有报告 human agreement、judge calibration、test-retest variability 或不同 judge 的稳健性。",
+      "主要 score 与 depth curves 没有 seeds、run variance、confidence intervals 或 error bars，统计单位也不清楚；三个选定目标不足以建立普适架构规律。",
+      "训练对象是逐图像 coordinate MLP，不包含 held-out combinations；所以高分不能等同于 ground-truth compositional generalization。",
+      "similarity pruning 同时改变 activation-based selection、random removal 与 retraining，Muon 的收益也可能来自优化质量；实验没有隔离因果机制。",
+      "体积解释没有完整定义 parameter-space measure；正文 width bound 的代数 scaling 与文字指数不符，附录分母又不同，因此不能把理论指数当作已证明结果。",
+      "$L^*$ 使用平衡二叉 composition 与 fan-in 不超过 2 等约定；Welch bound 为零仅表示正交可行，不证明网络学到正交或 monosemantic features。",
+      "附录图注写每格 10 trials，但官方 v1 TeX 仍保留未来 30-trial camera-ready sweep 的占位文字，显示统计证据尚未封口。"
+    ]},
+    {"title": "复现与资源", "paragraphs": [
+      "复现首先应固定三层对象：官方 PDF/TeX 的任务定义、逐权重 perturbation outputs，以及 VLM prompt/response；MinerU 仅用于定位全文。",
+      "为使 score 可比较，应记录每个权重的尺度、相对扰动 $\\delta/|w|$、像素级变化、judge logit/文本与人工盲评，并报告多 judge agreement。",
+      "架构实验需对每个 target、depth、width、optimizer 和 pruning random choice 使用预注册 seeds，给 mean、variance、CI 与完整失败样本。",
+      "要隔离 connectivity，应比较同一 mask 下不同 retraining、同一 activation criterion 下 deterministic removal，以及 matched-loss/matched-budget controls。",
+      "理论复核应先给 $\\mathcal M_\\varepsilon$ 指定有界域或 tube measure，再统一正文与附录的 counting exponent；在此之前只把 volume story 当作 hypothesis。"
+    ]},
+    {"title": "阅读指南", "paragraphs": [
+      "快速路线：pp. 2–6 看任务、Figure 3、EMC2-Bench、depth heuristic 与 Table 1；先确认它是单图像 coordinate MLP。",
+      "物理路线：把逐权重 sweep 看作局部响应，把 pruning+retraining 看作带 coarse-graining 的非平衡过程，再检查 depth peak 是否有 scaling evidence。",
+      "AI 路线：区分 feature-map 可解释性、perturbation robustness、monosemanticity 与 systematic compositional generalization。",
+      "批判路线：pp. 7–8 与 appendix 检查 solution-volume measure、width exponent、$L^*$ assumptions、Welch-bound 推论和未完成的 trial placeholder。"
+    ]}
+  ],
+  "evidence_refs": [
+    "paper.pdf pp. 2–6 and official v1 TeX: coordinate-MLP task, Figure 3 depth ablation, EMC2-Bench perturbation protocol, similarity pruning, compression heuristic and Table 1 scores",
+    "paper.pdf pp. 7–8 and appendix/official v1 TeX: solution-manifold volume proposal, depth and width assumptions, Welch-bound argument and inconsistent width-counting expressions",
+    "paper.pdf appendix and official v1 TeX: training hardware/steps, absent uncertainty reporting, 10-trial caption and retained 30-trial camera-ready placeholder",
+    "source PDF SHA-256 34757411f3c551766cee1999615441c608e4ba0b2927199d1e251904a04f3095",
+    "official arXiv v1 source archive SHA-256 cf4e60e81a3763eaa3f9c3d12a8984dc0df9f40840157dc4f6ef4dbdb9eaeb6d",
+    "MinerU Markdown SHA-256 670d68040db34b4a4108acea34e24dc3adc6ebe155416b6f35a27b3572a012e5",
+    "Evidence packet SHA-256 7a5dd4303ad3e271086f78b1227acfb4fdd1efb73540fbab86a76fdd9c40f6b7",
+    "Representative Figure 3 WebP SHA-256 4f503a44b41295be4cf1e357c8eff3f0665ecdbbd361cfea58e1f9240c94fc33",
+    "Evidence status: full text, official v1 TeX and Figure 3 verified; small coordinate-MLP/VLM-proxy, perturbation-scale, pruning-confound, three-target/statistical, solution-measure, exponent, depth-assumption, monosemanticity and unfinished-source boundaries recorded; no independent reproduction performed."
+  ]
+}

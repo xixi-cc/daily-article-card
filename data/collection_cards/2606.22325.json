@@ -1,0 +1,138 @@
+{
+  "arxiv_id": "2606.22325",
+  "source_version": "v1",
+  "source_pdf": "https://arxiv.org/pdf/2606.22325v1",
+  "title_en": "All Routes Lead to Collapse",
+  "title_zh": "所有路由都通向坍缩",
+  "curation_status": "full_text_verified",
+  "card_standard_version": "2.4",
+  "audience_profile": "physics_ai_literate_physicist",
+  "paper_profile": "theory_experiment",
+  "style_reference": "physicist_daily_arxiv",
+  "provenance": {
+    "program": "Collection", "catalog": "Paper Collection", "catalog_record_id": "2606.22325", "catalog_record_ids": ["2606.22325"],
+    "catalog_topic": "Representation Learning", "collection_date": "2026-08-30", "sampled_at": "2026-08-31", "selected_by": "ziming_mineru_serial_goal", "sampling_seed": "not_applicable_source_complete", "candidate_count": 464
+  },
+  "verified_metadata": {
+    "arxiv_id": "2606.22325", "version": "v1", "title": "All Routes Lead to Collapse",
+    "authors": ["K. R. Balasubramanian"],
+    "categories": ["cs.LG"], "primary_category": "cs.LG", "published": "2026-06-21", "updated": "2026-06-21",
+    "abstract": "The paper measures routing concentration, low-rank key geometry, and key-norm variation across pretrained transformers and several other neural routers, then uses targeted Mamba, RWKV, and AttnRes interventions to motivate—but not prove—a shared routing-attractor hypothesis."
+  },
+  "equation_refs": [
+    {
+      "label": "Maximum-entropy distance routing", "latex": "\\alpha_i=\\frac{\\exp[-\\beta D(q,k_i)^2]}{\\sum_j\\exp[-\\beta D(q,k_j)^2]}",
+      "role": "express routing as Boltzmann weights over query–key distance under a constrained maximum-entropy construction",
+      "symbols": {"alpha_i": "routing weight assigned to source i", "D": "assumed query–key distance", "beta": "inverse-temperature Lagrange multiplier"},
+      "evidence": "paper.pdf pp. 2–3 and p. 11, Equation (1)/Theorem 1, and official v1 TeX",
+      "interpretation": "这提供统计物理式的 Gibbs routing 视角；它是在给定距离与平均距离约束下的代数构造，不是训练动力学定理。"
+    },
+    {
+      "label": "Euclidean score decomposition", "latex": "\\|q-k_i\\|^2=\\|q\\|^2-2\\langle q,k_i\\rangle+\\|k_i\\|^2",
+      "role": "show why dot-product attention equals squared-distance routing only when the key-norm term is source-independent",
+      "symbols": {"q": "query vector", "k_i": "key for source i", "key_norm": "source-dependent radial term omitted by pure dot-product ranking"},
+      "evidence": "paper.pdf p. 11, derivation of Theorem 1, and official v1 TeX",
+      "interpretation": "若所有 $\\|k_i\\|$ 相等，公共项在 softmax 中抵消；本文实测各层 key norms 并不相等，所以 dot product 不是该 Euclidean distance 的严格代理。但这尚未证明 metric mismatch 导致全部坍缩指标。"
+    },
+    {
+      "label": "Reconstructed recurrent routing operator", "latex": "y_t=\\sum_{s\\le t}\\alpha_{t,s}x_s,\\qquad \\alpha_{t,s}=C_t\\left(\\prod_{r=s+1}^{t}\\bar A_r\\right)\\bar B_s",
+      "role": "rewrite a recurrent state-space layer as source-to-query influence weights for comparison with attention routing",
+      "symbols": {"alpha_ts": "reconstructed influence of source position s on output t", "A_bar": "state carry/decay factors", "B_bar": "input injection", "C_t": "readout"},
+      "evidence": "paper.pdf pp. 5 and 13–14, Mamba/RWKV operator reconstruction, and official v1 TeX",
+      "interpretation": "这使 Mamba/RWKV 也能画 routing concentration，但它是 architecture-specific reconstructed operator，不与 Transformer 的 post-softmax attention weight 构成同一绝对 observable。"
+    }
+  ],
+  "figure_refs": [
+    {
+      "label": "Figure 2 causal routing ablations", "asset_path": "assets/collection-figures/2606.22325/figure-02-causal-ablations.webp", "section": "核心结果与证据",
+      "role": "show within-checkpoint interventions on Mamba selectivity and RWKV carry that control reconstructed routing concentration",
+      "evidence": "paper.pdf p. 7, Figure 2; official source figures/fig3_causal_ablations.png",
+      "alt_text": "Side-by-side Mamba and RWKV ablation curves show routing concentration changing when selectivity or carry is frozen or removed.",
+      "caption": "Figure 2：冻结 Mamba 的选择性门控或移除 RWKV 的 carry，会削弱或消除特定 checkpoint 中的路由集中。",
+      "interpretation": "这是论文最接近因果证据的部分：干预直接控制对应模型的 concentration，但没有测 downstream task effect，也未证明所有架构共享同一机制。"
+    }
+  ],
+  "cover": {
+    "mode": "source_figure", "asset_path": "assets/collection-figures/2606.22325/figure-02-causal-ablations.webp", "label": "Figure 2 causal ablations", "visual_type": "data_plot",
+    "evidence": "paper.pdf p. 7, Figure 2; official raster source", "alt_text": "Mamba selectivity and RWKV carry ablations alter reconstructed routing concentration.",
+    "caption": "跨模型相关性之外，特定路由控制量的干预会改变集中度。", "selection_rationale": "It separates the paper's strongest intervention evidence from its broader descriptive and geometric hypothesis."
+  },
+  "sections": [
+    {"title": "作者信息", "paragraphs": [
+      "作者为 K. R. Balasubramanian。",
+      "本站核验 arXiv:2606.22325v1：提交于 2026-06-21，是当前唯一版本；主分类 cs.LG，PDF 20 页。",
+      "Collection 来源为刘子鸣网站的 Representation Learning 条目；本站检查官方 PDF、TeX、表格与 Figure 2，未运行模型、代码或数据。"
+    ]},
+    {"title": "研究问题", "paragraphs": [
+      "Transformer attention、图注意力、state-space model 和 residual routing 这些实现不同的系统，是否都会逐渐把大部分权重集中到少数来源？",
+      "论文把这一现象拆为三项 operational signatures：路由集中、key/key-like geometry 低秩，以及 key norm 的分层。",
+      "作者进一步提出：内容相关路由在固定相似性规则下会流向共同 attractor，位置项则控制何时、在哪里出现。",
+      "证据目标是跨 checkpoint 的经验规律与机制假设，而不是证明所有 router 都必然坍缩或坍缩一定有害。"
+    ]},
+    {"title": "背景", "paragraphs": [
+      "神经路由把每个 query 的信息需求分配给多个 source；softmax attention 是一次性归一化，Mamba/RWKV 则通过递归 carry 累积历史影响。",
+      "本文将 concentration 定义为各 source 跨 queries 接收的总路由量中最大者的归一化份额；首次超过 0.20 的层定义 onset。",
+      "低秩用 double-centered squared-distance matrix 的 rank-$r$ variance explained 衡量，等价于中心化 Gram spectrum 的信息；norm stratification 用 key norm 的变异系数衡量。",
+      "这三个量描述不同对象：概率质量、几何维数和径向尺度。它们可以相关，但不能被合并为一个已经证明的单一相变。"
+    ]},
+    {"title": "给物理学家的 AI 导读", "paragraphs": [
+      "把 router 看成从许多微观来源向少数通道重新分配概率质量：concentration 类似凝聚度，depth 类似离散演化时间，但网络层并非热平衡时间步。",
+      "最大熵推导给出 $\\alpha_i\\propto e^{-\\beta D^2}$；在 conformally flat constant metric 与等 key norm 下，它可化为 scaled dot-product softmax。",
+      "等范数条件像把所有候选态限制在同一球壳。真实 keys 的半径不同，遗漏的 $-\\|k_i\\|^2$ 项会改变能量排序，因此纯角向相似度可能偏爱大范数 keys。",
+      "低秩高 VE 表示方差集中在少数 collective directions；但 Pythia-160M 的 position-shuffle null 已重现 0.819/0.885，说明很大部分来自 marginal geometry，而非 token 顺序结构。",
+      "Figure 2 的 intervention 比跨模型曲线更接近机制检验：改变 Mamba gate 或 RWKV carry 后 concentration 随之改变；仍不能从一次 checkpoint 干预推出普适 universality class。"
+    ]},
+    {"title": "模型与方法", "paragraphs": [
+      "Transformer 样本含 GPT-2 small/medium/large/XL 与 Pythia 160M/410M/1B/1.4B/2.8B，共九个 pretrained checkpoints；使用 WikiText-103 validation 的 150 条、长度 128 的 fp32 sequences。",
+      "每层每头计算最大 source share、key-norm CV 与 VE@8，并用 isotropic Gaussian 和 position-shuffle null 区分低秩的边际与内容/位置成分。",
+      "跨架构部分比较 WebKB 三图上的 GAT/GCN、四个 Mamba scales、RWKV-4 169M 与 AttnRes/Qwen3 0.6B；重构 operator 的模型只用 16 条长度 128 sequences。",
+      "Mamba 将 input-dependent $\\Delta$ 冻结为逐位置均值，并进一步冻结 input/output projections；RWKV 扫描 carry/decay，含 no-carry 与 full-carry 极端。",
+      "AttnRes 调节 recency bias，并利用其 RMS-normalized keys 检查 key-norm variation 是否是 concentration 的必要条件。"
+    ]},
+    {"title": "核心结果与证据", "paragraphs": [
+      "九个 Transformer 的 depth-averaged key-norm CV：GPT-2 为 0.151–0.307，Pythia 为 0.254–0.289；每层均高于相应 isotropic-Gaussian baseline。",
+      "九个模型的真实 key VE@8 均高于 Gaussian 与 shuffle null；real-minus-shuffle 在 GPT-2 为 0.260–0.322，在 Pythia 为 0.066–0.214，但这些是 checkpoints 间描述性趋势。",
+      "以 0.20 为阈值，Transformer onset 位于归一化深度的 9%–25%，peak share 为 0.57–0.78；key-norm CV 与 max share 的 layer-head Pearson $r$ 多为正，但 Pythia-410M 的 0.05 不显著。",
+      "Mamba onset 为 56%–81%、peak 0.23–0.31；RWKV onset 42%、peak 0.28。由于这些是 reconstructed operators，绝对高度不应与 post-softmax Transformer weight 直接比较。",
+      "Figure 2 中冻结 Mamba $\\Delta$ 去除观察到的集中，进一步冻结 projections 后接近均匀；论文报告 real-versus-ablated 平均 peak gap 为 +0.23。",
+      "RWKV no-carry 将 concentration 保持在 0.015；full carry 的 onset 为 17%，早于 learned-decay 的 50%，carry sweep 中 peak 约从 0.083 升至 0.288。",
+      "AttnRes 56 个 sublayers 的 mean top-source share 为 0.643，uniform baseline 0.245；RMS-normalized keys 下仍可集中，说明 norm variation 在这个 router/指标中不是必要条件。"
+    ]},
+    {"title": "有效性与局限", "paragraphs": [
+      "大部分主结果来自单个固定 pretrained checkpoint；架构家族、训练语料、规模与实现彼此混杂，不能由 cross-model recurrence 单独识别共同训练机制。",
+      "150 条文本 sequences 和 recurrent-router 的 16 条 sequences 内部高度相关；headline tables 没有 sequence-sampling CI，layer-head pairs 也不是独立重复。",
+      "0.20 onset threshold 是为覆盖不同 routers 人为选择的操作阈值；改变阈值可能改变 onset ordering。",
+      "shuffle 保留 marginal vectors 但打乱位置，不是训练动力学的因果对照，也未穷尽 semantic/content structure。",
+      "Mamba、RWKV、AttnRes 的 reconstructed influence 与 Transformer softmax weight 不是同一 observable，绝对 peak 数值不可当作统一标度量。",
+      "等范数假设在所有测试 Transformer layers 中被违反，但论文没有直接修复或干预所谓 norm-blind metric，故不能说 metric mismatch 已导致三类 signatures。",
+      "极端 gate/carry/bias 参数可能超出训练分布；论文未测这些干预对 loss、accuracy 或 downstream behavior 的影响，也未表明 collapse 有害或有益。",
+      "关于无位置编码、RoPE/ALiBi 排序与 LoRA 的预测尚未测试。"
+    ]},
+    {"title": "复现与资源", "paragraphs": [
+      "复现应保存 exact model revisions、tokenizer、WikiText indices、sequence masks、precision，以及每层每头的未聚合 routing matrices、keys 与 null draws。",
+      "concentration 需同时报告多个阈值下的 onset、peak、末层值与 bootstrap sequence CI，避免把 0.20 的单点选择误作结构常数。",
+      "低秩分析应并列 real、Gaussian、position-shuffle 与 norm-matched null，并展示完整 spectrum，而不只 VE@8。",
+      "跨架构比较应先验证 operator normalization 与 conservation of total weight；若不能定义同一 observable，只比较曲线形状与模型内 intervention effect。",
+      "因果检验可在同一 checkpoint 中加入 key-norm normalization、显式 $-\\|k_i\\|^2$ 距离项或 learnable metric，并在 concentration、rank、norm 与 downstream performance 上联合评估。",
+      "两次重训的 12-layer Pythia 只显示 VE 相似而 subspace directions 不同；更可靠的训练结论需要更多 seeds 与预先定义的 subspace-alignment statistic。"
+    ]},
+    {"title": "阅读指南", "paragraphs": [
+      "快速路线：pp. 2–5 看三个指标、Table 1 与跨架构 onset；pp. 6–7 看 Figure 1/2，先区分描述曲线与干预。",
+      "物理路线：从最大熵 Boltzmann routing、球壳等范数条件、Gram spectrum 与 carry propagator 理解类比，同时保留非平衡/非同 observable 边界。",
+      "AI 路线：核对 softmax attention、Mamba/RWKV reconstructed operators 与 AttnRes block router 的定义差异。",
+      "批判路线：追踪 null model、相关样本、阈值敏感性、单-checkpoint confounds、OOD ablations 和缺失 downstream test。"
+    ]}
+  ],
+  "evidence_refs": [
+    "paper.pdf pp. 2–5 and official v1 TeX/tables: routing concentration, VE@8, key-norm CV definitions, nine-transformer protocol and headline measurements",
+    "paper.pdf pp. 5–7 and pp. 13–16: cross-architecture reconstructed operators, onset/peak values, GAT control, Mamba/RWKV/AttnRes interventions and Figure 2",
+    "paper.pdf pp. 10–12 and official v1 TeX: maximum-entropy distance routing identity, conformal/equal-norm assumptions and empirical violation boundary",
+    "paper.pdf appendices and official tables: null construction, sampling sizes, seed control, correlations, operator non-comparability and untested predictions",
+    "source PDF SHA-256 913eb70fa4b1fe0a0e48d4264cc9786c57c59bb7bba2f76b868b9cb09ebbce1d",
+    "official arXiv v1 source archive SHA-256 2a5a3888003dd6d9cb7154be9b2545f0c0bb5b2b9228bd8cce9e5442d560826a",
+    "MinerU Markdown SHA-256 61a52a6e5f9ffb7e75efa93844b93c71a37f2c25d1a9c6a4c25621d552e282d8",
+    "Evidence packet SHA-256 9c792b1f9f827cb24f28349298dfd31ec1b83dc7f14b3cb471ef3d445e5e78d0",
+    "Representative Figure 2 WebP SHA-256 86f19a3808749ee77295f63dc503d59cd7df0683d2f5f274893112063ef14d14",
+    "Evidence status: full text, official v1 TeX/tables and Figure 2 verified; operational-signature separation, correlated-sample/statistical, threshold, null, single-checkpoint, cross-operator, equal-norm/causal, OOD-intervention and downstream-effect boundaries recorded; no independent reproduction performed."
+  ]
+}
