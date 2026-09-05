@@ -1,0 +1,195 @@
+{
+  "arxiv_id": "2606.08167",
+  "source_version": "v3",
+  "source_pdf": "https://arxiv.org/pdf/2606.08167v3",
+  "title_en": "Explaining Data Mixing Scaling Laws",
+  "title_zh": "解释数据混合缩放律",
+  "curation_status": "full_text_verified",
+  "card_standard_version": "2.4",
+  "audience_profile": "physics_ai_literate_physicist",
+  "paper_profile": "theory_experiment",
+  "style_reference": "physicist_daily_arxiv",
+  "provenance": {
+    "program": "Collection",
+    "catalog": "Paper Collection",
+    "catalog_record_id": "2606.08167",
+    "catalog_record_ids": ["2606.08167"],
+    "catalog_topic": "Training Dynamics",
+    "collection_date": "2026-08-30",
+    "sampled_at": "2026-08-31",
+    "selected_by": "ziming_mineru_serial_goal",
+    "sampling_seed": "not_applicable_source_complete",
+    "candidate_count": 464
+  },
+  "verified_metadata": {
+    "arxiv_id": "2606.08167",
+    "version": "v3",
+    "title": "Explaining Data Mixing Scaling Laws",
+    "authors": ["Rui Dai", "Shuran Zheng"],
+    "categories": ["cs.LG", "cs.AI"],
+    "primary_category": "cs.LG",
+    "published": "2026-06-06",
+    "updated": "2026-07-30",
+    "abstract": "The paper models domain mixing as competition for finite representation capacity plus domain-specific finite-data noise, fits a scaling law to one multi-domain corpus, and reports proxy-to-target mixture transfer."
+  },
+  "equation_refs": [
+    {
+      "label": "Classical model/data scaling law",
+      "latex": "L(N,D)\\approx\\frac{A}{N^\\alpha}+\\frac{B}{D^\\beta}+E",
+      "role": "show the additive baseline that ignores interactions among data domains",
+      "symbols": {
+        "N": "model capacity or parameter scale",
+        "D": "training-token count",
+        "E": "irreducible loss floor",
+        "alpha_beta": "model- and data-scaling exponents"
+      },
+      "evidence": "paper.pdf pp. 2–3 and official v3 preliminaries TeX",
+      "interpretation": "单域 law 只把 model/data resources 相加；data mixing 还需要描述多个 domains 如何竞争共享容量及各自有效样本数。"
+    },
+    {
+      "label": "Capacity-allocation problem",
+      "latex": "\\min_{x_i\\ge H}\\sum_{i=1}^K h_i c_i x_i^{-b_i}\\quad\\mathrm{s.t.}\\quad\\sum_i(x_i-H)\\le N-H",
+      "role": "allocate a shared head and finite domain-specific tail capacity among K domains",
+      "symbols": {
+        "h_i": "training mixture fraction of domain i",
+        "x_i": "effective capacity allocated to domain i",
+        "H": "shared head capacity",
+        "b_i": "domain tail exponent"
+      },
+      "evidence": "paper.pdf p. 7, Equation (1), and official theory TeX",
+      "interpretation": "这像固定总自由度下的资源分配：增加某域权重会改变最优 $x_i^*$，从而间接影响其他域的 loss。"
+    },
+    {
+      "label": "Projected-linear mixture law",
+      "latex": "L_i(h\\mid N,D)\\approx c_i[x_i^*(h,N)]^{-b_i}+A_i(Dh_i)^{-a_i}+E_i",
+      "role": "combine capacity competition with domain-specific finite-sample noise",
+      "symbols": {
+        "x_i_star": "optimal capacity allocation from the inner problem",
+        "D_h_i": "number of tokens drawn from domain i",
+        "A_i_a_i": "domain-specific finite-data coefficient and exponent",
+        "E_i": "domain-specific floor"
+      },
+      "evidence": "paper.pdf pp. 9–10, Equation (3), appendix theorem, and official v3 TeX",
+      "interpretation": "第一项耦合所有 mixture weights，第二项只依赖本域样本量并打破 $h=w$ 对称；定理来自受限 linear regression，不是 Transformer pretraining theorem。"
+    }
+  ],
+  "figure_refs": [
+    {
+      "label": "Figure 4 1B/30B mixture extrapolation",
+      "asset_path": "assets/collection-figures/2606.08167/figure-04-extrapolation-1b.webp",
+      "section": "核心结果与证据",
+      "role": "compare training-loss trajectories for extrapolated, static and Additive-law mixtures at the target scale",
+      "evidence": "paper.pdf p. 15, Figure 4; official vector source eval_loss_3curves.pdf",
+      "alt_text": "Three training-loss curves at a 1B-parameter 30B-token target compare an extrapolated mixture, a static mixture and an Additive-law baseline.",
+      "caption": "Figure 4：1B/30B run 的最终 loss 分别为 extrapolated 2.1087、Additive 2.1106、static 2.2103。",
+      "interpretation": "0.0019 的领先没有 seeds/error bars；而 Additive baseline 的拟合尺度网格包含目标 1B/30B，因此不是等条件的 zero-target extrapolation。"
+    }
+  ],
+  "cover": {
+    "mode": "source_figure",
+    "asset_path": "assets/collection-figures/2606.08167/figure-04-extrapolation-1b.webp",
+    "label": "Figure 4 data-mixture extrapolation",
+    "visual_type": "comparison",
+    "evidence": "paper.pdf p. 15, Figure 4; official vector source",
+    "alt_text": "At 1B parameters and 30B tokens, an extrapolated mixture nearly matches a target-inclusive Additive baseline and improves over a static mixture.",
+    "caption": "小尺度拟合给出的 mixture 在更大目标尺度上保持了有利点估计。",
+    "selection_rationale": "It is the clearest practical transfer result and exposes the small numerical gap that requires an uncertainty caveat."
+  },
+  "sections": [
+    {
+      "title": "作者信息",
+      "paragraphs": [
+        "作者为 Rui Dai 与 Shuran Zheng。",
+        "本站核验 arXiv:2606.08167v3：初稿提交于 2026-06-06，v3 更新于 2026-07-30；主分类 cs.LG，PDF 43 页；arXiv 页面注明 ICML 2026。",
+        "Collection 来源为刘子鸣网站的 Training Dynamics 条目。"
+      ]
+    },
+    {
+      "title": "研究问题",
+      "paragraphs": [
+        "预训练数据来自多个 domains 时，某一 mixture 在小模型上测得的 loss 能否解释并预测更大模型的最优 mixture？为何 target mixture $w$ 通常不等于 training mixture $h$？",
+        "论文把机制分成共享 head 学习、domain-specific tail 的有限 capacity competition，以及有限 domain tokens 引起的 estimation noise。",
+        "理论在特定 projected linear regression 中导出相同 functional form，实验在一套 64-model/17-domain 语料和少量新训练上拟合/外推；这不构成通用 Transformer 定理。"
+      ]
+    },
+    {
+      "title": "背景",
+      "paragraphs": [
+        "data mixing 决定每个 domain 获得多少训练 tokens。若不同 domains 只独立缩放，可以把各域 law 相加；若共享 features/容量，则 mixture weights 会交叉影响 loss。",
+        "scaling law 是经验低维 surrogate：它把大量训练 run 压成少数参数，常用于昂贵 target run 前的 mixture selection。",
+        "外推质量取决于识别性与 uncertainty；一个 nonconvex fit 在固定 corpus 上误差较小，并不自动保证跨 architecture、tokenizer 或 domain shift。",
+        "bilevel optimization 中，外层选 $h$，内层求 capacity allocation $x^*(h,N)$；对 fitted law 求梯度只优化 surrogate，不保证原始训练问题的 global optimum。"
+      ]
+    },
+    {
+      "title": "给物理学家的 AI 导读",
+      "paragraphs": [
+        "可把 domains 看成共享低频 modes/head、各有高频 spectral tail 的组分。有限 $N$ 像总截断维数，KKT 条件决定尾部自由度如何分配。",
+        "$c_i[x_i^*]^{-b_i}$ 是 bias/capacity 项，耦合所有 $h_j$；$A_i(Dh_i)^{-a_i}$ 是 variance/noise 项，只随本域采样量改变。",
+        "target weights $w_i$ 定义评价目标，training weights $h_i$ 定义采样。noise 项打破二者对称，使最优训练 mixture 偏向更难或数据效率更低的域。",
+        "理论 covariance 必须可同时对角化，domain tails 严格正交且不重叠；这像可分解的多组分谱模型，而不是现实语义域的普遍结构。",
+        "点估计的 0.0019 loss 差应与 seed-to-seed fluctuation 比较；没有误差条时，只能说 reported ordering，不能说 statistically superior。"
+      ]
+    },
+    {
+      "title": "模型与方法",
+      "paragraphs": [
+        "Extended Quantization Model 假设 shared head 已学会，domain-specific skills 的 power-law tails 竞争剩余容量，求解带下界 $H$ 的 inner allocation。",
+        "Projected Linear Model 使用 simultaneous-diagonalizable covariances、orthogonal disjoint tails、isotropic teacher、Gaussian noise、top-$N$ sketch 与特定 one-pass cosine-SGD，导出 capacity+noise law。",
+        "拟合数据复用 1B parameters、25B tokens 的 64 个 models、17 个 Pile domains；复杂 laws 用 basin hopping + L-BFGS，多 random initializations，并在每次 objective 内解 convex allocation。",
+        "新四域 experiments 使用 200M/700M decoder、8B/16B tokens、24 layers、sequence length 1024、AdamW/BF16、8 张 H200；未报告总 compute、独立 seeds 或 error bars。",
+        "外推 mixture 由 proxy-scale fits 优化后用于 700M/16B 与 1B/30B target runs，并与 static 和已有 Additive law 比较。"
+      ]
+    },
+    {
+      "title": "核心结果与证据",
+      "paragraphs": [
+        "64-model/17-domain fit 中，新 law 报 mean relative error 1.533%、MAE 0.034；Additive baseline 为 2.209%、0.052，参数量同为约 5K。",
+        "论文未报告精确 train/test split sizes、重复 splits、confidence intervals 或 nonconvex initialization sensitivity；四个 domains 因 validation loss 缺失而改用 training loss。",
+        "700M/16B run 的最终 loss：extrapolated 1.8281、static 1.8356、baseline 1.8753。",
+        "Figure 4 的 1B/30B point estimates：extrapolated 2.1087、Additive 2.1106、static 2.2103；无独立训练重复或显著性检验。",
+        "Additive baseline 的 scale grid 包含 1B/30B target；新方法接近它支持 proxy transfer，但不能称为同等信息条件下胜过 baseline。"
+      ]
+    },
+    {
+      "title": "有效性与局限",
+      "paragraphs": [
+        "linear theorem 的 covariance、spectral-tail、teacher、noise、sketch 与 SGD assumptions 很强；不能把 capacity allocation 当成已识别的 Transformer causal mechanism。",
+        "Assumption D.7 称 $A(h)\\in[8,9]$，但直接代入展示的 leading Gamma term，在允许参数端点可约为 101 或 0.30；该 universal range 未由显示公式支持。",
+        "拟合研究只有一套 corpus，split/fit uncertainty 不完整；new target runs 只有 point estimates，无 seeds、SD/CI 或 tests。",
+        "1B Additive baseline 含目标尺度，比较并非 equal extrapolation；小 gap 不应解读为确立优越性。",
+        "synthetic overlap tests 接近模型假设且无 repetitions/error bars；rendered PDF 的 standard-normal noise caption 优先于注释掉的旧 0.5% TeX caption。",
+        "online mirror descent 只对 fitted law 求导，不证明 nonconvex outer mixture problem 或真实 pretraining 的 global convergence。"
+      ]
+    },
+    {
+      "title": "复现与资源",
+      "paragraphs": [
+        "v3 未给本站已核验可执行的完整复现实验链；本站未运行拟合、训练模型或审计 proof/code。",
+        "拟合复现应发布 64-run matrix、exact splits、domain losses、all initializations 与 solver tolerances，并用 nested cross-validation/bootstrap 给 prediction intervals。",
+        "mixture trial 应使用多个 independent training seeds，预先规定 target-blind baselines，报告 loss curves、final-window averages、tokens/compute 与 uncertainty。",
+        "理论复核应数值扫描 Assumption D.7 的 $A(h)$ displayed formula，并区分 theorem coefficient、leading approximation 与经验 fitted coefficient。",
+        "推广需更换 corpus、domain partition、architecture/tokenizer 与 target scale，并检验 fitted exponents、mixture optimum 和 residual structure 是否稳定。"
+      ]
+    },
+    {
+      "title": "阅读指南",
+      "paragraphs": [
+        "快速路线：pp. 7–10 看 capacity/noise laws；pp. 11–15 看 fitting 与 extrapolation；p. 15 看 Figure 4；appendix 看 theorem assumptions。",
+        "物理路线：把 $x_i$ 当有限谱容量、$Dh_i$ 当各组分采样数，分别追踪 bias 与 variance。",
+        "AI 路线：分开 empirical law、linear surrogate theorem 与 actual decoder runs；它们的证据强度不同。",
+        "批判路线：核查 target-inclusive baseline、missing uncertainty、D.7 coefficient inconsistency 与 corpus-specific identification。"
+      ]
+    }
+  ],
+  "evidence_refs": [
+    "paper.pdf pp. 7–10 and official v3 TeX: extended quantization allocation, projected-linear assumptions, capacity competition and finite-data noise law",
+    "paper.pdf pp. 11–15 and official vector Figure 4: 64-model/17-domain fits, 700M/16B and 1B/30B target runs, final losses and baseline information boundary",
+    "paper.pdf appendices and official v3 TeX: theorem assumptions, A(h) coefficient approximation, overlap stress tests, implementation and mirror-descent scope",
+    "source PDF SHA-256 dcd6942ebbfbcb222da625cac9fed9b2988eef20e8a4e781bbd17954ddc05d8f",
+    "official arXiv v3 source archive SHA-256 1499d4006ad9ec013cd816678bf995250ee769dacea57d146a4786618fa81713",
+    "MinerU Markdown SHA-256 57affaf7cc2a81c98bfe8e50ffa5140ba3ad9709744f1c184c3534e2c8b17380",
+    "Evidence packet SHA-256 d16ddc75b680d766860e507b5fc7d12e415410d0f9ab2a4c7569cbaa95afd768",
+    "Evidence status: full text, official Figure 4 and matching latest v3 TeX verified; linear-theory, coefficient, fit/split, target-baseline, uncertainty, optimization and transfer boundaries recorded; no independent reproduction performed."
+  ]
+}

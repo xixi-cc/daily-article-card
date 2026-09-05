@@ -1,0 +1,194 @@
+{
+  "arxiv_id": "2606.08105",
+  "source_version": "v1",
+  "source_pdf": "https://arxiv.org/pdf/2606.08105v1",
+  "title_en": "A Unifying View of Attention Sinks: Two Algorithms, Two Solutions",
+  "title_zh": "统一理解注意力汇：两种算法与两类解",
+  "curation_status": "full_text_verified",
+  "card_standard_version": "2.4",
+  "audience_profile": "physics_ai_literate_physicist",
+  "paper_profile": "theory_experiment",
+  "style_reference": "physicist_daily_arxiv",
+  "provenance": {
+    "program": "Collection",
+    "catalog": "Paper Collection",
+    "catalog_record_id": "2606.08105",
+    "catalog_record_ids": ["2606.08105"],
+    "catalog_topic": "Transformer Theory",
+    "collection_date": "2026-08-30",
+    "sampled_at": "2026-08-31",
+    "selected_by": "ziming_mineru_serial_goal",
+    "sampling_seed": "not_applicable_source_complete",
+    "candidate_count": 464
+  },
+  "verified_metadata": {
+    "arxiv_id": "2606.08105",
+    "version": "v1",
+    "title": "A Unifying View of Attention Sinks: Two Algorithms, Two Solutions",
+    "authors": ["Lukas Fesser", "Mozes Jacobs", "Thomas Fel", "Andy Keller", "Sham Kakade"],
+    "categories": ["cs.LG"],
+    "primary_category": "cs.LG",
+    "published": "2026-06-06",
+    "updated": "2026-06-06",
+    "abstract": "The paper proposes two functional interpretations of attention sinks—no-operation-like damping and global broadcasting—derives compatible single-head signatures, examines pretrained vision transformers, and compares LeJEPA mitigation variants."
+  },
+  "equation_refs": [
+    {
+      "label": "Single-head attention output",
+      "latex": "o_i^{\\mathrm{head}}=\\sum_{j=1}^n A_{ij}v_j,\\qquad A_{ij}=\\frac{\\exp(q_i^\\top k_j/\\sqrt{d_h})}{\\sum_l\\exp(q_i^\\top k_l/\\sqrt{d_h})}",
+      "role": "show that large attention weight matters only together with the sink token's value vector",
+      "symbols": {
+        "A_ij": "attention mass sent from query token i to token j",
+        "v_j": "value vector carried by token j",
+        "d_h": "head dimension",
+        "o_i": "head update received by token i"
+      },
+      "evidence": "paper.pdf p. 3, Equation (1), and official TeX",
+      "interpretation": "attention map 只是耦合系数；同样的 $A_{is}\\approx1$ 可因 $v_s\\approx0$ 近似不更新，也可因非零 $v_s$ 向所有 token 广播共同信息。"
+    },
+    {
+      "label": "Sink strength",
+      "latex": "\\mathrm{sink}(s;\\mathcal I)=\\frac{1}{|\\mathcal I|}\\sum_{i\\in\\mathcal I}A_{is}",
+      "role": "quantify how much attention a candidate token receives from a chosen query set",
+      "symbols": {
+        "s": "candidate sink token",
+        "I": "specified query-token set",
+        "A_is": "attention from query i to sink s"
+      },
+      "evidence": "paper.pdf p. 3, Definition 1 and Equation (2), and official TeX",
+      "interpretation": "它是 operational statistic，依赖 query set 与阈值；强 sink 并不唯一标记某个 algorithm。"
+    },
+    {
+      "label": "Near-rank-one broadcast update",
+      "latex": "O=AV=a_s v_s^\\top+EV,\\qquad\\|EV\\|_\\infty\\le\\epsilon\\max_j\\|v_j\\|",
+      "role": "express a near-perfect sink as a shared rank-one contribution plus leakage",
+      "symbols": {
+        "a_s": "column of attention weights received by sink s",
+        "v_s": "sink value vector",
+        "E": "non-sink attention remainder",
+        "epsilon": "row-wise leakage bound"
+      },
+      "evidence": "paper.pdf appendix pp. 14–17, Equations (8)–(10), and official TeX",
+      "interpretation": "若 $a_s$ 近似常数，所有 query 得到近似相同 update，表现为 broadcast；但多头 output mixing、MLP 与残差可改变这一图景。"
+    }
+  ],
+  "figure_refs": [
+    {
+      "label": "Figure 4 CLS-to-patch sink transition",
+      "asset_path": "assets/collection-figures/2606.08105/figure-04-sink-transition.webp",
+      "section": "核心结果与证据",
+      "role": "compare the layerwise recipients of strong sink attention across DINOv2-Large, DINOv2-Giant and OpenCLIP ViT-L/16",
+      "evidence": "paper.pdf p. 7, Figure 4; official source sink_signature_clip_dino.pdf",
+      "alt_text": "Three model panels show attention-sink mass moving from CLS tokens in earlier layers toward patch tokens in later layers.",
+      "caption": "Figure 4：DINOv2-L/G 与 OpenCLIP ViT-L/16 中，强 sink 的主要接收者随层深从 CLS 转向 patch token。",
+      "interpretation": "这是 pretrained checkpoints 的 observational signature；没有 ground-truth algorithm labels 或 causal head ablation，不能由图唯一判定 NOP 与 broadcast。"
+    }
+  ],
+  "cover": {
+    "mode": "source_figure",
+    "asset_path": "assets/collection-figures/2606.08105/figure-04-sink-transition.webp",
+    "label": "Figure 4 attention-sink transition",
+    "visual_type": "comparison",
+    "evidence": "paper.pdf p. 7, Figure 4; official vector source",
+    "alt_text": "Layerwise sink recipients transition from class tokens to image patches in three pretrained vision transformers.",
+    "caption": "attention sink 的位置会随深度改变，暗示不同层可能承担不同功能。",
+    "selection_rationale": "It provides the cleanest cross-model empirical observation while avoiding the paper's ambiguous Figure 6 label."
+  },
+  "sections": [
+    {
+      "title": "作者信息",
+      "paragraphs": [
+        "作者为 Lukas Fesser、Mozes Jacobs、Thomas Fel、Andy Keller 与 Sham Kakade。",
+        "本站核验 arXiv:2606.08105v1：提交于 2026-06-06，是当前唯一版本；分类 cs.LG，PDF 26 页。",
+        "Collection 来源为刘子鸣网站的 Transformer Theory 条目；作者给出代码仓库，本站未执行或审计。"
+      ]
+    },
+    {
+      "title": "研究问题",
+      "paragraphs": [
+        "为何某些 attention heads 会把几乎全部概率质量集中到一个 seemingly uninformative token？这种 attention sink 是同一病理，还是不同算法共享的外观？",
+        "论文提出两种功能：conditional damping 需要一个近似 no-operation（NOP）通道；global broadcast 则用 sink token 汇聚并向所有 token 发送共同信息。",
+        "toy tasks 能实现两种 compatible solutions，pretrained ViTs 也出现相应诊断；但这些诊断不是唯一标识，taxonomy 也未证明穷尽。"
+      ]
+    },
+    {
+      "title": "背景",
+      "paragraphs": [
+        "softmax attention 每行权重和为 1；即使某个 query 不需要通信，它也必须把概率质量分配出去。把质量送到一个低-value token 可近似实现 NOP。",
+        "反过来，若多个 queries 都指向同一携带全局 summary 的 token，它们会收到近似共同 update，形成 broadcast 或低秩 mixing。",
+        "只看 attention weights 容易把 coupling 与 transported content 混淆；需要同时检查 value norm、update rank、token variance 与 intervention。",
+        "vision transformer 通常含 CLS、patch，有时还有 register tokens；不同 token type 可能成为 sink，且 bidirectional attention 与 causal LLM 机制不同。"
+      ]
+    },
+    {
+      "title": "给物理学家的 AI 导读",
+      "paragraphs": [
+        "把 $A_{ij}$ 看成瞬时输运核，把 $v_j$ 看成被输运的场。大核元素不等于大物理通量：若 $v_s$ 很小，sink 只吸收 normalization mass。",
+        "NOP-like sink 类似把不需要的流量接到零势 reservoir；broadcast-like sink 则像 rank-one collective mode，把一个共同向量加到所有 sites。",
+        "两机制可由 low value norm、gating 与 stable rank 等统计区分，但这些只是 compatible observables；不同微观电路可能给相同宏观 signature。",
+        "near-perfect-sink lemma 是单头、强集中极限。多头输出经 $W_O$ 混合，再叠加 residual/MLP，不能直接把单头 rank-one 写成整层动力学。",
+        "token variance 的紧凑不等式隐藏了 cross term、初始 spread 与 $\\|v_s\\|$；uniform broadcast 更接近平移 centered cloud，而非自动使表示收缩。"
+      ]
+    },
+    {
+      "title": "模型与方法",
+      "paragraphs": [
+        "作者定义 $\\epsilon$-sink：对 query set $\\mathcal I$ 中每个 $i$，$A_{is}\\ge1-\\epsilon$；并用平均接收质量定义 sink strength。",
+        "两个 controlled objectives 分别要求 conditional damping 与从特定 token global broadcast；分析其 learned attention、value norms、gates、update rank 与 token variance。",
+        "理论用 single-head、near-perfect sink 分解 output matrix 为 rank-one term 加小 remainder，并讨论 NOP leakage 与 broadcast similarity。",
+        "empirical 部分分析 DINOv2-L/G、OpenCLIP ViT-L/16 等 bidirectional ViTs 的层间 sink recipient 与诊断 clouds。",
+        "mitigation 在 ViT-L LeJEPA 上比较六个 gating/register variants：ImageNet-1K 训练 100 epochs、每 variant 3 seeds、每 seed 约 300 H100 GPU-hours。"
+      ]
+    },
+    {
+      "title": "核心结果与证据",
+      "paragraphs": [
+        "conditional-damping toy task 学到近零 sink value 与 gating signature，global-broadcast task 学到 content-scale value 与近 rank-one updates，说明同一 attention pattern 可实现两类算法。",
+        "Figure 4 中 DINOv2-L/G 与 OpenCLIP 的强 sink 从早层 CLS 逐渐转向晚层 patches；部分 DINOv2-L heads 对接近 80% inputs 显示 sink。",
+        "pretrained-model diagnostic clusters 与两 toy regimes compatible，但样本嵌套在固定 checkpoints，未给 independent functional labels、causal ablations 或 inferential tests。",
+        "三 seed LeJEPA 报告 gating+register 的 ADE20K dense probe $0.200\\pm0.006$，baseline $0.166\\pm0.006$；VOC12 为 $0.524\\pm0.013$ 对 $0.438\\pm0.016$。",
+        "ImageNet means 约 0.693–0.695，差异很小；gating rows 还按这三个 seeds 的 mean ImageNet accuracy 选择具体 elementwise/headwise variant。"
+      ]
+    },
+    {
+      "title": "有效性与局限",
+      "paragraphs": [
+        "NOP 与 broadcast 是 hypotheses/solution types，不是经证明的 exhaustive taxonomy；near-zero value 和 low stable rank 也非唯一因果标识。",
+        "理论不自动覆盖 multi-head output mixing、MLP、causal masks 或 non-dominant attention，主文同一 $\\epsilon$ 还混用 sink leakage 与 output tolerance，附录才分开。",
+        "pretrained ViT 分析是观察性的，无 head-level intervention；discussion 中的 causal-LLM sinks 属相关工作，不是本研究的直接证据。",
+        "mitigation 每个 variant 只有 3 个 independently trained backbones，报告 mean±SD，无 hypothesis tests 或 multiplicity correction；probe-training randomness 未单列。",
+        "Figure 6 caption/text 称左图为 DINOv2-G，但官方 asset 标为 DINOv2 Giant + Reg.(4) 且有 register markers，因此本站不以该图支持 register-free 结论。",
+        "实验仅覆盖视觉、少量 checkpoints/datasets；不能声称跨语言任务、模型尺度或架构的普适 sink 机制。"
+      ]
+    },
+    {
+      "title": "复现与资源",
+      "paragraphs": [
+        "代码仓库为 https://github.com/KempnerInstitute/attention_sink；本站核验链接但未执行代码、重训 LeJEPA 或审计统计流程。",
+        "复现应固定 checkpoint、token types、query set、sink threshold、head/layer aggregation、sample counts 与所有 random seeds。",
+        "机制区分需要同时报告 attention mass、value/update norm、stable rank、centered token variance，并用 targeted head/value/gate ablation 检验必要性。",
+        "mitigation 比较应预注册 variant，不按同一小样本 ImageNet mean 选择；增加 independent backbone/probe seeds、confidence intervals 与 matched compute。",
+        "向 causal LLM 推广需单独处理 mask、BOS/initial tokens、KV cache 与 long-context distribution，并验证相同干预是否保留功能。"
+      ]
+    },
+    {
+      "title": "阅读指南",
+      "paragraphs": [
+        "快速路线：p. 3 看 sink 定义；pp. 5–7 看 two tasks 与 Figure 4；pp. 8–9 看 pretrained diagnostics 和 mitigation；pp. 14–17 看 lemmas。",
+        "物理路线：同时追踪 attention kernel 与 value flux，区分零通量 reservoir 和 collective rank-one mode。",
+        "AI 路线：先区分 toy objective、checkpoint observation 与 retrained mitigation，三类证据不能互相替代。",
+        "批判路线：核查 single-head 极限、diagnostic non-uniqueness、n=3 model seeds、selection bias 与 Figure 6 label ambiguity。"
+      ]
+    }
+  ],
+  "evidence_refs": [
+    "paper.pdf pp. 3–9 and official TeX: sink definition, NOP/broadcast hypotheses, controlled objectives, pretrained-ViT diagnostics, Figure 4 and LeJEPA Table 1",
+    "paper.pdf pp. 14–17 and official TeX: adaptivity construction, distinct leakage/tolerance quantities, rank-one residual bound and token-variance cross-term",
+    "paper.pdf pp. 20–23 and official TeX: ViT-L architecture, training schedule, three seeds, compute, probe protocol and variant selection",
+    "source PDF SHA-256 66de6a21fddc5fe5a956efab82af12a0579fb383790ccbb40a979b961fafaee3",
+    "official arXiv v1 source archive SHA-256 6b4c0862341f047b6d42c6731c670b362251b53967c096c2cf831b996b3a3f27",
+    "MinerU Markdown SHA-256 707e70c75dd344a279c01cdf03907b4e01b2f8f725cc019bb5d53aa8bc4e707c",
+    "Evidence packet SHA-256 eed041dc4238b893ca7d4e72e1df617c08c9c4e7dbf029911f6dfb3d5356e4cb",
+    "Evidence status: full text, official Figure 4 and matching TeX verified against latest arXiv v1; algorithm-identification, single-head, rank/variance, observational, seed/statistical, figure-label and cross-domain boundaries recorded; code not audited; no independent reproduction performed."
+  ]
+}
