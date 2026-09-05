@@ -1,0 +1,195 @@
+{
+  "arxiv_id": "2604.06169",
+  "source_version": "v1",
+  "source_pdf": "https://arxiv.org/pdf/2604.06169v1",
+  "title_en": "In-Place Test-Time Training",
+  "title_zh": "原位测试时训练",
+  "curation_status": "full_text_verified",
+  "card_standard_version": "2.4",
+  "audience_profile": "physics_ai_literate_physicist",
+  "paper_profile": "theory_experiment",
+  "style_reference": "physicist_daily_arxiv",
+  "provenance": {
+    "program": "Collection",
+    "catalog": "Paper Collection",
+    "catalog_record_id": "2604.06169",
+    "catalog_record_ids": ["2604.06169"],
+    "catalog_topic": "AI Agents",
+    "collection_date": "2026-08-30",
+    "sampled_at": "2026-08-31",
+    "selected_by": "ziming_mineru_serial_goal",
+    "sampling_seed": "not_applicable_source_complete",
+    "candidate_count": 464
+  },
+  "verified_metadata": {
+    "arxiv_id": "2604.06169",
+    "version": "v1",
+    "title": "In-Place Test-Time Training",
+    "authors": ["Guhao Feng", "Shengjie Luo", "Kai Hua", "Ge Zhang", "Di He", "Wenhao Huang", "Tianle Cai"],
+    "categories": ["cs.LG", "cs.AI", "cs.CL", "stat.ML"],
+    "primary_category": "cs.LG",
+    "published": "2026-04-07",
+    "updated": "2026-04-07",
+    "abstract": "The paper adapts selected MLP projection matrices as transient fast weights, updates them chunk by chunk with a next-token-aligned self-supervised target, and evaluates the mechanism on long-context language-model benchmarks after substantial training."
+  },
+  "equation_refs": [
+    {
+      "label": "Chunk-wise fast-weight update",
+      "latex": "W_{\\mathrm{down}}^{(i+1)}=W_{\\mathrm{down}}^{(i)}-\\eta\\,\\nabla_W\\mathcal L\\!\\left(Z_i(W_{\\mathrm{down}}^{(i)})^\\top,V_i\\right)",
+      "role": "state the apply-then-update rule that turns an existing MLP output projection into document-local memory",
+      "symbols": {
+        "W_down_i": "fast output-projection state before processing chunk i",
+        "Z_i": "gated MLP activations for chunk i",
+        "V_i": "self-supervised next-token-aligned target",
+        "eta": "test-time update step size"
+      },
+      "evidence": "paper.pdf p. 4 and official approach TeX",
+      "interpretation": "第 $i$ 块先用当前 $W_{\\mathrm{down}}^{(i)}$ 产生输出，再用该块构造更新供后续块使用；若实现把本块更新提前纳入，就会泄漏未来词信息。"
+    },
+    {
+      "label": "Outer-product memory write",
+      "latex": "W_{\\mathrm{down}}^{(i)}=W_{\\mathrm{down}}^{(i-1)}+\\eta\\,\\widehat V_i^\\top Z_i",
+      "role": "show that the chosen linear loss reduces the fast-weight write to an additive key-value outer product",
+      "symbols": {
+        "Vhat_i": "Conv1D-and-projection-derived language-model-aligned value",
+        "Z_i": "MLP activation acting as a key-like feature",
+        "eta": "write strength"
+      },
+      "evidence": "paper.pdf p. 5, Equation (1), and official approach TeX",
+      "interpretation": "这类似向关联记忆累加 dyad：没有内禀衰减或正则化，稳定性依赖有限文档、每文档重置和 $\\tau=10^{-5}$ 的更新裁剪。"
+    },
+    {
+      "label": "Idealized induction-logit separation",
+      "latex": "\\mathbb E[\\Delta \\ell_{\\mathrm{correct}}]\\geq\\lambda_{\\mathrm{lr}}c_{\\mathrm{norm}}^2c_{\\mathrm{align}},\\qquad |\\mathbb E[\\Delta \\ell_{\\mathrm{other}}]|\\leq\\lambda_{\\mathrm{lr}}\\epsilon c_{\\mathrm{align}}",
+      "role": "formalize why an aligned outer-product update can favor the repeated-key continuation in an ideal induction pattern",
+      "symbols": {
+        "Delta_l": "one-update change of a token logit",
+        "c_norm": "lower bound on relevant embedding norm",
+        "c_align": "alignment strength of the constructed target",
+        "epsilon": "approximate cross-token embedding overlap",
+        "lambda_lr": "effective learning-rate factor"
+      },
+      "evidence": "paper.pdf pp. 5–6, Equations (2)–(3), and appendix proof pp. 16–18",
+      "interpretation": "结论只覆盖强假设下的一次期望 logit 更新；它不推出重复更新稳定、经验 loss 下降或一般长上下文任务正确。"
+    }
+  ],
+  "figure_refs": [
+    {
+      "label": "Figure 1 In-Place TTT pipeline",
+      "asset_path": "assets/collection-figures/2604.06169/figure1-in-place-ttt-pipeline.webp",
+      "section": "模型与方法",
+      "role": "show the fixed-attention path, gated MLP, document-local W_down state and the Conv1D/projection target used for chunk-wise writes",
+      "evidence": "paper.pdf p. 6, Figure 1; official source image/IPTTT.pdf",
+      "alt_text": "Diagram of a Transformer block whose attention stays fixed while the MLP down-projection is applied and then updated from a next-token-aligned target for each chunk.",
+      "caption": "Figure 1：原位 TTT 把部分 MLP 的 $W_{\\mathrm{down}}$ 变成按 chunk 更新的 fast weight；图中未画出文档边界重置、更新裁剪和训练新 target modules 的成本。",
+      "interpretation": "核心不是给模型外挂一个独立 recurrent layer，而是让已有线性映射在文档内部携带状态；这同时带来严格的因果扫描和服务隔离要求。"
+    }
+  ],
+  "cover": {
+    "mode": "source_figure",
+    "asset_path": "assets/collection-figures/2604.06169/figure1-in-place-ttt-pipeline.webp",
+    "label": "Figure 1 In-Place TTT pipeline",
+    "visual_type": "schematic",
+    "evidence": "paper.pdf p. 6, Figure 1; official source figure",
+    "alt_text": "A method diagram showing fixed attention and an MLP projection used as transient fast-weight memory.",
+    "caption": "在 Transformer 原有 MLP 内执行 apply-then-update 的文档内 fast-weight 机制。",
+    "selection_rationale": "It exposes the method's defining state, target and causal ordering more directly than a single benchmark plot."
+  },
+  "sections": [
+    {
+      "title": "作者信息",
+      "paragraphs": [
+        "Guhao Feng、Shengjie Luo、Kai Hua、Ge Zhang、Di He、Wenhao Huang、Tianle Cai 来自 ByteDance Seed 与北京大学；作者注明前两位等贡献，Di He 与 Wenhao Huang 为通讯作者。",
+        "本站核验 arXiv:2604.06169v1：提交于 2026-04-07，是当前唯一版本，主分类 cs.LG，PDF 20 页。arXiv comment 的 ICLR 2026 Oral 属作者自报元数据，本站未独立核验会议信息。",
+        "Collection 来源为刘子鸣网站的 AI Agents 条目。"
+      ]
+    },
+    {
+      "title": "研究问题",
+      "paragraphs": [
+        "标准语言模型在推理时只改变 KV cache，不改变参数。能否让已有 Transformer 在读一个长文档时，以局部参数更新积累早先信息，同时仍保持因果计算和可并行的 chunk 处理？",
+        "论文选择每隔六层的 MLP 输出投影 $W_{\\mathrm{down}}$ 作为 fast weight，用当前 chunk 构造与 next-token prediction 对齐的自监督 target，并把更新留给后续 chunks。",
+        "真正被检验的是：经过约 20B–35B tokens 的匹配 continual pretraining 后，这个机制是否改善 RULER 等有限基准；不是把任意现成模型零训练地打开一个开关。"
+      ]
+    },
+    {
+      "title": "背景",
+      "paragraphs": [
+        "test-time training 在推理过程中最小化一个辅助 loss 并更新少量参数。难点是辅助目标可能与语言建模错位、逐 token 反向传播昂贵，而且更新顺序稍有不慎就破坏 autoregressive causality。",
+        "普通注意力把过去保存在 KV cache；fast-weight 方法则把历史压入一个会变化的矩阵。前者保留 token-level records，后者更像有限容量的可塑性介质，两者的检索、干扰和内存 scaling 不同。",
+        "这里的 continual learning 发生在单个文档内部：遇到文档边界就重置状态。它不等于跨用户、跨任务或跨会话累积知识的 persistent continual learning。",
+        "RULER 是合成长上下文诊断集合，能检查 retrieval、aggregation 等能力，但不能替代真实 agent stream、知识更新或分布漂移测试。"
+      ]
+    },
+    {
+      "title": "给物理学家的 AI 导读",
+      "paragraphs": [
+        "可把 $W_{\\mathrm{down}}$ 看成随离散时间 $i$ 演化的内部场：固定网络给出驱动 $\\Delta W_i$，状态按 $W_{i+1}=W_i+\\Delta W_i$ 积分，并在每个文档开头重置初值。",
+        "外积 $\\widehat V_i^\\top Z_i$ 是典型 associative-memory write：$Z_i$ 像 key，$\\widehat V_i$ 像 value。以后出现相似 $Z$ 时，矩阵乘法会读出沿 $\\widehat V$ 方向的响应。",
+        "exclusive prefix sum 是因果 light cone：位置 $i$ 只能感受 $j<i$ 的更新。论文正文定义满足这一点，但伪代码只写 Cumsum、未明确 exclusive，复现时必须核查代码语义。",
+        "无衰减的累加器可能出现漂移与干扰；$\\tau=10^{-5}$ clipping 和文档重置类似限制单步 kick 与有限观测时长，却不是 Lyapunov stability 证明。",
+        "定理像受控 perturbation calculation：在 embedding 近似正交、重复 key 对齐且无关项很小的理想系综里，正确 logit 的期望响应占优。实际网络是否满足这些假设没有被测量。"
+      ]
+    },
+    {
+      "title": "模型与方法",
+      "paragraphs": [
+        "注意力路径保持标准形式；选定 MLP 的 gated activation 记为 $Z_i$，当前 $W_{\\mathrm{down}}^{(i)}$ 先生成第 $i$ 个 chunk 的输出，随后才写入 fast-weight update。",
+        "target 由未来一个 token 对齐的 hidden signal 经 causal Conv1D 与 projection 构造；线性相似度 loss 使梯度化为可批处理的外积。新 Conv1D/projection 需要在训练中学习。",
+        "context parallelism 下先为每块算 $\\Delta W_i$，再用 prior-chunk exclusive cumulative sum 得到状态 $\\Delta S_i=\\sum_{j<i}\\Delta W_j$；每个文档独立初始化。",
+        "continual-Qwen3-4B 先以 32k context 训练 20B tokens，再以 128k 训练 15B；8B/14B extensions 约 20B tokens。另有从零训练的 500M–4B full-attention 与 sliding-window variants。",
+        "所有报告实验使用 H800；continual-Qwen3-4B 的 fast update Frobenius norm 裁剪阈值为 $\\tau=10^{-5}$。"
+      ]
+    },
+    {
+      "title": "核心结果与证据",
+      "paragraphs": [
+        "匹配训练后的 Qwen3-4B baseline 与 In-Place TTT 在 RULER-64k 为 74.3→78.7，128k 为 74.8→77.0，256k 为 41.7→43.9；4k 则 96.6→96.1，并非所有长度都改善。",
+        "约 20B-token extensions 中，LLaMA-3.1-8B 的 RULER-64k 为 81.6→83.7；Qwen3-14B 为 67.9→70.6，配 YaRN 时为 81.3→82.5。论文未报告重复训练的方差。",
+        "从零训练的 4B full-attention 在 RULER-16k 为 6.58→19.99，sliding-window model 在 RULER-8k 为 9.91→26.80；但 full-attention ARC-C 33.19→32.34、SWA PIQA 72.58→72.03，短任务存在退化。",
+        "1.7B 单次 ablations 在本设置中偏好更大 state、512/1024 chunk，以及 Conv 与 projection 同时启用；没有多 seed uncertainty 或独立 held-out tuning。",
+        "Figure 4 只显示 H800、batch 1、8k–128k prefill throughput 与峰值显存，曲线表明有限设置下 overhead 较小但非零；图中未表列精确数值。"
+      ]
+    },
+    {
+      "title": "有效性与局限",
+      "paragraphs": [
+        "drop-in 指复用 block topology，不是 training-free：必须训练新 target components，并投入数百亿 continual-pretraining tokens；计算与数据成本不能从产品叙事中删去。",
+        "headline results 是单点估计，没有 seeds、error bars 或 significance；2–4 个百分点的增益无法仅凭论文区分于训练与评测方差。",
+        "理论只证明理想 induction pair 下的一步期望 logit separation；不证明 empirical loss、反复写入稳定性、fast-state capacity、遗忘或一般 long-context accuracy。",
+        "专有训练混合只作定性描述，exact proportions、deduplication、licensing 与 benchmark contamination 不可审计。",
+        "效率结论限于 batch-1 H800 prefill/peak memory；没有 decode latency、time-to-first-token、并发用户的状态隔离、训练 overhead 或跨卡通信成本。",
+        "未测试 poisoned/adversarial context、跨文档泄漏、隐私抽取、state corruption、calibration、安全行为或真实在线分布漂移，因此不能把它称为已验证的安全自适应 agent memory。"
+      ]
+    },
+    {
+      "title": "复现与资源",
+      "paragraphs": [
+        "官方代码为 https://github.com/ByteDance-Seed/In-Place-TTT 。本站未运行；复现应 pin commit、模型 checkpoint、数据版本、环境、训练 seed 和全部超参数。",
+        "第一优先级是写 causality unit test：比较串行 apply-then-update 与并行 exclusive scan 的每个 token logits，并用 deliberately leaked inclusive scan 作为应失败对照。",
+        "分别记录 training FLOPs/tokens、prefill、decode、TTFT、峰值显存、每会话 fast-state bytes 和 context-parallel communication；覆盖 batch size 与并发数，而非只看 batch 1。",
+        "至少重复多个 training/data/evaluation seeds，预注册长度分层 endpoint，并报告 paired confidence intervals；同时保留短任务 regression，而不是只汇报长上下文平均值。",
+        "做长序列 interference/forgetting、文档 reset、混合用户 isolation、poisoned context 与隐私 canary；这些是把研究机制用于 agent streams 前的必要压力测试。"
+      ]
+    },
+    {
+      "title": "阅读指南",
+      "paragraphs": [
+        "快速路线：pp. 3–7 看问题、更新式、定理和 Figure 1；pp. 7–10 看 Tables 1–3 与 ablations；pp. 16–20 看 proof、Algorithm 1、training details 与 reset/clipping。",
+        "物理路线：把 fast weights 视作受外积驱动、有限时域并带硬裁剪的动力系统；追问稳定性、容量、干扰和 initial/reset boundary conditions。",
+        "AI 路线：严格区分 inference-time parameter update、KV cache、训练新 target module 与长期模型参数；不要把 document-local state 误读成跨任务学习。",
+        "批判路线：核查 exclusive scan、数百亿 token 成本、无 uncertainty、专有语料、短任务退化，以及 batch-1 prefill 之外缺失的系统与安全指标。"
+      ]
+    }
+  ],
+  "evidence_refs": [
+    "paper.pdf pp. 3–7 and official approach/theory TeX: fast-weight choice, LM-aligned target, chunk-wise apply-then-update equations, Figure 1 and idealized induction theorem",
+    "paper.pdf pp. 7–10 and official experiments TeX: RULER Tables 1–3, from-scratch comparisons, short-task regressions, 1.7B ablations and batch-1 H800 efficiency plots",
+    "appendix pp. 16–20 and official appendix TeX: theorem proof, Algorithm 1 scan ambiguity, document resets, data/training descriptions, token budgets, H800 protocol and tau=1e-5 clipping",
+    "source PDF SHA-256 de425cc8f80f25d1e0d428fc99c0b9117dbae4233545de96c6354a590f59fbe3",
+    "official arXiv v1 source archive SHA-256 fad4690e6777f30f3ce65583d1970c7ddbced74b2ca6e17aca78e9859a1b776b",
+    "MinerU Markdown SHA-256 75f03815699d9735fcad620b972ffee8f9891c270ebf3cbdb54bcfda9361e4a1",
+    "Evidence packet SHA-256 106739b636a497781a8670c73796f227f2361bf83c06db04eb3eb6a167f72eb9",
+    "Evidence status: full text, rendered pages and official TeX verified against latest arXiv v1; training-cost, transient-state, causal-scan, theorem-scope, statistical, corpus, efficiency and safety boundaries recorded; no independent reproduction performed."
+  ]
+}

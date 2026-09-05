@@ -1,0 +1,198 @@
+{
+  "arxiv_id": "2604.04037",
+  "source_version": "v2",
+  "source_pdf": "https://arxiv.org/pdf/2604.04037v2",
+  "title_en": "Geometric Limits of Knowledge Distillation: A Minimum-Width Theorem via Superposition Theory",
+  "title_zh": "知识蒸馏的几何极限：基于叠加理论的最小宽度命题",
+  "curation_status": "full_text_verified",
+  "card_standard_version": "2.4",
+  "audience_profile": "physics_ai_literate_physicist",
+  "paper_profile": "theory_experiment",
+  "style_reference": "physicist_daily_arxiv",
+  "provenance": {
+    "program": "Collection",
+    "catalog": "Paper Collection",
+    "catalog_record_id": "2604.04037",
+    "catalog_record_ids": ["2604.04037"],
+    "catalog_topic": "Representation Learning",
+    "collection_date": "2026-08-30",
+    "sampled_at": "2026-08-31",
+    "selected_by": "ziming_mineru_serial_goal",
+    "sampling_seed": "not_applicable_source_complete",
+    "candidate_count": 464
+  },
+  "verified_metadata": {
+    "arxiv_id": "2604.04037",
+    "version": "v2",
+    "title": "Geometric Limits of Knowledge Distillation: A Minimum-Width Theorem via Superposition Theory",
+    "authors": ["Nilesh Sarkar", "Dawar Jyoti Deka"],
+    "categories": ["cs.LG", "cs.AI"],
+    "primary_category": "cs.LG",
+    "published": "2026-04-05",
+    "updated": "2026-04-07",
+    "abstract": "The paper proposes a sparse-feature capacity heuristic for distillation loss floors, tests it in a superposition toy model, and post-hoc calibrates SAE-derived scores against five Pythia-410M student widths."
+  },
+  "equation_refs": [
+    {
+      "label": "claimed sparse-feature capacity factor",
+      "latex": "g(\\alpha)=\\frac{1}{(1-\\alpha)\\ln[1/(1-\\alpha)]},\\qquad F_S=\\lfloor d_Sg(\\alpha)\\rfloor",
+      "role": "translate average feature sparsity into a claimed number of teacher features representable by student width",
+      "symbols": {
+        "alpha": "probability that a feature is inactive, by the paper's convention",
+        "g_alpha": "features-per-dimension capacity factor",
+        "d_S": "student hidden width",
+        "F_S": "hard-cutoff retained-feature count"
+      },
+      "evidence": "paper.pdf p. 3, Eq. (1), Theorem 1 and official arxvig.tex",
+      "interpretation": "印刷公式在 $\\alpha=0$ 时分母为零并发散，却被正文声明 $g(0)=1$；其增长也不是全域 exponential。该数学不一致必须先于工程解释。"
+    },
+    {
+      "label": "importance-tail floor",
+      "latex": "\\widehat L_{\\mathrm{geom}}(d_S)=\\sum_{i=F_S+1}^{F}I_i\\,\\mathbb E[x_i^2]",
+      "role": "sum the assumed additive costs of features lying below a hard importance-ranked capacity cutoff",
+      "symbols": {
+        "F": "number of teacher features estimated by an SAE",
+        "I_i": "importance of feature i, sorted in descending order",
+        "x_i": "feature activation",
+        "L_geom": "predicted hidden-space geometric loss component"
+      },
+      "evidence": "paper.pdf p. 3, Theorem 1 / Eq. (2) and proof sketch",
+      "interpretation": "这是 A1–A3 下的 stylized importance-tail construction；论文一处称 lower bound、另一处称 formula predicts an upper bound，Figure 2 又多见公式低于观测，方向未自洽。"
+    },
+    {
+      "label": "post-hoc KL calibration",
+      "latex": "L_{\\mathrm{observed}}=C\\widehat L_{\\mathrm{geom}}+B,\\qquad C=8.97,\\quad B_{\\mathrm{fit}}=0.623",
+      "role": "map SAE hidden-space importance units to measured per-token output-KL plateaus",
+      "symbols": {
+        "C": "fitted scale factor",
+        "B_fit": "fitted intercept in nats per token",
+        "L_observed": "finite-training distillation plateau",
+        "L_geom": "SAE-derived predictor"
+      },
+      "evidence": "paper.pdf p. 7, Eq. (3), five-width affine fit and official TeX",
+      "interpretation": "$R^2=0.993$ 来自五个宽度、两个 fitted parameters，且无 held-out width；正文又称 $B$ 固定为 same-width control 0.586，与报告的 fitted 0.623 口径冲突。"
+    }
+  ],
+  "figure_refs": [
+    {
+      "label": "Figure 2 toy-model loss-floor sweep",
+      "asset_path": "assets/collection-figures/2604.04037/figure2-toy-loss-floor-grid.webp",
+      "section": "核心结果与证据",
+      "role": "compare observed toy-model mean and standard deviation against the proposed hard-cutoff formula across widths, sparsities and feature counts",
+      "evidence": "paper.pdf p. 5, Figure 2; official source graphs/fig1_loss_floor_vs_student_width_grid.png",
+      "alt_text": "A twelve-panel grid compares toy-model loss floors across student widths with a dashed proposed formula and dotted critical-width markers.",
+      "caption": "Figure 2：48 个 toy configurations、20 seeds 的宽度扫描。图显示排序/形状有相关性，但公式与观测的 bound 方向并不统一；源图内部标题误写 Figure 1。",
+      "interpretation": "140 个 width-level points 嵌套于 48 configurations，并非独立重复；$r=0.93$ 可支持单调共变，MAPE=93.9% 却表示绝对预测误差很大。"
+    }
+  ],
+  "cover": {
+    "mode": "source_figure",
+    "asset_path": "assets/collection-figures/2604.04037/figure2-toy-loss-floor-grid.webp",
+    "label": "Figure 2 toy floor grid",
+    "visual_type": "data_plot",
+    "evidence": "paper.pdf p. 5, Figure 2; official source image",
+    "alt_text": "Toy superposition models show width-dependent loss floors and proposed critical-width predictions over twelve parameter panels.",
+    "caption": "toy superposition sweep 对比 observed floors、importance-tail formula 与 claimed critical widths。",
+    "selection_rationale": "It is the direct finite test of the proposed formula and exposes both its trend agreement and absolute/bound-direction problems."
+  },
+  "sections": [
+    {
+      "title": "作者信息",
+      "paragraphs": [
+        "作者为 Nilesh Sarkar 与 Dawar Jyoti Deka，来自 Erdős AI Labs，equal contribution；PDF 标注 Under review at COLM 2026。",
+        "本站核验 arXiv:2604.04037v2：初次提交于 2026-04-05，最新版更新于 2026-04-07；主分类 cs.LG，PDF 18 页。",
+        "Collection 来源为刘子鸣网站的 Representation Learning 条目。"
+      ]
+    },
+    {
+      "title": "研究问题",
+      "paragraphs": [
+        "knowledge distillation 中，小 student 的 KL loss 常在继续训练后停在非零平台。这个 floor 是否来自 hidden width 无法容纳 teacher 的大量 sparse superposed features？",
+        "论文假设 student 按 importance 保留最多 $d_Sg(\\alpha)$ 个 features，把其余 feature importance 相加为 geometric floor，并称临界宽度为 $d_S^*=F/g(\\alpha)$。",
+        "toy model 显示预测量与 floors 有 rank correlation；Pythia-410M 实验中 SAE predictor 与五个有限训练 KL plateaus 随宽度同向变化。但 theorem 条件、公式自洽性与 calibration 证据不足以支持通用最小宽度定理。"
+      ]
+    },
+    {
+      "title": "背景",
+      "paragraphs": [
+        "superposition 指有限维 residual space 用非正交 directions 编码多于维数的稀疏 features。能否恢复这些 features 取决于 sparsity、measurement ensemble、incoherence、decoder、noise 与 signal distribution。",
+        "compressed sensing 的 phase transition 是特定随机测量和 recovery algorithm 下的渐近性质，不能只取一个 features-per-dimension 函数就成为任意 nonlinear Transformer bottleneck 的容量定理。",
+        "SAE 把 activations 分解成 learned dictionary directions。alive feature count、average sparsity 和 importance 会随 expansion、regularization、threshold、training data 与 identifiability 改变。",
+        "distillation output KL 混合 representation capacity、optimization、architecture、objective temperature 和 teacher/student mismatch；hidden-space reconstruction cost 与 KL nats 之间需要额外理论或独立 calibration。"
+      ]
+    },
+    {
+      "title": "给物理学家的 AI 导读",
+      "paragraphs": [
+        "可把 hidden width 看成通道数，把稀疏 features 看成间歇激发的 modes；superposition 是多个 modes 共用有限基底。importance-tail 模型相当于按能量权重做 hard ultraviolet truncation。",
+        "但 $F_S=d_Sg(\\alpha)$ 不是从本文网络 Hamiltonian 推出的 state-counting law。它借用 compressed-sensing threshold，却未写出 random projection、measurement matrix 或 recovery map 的必要条件。",
+        "所谓 loss floor 要先区分 finite-time metastable plateau 与真正不可达 ground-state energy。width 128 从 30000 到 40000 steps 仍下降 2.8%，说明这里观测到的是 conservative finite-training upper envelope。",
+        "五个 width points 随宽度单调下降并不识别几何机制，因为 width 同时改变 attention heads、FFN width 和总参数；许多 capacity/optimization explanations 都产生相同单调序。",
+        "若要称 phase transition，需要在尺寸增长下观察 order parameter、critical scaling 和两侧 regimes，而不是在五点曲线上画 $d_S^*$ 竖线。"
+      ]
+    },
+    {
+      "title": "模型与方法",
+      "paragraphs": [
+        "理论设 teacher 有 $F$ 个按 importance 排序的 sparse features；A1 为 sparsity $\\alpha$，A2 为 student optimal importance allocation，A3 为 hidden layer 是 primary information bottleneck。",
+        "proof sketch 断言宽度 $d_S$ 最多传递 $F_S$ features，丢失信息由 data-processing inequality 不可恢复，再假设各 feature 对 loss 的贡献可加，得到 importance-tail floor。",
+        "toy model 扫 $n\\in\\{10,20,40\\}$、teacher width $\\in\\{3,5,8,10\\}$、$\\alpha\\in\\{0.80,0.90,0.95,0.99\\}$ 共 48 configurations；每个 student width 使用 20 seeds。",
+        "在 Pythia-410M residual stream layers 8/12/16 训练 32× SAE，数据为 The Pile 3 亿 tokens；alive threshold 为 activation frequency $>10^{-5}$，importance 定义为 $\\mathbb E[z_i^2]$。",
+        "五个同深度 students 宽 128/256/512/768/1024，用 temperature 2 的 output-KL 蒸馏 30000 steps；只有 width 128 报两 seeds，并延长到 40000 steps。"
+      ]
+    },
+    {
+      "title": "核心结果与证据",
+      "paragraphs": [
+        "toy 48 configurations 的 140 个嵌套 width points 给 Pearson $r=0.93$，但 MAPE=93.9%；正文/摘要将其描述为超过 93% prediction accuracy，与 MAPE 含义相反。naive $g=1$ 模型 $R^2=-0.04$。",
+        "layer 12 SAE 报 $F=28665$、$\\alpha=0.9924$、$g=26.92$、$d_S^*=1065$；三层 claimed critical widths 为 1065–1186。这些量依赖同一 SAE recipe，不是 ground-truth feature count。",
+        "宽 128/256/512/768/1024 的 30000-step per-token KL 分别为 1.320/1.008/0.733/0.652/0.586 nats，呈单调下降；128 延长训练后再下降 2.8%。",
+        "SAE importance 与 KL 的 affine fit 报 $C=8.97,B=0.623,R^2=0.993$。同宽 control 又被称为独立固定 baseline $B=0.586$，两种 fitting description 没有完全统一。",
+        "另一五点拟合 $L_{obs}=11.6d_S^{-0.47}+0.13$ 给 $R^2=0.998$；如此小样本和无 held-out validation 不能确定 asymptotic exponent 或 universal baseline。",
+        "六个 average-pooled coarse binary probes 在 width 128 仍高于 chance，mean absolute change 1.27 pp；这是 decodability，不是 SAE feature dropout 或 lost-feature 导致 KL 的 causal evidence。"
+      ]
+    },
+    {
+      "title": "有效性与局限",
+      "paragraphs": [
+        "Eq. (1) 在 $\\alpha=0$ 发散却称 $g(0)=1$，并把其增长称 exponential；这些是公式级问题，不能仅视为文字疏漏。",
+        "A1–A3 没有给 random/incoherent projection、recovery decoder、feature correlations、identifiability 或 hidden loss 到 output KL 的映射，proof sketch 不构成一般 Transformer lower bound。",
+        "Eq. (2) 被交替称 lower bound 和 upper prediction，而 toy curves 多数将 formula 画在 observation 下方；bound direction 与 empirical claim 未解决。",
+        "critical width 在 stylized model 中至多是必要容量 heuristic，并不充分保证零实际 loss；same-width student 仍有 0.586 nats finite-training KL。",
+        "student width 与 heads、FFN width、parameter count 同时变化。单 teacher/model family、单 output-KL objective、单 temperature、固定 depth 与 The Pile 不能排除其他 architecture/objective/optimizer。",
+        "除 width 128 外无 repeated seeds，SAE fits 和其他 widths 无 uncertainty；无代码、checkpoints、raw results、下游 accuracy、alternative KD objective 或跨模型验证。"
+      ]
+    },
+    {
+      "title": "复现与资源",
+      "paragraphs": [
+        "第一步应修正并重新推导 $g(\\alpha)$，明确 sparsity convention、极限 $\\alpha\\to0,1$、compressed-sensing ensemble、recovery threshold 和所有 constants。",
+        "把 theorem 拆为 representation capacity、feature selection 和 loss mapping 三个命题；为每个命题给可检验 assumptions、upper/lower direction 与 counterexamples。",
+        "toy 结果以 configuration 为顶层单位报告 correlation、absolute/relative errors 和 calibration holdout；不要把同一 configuration 的多 widths 当独立点。",
+        "SAE sensitivity 扫 expansion、$L_1$、alive threshold、dictionary seed/layer/data，并用多个 feature decompositions 检查 $F,\\alpha,I_i,d_S^*$ 是否稳定。",
+        "Pythia 实验每个 width 多 seeds、训练到 convergence，并做 width-only parameterization controls；比较 logits KL、feature distillation、hidden-state matching 与下游任务。",
+        "论文未给代码链接；在没有代码、checkpoints 与 raw curves 前，本站未独立复现，不能把 fitted predictor 用于资源决策。"
+      ]
+    },
+    {
+      "title": "阅读指南",
+      "paragraphs": [
+        "快速路线：p. 3 核对 $g(\\alpha)$、A1–A3、Theorem 1 与 proof sketch；pp. 4–6 看 toy sweep；pp. 6–8 看 SAE、students 和 affine calibration。",
+        "物理路线：把 superposition 当稀疏 modes 共用基底，把 importance-tail 当 mode truncation；重点检查 state counting 和 observable loss 是否真的相连。",
+        "AI 路线：区分 SAE dictionary feature、hidden width、student parameter count 与 output KL；这些量之间没有自动等价关系。",
+        "批判路线：依次检查 $\\alpha=0$ 极限、bound 方向、MAPE/accuracy、$B$ fixed/fitted、五点拟合、finite-training plateau 和 missing controls。"
+      ]
+    }
+  ],
+  "evidence_refs": [
+    "paper.pdf p. 3 and official arxvig.tex: Eq. (1), Theorem 1, Eq. (2), proof sketch, A1–A3, asymptotic-capacity wording and internal mathematical inconsistencies",
+    "paper.pdf pp. 4–6 and official TeX: 48 toy configurations, 20 seeds, 140 nested points, r/MAPE wording, formula-versus-observation direction and Figure 2",
+    "paper.pdf pp. 4–10 and official TeX: SAE definitions/layers, five student architectures, KL normalization, finite-training floors, affine decomposition and five-point scaling fit",
+    "paper.pdf pp. 8–11 and appendix pp. 12–18: probing design, explicit limitations, absent code, student/SAE/training details and two-seed scope",
+    "source PDF SHA-256 7e617a3dfe6854f0275f20e028108fbfec552eff97299103588238f1cbad93e5",
+    "official arXiv v2 source archive SHA-256 fb1bb86e6416ca1ea3f92c96a9f1be82765f8e1cce5c90c1c98565debba040bb",
+    "MinerU Markdown SHA-256 493d0fddfddd7a8dcefa9d69494590c8922995ff05dcb50757126df471ca1891",
+    "Evidence packet SHA-256 54b1c0c26b8981fb0825cb4027ec19f38901b451cca705d8b7e901eec6579486",
+    "Evidence status: full text, rendered pages and official TeX verified against latest arXiv v2; formula-domain, theorem-assumption, proof, bound-direction, MAPE, calibration, finite-training, SAE-identifiability, confounding, uncertainty and external-validity boundaries recorded; no independent reproduction performed."
+  ]
+}
