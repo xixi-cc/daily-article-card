@@ -1,0 +1,196 @@
+{
+  "arxiv_id": "2606.03217",
+  "source_version": "v1",
+  "source_pdf": "https://arxiv.org/pdf/2606.03217v1",
+  "title_en": "An Asymptotic Theory of Chain-of-Thought in In-Context Learning",
+  "title_zh": "上下文学习中思维链的渐近理论",
+  "curation_status": "full_text_verified",
+  "card_standard_version": "2.4",
+  "audience_profile": "physics_ai_literate_physicist",
+  "paper_profile": "theory_experiment",
+  "style_reference": "physicist_daily_arxiv",
+  "provenance": {
+    "program": "Collection",
+    "catalog": "Paper Collection",
+    "catalog_record_id": "2606.03217",
+    "catalog_record_ids": ["2606.03217"],
+    "catalog_topic": "AI Agents",
+    "collection_date": "2026-08-30",
+    "sampled_at": "2026-08-31",
+    "selected_by": "ziming_mineru_serial_goal",
+    "sampling_seed": "not_applicable_source_complete",
+    "candidate_count": 464
+  },
+  "verified_metadata": {
+    "arxiv_id": "2606.03217",
+    "version": "v1",
+    "title": "An Asymptotic Theory of Chain-of-Thought in In-Context Learning",
+    "authors": ["Kaito Takanami", "Cengiz Pehlevan"],
+    "categories": ["stat.ML", "cond-mat.dis-nn", "cs.LG"],
+    "primary_category": "stat.ML",
+    "published": "2026-06-02",
+    "updated": "2026-06-02",
+    "abstract": "The paper studies repeated test-time refinement of a latent linear-regression weight estimate by a learned linear-attention operator, deriving high-dimensional fixed-depth error and a conditional long-depth phase structure."
+  },
+  "equation_refs": [
+    {
+      "label": "Gaussian in-context regression task",
+      "latex": "x_{\\mu l}\\sim\\mathcal N(0,I_D/D),\\qquad y_{\\mu l}=w_\\mu^\\top x_{\\mu l}+\\epsilon_{\\mu l}",
+      "role": "define each synthetic pretraining task and its in-context examples",
+      "symbols": {
+        "mu": "task index",
+        "L": "number of demonstrations per task",
+        "D": "latent regression dimension",
+        "w_mu": "task-specific target weight",
+        "epsilon_mu_l": "Gaussian label noise"
+      },
+      "evidence": "paper.pdf pp. 3–4, Equations (1)–(3), and official model TeX",
+      "interpretation": "这里的 task 是 Gaussian linear regression；论文所谓 CoT 不生成自然语言 token，而是反复修正隐藏的 weight estimate。"
+    },
+    {
+      "label": "Repeated latent-weight refinement",
+      "latex": "w-\\widehat w_t=\\left(I-\\frac{1}{\\alpha}A^*S\\right)^t w",
+      "role": "express test-time reasoning depth as repeated application of one learned linear operator",
+      "symbols": {
+        "t": "number of refinement steps called CoT depth",
+        "A_star": "operator learned from pretraining tasks",
+        "S": "test prompt covariance-like matrix",
+        "alpha": "context ratio L/D"
+      },
+      "evidence": "paper.pdf pp. 4–5, Equation (12), and official result TeX",
+      "interpretation": "这更像 stationary linear iteration 或 Richardson-style solver：同一层重复使用，深度过大时谱半径可放大误差。"
+    },
+    {
+      "label": "Conditional long-depth phase law",
+      "latex": "\\mathcal E_t-\\mathcal E_\\infty\\sim Kt^{-1/2}\\Lambda(\\alpha,\\tau,\\sigma^2)^t",
+      "role": "separate exponential stability from the limiting error floor at large depth",
+      "symbols": {
+        "E_t": "normalized expected squared weight-estimation error after depth t",
+        "Lambda": "dominant exponential rate",
+        "tau": "pretraining-task ratio M/D",
+        "E_infinity": "asymptotic error floor"
+      },
+      "evidence": "paper.pdf pp. 6–7 and official phase-result TeX; long-depth appendix assumptions pp. 39–42",
+      "interpretation": "$\\Lambda>1,=1,<1$ 分别给放大、临界 polynomial 与衰减；但推导还假设唯一主导对称临界点及无更近奇点。"
+    }
+  ],
+  "figure_refs": [
+    {
+      "label": "Figure 1 phase diagram and depth trajectories",
+      "asset_path": "assets/collection-figures/2606.03217/figure-01-phase-diagram.webp",
+      "section": "核心结果与证据",
+      "role": "show the analytic overthinking, polynomial-decay, saturation and exponential-decay regimes",
+      "evidence": "paper.pdf p. 7, Figure 1; official source fig/phase_diagram.pdf",
+      "alt_text": "Three panels show an analytic phase diagram over context and task-diversity ratios plus representative error-versus-depth curves for four regimes.",
+      "caption": "Figure 1：由 $\\Lambda$ 与 $\\mathcal E_\\infty$ 组合得到 overthinking、临界 polynomial decay、saturation 与 exponential decay 四区。",
+      "interpretation": "这是 solvable Gaussian model 的 joint high-dimensional/long-depth diagram；不能把边界直接当成有限 LLM 的经验相变线。"
+    }
+  ],
+  "cover": {
+    "mode": "source_figure",
+    "asset_path": "assets/collection-figures/2606.03217/figure-01-phase-diagram.webp",
+    "label": "Figure 1 CoT phase diagram",
+    "visual_type": "phase_diagram",
+    "evidence": "paper.pdf p. 7, Figure 1; official vector source",
+    "alt_text": "An analytic phase diagram separates overthinking, saturation and improving-depth regimes in a linear in-context model.",
+    "caption": "更多推理步并不总更好：稳定率与误差底共同决定深度行为。",
+    "selection_rationale": "It displays the central non-monotonic depth claim and the four asymptotic regimes while making the model-specific phase variables visible."
+  },
+  "sections": [
+    {
+      "title": "作者信息",
+      "paragraphs": [
+        "作者为 Kaito Takanami 与 Cengiz Pehlevan。",
+        "本站核验 arXiv:2606.03217v1：提交于 2026-06-02，是当前唯一版本；主分类 stat.ML，并交叉列入 cond-mat.dis-nn 与 cs.LG；PDF 47 页。",
+        "Collection 来源为刘子鸣网站的 AI Agents 条目；作者提供代码链接，但本站未运行或审计。"
+      ]
+    },
+    {
+      "title": "研究问题",
+      "paragraphs": [
+        "增加 test-time reasoning depth 何时持续改善预测，何时趋于误差底，何时出现 overthinking？pretraining task diversity 与 prompt examples 数量如何控制这些区间？",
+        "论文把 CoT 抽象为：一个学得的单层 linear-attention update 在测试时重复作用于 latent regression-weight estimate，并在 $D,L,M\\to\\infty$ 下解析其误差。",
+        "安全结论是 solvable linear ICL model 的渐近理论与小规模定性实验；它不是自然语言 CoT、LLM agent loop 或通用 test-time scaling 的理论。"
+      ]
+    },
+    {
+      "title": "背景",
+      "paragraphs": [
+        "in-context learning 在固定网络权重下，从 prompt examples 临时推断一个 task。这里 task 由未知向量 $w$ 定义，预测等价于先估计 $w$。",
+        "把同一 attention layer 反复应用可看作离散动力系统。其长期稳定性由 update operator 的谱结构控制，与迭代求解器的收敛/发散类似。",
+        "论文用 $\\alpha=L/D$ 表示 context density，用 $\\tau=M/D$ 表示 pretraining task diversity；它们是 thermodynamic-limit control parameters，不是模型 parameter count scaling laws。",
+        "phase transition 在这里指渐近误差律的非解析分区。有限 $D=50$ 的 smooth crossover 与五次重复不能单独建立严格有限系统临界点。"
+      ]
+    },
+    {
+      "title": "给物理学家的 AI 导读",
+      "paragraphs": [
+        "最重要的翻译：本文 CoT state 是 $\\widehat w_t\\in\\mathbb R^D$，不是语言中的一句中间推理。所谓 reasoning step 是同一线性 residual update 的一次迭代。",
+        "learned matrix $A^*$ 来自 $M$ 个 synthetic tasks；test prompt 贡献 covariance $S$。误差传播矩阵 $I-A^*S/\\alpha$ 的不稳定模态对应 overthinking。",
+        "$\\Lambda$ 类似最大有效增长因子，$\\mathcal E_\\infty$ 类似 information-limited residual。只有同时看二者，才能区分指数收敛到零与稳定但饱和。",
+        "critical line 上 $\\Lambda=1$，指数因子消失而出现 power-law prefactor；但 exponent 来自该 random-matrix singularity，不应自动宣称为语言推理的 universality class。",
+        "optimal stopping depth $t^*\\propto(\\tau_c-\\tau)^{-1}$ 是从 overthinking side 接近边界的条件渐近式；没有 observable estimator 或 calibrated policy 将它用于真实模型。"
+      ]
+    },
+    {
+      "title": "模型与方法",
+      "paragraphs": [
+        "每个 pretraining task 有 Gaussian $w_\\mu$，含 $L$ 个 $x_{\\mu l}\\sim\\mathcal N(0,I_D/D)$ examples 与 noisy labels；模型学习从 prompt 更新 latent weight 的矩阵 $A$。",
+        "理论固定 attention block 的大部分结构，只训练 $A$；测试时从 $\\widehat w_0=0$ 出发，把相同 update 递归 $t$ 次，风险为 $\\mathbb E\\|w-\\widehat w_t\\|^2/D$。",
+        "取 $L/D\\to\\alpha$、$M/D\\to\\tau$，固定 $t$ 的 error 由 deterministic two-point generating function 的 derivatives 表示；$\\lambda=0$ 时给出闭式。",
+        "再令 $t\\to\\infty$，作者在唯一 dominant symmetric critical point、无更近 singularity 与 transverse crossing 等条件下提取 $t^{-1/2}\\Lambda^t$ law。",
+        "expanded experiments 用 $D=50$ 的 fully learned linear/softmax attention，合成 noiseless regression、designed full-history mask 与 one-step training；每点 5 trials、每个 trained model 评估 4096 个新 tasks。"
+      ]
+    },
+    {
+      "title": "核心结果与证据",
+      "paragraphs": [
+        "固定深度结果在 joint high-dimensional limit 下给出 normalized error 的 asymptotically exact characterization；它依赖具体 linear ICL architecture 与 Gaussian task ensemble。",
+        "当 $\\tau>1$ 且深度大时，$\\mathcal E_t-\\mathcal E_\\infty\\sim Kt^{-1/2}\\Lambda^t$：$\\Lambda>1$ 为 overthinking，$=1$ 为 critical polynomial decay，$<1$ 为稳定衰减。",
+        "$\\alpha<1$ 且稳定时可留下非零 $\\mathcal E_\\infty$，形成 saturation；$\\alpha>1$ 且稳定时误差趋零，形成 exponential-improvement regime。",
+        "额外取 $\\tau\\to\\infty,\\lambda=0,\\alpha>1$，论文得到特殊的 $t^{-3/2}[(2\\sqrt\\alpha+\\sigma^2)/(\\alpha+1+\\sigma^2)]^{2t}$；不能与一般 $t^{-1/2}$ prefactor 混写。",
+        "从 overthinking side 接近 $\\tau_c$ 时，最优离散深度按 $(\\tau_c-\\tau)^{-1}$ 发散；Figure 2 的 $D=50$ experiments 仅展示相似 phase patterns，没有 quantitative boundary/exponent fit。"
+      ]
+    },
+    {
+      "title": "有效性与局限",
+      "paragraphs": [
+        "理论 CoT 是 latent linear-regression refinement，不覆盖 verbal rationale、semantic compositionality、tool use、self-correction 或 agent planning。",
+        "fixed-depth exactness 是 model-specific asymptotic statement；long-depth phase law还依赖附录中的 dominant-singularity assumptions，非无条件 theorem。",
+        "理论只学习矩阵 $A$，fully learned linear/softmax experiments 不在 theorem 内；二者的初始化与 input normalization 也不同，不能称 parameter-matched validation。",
+        "有限实验只有 $D=50$、synthetic Gaussian regression、single residual attention layer 与 5-trial SEM；无语言 benchmark、pretrained LLM、distribution shift 或 stopping decision。",
+        "论文没有 phase-boundary goodness-of-fit、critical-exponent confidence interval、hypothesis test 或 multiple-comparison correction。",
+        "因此不能声称 LLM 存在同一普适相变、更多 test-time compute 普遍单调有效，或已有可部署的 overthinking detector。"
+      ]
+    },
+    {
+      "title": "复现与资源",
+      "paragraphs": [
+        "作者代码为 https://github.com/taka255/cot_asymptotics；本站仅核验链接，未执行代码或复现图表。",
+        "理论复核应先重建 fixed-$t$ generating function，再检查 $D,L,M$ 极限顺序；long-$t$ 部分需显式验证所有 competing singularities 与 saddle dominance。",
+        "数值复现应对齐 theory/experiment 的 $\\widehat w_0$ 与 $x$ normalization，扫描 $D$、$t$、$\\alpha$、$\\tau$，拟合 finite-size drift 与 exponent，而不只看 heatmap。",
+        "向语言模型外推至少要定义可观测的 reasoning state、task diversity 与 context ratio，并在多个模型/任务上预注册 stopping metric、held-out threshold、false-stop cost。",
+        "应分别比较 repeated tied-layer update、untied deep transformer、self-consistency 与 search；否则深度效应可能来自 architecture 而不是通用推理规律。"
+      ]
+    },
+    {
+      "title": "阅读指南",
+      "paragraphs": [
+        "快速路线：pp. 3–5 看 linear CoT recursion；pp. 5–8 看 fixed-depth result、phase law 与 optimal depth；p. 9 看 finite-$D$ experiments。",
+        "物理路线：把误差传播读成 random linear dynamics，分清谱稳定率 $\\Lambda$、残余 floor $\\mathcal E_\\infty$、critical prefactor 与 finite-size crossover。",
+        "AI 路线：先确认 CoT state 是否为自然语言；再区分 partially fixed analytic model 与 fully learned attention experiment。",
+        "批判路线：核对极限顺序、dominant-singularity assumptions、$t^{-1/2}$ 与 $t^{-3/2}$ 的适用域，以及 phase diagram 到真实 LLM 的证据断层。"
+      ]
+    }
+  ],
+  "evidence_refs": [
+    "paper.pdf pp. 3–5 and official model/result TeX: Gaussian task ensemble, prompt encoding, learned linear-attention update and latent-weight recursion",
+    "paper.pdf pp. 5–8 and official result/phase TeX: high-dimensional ratios, fixed-depth characterization, conditional long-depth phase law, population-risk special limit and optimal-depth scaling",
+    "paper.pdf pp. 7–10 and appendix pp. 39–47: Figure 1, dominant-singularity assumptions, finite-D experiment design, SEM and theory-experiment normalization differences",
+    "source PDF SHA-256 b713fd487dfaddeaf892f7e4767d9fefd8be9e47736ee5c233c3516e6a1944c4",
+    "official arXiv v1 source archive SHA-256 3bd1c35ee20081973837958fdde046ef69fcc46485ca3feb8f9c0c5faf4eb3df",
+    "MinerU Markdown SHA-256 4ff81e162f6514e6e2cd5559fc97fc300091d077f02a74da5858448899ff2bad",
+    "Evidence packet SHA-256 2f268b3cc264ea9ca1b7289ba2fd03a430900f2683eda346c6452beef22b5102",
+    "Evidence status: full text, official Figure 1 and matching multi-file TeX verified against latest arXiv v1; CoT-definition, asymptotic, singularity, normalization, finite-size, statistical and transfer boundaries recorded; code not audited and no independent reproduction performed."
+  ]
+}
