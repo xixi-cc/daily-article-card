@@ -1,0 +1,198 @@
+{
+  "arxiv_id": "2604.09429",
+  "source_version": "v4",
+  "source_pdf": "https://arxiv.org/pdf/2604.09429v4",
+  "title_en": "Rays as Pixels: Learning A Joint Distribution of Videos and Camera Trajectories",
+  "title_zh": "以射线为像素：学习视频与相机轨迹的联合分布",
+  "curation_status": "full_text_verified",
+  "card_standard_version": "2.4",
+  "audience_profile": "physics_ai_literate_physicist",
+  "paper_profile": "theory_experiment",
+  "style_reference": "physicist_daily_arxiv",
+  "provenance": {
+    "program": "Collection",
+    "catalog": "Paper Collection",
+    "catalog_record_id": "2604.09429",
+    "catalog_record_ids": ["2604.09429"],
+    "catalog_topic": "Generative Models",
+    "collection_date": "2026-08-30",
+    "sampled_at": "2026-08-31",
+    "selected_by": "ziming_mineru_serial_goal",
+    "sampling_seed": "not_applicable_source_complete",
+    "candidate_count": 464
+  },
+  "verified_metadata": {
+    "arxiv_id": "2604.09429",
+    "version": "v4",
+    "title": "Rays as Pixels: Learning A Joint Distribution of Videos and Camera Trajectories",
+    "authors": ["Wonbong Jang", "Shikun Liu", "Soubhik Sanyal", "Juan Camilo Perez", "Kam Woh Ng", "Sanskar Agrawal", "Juan-Manuel Perez-Rua", "Yiannis Douratsos", "Tao Xiang"],
+    "categories": ["cs.CV", "cs.AI", "cs.LG"],
+    "primary_category": "cs.CV",
+    "published": "2026-04-10",
+    "updated": "2026-05-29",
+    "abstract": "The paper represents a camera trajectory as a video-shaped field of per-pixel rays, couples ray and RGB latent streams in a Wan-2.1-derived flow model, and supports video-to-camera estimation, camera-conditioned video generation, and joint sampling with one trained model."
+  },
+  "equation_refs": [
+    {
+      "label": "Per-pixel raxel geometry",
+      "latex": "\\mathbf d=R_{\\mathrm{rel}}^{(j)}\\frac{K_j^{-1}\\tilde{\\mathbf u}}{\\lVert K_j^{-1}\\tilde{\\mathbf u}\\rVert_2},\\qquad \\mathbf o=T_{\\mathrm{rel}}^{(j)}",
+      "role": "encode each image pixel as a world-relative ray direction and camera-center origin",
+      "symbols": {
+        "u_tilde": "homogeneous pixel coordinate",
+        "K_j": "camera intrinsic matrix at frame j",
+        "R_rel": "rotation relative to a selected reference frame",
+        "T_rel": "relative camera translation",
+        "d": "unit ray direction",
+        "o": "ray origin"
+      },
+      "evidence": "paper.pdf pp. 3–4, Equations (1)–(2), and official method TeX",
+      "interpretation": "每个 pixel 不再存 RGB，而存同形状的几何 ray field；同一相机的 $\\mathbf o$ 在空间上重复，$\\mathbf d$ 随像素和姿态变化。"
+    },
+    {
+      "label": "Flow-matching with angular alignment",
+      "latex": "\\mathcal L(\\theta)=\\mathbb E\\!\\left[\\lVert v_\\theta-u_t\\rVert^2+\\lambda\\left(1-\\frac{v_\\theta^\\top u_t}{\\lVert v_\\theta\\rVert\\,\\lVert u_t\\rVert}\\right)\\right]",
+      "role": "train the joint video-ray velocity field using magnitude and direction agreement",
+      "symbols": {
+        "v_theta": "predicted flow velocity",
+        "u_t": "target velocity along the interpolation path",
+        "lambda": "cosine-loss weight",
+        "t": "continuous noise-to-data interpolation time"
+      },
+      "evidence": "paper.pdf pp. 4–5, Equations (3)–(4), and official method TeX",
+      "interpretation": "第一项匹配 Euclidean vector field，第二项匹配方向；ablation 表明二者在该训练 recipe 中共同有用，但不说明 cosine term 普遍必要。"
+    },
+    {
+      "label": "Dual-stream conditional factorization motivation",
+      "latex": "\\log p(z,r)=\\log p(r)+\\log p(z\\mid r)\\equiv\\log p(z)+\\log p(r\\mid z)",
+      "role": "motivate bidirectional cross-attention between video latents z and ray latents r",
+      "symbols": {
+        "z": "video latent variables",
+        "r": "ray-trajectory latent variables",
+        "p_z_given_r": "camera-conditioned video distribution",
+        "p_r_given_z": "video-conditioned camera distribution"
+      },
+      "evidence": "paper.pdf pp. 5–6, Equation (5), and official method TeX",
+      "interpretation": "概率恒等式说明联合分布可两向分解；DSCA 架构与 flow objective 并未据此证明学到了精确、校准且相容的 joint density。"
+    }
+  ],
+  "figure_refs": [
+    {
+      "label": "Figure 2 joint video-camera framework",
+      "asset_path": "assets/collection-figures/2604.09429/figure-02-framework.webp",
+      "section": "模型与方法",
+      "role": "show the video and ray VAE streams, dual-stream cross-attention training and three inference modes",
+      "evidence": "paper.pdf p. 3, Figure 2; official source figures/arch_VAE_modified.pdf",
+      "alt_text": "Architecture diagram with RGB-video and ray-field latent branches, dual-stream attention, and arrows for video-to-camera, camera-to-video, and joint sampling.",
+      "caption": "Figure 2：RGB 与 raxel 经过双 latent streams 和 DSCA 联合建模，可执行三种 inference direction；图不表示已获得真实 3D scene model 或 exact joint likelihood。",
+      "interpretation": "共享时空 grid 让 camera field 与 video token 对齐，cross-attention 交换条件信息；20B 总规模和完整 fine-tuning 是方法成本的一部分。"
+    }
+  ],
+  "cover": {
+    "mode": "source_figure",
+    "asset_path": "assets/collection-figures/2604.09429/figure-02-framework.webp",
+    "label": "Figure 2 framework",
+    "visual_type": "schematic",
+    "evidence": "paper.pdf p. 3, Figure 2; official source figure",
+    "alt_text": "A joint generative architecture for RGB videos and video-shaped camera ray fields.",
+    "caption": "将相机射线场与 RGB 视频作为对齐的双流生成变量。",
+    "selection_rationale": "It directly explains the raxel representation, dual-stream coupling and all three supported inference modes."
+  },
+  "sections": [
+    {
+      "title": "作者信息",
+      "paragraphs": [
+        "作者为 Wonbong Jang、Shikun Liu、Soubhik Sanyal、Juan Camilo Perez、Kam Woh Ng、Sanskar Agrawal、Juan-Manuel Perez-Rua、Yiannis Douratsos、Tao Xiang。",
+        "本站核验 arXiv:2604.09429v4：初稿 2026-04-10，当前版 2026-05-29；主分类 cs.CV，PDF 14 页。",
+        "Collection 来源为刘子鸣网站的 Generative Models 条目。"
+      ]
+    },
+    {
+      "title": "研究问题",
+      "paragraphs": [
+        "视频生成通常把 camera trajectory 当外部 control signal，相机估计又把视频当输入。能否把 RGB video 与 camera rays 放进一个联合生成模型，同时支持两种 conditional directions 和 joint sampling？",
+        "论文把每帧相机内外参展开成与图像同高宽的 ray origin/direction field（raxel），再为 RGB 与 ray 建双 VAE/DiT streams，用 dual-stream cross-attention 交换信息。",
+        "核心经验问题是这个 pipeline 能否同时改善生成 FID/FVD 并保持 camera estimation/control；不能把生成指标优势直接等同于几何精度或真实 3D 理解。"
+      ]
+    },
+    {
+      "title": "背景",
+      "paragraphs": [
+        "pinhole camera 中，pixel $\\tilde u$ 通过 $K^{-1}$ 变为 camera-frame direction，再经 pose 旋转到共同坐标系；camera center 给 ray origin。",
+        "Plücker coordinates 常用六维 line representation $(d,o\\\\times d)$，对 ray 上 origin shift 具有几何性质；raxel 直接存 $(o,d)$，更接近 image-like tensor。",
+        "flow matching 学习从噪声分布到数据分布的 time-dependent vector field。本文联合噪声化 video/ray latents，而不是显式计算 normalized likelihood。",
+        "相机轨迹只有相对 pose；scale、reference frame 与 intrinsics conventions 都影响误差。生成 evaluation 再经外部 VGGT 反推轨迹，引入 estimator bias。"
+      ]
+    },
+    {
+      "title": "给物理学家的 AI 导读",
+      "paragraphs": [
+        "raxel 可看成离散 light-ray phase-space field：每个像素格点携带 origin $\\mathbf o$ 与 direction $\\mathbf d$，与 RGB field 共用 $(x,y,t)$ lattice。",
+        "双流 cross-attention 类似两个耦合场：各自 self-attention 建内部 correlations，cross-attention 交换 camera-motion 与 appearance 信息；它不是显式 multiview geometry solver。",
+        "联合概率的两种 factorization 是 Bayes identity，不是架构成功的 theorem。要证明 joint coherence，需要 calibrated likelihood 或更强 consistency tests，而不只是 cycle samples。",
+        "scale-normalized trajectory error 去除了一个 gauge-like degree of freedom；数值变小并不保证 absolute metric scale 或 scene geometry 正确。",
+        "4× temporal VAE compression 是 coarse graining：提高效率，但可能滤掉快速运动与高频动态。论文自己把 rapid motion/dynamic objects 列为 failure mode。"
+      ]
+    },
+    {
+      "title": "模型与方法",
+      "paragraphs": [
+        "模型从 Wan 2.1 14B video backbone 出发并 full fine-tune，增加约 6B ray branch，总计约 20B；ray tensor 经与视频兼容的 VAE path 编码。",
+        "每条 trajectory 先相对 reference frame 归一化，再由 intrinsics/extrinsics 为每个 pixel 构造 $(o,d)$。DSCA 让 video/ray streams 同时 self-attend 并双向 cross-attend。",
+        "训练目标在 linear interpolation $x_t=(1-t)x_0+t x_1$ 上匹配 velocity，并增加 cosine alignment。推理可固定 video 求 camera、固定 camera 求 video，或两侧同时从噪声采样。",
+        "video-to-camera 输出 ray field 后还需通过 pairwise relative rotations、$SE(3)$ optimization 与 median focal estimates 回收显式 camera parameters。",
+        "训练数据主要为 static scenes 与 smooth trajectories；RealEstate10K、DL3DV 等既用于训练，也构造 held-out evaluations，Tanks and Temples 更接近外部测试。"
+      ]
+    },
+    {
+      "title": "核心结果与证据",
+      "paragraphs": [
+        "Table 2 full model 的 FID/FVD/$R_{err}$/$T_{err}$ 为 7.33/68.17/0.020/0.018；去 DSCA 为 8.69/77.08/0.048/0.052，去 cosine loss 为 9.48/97.84/0.058/0.094。",
+        "Table 3 的 mRRA@30×100 在 RealEstate10K/DL3DV/Tanks and Temples 为 95.91/88.37/93.51，均低于 VGGT 的 98.07/91.86/97.70，因此 camera estimation 并非最佳。",
+        "Table 4 中该模型在三个 datasets 的 FID/FVD 点估计均最好；但 camera-trajectory errors 没有全面领先，DL3DV 与 Tanks and Temples 尤其有更强 baselines。",
+        "cycle test 显示 video→camera→video 两个 conditionals 在样例上具有一定 compatibility；它不是 calibrated joint-likelihood test，也不证明 recovered 3D faithful。",
+        "全部 headline tables 为 point estimates，未找到 seeds、confidence intervals、error bars 或 significance；generation sample count 在核验文本中也不清楚。"
+      ]
+    },
+    {
+      "title": "有效性与局限",
+      "paragraphs": [
+        "raxel 对 Plücker 的 ablation 有结构性混杂：六通道 Plücker 不能走 pretrained 三通道 VAE path，改用不同 MLP/concatenation encoder，因此比较的是整套 pipeline compatibility。",
+        "camera adherence 由 VGGT 从生成视频估计，再比较 scale-normalized paths；它继承 VGGT domain bias，且不等于 ground-truth rendering geometry。",
+        "RealEstate10K/DL3DV 同时进入训练与 held-out evaluation；RealEstate10K pose subset 还做 quality filtering，外部有效性应主要看 Tanks and Temples。",
+        "static-scene、smooth-trajectory training 不支持 dynamic/rapid-motion robustness；supplement 提到加入 unposed dynamic videos 只是 future extension。",
+        "DSCA 的 probabilistic story 是设计动机，不是 exact density factorization 证明；cycle consistency 也可能由两个共同偏置的 conditionals 产生。",
+        "20B full-finetuned model 的训练与推理成本、数据许可和部署 latency 未系统报告；“first model”属于未独立检索的 novelty claim。"
+      ]
+    },
+    {
+      "title": "复现与资源",
+      "paragraphs": [
+        "项目页为 https://wbjang.github.io/raysaspixels/ 。本站未运行代码；复现需固定 release/commit、Wan checkpoint、VAE、datasets、camera conventions、filters 和 evaluation checkpoints。",
+        "先用解析 pinhole cameras 逐 pixel 核验 $(o,d)$、reference-frame transform、scale normalization 与 pose recovery，再测试 degenerate translation/rotation/intrinsics cases。",
+        "做 representation-only 对照必须让 raxel 与 Plücker 共享等容量 encoder、相同 pretrained advantage、tokens、training budget 与 optimizer，避免 pipeline confound。",
+        "按训练 seed 和 generation seed 报 FID/FVD/pose errors 的 intervals；公开 sample counts，并在同一 generated videos 上用多种 camera estimators 与 ground-truth renderer checks。",
+        "joint coherence 应测两向 conditional calibration、cycle error distribution、multi-view reprojection/epipolar consistency 和 known-scene 3D reconstruction，而非只看视觉样例。",
+        "扩展到 moving objects、fast camera、rolling shutter 和 intrinsics shifts，分别报告失败率；同时记录 20B model 的 train FLOPs、VRAM、latency 与 throughput。"
+      ]
+    },
+    {
+      "title": "阅读指南",
+      "paragraphs": [
+        "快速路线：pp. 2–6 看 raxel、Figure 2、flow objective 与 DSCA；pp. 8–9 看 Tables 2–4；pp. 9–10、14 看失败模式与补充边界。",
+        "物理路线：从 ray geometry、reference-frame gauge 与 temporal coarse graining 出发，再判断概率 factorization 是否只是 identity。",
+        "AI 路线：区分 joint generative training、conditional inference、explicit camera recovery 与外部 VGGT evaluation；四者证据链不同。",
+        "批判路线：核查 Plücker encoder confound、训练/测试 dataset overlap、point estimates、static-scene assumption、cycle-test ceiling 与 20B compute cost。"
+      ]
+    }
+  ],
+  "evidence_refs": [
+    "paper.pdf pp. 3–6 and official method TeX: relative camera coordinates, raxel equations, flow-matching objective, DSCA motivation, model scale and three inference modes",
+    "paper.pdf pp. 8–9 and official experiment TeX: component ablations, video-to-camera mRRA, camera-conditioned FID/FVD/trajectory errors and cycle evaluation",
+    "paper.pdf pp. 9–10 and supplement p. 14: static-scene training, temporal compression, evaluation filters, limitations and dynamic-data future extension",
+    "source PDF SHA-256 47174af777f5f51c772b9892a2c057c0b7e27485d2aa079ae5b6e0015717a784",
+    "official arXiv v4 source archive SHA-256 c0cadacd1291d942e52e4253a19bd51001ceec0947d95324277552c8315c747d",
+    "MinerU Markdown SHA-256 795d61d16c4fd4c3e964529c0d128ff72e896ea58ce18373fcb9468dfaf5b306",
+    "Evidence packet SHA-256 8ead022379fae0ece381d869e8e6b419a0a7f48ab13b1975bcd128fd340b7382",
+    "Evidence status: full text, rendered figure and official TeX verified against latest arXiv v4; representation-confound, estimator, dataset-overlap, dynamic-scene, temporal-compression, statistical, probabilistic and compute boundaries recorded; no independent reproduction performed."
+  ]
+}

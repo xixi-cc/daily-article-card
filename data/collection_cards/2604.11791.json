@@ -1,0 +1,196 @@
+{
+  "arxiv_id": "2604.11791",
+  "source_version": "v1",
+  "source_pdf": "https://arxiv.org/pdf/2604.11791v1",
+  "title_en": "A Mechanistic Analysis of Looped Reasoning Language Models",
+  "title_zh": "循环推理语言模型的机制分析",
+  "curation_status": "full_text_verified",
+  "card_standard_version": "2.4",
+  "audience_profile": "physics_ai_literate_physicist",
+  "paper_profile": "theory_experiment",
+  "style_reference": "physicist_daily_arxiv",
+  "provenance": {
+    "program": "Collection",
+    "catalog": "Paper Collection",
+    "catalog_record_id": "2604.11791",
+    "catalog_record_ids": ["2604.11791"],
+    "catalog_topic": "AI Agents",
+    "collection_date": "2026-08-30",
+    "sampled_at": "2026-08-31",
+    "selected_by": "ziming_mineru_serial_goal",
+    "sampling_seed": "not_applicable_source_complete",
+    "candidate_count": 464
+  },
+  "verified_metadata": {
+    "arxiv_id": "2604.11791",
+    "version": "v1",
+    "title": "A Mechanistic Analysis of Looped Reasoning Language Models",
+    "authors": ["Hugh Blayney", "Álvaro Arroyo", "Johan Obando-Ceron", "Pablo Samuel Castro", "Aaron Courville", "Michael M. Bronstein", "Xiaowen Dong"],
+    "categories": ["cs.LG", "cs.AI"],
+    "primary_category": "cs.LG",
+    "published": "2026-04-13",
+    "updated": "2026-04-13",
+    "abstract": "The paper analyzes cyclic looped language models as iterated maps, proves conditional statements about cyclically permuted fixed points and attention stability, and reports recurrent attention and residual-state patterns in several heterogeneous pretrained and small trained models."
+  },
+  "equation_refs": [
+    {
+      "label": "Cyclic loop operator",
+      "latex": "R_{\\ell,k}(X)=\\underbrace{S_k\\!\\left(S_k\\!\\left(\\cdots S_k(X)\\right)\\right)}_{\\ell\\ \\mathrm{times}}",
+      "role": "define a looped model by repeatedly applying the same k-block composition",
+      "symbols": {
+        "S_k": "composition of k Transformer blocks",
+        "ell": "number of recurrent cycles",
+        "X": "sequence hidden state",
+        "R_lk": "effective recurrent-depth map"
+      },
+      "evidence": "paper.pdf pp. 3–4, Equations (5)–(7), and official preliminaries TeX",
+      "interpretation": "这是离散动力系统 $X_{t+1}=S_k(X_t)$；共享参数使 orbit 可研究，但有限 recurrence 的 attention repetition 不自动意味着 $X_t$ 已收敛。"
+    },
+    {
+      "label": "Cyclic fixed-point implication",
+      "latex": "S_k(X^\\star)=X^\\star\\quad\\Longrightarrow\\quad B_{k-1}\\circ\\cdots\\circ B_0(X^\\star)=X^\\star",
+      "role": "summarize the proposition that a fixed point of one block composition induces fixed points for cyclic permutations along its orbit",
+      "symbols": {
+        "X_star": "assumed fixed point of the full k-block composition",
+        "B_i": "individual Transformer block",
+        "S_k": "ordered block composition"
+      },
+      "evidence": "paper.pdf p. 4, Proposition 4.1; proof p. 13 and official proofs TeX",
+      "interpretation": "命题前提已经假设 composite map 有 fixed point；它只重排 orbit 上的 fixed states，不证明 fixed point 存在、唯一、吸引或被训练轨迹到达。"
+    },
+    {
+      "label": "Attention-change Lipschitz bound",
+      "latex": "\\lVert\\mathcal S_\\ell(X_{\\ell,t})-\\mathcal S_\\ell(X_{\\ell,t-1})\\rVert\\leq L_{\\mathrm{sm}}\\frac{2B\\kappa_\\ell}{\\sqrt d}\\lVert X_{\\ell,t}-X_{\\ell,t-1}\\rVert",
+      "role": "transfer small hidden-state changes to small attention-score changes under bounded-state and tied-QK assumptions",
+      "symbols": {
+        "S_l": "softmax attention map at layer l",
+        "B": "bound on hidden-state norm",
+        "kappa_l": "operator-norm factor for the tied query/key weights",
+        "L_sm": "softmax Lipschitz constant",
+        "d": "attention head dimension"
+      },
+      "evidence": "paper.pdf p. 4, Proposition 4.2; proof pp. 13–14 and official proofs TeX",
+      "interpretation": "这是条件式 continuity bound：如果 state 已变慢，attention 也变慢；它没有反向证明 state convergence，更不把 attention stability 等同 reasoning correctness。"
+    }
+  ],
+  "figure_refs": [
+    {
+      "label": "Figure 2 cyclic attention-distance patterns",
+      "asset_path": "assets/collection-figures/2604.11791/figure-01-attention-cyclic-similarity.webp",
+      "section": "核心结果与证据",
+      "role": "compare recurrent attention-distance heatmaps across Ouro 1.4B, retrofitted Llama and Huginn-0125",
+      "evidence": "paper.pdf p. 5, Figure 2; official source figures/fixed_point/heatmaps/attention_weight_norms.pdf",
+      "alt_text": "Three attention-distance heatmaps display repeated diagonal band structures across recurrent cycles for three looped language models.",
+      "caption": "Figure 2：三种异质 looped LMs 在 8 recurrences 上出现 blockwise diagonal bands；pattern repetition 是描述性相似度，不是语义 stage 或 fixed-point convergence 的证明。",
+      "interpretation": "共同的周期结构与 cyclic weight sharing 相容，但模型规模、训练史、norm、input injection 和 block size 均不同，不能作受控 architecture comparison。"
+    }
+  ],
+  "cover": {
+    "mode": "source_figure",
+    "asset_path": "assets/collection-figures/2604.11791/figure-01-attention-cyclic-similarity.webp",
+    "label": "Figure 2 cyclic attention comparison",
+    "visual_type": "data_plot",
+    "evidence": "paper.pdf p. 5, Figure 2; official source figure",
+    "alt_text": "Cross-model heatmaps show recurring diagonal attention-distance structure over loop iterations.",
+    "caption": "循环权重共享下出现的 attention-distance 周期结构。",
+    "selection_rationale": "It is the central comparative observation and makes the distinction between repeated diagnostics and fixed-point proof concrete."
+  },
+  "sections": [
+    {
+      "title": "作者信息",
+      "paragraphs": [
+        "作者为 Hugh Blayney、Álvaro Arroyo、Johan Obando-Ceron、Pablo Samuel Castro、Aaron Courville、Michael M. Bronstein、Xiaowen Dong。",
+        "本站核验 arXiv:2604.11791v1：提交于 2026-04-13，是当前唯一版本；主分类 cs.LG，PDF 39 页。",
+        "Collection 来源为刘子鸣网站的 AI Agents 条目。"
+      ]
+    },
+    {
+      "title": "研究问题",
+      "paragraphs": [
+        "looped reasoning model 反复应用同一 blocks。它的 hidden states 与 attention 是否趋向 fixed points、limit cycles 或其他 orbit？不同 architecture choices 又如何影响这些动力学？",
+        "论文给出两个条件性 propositions，并用 attention distance、residual trajectories、PCA 与 ColSum Concentration 描述 Ouro、Huginn 和 retrofitted Llama 的 recurrence。",
+        "研究目标是机制诊断，不是新的 reasoning benchmark：论文没有重新测 reasoning accuracy，也没有 causal intervention 证明某种 orbit 提升了正确率。"
+      ]
+    },
+    {
+      "title": "背景",
+      "paragraphs": [
+        "cyclic recurrence 把同一 ordered block stack 重复使用；sequential recurrence 等其他架构不在本文范围。共享权重产生时间平移式结构，但 block 内仍是非线性、输入相关 map。",
+        "fixed point 满足 $S(X^\\star)=X^\\star$，吸引 fixed point 还需要局部 Jacobian spectrum 控制；只看到 $X_{t+1}-X_t$ 变小不足以证明无限时极限。",
+        "attention weights 是 hidden states 经 Q/K bilinear form 和 softmax 的投影。不同 hidden states 可能给相近 attention，attention 相近也不保证 value/MLP/output 相近。",
+        "ColSum Concentration 本质上是 column-attention distribution 的 normalized entropy summary；它压缩拓扑集中度，不携带语义标签。"
+      ]
+    },
+    {
+      "title": "给物理学家的 AI 导读",
+      "paragraphs": [
+        "可把每轮 recurrence 当 stroboscopic map。fixed point、periodic orbit 与 transient 都是合理候选；heatmap 的平行对角带更像离散时间相关函数的周期结构。",
+        "Proposition 4.1 是 k-step map 与 cyclically shifted maps 的轨道 bookkeeping：给定一个 fixed orbit，换观察相位仍得到对应 fixed state；它不是 Banach contraction theorem。",
+        "Proposition 4.2 是 observable continuity：state displacement 小会限制 attention displacement。它只沿一个方向传递 bound，不能由 attention 看似稳定反演出完整 state convergence。",
+        "ColSum 随 recurrence 的阶段轮廓可类比经验 order parameter，但没有对称性、critical point 或 intervention；把低/高 entropy 命名为 reasoning stage 属 phenomenology。",
+        "手调 thresholds 下极少 token 未达 approximate fixed point，不是 universal rarity：阈值、norm、prompt 与 system persona 都改变计数。"
+      ]
+    },
+    {
+      "title": "模型与方法",
+      "paragraphs": [
+        "预训练分析覆盖 Ouro 1.4B、Huginn-0125 与把 Llama blocks retrofit 成循环的模型；它们在 recurrent block size、normalization、BOS/input injection 和训练历史上不同。",
+        "共同分析集主要为同一随机 256-example GSM8K subset；另有 256 HellaSwag examples，部分 PCA/orbit 图是单 prompt illustration。",
+        "作者计算 successive recurrences 的 attention/residual distances、tokenwise trajectories 与 ColSum Concentration，并在 recurrence 128 处用 heuristic threshold 判定 approximate endpoints。",
+        "随机 12-layer architecture probes 比较 input injection 与 normalization，平均 3 initializations；这些模型未训练，只用于探查 map geometry。",
+        "另训练 width 512、4 heads 的小模型 3.7B tokens、固定 4 recurrences，检查 ColSum stage profile 是否在训练后出现。"
+      ]
+    },
+    {
+      "title": "核心结果与证据",
+      "paragraphs": [
+        "Proposition 4.1 只在 composite fixed point 已存在时推出 cyclic permutations 的对应 fixed points；Proposition 4.2 只在 bounded state 与 tied Q/K 下把 state change bound 传给 attention。",
+        "8 recurrences 的 Figure 2 在 Ouro、retrofitted Llama、Huginn 上都显示 blockwise repetition；到 recurrence 128 的 approximate endpoint，Huginn 与 retrofitted Llama 稳定，Ouro 未稳定。",
+        "随机 architecture probes 的 3 initializations 显示 input injection 与 normalization choice 关联 distinct 或 degenerate fixed points；未训练 probe 不能证明同效应在大规模训练后保持。",
+        "3.7B-token 小模型出现 tentative repeated ColSum-stage profiles，作者明确标注 scale limitation；没有多 checkpoint families 或 reasoning-performance link。",
+        "手调 recurrence-128 heuristic 报告 Huginn 无 system prompt 时 0.02% tokens、0.76% examples 未达 fixed-point criterion；长 persona 时为 0.14%/2.81%，显示 prompt dependence。"
+      ]
+    },
+    {
+      "title": "有效性与局限",
+      "paragraphs": [
+        "条件 propositions 不证明一般 convergence、吸引性、唯一性或 reasoning correctness；attention bound 还依赖 tied Q/K 与 bounded states。",
+        "ColSum 和所谓 inference stages 是描述性 summaries。没有对 ColSum 做 targeted intervention，也没有显示阶段消失会使答案失败。",
+        "预训练模型比较高度异质，不能把 differences 单独归因于 input injection、norm 或 recurrent block design；受控证据只到 untrained probes 和小模型。",
+        "多数图复用 256 GSM8K prompts，seed 未陈述，tokens/prompts 相关；error bands across inputs 不是 checkpoint/training uncertainty，多数结果无 formal tests。",
+        "orbit/slider thresholds 由视觉检查手调，absolute rarity 对 hyperparameters 敏感；精确百分比不是 invariant property。",
+        "本文不新测 reasoning accuracy，关于 latent stability 与 OOD performance 的联系来自 prior Ouro/Huginn 工作；也未覆盖 sequential recurrence。"
+      ]
+    },
+    {
+      "title": "复现与资源",
+      "paragraphs": [
+        "论文引用的可运行资源包括 https://github.com/TrelisResearch/nanochat/tree/recursive 。本站未运行；应 pin exact commits、model revisions、prompts、tokenizer 与 analysis thresholds。",
+        "逐模型保存同一 prompts/tokens 的 full hidden and attention trajectories，报告 convergence residual 对 norm、layer、token 与 recurrence 的分布，而不只画平均 heatmaps。",
+        "fixed-point 判定需做 threshold sweep、longer recurrence、Jacobian spectral-radius estimate 与 perturb-and-return tests；区分 fixed point、slow transient 和 low-amplitude cycle。",
+        "architecture 因果需要 matched-size/training/data factorial：input injection × norm × block size × initialization，并用多 seeds 与 held-out prompts。",
+        "对 ColSum stage 做 intervention：打乱/抑制相关 heads、patch states、改变 stage duration，再测 exact answer/logit；同时以 random matched observables 控制 post-hoc segmentation。",
+        "若要连接性能，应同步报告 GSM8K/HellaSwag correctness、calibration、compute-depth curves 与 per-example orbit class，检验 stability 是帮助、限制还是仅相关。"
+      ]
+    },
+    {
+      "title": "阅读指南",
+      "paragraphs": [
+        "快速路线：pp. 3–4 看 loop definitions 与 propositions；pp. 5–8 看 Figure 2、architectures、ColSum stages 和小模型；pp. 13–17 看 proofs、thresholds 与样本细节。",
+        "物理路线：把 looped LM 当离散非线性动力系统，先区分 existence、stability、basin 与 finite-time diagnostic，再解释 attention observable。",
+        "AI 路线：分清 hidden-state convergence、attention similarity、logit stability 与 task correctness；它们没有双向等价。",
+        "批判路线：核查 proposition assumptions、异质模型 confounds、256-example reuse、hand-tuned thresholds、无新 accuracy 与 sequential-recurrence exclusion。"
+      ]
+    }
+  ],
+  "evidence_refs": [
+    "paper.pdf pp. 3–6 and official preliminaries/proofs TeX: cyclic recurrence definitions, Propositions 4.1–4.2, Figure 2 attention distances and recurrence-128 endpoint observations",
+    "paper.pdf pp. 6–8 and official main/appendix TeX: architecture probes, ColSum Concentration, inferred stages and 3.7B-token small-model experiment",
+    "paper.pdf pp. 13–17 and official proofs/experiment-details/orbit TeX: proof assumptions, prompts/sample sizes, training settings, threshold procedure and non-fixed-point counts",
+    "source PDF SHA-256 d9739a3d53b7e94f8796970ddf743284d56ed37b0767a4084c89e6be846de4aa",
+    "official arXiv v1 source archive SHA-256 901075cafc16c8421d81a6ca4be60eba9550014c1f5845482fc663294c25c5cf",
+    "MinerU Markdown SHA-256 301f6d885bc0e96e6b3cb3579d68ebca9f852a3d475fa0b30de5890a90238068",
+    "Evidence packet SHA-256 42cff7454928ec1163973b9920642d03f025cf15fbbe587c112b3e2cd495c978",
+    "Evidence status: full text, rendered figure and official TeX verified against latest arXiv v1; proposition, convergence, observable, causal, architecture-confound, sampling, threshold and performance-link boundaries recorded; no independent reproduction performed."
+  ]
+}
