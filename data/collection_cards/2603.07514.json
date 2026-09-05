@@ -1,0 +1,197 @@
+{
+  "arxiv_id": "2603.07514",
+  "source_version": "v3",
+  "source_pdf": "https://arxiv.org/pdf/2603.07514v3",
+  "title_en": "A Unified View of Score-Based and Drifting Models",
+  "title_zh": "Score-Based 与 Drifting 模型的统一视角",
+  "curation_status": "full_text_verified",
+  "card_standard_version": "2.4",
+  "audience_profile": "physics_ai_literate_physicist",
+  "paper_profile": "theory_experiment",
+  "style_reference": "physicist_daily_arxiv",
+  "provenance": {
+    "program": "Collection",
+    "catalog": "Paper Collection",
+    "catalog_record_id": "2603.07514",
+    "catalog_record_ids": ["2603.07514"],
+    "catalog_topic": "Generative Models",
+    "collection_date": "2026-08-30",
+    "sampled_at": "2026-08-31",
+    "selected_by": "ziming_mineru_serial_goal",
+    "sampling_seed": "not_applicable_source_complete",
+    "candidate_count": 464
+  },
+  "verified_metadata": {
+    "arxiv_id": "2603.07514",
+    "version": "v3",
+    "title": "A Unified View of Score-Based and Drifting Models",
+    "authors": ["Chieh-Hsin Lai", "Bac Nguyen", "Naoki Murata", "Yuhta Takida", "Toshimitsu Uesaka", "Yuki Mitsufuji", "Stefano Ermon", "Molei Tao"],
+    "categories": ["cs.LG", "cs.AI", "cs.CV"],
+    "primary_category": "cs.LG",
+    "published": "2026-03-08",
+    "updated": "2026-05-15",
+    "abstract": "The paper identifies Gaussian mean shift with a smoothed score, decomposes general radial-kernel drifting fields into a preconditioned score plus residual, and studies conditional high-dimensional alignment with synthetic and image experiments."
+  },
+  "equation_refs": [
+    {
+      "label": "Gaussian mean-shift score identity",
+      "latex": "V_{\\pi,\\tau}(x)=\\frac{\\int (y-x)\\exp[-\\|x-y\\|^2/(2\\tau^2)]\\,d\\pi(y)}{\\int\\exp[-\\|x-y\\|^2/(2\\tau^2)]\\,d\\pi(y)}=\\tau^2\\nabla_x\\log\\pi_\\tau(x)",
+      "role": "identify the population Gaussian-kernel mean-shift field with the score of the Gaussian-smoothed distribution",
+      "symbols": {
+        "pi": "data or model distribution",
+        "pi_tau": "pi convolved with Gaussian noise of bandwidth tau",
+        "V_pi_tau": "population drifting/mean-shift vector field",
+        "tau": "kernel bandwidth or smoothing scale"
+      },
+      "evidence": "paper.pdf pp. 2 and 5–6, Gaussian identity",
+      "interpretation": "这是可靠的 population field 恒等式；它不等价完整 diffusion forward process、time-conditioned score objective 或 multistep sampler。"
+    },
+    {
+      "label": "radial field decomposition",
+      "latex": "V_{\\pi,k}(x)=A_{\\pi,k}(x)\\,\\nabla\\log\\pi_k(x)+R_{\\pi,k}(x)",
+      "role": "split a general radial-kernel mean-shift field into a scalar-preconditioned kernel score and a covariance residual",
+      "symbols": {
+        "k": "radial kernel, including Gaussian or Laplace",
+        "A_pi_k": "state-dependent scalar preconditioner",
+        "pi_k": "kernel-smoothed density",
+        "R_pi_k": "radius-direction covariance correction"
+      },
+      "evidence": "paper.pdf pp. 6–7, exact radial-kernel decomposition",
+      "interpretation": "Gaussian residual 精确为零；Laplace residual 仅在强 shell/inner-product assumptions 与高维极限下预期小，且小 drift 还可能由 preconditioner/residual cancellation 产生。"
+    },
+    {
+      "label": "clean-model-weighted field discrepancy",
+      "latex": "\\mathcal L_{drift}(q)=\\mathbb E_{x\\sim q}\\left[\\|V_{p,k}(x)-V_{q,k}(x)\\|^2\\right]",
+      "role": "compare data and model population fields at clean samples drawn from the current model distribution",
+      "symbols": {
+        "p": "data distribution",
+        "q": "model distribution",
+        "V_p_V_q": "kernel-smoothed mean-shift fields",
+        "stop_gradient": "implementation differentiates a semi-gradient rather than the full derivative of this functional"
+      },
+      "evidence": "paper.pdf pp. 3–5, drifting loss and gradient discussion",
+      "interpretation": "Gaussian 时 integrand 是 smoothed-score mismatch，但 weighting 仍为 unsmoothed q；objective-value equality 不推出 stop-gradient 的 full-gradient equality。"
+    }
+  ],
+  "figure_refs": [
+    {
+      "label": "Figure 2 high-dimensional field alignment",
+      "asset_path": "assets/collection-figures/2603.07514/figure_2_high_dimensional_alignment.webp",
+      "section": "核心结果与证据",
+      "role": "plot absolute, relative and directional Laplace-versus-score field errors from dimension 4 to 512 for ring and raw Gaussian-mixture families",
+      "evidence": "paper.pdf pp. 8–9, Figure 2; official source asset figs/fig1_alignment.pdf",
+      "alt_text": "Three log-log panels show absolute, relative and directional alignment errors versus dimension for two synthetic Gaussian-mixture constructions.",
+      "caption": "Figure 2：D=4–512 的 Raw/Ring mixtures 中三类 alignment error 随维数下降，fitted slopes 接近或快于 -1；每个 D 的比例 $C^*$ 用同一 fields 做 least-squares oracle fit，query/replicate/error-bar 语义未说明。",
+      "interpretation": "图是高维对齐的描述性支持，不严格满足 bounded-norm theorem assumptions，也不独立验证理论 scale calibration 或 minimizer result。"
+    }
+  ],
+  "cover": {
+    "mode": "source_figure",
+    "asset_path": "assets/collection-figures/2603.07514/figure_2_high_dimensional_alignment.webp",
+    "label": "Figure 2 high-dimensional alignment",
+    "visual_type": "data_plot",
+    "evidence": "paper.pdf pp. 8–9, Figure 2; official source vector figure",
+    "alt_text": "Synthetic Laplace-field alignment errors decrease with ambient dimension under oracle rescaling.",
+    "caption": "Laplace field 与 score field 的高维误差 scaling；比例是同数据 oracle fit，严格定理假设未完全满足。",
+    "selection_rationale": "The three-panel plot directly exposes the headline dimension-scaling evidence and the distinction among absolute, relative and directional errors."
+  },
+  "sections": [
+    {
+      "title": "作者信息",
+      "paragraphs": [
+        "作者为 Chieh-Hsin Lai、Bac Nguyen、Naoki Murata、Yuhta Takida、Toshimitsu Uesaka、Yuki Mitsufuji、Stefano Ermon 与 Molei Tao，来自 Sony AI、Sony Group、Stanford 与 Georgia Tech。",
+        "本站核验 arXiv:2603.07514v3：v1 提交于 2026-03-08，v3 更新于 2026-05-15；分类 cs.LG、cs.AI、cs.CV，PDF 47 页。",
+        "Collection 来源为刘子鸣网站的 Generative Models 条目。"
+      ]
+    },
+    {
+      "title": "研究问题",
+      "paragraphs": [
+        "score-based diffusion 学习 log-density gradient；drifting models 比较 kernel-weighted data/model displacements。两种 population vector fields 在什么条件下相同或渐近对齐？",
+        "论文证明 Gaussian kernel 下 mean shift 精确等于 Gaussian-smoothed score；一般 radial kernel 分解为 preconditioned score 与 covariance residual，并声称 Laplace residual 在特定高维 shell geometry 下按 $O(1/D)$ 消失。",
+        "synthetic slopes、CIFAR FID 与 released ImageNet checkpoint diagnostics 与该图景相容，但不构成完整 diffusion equivalence、分布可识别性、optimization guarantee 或 statistically established kernel parity。"
+      ]
+    },
+    {
+      "title": "背景",
+      "paragraphs": [
+        "score $\\nabla\\log p_\\tau(x)$ 是 smoothed density 的局部最陡上升方向；mean shift 是 kernel neighborhood 的加权平均位移。Gaussian kernel 的导数恰把二者联系起来，也即 Tweedie/mean-shift identity。",
+        "drifting loss 在 clean model samples x~q 上比较 p/q 的 smoothed fields，和把两种 smoothed distributions 自身作为 integration measure 的 Fisher divergence 不同。",
+        "stop-gradient 可使某个更新方向在数值上与另一个 semi-gradient 对齐，但其自动微分忽略部分 parameter dependence；同一个 scalar objective value 不保证 full Jacobian 相同。",
+        "高维 concentration 不是自动定律：common shell、混合内积小、norm uniform bounded、kernel scale 与 distribution family 都需显式检查。"
+      ]
+    },
+    {
+      "title": "给物理学家的 AI 导读",
+      "paragraphs": [
+        "Gaussian mean shift 像对 density 做有限分辨率 coarse graining 后得到 chemical-potential gradient；恒等式是局部场层级，不包含如何随 time schedule 逐步 transport particles。",
+        "一般径向 kernel 的 $A\\nabla\\log p_k$ 是 mobility/preconditioner，R 是 radius 与 direction fluctuation 的 covariance correction。高维 shell 变薄时 R 可能相对减小。",
+        "但 theorem 必须统一控制 distribution family：若 instance noise 是 nondegenerate Gaussian，support 必然无界，与 almost-sure bounded-support assumption 同时要求会矛盾。",
+        "field alignment 不等于 measure equality：可能存在 flat distances、finite-pool bias 或 preconditioner/residual cancellation；从 vector-field MSE 到 KL/TV 还需 identifiability/stability。"
+      ]
+    },
+    {
+      "title": "模型与方法",
+      "paragraphs": [
+        "theory 先给 Gaussian exact identity，再对 radial kernels 推 exact decomposition；Laplace theorem 在 common-shell、small mixed inner products 和 dimension-uniform norm assumptions 下比较 fields。",
+        "numerical oracle 用 Ring/Raw Gaussian mixtures，D=4–512，每维各 3,000 p 与 3,000 q reference samples，τ=0.3×mean query norm；每维拟合最优 scalar $C^*$。",
+        "CIFAR-10 one-step models 训练 100,000 iterations，用 ConvNeXt 或 MAE features，生成 50,000 samples 算 FID；Gaussian/Laplace 各自使用 tuned bandwidth lists。",
+        "practical implementation 还含 query-axis affinity symmetrization、finite positive/negative/generated pools、batch distance normalization、CFG weighting、multiple temperatures 与 feature-head aggregation，不是裸 population theorem。"
+      ]
+    },
+    {
+      "title": "核心结果与证据",
+      "paragraphs": [
+        "Gaussian kernel 给 $V_{\\pi,\\tau}=\\tau^2\\nabla\\log\\pi_\\tau$ 精确等式；因此 p/q drifting field difference 是 Gaussian-smoothed score difference 的比例。",
+        "Laplace radial decomposition中 residual 是 radius-direction covariance；论文在强高维 assumptions 下给 mean-square $O(1/D)$ alignment，并提出 scale $C=\\tau\\sqrt2R_0$。",
+        "Figure 2 的 Raw/Ring fitted slopes：absolute error -1.14/-1.49，relative -1.04/-1.35，directional -0.90/-1.07。比例用 same-data oracle $C^*$，slope uncertainty 未给。",
+        "CIFAR ConvNeXt 的 Gaussian/Laplace FID 8.38/8.66，MAE 4.72/4.79；没有 multi-seed CIs/equivalence test，且 bandwidth grids 不同，不能说 kernel shape 是唯一变量。",
+        "一个 released ImageNet Laplace checkpoint 的 post-hoc relative error/cosine/preconditioner ratio/residual-gap energy 为 0.184/0.983/1.002/1.6e-6。",
+        "ImageNet FID≈1.53–1.54 来自既有 drifting release，没有 matched newly trained Gaussian ImageNet run；只能说明 selected checkpoint 内部 field diagnostics，不检验 scale-level parity。"
+      ]
+    },
+    {
+      "title": "有效性与局限",
+      "paragraphs": [
+        "Gaussian theorem 是 population field identity，不是 diffusion forward process、denoising loss、time-conditioned score network 与 multistep generation 的一一等价。",
+        "drifting loss 是 clean-q weighted smoothed-score mismatch；称 reverse Fisher 需限定。stop-gradient update 是 semi-gradient，不能从 objective equality 推 full-gradient equality。",
+        "高维 minimizer theorem 同时使用 almost-sure bounded support 与 nondegenerate Gaussian instance noise，assumptions as written 不相容；需替换为 high-probability moment/tail control。",
+        "synthetic Gaussian mixtures support 无界且 norm 随 D 增长，不满足 dimension-independent a.s. bound。Figure 2 因而是 qualitative asymptotic evidence，不是 theorem-domain validation。",
+        "每维 $C^*$ 用同一 fields 最小化 error，使 alignment 更容易；应另看 $C^*/C_{theory}$。论文也未给 query count、independent instances、seeds、error-bar 定义或 slope uncertainty。",
+        "global-minimizer result 还假设 exact realizability、minima attained、zero population drift；不证明 finite neural training 到达，也不推出 raw p/q 在 KL/TV 接近。",
+        "CIFAR 小差异无 repeat uncertainty/equivalence margin，且 hyperparameter sets 不同；post-hoc residual/FID correlation 不证明 residual small 导致 quality parity。",
+        "ImageNet 只分析 selected released Laplace checkpoint，无 matched Gaussian training，因此不能外推 universal kernel equivalence。"
+      ]
+    },
+    {
+      "title": "复现与资源",
+      "paragraphs": [
+        "解析复现 Gaussian identity 与 radial decomposition；为 minimizer theorem 重写兼容 assumptions，例如 sub-Gaussian tails+high-probability shell，而非 bounded support+Gaussian noise。",
+        "synthetic 实验预先固定 theory scale C，不先拟合；另报 oracle $C^*$、$C^*/C$、query/mixture/seed counts、error bars 与 slope CI，跨 D 保持明确 norm scaling。",
+        "CIFAR 用同一 bandwidth-selection budget、nested validation、多个 training seeds 与 paired FID/KID/precision-recall；对 Gaussian–Laplace 差做 equivalence testing。",
+        "实现层逐项消融 symmetrization、finite pools、normalization、CFG、multi-temperature 与 heads，并直接比较 full/stop-gradient Jacobians、field error 和 sample quality。",
+        "ImageNet 需 matched Gaussian/Laplace architecture/data/compute/seeds；checkpoint post-hoc diagnostic 与 prospective prediction 分开，避免选择偏差。",
+        "论文指向 official drifting JAX repo，但 Stage A 未运行外部训练；arXiv v3 bundle 无 independent seed-level CIFAR receipts，复现应 pin commit/environment/checkpoints。"
+      ]
+    },
+    {
+      "title": "阅读指南",
+      "paragraphs": [
+        "快速路线：pp. 2–6 看 Gaussian identity/loss；pp. 6–9 看 radial decomposition、Laplace theorem 与 Figure 2；p. 9 及 appendix 看 CIFAR/ImageNet。",
+        "物理路线：将 score 视为 coarse-grained potential gradient，将 radial residual 视为 fluctuation covariance；逐条检查 shell/tail/scaling assumptions。",
+        "AI 路线：区分 population vector field、semi-gradient training rule、one-step generator 与 full diffusion pipeline；implementation deviations 是主误差源。",
+        "批判路线：重点核对 bounded-support/Gaussian-noise conflict、synthetic domain mismatch、oracle C*、error-bar unit、bandwidth fairness、FID equivalence 与 ImageNet matched control 缺失。"
+      ]
+    }
+  ],
+  "evidence_refs": [
+    "paper.pdf pp. 2–7 and mathematical appendix: exact Gaussian mean-shift/score identity, clean-q field loss, stop-gradient boundary and radial preconditioned-score-plus-residual decomposition",
+    "paper.pdf pp. 7–9 and theorem appendix: conditional Laplace high-dimensional alignment, incompatible bounded-support/Gaussian-noise assumptions, synthetic oracle scaling and Figure 2",
+    "paper.pdf p. 9 and experimental appendix: CIFAR one-step training/FID point estimates, differing bandwidth lists and single released ImageNet Laplace checkpoint analysis",
+    "source PDF SHA-256 692a4c8e2742ad06b5dcc0fb5b770e61b121cf33296171d5153168c85515adff",
+    "official arXiv v3 source archive SHA-256 ff7a97288bc9181225c3c0e212296c9fa0b973b9e07d7b71903784bd6d6b2297",
+    "MinerU Markdown SHA-256 ad730c2cd782680cac4ad1e5781523dc4d751865c427ab03ccc67f84f01e85c6",
+    "Evidence packet SHA-256 f2e925957a6f96fd005dcaafd25ed84926709113d9673e83134d066259cba786",
+    "Evidence status: full text, rendered pages and official TeX verified against latest arXiv v3; population-field versus diffusion, clean weighting/semi-gradient, shell assumptions, theorem incompatibility, synthetic domain/oracle scaling, missing uncertainty, CIFAR tuning/equivalence and post-hoc ImageNet boundaries recorded; no independent reproduction performed."
+  ]
+}

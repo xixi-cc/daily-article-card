@@ -1,0 +1,197 @@
+{
+  "arxiv_id": "2603.06875",
+  "source_version": "v3",
+  "source_pdf": "https://arxiv.org/pdf/2603.06875v3",
+  "title_en": "Stochastic Attention via Langevin Dynamics on the Modern Hopfield Energy",
+  "title_zh": "现代 Hopfield 能量上的 Langevin 动力学随机注意力",
+  "curation_status": "full_text_verified",
+  "card_standard_version": "2.4",
+  "audience_profile": "physics_ai_literate_physicist",
+  "paper_profile": "theory_experiment",
+  "style_reference": "physicist_daily_arxiv",
+  "provenance": {
+    "program": "Collection",
+    "catalog": "Paper Collection",
+    "catalog_record_id": "2603.06875",
+    "catalog_record_ids": ["2603.06875"],
+    "catalog_topic": "Representation Learning",
+    "collection_date": "2026-08-30",
+    "sampled_at": "2026-08-31",
+    "selected_by": "ziming_mineru_serial_goal",
+    "sampling_seed": "not_applicable_source_complete",
+    "candidate_count": 464
+  },
+  "verified_metadata": {
+    "arxiv_id": "2603.06875",
+    "version": "v3",
+    "title": "Stochastic Attention via Langevin Dynamics on the Modern Hopfield Energy",
+    "authors": ["Abdulrahman Alswaidan", "Jeffrey D. Varner"],
+    "categories": ["cs.LG", "q-fin.CP"],
+    "primary_category": "cs.LG",
+    "published": "2026-03-06",
+    "updated": "2026-05-14",
+    "abstract": "The paper turns a fixed modern-Hopfield memory energy into a Langevin sampler, derives smoothness, dissipativity and a sufficient convex regime, and explores temperature-controlled retrieval and interpolation on several small data domains."
+  },
+  "equation_refs": [
+    {
+      "label": "modern Hopfield energy",
+      "latex": "E_\\beta(x)=\\frac12\\|x\\|^2-\\frac1\\beta\\log\\sum_{k=1}^K\\exp(\\beta\\,\\xi_k^\\top x)",
+      "role": "define a finite-temperature energy whose gradient combines quadratic confinement with softmax retrieval from fixed memories",
+      "symbols": {
+        "x": "continuous state being sampled",
+        "xi_k": "one fixed memory column of X",
+        "beta": "inverse temperature controlling retrieval versus interpolation",
+        "K": "number of stored memories"
+      },
+      "evidence": "paper.pdf pp. 3–4, modern-Hopfield energy definition",
+      "interpretation": "常数归一化不影响动力学；这里 X 固定，不是同时训练 Q/K/V 的 Transformer attention layer。"
+    },
+    {
+      "label": "unadjusted Langevin attention update",
+      "latex": "x_{t+1}=(1-\\alpha)x_t+\\alpha X\\operatorname{softmax}(\\beta X^\\top x_t)+\\sqrt{2\\alpha/\\beta}\\,\\varepsilon_t,\\qquad\\varepsilon_t\\sim\\mathcal N(0,I)",
+      "role": "alternate deterministic Hopfield retrieval drift with temperature-scaled Gaussian diffusion",
+      "symbols": {
+        "alpha": "Euler-Maruyama step size",
+        "T": "number of iterative sampling steps",
+        "X_softmax": "attention-like memory average",
+        "epsilon": "independent Gaussian innovation"
+      },
+      "evidence": "paper.pdf pp. 4–5, ULA derivation",
+      "interpretation": "每步 $O(dK)$，一份样本需 $O(TdK)$；continuous SDE 的不变分布/遍历性不等于 high-beta discrete ULA 的有限 T 全局混合。"
+    },
+    {
+      "label": "temperature-entropy identity",
+      "latex": "\\frac{d}{d\\beta}H[p_\\beta(e)]=-\\beta\\,\\operatorname{Var}_{p_\\beta}(e)",
+      "role": "show that, for a fixed state and fixed similarity energies, increasing inverse temperature lowers softmax entropy",
+      "symbols": {
+        "p_beta": "softmax distribution over memory similarities",
+        "e": "fixed similarity values",
+        "H": "Shannon entropy",
+        "Var": "variance under p_beta"
+      },
+      "evidence": "paper.pdf pp. 5–6, entropy proposition",
+      "interpretation": "identity 对 fixed x 精确；sampling trajectory 本身随 beta 改变。$\\beta_*=O(\\sqrt d)$ 是 random-unit-memory heuristic，非普适临界温度。"
+    }
+  ],
+  "figure_refs": [
+    {
+      "label": "Figure 1 temperature crossover and chain validation",
+      "asset_path": "assets/collection-figures/2603.06875/figure_1_synthetic_phase_and_convergence.webp",
+      "section": "核心结果与证据",
+      "role": "show a finite-system temperature crossover and compare eight finite chains with one long-chain reference energy distribution",
+      "evidence": "paper.pdf p. 5, Figure 1; official source asset figs/Fig_experiment-combined.pdf",
+      "alt_text": "One panel shows retrieval and generation diagnostics crossing smoothly with inverse temperature; another compares sampled energy histograms with a long reference chain.",
+      "caption": "Figure 1：$d=64,K=16$ 的 observables 在 β≈5–10 平滑 crossover；另用 $d=8,K=4,β=5$ 的八条链与 200,000-step reference 比能量分布。有限系统光滑转折不是 thermodynamic phase transition。",
+      "interpretation": "KS/moment agreement 是一个小 synthetic setting 的 convergence check；不证明 main high-beta applications 跨 modes 混合。"
+    }
+  ],
+  "cover": {
+    "mode": "source_figure",
+    "asset_path": "assets/collection-figures/2603.06875/figure_1_synthetic_phase_and_convergence.webp",
+    "label": "Figure 1 finite-temperature crossover",
+    "visual_type": "comparison",
+    "evidence": "paper.pdf p. 5, Figure 1; official source vector plot",
+    "alt_text": "Finite-system retrieval-generation crossover and a synthetic energy-distribution chain check.",
+    "caption": "有限 Hopfield memory 的温度 crossover 与小规模链检验；不等于相变或 high-β 全局混合证明。",
+    "selection_rationale": "The two-panel figure jointly conveys temperature control and the paper's cleanest finite-chain validation while making the finite-system scope visible."
+  },
+  "sections": [
+    {
+      "title": "作者信息",
+      "paragraphs": [
+        "作者为 Abdulrahman Alswaidan 与 Jeffrey D. Varner，来自 Cornell University R.F. Smith School of Chemical and Biomolecular Engineering。",
+        "本站核验 arXiv:2603.06875v3：v1 提交于 2026-03-06，v3 更新于 2026-05-14；分类 cs.LG、q-fin.CP。官方 PDF 实际 37 页，而 abstract metadata 仍写 11+15=26 页，以 PDF 为准。",
+        "Collection 来源为刘子鸣网站的 Representation Learning 条目。"
+      ]
+    },
+    {
+      "title": "研究问题",
+      "paragraphs": [
+        "标准 attention 对固定 query 做一次确定性加权平均。若把对应 modern-Hopfield energy 当 Boltzmann landscape，并加入 Langevin noise，能否在记忆 basin 内检索、跨 basin 插值或生成新样本？",
+        "论文推导 ULA update，给 gradient smoothness、dissipativity 与充分强凸条件，并用 β 调节 retrieval–generation trade-off；应用到 synthetic、MNIST、protein、face mask 及 appendix finance。",
+        "最可靠结论是固定 memory energy 上的 well-defined sampler 与有限数据示范。main β 远离已证凸区，global mixing、现代生成 superiority、真实 Transformer integration 与领域有效性均未建立。"
+      ]
+    },
+    {
+      "title": "背景",
+      "paragraphs": [
+        "modern Hopfield update $X\\operatorname{softmax}(\\beta X^Tx)$ 与 attention 相同代数核；前者通常解释为在固定能量地形上的 retrieval，后者还含 learned projections、multiple heads 与 context coupling。",
+        "overdamped Langevin SDE $dx=-\\nabla E(x)dt+\\sqrt{2/\\beta}dW$ 的平衡分布形式为 $e^{-\\beta E}$。ULA 是有限步 Euler discretization，会引入 step-size bias。",
+        "高 β 降低局部 noise 并加深相对 barriers，利于 fidelity 但恶化跨 basin mixing；多条 warm-start chains 的多样性可能只是不同 initialization basins，而非单链探索。",
+        "有限 K,d 的 entropy/nearest-memory observables 通常平滑。称“phase transition”需要热力学极限、非解析量和 scaling；本文只展示 crossover/inflection。"
+      ]
+    },
+    {
+      "title": "给物理学家的 AI 导读",
+      "paragraphs": [
+        "这是一套最直接的 statistical-mechanics construction：memory vectors 决定 multiwell potential，β 是 inverse temperature，deterministic attention 是 drift，Gaussian noise 提供 thermal exploration。",
+        "Hessian bound 给 Lipschitz constant $1+\\beta\\|X\\|_{op}^2/2$，dissipativity 给远场 confinement；$\\beta\\|X\\|_{op}^2<2$ 只是保证全局强凸的充分条件，不是 multimodality onset 的必要条件。",
+        "continuous process 的 geometric ergodicity 表明无限时收敛于 invariant measure，但 mixing constant 可随 barriers 极差；不能据此给 discrete ULA 在 β=200/2000、T=5,000 的 global equilibration certificate。",
+        "sampling quality 是多目标：memory fidelity、novelty、diversity、energy 与 domain validity 可冲突。尤其 cosine diversity 会奖励 noise，self-energy 又偏好本方法的 energy landscape。"
+      ]
+    },
+    {
+      "title": "模型与方法",
+      "paragraphs": [
+        "单链保存 continuous state x，固定 K-memory matrix X；每步做 attention-like weighted memory average、linear confinement 与 Gaussian noise。可选 ULA/MALA，成本随 steps 线性累积。",
+        "temperature 用 attention entropy inflection 作为 operational retrieval/generation boundary；random unit memories 给 $O(\\sqrt d)$ heuristic。step size 与 chains/burn-in/thinning 按应用单独选。",
+        "MNIST 以 100 个 normalized digit-3 memories、30 warm starts、α=0.01、T=5,000、burn-in 2,000、共 150 retained samples；比较 VAE/DDPM baselines。",
+        "protein 用 Pfam PF00076 的 68 aligned sequences，从 1,420 维 PCA 到 59 维后采样，再 argmax decode；face experiment 用 known subject label 限制 memory support。"
+      ]
+    },
+    {
+      "title": "核心结果与证据",
+      "paragraphs": [
+        "Figure 1 左：$d=64,K=16$ 在 β≈5–10 呈平滑 retrieval/generation crossover；右：$d=8,K=4,β=5$ 的八链能量分布相对 200,000-step reference 得 KS 0.018、mean difference 0.0002、SD difference 0.0011。",
+        "MNIST β=200 时 SA novelty/diversity 0.548/0.885，VAE 0.214/0.441；但 SA mean Hopfield energy 1.467，VAE -0.286，说明 metrics 并不共同指向一个 quality ranking。",
+        "β=2000 的 multi-chain diversity 0.600 包含 initialization diversity；单链仅 0.282。β=200 单链为 0.796，β=50 为 0.967 但 memory fidelity 变差，显示 temperature trade-off。",
+        "PF00076 β=8：SA/VAE novelty 0.623/0.621、composition KL 0.060/0.416、position KL 2.92/9.99、MI correlation 0.871/0.525，二者 HMM pass 均 100%。",
+        "Olivetti hard mask 将 subject recovery 从 unmasked 10.4%/random 10.0% 提到 96.0%，但 mask 已直接提供 target subject 的 memory indices，是 support restriction 而非 learned semantic conditioning。",
+        "main MNIST point 的 MALA acceptance 99.2%；appendix 在 α≤0.02 时 ULA–MALA metrics 差小。这是局部 setting 的 empirical bias check，不是全参数 ULA guarantee。"
+      ]
+    },
+    {
+      "title": "有效性与局限",
+      "paragraphs": [
+        "强凸条件是充分而非必要；main β=200/2000 不在该 regime。违反 bound 不证明多模态，更不证明每个 stored pattern 对应一 basin。",
+        "continuous-time ergodicity 不给 high-β discrete ULA 有限 T 全局 mixing。论文在 β=2000 的 50,000 steps 观察不到 basin crossing，反而提示 metastability。",
+        "barrier scaling 文字未完整推导，似混合 E 的 β-dependence 与外部 Boltzmann factor；不能宣称 $\\exp(\\beta^2)$ mixing law。",
+        "entropy derivative 对 fixed state 成立；β*≈√d 是 random geometry order estimate。有限 K crossover 不是 thermodynamic criticality。",
+        "thinned samples、shared memories 和 same dataset 仍相关；chain-level SE 不等于跨 datasets/memory sets uncertainty。多数应用只有一个 selected corpus/memory bank。",
+        "DDPM 是低数据 MLP、200 diffusion steps baseline，不代表现代 diffusion family。Hopfield energy 又是 method-specific metric，不能单独判 generative superiority。",
+        "protein 只是一族 68 sequences、PCA+argmax；HMM pass 表示 family recognizability，不证明 folding、function、safety 或 wet-lab viability。",
+        "没有在 pretrained language Transformer 内运行 SA；multi-head appendix 只是 PCA partitioned subspaces。finance 也未建 temporal dependence/volatility clustering，不能支持 forecasting/risk deployment。"
+      ]
+    },
+    {
+      "title": "复现与资源",
+      "paragraphs": [
+        "固定 X/data splits、normalization、PCA fit、all chain initializations、α/β/T/burn-in/thinning/seeds；保存 energy、nearest-memory、ESS、autocorrelation 与 basin-transition traces。",
+        "先在 convex bound 内验证 ULA invariant bias/step convergence，再在 multimodal regime 用 replica exchange/tempering 与 many long chains 检查 R-hat、between/within-chain variance 和 mode occupancy。",
+        "temperature scan 报 finite-size K,d scaling，不使用 phase-transition language；分开 fixed-x entropy identity 与 stationary samples 随 β 的变化。",
+        "MNIST/protein 做多个 independent memory banks/datasets，使用 paired baselines 与 equal preprocessing/compute；quality 需 external classifier/human/domain tests，不只 self-energy。",
+        "hard-mask comparison加入同 size random/support-prior/soft conditioning controls；protein 必须经过 structure predictor、novelty/leakage checks、uncertainty和实验验证才谈 biological utility。",
+        "source 提到 accompanying repository，但 arXiv v3 bundle 没有 independent rerun receipts；复现应 pin commit/environment/checkpoints/raw chain logs。"
+      ]
+    },
+    {
+      "title": "阅读指南",
+      "paragraphs": [
+        "快速路线：pp. 3–5 看 energy、ULA 与 Figure 1；pp. 5–6 看 entropy/temperature；pp. 6–9 看 MNIST、protein、mask；appendix 看 mixing/step-size/single-chain。",
+        "物理路线：重点区分 strong convexity、dissipativity、ergodicity、spectral/mixing time 与 discretization bias；把 crossover 与 phase transition 分开。",
+        "AI 路线：区分 fixed-memory Hopfield sampler、一次 attention layer 与 pretrained Transformer integration；计算总成本要乘 T。",
+        "批判路线：检查 main β 是否在 theorem domain、single/multi-chain diversity、metric incentives、baseline fairness、hard-mask oracle、protein validity 与 finance extrapolation。"
+      ]
+    }
+  ],
+  "evidence_refs": [
+    "paper.pdf pp. 3–6 and mathematical appendix: modern-Hopfield energy, ULA update, O(dK) per-step cost, smoothness/dissipativity, sufficient convex regime and fixed-state entropy identity",
+    "paper.pdf pp. 5–9 and appendix: finite crossover/chain check, MNIST chain settings and single-versus-multi-chain diversity, PF00076 metrics, MALA checks and hard-mask support restriction",
+    "official arXiv v3 metadata/PDF: abstract page-count note 11+15 conflicts with the 37-page downloaded official PDF",
+    "source PDF SHA-256 55b9ff3403bf942e8c3b52455b7479d8d5da2494a7b6b0fb6c1be348ea7cf345",
+    "official arXiv v3 source archive SHA-256 711b313d34293c1af15ed8e3174521048e027c195ce10ed11a38fc72c9511faf",
+    "MinerU Markdown SHA-256 cd13806702a05b4c83716f047bdd4c5e0852305ab8a1d891c271a8c0ea521bcf",
+    "Evidence packet SHA-256 f3dc8e5243beee8c1ee87657883f63295d11152beac5c71901c751f80febb3c4",
+    "Evidence status: full text, rendered pages and official TeX verified against latest arXiv v3; sufficient-convexity scope, continuous-versus-discrete mixing, barrier ambiguity, finite crossover, O(TdK) cost, chain/statistical dependence, metric/baseline, hard-mask, protein/finance and no-pretrained-Transformer boundaries recorded; no independent reproduction performed."
+  ]
+}
