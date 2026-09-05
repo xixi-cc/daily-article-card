@@ -1,0 +1,198 @@
+{
+  "arxiv_id": "2603.06248",
+  "source_version": "v1",
+  "source_pdf": "https://arxiv.org/pdf/2603.06248v1",
+  "title_en": "Gradient Flow Polarizes Softmax Outputs towards Low-Entropy Solutions",
+  "title_zh": "梯度流将 Softmax 输出极化到低熵解",
+  "curation_status": "full_text_verified",
+  "card_standard_version": "2.4",
+  "audience_profile": "physics_ai_literate_physicist",
+  "paper_profile": "theory_experiment",
+  "style_reference": "physicist_daily_arxiv",
+  "provenance": {
+    "program": "Collection",
+    "catalog": "Paper Collection",
+    "catalog_record_id": "2603.06248",
+    "catalog_record_ids": ["2603.06248"],
+    "catalog_topic": "Training Dynamics",
+    "collection_date": "2026-08-30",
+    "sampled_at": "2026-08-31",
+    "selected_by": "ziming_mineru_serial_goal",
+    "sampling_seed": "not_applicable_source_complete",
+    "candidate_count": 464
+  },
+  "verified_metadata": {
+    "arxiv_id": "2603.06248",
+    "version": "v1",
+    "title": "Gradient Flow Polarizes Softmax Outputs towards Low-Entropy Solutions",
+    "authors": ["Aditya Varre", "Mark Rofin", "Nicolas Flammarion"],
+    "categories": ["cs.LG", "math.OC", "stat.ML"],
+    "primary_category": "cs.LG",
+    "published": "2026-03-06",
+    "updated": "2026-03-06",
+    "abstract": "A jointly trained value-softmax factorization exhibits centered positive feedback that separates initially ordered coordinates; the paper contrasts intended asymptotic one-hot logistic dynamics with finite polarization under square loss and tests related sparsity patterns in small Transformers."
+  },
+  "equation_refs": [
+    {
+      "label": "value-softmax factorization",
+      "latex": "s=\\operatorname{softmax}(a),\\qquad \\beta=Vs,\\qquad \\mathcal L(V,a)=\\ell(\\beta)",
+      "role": "isolate the jointly trainable matrix-times-softmax parameterization shared by an attention output",
+      "symbols": {
+        "a": "free p-dimensional score vector",
+        "s": "probability vector whose entropy and ratios are observable",
+        "V": "trainable matrix of value columns",
+        "beta": "final predictor represented as their convex combination"
+      },
+      "evidence": "paper.pdf pp. 3–4, model definition",
+      "interpretation": "该 toy model 把 score vector 当自由参数，只有单个 output/target；真实 QK scores、values、queries 和 tokens 共享参数并彼此耦合。"
+    },
+    {
+      "label": "sign-correct logistic gradient flow",
+      "latex": "\\dot V=\\gamma(\\beta)\\,\\beta_*s^\\top,\\quad \\dot a=\\gamma(\\beta)[\\operatorname{diag}(s)-ss^\\top]V^\\top\\beta_*,\\quad \\dot u=\\gamma(\\beta)\\|\\beta_*\\|^2s",
+      "role": "show the direct negative-gradient dynamics for logistic loss, with u=V^T beta_star",
+      "symbols": {
+        "gamma": "positive logistic factor 1/(1+exp(<beta_star,beta>))",
+        "J_s": "softmax Jacobian diag(s)-ss^T",
+        "u": "value-column projections onto the target direction",
+        "beta_star": "fixed target direction"
+      },
+      "evidence": "paper.pdf pp. 4 and 13–14; checked by direct differentiation and appendix derivation",
+      "interpretation": "主文与 reduced-system 显示式误加整体负号，而后续 ordering arguments 实际使用正号；卡片不复写错误方程。"
+    },
+    {
+      "label": "nonmaximal probability-ratio bound",
+      "latex": "\\frac{s_j(t)}{s_0(t)}\\le\\left[1+\\frac{\\delta}{p}\\int_0^t\\gamma(\\beta(r))\\,dr\\right]^{-1},\\qquad \\delta=\\min_{i<j}[u_i(0)-u_j(0)]>0",
+      "role": "connect ordered value projections to decay of every initially nonmaximal softmax coordinate",
+      "symbols": {
+        "s_0": "softmax coordinate paired with the initially largest u projection",
+        "s_j": "one nonmaximal probability",
+        "delta": "smallest correctly oriented initial gap",
+        "p": "number of softmax coordinates"
+      },
+      "evidence": "paper.pdf p. 5, Theorem 3.3 and appendix proof",
+      "interpretation": "只有积分发散才能推出 one-hot；论文用于证明 loss→0 与 $\\int\\gamma=\\Theta(\\log t)$ 的一步存在未获假设支持的不等式，需修补。"
+    }
+  ],
+  "figure_refs": [
+    {
+      "label": "Figure 2 logistic polarization trajectory",
+      "asset_path": "assets/collection-figures/2603.06248/figure-2-polarization.webp",
+      "section": "核心结果与证据",
+      "role": "show one of eight probabilities approaching one while its value projection separates from the remaining coordinates",
+      "evidence": "paper.pdf p. 5, Figure 2; official source asset figs/softmax_and_u_evolution_icml_2col.pdf",
+      "alt_text": "Two panels show eight softmax probability trajectories and their target-aligned value projections during a logistic-loss gradient-flow simulation.",
+      "caption": "Figure 2：一个 illustrative logistic trajectory 中，初始领先 coordinate 的 softmax weight 接近 1，相应 $u_i$ 持续分离。图运行到 $10^6$ iterations，无 repeats、tolerance 或 uncertainty；不能替代有缺口的渐近证明。",
+      "interpretation": "图与 intended self-reinforcing dynamics 一致，但只是一条数值轨迹，不验证 theorem assumptions、rate 或 full Transformer transfer。"
+    }
+  ],
+  "cover": {
+    "mode": "source_figure",
+    "asset_path": "assets/collection-figures/2603.06248/figure-2-polarization.webp",
+    "label": "Figure 2 polarization trajectory",
+    "visual_type": "trajectory",
+    "evidence": "paper.pdf p. 5, Figure 2; official source vector plot",
+    "alt_text": "An initially favored softmax coordinate grows toward one as its aligned value projection separates.",
+    "caption": "value-softmax 的坐标自增强极化；这是单条 toy trajectory，one-hot 定理仍有源文证明缺口。",
+    "selection_rationale": "The paired trajectory directly visualizes the feedback loop between probability concentration and value-projection separation."
+  },
+  "sections": [
+    {
+      "title": "作者信息",
+      "paragraphs": [
+        "作者为 Aditya Varre、Mark Rofin 与 Nicolas Flammarion，来自 EPFL Theory of Machine Learning Lab。",
+        "本站核验 arXiv:2603.06248v1：提交于 2026-03-06；分类 cs.LG、math.OC、stat.ML，PDF 35 页。",
+        "Collection 来源为刘子鸣网站的 Training Dynamics 条目。"
+      ]
+    },
+    {
+      "title": "研究问题",
+      "paragraphs": [
+        "同一个 predictor $\\beta$ 可由许多 value columns 的 softmax mixture 表示；gradient dynamics 会选择高熵 mixture，还是把概率推向某个 extremal column？",
+        "论文研究 V 与 scores a 同时训练的连续梯度流。softmax Jacobian 带有减去加权平均的 centered interaction，使初始领先的 target projection 获得更多 weight，又因更多 weight 更新得更快，形成正反馈。",
+        "作者意图证明 logistic loss 下最终 one-hot，并说明 square loss 下只有有限 polarization；但官方 source 有方程符号、定理量词和关键证明不等式问题，因此完整 asymptotic theorem 需独立修补后才能视为已验证。"
+      ]
+    },
+    {
+      "title": "背景",
+      "paragraphs": [
+        "softmax 对 logits 整体平移不变，绝对 a 是 gauge-dependent；有意义的量是 probability ratios、entropy 与相对 gaps。low entropy 不等于 V 或最终 predictor 稀疏。",
+        "softmax Jacobian $J=\\operatorname{diag}(s)-ss^\\top$ 的每行和为零，产生“coordinate fitness minus population average”的 replicator-like dynamics。elementwise sigmoid/ReLU 没有同样 cross-coordinate centering。",
+        "implicit bias 问的是在等价函数解中优化偏好哪种参数表示。本文的 extremal selection 来自 V 与 a 的 joint adaptation；若 V 固定或 loss gradient 不与固定 target 对齐，闭合机制可改变。",
+        "attention sink 是许多 queries 把 mass 放到共同 key position。把单向量 one-hot 推广到 sink 还需每行共享初始 winner/target，远强于真实 coupled QK attention。"
+      ]
+    },
+    {
+      "title": "给物理学家的 AI 导读",
+      "paragraphs": [
+        "把 s_i 看作 population fraction、u_i 看作 fitness：领先 coordinate 获得更大 s_i，因此 value column 更快沿 $\\beta_*$ 移动，fitness gap 又扩大，类似 winner-take-all 的 replicator feedback。",
+        "初始严格排序显式破坏 permutation symmetry，theorem 的 winner 由微小 initial maximum 决定。有限 SGD noise、ties 或 Adam 是否改变 basin selection，连续 deterministic flow 不回答。",
+        "logistic loss 在 separable direction 上参数可持续增长，累积 driving strength 可能发散；square loss residual 指数衰减使 driving integral 有限，所以 polarization 停在有限程度。共同的是 centered feedback，不是共同 one-hot phase。",
+        "Figure 2 类似 order-parameter trajectory，但没有 finite-size/step-size scaling。要把相图外推到 Transformer，必须纳入 score factorization、共享 values、multiple targets 与 stochastic optimization。"
+      ]
+    },
+    {
+      "title": "模型与方法",
+      "paragraphs": [
+        "core model 为 $\\mathcal L(V,a)=\\ell(V\\operatorname{softmax}(a))$，对 V 和 a 做 continuous-time gradient flow；logistic 目标只依赖固定 direction $\\beta_*$。",
+        "logistic 初始化要求 a(0)=0、$u_i(0)=(V^T\\beta_*)_i$ 严格有序；authors 分析 no crossing、ordered-gap repulsion 与 probability-ratio decay。",
+        "square-loss regression 取 V(0)=0、scores 初始严格排序；V 保持 rank one，residual decay 决定累积极化有限。还用 sigmoid/ReLU 和一般 normalized maps 做扩展。",
+        "empirical 部分含 2-layer induction Transformers、一个 matched 7B softmax/sigmoid checkpoint pair，以及人工 redundant-label classification 的 one-token OOD swap。"
+      ]
+    },
+    {
+      "title": "核心结果与证据",
+      "paragraphs": [
+        "在 sign-correct dynamics 中，u 的每 coordinate 以 $\\gamma\\|\\beta_*\\|^2s_i$ 增长；softmax update 使用 u_i 减去 s-weighted mean，因此 initial ranking 在正确方向上自增强。",
+        "Theorem 3.2 的 proof 支持 i<j 时 ordered gap 增大；statement 写“any i≠j 的 signed gap 增大”在交换 indices 后不可能成立，应改为 ordered 或 absolute gap。",
+        "Theorem 3.3 给 ratio bound，并声称 $\\int_0^t\\gamma dr=\\Theta(\\log t)$ 从而 s→one-hot。proof 用 arbitrary ordered u 推出 $\\langle\\beta_*,\\beta\\rangle\\ge u_0/p$ 的链式下界，但非最大 u 可为负，此步不由现 assumptions 保证。",
+        "square loss 下 residual 指数衰减，polarization integral 有限，故 attention weights 一般不趋于 one-hot；condition number 越坏的 toy simulations 中收敛越慢、有限 polarization 越强。",
+        "induction 实验使用 100,000 train/1,000 eval、2 layers、1/2/4/8 heads、三 learning rates 与 seeds 0–4；但丢弃 induction accuracy<95% 的 runs，所报 sink fractions 是 success-conditioned。",
+        "pretrained evidence 只比较一对 7B softmax/sigmoid checkpoints，在 Pile-10k 的 1,000 samples、max length 256 上看 head-level maximum-attention fractions；prompts/heads 不是独立 pretraining replicates。",
+        "synthetic classification 使用 10,000 train/1,000 eval、四 labels、length 11、五 seeds，并报告跨 heads/layers 的最大 OOD token-flip rate；加 heads/layers 时效应减弱。"
+      ]
+    },
+    {
+      "title": "有效性与局限",
+      "paragraphs": [
+        "主文 logistic 与 reduced regression systems 的整体负号和直接微分、附录正号推导冲突；后续 repulsion 论证使用正号。任何复现须先修正 governing equations。",
+        "one-hot theorem 的 quantifier 与 vanishing-loss proof 有可见缺口；ratio inequality 本身是 conditional chain，不能在未修补 $\\int\\gamma$ 发散前宣称完整证明闭合。",
+        "结论属于 t→∞ continuous gradient flow，不覆盖 finite-step SGD、Adam、weight decay、learning-rate schedules、noise 或 shared Transformer factorization。",
+        "logistic one-hot 与 regression partial polarization 实质不同。“across objectives”的通用部分仅是 centered feedback，objective-dependent cumulative drive 决定终态。",
+        "row-wise sink bridge 假设自由 score matrix、共同 target 与相同 initial winner；真实 queries/keys/values 跨 tokens/tasks 耦合，故只是 plausible existence mechanism，不是 sinks 的 necessity/sufficiency theorem。",
+        "induction 过滤失败 runs 会把 architecture-induced training failure 与 sink propensity 混在一起；论文未给每 configuration retained counts、CIs 或 0.9 BOS threshold sensitivity。",
+        "一对 pretrained models 无 independent pretraining seeds，不能把差异唯一归因 softmax。1,000 prompts 增加 token observations，不增加训练 replicate 数。",
+        "OOD swap 是人工 redundant-label task，且取 heads/layers 最大值；它说明 selected sparse route 可脆弱，不等于自然 adversarial risk 或部署 robustness。"
+      ]
+    },
+    {
+      "title": "复现与资源",
+      "paragraphs": [
+        "先符号推导 $\\dot V,\\dot a,\\dot u$，写 unit tests 对 autograd vector field；区分 main-text negative system 与 appendix/direct-differentiation positive system。",
+        "对 Theorem 3.3 搜索反例：随机生成严格有序但含负 u 的 initialization，数值检查 loss、$\\int\\gamma$ 与 ratios；寻找可替代的 invariant/lower bound 或明确增加 positivity assumption。",
+        "toy ODE 报 solver/tolerance、initial ledger、多 trajectories、entropy/ratio curves 与 t scaling；另离散化 step/noise/Adam，测 winner stability 和 finite-time deviations。",
+        "induction 结果同时报告 unconditional success、conditional sink、retained run count 和 joint distribution；扫描 BOS threshold、positions、sequence length 与 positional encodings。",
+        "pretrained causal test 需 matched architecture/data/compute、多 independent seeds，只替换 normalization；保存 checkpoints 并比较 attention entropy、sink、loss 与 downstream behavior。",
+        "arXiv v1 bundle 有 TeX/vector figures，无 experiment code snapshot、environment lock、raw tables、logs、checkpoints 或 per-run seed ledger，当前不支持精确独立复现。"
+      ]
+    },
+    {
+      "title": "阅读指南",
+      "paragraphs": [
+        "快速路线：pp. 3–5 看 value-softmax、logistic dynamics 与 Figure 2；p. 6 看 regression/generalization；pp. 7–10 看 sink/OOD experiments。",
+        "物理路线：用 replicator feedback、symmetry breaking 与 cumulative drive 理解机制；把 logistic divergent drive 与 regression finite drive 分开。",
+        "AI 路线：区分 free scores 的 toy attention、row-wise sink analogy、small induction model 与单对 pretrained checkpoints。",
+        "批判路线：直接对照 pp. 4–5 与 appendix pp. 13–19 的符号，核查 Theorems 3.2/3.3 量词和下界，再审 success filtering 与 replicate unit。"
+      ]
+    }
+  ],
+  "evidence_refs": [
+    "paper.pdf pp. 3–6 and appendix pp. 13–19: value-softmax model, direct gradient flow, ordering/ratio results, logistic versus regression polarization and source-level sign/quantifier/proof issues",
+    "paper.pdf pp. 7–10 and appendix pp. 23–24: row-wise sink bridge, induction filtering protocol, matched pretrained pair and synthetic OOD token-swap setup",
+    "paper.pdf p. 5 Figure 2: one illustrative eight-coordinate logistic trajectory without repeated-run uncertainty",
+    "source PDF SHA-256 726a8d5a209206ea6c1ab9874526688cfc22ef5d30cb56265ae1d7c8dcf2e06a",
+    "official arXiv v1 source archive SHA-256 00aab8769c3d1acef51212d326fd4e0974829162bd70c8c523c24ff09e6894ce",
+    "MinerU Markdown SHA-256 883cda8f3b80186c012e5cc0e78c2de9f71c0043b475935451ed96233ace1099",
+    "Evidence packet SHA-256 6729b17adc315b3b531f740f42b3286fe80e96be34f668e39369ff6853ee3688",
+    "Evidence status: full text, rendered pages and official TeX verified against latest arXiv v1; sign-correct dynamics, theorem quantifier, proof lower-bound, logistic-versus-regression limit, gradient-alignment, gauge, success-conditioned induction, pretrained replicate and OOD-max boundaries recorded; no independent reproduction performed."
+  ]
+}

@@ -1,0 +1,198 @@
+{
+  "arxiv_id": "2603.06274",
+  "source_version": "v2",
+  "source_pdf": "https://arxiv.org/pdf/2603.06274v2",
+  "title_en": "Stem: Rethinking Causal Information Flow in Sparse Attention",
+  "title_zh": "Stem：重新思考稀疏注意力中的因果信息流",
+  "curation_status": "full_text_verified",
+  "card_standard_version": "2.4",
+  "audience_profile": "physics_ai_literate_physicist",
+  "paper_profile": "theory_experiment",
+  "style_reference": "physicist_daily_arxiv",
+  "provenance": {
+    "program": "Collection",
+    "catalog": "Paper Collection",
+    "catalog_record_id": "2603.06274",
+    "catalog_record_ids": ["2603.06274"],
+    "catalog_topic": "Machine Learning",
+    "collection_date": "2026-08-30",
+    "sampled_at": "2026-08-31",
+    "selected_by": "ziming_mineru_serial_goal",
+    "sampling_seed": "not_applicable_source_complete",
+    "candidate_count": 464
+  },
+  "verified_metadata": {
+    "arxiv_id": "2603.06274",
+    "version": "v2",
+    "title": "Stem: Rethinking Causal Information Flow in Sparse Attention",
+    "authors": ["Lin Niu", "Xin Luo", "Linchuan Xie", "Yifu Sun", "Guanghua Yu", "Jianchen Zhu", "S. Kevin Zhou"],
+    "categories": ["cs.LG", "cs.AI"],
+    "primary_category": "cs.LG",
+    "published": "2026-03-06",
+    "updated": "2026-07-31",
+    "abstract": "Stem allocates a larger sparse-attention budget to early causal positions and augments approximate query-key routing with pooled value magnitude, reporting favorable long-context quality and prefill-latency point estimates."
+  },
+  "equation_refs": [
+    {
+      "label": "token position-decay schedule",
+      "latex": "k(i)=\\left\\lfloor k_{start}-k_{start}(1-\\mu)\\frac{i}{N}\\right\\rfloor,\\qquad k_{end}=\\mu k_{start}",
+      "role": "decrease the retained attention budget from early toward late causal query positions",
+      "symbols": {
+        "i": "query position in a length-N causal sequence",
+        "k_start": "larger early-position budget",
+        "mu": "end-to-start budget ratio, reported as 0.7",
+        "k_i": "derivation-level token budget before block implementation details"
+      },
+      "evidence": "paper.pdf pp. 3–4, TPD definition",
+      "interpretation": "因果 mask 只保证 early keys 对更多 future queries 可见；它不保证 attention mass、Jacobian influence 或 downstream information 随可见次数单调增加。"
+    },
+    {
+      "label": "upper-bound-optimal OAM ranking",
+      "latex": "\\left\\|\\sum_{j\\notin S_i}P_{ij}V_j\\right\\|\\le\\sum_{j\\notin S_i}P_{ij}\\|V_j\\|,\\qquad score_{ij}\\equiv\\frac{Q_iK_j^\\top}{\\sqrt d}+\\log\\|V_j\\|",
+      "role": "derive a separable Top-k ranking for an unrenormalized triangle-inequality surrogate",
+      "symbols": {
+        "S_i": "keys retained for query i",
+        "P_ij": "dense softmax weight",
+        "V_j": "value vector",
+        "score_ij": "exact rank-equivalent score only before deployed heuristic modifications"
+      },
+      "evidence": "paper.pdf appendix pp. 12–13, truncation-error derivation",
+      "interpretation": "Top-k 只最小化可分上界，不一般最小化原向量误差，因为 discarded vectors 可相消，实际 sparse softmax 还会重归一化。"
+    },
+    {
+      "label": "uniform sparse causal work",
+      "latex": "C_{uniform}(N,k)\\approx Nk-\\frac{k^2}{2}",
+      "role": "count retained token pairs for a uniform causal window-like budget and motivate constant-factor savings from decay",
+      "symbols": {
+        "N": "sequence length",
+        "k": "retained token budget per late query in the derivation",
+        "B": "implementation block size, fixed to 128 but omitted from this token-level expression",
+        "C_uniform": "approximate retained pair count"
+      },
+      "evidence": "paper.pdf pp. 3–4 and p. 8, cost discussion",
+      "interpretation": "若 k 或 block budget 是 N 的常数比例，执行项仍为 $\\Theta(N^2)$；固定 B 的 metric construction 也保留 $N^2/B^2$，因此是 practical constant-factor speedup，不是无条件线性复杂度。"
+    }
+  ],
+  "figure_refs": [
+    {
+      "label": "Figure 3 Stem pipeline",
+      "asset_path": "assets/collection-figures/2603.06274/figure-3-stem-pipeline.webp",
+      "section": "核心结果与证据",
+      "role": "contrast uniform and position-decayed budgets, add pooled value magnitude to routing scores, and feed selected blocks to sparse FlashAttention",
+      "evidence": "paper.pdf p. 5, Figure 3; official source asset sec/img/stem.pdf",
+      "alt_text": "A three-part schematic shows an early-heavy causal block budget, output-aware block scoring and the resulting sparse attention mask.",
+      "caption": "Figure 3：Stem 用 TPD 把更多 block budget 分给早期 queries，再以 QK 与 pooled value norm 构造 OAM，最后交给 sparse FlashAttention。图是算法示意，不证明信息重要性、最优性、复杂度或 losslessness。",
+      "interpretation": "schematic 清楚展示工程组合；actual OAM 的 beta、log-norm clipping、pooling、anti-diagonal approximation 与 local/initial blocks 已偏离精确排序推导。"
+    }
+  ],
+  "cover": {
+    "mode": "source_figure",
+    "asset_path": "assets/collection-figures/2603.06274/figure-3-stem-pipeline.webp",
+    "label": "Figure 3 Stem pipeline",
+    "visual_type": "schematic",
+    "evidence": "paper.pdf p. 5, Figure 3; official source vector figure",
+    "alt_text": "Stem combines a position-decayed sparse budget with output-aware block selection.",
+    "caption": "TPD 位置预算与 OAM value-aware routing 的组合；最优性只适用于修改前的上界问题。",
+    "selection_rationale": "The method overview is the highest-information figure and directly links the causal-budget motivation, selection score and sparse kernel."
+  },
+  "sections": [
+    {
+      "title": "作者信息",
+      "paragraphs": [
+        "作者为 Lin Niu、Xin Luo、Linchuan Xie、Yifu Sun、Guanghua Yu、Jianchen Zhu 与 S. Kevin Zhou，来自 Tencent、USTC 及相关机构。",
+        "本站核验 arXiv:2603.06274v2：v1 提交于 2026-03-06，v2 更新于 2026-07-31 并标注 ICML 2026 camera-ready；分类 cs.LG、cs.AI，PDF 13 页。",
+        "Collection 来源为刘子鸣网站的 Machine Learning 条目。"
+      ]
+    },
+    {
+      "title": "研究问题",
+      "paragraphs": [
+        "长上下文 prefill 的 dense attention 是二次代价。固定稀疏预算是否忽略了 causal positions 的不对称作用？只按 approximate QK scores 选 blocks 是否漏掉大 value contributions？",
+        "Stem 组合 TPD 与 OAM：预算从 early queries 到 late queries 线性衰减；routing score 在 approximate QK 上加入 pooled value norm，选出的 blocks 用 sparse FlashAttention 计算。",
+        "论文在 LongBench、RULER、两种 trained-sparse backbones 与 H20 latency 上给出有竞争力的 trade-off；理论只支持 causal support count 和一个 unrenormalized error 上界，不支持 exact reconstruction、普遍因果重要性或渐近线性。"
+      ]
+    },
+    {
+      "title": "背景",
+      "paragraphs": [
+        "causal mask 中 key j 可被所有 i≥j 的 queries 看见，早期 key 的 graph out-degree 更大。但 support topology 不等于 weighted information flow：权重可接近零，残差可旁路，非线性可放大或抵消。",
+        "block-sparse prefill 先用低成本 metric 选择 query-key blocks，再只计算部分 exact attention。实际质量由 routing recall、softmax renormalization、local windows 与 kernel overhead 共同决定。",
+        "若目标是近似向量 $\\sum_jP_{ij}V_j$，单项 norm 最大不一定最重要：两个大 discarded vectors 可能相消。triangle inequality 去掉相消后才得到 separable ranking。",
+        "工程中的“25% budget”通常指常数比例 retained blocks；它降低前因子但随 N 增长仍是二次。只有 k sublinear/constant 且 selection 本身不二次，才可能渐近低于 quadratic。"
+      ]
+    },
+    {
+      "title": "给物理学家的 AI 导读",
+      "paragraphs": [
+        "把 causal attention 看成上三角被禁、下三角可耦合的有向格点。early sites 的未来 light cone 较大，但 Green's function amplitude 还依赖每条边权与中间 dynamics；只数可达路径不能推出响应幅度。",
+        "TPD 相当于对 query time 施加非均匀 interaction cutoff。Figure 2 的 positional perturbation 显示 early sparsification 误差更大，是 30 个 8K cases 的有限 diagnostic，并非 propagation bound。",
+        "OAM 的 derivation 用 norm 的三角上界把 vector optimization 变成 scalar knapsack；这是可计算 surrogate。deployed beta、clipping 与 block pooling 则像经验 coarse graining，需要用 held-out ablation 校准。",
+        "reported latency 是特定 H20/PyTorch/BF16 implementation 的 wall-clock observable，不是复杂度定理；kernel 330 ms 加约 90 ms selection/overhead 才构成 420 ms total。"
+      ]
+    },
+    {
+      "title": "模型与方法",
+      "paragraphs": [
+        "TPD 用 $\\mu=0.7$ 将 early budget 衰减到 end budget；OAM 使用 anti-diagonal pooled Q/K score、max-pooled clipped log value norm 与 $\\beta=0.2$。",
+        "block size 为 128，另强制 four initial blocks、four local blocks 和 stated minimum total budget 54 blocks；8K–16K initial budget 写为 0.2 $N_{blk}$，更长写为 0.1 $N_{blk}$。",
+        "理论部分在 token k 上推 cost；method/figure/experiments 多用 block fractions/counts，而 Algorithm 1 又对 interpolated $k_{start}$ 除 B。单位转换不一致，不能从文字无歧义重建 exact mask。",
+        "评测 dense Qwen3-8B、Llama-3.1-8B-Instruct，以及 DeepSeek-V3.2/MiniCPM-4.1 trained-sparse models；quality 用 LongBench/RULER averages，speed 用 H20 batch 1 BF16 prefill。"
+      ]
+    },
+    {
+      "title": "核心结果与证据",
+      "paragraphs": [
+        "30 个 Qwen3-8B、8K LongBench cases 中，early-segment sparsification 的 displayed head-logit MSE 高于 late segment；无 error bars，不能排除 content 或 baseline mask geometry。",
+        "top-k 1024 的 SAM/OAM：L5 MSE 1.5e-5/1.4e-5，L15 均 2.0e-4，L25 8.5e-4/8.1e-4，L35 6.0e-3/5.2e-3，head-logit MSE 0.3368/0.3126。",
+        "LongBench：Qwen Stem 25% budget 得 31.64、dense 32.01；Llama Stem 31% 得 41.48、dense 42.02。Stem 是列出的 sparse methods 中最高 average，但各方法 budget 不同。",
+        "trained-sparse integration：DeepSeek-V3.2 Stem/DSA 43.16/42.84，平均 budget 减 15%；MiniCPM-4.1 Stem/InfLLMv2 42.76/42.75，减 18%。这些是近邻 point estimates，无 equivalence interval。",
+        "RULER 4K–128K：Llama Stem/dense average 88.47/88.86，Qwen 87.15/87.66，Stem 25% budget；dense 均略高，不能称统计 lossless。",
+        "近似 matched budget 的 sequential ablation：Qwen Uniform→TPD→TPD+OAM 为 29.41→31.43→31.64，Llama 37.48→40.85→41.48。TPD 增益更大；无 OAM-only arm，不能估 interaction。",
+        "128K Llama H20 prefill total：dense 1540 ms、MInference 586、FlexPrefill 442、XAttention 476、Stem 420；Stem kernel 330 ms，另约 90 ms overhead。无 repetitions/dispersion。"
+      ]
+    },
+    {
+      "title": "有效性与局限",
+      "paragraphs": [
+        "early causal visibility 不是 information importance；论文未界定 attention weight、downstream Jacobian 或 error propagation，也未证明 pruning error 递归单调放大。",
+        "Top-k $P_{ij}\\|V_j\\|$ 只对 triangle upper bound 最优；original vector error 可相消，sparse softmax 会重归一化。故“output-aware optimal”必须带 surrogate 限定。",
+        "implemented score 为 approximate QK+$\\beta\\max(0,\\log\\|V\\|)$，加 pooling、clipping、anti-diagonal、causal/local windows；不再与理论 score rank-equivalent。",
+        "token/block k 的方法、算法与实验单位冲突，exact budget schedule 不可由 paper alone 唯一恢复；需要 code/author clarification。",
+        "固定 B 时 metric 有 $N^2/B^2$ 项，constant-fraction budget 使 sparse execution 也保持 $\\Theta(N^2)$。报告支持 128K constant-factor acceleration，不支持 unconditional linear scaling。",
+        "LongBench/RULER averages 无 prompt counts、seeds、bootstrap、task-level variance、tests 或 equivalence margin；小差异应保留数值，不能称 lossless。",
+        "cross-method budget 不等；internal ablation 又只有 Uniform→TPD→TPD+OAM，无 OAM-only/factorial arm。$\\mu=0.7,\\beta=0.2$ 在同一 LongBench 上调参与报告，可能 optimistic。",
+        "latency 缺 GPU count、warmups、runs、dispersion、memory、driver/software 与 compilation state；只说明一个 setup 的 reported point，不能保证其他 hardware 或 generation throughput。"
+      ]
+    },
+    {
+      "title": "复现与资源",
+      "paragraphs": [
+        "先向作者确认 k 的 token/block semantics、54-block floor 与 Algorithm 1 的 B conversion；对每个 N 输出 exact per-query mask counts 并核对 average budget。",
+        "实现三层 OAM：exact token upper-bound ranking、block-pooled rank-equivalent score、deployed beta/clipped heuristic；分别测 true renormalized output error 与 downstream logits。",
+        "做 factorial ablation Uniform/TPD × SAM/OAM，budget 严格相同；$\\mu,\\beta$ 在 held-out tuning set 选择，再锁定到 LongBench/RULER test。",
+        "对 causal-information claim 做 controlled position intervention：固定 content 与 retained mass，移动同一 fact/token，测 attention path Jacobian、residual reconstruction 与 final loss，而非只看 visibility count。",
+        "quality 按 task/prompt bootstrap，报告 paired differences 与 equivalence bounds；latency 报 warmup、p50/p95、多 runs、VRAM、kernel/selection breakdown 和多 lengths。",
+        "arXiv v2 source 的 anonymous code URL 被注释，bundle 无 executable implementation、environment、raw predictions/timing logs 或 seed ledger；camera-ready 文字仍不足以独立重现 exact kernel。"
+      ]
+    },
+    {
+      "title": "阅读指南",
+      "paragraphs": [
+        "快速路线：pp. 3–5 看 TPD/OAM 与 Figure 3；pp. 6–8 看 LongBench、RULER、ablation、complexity 与 latency；appendix pp. 12–13 看 OAM bound。",
+        "物理路线：区分 causal support graph、weighted response、nonlinear propagation 与 empirical head-logit MSE；不要由 light-cone size 推出 information amplitude。",
+        "AI 路线：区分 metric selection、renormalized sparse attention、block kernel 与 end-to-end prefill；核对 budgets 是否 matched。",
+        "批判路线：重点检查 surrogate optimality、implemented-score drift、token/block units、quadratic terms、TPD/OAM factorial absence、tuning reuse、uncertainty与 latency protocol。"
+      ]
+    }
+  ],
+  "evidence_refs": [
+    "paper.pdf pp. 3–5 and appendix pp. 12–13: causal-support motivation, TPD schedule, unrenormalized triangle-bound OAM derivation and deployed heuristic changes",
+    "paper.pdf pp. 5–8: exact block/pooling settings, LongBench, trained-sparse, RULER, sequential ablation, complexity expression and H20 latency point estimates",
+    "official TeX methods/algorithm: inconsistent token-versus-block budget units and commented-out anonymous code URL",
+    "source PDF SHA-256 d5a56c152e00e998f0e096e1ff0572fa19daf0b910a0415292f6a1cb8444174c",
+    "official arXiv v2 source archive SHA-256 6fb7e89ea3f88ba57b90b669334339736657be6b2d8dcf37558226c713138aa4",
+    "MinerU Markdown SHA-256 4f096c5232cc72778f1113703e7ad18fa14c16905e47ec25e8e4e11f88e856b1",
+    "Evidence packet SHA-256 d3fedf7d32791cdce00a9c58dee63f882f16da91d19fdd60e712512aa1388eda",
+    "Evidence status: full text, rendered pages and official TeX verified against latest arXiv v2 camera-ready; visibility-versus-importance, vector cancellation/renormalization, heuristic score drift, budget units, asymptotic complexity, matched-budget factorial, tuning reuse, uncertainty/equivalence and latency portability boundaries recorded; no independent reproduction performed."
+  ]
+}

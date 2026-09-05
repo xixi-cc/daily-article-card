@@ -1,0 +1,198 @@
+{
+  "arxiv_id": "2603.05498",
+  "source_version": "v1",
+  "source_pdf": "https://arxiv.org/pdf/2603.05498v1",
+  "title_en": "The Spike, the Sparse and the Sink: Anatomy of Massive Activations and Attention Sinks",
+  "title_zh": "尖峰、稀疏与汇点：巨幅激活和注意力汇点的结构剖析",
+  "curation_status": "full_text_verified",
+  "card_standard_version": "2.4",
+  "audience_profile": "physics_ai_literate_physicist",
+  "paper_profile": "theory_experiment",
+  "style_reference": "physicist_daily_arxiv",
+  "provenance": {
+    "program": "Collection",
+    "catalog": "Paper Collection",
+    "catalog_record_id": "2603.05498",
+    "catalog_record_ids": ["2603.05498"],
+    "catalog_topic": "Representation Learning",
+    "collection_date": "2026-08-30",
+    "sampled_at": "2026-08-31",
+    "selected_by": "ziming_mineru_serial_goal",
+    "sampling_seed": "not_applicable_source_complete",
+    "candidate_count": 464
+  },
+  "verified_metadata": {
+    "arxiv_id": "2603.05498",
+    "version": "v1",
+    "title": "The Spike, the Sparse and the Sink: Anatomy of Massive Activations and Attention Sinks",
+    "authors": ["Shangwen Sun", "Alfredo Canziani", "Yann LeCun", "Jiachen Zhu"],
+    "categories": ["cs.AI", "cs.CL"],
+    "primary_category": "cs.AI",
+    "published": "2026-03-05",
+    "updated": "2026-03-05",
+    "abstract": "The paper traces extreme residual-stream coordinates through early injection, intermediate persistence and late cancellation, proposes a conditional quadratic-amplifier account, and tests how architecture and training interventions alter spikes and a thresholded attention-sink metric."
+  },
+  "equation_refs": [
+    {
+      "label": "conditional quadratic amplifier",
+      "latex": "y_k\\approx \\tilde h^\\top U_k\\tilde h,\\qquad U_k=\\sum_{i=1}^{d_{ff}}W_{down}^{(k,i)}W_{gate}^{(i)}W_{up}^{(i)\\top}",
+      "role": "rewrite one SwiGLU output coordinate as a quadratic form when the SiLU gate is approximately linear on selected spike-token activations",
+      "symbols": {
+        "h_tilde": "RMS-normalized residual input",
+        "U_k": "weighted sum of rank-one gate/up outer products for output channel k",
+        "y_k": "feedforward residual-branch output coordinate",
+        "d_ff": "SwiGLU intermediate width"
+      },
+      "evidence": "paper.pdf pp. 4–5 and appendix pp. 18–19, quadratic-form theorem",
+      "interpretation": "等式依赖 $\\operatorname{SiLU}(x)\\approx x$ 的经验近似，误差未界定；大 $\\|U_k\\|_F$ 或 dominant eigenvalue 仍不单独证明自然 token 被因果放大。"
+    },
+    {
+      "label": "correct dominant-direction scaling",
+      "latex": "\\tilde h^\\top S_k\\tilde h\\approx\\lambda_* (s_*^\\top\\tilde h)^2=\\lambda_*d_{model}\\cos^2(s_*,\\tilde h),\\qquad \\|\\tilde h\\|=\\sqrt{d_{model}}",
+      "role": "state the algebraically correct projection of an RMS-normalized activation onto a unit dominant eigenvector",
+      "symbols": {
+        "S_k": "symmetric part of the quadratic matrix",
+        "lambda_star": "dominant eigenvalue",
+        "s_star": "unit dominant eigenvector",
+        "d_model": "residual width"
+      },
+      "evidence": "paper.pdf p. 5, Equation (21), independently checked against the RMSNorm convention",
+      "interpretation": "源文最后一行误写为 $\\lambda_*\\sqrt d\\cos$，同时丢掉一次 $\\sqrt d$ 和 cosine 的平方；卡片采用上式并显式标错。"
+    },
+    {
+      "label": "reported attention-sink ratio",
+      "latex": "s_\\epsilon=\\frac{1}{N_LN_H}\\sum_{l,h}\\mathbf 1\\!\\left[\\max_{1\\le k\\le\\lfloor T/2\\rfloor}\\alpha_k^{l,h}>\\epsilon\\right],\\qquad T=64,\\ \\epsilon=0.3",
+      "role": "count layer-head pairs with an early position receiving more than a fixed average-attention threshold",
+      "symbols": {
+        "alpha_k_lh": "attention received by position k, averaged over query positions for layer l and head h",
+        "T": "evaluation sequence length",
+        "epsilon": "fixed sink threshold",
+        "s_epsilon": "per-sequence ratio subsequently averaged over sequences"
+      },
+      "evidence": "paper.pdf appendix p. 17, sink-ratio definition",
+      "interpretation": "该 observable 受 causal mask、first-half search、T 与阈值影响；论文只报告 T=64、epsilon=0.3，未做 sensitivity 或 null calibration。"
+    }
+  ],
+  "figure_refs": [
+    {
+      "label": "Figure 1 spike lifecycle",
+      "asset_path": "assets/collection-figures/2603.05498/figure-1-spike-lifecycle.webp",
+      "section": "核心结果与证据",
+      "role": "separate individual block-output impulses from accumulated residual-stream plateaus in Llama 2 7B and Qwen3 8B",
+      "evidence": "paper.pdf p. 4, Figure 1; official source assets figures/magnitudes_llama2_7b.pdf and magnitudes_qwen3_8b.pdf",
+      "alt_text": "Layerwise plots for two language models show early spike injection, persistence in the residual stream and late opposite-sign cancellation.",
+      "caption": "Figure 1：Llama 2 7B 与 Qwen3 8B 的极端 coordinates 由早期 step-up block 注入，经 residual stream 长程保持，再被晚期 step-down outputs 抵消。图是 selected prompts/checkpoints 的描述，不含不确定度或 prompt-distribution 信息。",
+      "interpretation": "rise–plateau–fall 清楚区分 branch output 与 accumulated state；它不单独证明 spike 的功能、sequence universality 或所有 Transformer family 的共同机制。"
+    }
+  ],
+  "cover": {
+    "mode": "source_figure",
+    "asset_path": "assets/collection-figures/2603.05498/figure-1-spike-lifecycle.webp",
+    "label": "Figure 1 spike lifecycle",
+    "visual_type": "trajectory",
+    "evidence": "paper.pdf p. 4, Figure 1; official source plots",
+    "alt_text": "Massive activations rise in early blocks, persist through residual additions and fall in late blocks.",
+    "caption": "极端激活的 step-up—residual plateau—step-down 生命周期；功能与普适性仍需干预验证。",
+    "selection_rationale": "The figure is the clearest overview of where large coordinates are injected, preserved and cancelled, and distinguishes module output from the residual stream."
+  },
+  "sections": [
+    {
+      "title": "作者信息",
+      "paragraphs": [
+        "作者为 Shangwen Sun、Alfredo Canziani、Yann LeCun 与 Jiachen Zhu，来自 New York University。",
+        "本站核验 arXiv:2603.05498v1：提交于 2026-03-05；分类 cs.AI、cs.CL，PDF 21 页。",
+        "Collection 来源为刘子鸣网站的 Representation Learning 条目。"
+      ]
+    },
+    {
+      "title": "研究问题",
+      "paragraphs": [
+        "decoder-only LMs 中少量 token/channel 会出现远大于典型尺度的 massive activations，少量位置又吸收很多 attention 成为 sinks。它们如何产生、为何常重合、能否被训练或结构干预？",
+        "论文先逆向分析 pretrained Llama/Qwen，再从头训练多组 7B Llama-style ablations。提出链条是：早期 self-sinking 使 token 靠近 MLP 高增益方向，SwiGLU 二次放大，RMSNorm 把主导 coordinates 压到稀疏近恒定方向，后续 keys 形成 sink subspace。",
+        "证据稳健支持 selected checkpoints 的生命周期与两种统计量可部分解耦；quadratic、subspace、implicit gating 和 short-range function 的完整因果链仍含条件近似与推断。"
+      ]
+    },
+    {
+      "title": "背景",
+      "paragraphs": [
+        "massive activation 是 residual/MLP coordinate 的极端值；attention sink 是某 position 接收高平均 attention。一个是 state amplitude，一个是 routing pattern，定义上不同。",
+        "pre-norm residual network 把每个 block output 加到长期 residual stream，因此早期 impulse 可像近守恒 mode 一样跨层保留；晚期 opposite-sign output 可主动消去。",
+        "RMSNorm 把向量范数固定为 $\\sqrt d$，故每 coordinate 绝对值不超过 $\\sqrt d$。但“少数 coordinate 主导→方向稀疏近恒定”还需稳定比例与其他坐标可忽略。",
+        "在 causal position 0，token 只能 attend 自己，attention branch 退化为 prompt-independent linear value-output map。这给 first-token trajectory 一个结构解释，但 delimiter 与其他 sinks 还涉及不同上下文。"
+      ]
+    },
+    {
+      "title": "给物理学家的 AI 导读",
+      "paragraphs": [
+        "可把 step-up block 看成向 residual state 注入大幅慢模，后续 residual additions 不显著改变该 coordinate，于是形成 plateau；step-down block 像 boundary counterterm，在输出端抵消它。",
+        "SwiGLU 在特定输入区近线性时，两个线性 projections 的乘积产生 quadratic form。dominant eigenvector $s_*$ 是候选 high-gain direction，但必须对 $s_*$ 做投影/edit 才能从谱关联升级为因果机制。",
+        "RMSNorm 后多个 spike tokens 聚到近似方向，可类比 order-parameter collapse；然而 t-SNE 不能测 intrinsic dimension，也不保全局距离，所谓 1–2D sink-key subspace 尚需 spectrum/participation ratio。",
+        "sink ratio 是人为 thresholded observable，不是序参量定理。其值与 perplexity 在超参 sweep 中并不单调，故不能自动作为 optimization health proxy。"
+      ]
+    },
+    {
+      "title": "模型与方法",
+      "paragraphs": [
+        "observational 部分检查 Llama 2/3 与 Qwen2.5/3 的 7B–14B pre-norm RMSNorm checkpoints，追踪 top residual coordinates、block outputs、SwiGLU quadratic matrices、normalized directions、keys 与 attention。",
+        "interventional 部分训练 32-layer、hidden 4096、32 heads×128、FFN 11008 的 7B Llama-style models，在 DCLM 上 5,000 steps、每 batch 2M tokens，总计 100B tokens。",
+        "ablation axes 包括 optimizer、FFN/nonlinearity、normalization、head dimension/count、conditional/static gating，以及只对长 positions 计 loss；报告 perplexity、maximum activation 与固定 sink ratio。",
+        "evaluation 最多抽取 1024×4096 C4 tokens；maximum 是 exposure-dependent extreme statistic，而 sink ratio 固定使用 T=64、epsilon=0.3。各表没有 training repeats 或 uncertainty。"
+      ]
+    },
+    {
+      "title": "核心结果与证据",
+      "paragraphs": [
+        "Figure 1 在 Llama 2 7B/Qwen3 8B 显示 top coordinates 的 early injection、long plateau 与 late cancellation；Table 1 还列出七个 checkpoints 的 step-up/step-down blocks。",
+        "Llama 2 7B 的 spike channels 对应异常大的 $\\|U_k\\|_F$ 和 dominant eigenvalue，并在多个 channels 共享领先方向；这是 quadratic-amplification candidate 的谱证据，不是完整 causal edit。",
+        "vocabulary-wide first-position probe 对七个 named checkpoints 报 98.40%–99.93% spike-token rates，但没有正式 spike threshold 与完整 token/prompt classification protocol。",
+        "optimizer ablations 的 sink ratio 18.6%–63.3%、baseline 46.0%；spike maxima 1,447–12,275、baseline 3,818。它们显示训练敏感性，但 sink ratio 与 perplexity 非单调。",
+        "normalization 可解耦两者：sandwich norm perplexity/sink/spike 为 9.8/44.7%/520，sandwich QK 为 10.0/42.0%/92，DynamicTanh 为 10.0/61.0%/153，baseline 为 10.1/46.0%/3,818。",
+        "fixed total width 时，head dimension 8→256 的 sink ratio 11.0%→52.1%，perplexity 10.7→10.1。per-channel/per-head conditional gates 把 sink ratio 降至 4.5%/6.4%，point-estimate perplexity 10.0/10.1。",
+        "long-position loss 使 sink ratio 从 baseline 46.0% 降到 13.0%、8.0%、1.2% 或 5.8%，但多行 spike maxima 超过 30,000，进一步表明固定定义下 sink 与 spike 非必要同涨同落。"
+      ]
+    },
+    {
+      "title": "有效性与局限",
+      "paragraphs": [
+        "quadratic theorem 以 spike tokens 上 SiLU≈identity 为前提，未给 approximation error；原 Equation (21) 末行还有明确代数错误，不能照抄其 $\\sqrt d\\cos$ scaling。",
+        "大 Frobenius norm/eigenvalue 与 spike 共现兼容 amplification，但未证明 $s_*$ 对自然 token 的 causal necessity。需 direction projection、rank-one edit 与 matched control。",
+        "“implicit parameters”只是类比：near-constant normalized activations 不是 learned parameter tensors；没有 replacement experiment 证明功能等价或必要。",
+        "1–2D sink subspace 主要来自 t-SNE/定性 geometry，无 intrinsic dimension、spectrum、null comparison 或 subspace intervention。conditional gate 抑制 sink 也不证明 sink 本身执行 gating。",
+        "sink metric 依赖 T=64、epsilon=0.3、first-half search 与 causal mask；缺 threshold/length sensitivity。maximum activation 又随 evaluated tokens/layers/coordinates 数增长。",
+        "100B-token ablation 表看似每行一 model，无 seeds、error bars、CIs、compute-matched parameter accounting 或 equivalence margin。perplexity 差 0.1 只能说 point estimates 接近，不能说无性能损失。",
+        "architectural replacement 会同时改变参数、compute、optimization landscape 与 residual scaling；attention-only、FFN replacement、head-capacity 和 gating 并非严格单因素因果 isolation。",
+        "附录 inventory 与 source assets 只支持七个 named checkpoints，但正文/图注声称十二个；五个额外模型未文档化。七个也主要是相关 Llama/Qwen family，不能支持 universal anatomy。"
+      ]
+    },
+    {
+      "title": "复现与资源",
+      "paragraphs": [
+        "冻结所有 checkpoint hashes、tokenizer、C4/DCLM shards、prompt/token sampling、spike threshold、evaluation exposure 与 hooks；同时发布每 coordinate 的 quantiles 而非只报 maximum。",
+        "独立修正 Equation (21)，对 SiLU identity approximation 按 token/layer 报 relative error；投影掉 $s_*$、替换 eigenvalue、做 same-norm random directions，测 spikes 与 downstream logits。",
+        "sink ratio 扫描 T、epsilon、search window 与 null attention baselines；报告 attention entropy、received-mass distribution 和 uncertainty，避免一个阈值决定结论。",
+        "每个 7B ablation 至少多 seeds，公开 training curves/checkpoint hashes；做 parameter/FLOP/token matched variants，并用 equivalence test 判断 perplexity 是否近似不变。",
+        "对 proposed sink subspace 用 PCA spectrum、participation ratio、cross-prompt principal angles 与 causal key/query projections；t-SNE 只保留作可视化。",
+        "arXiv v1 bundle 有 TeX/figures，无 code、data artifacts、environment lock、seed ledger、training logs 或 ablation checkpoint hashes，当前不能独立复现 100B-token tables。"
+      ]
+    },
+    {
+      "title": "阅读指南",
+      "paragraphs": [
+        "快速路线：pp. 3–4 看 lifecycle；pp. 4–7 看 quadratic amplifier、RMSNorm 与 sink geometry；pp. 8–11 看 ablations；appendix pp. 17–19 看 metric 与 derivations。",
+        "物理路线：区分 residual slow mode、conditional quadratic response、normalization-induced directional collapse 与 thresholded sink observable；不要把关联链当完整有效理论。",
+        "AI 路线：区分 massive activation、attention sink、first-token causal-mask effect、delimiter self-sinking 与 architecture replacement。",
+        "批判路线：重点核对 Equation (21)、sink-threshold sensitivity、extreme-value exposure、single-run 7B tables、performance-equivalence language、t-SNE dimension 与 7-versus-12 inconsistency。"
+      ]
+    }
+  ],
+  "evidence_refs": [
+    "paper.pdf pp. 3–7 and appendix pp. 18–19: rise-plateau-fall lifecycle, conditional SwiGLU quadratic form, Equation (21) inconsistency, RMSNorm bound and proposed sink geometry",
+    "paper.pdf pp. 8–11 and appendix p. 17: 100B-token Llama-style ablations, exact training setup, T=64 epsilon=0.3 sink ratio and point-estimate intervention tables",
+    "paper.pdf appendix pp. 19–21 and official source assets: seven named pretrained checkpoints versus unsupported twelve-model prose/caption count",
+    "source PDF SHA-256 d58c589cf45388b83054f8b7d67389a5a107826161b58330d220c29fd1475e49",
+    "official arXiv v1 source archive SHA-256 50ddba9b1ad1d0a80868c63ee806cbf71e9d5cc8294a010017d0373231a86ec4",
+    "MinerU Markdown SHA-256 6001a1b1c46ca2ec23ee97ad08405572d7c19b825b710f2f6ce78807714c695a",
+    "Evidence packet SHA-256 d6febb5842c3109015465a8486180d0faa44503151c2f7ffb9c7c02983d96281",
+    "Evidence status: full text, rendered pages and official TeX verified against latest arXiv v1; conditional approximation, corrected dominant-direction algebra, threshold/length sensitivity, extreme-statistic exposure, t-SNE/subspace/gating/function causality, single-run uncertainty, equivalence and seven-versus-twelve model-count boundaries recorded; no independent reproduction performed."
+  ]
+}
