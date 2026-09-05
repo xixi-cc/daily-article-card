@@ -1,0 +1,196 @@
+{
+  "arxiv_id": "2604.08192",
+  "source_version": "v1",
+  "source_pdf": "https://arxiv.org/pdf/2604.08192v1",
+  "title_en": "Inside-Out: Measuring Generalization in Vision Transformers Through Inner Workings",
+  "title_zh": "由内而外：通过内部工作机制测量视觉 Transformer 的泛化",
+  "curation_status": "full_text_verified",
+  "card_standard_version": "2.4",
+  "audience_profile": "physics_ai_literate_physicist",
+  "paper_profile": "theory_experiment",
+  "style_reference": "physicist_daily_arxiv",
+  "provenance": {
+    "program": "Collection",
+    "catalog": "Paper Collection",
+    "catalog_record_id": "2604.08192",
+    "catalog_record_ids": ["2604.08192"],
+    "catalog_topic": "Mechanistic Interpretability",
+    "collection_date": "2026-08-30",
+    "sampled_at": "2026-08-31",
+    "selected_by": "ziming_mineru_serial_goal",
+    "sampling_seed": "not_applicable_source_complete",
+    "candidate_count": 464
+  },
+  "verified_metadata": {
+    "arxiv_id": "2604.08192",
+    "version": "v1",
+    "title": "Inside-Out: Measuring Generalization in Vision Transformers Through Inner Workings",
+    "authors": ["Yunxiang Peng", "Mengmeng Ma", "Ziyu Yao", "Xi Peng"],
+    "categories": ["cs.LG", "cs.CV"],
+    "primary_category": "cs.LG",
+    "published": "2026-04-09",
+    "updated": "2026-04-09",
+    "abstract": "The paper derives graph-like circuits from Vision Transformer activations, proposes a circuit motif score for pre-deployment model selection and a circuit-shift score for post-deployment monitoring, and evaluates their correlation with labeled out-of-domain performance."
+  },
+  "equation_refs": [
+    {
+      "label": "Circuit edge attribution",
+      "latex": "c_{\\mathcal D_X}^{\\mathcal M}(e)=\\mathbb E_{x\\sim\\mathcal D_X}\\!\\left[\\operatorname{KL}\\!\\left(\\mathcal M_{\\setminus\\{e\\}}(x),\\mathcal M(x)\\right)\\right]",
+      "role": "score an internal edge by how much mean-ablation of that edge changes the model output distribution",
+      "symbols": {
+        "M": "Vision Transformer",
+        "e": "candidate computational-graph edge",
+        "M_without_e": "model evaluated under edge ablation or its EAP-IG approximation",
+        "D_X": "input distribution used to extract the circuit"
+      },
+      "evidence": "paper.pdf pp. 3–4, Equation (1), and official method TeX",
+      "interpretation": "它是 intervention-inspired sensitivity：改变输出越大，edge score 越高；但 mean ablation 可能 off-manifold，且实际使用 EAP-IG approximation，因此不自动等于真实因果机制。"
+    },
+    {
+      "label": "Deep-to-shallow dependency bias",
+      "latex": "\\operatorname{DDB}_{J}(\\Lambda,\\tau)=\\log\\!\\frac{\\sum_{i\\in\\mathcal L_{\\mathrm{high}}(\\tau),\\,j\\in J}\\Lambda_{ij}}{\\sum_{i\\in\\mathcal L_{\\mathrm{low}}(\\tau),\\,j\\in J}\\Lambda_{ij}}",
+      "role": "measure whether selected output modules receive more attributed circuit mass from high rather than low layers",
+      "symbols": {
+        "Lambda_ij": "sum of circuit-edge scores from source module i to target module j",
+        "J": "chosen output-side module set",
+        "L_high": "layers above threshold tau",
+        "L_low": "layers below threshold tau"
+      },
+      "evidence": "paper.pdf p. 4, Equation (4), and official pre-deployment TeX",
+      "interpretation": "这像把有向网络中的 current 按深浅两区积分再取 log ratio；$\\tau$ 与 motif 的选择是经验设计，尚非由泛化理论唯一导出。"
+    },
+    {
+      "label": "Circuit shift score",
+      "latex": "\\operatorname{CSS}_{(\\mathcal R,d)}(\\mathcal M,\\mathcal D_i)=d\\!\\left(\\mathcal R(c_{\\mathcal D_{\\mathrm{ID}}}^{\\mathcal M}),\\mathcal R(c_{\\mathcal D_i}^{\\mathcal M})\\right)",
+      "role": "compare the model's internal circuit on reference ID data with the circuit induced by a deployment domain",
+      "symbols": {
+        "c_D": "edge-score vector or circuit for distribution D",
+        "R": "circuit representation operator",
+        "d": "distance or dissimilarity between representations",
+        "D_i": "candidate deployment domain"
+      },
+      "evidence": "paper.pdf pp. 6–7, Equation (7), and official post-deployment TeX",
+      "interpretation": "它把 domain shift 变成内部 network observable 的距离；无目标标签即可计算，不代表 metric 的选择、校准与验证过程也完全无标签。"
+    }
+  ],
+  "figure_refs": [
+    {
+      "label": "Figure 1 inside-out generalization overview",
+      "asset_path": "assets/collection-figures/2604.08192/figure-01-overview.webp",
+      "section": "模型与方法",
+      "role": "connect pre-deployment model selection and post-deployment monitoring to circuit extraction, DDB, CSS and example correlations",
+      "evidence": "paper.pdf p. 1, Figure 1; official source fig/tfigure.pdf",
+      "alt_text": "Overview contrasting output-based proxies with circuit-based model selection and domain-shift monitoring, including example correlation scatter plots.",
+      "caption": "Figure 1：从 ViT 内部 edge-attribution circuits 构造 DDB 与 CSS，用于模型选择和 shift alarm；scatter correlation 是 benchmark-level association，不是因果机制证明。",
+      "interpretation": "图把两个 deployment scenario 与内部观测量连接起来，也显示方法最终仍通过有标签 OOD performance 选择和评估。"
+    }
+  ],
+  "cover": {
+    "mode": "source_figure",
+    "asset_path": "assets/collection-figures/2604.08192/figure-01-overview.webp",
+    "label": "Figure 1 method overview",
+    "visual_type": "schematic",
+    "evidence": "paper.pdf p. 1, Figure 1; official source figure",
+    "alt_text": "A schematic of circuit-based pre-deployment selection and post-deployment monitoring for Vision Transformers.",
+    "caption": "以内部 circuit observables 预测或监测图像域外性能。",
+    "selection_rationale": "It is the only official figure that jointly explains both operational scenarios, the proposed metrics and the output-proxy contrast."
+  },
+  "sections": [
+    {
+      "title": "作者信息",
+      "paragraphs": [
+        "作者 Yunxiang Peng、Mengmeng Ma、Ziyu Yao、Xi Peng；PDF/主页给出 deep-real 项目与代码信息。",
+        "本站核验 arXiv:2604.08192v1：提交于 2026-04-09，是当前唯一版本；主分类 cs.LG，PDF 21 页。arXiv comment 标注 CVPR 2026 Highlight，本站按作者自报元数据处理。",
+        "Collection 来源为刘子鸣网站的 Mechanistic Interpretability 条目。"
+      ]
+    },
+    {
+      "title": "研究问题",
+      "paragraphs": [
+        "部署前缺少目标域标签时，怎样从一组 ViT 中选择更可能泛化的模型？部署后只有未标注输入时，怎样及时发现模型性能可能跌破阈值？",
+        "论文不只看 confidence、entropy 等 output proxies，而是把模型拆成内部 module graph，估计关键 edge 的 attribution，构造 DDB 预测模型泛化、CSS 测量 ID-to-OOD circuit shift。",
+        "关键证据是这些 scores 与事后有标签 OOD performance 的相关和 alarm F1；它们是预测性 observables，不等同于识别了泛化的因果机制。"
+      ]
+    },
+    {
+      "title": "背景",
+      "paragraphs": [
+        "domain shift 指部署分布与训练/验证分布改变。没有目标标签时，accuracy 不可直接测，只能寻找与 accuracy 共变的 proxy。",
+        "mechanistic interpretability 常把 Transformer 表示为 nodes/edges 的 computational graph，并用 ablation、gradient attribution 或 path patching 估计哪些连接影响输出。",
+        "EAP-IG 近似 edge ablation effect，避免逐 edge 真正重跑；速度换来了近似误差，而 mean-ablation reference 可能把 activation 推到训练 manifold 之外。",
+        "相关系数回答排序或线性关联，alarm F1 回答阈值决策；两者不是同一 estimand，且都需要有标签结果来验证方法是否有效。"
+      ]
+    },
+    {
+      "title": "给物理学家的 AI 导读",
+      "paragraphs": [
+        "可把抽出的 circuit 看成有向加权网络，$\\Lambda_{ij}$ 是 coarse-grained coupling。DDB 比较来自深层与浅层的总权重，类似用一个经验 order parameter 压缩拓扑 motif。",
+        "edge ablation 的 KL response 类似 susceptibility：对某条 connection 施加有限 perturbation 后测输出分布变化。它依赖 perturbation protocol，不是 gauge-independent 的“真实作用力”。",
+        "CSS 则像比较两个 ensemble 下有效 interaction graph 的距离。若 shift 改变了 circuit，却不影响任务相关方向，CSS 仍可能报警；反之 compensation 也可能让图近似而性能下降。",
+        "把 $R^2$、Spearman 和 Kendall 再平均，相当于混合不同统计量和不同 ensembles；这个 pooled scalar 方便汇总，却没有单一清晰的 sampling interpretation。",
+        "hospital slides、parent domains 和 synthetic corruptions 具有 clustering；把每个 constructed domain 当独立 realization 会低估 uncertainty。"
+      ]
+    },
+    {
+      "title": "模型与方法",
+      "paragraphs": [
+        "预部署阶段为每个 ViT model zoo 抽取 ID-data circuit，将 edge scores 聚合为 layer-to-module matrix $\\Lambda$；用训练 zoo 学到的投影和 layer threshold 构造输出侧 DDB。",
+        "后部署阶段分别在 ID 与当前 domain 上估计 circuit，以 vector、graph spectrum 或 edge set 等 representation 比较 CSS；论文在候选 distance 中报告 vector-SRCC 最强。",
+        "DDB 用 PACS、Camelyon17、Terra Incognita 的 ViT zoos，单 zoo 72–144 models，累计宣称 26 domain-pair tasks；同时与 ID accuracy 等 model-selection proxies 比较。",
+        "CSS 在 PACS、Camelyon17、FMoW 与 ImageNet 构造 9、34、10、27 个 OOD domains，并与 ATC 等 output-based performance estimators 比较。",
+        "Camelyon17 alarm 先用带标签 surrogate shifts 校准 metric threshold $\\delta'$ 到 performance threshold $\\delta$，再在 evaluation shifts 上计算 alarm precision/recall/F1。"
+      ]
+    },
+    {
+      "title": "核心结果与证据",
+      "paragraphs": [
+        "Table 1 中 DDB_out 的 pooled average correlation 为 $0.766\\\\pm0.029$，ID accuracy 为 $0.632\\\\pm0.047$；绝对差 0.134，汇总跨三个 metrics 与三个 datasets。",
+        "Table 3 中 CSS vector-SRCC 为 $0.811\\\\pm0.041$，ATC 为 $0.470\\\\pm0.095$，绝对差 0.341；dataset-specific $R^2$ 从 Camelyon17 的 0.519 到 ImageNet 的 0.953。",
+        "Camelyon17 Figure 6 在 performance threshold 0.80–0.90 范围内，CSS F1 图示约 0.70–0.95，baselines 约 0.15–0.42；论文概括为约 45% gain。",
+        "这些 percentage improvements 是 pooled correlation 或 F1 的绝对差，不应写成相对误差降低，更不能从混合统计量反推出共同 effect size。",
+        "ViT-B/16、batch 32、单 A6000 上 circuit discovery 约 1585 ms，普通 forward 123 ms，约 13×；已有 circuit 的 metric calculation 约 52 ms。"
+      ]
+    },
+    {
+      "title": "有效性与局限",
+      "paragraphs": [
+        "label-free 只指目标域 inference 时不读取标签；DDB/CSS 的设计、$\\tau$/variant 选择、reported validation 和 surrogate alarm calibration 均使用标签。",
+        "motif、公式、threshold 与 distance variants 在同一 benchmark family 上开发和比较，没有 held-out dataset-level meta-test 排除 metric-selection overfit。",
+        "EAP-IG 与 mean ablation 的 comparative faithfulness 不证明被选 edges 是 OOD generalization 的生成机制；本文没有 intervention 证明改变 DDB/CSS 会改变泛化。",
+        "pooled average 混合 $R^2$/Spearman/Kendall 与 datasets；SEM 的 independent replication unit 不清楚，也没有 model-training seeds、confidence intervals 或 hypothesis tests。",
+        "PACS 子集共享 parent domains，Camelyon slides 按 hospital/patient clustered，synthetic corruptions 也不是独立真实 shift mechanisms；名义 domain counts 高估独立性。",
+        "circuit extraction 比 forward 慢约 13×，不支持 real-time claim；所有主要实验是 ViT image classifiers，跨 CNN、language model、其他模态和线上 drift 均未验证。"
+      ]
+    },
+    {
+      "title": "复现与资源",
+      "paragraphs": [
+        "官方代码为 https://github.com/deep-real/GenCircuit 。本站未运行；复现应 pin commit、environment、model-zoo checkpoints、dataset/domain manifests 与 exact seeds。",
+        "首先重建每个 zoo 和 domain pair，按 model、training seed、hospital/patient 与 parent domain 保存 cluster IDs；相关与 confidence interval 应以正确层级 bootstrap。",
+        "把 metric design 与 evaluation 做 dataset-level nested split：外层完全留出一个 dataset/shift family，内层才选择 motif、$\\tau$、representation 与 distance。",
+        "用 exact edge ablation 在小模型上校准 EAP-IG approximation，并做 necessity/sufficiency interventions；同时比较 random、magnitude-matched 与 topology-matched circuits。",
+        "alarm 实验需把 surrogate calibration 与 future shifts 按时间/机制隔离，报告 precision-recall curve、false-alarm cost、miss cost 和 threshold uncertainty。",
+        "系统评估应报告 extraction amortization、batch/streaming latency、GPU memory 与 update cadence；再扩展到 CNN、不同 ViT families、language/medical modalities。"
+      ]
+    },
+    {
+      "title": "阅读指南",
+      "paragraphs": [
+        "快速路线：pp. 1–4 看 Figure 1、circuit 与 DDB；pp. 5–8 看 Tables 1/3、CSS 与 alarm；pp. 12–15、20–21 看 domains、hyperparameters、faithfulness 和 runtime。",
+        "物理路线：把 edge attribution 当 response protocol，把 DDB 当 network motif order parameter，把 CSS 当两个 ensembles 的 graph distance，并追问 invariance 与 sampling unit。",
+        "AI 路线：区分 target-time label-free computation、supervised metric development、surrogate calibration 和 labeled retrospective evaluation。",
+        "批判路线：核查同 benchmark family 的选择偏差、混合 correlation average、cluster dependence、ablation causality、13× extraction cost 和 ViT-only external validity。"
+      ]
+    }
+  ],
+  "evidence_refs": [
+    "paper.pdf pp. 1–5 and official method/pre-deployment TeX: two deployment scenarios, EAP-IG circuit score, layer aggregation, DDB definition, model zoos and Table 1",
+    "paper.pdf pp. 5–8 and official post-deployment TeX: CSS variants, domain construction summary, Table 3, surrogate calibration and Camelyon17 alarm",
+    "paper.pdf pp. 12–15 and 20–21 plus official appendix/source: detailed domain subsets, model-zoo hyperparameters, circuit-method benchmark, clustering context and runtime profile",
+    "source PDF SHA-256 530f1424f4e7f9aef225f8c0e984886157625d334b2c6cc50ea0489a9089a714",
+    "official arXiv v1 source archive SHA-256 946d6927761bbfcb938a368bb1623210b28948298d061e1bbb34ed8e3619c421",
+    "MinerU Markdown SHA-256 017df3c230ea81c135acb8475e622249d5204a29b1ad301c12607a9ffd9ee901",
+    "Evidence packet SHA-256 4faa5c64f457582d86a228c6721d4894bd990e21bba57eed65768ff64b2e5aa7",
+    "Evidence status: full text, rendered figure and official TeX verified against latest arXiv v1; label-use, circuit-causality, metric-selection, pooled-statistic, clustering, runtime and cross-architecture boundaries recorded; no independent reproduction performed."
+  ]
+}

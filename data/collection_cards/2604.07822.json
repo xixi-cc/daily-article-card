@@ -1,0 +1,195 @@
+{
+  "arxiv_id": "2604.07822",
+  "source_version": "v2",
+  "source_pdf": "https://arxiv.org/pdf/2604.07822v2",
+  "title_en": "Loop, Think, & Generalize: Implicit Reasoning in Recurrent-Depth Transformers",
+  "title_zh": "循环、思考与泛化：循环深度 Transformer 中的隐式推理",
+  "curation_status": "full_text_verified",
+  "card_standard_version": "2.4",
+  "audience_profile": "physics_ai_literate_physicist",
+  "paper_profile": "theory_experiment",
+  "style_reference": "physicist_daily_arxiv",
+  "provenance": {
+    "program": "Collection",
+    "catalog": "Paper Collection",
+    "catalog_record_id": "2604.07822",
+    "catalog_record_ids": ["2604.07822"],
+    "catalog_topic": "Scaling Laws",
+    "collection_date": "2026-08-30",
+    "sampled_at": "2026-08-31",
+    "selected_by": "ziming_mineru_serial_goal",
+    "sampling_seed": "not_applicable_source_complete",
+    "candidate_count": 464
+  },
+  "verified_metadata": {
+    "arxiv_id": "2604.07822",
+    "version": "v2",
+    "title": "Loop, Think, & Generalize: Implicit Reasoning in Recurrent-Depth Transformers",
+    "authors": ["Harsh Kohli", "Srinivasan Parthasarathy", "Huan Sun", "Yuekun Yao"],
+    "categories": ["cs.CL", "cs.AI", "cs.LG"],
+    "primary_category": "cs.CL",
+    "published": "2026-04-09",
+    "updated": "2026-08-11",
+    "abstract": "The paper trains small recurrent-depth Transformers on synthetic knowledge-graph composition tasks and studies systematic generalization, extrapolation to more hops by increasing inference recurrence, grokking-like training dynamics, and degradation from excessive recurrence."
+  },
+  "equation_refs": [
+    {
+      "label": "Recurrent-depth state evolution",
+      "latex": "h^{(r+1)}=f_\\theta\\!\\left(h^{(r)};m\\right),\\qquad r=0,\\ldots,R-1",
+      "role": "define repeated application of one shared Transformer block stack to the same sequence representation",
+      "symbols": {
+        "h_r": "hidden sequence state after recurrent iteration r",
+        "f_theta": "L-layer Transformer stack with shared parameters across recurrence",
+        "m": "input or attention mask information",
+        "R": "number of recurrent applications"
+      },
+      "evidence": "paper.pdf pp. 3–4 and official v2 main TeX",
+      "interpretation": "物理上像对同一离散演化算子迭代 $R$ 次；effective depth $D=L R$ 增加，但独立参数量不随 $R$ 增加，计算量和误差传播会增加。"
+    },
+    {
+      "label": "Dynamic recurrence schedule",
+      "latex": "R\\sim\\operatorname{clip}\\!\\left(\\operatorname{Poisson}(\\lambda),R_{\\min},R_{\\max}\\right)",
+      "role": "sample training-time compute depth so a shared model sees a distribution of recurrence counts",
+      "symbols": {
+        "lambda": "Poisson mean",
+        "R_min": "minimum recurrence",
+        "R_max": "maximum recurrence"
+      },
+      "evidence": "paper.pdf pp. 4 and 15, dynamic-recurrence method and hyperparameters",
+      "interpretation": "这是一种 recurrence-depth data augmentation；它可能改善对不同 iteration counts 的鲁棒性，但没有建立 $R\\to\\infty$ 的稳定性或任意深度泛化。"
+    },
+    {
+      "label": "Adaptive halting criterion",
+      "latex": "\\operatorname{KL}\\!\\left(p_t\\Vert p_{t-1}\\right)<\\varepsilon_{\\mathrm{KL}}\\quad\\land\\quad H(p_t)<H_{\\mathrm{thresh}}",
+      "role": "stop recurrence only when predictions change little and are sufficiently concentrated",
+      "symbols": {
+        "p_t": "output-token distribution after iteration t",
+        "epsilon_KL": "distribution-change threshold",
+        "H": "predictive entropy",
+        "H_thresh": "confidence threshold"
+      },
+      "evidence": "paper.pdf p. 10, Figure 10 discussion, and official v2 main TeX",
+      "interpretation": "小 KL 只表示 fixed point-like stagnation，可能稳定在错误答案；额外 entropy 条件减少但不消除错误自信，论文未给 calibration 或风险保证。"
+    }
+  ],
+  "figure_refs": [
+    {
+      "label": "Figure 7 matched-data depth extrapolation",
+      "asset_path": "assets/collection-figures/2604.07822/figure-07-matched-data.webp",
+      "section": "核心结果与证据",
+      "role": "compare fixed and dynamic recurrence after all models receive the same training-hop curriculum through 12 hops",
+      "evidence": "paper.pdf p. 9, Figure 7; official source images/paper_samehop_accuracy_region_5panel.pdf",
+      "alt_text": "Five heatmaps show multi-hop answer accuracy versus inference recurrence for fixed R equal to 5, 6, 7, 8 and dynamic recurrence, all trained through 12 hops.",
+      "caption": "Figure 7：匹配训练数据至 12-hop 后，$R=8$ 与 dynamic recurrence 在此 synthetic permutation-KG 上达到 19-hop；颜色边界由有限测试集和单次 heatmap 定义。",
+      "interpretation": "这张图去除了 Figure 5 的 maximum-training-hop confound，是最强的 depth-extrapolation 证据；但仍不是 scaling law，更不支持 arbitrary depth。"
+    }
+  ],
+  "cover": {
+    "mode": "source_figure",
+    "asset_path": "assets/collection-figures/2604.07822/figure-07-matched-data.webp",
+    "label": "Figure 7 matched-data comparison",
+    "visual_type": "data_plot",
+    "evidence": "paper.pdf p. 9, Figure 7; official source figure",
+    "alt_text": "Matched-data heatmaps compare how recurrent-depth Transformers extrapolate beyond 12-hop training.",
+    "caption": "相同 12-hop 训练覆盖下，改变共享层的训练与推理 recurrence。",
+    "selection_rationale": "It tests the headline depth-extrapolation claim while controlling the largest curriculum-depth confound."
+  },
+  "sections": [
+    {
+      "title": "作者信息",
+      "paragraphs": [
+        "Harsh Kohli、Srinivasan Parthasarathy、Huan Sun、Yuekun Yao 来自 The Ohio State University；后两位标注 equal supervision。",
+        "本站核验 arXiv:2604.07822v2：初稿 2026-04-09，当前版 2026-08-11；主分类 cs.CL，PDF 21 页。PDF 标为 COLM 2026 conference paper。",
+        "Collection 来源为刘子鸣网站的 Scaling Laws 条目。"
+      ]
+    },
+    {
+      "title": "研究问题",
+      "paragraphs": [
+        "若 Transformer 反复应用同一组层，它能否在单次 forward process 内组合训练时从未组合过的参数知识，并在推理时增加 recurrence 来解决超过训练 hop depth 的问题？",
+        "论文将两种泛化分开：systematicity 测未参与训练组合的原子事实能否被重新组合；depth extrapolation 测只训练到有限 hops 后能否处理更长 composition。",
+        "证据来自从零训练的小型合成模型与 permutation knowledge graphs；它检验 architecture bias，不直接检验 pretrained/frontier LLM 的自然语言推理。"
+      ]
+    },
+    {
+      "title": "背景",
+      "paragraphs": [
+        "普通 depth 增加时每层参数通常独立；recurrent depth 让一个 $L$-layer stack 重复 $R$ 次，effective depth 为 $L R$，参数共享但 inference FLOPs 随 $R$ 增长。",
+        "implicit reasoning 指不输出 chain-of-thought，而让中间组合发生在 hidden states 中；答对最终 token 不代表已经唯一识别内部 algorithm。",
+        "grokking 是训练 loss 早已降低后，held-out generalization 延迟出现的现象。曲线阶段可以描述动力学，但不能仅凭时间顺序证明某一表示变化是因果机制。",
+        "permutation relations 给每个 entity 唯一 successor，避免许多 suffix-frequency shortcuts；同时也移除了自然语言中的歧义、别名、distractors 与开放世界噪声。"
+      ]
+    },
+    {
+      "title": "给物理学家的 AI 导读",
+      "paragraphs": [
+        "把共享 Transformer stack 看成离散 map $h_{r+1}=f_\\theta(h_r)$：训练改变 map，本次推理的 recurrence $R$ 则改变演化时间，而不增加耦合参数。",
+        "hop 数像目标计算的路径长度；能在 12-hop 训练后做到 19-hop，表示有限 out-of-distribution time extrapolation，不等于 map 在任意长时间上保持正确轨道。",
+        "overthinking 类似轨道先进入正确 basin、随后又离开：correct-token logit margin 在某一 iteration 达峰后下降。更多 compute 因而不是单调的 control parameter。",
+        "dynamic recurrence 相当于训练时对 evolution time 做 ensemble averaging，可能迫使表示在不同 iteration counts 下稳定；特殊 zero initialization 仍是重要 boundary condition。",
+        "adaptive halting 用相邻输出分布的 KL 和 entropy 判定近似稳态，但低 entropy fixed point 也可能是错误吸引子；需要 calibration 与 selective-risk 测试。"
+      ]
+    },
+    {
+      "title": "模型与方法",
+      "paragraphs": [
+        "systematicity 数据含 2000 entities、200 relations、40,000 atomic facts 与 273,600 inferred training facts；5% atomic facts 被留作只在 OOD composition 中出现。",
+        "该实验用 $L=4$，固定 $R\\in\\\\{1,2,4,8\\\\}$；$R=1$ 等价于普通 4-layer Transformer。比较 training/ID/OOD accuracy 与 wall-clock convergence。",
+        "depth 数据含 200 entities、10 permutation relations；每 hop 生成 15,000 examples，并为每 hop 留 750 tests，最大检查到 $k=40$。curriculum 以 held-out accuracy 达 95% 才升级。",
+        "fixed recurrence 在训练中固定 $R$，dynamic recurrence 从截断 Poisson 采样；推理时扫描不同 recurrence。Figure 7 把所有模型训练到相同 12-hop，减少 curriculum exposure confound。",
+        "机制检查包括 logit lens 对 bridge/target entity 的可解码性，以及选定 2-hop corruption/restore case 的 activation patching；这些 probe 的 causal strength 不同。"
+      ]
+    },
+    {
+      "title": "核心结果与证据",
+      "paragraphs": [
+        "systematicity 中 $R=1$ 对未见组合几乎失败，$R=2$ 开始出现 OOD generalization；$R=4$ 约 2000 epochs 收敛，$R=2$ 约 7000，论文称经历 memorization→ID→OOD 三阶段。",
+        "主 Figure 5 中训练 recurrence 与 maximum training hops 一起变化，因此不能单独归因于 recurrence。匹配数据的 Figure 7 更关键：都训练至 12-hop 时，$R=6$ 到 14-hop，$R=8$ 与 dynamic 到 19-hop。",
+        "Figure 8 用 correct-token logit margin 的 post-peak decay 定义 overthinking；dynamic recurrence 衰减较慢，但 Figure 5 中超过 15 iterations 没有继续提高 OOD reach。",
+        "Figure 3 阴影是单次 run 的 100-epoch rolling standard deviation，不是 across-seed uncertainty。main heatmaps 多为单次运行，也没有 confidence intervals 或 hypothesis tests。",
+        "appendix 仅给 fixed recurrence 两个 seeds、dynamic 三个 seeds；默认 Gaussian initialization 的五个 $R=5$ seeds 行为差异显著，主结果依赖特殊 zero initialization。"
+      ]
+    },
+    {
+      "title": "有效性与局限",
+      "paragraphs": [
+        "Figure 7 支持 matched finite extrapolation，不支持随 $R$ 或参数规模的 asymptotic scaling law，更不支持 arbitrary-depth reasoning。",
+        "95% curriculum threshold、每 hop 750 tests 和单次 heatmap 共同定义“达到 19-hop”；缺少 seed-aggregated estimate 后，边界的统计稳定性未知。",
+        "logit lens 只证明信息可被线性读出；有限 activation patching 为选定 2-hop case 提供局部因果证据，但不是完整 circuit 的 necessity/sufficiency 证明。",
+        "permutation construction 排除已诊断的 short-suffix shortcut，不排除所有 heuristic；iso-FLOP controls 也没有隔离 recurrence、weight sharing、zero initialization 与 optimization。",
+        "专用 entity/relation tokens、无歧义且无 distractors 的小型 graphs 与自然语言差距很大；没有 pretrained/frontier LLM、真实 KB、distribution shift 或 noisy retrieval 实验。",
+        "论文未测 latency、energy、memory/throughput、calibration 或 adaptive-halting error cost，无法判断多 recurrence 在部署中的净效益。"
+      ]
+    },
+    {
+      "title": "复现与资源",
+      "paragraphs": [
+        "官方代码为 https://github.com/OSU-NLP-Group/Loop-Think-Generalize 。本站未运行；应 pin commit、environment、data generator、vocabulary split、initialization 与全部 seeds。",
+        "重建每个 atomic/inferred split 并检查 permutation bijection、path uniqueness 和 cross-split leakage；保存每 hop 的 exact counts 与 hashes。",
+        "用 matched 12-hop curriculum 对所有 $R$ 和 dynamic settings 做多 seed repeats，报告 per-hop binomial intervals、across-run variance 和 reach threshold sensitivity。",
+        "把 initialization、weight sharing、effective depth 与 inference FLOPs 做 factorial controls；同时报告 correct-answer first-hit、retention time 和 overthinking survival curve。",
+        "机制层面应做多 hops、多 relations、多 seeds 的 patching，加入 necessity ablation 与 causal mediation；外部有效性则需逐步加入 aliases、distractors、noisy facts、自然语言 paraphrases 和 pretrained models。",
+        "adaptive halting 要比较 fixed-compute Pareto frontier，并分别报告 early-exit accuracy、calibration、wrong-confident stops、latency 与 energy。"
+      ]
+    },
+    {
+      "title": "阅读指南",
+      "paragraphs": [
+        "快速路线：pp. 3–4 看 recurrent architecture；pp. 5–7 看 systematicity/grokking；pp. 7–10 看 depth extrapolation、Figure 7、overthinking 与 halting。",
+        "物理路线：把 recurrence 当共享非线性 map 的演化时间，关注 attractor、transient、boundary condition 和 long-time stability。",
+        "AI 路线：区分独立层深度、共享层 recurrence、training curriculum 与 inference compute；Figure 7 才是较干净的 matched-data comparison。",
+        "批判路线：核查 95% reach 定义、rolling band、seed 数、zero initialization、probe versus intervention，以及从 permutation-KG 到自然语言 LLM 的外推边界。"
+      ]
+    }
+  ],
+  "evidence_refs": [
+    "paper.pdf pp. 3–7 and official v2 main TeX: recurrent-depth map, dynamic recurrence, systematicity split, grokking curves, logit lens and model setup",
+    "paper.pdf pp. 7–10 and official v2 main TeX: curriculum threshold, Figure 7 matched-data reach, overthinking margins and adaptive halting criterion",
+    "paper.pdf pp. 15–20 and appendix TeX: permutation construction, per-hop counts, hyperparameters, activation patching, initialization sensitivity and seed coverage",
+    "source PDF SHA-256 a1a0e8f0507df84ddc70d438ba465a883c1f0002a7fc04845e471eabcb3d10b8",
+    "official arXiv v2 source archive SHA-256 d7388e11064ee6c7e7478b55e5a03742c7e1a1a4088f9f8e6c2afe1e692cf705",
+    "MinerU Markdown SHA-256 74f316e6ba60b257e4e568d2f9c3f124eb6459e8ce1329a46550d49e60d4557c",
+    "Evidence packet SHA-256 3ae13117bb1b956690b0e0617e2d26b655d6cfaf68f54f5a8234a256af9654be",
+    "Evidence status: full text, rendered pages and official v2 TeX verified; curriculum, matched-data, recurrence, overthinking, initialization, statistics, mechanism-probe and external-validity boundaries recorded; no independent reproduction performed."
+  ]
+}
