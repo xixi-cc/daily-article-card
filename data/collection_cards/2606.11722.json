@@ -1,0 +1,194 @@
+{
+  "arxiv_id": "2606.11722",
+  "source_version": "v1",
+  "source_pdf": "https://arxiv.org/pdf/2606.11722v1",
+  "title_en": "ICA Lens: Interpreting Language Models Without Training Another Dictionary",
+  "title_zh": "ICA Lens：无需再训练字典的语言模型解释方法",
+  "curation_status": "full_text_verified",
+  "card_standard_version": "2.4",
+  "audience_profile": "physics_ai_literate_physicist",
+  "paper_profile": "ai_empirical",
+  "style_reference": "physicist_daily_arxiv",
+  "provenance": {
+    "program": "Collection",
+    "catalog": "Paper Collection",
+    "catalog_record_id": "2606.11722",
+    "catalog_record_ids": ["2606.11722"],
+    "catalog_topic": "Mechanistic Interpretability",
+    "collection_date": "2026-08-30",
+    "sampled_at": "2026-08-31",
+    "selected_by": "ziming_mineru_serial_goal",
+    "sampling_seed": "not_applicable_source_complete",
+    "candidate_count": 464
+  },
+  "verified_metadata": {
+    "arxiv_id": "2606.11722",
+    "version": "v1",
+    "title": "ICA Lens: Interpreting Language Models Without Training Another Dictionary",
+    "authors": ["Sida Liu", "Feijiang Han"],
+    "categories": ["cs.LG", "cs.AI", "cs.CL"],
+    "primary_category": "cs.LG",
+    "published": "2026-06-10",
+    "updated": "2026-06-10",
+    "abstract": "The ongoing-project manuscript packages whitening and FastICA into a compact residual-stream feature workflow, audits labelability, and compares sparse probing and reconstruction-based feature interventions with PCA, ITDA and public SAEs."
+  },
+  "equation_refs": [
+    {
+      "label": "Whitened ICA objective",
+      "latex": "\\max_{WW^\\top=I}\\frac1n\\sum_{i=1}^n\\sum_{j=1}^m G\\!\\left((ZW^\\top)_{ij}\\right),\\qquad S=ZW^\\top",
+      "role": "find orthogonal directions with non-Gaussian projected activations after whitening",
+      "symbols": {
+        "Z": "row-normalized and whitened activation matrix",
+        "W": "ICA unmixing directions",
+        "S": "component scores",
+        "G": "FastICA non-Gaussianity contrast"
+      },
+      "evidence": "paper.pdf pp. 6–8 and official v1 methods TeX",
+      "interpretation": "whitening 后的 orthogonal ICA 像寻找高阶 cumulant 显著的独立坐标；non-Gaussian 并不等于 monosemantic，也可能来自词频或 outliers。"
+    },
+    {
+      "label": "Excess kurtosis diagnostic",
+      "latex": "\\kappa(v)=\\frac{\\frac1n\\sum_i(z_i(v)-\\bar z(v))^4}{\\left[\\frac1n\\sum_i(z_i(v)-\\bar z(v))^2\\right]^2}-3",
+      "role": "measure heavy-tailed activation along a candidate direction",
+      "symbols": {
+        "z_i_v": "projection of normalized activation i onto direction v",
+        "kappa": "excess kurtosis",
+        "n": "sampled activation rows, typically one million"
+      },
+      "evidence": "paper.pdf pp. 10–12 and official v1 TeX",
+      "interpretation": "大 $\\kappa$ 表示稀有强激活，但不识别其语义来源；必须结合 examples、人类审阅与下游 tests。"
+    },
+    {
+      "label": "Effective receptive field",
+      "latex": "\\mathrm{ERF}(j)=\\frac1{|\\mathcal E_j|}\\sum_{(x,t)\\in\\mathcal E_j}\\min\\{k:R_j(x,t,k)=1\\}",
+      "role": "summarize the shortest suffix that preserves component j in the top-15 with its sign",
+      "symbols": {
+        "j": "ICA component",
+        "k": "retained suffix length",
+        "R_j": "top-15 rank-and-sign recovery indicator",
+        "E_j": "evaluation events for component j"
+      },
+      "evidence": "paper.pdf pp. 12–14 and official v1 TeX",
+      "interpretation": "这是 operational suffix-recovery length，不是因果 receptive field；被截掉的 prefix 可能通过别的 features 间接影响模型。"
+    }
+  ],
+  "figure_refs": [
+    {
+      "label": "Figure 10 sparse-probe comparison",
+      "asset_path": "assets/collection-figures/2606.11722/figure-10-sparse-probing.webp",
+      "section": "核心结果与证据",
+      "role": "compare top-k sparse-probe accuracy for ICA, public SAEs, ITDA and PCA across three model families",
+      "evidence": "paper.pdf p. 24, Figure 10; official vector source sparse_probe_baselines_by_model.pdf",
+      "alt_text": "Three panels plot aggregated sparse-probe accuracy versus feature budget for ICA, sparse autoencoders, ITDA and PCA in three language models.",
+      "caption": "Figure 10：ICA 在三模型、八数据集和每模型两个选定层的聚合 sparse-probe 曲线上接近 public SAE，并高于所测 ITDA/PCA。",
+      "interpretation": "曲线跨异质数据集/选定层取 mean，未给 run-level seeds、CI 或逐数据集 tests；不能据此声称总体统计优越。"
+    }
+  ],
+  "cover": {
+    "mode": "source_figure",
+    "asset_path": "assets/collection-figures/2606.11722/figure-10-sparse-probing.webp",
+    "label": "Figure 10 sparse probing",
+    "visual_type": "comparison",
+    "evidence": "paper.pdf p. 24, Figure 10; official vector source",
+    "alt_text": "Compact ICA features give competitive aggregated sparse-probe curves compared with public sparse autoencoder dictionaries.",
+    "caption": "不训练新字典的 compact ICA features 在聚合 probing 中具有竞争力。",
+    "selection_rationale": "It directly shows the main utility comparison across models and feature budgets while retaining the aggregation boundary."
+  },
+  "sections": [
+    {
+      "title": "作者信息",
+      "paragraphs": [
+        "作者为 Sida Liu 与 Feijiang Han。",
+        "本站核验 arXiv:2606.11722v1：提交于 2026-06-10，是当前唯一版本；主分类 cs.LG，PDF 47 页；arXiv comment 标注为 Ongoing Project。",
+        "Collection 来源为刘子鸣网站的 Mechanistic Interpretability 条目；代码和项目链接可解析，本站未运行或审计。"
+      ]
+    },
+    {
+      "title": "研究问题",
+      "paragraphs": [
+        "能否不为每个模型/层重新训练 overcomplete Sparse Autoencoder（SAE），直接用经典 ICA 从 residual-stream activations 提取可解释 features？",
+        "ICA Lens 用 row normalization、whitening 与 GPU FastICA，加入 convergence acceptance/adaptive fallback，再比较人类 labelability、sparse probes、TPP 与 SAE overlap。",
+        "结果支持 compact、可操作的 feature basis；不支持 ground-truth monosemantic concepts、模型行为因果控制或全面替代 overcomplete SAE。"
+      ]
+    },
+    {
+      "title": "背景",
+      "paragraphs": [
+        "SAE 用 reconstruction+sparsity 训练过完备字典，feature 数常远大于 residual dimension；解释力与 reconstruction 之间需要训练成本和超参数选择。",
+        "ICA 假设 observed mixtures 由统计独立、非高斯 sources 线性混合；whitening 后寻找高阶统计最非高斯的 orthogonal directions。",
+        "LLM activations 未必满足独立线性源模型，所以 ICA components 是分析坐标，不是网络内部真实神经元或唯一因果变量。",
+        "probe accuracy 衡量 feature 对外部 label 的预测信息；reconstruction intervention 衡量坐标操作后的 probe score，均不直接等于生成行为改变。"
+      ]
+    },
+    {
+      "title": "给物理学家的 AI 导读",
+      "paragraphs": [
+        "把一层的百万个 token activations 看成高维样本云。PCA 对角化 covariance，ICA 在 whitened sphere 上继续旋转，以四阶及更高统计寻找非高斯轴。",
+        "row normalization 先消除每个样本的总体 amplitude，改善 numerical conditioning，但也改变原始 activation distribution；结果是 normalized-state features。",
+        "FastICA 的 fixed-point iteration 可能只在少数 components 失败。作者用 max-LIM strict criterion 与 p95 fallback，把 convergence 变成可审计 acceptance，而非默默输出。",
+        "component 维数至多 $d$，因此 ICA 是 compact basis；overcomplete SAE 能用更多 atoms 分解同一方向族。二者容量不同，不能只按 probe score判断谁普遍更好。",
+        "ERF 类似 coarse-graining 输入 prefix 后检查一个 order parameter 是否保留，但 top-15/sign criterion 是人为 operational definition，不是因果 light cone。"
+      ]
+    },
+    {
+      "title": "模型与方法",
+      "paragraphs": [
+        "对 GPT-2 等三类模型的 residual-stream activations，作者每层采样约 $n=10^6$ rows，做 row normalization、centering/whitening，再 GPU-parallel FastICA。",
+        "strict acceptance 要求所有 component LIM 小于阈值；若失败可用 p95-LIM fallback，并把 component count 逐次减半至最少 16，reduced fit 用 pseudoinverse write map。",
+        "interpretability audit 固定一个 random seed，抽 150 components，主要看一个 dominant signed side；secondary audit 已知初始 label 后再设计 prompts。",
+        "SAEBench sparse probing 在三模型、每模型两个 selected layers、八 datasets 上比较 top-k ICA/SAE/ITDA/PCA feature scores。",
+        "TPP 先用选择 features 重建/扰动 activation 再测 probe score；另比较 ICA directions 与 public SAE decoders 的 nearest cosine。"
+      ]
+    },
+    {
+      "title": "核心结果与证据",
+      "paragraphs": [
+        "GPT-2 百万-row fits 中，raw strict acceptance 为 2/12 layers，normalization 后 8/12，允许 p95 fallback 后 10/12；总 iterations 从 3107 降至 2741。",
+        "固定样本人类审阅中 142/150 components 获 non-unclear label，127/150 为 high confidence；非盲 secondary audit 报 121 supported、6 partial、0 rejected。",
+        "Figure 10 中 ICA 的 mean sparse-probe curves 接近 public SAEs，并高于 tested ITDA/PCA；aggregation 掩盖了 dataset/layer heterogeneity。",
+        "TPP 在小到中 feature budget 报 ICA probe selectivity 有利，较大 budgets 时 public SAEs 更具竞争力。",
+        "ICA–SAE nearest cosine 显示方向重叠，但 overcomplete dictionary size 与 checkpoint availability 会改变 nearest-neighbor 基线，cosine 接近也不等于同一语义/计算。"
+      ]
+    },
+    {
+      "title": "有效性与局限",
+      "paragraphs": [
+        "non-Gaussianity 不是 interpretability 或 monosemanticity 定义；kurtosis 可由 lexical frequency、formatting 或 outliers 产生。",
+        "human audit 是一次 fixed draw，secondary audit 不盲且看过初始 label 后构造 prompts；无 inter-rater reliability 或 independent resampling。",
+        "sparse-probe curves 聚合八 datasets 与两个 chosen layers，无 run seeds、confidence intervals 或 per-dataset significance tests。",
+        "TPP 只展示 feature-coordinate intervention 后 probe behavior，不是 generated text 或 task performance 的因果控制。",
+        "adaptive reduced ICA 至多 $d$ components 且用 pseudoinverse write map，不能保持全部 activation information，也不等价于 overcomplete SAE。",
+        "论文未提供 matched end-to-end GPU time、peak memory、storage 或 energy 对比，不能声称 ICA 普遍成本更低。"
+      ]
+    },
+    {
+      "title": "复现与资源",
+      "paragraphs": [
+        "代码为 https://github.com/liusida/ica-lens-paper，项目页为 https://liusida.github.io/ica-lens-paper/；本站未执行 checkpoint、demo 或 benchmark。",
+        "复现需固定 model revision、dataset/token sampling、hook/layer、normalization、whitening rank、FastICA contrast/tolerance、component-halving rule 与 random seeds。",
+        "人工审阅应预注册 label rubric、盲化 second rater，报告 inter-rater agreement，并跨 multiple component draws 重复。",
+        "benchmark 应保留 per-dataset/per-layer results、independent probe seeds、CI/tests，并让 ICA/PCA/SAE 使用 matched activation samples 与 feature budgets。",
+        "若主张行为因果，应对 generated outputs 做 targeted feature ablation/steering、matched reconstruction controls 与 downstream task evaluation。"
+      ]
+    },
+    {
+      "title": "阅读指南",
+      "paragraphs": [
+        "快速路线：pp. 6–10 看 pipeline/convergence；pp. 14–18 看人工审阅；pp. 23–26 看 Figure 10、TPP 与 SAE overlap。",
+        "物理路线：把 PCA 看二阶 diagonalization、ICA 看高阶统计旋转，并关注 normalization 与 finite-sample conditioning。",
+        "AI 路线：分清 feature extraction、labelability、probe utility、activation reconstruction 与 model behavior 五层证据。",
+        "批判路线：检查 fixed-seed/non-blind audit、selected-layer aggregation、缺失 uncertainty、compact/overcomplete 容量不匹配与成本口径。"
+      ]
+    }
+  ],
+  "evidence_refs": [
+    "paper.pdf pp. 6–10 and official v1 TeX: row normalization, whitening, FastICA objective, LIM acceptance, adaptive component count and convergence Table 1",
+    "paper.pdf pp. 14–18 and official v1 materials: fixed-seed component sample, label/confidence protocol and non-blind secondary audit",
+    "paper.pdf pp. 23–29 and official Figure 10: sparse probing, TPP reconstruction/intervention, ICA-SAE overlap, aggregation units and limitations",
+    "source PDF SHA-256 e5e4c7613ff07a252257ba681b17bf0af3f7625ddb8a1a14e86bed1844c0249a",
+    "official arXiv v1 source archive SHA-256 17523aac5434289819c9ad3944c1ecac82a91a54168f051d6d08427cc30ef1b3",
+    "MinerU Markdown SHA-256 b036cee962a107a22501b3298a5f3786382d2038bbcaea50b4c634c71f2b2ca8",
+    "Evidence packet SHA-256 aca995cf5d368a1df2e853544f37257cab265e702e47089aa2bbeb833ce70697",
+    "Evidence status: full text, official Figure 10 and matching v1 TeX verified; statistical-feature, convergence, annotation, aggregation, intervention, compact/overcomplete and cost boundaries recorded; checkpoint/code/demo not audited; no independent reproduction performed."
+  ]
+}

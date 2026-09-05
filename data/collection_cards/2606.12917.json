@@ -1,0 +1,205 @@
+{
+  "arxiv_id": "2606.12917",
+  "source_version": "v1",
+  "source_pdf": "https://arxiv.org/pdf/2606.12917v1",
+  "title_en": "Where Computation Lives Inside TabPFN: Causal Localisation of Attention Head Function",
+  "title_zh": "TabPFN 的计算位于何处：注意力头功能的因果定位",
+  "curation_status": "full_text_verified",
+  "card_standard_version": "2.4",
+  "audience_profile": "physics_ai_literate_physicist",
+  "paper_profile": "ai_empirical",
+  "style_reference": "physicist_daily_arxiv",
+  "provenance": {
+    "program": "Collection",
+    "catalog": "Paper Collection",
+    "catalog_record_id": "2606.12917",
+    "catalog_record_ids": [
+      "2606.12917"
+    ],
+    "catalog_topic": "Mechanistic Interpretability",
+    "collection_date": "2026-08-30",
+    "sampled_at": "2026-08-31",
+    "selected_by": "ziming_mineru_serial_goal",
+    "sampling_seed": "not_applicable_source_complete",
+    "candidate_count": 464
+  },
+  "verified_metadata": {
+    "arxiv_id": "2606.12917",
+    "version": "v1",
+    "title": "Where Computation Lives Inside TabPFN: Causal Localisation of Attention Head Function",
+    "authors": [
+      "Atharva Gupta",
+      "Dhruv Kumar",
+      "Murari Mandal",
+      "Saurabh Deshpande"
+    ],
+    "categories": [
+      "cs.LG"
+    ],
+    "primary_category": "cs.LG",
+    "published": "2026-06-11",
+    "updated": "2026-06-11",
+    "abstract": "The paper applies activation patching, head ablation, attention entropy and one contrastive-steering test to feature-wise attention in one TabPFN-2.5 regression checkpoint on two synthetic tasks."
+  },
+  "equation_refs": [
+    {
+      "label": "Gap-normalized patching restoration",
+      "latex": "\\mathrm{Restore}(\\ell,S)=\\frac{\\hat y(x_{\\ell,S}^{\\mathrm{patched}})-\\hat y(x^{\\mathrm{corr}})}{\\hat y(x^{\\mathrm{clean}})-\\hat y(x^{\\mathrm{corr}})}",
+      "role": "measure how replacing selected corrupted-run activations by clean ones closes the output gap",
+      "symbols": {
+        "ell": "intervened layer",
+        "S": "patched head or feature-block subset",
+        "yhat": "scalar TabPFN regression prediction",
+        "clean_corrupt": "paired inputs before and after the chosen corruption"
+      },
+      "evidence": "paper.pdf pp. 2 and 5, activation-patching definition, and official v1 TeX",
+      "interpretation": "1 表示按这个 output gap 完全恢复，0 表示无恢复，负值表示 patch 反而加剧偏离；当 clean-corrupt denominator 很小时，ratio 会不稳定。"
+    },
+    {
+      "label": "Head-ablation effect",
+      "latex": "\\mathrm{effect}_{b,\\ell}=y_{\\mathrm{normal}}-y_{\\mathrm{ablated}},\\qquad r_{b,\\ell}=\\frac{\\mathrm{effect}_{b,\\ell}}{|y_{\\mathrm{normal}}|}",
+      "role": "quantify prediction sensitivity to zeroing one attention-head activation",
+      "symbols": {
+        "b": "attention head index",
+        "ell": "layer index",
+        "effect": "signed output change",
+        "r": "output-relative ratio"
+      },
+      "evidence": "paper.pdf pp. 3 and 6, Equation (2), and official v1 TeX",
+      "interpretation": "ablation 证明的是该 zeroing intervention 下的 necessity/sensitivity；它不识别唯一语义功能，也不排除分布式冗余或下游 compensation。"
+    },
+    {
+      "label": "Normalized attention entropy",
+      "latex": "H_{bq}=-\\sum_{k=1}^{F}A_{bqk}\\log(A_{bqk}+\\epsilon),\\qquad\\widetilde H=\\frac{1}{BF\\log F}\\sum_{b=1}^{B}\\sum_{q=1}^{F}H_{bq}",
+      "role": "compare feature-wise attention concentration across tasks with different numbers of feature blocks",
+      "symbols": {
+        "A": "attention probability over key feature blocks",
+        "B": "batch size",
+        "F": "number of feature blocks",
+        "q_k": "query and key feature indices",
+        "epsilon": "numerical stabilizer, 10^-12"
+      },
+      "evidence": "paper.pdf pp. 3 and 7–8, Equations (5)–(7), and official v1 TeX",
+      "interpretation": "低熵仅表示 selectivity；Head 0 在 layer 0 与 Head 2 同样低熵却几乎无 ablation effect，直接说明 selectivity 不充分推出 causal necessity。"
+    }
+  ],
+  "figure_refs": [
+    {
+      "label": "Figure 2 multiplication head ablation",
+      "asset_path": "assets/collection-figures/2606.12917/figure-02-mha-head-ablation.webp",
+      "section": "核心结果与证据",
+      "role": "show the layer-resolved target-standard-deviation effect of ablating each feature-attention head on the multiplication task",
+      "evidence": "paper.pdf p. 2, Figure 2; official raster source mha_head_ablation.png",
+      "alt_text": "Three layer-wise curves show that Head 2 has a sharp ablation-effect peak at layer 0 while Heads 0 and 1 have much smaller late-layer peaks.",
+      "caption": "Figure 2：Multiplication task 中 Head 2 在 layer 0 的 ablation effect 为 $0.076\\sigma$，约为其他头各自峰值的 4.8–5 倍。",
+      "interpretation": "这是单 checkpoint、单 task、固定 seed 的小幅 output sensitivity，未给误差条；不能据此指定 Head 2 的唯一语义计算。"
+    }
+  ],
+  "cover": {
+    "mode": "source_figure",
+    "asset_path": "assets/collection-figures/2606.12917/figure-02-mha-head-ablation.webp",
+    "label": "Figure 2 head-ablation profile",
+    "visual_type": "comparison",
+    "evidence": "paper.pdf p. 2, Figure 2; official raster source",
+    "alt_text": "Layer-resolved ablation separates a dominant Head 2 sensitivity peak from two weaker heads on one synthetic task.",
+    "caption": "逐层消融在受控乘法任务中定位到 Head 2 的早层敏感性峰。",
+    "selection_rationale": "It is the clearest direct intervention result and keeps the measured effect size visible."
+  },
+  "sections": [
+    {
+      "title": "作者信息",
+      "paragraphs": [
+        "作者为 Atharva Gupta、Dhruv Kumar、Murari Mandal 与 Saurabh Deshpande。",
+        "本站核验 arXiv:2606.12917v1：提交于 2026-06-11，是当前唯一版本；分类 cs.LG，PDF 9 页。",
+        "Collection 来源为刘子鸣网站的 Mechanistic Interpretability 条目；本站检查全文、官方 TeX 与代表图，未运行代码或 checkpoint。"
+      ]
+    },
+    {
+      "title": "研究问题",
+      "paragraphs": [
+        "TabPFN 不是逐 token 生成语言，而是把一个表格任务作为 context 做 in-context prediction。它的 feature-wise attention heads 在哪些层对输出真正重要？",
+        "论文在一个 TabPFN-2.5 regression checkpoint 上，用 clean/corrupt activation patching、head ablation 与 attention entropy 定位 computation，并测试 mean-difference steering 能否跨样本迁移。",
+        "结果只支持两个 synthetic tasks 上的 task-dependent sensitivity profile；不支持 universal head taxonomy、唯一语义功能、task-complexity depth law 或 TabPFN 不可 steering。"
+      ]
+    },
+    {
+      "title": "背景",
+      "paragraphs": [
+        "TabPFN 预训练于大量合成表格任务，推理时把训练样本和 query 一起输入，不更新权重；本文聚焦 feature blocks 之间的 self-attention，而不是样本之间的 attention。",
+        "activation patching 把 corrupted run 的内部变量替换为 clean run 对应值，问该位置是否足以恢复输出 gap；ablation 则删除变量，问输出是否依赖它。",
+        "二者分别接近 sufficiency-under-replacement 与 necessity-under-zeroing，但都依赖 intervention choice，不能自动给出唯一因果机制。",
+        "attention entropy 是观测量：低熵说明集中读取少数 feature blocks，却不说明这些读取对最终预测必要。"
+      ]
+    },
+    {
+      "title": "给物理学家的 AI 导读",
+      "paragraphs": [
+        "可把 18 层中的每个 head 看作传递 feature-space message 的通道。逐层 ablation profile 类似测 susceptibility：局部 perturbation 引起多少标准化输出响应。",
+        "patching 不是把系统回滚到该层的完整 clean microstate，而只替换选定 head/block；恢复率因此同时取决于被替换变量、corruption 和 clean-corrupt gap。",
+        "低 entropy 类似较小参与比所指示的 mode localization，但 localization 不等于 transport weight；Head 0 的低熵/低 ablation effect 是现成反例。",
+        "逐 18 层、3 头寻找最大峰会产生 selection bias；没有多 seed、peak uncertainty 或 multiple-comparison correction 时，应把峰当探索性定位。",
+        "steering 的 mean direction 是把许多 sample-dependent activation differences coarse-grain 成一个公共向量；约 300 倍 norm collapse 表明平均过程抵消，但不证明不存在 nonlinear 或 context-conditioned control。"
+      ]
+    },
+    {
+      "title": "模型与方法",
+      "paragraphs": [
+        "模型为 tabpfn==6.3.1 的 TabPFNRegressor/TabPFN-2.5 regression checkpoint：18 层、3 头、head dimension 64、model dimension 192。",
+        "Multiplication task 取 $a,b,c\\sim\\mathcal N(0,1)$，$y=ab+c$，形成 4 个含 label 的 feature blocks；Pairwise-50 取 50 个 Gaussian features，$y=(\\sum_i x_i)^2$，形成 35 blocks。",
+        "patching 在 corrupted forward pass 中替换 pre-$W_O$ 单头输出；ablation 将激活置零，并以 target standard deviation 归一输出变化。",
+        "entropy 先逐 sample/query 计算再平均，并除以 $\\log F$；先平均 attention 再算熵会因 Jensen inequality 系统性偏高。",
+        "steering 在 layer 0 求 mean-difference direction：train $N=512$、validation 选 $\\alpha$ 用 $N=256$、test $N=256$；其余实验默认 fixed seed 42。"
+      ]
+    },
+    {
+      "title": "核心结果与证据",
+      "paragraphs": [
+        "Multiplication 中 Head 2 的 ablation 峰在 layer 0，为 $0.076\\sigma$；Head 0/1 峰值仅 $0.015\\sigma$（L13）与 $0.016\\sigma$（L12）。",
+        "Pairwise-50 中 Head 2 峰移到 layer 16，大小 $0.074\\sigma$；Head 0/1 为 $0.023\\sigma$（L15）与 $0.035\\sigma$（L17）。两任务不足以确立复杂度—深度关系。",
+        "Multiplication patching extrema为 H0 L13 $0.228\\sigma$、H1 L12 $0.196\\sigma$、H2 L6 $0.228\\sigma$；它们与 ablation peak 不要求落在同层。",
+        "Pairwise-50 signed gap recovery 中 H0 L5 为 +13.2%，而 H1 L17 与 H2 L13 的最大绝对偏差分别是 -25.5% 与 -18.5%；后两者是 disruption，不是恢复。",
+        "validation-selected steering 在 held-out Multiplication test 上报 MSE improvement 0.0%、recovery -0.8%；train/validation direction cosine 为 0.71，但公共方向 norm 比 per-sample differences 约缩小 300 倍。"
+      ]
+    },
+    {
+      "title": "有效性与局限",
+      "paragraphs": [
+        "只检查一个预训练 checkpoint、两个 synthetic regression tasks；没有真实表格数据、classification、alternate checkpoint 或独立训练模型。",
+        "主实验固定 seed 42，无 multi-seed mean、confidence interval、hypothesis test；$n=64$ 与 $n=512$ 检查是样本量变化，不是 checkpoint replication。",
+        "峰值从 18 层×3 头中选择，未校正多重比较或报告 peak-location uncertainty；$0.074$–$0.076\\sigma$ 的 output effects 本身较小。",
+        "Gaussian-replacement corruption 在 Pairwise-50 因 clean-corrupt mean gap 近零而产生不稳定百分比，正文改报 mean-shift；这说明结论依赖 corruption geometry。",
+        "全层 clean-state patching 近 100% recovery 只说明完整 residual state 替换后仍足够，不单独证明 computation 是 distributed。",
+        "一次 layer-0 mean-direction steering 失败不能推出 pure-ICL architecture 普遍不可 steering；nonlinear、per-context、other-layer directions 与不同 checkpoint 未排除。"
+      ]
+    },
+    {
+      "title": "复现与资源",
+      "paragraphs": [
+        "论文给出代码链接 https://anonymous.4open.science/r/causal-tabpfn；本站未核验匿名仓库快照是否与 v1 完全对应，也未执行模型。",
+        "复现需固定 tabpfn 6.3.1、checkpoint hash、task generator、50/50 split、seed、hook 在 pre-$W_O$ 的精确 tensor axis，以及 corruption strength。",
+        "应保留 per-sample signed patching numerator/denominator，预先定义 invalid small-gap threshold；negative restoration 必须与 positive recovery 分开。",
+        "统计扩展应使用多 task seeds、多个 checkpoints/retraining runs、预注册层/头 contrasts，并报告 effect distributions、CI 和 peak stability。",
+        "steering 扩展需比较 mean/PCA/nonlinear/context-conditioned directions、多个 hooks 与 matched random directions，在严格 train/val/test separation 下报告。"
+      ]
+    },
+    {
+      "title": "阅读指南",
+      "paragraphs": [
+        "快速路线：pp. 1–2 看 TabPFN 结构与 Figure 2；pp. 2–4 看 patching/ablation/entropy；pp. 8–9 看 steering。",
+        "物理路线：把 ablation response、patching restoration 与 entropy 分别看作响应、受控状态替换和 localization diagnostic，不要混成一种因果量。",
+        "AI 路线：先分清 feature-wise 与 item-wise attention，再追踪 pre-$W_O$ hook、feature blocks 和 held-out steering protocol。",
+        "批判路线：核对固定 seed、峰值搜索、small-gap denominator、negative recovery、单 checkpoint，以及从 steering null result 到 architecture claim 的跃迁。"
+      ]
+    }
+  ],
+  "evidence_refs": [
+    "paper.pdf pp. 1–4 and official v1 TeX: TabPFN-2.5 feature-attention architecture, two synthetic tasks, clean/corrupt patching, head ablation, Figure 2 and cross-task peak values",
+    "paper.pdf pp. 5–8 and official v1 TeX: fixed-seed protocol, sample sizes, mean-shift versus unstable Gaussian replacement, normalized entropy and feature-block interventions",
+    "paper.pdf pp. 8–9 and official v1 TeX: held-out mean-difference steering, train/validation cosine, norm collapse, selected-alpha null result and architectural interpretation",
+    "source PDF SHA-256 6592359930da373db33a68a83a1c98b985261f30a54deb3f435142b8f9b9fd80",
+    "official arXiv v1 source archive SHA-256 b4c8993568ef47d2bcda4b016b5a842ecfd0036f69361dc3ed577494ad3640af",
+    "MinerU Markdown SHA-256 f507b9e88baf670131c52d7738b7dbcc1a6d5a45755a4f4228c0f012abb90b9e",
+    "Evidence packet SHA-256 799dbf4c9469857e9fc7d3489711ee37071b3be7deb7971a98efa53feaa81c4c",
+    "Evidence status: full text, matching v1 TeX and official Figure 2 verified; intervention semantics, denominator stability, fixed-seed/peak-selection, checkpoint/task scope, entropy-causality and steering-generalization boundaries recorded; code/checkpoint not audited; no independent reproduction performed."
+  ]
+}
