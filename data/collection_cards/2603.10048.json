@@ -1,0 +1,194 @@
+{
+  "arxiv_id": "2603.10048",
+  "source_version": "v1",
+  "source_pdf": "https://arxiv.org/pdf/2603.10048v1",
+  "title_en": "Revisiting Sharpness-Aware Minimization: A More Faithful and Effective Implementation",
+  "title_zh": "重访锐度感知最小化：一种更忠实且更有效的实现",
+  "curation_status": "full_text_verified",
+  "card_standard_version": "2.4",
+  "audience_profile": "physics_ai_literate_physicist",
+  "paper_profile": "theory_experiment",
+  "style_reference": "physicist_daily_arxiv",
+  "provenance": {
+    "program": "Collection",
+    "catalog": "Paper Collection",
+    "catalog_record_id": "2603.10048",
+    "catalog_record_ids": ["2603.10048"],
+    "catalog_topic": "Representation Learning",
+    "collection_date": "2026-08-30",
+    "sampled_at": "2026-08-31",
+    "selected_by": "ziming_mineru_serial_goal",
+    "sampling_seed": "not_applicable_source_complete",
+    "candidate_count": 464
+  },
+  "verified_metadata": {
+    "arxiv_id": "2603.10048",
+    "version": "v1",
+    "title": "Revisiting Sharpness-Aware Minimization: A More Faithful and Effective Implementation",
+    "authors": ["Jianlong Chen", "Zhiming Zhou"],
+    "categories": ["cs.LG", "cs.AI"],
+    "primary_category": "cs.LG",
+    "published": "2026-03-09",
+    "updated": "2026-03-09",
+    "abstract": "The paper reinterprets the displaced gradient used by sharpness-aware minimization and proposes XSAM, which samples candidate directions on an arc in a two-vector subspace before applying the highest-loss direction."
+  },
+  "equation_refs": [
+    {
+      "label": "SAM robust-neighborhood objective",
+      "latex": "\\min_{\\theta}\\max_{\\lVert\\delta\\rVert\\leq\\rho}L(\\theta+\\delta)",
+      "role": "state the ideal min-max problem that practical SAM approximates",
+      "symbols": {
+        "theta": "trainable model parameters",
+        "delta": "adversarial displacement in parameter space",
+        "rho": "radius of the parameter-space neighborhood",
+        "L": "training loss"
+      },
+      "evidence": "paper.pdf p. 3, Eq. (1)",
+      "interpretation": "这像在每个参数点考察半径 $\\rho$ 球内的最高势垒，再让这个最坏值下降；但神经网络的 parameter-space sharpness 会随参数化与尺度变换而改变。"
+    },
+    {
+      "label": "XSAM two-direction spherical search",
+      "latex": "v_0=\\frac{\\vartheta_k-\\vartheta_0}{\\lVert\\vartheta_k-\\vartheta_0\\rVert},\\quad v_1=\\frac{g_k}{\\lVert g_k\\rVert},\\quad v(\\alpha)=\\frac{\\sin[(1-\\alpha)\\psi]}{\\sin\\psi}v_0+\\frac{\\sin(\\alpha\\psi)}{\\sin\\psi}v_1",
+      "role": "interpolate or extrapolate candidate unit directions in the plane spanned by the ascent displacement and final ascent gradient",
+      "symbols": {
+        "vartheta_0": "current parameters before inner ascent",
+        "vartheta_k": "parameters after k ascent steps",
+        "g_k": "gradient at the final ascent point",
+        "psi": "angle between v_0 and v_1",
+        "alpha": "sampled arc coordinate"
+      },
+      "evidence": "paper.pdf p. 6, Eqs. (5)–(6)",
+      "interpretation": "搜索空间只是两个向量张成平面中的一段球面弧，不是完整高维邻域；当两方向平行或反平行时 $\\sin\\psi=0$，论文未给稳定化规则。"
+    },
+    {
+      "label": "XSAM selection and outer update",
+      "latex": "\\alpha^*=\\arg\\max_{\\alpha\\in[0,a]}L(\\vartheta_0+\\rho_m v(\\alpha)),\\qquad \\theta_{t+1}=\\theta_t-\\eta_t\\lVert g_k\\rVert v(\\alpha^*)",
+      "role": "choose the highest-loss sampled direction and step oppositely using the final-gradient norm",
+      "symbols": {
+        "a": "upper end of the sampled alpha range",
+        "rho_m": "radius used to probe candidate directions",
+        "eta_t": "outer learning rate",
+        "alpha_star": "best sampled arc coordinate"
+      },
+      "evidence": "paper.pdf pp. 6–7, Eqs. (7)–(8) and Algorithm 1",
+      "interpretation": "这是有限方向、有限采样的 zeroth-order probe；它可作为优化启发式，但论文未证明该更新是原始 SAM min–max 目标的梯度或下降方向。"
+    }
+  ],
+  "figure_refs": [
+    {
+      "label": "Figure 3 trajectory and accuracy comparisons",
+      "asset_path": "assets/collection-figures/2603.10048/figure_3_trajectory_and_accuracy.webp",
+      "section": "核心结果与证据",
+      "role": "combine the proposed geometric intuition with CIFAR-100 accuracy across perturbation radii",
+      "evidence": "paper.pdf p. 8, Figure 3",
+      "alt_text": "A two-dimensional loss-surface trajectory is shown beside single-step and multi-step CIFAR-100 accuracy curves comparing SAM variants and XSAM.",
+      "caption": "Figure 3：左图给出选定二维切片上的优化轨迹，右侧给出 CIFAR-100 随扰动半径变化的 accuracy。二维切片是示意性诊断，曲线也未显示置信区间。",
+      "interpretation": "图支持 XSAM 在所画设置中的点估计优势，却不能证明候选方向更接近完整参数球内的真正最大点，也不能单独确认机制因果性。"
+    }
+  ],
+  "cover": {
+    "mode": "source_figure",
+    "asset_path": "assets/collection-figures/2603.10048/figure_3_trajectory_and_accuracy.webp",
+    "label": "Figure 3 trajectory and accuracy",
+    "visual_type": "comparison",
+    "evidence": "paper.pdf p. 8, Figure 3",
+    "alt_text": "XSAM is illustrated on a two-dimensional loss surface and compared with SAM variants on CIFAR-100.",
+    "caption": "XSAM 的二维几何图像与 accuracy 比较；几何切片不等于完整高维邻域。",
+    "selection_rationale": "The figure places the claimed mechanism beside the empirical outcome, making their evidential separation visible."
+  },
+  "sections": [
+    {
+      "title": "作者信息",
+      "paragraphs": [
+        "作者为 Jianlong Chen 与 Zhiming Zhou，来自 Shanghai University of Finance and Economics 的 Key Laboratory of Interdisciplinary Research of Computation and Economics。论文标注为 ICLR 2026 conference paper。",
+        "本站核验 arXiv:2603.10048v1：提交于 2026-03-09，是当前唯一版本；主分类 cs.LG，PDF 27 页。",
+        "Collection 来源为刘子鸣网站的 Representation Learning 条目。"
+      ]
+    },
+    {
+      "title": "研究问题",
+      "paragraphs": [
+        "SAM 的理想目标是在参数邻域里先找最高 loss，再降低这个最坏值；实际算法通常只做一到数步 ascent，然后把偏移点处的 gradient 用回原参数。这个 nonlocal gradient 为什么有效，又是否真的指向邻域最大点？",
+        "论文提出 XSAM：把 ascent displacement 与末端 gradient 归一化，在二者张成的二维平面里沿球面弧采样方向，选出 loss 最大者，再沿反方向更新。",
+        "实验点估计总体优于调过参的 SAM，但核心 Proposition 的证明把局部 Taylor 展开用于大半径结论，因此不能据此宣称 XSAM 被证明为更忠实的 SAM 实现。"
+      ]
+    },
+    {
+      "title": "背景",
+      "paragraphs": [
+        "普通 SGD 只读取当前位置的斜率。SAM 则主动探测附近的高 loss 区域，试图避免落入对参数扰动敏感的尖锐解；这是一种 parameter-space robust optimization。",
+        "在连续系统语言中，gradient 是局部广义力，Hessian 是局部刚度矩阵。沿某个方向看到更高势垒，不等于该方向在完整高维球面上离全局最高点最近。",
+        "神经网络 sharpness 不是坐标不变量：重参数化、归一化和层间缩放可改变 Hessian spectrum 或邻域 loss，而函数几乎不变。因此 flatness–generalization 关系需要固定参数化与比较协议。",
+        "slerp 是单位球面上的角度插值。$0\\leq\\alpha\\leq1$ 位于两方向间短弧；$\\alpha>1$ 是外推，不能理解为自动覆盖整个二维平面。"
+      ]
+    },
+    {
+      "title": "给物理学家的 AI 导读",
+      "paragraphs": [
+        "把 SAM 想成在高维能量面上用一个有限半径探针寻找局部最高势垒，再让系统远离它。实际 SAM 只用 ascent 末端的切向信息，XSAM 则在两个候选方向之间增加少量测量点。",
+        "这更像受限 reaction-coordinate scan，而不是求出了整个构型空间的 saddle 或 maximum。二维子空间可能抓住重要 mode，也可能漏掉与两向量正交的更陡方向。",
+        "论文的命题使用 $o(\\rho_m^2)$ 局部展开，却令 $\\rho_m$ 足够大使二次项压过一次项。little-o 只控制 $\\rho_m\\to0$ 的邻域；没有全局 remainder bound 时，这一步不能推出所有大半径都成立。",
+        "因此最稳妥的认识是：XSAM 是带额外 loss probes 的低维方向搜索器。它是否有效可以由 benchmark 衡量，但“更接近真实 maximum”需要独立的高维近似、干预或可解模型验证。"
+      ]
+    },
+    {
+      "title": "模型与方法",
+      "paragraphs": [
+        "SAM 从 $\\vartheta_0=\\theta_t$ 出发做 $k$ 次 normalized ascent 得到 $\\vartheta_k$ 与 $g_k$。XSAM 取 ascent displacement 的方向 $v_0$ 和末端 gradient 方向 $v_1$，用 slerp 生成候选 $v(\\alpha)$。",
+        "在半径 $\\rho_m$ 上评估 20–40 个候选方向的 minibatch loss，以最高者的 $\\alpha^*$ 决定更新方向；通常每 epoch 首个 minibatch 重新搜索，epoch 内复用该 alpha。",
+        "single-step 实验覆盖 CIFAR-10/100、Tiny-ImageNet 与 VGG-11/ResNet-18/DenseNet-121；另测 ImageNet/ResNet-50、IWSLT2014 translation 与 CIFAR-100/ViT-Ti。multi-step 主实验为 CIFAR-100/ResNet-18。",
+        "SAM 的 learning rate、weight decay 与 rho 先按数据集调优；XSAM 另外引入 $\\rho_m$、alpha range、采样数和搜索频率。代码链接为 https://github.com/Cccjl219/XSAM，但本站未审计或运行。"
+      ]
+    },
+    {
+      "title": "核心结果与证据",
+      "paragraphs": [
+        "九个 single-step model–dataset cells 中，五次运行的 XSAM mean accuracy 均高于 SAM，差值为 0.15–1.01 points。CIFAR-100/ResNet-18 为 81.24±0.07 对 80.93±0.11；Tiny-ImageNet/ResNet-18 为 63.82±0.23 对 62.81±0.09。",
+        "较大任务报告 ImageNet/ResNet-50 为 77.22±0.07 对 77.04±0.09，IWSLT2014 BLEU 为 35.63±0.12 对 35.30±0.04，CIFAR-100/ViT-Ti 为 68.32±0.18 对 67.80±0.22。",
+        "CIFAR-100/ResNet-18 的 k=1/2/4 multi-step 中，XSAM 为 81.27/81.44/81.37，SAM 为 80.93/80.91/80.65；这支持所列协议下的 point-estimate improvement。",
+        "200-epoch runtime 表里的 XSAM 相对 SAM 增幅约 0.3%–5.1%；后者来自 0.98 到 1.03 小时。论文基于迭代数和等 forward/backward cost 所称的 ≤2.5% 并非该表的统一实测上界。",
+        "一组 CIFAR-10/ResNet-18 Hessian diagnostic 报最大 eigenvalue：SGD/SAM/XSAM 为 78.79/36.15/33.92，但没有跨运行 uncertainty，也不能由此建立 sharpness 改善 accuracy 的因果链。"
+      ]
+    },
+    {
+      "title": "有效性与局限",
+      "paragraphs": [
+        "核心 Proposition 未在所述假设下证明：局部 Taylor remainder 被用于 $\\rho_m$ 足够大的区间；由 $g_0,g_1$ 不平行推断 $g_0,Hg_0$ 不平行也依赖未控制的 small-rho approximation。第二个结论有同样边界缺口。",
+        "更高的单半径 loss 不等于 angular/location 上更接近 constrained maximum。XSAM 只搜索两个方向张成平面的一段离散弧，并假设 maximum 在边界；它不求解完整 inner maximization。",
+        "slerp 在平行或反平行时奇异；$\\alpha>1$ 是外推。epoch 首批估计的 alpha 在方向随 minibatch 改变时继续复用，平滑 alpha trace 不能保证它仍忠实。",
+        "五次运行给 mean±SD，但无 paired test、confidence interval 或 selection-adjusted uncertainty；部分增益只有 0.15–0.18 points。validation split、trial budget 与 test-guided selection 也不清楚。",
+        "accuracy gain 同时混合 repeated loss evaluation、独立 probe radius、epochwise state 与 restricted-search regularization，不能唯一归因于 maximum-direction estimation。",
+        "二维 loss slices、Hessian eigenvalues 与 random-direction sharpness 依赖参数化和方向选择。结果尚不覆盖 foundation-model/LLM pretraining、RL、其他 norm 或大规模 memory/energy scaling。"
+      ]
+    },
+    {
+      "title": "复现与资源",
+      "paragraphs": [
+        "先修订 Proposition：明确 $\\rho$ 与 $\\rho_m$ 的 small-radius regime，给统一 remainder bounds；或在可解 quadratic/nonquadratic landscapes 上构造 theorem 与反例，分开 loss ordering、angle 与 maximum location。",
+        "实现需处理 $\\sin\\psi\\approx0$、反平行与 extrapolation，并记录每次搜索的 candidate losses、alpha、额外 forward 次数、wall-clock、VRAM 和 energy。",
+        "用多个 class orders/seeds 做 paired comparison，报告 CI 与 per-seed differences；公开 validation split、每方法 trial budget，并以等 compute 的 random-direction、固定-alpha 和额外-forward baselines 隔离机制。",
+        "在低维可穷举模型中比较 XSAM direction 与真实 ball maximum；在较大网络中用更多随机/子空间 adversarial directions 检查遗漏，并测试 chosen direction 是否真的降低 robust objective。",
+        "官方 arXiv source 提供代码 URL，但本站未核验 repository commit、environment 或结果复现；复现时应 pin commit 与数据/配置 hashes。"
+      ]
+    },
+    {
+      "title": "阅读指南",
+      "paragraphs": [
+        "快速路线：pp. 3–4 看 SAM objective/approximation；pp. 6–7 看 XSAM search 与 Algorithm 1；pp. 8–10 看主要结果。",
+        "物理路线：把两方向 spherical scan 看成低维 reaction coordinate；牢记 parameter-space sharpness 不是坐标不变量。",
+        "AI 路线：区分 inner adversarial point、偏移点 gradient、outer update direction 与 generalization metric，不把它们合并成一个“更平坦”故事。",
+        "批判路线：直接读 appendix Proposition proof，核对 local Taylor→large radius 的跳跃，再看采样弧覆盖、统计、调参公平性与 runtime 上界。"
+      ]
+    }
+  ],
+  "evidence_refs": [
+    "paper.pdf pp. 3–7: SAM objective and practical approximation, stated Proposition, XSAM two-direction spherical search, Algorithm 1 and runtime estimate",
+    "paper.pdf pp. 8–10: five-run single-step table, Figure 3, ImageNet/IWSLT/ViT and multi-step point estimates",
+    "paper.pdf appendix and official TeX: full Proposition proof, hyperparameter grids, seed statement, Hessian diagnostics and runtime derivation",
+    "source PDF SHA-256 ceec0141fd6916368d32e4c807589bd8765ca3b0a8588655f496e9117318f296",
+    "official arXiv v1 source archive SHA-256 34a5ebdff847261efe093282dcee36e797c01a84582eaf0d7ae4bf4a9273a209",
+    "MinerU Markdown SHA-256 e36ab170aac9a4f21489f5d62ef29b963551edb7cd8909417acc37492ee46cc9",
+    "Evidence packet SHA-256 b79a350379ac078c7024ef22ee222c7caae5b6e2c4438451f2b7c8332a2ea0ea",
+    "Evidence status: full text, rendered pages and official TeX verified against latest arXiv v1; local-Taylor proof failure, restricted-search geometry, slerp singularity, statistical/tuning, compute, sharpness-causality and large-scale extrapolation boundaries recorded; no independent reproduction performed."
+  ]
+}

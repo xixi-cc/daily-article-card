@@ -1,0 +1,196 @@
+{
+  "arxiv_id": "2603.10225",
+  "source_version": "v3",
+  "source_pdf": "https://arxiv.org/pdf/2603.10225v3",
+  "title_en": "Rethinking the Harmonic Loss via Non-Euclidean Distance Layers",
+  "title_zh": "用非欧氏距离层重新审视调和损失",
+  "curation_status": "full_text_verified",
+  "card_standard_version": "2.4",
+  "audience_profile": "physics_ai_literate_physicist",
+  "paper_profile": "theory_experiment",
+  "style_reference": "physicist_daily_arxiv",
+  "provenance": {
+    "program": "Collection",
+    "catalog": "Paper Collection",
+    "catalog_record_id": "2603.10225",
+    "catalog_record_ids": ["2603.10225"],
+    "catalog_topic": "Representation Learning",
+    "collection_date": "2026-08-30",
+    "sampled_at": "2026-08-31",
+    "selected_by": "ziming_mineru_serial_goal",
+    "sampling_seed": "not_applicable_source_complete",
+    "candidate_count": 464
+  },
+  "verified_metadata": {
+    "arxiv_id": "2603.10225",
+    "version": "v3",
+    "title": "Rethinking the Harmonic Loss via Non-Euclidean Distance Layers",
+    "authors": ["Maxwell Miller-Golub", "Collin Coil", "Kamil Faber", "Marcin Pietron", "Panpan Zheng", "Pasquale Minervini", "Roberto Corizzo"],
+    "categories": ["cs.LG", "cs.AI"],
+    "primary_category": "cs.LG",
+    "published": "2026-03-10",
+    "updated": "2026-04-28",
+    "abstract": "The paper replaces Euclidean distance in harmonic classification heads with several alternative metrics and benchmarks predictive performance, representation diagnostics, compute, and estimated emissions across vision and language settings."
+  },
+  "equation_refs": [
+    {
+      "label": "harmonic class probability",
+      "latex": "p_W(y_k\\mid x)=\\frac{d_k^{-n}}{\\sum_{j=1}^{K}d_j^{-n}}",
+      "role": "convert distances between an example representation and learned class prototypes into normalized class probabilities",
+      "symbols": {
+        "h": "representation of input x",
+        "w_k": "learned prototype vector for class k",
+        "d_k": "chosen distance d(h,w_k)",
+        "n": "positive inverse-distance exponent",
+        "K": "number of classes"
+      },
+      "evidence": "paper.pdf p. 3, Eq. (1)",
+      "interpretation": "距离越小，$d_k^{-n}$ 越大；$n$ 类似 inverse temperature，控制概率对最近 prototype 的集中程度，但距离趋零也带来奇异性与数值稳定问题。"
+    },
+    {
+      "label": "harmonic negative log-likelihood",
+      "latex": "\\mathcal{L}(W)=-\\sum_{(x,y)\\in D}\\log p_W(y\\mid x)",
+      "role": "train the backbone representation and class prototypes using the distance-derived probabilities",
+      "symbols": {
+        "D": "training dataset",
+        "W": "model parameters including class prototypes",
+        "y": "ground-truth class",
+        "p_W": "probability induced by inverse distances"
+      },
+      "evidence": "paper.pdf p. 3, Eq. (2)",
+      "interpretation": "它仍是 log-loss；改变的是构造概率的 score geometry，而不是取消最大似然式训练。"
+    },
+    {
+      "label": "cosine distance head",
+      "latex": "d_{\\mathrm{cos}}(h,w)=1-\\frac{h^\\top w}{\\lVert h\\rVert_2\\lVert w\\rVert_2}",
+      "role": "make the harmonic head depend on angular alignment rather than Euclidean separation",
+      "symbols": {
+        "h": "sample representation",
+        "w": "class prototype",
+        "inner_product": "angular alignment numerator",
+        "norms": "scale-removing normalization factors"
+      },
+      "evidence": "paper.pdf pp. 4–5, distance definitions",
+      "interpretation": "cosine distance 丢弃径向自由度，只比较方向；这可改善某些优化尺度性质，却不自动使 prototype 具有可解释语义。"
+    }
+  ],
+  "figure_refs": [
+    {
+      "label": "Figure 1 normalized vision radar plots",
+      "asset_path": "assets/collection-figures/2603.10225/figure-1-vision-radar-plots.webp",
+      "section": "核心结果与证据",
+      "role": "summarize selected vision methods across predictive, PCA, runtime, FLOPs, and emissions axes",
+      "evidence": "paper.pdf p. 10, Figure 1",
+      "alt_text": "A grid of radar plots compares cross-entropy, Euclidean harmonic loss, and selected non-Euclidean variants across vision datasets and backbones.",
+      "caption": "Figure 1：视觉任务的归一化 radar plots，混合 accuracy/F1、PCA 指标、训练时间、FLOPs 与排放。轴已相对 Euclidean 映射到 0–10，且只展示筛选方法，polygon area 不是绝对效用。",
+      "interpretation": "该图适合看 trade-off pattern，不适合读取 raw effect size 或建立总排名；统计结论必须回到 Tables 9–11。"
+    }
+  ],
+  "cover": {
+    "mode": "source_figure",
+    "asset_path": "assets/collection-figures/2603.10225/figure-1-vision-radar-plots.webp",
+    "label": "Figure 1 vision trade-offs",
+    "visual_type": "comparison",
+    "evidence": "paper.pdf p. 10, Figure 1",
+    "alt_text": "Normalized radar plots show metric-dependent trade-offs across vision models and datasets.",
+    "caption": "不同距离层的多目标 trade-off；归一化雷达面积不等于统计显著的综合优势。",
+    "selection_rationale": "It captures the paper's central multiobjective comparison while making metric-, dataset-, and architecture-dependence visible."
+  },
+  "sections": [
+    {
+      "title": "作者信息",
+      "paragraphs": [
+        "作者为 Maxwell Miller-Golub、Collin Coil、Kamil Faber、Marcin Pietron、Panpan Zheng、Pasquale Minervini 与 Roberto Corizzo，来自 American University、University of Vermont、AGH University、Xinjiang University 与 University of Edinburgh。",
+        "本站核验 arXiv:2603.10225v3：初稿提交于 2026-03-10，最新版更新于 2026-04-28；主分类 cs.LG，PDF 64 页。",
+        "Collection 来源为刘子鸣网站的 Representation Learning 条目。"
+      ]
+    },
+    {
+      "title": "研究问题",
+      "paragraphs": [
+        "harmonic loss 把最后一层的 inner-product logits 改成“表示到 class prototype 的 inverse distance”。若把 Euclidean distance 换成 cosine、Manhattan、Canberra、Bray–Curtis 或 Mahalanobis 等，性能、表示几何和计算代价会怎样变化？",
+        "论文在视觉与语言模型上做宽覆盖 benchmark，并用 accuracy/perplexity、gradient stability、PCA/effective rank、runtime/FLOPs 与 CodeCarbon emissions 组成三类评价。",
+        "最可靠的结论是 trade-off 强烈依赖 metric、architecture 与 dataset，cosine 常是较好的经验折中；数据不支持普适 accuracy/carbon 改善，也没有 multiplicity-corrected 显著差异。"
+      ]
+    },
+    {
+      "title": "背景",
+      "paragraphs": [
+        "标准 classifier 常以 $z_k=h^\\top w_k$ 作为 logit，再做 softmax。harmonic head 则把 $w_k$ 解释为 prototype，用 $d(h,w_k)^{-n}$ 竞争；这相当于先选定 feature space 的几何，再定义类别吸引力。",
+        "Euclidean、$L_1/L_\\infty$、cosine、Canberra/Bray–Curtis 与 Mahalanobis 对尺度、坐标旋转、稀疏分量和相关方向的敏感性不同，所以它们不是无关紧要的“距离函数替换”。",
+        "PCA explained variance 与 effective rank 描述表示谱集中程度。谱更集中可能意味着低维结构，也可能意味着信息塌缩；除非结合任务与干预，不能直接等同 interpretability。",
+        "FLOPs 是算术操作近似，runtime 还受 kernel、memory traffic 和硬件影响；CodeCarbon 是依赖设备、地点、电力强度与运行时间的估算，不是算法固有常数。"
+      ]
+    },
+    {
+      "title": "给物理学家的 AI 导读",
+      "paragraphs": [
+        "可以把 class prototypes 看作 feature space 中的吸引中心，而 $d^{-n}$ 像长程势核。换 metric 等于换了等距面、各向异性和接近奇点时的响应，不只是换一个读数单位。",
+        "cosine metric 只保留方向，自由度从径向尺度中商掉；Mahalanobis metric 则用 $\\Sigma^{-1}$ 重标不同 collective modes。它们改变 gradient flow，因此 performance 与 representation spectrum 同时改变并不意外。",
+        "所谓 prototype interpretability 至少要区分三层：几何上靠近 class center、线性/PCA 可读、对预测有 causal influence。本文主要测前两类 proxy，没有证明 human-semantic 或因果解释。",
+        "多目标 radar plot 类似把不同量纲 observable 先归一化后画 phase portrait；轮廓依赖 normalization、基准和筛选方法，面积本身没有自然物理意义。"
+      ]
+    },
+    {
+      "title": "模型与方法",
+      "paragraphs": [
+        "视觉覆盖 MNIST、CIFAR-10/100、Marathi Sign 与 TinyImageNet，backbones 包括 MLP、CNN、ResNet50 与 PVTv2-B0；语言实验使用 OpenWebText 上的 GPT、BERT 与 Qwen2-style models。",
+        "在相同 backbone 后把 Euclidean harmonic head 替换为 Manhattan、Chebyshev、Minkowski、cosine、Hamming、Canberra、Bray–Curtis 和 Mahalanobis 等距离，并与 cross-entropy 与 Euclidean harmonic baseline 比较。",
+        "评价包括 predictive metrics、gradient stability、effective rank/PCA、epoch duration、FLOPs 与 CodeCarbon emissions；筛选后的视觉配置以 3 seeds 重跑并画 nominal 95% confidence bands。",
+        "作者另研究 modulo addition 的 grokking/circular embeddings，并给关于 scale invariance、finite minimizer 与 PAC-Bayes-style capacity 的理论论述。"
+      ]
+    },
+    {
+      "title": "核心结果与证据",
+      "paragraphs": [
+        "跨 N=16 个 dataset–backbone pairs，没有一种非欧氏距离对 Euclidean 的 accuracy improvement 达到显著的正 median raw effect。较好的正 median 包括 normalized Bray–Curtis +0.5317（raw p=0.17060）和 stable cosine +0.1598（p=0.45339）。",
+        "Tables 9–11 有若干 raw p<0.05 项，但所有 reported adjusted p-values 都大于 0.05，因此不能称为多重比较校正后显著。N=16 pairs 还共享 datasets、backbones、代码与 baselines，不是明显独立的总体样本。",
+        "modulo-addition case study 中 cross-entropy 的 PCA explained variance 约 20–30%，多种 harmonic variants 接近 100% 并呈 circle-like embeddings；这是 synthetic task 的描述性结果，不等于普遍消除 grokking。",
+        "Table 16 的 backbone-dominated cost 从 MNIST MLP 的 0.0010 GFLOPs 到 224×224 TinyImageNet PVT/ResNet50 的 1.8995/4.0967 GFLOPs；head 的复杂度写作 $O(Cd)$，但 FLOPs 不含 memory/kernel effects。",
+        "论文总体显示 metric choice 会系统改变 accuracy、optimization trajectories、representation spectra 与 measured emissions；不存在一个在所有模型和数据上同时支配其他选择的 universal distance。"
+      ]
+    },
+    {
+      "title": "有效性与局限",
+      "paragraphs": [
+        "Tables 9–11 以 raw p<0.05 标 significance，但 adjusted p 全部 >0.05；卡片不采用论文的 corrected-significance 表述。3 seeds 对筛选后方法的 uncertainty 支持也较弱，interval construction 与 selection adjustment 未交代。",
+        "Table 10 caption 规定 negative difference 表示使用更少 PCs，正文却把 positive +12.8/+9.8 当作更强 concentration；在回查 raw configurations 前，PCA effect direction 无法可靠判定。",
+        "Theorem A.2 的 joint scale invariance 计算不证明只优化 W 时 finite minimizer 存在，compactness argument 又假设连续性而 $r^{-\\omega}$ 在零处奇异。Theorem A.4 使用未具体化的 compatible capacity norm 与 schematic PAC-Bayes 引用。",
+        "语言 carbon 叙述冲突：主文把 distance heads 描述为 neutral-to-greener，Appendix L.3 却说所有替代项都提高 per-1k-step emissions；累计排放、early stopping 与单位步排放不能混为一谈。",
+        "PCA concentration、effective rank 与 prototype proximity 是几何 diagnostics，不证明 semantic interpretability 或 causal mechanism。radar axes 归一化且只展示 selected methods，polygon area 不是完整排名。",
+        "CodeCarbon、runtime 与 early stopping 都依赖硬件和 protocol；结果不能外推成算法固有的 universal carbon ordering。"
+      ]
+    },
+    {
+      "title": "复现与资源",
+      "paragraphs": [
+        "先从 raw per-configuration data 重建 Tables 9–11，确认差值方向、Wilcoxon pairing unit 与 multiplicity family；报告 adjusted effect CIs，而不仅是 p-values。",
+        "对所有候选 metric 使用相同 trial budget、validation rule 与 seeds；避免先选 top methods 再只对其画 3-seed bands，至少报告 selection-aware uncertainty。",
+        "在 scale-invariance/finite-minimizer theorem 中明确固定与共同缩放的变量、distance 零点 regularization、compact domain 和 capacity norm；用一维反例测试存在性声明。",
+        "排放实验同时报告 total-to-target、per-step、wall-clock、hardware/location、电力强度、memory 与 accuracy-matched stopping，分离 head cost 和 backbone-dominated cost。",
+        "要验证 interpretability，应加入 prototype retrieval 的 blinded human/label tests、causal ablation 与 counterfactual movement；要验证 grokking，应扩展 tasks、seeds 并控制 training horizon。",
+        "作者给出匿名代码链接 https://anonymous.4open.science/r/rethinking-harmonic-loss-5BAB/；本站未运行或审计，复现时应固定 snapshot、environment 和 dataset hashes。"
+      ]
+    },
+    {
+      "title": "阅读指南",
+      "paragraphs": [
+        "快速路线：pp. 3–6 看 harmonic probability 与 distances；pp. 8–11 看视觉/语言总结；pp. 28–32 看统计 tables 与 confidence bands。",
+        "物理路线：把 metric 看成 feature manifold 上的几何选择，把 inverse distance 看成竞争势核；再问哪些结论对坐标与尺度不变。",
+        "AI 路线：区分 classification head、backbone representation、optimization dynamics 与 evaluation proxy；PCA 低维不自动等于解释性。",
+        "批判路线：优先核对 adjusted p-values、Table 10 sign、Theorems A.2/A.4、主文与 Appendix L.3 的 emissions 口径，以及 modulo-addition 外推边界。"
+      ]
+    }
+  ],
+  "evidence_refs": [
+    "paper.pdf pp. 3–7: harmonic probabilities and loss, alternative distances, task/model coverage, gradient stability, effective rank, PCA and emissions definitions",
+    "paper.pdf pp. 8–11: normalized vision/language radar plots and the metric-dependent empirical narrative",
+    "paper.pdf pp. 19–20 and official TeX: Theorems A.2/A.4, scale/minimizer assumptions and PAC-Bayes-style proof boundaries",
+    "paper.pdf pp. 28–32 and 48–50: N=16 Wilcoxon tables, adjusted p-values, three-seed bands, modulo addition and FLOPs; sustainability appendix for emissions inconsistency",
+    "source PDF SHA-256 3b584d5a9e8de2acdcc9ee68913c2d1e3632f9e6d922f1a1e9be73461eb79540",
+    "official arXiv v3 source archive SHA-256 9d1ee4cf549a2718b3761cad11aa66451d2d721cee46c8e12c25eb4c7f2b0c6e",
+    "MinerU Markdown SHA-256 634b1bb879b30bc1505eb838e65c7cb176832d4b63d28c81c338c66373ef21fe",
+    "Evidence packet SHA-256 143b1015f7e12fbb904595abcbd2fa25a2ebe9c8a2dd4a647cf3c4fff280a68d",
+    "Evidence status: full text, rendered pages and official TeX verified against latest arXiv v3; multiplicity, PCA-sign, theorem, selection/seed, interpretability, grokking, FLOPs and emissions boundaries recorded; no independent reproduction performed."
+  ]
+}

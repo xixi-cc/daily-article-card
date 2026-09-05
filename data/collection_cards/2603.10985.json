@@ -1,0 +1,195 @@
+{
+  "arxiv_id": "2603.10985",
+  "source_version": "v1",
+  "source_pdf": "https://arxiv.org/pdf/2603.10985v1",
+  "title_en": "The Discrete Charm of the MLP: Binary Routing of Continuous Signals in Transformer Feed-Forward Layers",
+  "title_zh": "MLP 的离散魅力：Transformer 前馈层对连续信号的二值路由",
+  "curation_status": "full_text_verified",
+  "card_standard_version": "2.4",
+  "audience_profile": "physics_ai_literate_physicist",
+  "paper_profile": "ai_empirical",
+  "style_reference": "physicist_daily_arxiv",
+  "provenance": {
+    "program": "Collection",
+    "catalog": "Paper Collection",
+    "catalog_record_id": "2603.10985",
+    "catalog_record_ids": ["2603.10985"],
+    "catalog_topic": "Representation Learning",
+    "collection_date": "2026-08-30",
+    "sampled_at": "2026-08-31",
+    "selected_by": "ziming_mineru_serial_goal",
+    "sampling_seed": "not_applicable_source_complete",
+    "candidate_count": 464
+  },
+  "verified_metadata": {
+    "arxiv_id": "2603.10985",
+    "version": "v1",
+    "title": "The Discrete Charm of the MLP: Binary Routing of Continuous Signals in Transformer Feed-Forward Layers",
+    "authors": ["Peter Balogh"],
+    "categories": ["cs.LG"],
+    "primary_category": "cs.LG",
+    "published": "2026-03-11",
+    "updated": "2026-03-11",
+    "abstract": "The paper reports a post-hoc GPT-2 Small activation pattern in which seven selected Layer-11 neurons and one anti-correlated neuron predict MLP-output magnitude and the conditional cost of removing the whole MLP."
+  },
+  "equation_refs": [
+    {
+      "label": "transformer MLP map",
+      "latex": "\\operatorname{MLP}(x)=W_{\\mathrm{out}}\\operatorname{GELU}(W_{\\mathrm{in}}x+b_{\\mathrm{in}})+b_{\\mathrm{out}}",
+      "role": "express the feed-forward layer as continuous hidden activations followed by a linear projection back to the residual stream",
+      "symbols": {
+        "x": "token residual-stream vector entering the MLP",
+        "W_in": "expansion matrix from residual to hidden width",
+        "GELU": "smooth gating nonlinearity",
+        "W_out": "projection back to residual width"
+      },
+      "evidence": "paper.pdf p. 2, Eq. (1)",
+      "interpretation": "GPT-2 Small 把 768 维输入扩到 3072 个 hidden neurons；单个 activation 连续，但跨阈值后的 ON/OFF pattern 可作为离散 coarse-graining。"
+    },
+    {
+      "label": "nonlinear residual used by polynomial probes",
+      "latex": "\\delta_i=y_i-(Wx_i+b)",
+      "role": "subtract the best fitted linear map before asking whether the remaining MLP response is captured by low-degree polynomials",
+      "symbols": {
+        "x_i": "MLP input for token i",
+        "y_i": "MLP output for token i",
+        "Wx_i_plus_b": "least-squares linear prediction",
+        "delta_i": "remaining nonlinear component"
+      },
+      "evidence": "paper.pdf p. 3, Section 2.1",
+      "interpretation": "probe 实际检验的是 PCA-compressed、特定 residual stratum 上 degree 2–7 ridge polynomial 的泛化，而不是所有 smooth function approximators。"
+    },
+    {
+      "label": "selected-neuron consensus count",
+      "latex": "c_i=\\sum_{j=1}^{7}\\mathbf{1}[a_{ij}>0.1]",
+      "role": "bin each token by how many of seven post-hoc selected default-ON neurons cross the activation threshold",
+      "symbols": {
+        "a_ij": "activation of selected neuron j for token i",
+        "0.1": "fixed firing threshold used in the analysis",
+        "c_i": "consensus bin from 0 through 7",
+        "indicator": "binary thresholding operation"
+      },
+      "evidence": "paper.pdf pp. 5–7, neuron selection and consensus analysis",
+      "interpretation": "这是对连续 activation 的人为 coarse-graining；发现的强单调关系值得关注，但 threshold、neuron selection 与 corpus 都属于测量协议。"
+    }
+  ],
+  "figure_refs": [
+    {
+      "label": "Figure 1 consensus and two response regimes",
+      "asset_path": "assets/collection-figures/2603.10985/figure-1-two-regimes.webp",
+      "section": "核心结果与证据",
+      "role": "show how N2123 firing and total MLP-output norm change across the seven-neuron consensus bins",
+      "evidence": "paper.pdf p. 7, Figure 1; official source asset two_regimes.pdf",
+      "alt_text": "As the number of active selected consensus neurons rises from zero to seven, N2123 firing falls and the mean Layer-11 MLP-output norm also decreases.",
+      "caption": "Figure 1：在选定的 GPT-2 Small Layer 11 neurons 中，consensus 从 0/7 增至 7/7 时，N2123 firing 与 MLP-output norm 单调下降。误差来自 token-level bootstrap，不是独立模型复现。",
+      "interpretation": "图显示一个很干净的 post-hoc order parameter，但没有单独操作这七个 neurons；N2123-only intervention 近乎无效。"
+    }
+  ],
+  "cover": {
+    "mode": "source_figure",
+    "asset_path": "assets/collection-figures/2603.10985/figure-1-two-regimes.webp",
+    "label": "Figure 1 consensus regimes",
+    "visual_type": "data_plot",
+    "evidence": "paper.pdf p. 7, Figure 1",
+    "alt_text": "Two curves link a selected-neuron consensus score to N2123 firing and MLP-output magnitude.",
+    "caption": "七神经元 consensus 是强预测指标；它尚未被证明是实现路由的因果开关。",
+    "selection_rationale": "It is the clearest view of the reported binary pattern and simultaneously exposes that the evidence is conditional and correlational."
+  },
+  "sections": [
+    {
+      "title": "作者信息",
+      "paragraphs": [
+        "作者为 Peter Balogh；论文未列机构 affiliation，提供个人联系邮箱。",
+        "本站核验 arXiv:2603.10985v1：提交于 2026-03-11，是当前唯一版本；主分类 cs.LG，PDF 18 页，标注为 under-review preprint。",
+        "Collection 来源为刘子鸣网站的 Representation Learning 条目。"
+      ]
+    },
+    {
+      "title": "研究问题",
+      "paragraphs": [
+        "Transformer MLP 通常被视为从 residual vector 到 residual vector 的连续函数。沿自然语言数据流，它是否更适合描述成由离散 activation patterns 决定“需要多少非线性处理”，而被路由的信号幅度仍连续？",
+        "论文在一个预训练 GPT-2 Small 的 Layer 11 中选出七个 default-ON neurons 与一个互斥的 N2123，并把七者越过阈值的数量当作 consensus score。",
+        "该 score 强烈预测 N2123 firing、MLP-output norm 与移除整个 MLP 的条件性 perplexity cost；但这是一项单模型、单 corpus、post-hoc discovery，不能称为通用或已定位因果 circuit。"
+      ]
+    },
+    {
+      "title": "背景",
+      "paragraphs": [
+        "GPT-2 的 MLP 对每个 token 独立作用：先扩维、经 GELU，再投影回 residual stream。GELU 输出连续，所以网络从数学上仍是连续映射；“binary routing”指观测到的 activation pattern 描述，不是网络变成硬数字门。",
+        "mechanistic interpretability 常从 neuron activations、probes 与 ablations 猜测内部计算。probe 的可预测性说明信息存在；只有针对候选变量的 intervention 才更接近因果定位。",
+        "perplexity 是平均 token negative log-likelihood 的指数。移除 MLP 后 perplexity 增幅越大，说明该模块对这一 token subset 的预测更重要，但未指出模块内部哪个 neuron 承担作用。",
+        "在相关序列中，token 不是独立实验单位。对 contiguous tokens 做普通 bootstrap 或 chi-square 会把样本量看得过大，尤其在 pattern 是同一数据上探索出来时。"
+      ]
+    },
+    {
+      "title": "给物理学家的 AI 导读",
+      "paragraphs": [
+        "可把七神经元 consensus $c$ 看成从 3072 维微观 activation state 提取的离散 order parameter。$c$ 与输出 norm 的近单调关系很像不同宏观 regime，但 order parameter 能分类状态不等于它驱动相变。",
+        "N2123 与 consensus 高度反相关，像一个醒目的 indicator spin。把它单独置零或 clamp 后 perplexity 改变 <0.1%，说明它更像 diagnostic display，而不是 bottleneck actuator。",
+        "conditional whole-MLP ablation 则同时删除 3072-neuron subsystem。不同 $c$ bins 的响应差异说明 consensus 能预测模块 susceptibility，却不能把因果性分配给那八个被选 neurons。",
+        "binary/continuous 不是非此即彼：thresholded features 对 imbalanced routing label 足够，而连续幅度对 output norm 保留更多信息。更准确的图像是离散 sector 标签承载路径信息，sector 内仍有连续动力学。"
+      ]
+    },
+    {
+      "title": "模型与方法",
+      "paragraphs": [
+        "全部主实验使用原始 OpenAI GPT-2 Small：124M parameters、12 layers、每层 3072 MLP neurons；数据为 nested 50K/500K WikiText-103 token samples。",
+        "先拟合 MLP input→output 的最佳线性映射，取 nonlinear residual；把输入与 residual PCA-compress 后，用 degree 2–7 ridge polynomials 及五种 cluster-then-fit variants 做 held-out probe。",
+        "按 residual norm 的 bottom 25% 与 top 5% 比较 firing-rate shifts，选择 Layer-11 neurons，阈值 activation>0.1；七个 default-ON neurons 的 active count 定义 consensus，N2123 被描述为 exception indicator。",
+        "后续比较 binary 与 continuous features 对 top-quartile routing label/output norm 的预测，并按 consensus bin 条件性移除整个 Layer-11 MLP；另做 N2123-only zeroing/clamping。"
+      ]
+    },
+    {
+      "title": "核心结果与证据",
+      "paragraphs": [
+        "top-10%-residual tokens 上，degree 2–7 polynomial probes 的最大 validation $R^2$ 为 Layer 9 的 0.062 与 Layer 11 的 0.262；Layer-9 五类 cluster-then-fit 的 best-cluster $R^2$ 至多 0.021。",
+        "七个 selected default-ON neurons 与 N2123 的 pairwise exclusivity 为 92.8%–97.8%。consensus 从 0/7 到 7/7 时，N2123 firing 从 94.7% 降至 0.5%，mean MLP-output norm 从 194.1 降至 70.0，即 2.77×。",
+        "10,000 次 token-level bootstrap 报 gradient range CI [93.8,94.7] percentage points、norm ratio [2.73,2.81]×、average exclusivity [95.8,95.9]%；这些区间不包含独立模型/corpus uncertainty。",
+        "预测 top-quartile routing label 时 binary/continuous features accuracy 为 79.2%/78.8%，但 majority baseline 已是 75%；预测 output norm 时 continuous $R^2=0.36$，高于 binary 的 0.22。",
+        "按 consensus 条件性移除整个 MLP，perplexity 在 0/7 bin 增 43.3%，在 7/7 bin 增 10.1%，总体移除增 16.9%；单独 zero/clamp N2123 的影响 <0.1%。",
+        "相同 neuron indices 的 clean pattern 在 GPT-2 Medium 不出现，在 Large 较弱；作者未在大模型中重新发现各自候选 circuit，所以这不是公平的 cross-scale absence test。"
+      ]
+    },
+    {
+      "title": "有效性与局限",
+      "paragraphs": [
+        "全 MLP ablation 操作的是整个模块，并按同一模型/数据上 post-hoc 发现的状态分组；各 bins 的 token composition 与 baseline perplexity 差异很大。它不证明八个 selected neurons 实现或导致 routing。",
+        "polynomial failure 仅限 PCA-compressed ridge、degrees 2–7、特定 residual strata 和一个模型/corpus；它不能排除一般 smooth approximation，更不能由失败本身推出 binary routing 是原因。",
+        "连续文本 tokens 相互依赖。chi-square 与普通 token bootstrap 未按 document/sequence 聚类，也未校正 neuron/subset search 与 post-selection uncertainty。",
+        "exclusivity 对 base rate 敏感：1000 个 random controls 中 220 个超过 95.8%。gradient control 更有选择性，但也是在真实 neurons 被发现后只比较 1000 次构造。",
+        "79.2% routing accuracy 只比 75% majority baseline 高约 4 points；continuous activations 对 magnitude 保留更多信息，因此“binarization loses no information”仅适用于这一定义的 label。",
+        "semantic roles、exception handler、quorum、hard IF/ELSE 与 developmental arc 都是 post-hoc 解释。没有 training seeds、其他 corpora、architecture families 或 SwiGLU/GeGLU replication。"
+      ]
+    },
+    {
+      "title": "复现与资源",
+      "paragraphs": [
+        "先固定 discovery/evaluation split：在一组 documents 选 neurons/threshold，在独立 documents 测曲线与 ablation；bootstrap 以 document 或 contiguous block 为单位，并加入 selection-aware null。",
+        "做 neuron-level causal tests：matched activation-rate random sets、对七者逐个/组合 patching、activation steering 与 mediation；保持 token subset 不变，区分 indicator、redundant contributor 与真正 bottleneck。",
+        "polynomial 对照应扩大 basis/model family、degree/regularization、raw versus PCA coordinates，并与同参数量 neural/spline/kernel probes 比较；结论限定为测试族而非“smooth functions fail”。",
+        "在 GPT-2 Medium/Large 及其他 seeds/corpora 中重新跑完整 discovery pipeline，而不是复用 neuron indices；再扩展到 LLaMA-style SwiGLU/GeGLU，报告跨模型 effect distribution。",
+        "代码与数据链接为 https://github.com/pbalogh/discrete-charm-mlp；本站未运行或审计，应 pin commit、model revision、dataset slice 与 tokenization hashes。"
+      ]
+    },
+    {
+      "title": "阅读指南",
+      "paragraphs": [
+        "快速路线：pp. 3–5 看 probe 与 clustering；pp. 5–8 看 neuron selection、consensus 与 Figure 1；pp. 9–10 看 ablations。",
+        "物理路线：把 consensus 当 coarse-grained order parameter，把 whole-MLP ablation 当大范围 perturbation；不要把 susceptibility predictor 当 microscopic cause。",
+        "AI 路线：区分 activation threshold、probe prediction、conditional module importance 与 causal circuit localization。",
+        "批判路线：重点核对 majority baseline、token pseudoreplication、random-control base rate、N2123-null effect，以及 Medium/Large 未重新发现 neurons 的 transfer boundary。"
+      ]
+    }
+  ],
+  "evidence_refs": [
+    "paper.pdf pp. 3–5: GPT-2 Small/WikiText-103 setup, PCA polynomial probes, residual strata and five cluster-then-fit controls",
+    "paper.pdf pp. 5–8: post-hoc neuron selection, threshold, exclusivity, consensus bins, Figure 1, token bootstrap and binary-versus-continuous prediction",
+    "paper.pdf pp. 9–10: conditional whole-MLP ablation, token composition/base perplexity and diagnostic-only N2123 intervention",
+    "paper.pdf pp. 12 and 15–16: stated scope limitations and indexed GPT-2 Medium/Large transfer tests",
+    "source PDF SHA-256 7af94960811ec2cd41cb95a44c03f4895a638caaa5ce7e8909b71829139abad4",
+    "official arXiv v1 source archive SHA-256 daa1e192d290dc587790522ee579ea84e6ad85aae164fe81c9db2345ee16da22",
+    "MinerU Markdown SHA-256 0490c3bc258629e3afbef7c9a0f275cc78a6bb3451ccf2d8dfe971b8029cb589",
+    "Evidence packet SHA-256 5bf704ce2a8bbfc4fcaaec7eab9bfa776165f24bbd2671fde6990fdc344183ca",
+    "Evidence status: full text, rendered pages and official TeX verified against latest arXiv v1; probe-family, whole-MLP versus neuron causality, token dependence/post-selection, base-rate, binary-label and cross-model generalization boundaries recorded; no independent reproduction performed."
+  ]
+}
