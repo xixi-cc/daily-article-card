@@ -1,0 +1,200 @@
+{
+  "arxiv_id": "2603.14294",
+  "source_version": "v3",
+  "source_pdf": "https://arxiv.org/pdf/2603.14294v3",
+  "title_en": "Seeking Physics in Diffusion Noise",
+  "title_zh": "在扩散噪声中寻找物理信号",
+  "curation_status": "full_text_verified",
+  "card_standard_version": "2.4",
+  "audience_profile": "physics_ai_literate_physicist",
+  "paper_profile": "ai_empirical",
+  "style_reference": "physicist_daily_arxiv",
+  "provenance": {
+    "program": "Collection",
+    "catalog": "Paper Collection",
+    "catalog_record_id": "2603.14294",
+    "catalog_record_ids": ["2603.14294"],
+    "catalog_topic": "Representation Learning",
+    "collection_date": "2026-08-30",
+    "sampled_at": "2026-08-31",
+    "selected_by": "ziming_mineru_serial_goal",
+    "sampling_seed": "not_applicable_source_complete",
+    "candidate_count": 464
+  },
+  "verified_metadata": {
+    "arxiv_id": "2603.14294",
+    "version": "v3",
+    "title": "Seeking Physics in Diffusion Noise",
+    "authors": ["Chujun Tang", "Lei Zhong", "Fangqiang Ding"],
+    "categories": ["cs.CV", "cs.AI", "cs.LG", "cs.RO"],
+    "primary_category": "cs.CV",
+    "published": "2026-03-15",
+    "updated": "2026-08-05",
+    "abstract": "The paper probes frozen video Diffusion Transformer features for physical-plausibility labels, trains backbone-specific verifiers, and uses them for progressive trajectory selection and reward-gradient guidance without fine-tuning the generator."
+  },
+  "equation_refs": [
+    {
+      "label": "causal temporal verifier",
+      "latex": "\\tilde{\\mathbf f}^{(\\ell)}_t=\\operatorname{Proj}(\\mathbf f^{(\\ell)}_t)+\\mathbf p_{1:F},\\qquad \\mathbf y^{(\\ell)}_t=\\tilde{\\mathbf f}^{(\\ell)}_t+\\operatorname{CausalAttn}(\\operatorname{LN}(\\tilde{\\mathbf f}^{(\\ell)}_t))",
+      "role": "map frozen framewise DiT features to a temporally causal representation used to score physical plausibility",
+      "symbols": {
+        "f": "spatially pooled hidden features over F latent frames",
+        "ell": "chosen frozen DiT block",
+        "t": "diffusion-noise timestep",
+        "Proj": "learned projection into the verifier width",
+        "CausalAttn": "small trainable temporal attention head"
+      },
+      "evidence": "paper.pdf pp. 3–4, Eqs. (1)–(3) and verifier description",
+      "interpretation": "verifier 读取冻结 backbone 的可预测信号；其监督标签与约一百万可训练参数来自外部训练，因此不能把分数本身称为 generator 内生的物理定律。"
+    },
+    {
+      "label": "progressive trajectory compute",
+      "latex": "C_{\\mathrm{ours}}\\approx T_{\\mathrm{steps}}N\\frac{1-\\rho^{K+1}}{(K+1)(1-\\rho)}",
+      "role": "estimate denoising work when a fixed initial population is geometrically pruned at K intermediate checkpoints",
+      "symbols": {
+        "N": "number of initially sampled trajectories",
+        "K": "number of pruning checkpoints",
+        "rho": "fraction retained at each checkpoint",
+        "T_steps": "full denoising-step count",
+        "C_ours": "approximate active-trajectory step count"
+      },
+      "evidence": "paper.pdf pp. 4–5, Eq. (4), Algorithm 1 and efficiency analysis",
+      "interpretation": "节省来自提前终止候选而非单轨迹更便宜；报告的 37% 只相对四条轨迹全部跑完的 Best-of-4，490 s 仍是单样本 204 s 的约 2.4 倍。"
+    },
+    {
+      "label": "physics-reward gradient guidance",
+      "latex": "\\tilde{\\boldsymbol\\epsilon}_t=\\hat{\\boldsymbol\\epsilon}_t-w_{\\mathrm{phy}}\\sigma_t\\nabla_{\\mathbf z_t}\\log r_t(\\mathbf z_t)",
+      "role": "steer a surviving latent trajectory toward a higher verifier score during a restricted noise window",
+      "symbols": {
+        "z_t": "noisy video latent at timestep t",
+        "epsilon_hat": "ordinary classifier-free-guided noise prediction",
+        "r_t": "learned verifier plausibility score",
+        "w_phy": "physics-reward guidance strength",
+        "sigma_t": "noise-scale factor"
+      },
+      "evidence": "paper.pdf pp. 5–6, Eqs. (5)–(6) and guidance safeguards",
+      "interpretation": "这是对 learned proxy 的局部梯度上升；有限噪声窗口与 gradient clipping 降低风险，但不能排除 reward hacking、off-manifold drift 或 evaluator bias。"
+    }
+  ],
+  "figure_refs": [
+    {
+      "label": "Figure 1 physics-aware diffusion inference",
+      "asset_path": "assets/collection-figures/2603.14294/figure1-framework.webp",
+      "section": "核心结果与证据",
+      "role": "show how frozen intermediate features feed a backbone-specific verifier, trajectory pruning and reward-gradient guidance",
+      "evidence": "paper.pdf p. 1, Figure 1; official source fig/pipeline1.png",
+      "alt_text": "A video diffusion model exposes intermediate features to a physics verifier that ranks multiple trajectories and supplies a guidance gradient.",
+      "caption": "Figure 1：冻结 video DiT 的中间特征被外接 verifier 读取；分数一方面淘汰候选轨迹，另一方面通过 latent gradient 引导保留轨迹。",
+      "interpretation": "图中的 physics-aware 是监督式 plausibility proxy 与 inference policy，不是把守恒方程或显式动力学求解器嵌入生成器。"
+    }
+  ],
+  "cover": {
+    "mode": "source_figure",
+    "asset_path": "assets/collection-figures/2603.14294/figure1-framework.webp",
+    "label": "Figure 1 verifier-guided diffusion",
+    "visual_type": "schematic",
+    "evidence": "paper.pdf p. 1, Figure 1; official source fig/pipeline1.png",
+    "alt_text": "Intermediate diffusion features are scored to prune and steer video-generation trajectories.",
+    "caption": "从中间 diffusion features 读出 plausibility proxy，再用于多轨迹选择和局部梯度引导。",
+    "selection_rationale": "It is the source-authored overview that connects the representation claim to both inference-time interventions."
+  },
+  "sections": [
+    {
+      "title": "作者信息",
+      "paragraphs": [
+        "作者为 Chujun Tang（香港科技大学〔广州〕、Brown University）、Lei Zhong（University of Edinburgh）与 Fangqiang Ding（香港科技大学〔广州〕）。",
+        "本站核验 arXiv:2603.14294v3：初次提交于 2026-03-15，最新版更新于 2026-08-05；主分类 cs.CV，PDF 15 页。",
+        "Collection 来源为刘子鸣网站的 Representation Learning 条目。"
+      ]
+    },
+    {
+      "title": "研究问题",
+      "paragraphs": [
+        "video diffusion model 经常生成外观逼真却违反碰撞、重力或材料行为的视频。冻结的 Diffusion Transformer 在尚有较强噪声时，是否已包含能预测最终物理可信度的中间信号？",
+        "论文先用 linear probe 检查这种信号，再训练小型 backbone-specific verifier；推理时用它逐步淘汰四条候选轨迹，或对 latent 施加 reward gradient，而不微调生成器权重。",
+        "结果支持的是 annotated physical plausibility 的部分可解码性和有限 benchmark 上的干预收益；尚不足以证明 DiT 学到了可识别、可外推的内部物理定律。"
+      ]
+    },
+    {
+      "title": "背景",
+      "paragraphs": [
+        "diffusion video model 从高噪声 latent 逐步去噪。DiT 的中间 block activation 同时编码时间结构、对象外观、运动和训练数据来源；linear probe 测的是某标签能否从这些 activation 中被简单读出。",
+        "AUC=0.5 对应随机排序，AUC 越高表示正负样本的 score 排序越可分。AUC 不告诉我们模型是否在生成决策中使用该变量，更不等于恢复了质量、能量或动量等状态量。",
+        "Best-of-N 把 N 个样本全部生成后再评分，代价近似乘 N。progressive selection 在中途只保留高分轨迹，目标是在同一初始候选预算下提前停止较差分支。",
+        "reward guidance 类似 classifier guidance：对一个可微 score 求 latent gradient 并改写 denoising direction。优化的是 verifier 的代理目标，代理与真实物理之间始终可能存在 gap。"
+      ]
+    },
+    {
+      "title": "给物理学家的 AI 导读",
+      "paragraphs": [
+        "可以把每条 denoising trajectory 看成从高噪声边界条件到视频样本的一条随机路径；progressive selection 类似 population dynamics，在若干中间时刻按估计的终态 observable 淘汰 walkers。",
+        "verifier score 更接近数据驱动的 coarse-grained order parameter：它与人工标注的 plausibility 有统计相关，但没有被证明等于 Hamiltonian、action 或守恒量，也没有给出 closed dynamics。",
+        "中间 feature 的 AUC 是 susceptibility-like readout：一个简单探针能响应标签差异。要声称内部机制，仍需 intervention、跨分布 transfer、显式状态变量识别和因果控制，而不只是 decodability。",
+        "reward gradient 像沿经验自由能面下降，但该势面由有限标注和 evaluator 定义。若 proxy 在数据流形外失真，梯度可以把轨迹推向高分却非物理的区域，即 reward hacking。",
+        "最重要的比较基准不是只看最终分数，而是固定 sampling compute、候选数、seed 与 evaluator 后，分别测随机剪枝、verifier 剪枝、纯 guidance 和完整组合。"
+      ]
+    },
+    {
+      "title": "模型与方法",
+      "paragraphs": [
+        "作者在约 4500 个 VideoPhy 视频上探测 CogVideoX-2B：对 VAE latent 加入 t∈{200,400,600} 的噪声，读取 blocks 5/10/15/20/25，去掉文本 tokens 后对空间维平均，以 5-fold CV logistic regression 预测 physical-commonsense label。",
+        "verifier 先把逐帧 hidden features 投影到 256 维，加入 frame positional embedding，再用四头 causal self-attention 汇聚；不同 backbones 的 trainable size 为 0.55M–1.37M，每个 verifier 在单张 A100 上训练不足 10 分钟。",
+        "为减小 generator-source confound，作者做 within-source probing，并为目标 backbone 使用匹配来源的标注训练 verifier；另从 feature 中线性 residualize VQAScore-correlated component。",
+        "progressive schedule 从 N=4 条轨迹开始，在 t=600 保留两条、t=400 保留一条，再完成生成；random selection 与全部跑完后评分的 Best-of-4 分别隔离多样性和早停排序贡献。",
+        "guidance 只反传到被选中的前部 DiT blocks，并限制在约 t∈[400,600]、裁剪逐帧梯度且令 $w_{phy}\\ll w_{cfg}$；论文表中 + Reward Gradient 实际包含 selection 与 guidance。"
+      ]
+    },
+    {
+      "title": "核心结果与证据",
+      "paragraphs": [
+        "CogVideoX-2B 的 within-source probe AUC 为 0.534–0.712；layer/noise grid 最好约 0.638，所有 tested DiT features 都超过 raw noised VAE latents，最大差值 +0.101。这是 moderate predictive signal，不是接近完美的物理分类器。",
+        "generator identity 主导 feature clustering：within-source diagonal mean AUC 0.611，而 cross-source off-diagonal mean 0.538。VQAScore-only AUC 0.555 且线性 residualization 后信号近似保留，缩小但没有消除 style/quality confounding。",
+        "CogVideoX-2B 上 selection 与 Best-of-4 都为 0.515，耗时 490 s 对 778 s，即相对 Best-of-4 减少 37%；单样本 baseline 为 204 s，所以 selection 仍约慢 2.4 倍。random selection 为 0.490，说明一部分提升来自四候选多样性。",
+        "CogVideoX-5B 从 base 0.363 到 selection 0.365，再到 selection+guidance 0.496；大幅变化属于组合流程，不能从该表单独识别纯 guidance effect。",
+        "Wan 2.1-14B 从 0.569 到 selection 0.612，组合后为 0.606；补充分析显示 kept/dropped score 大量重叠，作者据此把主要收益归于普通多轨迹多样性，而非有效 physics ranking。",
+        "不完整 Physics-IQ 子集上 combined method 将总分 0.242 提到 0.262、spatial IoU 0.292 提到 0.317；文本同时写 42/66 scenarios、每个三视角和 252 videos/method，因 42×3=126，计数无法由论文自洽解决。"
+      ]
+    },
+    {
+      "title": "有效性与局限",
+      "paragraphs": [
+        "linear decodability 不证明 backbone 在生成中使用该表征，也不识别质量、速度、碰撞或材料参数等显式物理变量；implicit physical knowledge 是超出当前因果证据的解释。",
+        "source identity 明显支配 feature space。within-source CV 和线性 VQAScore residualization 只控制已测来源/代理，未排除压缩伪影、运动幅度、prompt difficulty 或其他非物理 cues。",
+        "verifier 数据较小，并使用单次 85/15 train/validation split 与早停；没有跨 split confidence interval。generation 使用一个 seed schedule，表中小差值没有跨 seed uncertainty。",
+        "verifier 必须按 backbone 训练，Wan 只有 591 个标注训练视频；跨 architecture、未见物理现象与真实世界动力学的泛化均未建立。",
+        "PhyGenBench 混合 VQAScore 与 GPT-4o judging，pairwise comparisons 又出现大量 ties；Physics-IQ 只覆盖 42/66 scenarios 且样本计数矛盾，评价噪声会进入结论。",
+        "gradient guidance 直接优化 learned proxy，窗口限制和 clipping 不是安全保证；本工作不能支持真实机器人预测、安全关键生成或违反物理概率的可靠校准。"
+      ]
+    },
+    {
+      "title": "复现与资源",
+      "paragraphs": [
+        "先固定官方 arXiv v3、VideoPhy/PhyGenBench/Physics-IQ revisions、backbone checkpoints、prompt list 与 generation seeds；逐项核对 42×3 和 252 的统计口径。",
+        "probe 以 generator、prompt family 和 semantic difficulty 分组拆分，做 nested CV 与多 split bootstrap；同时报告 source prediction、motion/quality nuisance probes 和 residualization sensitivity。",
+        "generation 做 matched-compute factorial ablation：single、random 4→2→1、verifier 4→2→1、guidance-only、selection+guidance、Best-of-4，并以独立 seeds 为统计单位。",
+        "加入显式 physics diagnostics，例如轨迹、速度、加速度、接触事件和守恒残差；用 simulator/real trajectories 检查 verifier score 是否随已知扰动单调且能跨场景校准。",
+        "对 guidance 记录 score、benchmark、naturalness、latent norm 与 off-manifold detector 随 timestep 的变化，搜索高 verifier/低真实物理的一致性反例。",
+        "项目页 https://thegreatestcj.github.io/Physics-in-Noise/ ；本站未运行代码或独立复现，复现时仍需 pin 公开代码 commit、环境与模型 revisions。"
+      ]
+    },
+    {
+      "title": "阅读指南",
+      "paragraphs": [
+        "快速路线：pp. 2–4 看 probe/verifier；pp. 4–6 看 selection 与 reward gradient；pp. 6–7 看三 backbone 主结果、效率和 Physics-IQ。",
+        "物理路线：把 trajectory selection 对照 population dynamics，把 verifier 当经验 order parameter；重点追问它与可测状态变量、守恒约束和外推的关系。",
+        "AI 路线：区分 probe AUC、verifier validation AUC、final benchmark score 与 pairwise win rate；它们的样本、标签和 evaluator 不相同。",
+        "批判路线：先核对 37% 的 Best-of-4 基线，再检查 random-selection control、5B combined attribution、Wan diversity explanation、single-seed uncertainty 与 Physics-IQ 数量矛盾。"
+      ]
+    }
+  ],
+  "evidence_refs": [
+    "paper.pdf pp. 2–4 and official TeX: frozen-feature probing, within-source controls, causal verifier architecture, training data and AUC results",
+    "paper.pdf pp. 4–7 and official TeX: 4-to-2-to-1 selection, reward-gradient equation, PhyGenBench tables, timing comparison and contribution controls",
+    "paper.pdf pp. 10–15 and supplementary TeX: verifier splits/hyperparameters, Physics-IQ protocol, score distributions, tie handling and failure cases",
+    "source PDF SHA-256 ae1a4c7d69387b792c1a88275582b311243e63442c68a0831000c0f93919d842",
+    "official arXiv v3 source archive SHA-256 acfdad064f27fcb120357225dfa6f4d5bc60150880133d7e81af1817cb0600bd",
+    "MinerU Markdown SHA-256 0f23686b7f35e5299712348a1ddf2785de6b0b2c47c3366cdaf4af3f73950fdb",
+    "Evidence packet SHA-256 e6e89d66ae8eb40436227483dc4124e52fa3a50922f62d577791631e1ad47a69",
+    "Evidence status: full text, rendered pages and official TeX verified against latest arXiv v3; decodability-versus-use, source/quality confounding, comparison baseline, combined-method attribution, diversity, seed/split uncertainty, evaluator dependence, reward hacking and Physics-IQ count boundaries recorded; no independent reproduction performed."
+  ]
+}

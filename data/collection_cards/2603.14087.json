@@ -1,0 +1,196 @@
+{
+  "arxiv_id": "2603.14087",
+  "source_version": "v1",
+  "source_pdf": "https://arxiv.org/pdf/2603.14087v1",
+  "title_en": "Understanding the Emergence of Seemingly Useless Features in Next-Token Predictors",
+  "title_zh": "理解下一词元预测器中看似无用特征的涌现",
+  "curation_status": "full_text_verified",
+  "card_standard_version": "2.4",
+  "audience_profile": "physics_ai_literate_physicist",
+  "paper_profile": "theory_experiment",
+  "style_reference": "physicist_daily_arxiv",
+  "provenance": {
+    "program": "Collection",
+    "catalog": "Paper Collection",
+    "catalog_record_id": "2603.14087",
+    "catalog_record_ids": ["2603.14087"],
+    "catalog_topic": "Representation Learning",
+    "collection_date": "2026-08-30",
+    "sampled_at": "2026-08-31",
+    "selected_by": "ziming_mineru_serial_goal",
+    "sampling_seed": "not_applicable_source_complete",
+    "candidate_count": 464
+  },
+  "verified_metadata": {
+    "arxiv_id": "2603.14087",
+    "version": "v1",
+    "title": "Understanding the Emergence of Seemingly Useless Features in Next-Token Predictors",
+    "authors": ["Mark Rofin", "Jalal Naghiyev", "Michael Hahn"],
+    "categories": ["cs.LG", "cs.CL"],
+    "primary_category": "cs.LG",
+    "published": "2026-03-14",
+    "updated": "2026-03-14",
+    "abstract": "The paper exactly decomposes the loss gradient by computational path at one residual-stream position, then uses first-order trajectory attribution and local SAE interventions to study features not needed by an immediate predictor."
+  },
+  "equation_refs": [
+    {
+      "label": "gradient-path decomposition",
+      "latex": "\\nabla_\\theta L=\\nabla_\\theta L_{i,\\mathrm{direct}}^k+\\nabla_\\theta L_{i,\\mathrm{pre}}^k+\\nabla_\\theta L_{i,\\mathrm{shared}}^k",
+      "role": "partition the batch loss gradient according to how it reaches a fixed layer-position residual state",
+      "symbols": {
+        "i": "selected sequence position",
+        "k": "selected Transformer layer",
+        "direct": "loss at the immediately predicted token through the chosen residual state",
+        "pre": "later-token losses reached through the cached state at position i",
+        "shared": "updates through parameters shared with other positions"
+      },
+      "evidence": "paper.pdf pp. 2–4, Eqs. (1)–(3) and Proposition 3.1",
+      "interpretation": "三项相加是精确 bookkeeping identity；它说明 gradient 走哪条 computational path，不自动说明某个 feature 在整段训练中由哪条路径因果产生。"
+    },
+    {
+      "label": "feature mismatch functional",
+      "latex": "R(x\\mid\\theta_1,\\theta_2,w_i^k)=\\frac12[\\langle w_i^k,r_{\\theta_1,i}^k(x)\\rangle-\\langle w_i^k,r_{\\theta_2,i}^k(x)\\rangle]^2",
+      "role": "measure how far a chosen probe coordinate at an intermediate checkpoint is from its final-checkpoint value",
+      "symbols": {
+        "w_i_k": "fixed linear probe or feature direction",
+        "r_theta": "residual representation under parameters theta",
+        "theta_2": "reference final checkpoint",
+        "R": "squared coordinate mismatch"
+      },
+      "evidence": "paper.pdf pp. 3–4, first-order influence construction",
+      "interpretation": "attribution depends on probe direction、final reference 与 replayed checkpoints；换 feature basis 或 nonlinear probe 会改变被解释的 quantity。"
+    },
+    {
+      "label": "local pre-cached-to-direct proxy",
+      "latex": "Q(w)\\approx\\frac{\\sum_{j>i+1}D_{\\mathrm{KL}}(T_{\\theta^*}(x_j\\mid x_{<j})\\Vert T_{\\theta/i}(x_j\\mid x_{<j}))}{D_{\\mathrm{KL}}(T_{\\theta^*}(x_{i+1}\\mid x_{<i+1})\\Vert T_{\\theta/i}(x_{i+1}\\mid x_{<i+1}))}",
+      "role": "estimate how ablating one SAE feature changes later-token predictions relative to the immediate next token",
+      "symbols": {
+        "theta_star": "final pretrained model",
+        "theta_over_i": "model state after a local feature ablation at position i",
+        "T": "next-token distribution",
+        "Q": "final-checkpoint local intervention proxy"
+      },
+      "evidence": "paper.pdf pp. 8–9 and appendix, Proposition 5.1",
+      "interpretation": "$Q(w)$ 是单 checkpoint、单层 SAE 的局部 ablation ratio，不是训练历史中 pre-cached gradient 的精确积分，也会继承 SAE reconstruction/off-manifold effects。"
+    }
+  ],
+  "figure_refs": [
+    {
+      "label": "Figure 1 direct, pre-cached and shared paths",
+      "asset_path": "assets/collection-figures/2603.14087/figure1-gradient-decomposition.webp",
+      "section": "核心结果与证据",
+      "role": "visualize the three computational paths and how each update is assigned first-order feature influence",
+      "evidence": "paper.pdf p. 3, Figure 1",
+      "alt_text": "A computational graph separates direct, pre-cached, and shared gradient routes and links them to feature-mismatch changes.",
+      "caption": "Figure 1：固定 residual location 的三类 gradient paths。路径分解精确；沿训练轨迹累计到 feature emergence 的影响使用一阶、probe-dependent approximation。",
+      "interpretation": "图应读作 causal-graph bookkeeping，而非已经证明的 feature developmental mechanism。"
+    }
+  ],
+  "cover": {
+    "mode": "source_figure",
+    "asset_path": "assets/collection-figures/2603.14087/figure1-gradient-decomposition.webp",
+    "label": "Figure 1 gradient paths",
+    "visual_type": "schematic",
+    "evidence": "paper.pdf p. 3, Figure 1",
+    "alt_text": "The next-token loss gradient reaches one hidden state through direct, future cached, and parameter-sharing paths.",
+    "caption": "精确 gradient-path partition 与一阶 feature-attribution 需要分开理解。",
+    "selection_rationale": "It is the conceptual core of the paper and clearly separates immediate, future-token, and shared-parameter supervision."
+  },
+  "sections": [
+    {
+      "title": "作者信息",
+      "paragraphs": [
+        "作者为 Mark Rofin（EPFL）、Jalal Naghiyev（Technical University of Munich / Zuse School ELIZA）与 Michael Hahn（Saarland University）。论文发表为 ICLR 2026 conference paper。",
+        "本站核验 arXiv:2603.14087v1：提交于 2026-03-14，是当前唯一版本；主分类 cs.LG，PDF 27 页。",
+        "Collection 来源为刘子鸣网站的 Representation Learning 条目。"
+      ]
+    },
+    {
+      "title": "研究问题",
+      "paragraphs": [
+        "next-token prediction 只直接要求预测紧邻 token，为何 hidden state 会编码看似对当前预测无用、却描述世界状态、句法或更远未来的特征？",
+        "论文把一个 layer-position residual state 收到的 gradient 分为 direct、pre-cached future-token 与 parameter-sharing paths，并估计各路径对选定 feature coordinate 形成的影响。",
+        "小模型 interventions 支持 future-token 与 sharing paths 可促进这类 feature；Gemma 2 2B 分析则给一个 final-checkpoint SAE-ablation proxy。精确的是局部 gradient partition，feature developmental attribution 仍是一阶且路径依赖。"
+      ]
+    },
+    {
+      "title": "背景",
+      "paragraphs": [
+        "causal Transformer 会 cache 位置 $i$ 的 residual state；未来位置通过 attention 读取它。因此未来 token 的 loss 可沿 cache 回传，促使当前位置提前存储稍后有用的信息。",
+        "同一 weights 在所有 positions 共享。即使 position $i$ 的即时 loss 不需要某特征，其他 positions 的 gradients 也可更新这些参数，使该特征在 $i$ 出现。",
+        "linear probe 说明某方向可解码信息，不说明模型行为使用它；SAE feature 也只是对 activation distribution 的近似 dictionary coordinate。",
+        "所谓 NTP-useless 是相对于某个 optimal immediate predictor 与某一 position 的定义，不是绝对无用，也不排除另一个最优实现保留该信息。"
+      ]
+    },
+    {
+      "title": "给物理学家的 AI 导读",
+      "paragraphs": [
+        "把 computational graph 看成离散时空格点：loss sources 的 response 通过不同 propagators 回到同一 hidden field。Proposition 3.1 是把总 generalized force 按路径精确分流。",
+        "pre-caching 类似未来边界条件经 causal cone 回传到早期 state；parameter sharing 则像平移不变 coupling，让别处的局部力共同改变一个全局 coupling constant。",
+        "从瞬时 force 分解到最终 order parameter 的形成，需要沿非线性训练轨迹积分。论文用一阶 influence 累加近似；有限步长、Adam moments、feature rotation 与 path dependence 都会造成误差。",
+        "Q(w) 更像终态的局部 susceptibility ratio：移除一个 SAE coordinate 后，未来 token distributions 相对 immediate token 变化多少。它不是历史响应函数，也不唯一定位训练来源。"
+      ]
+    },
+    {
+      "title": "模型与方法",
+      "paragraphs": [
+        "stop-gradient counterfactuals 在固定 layer k、position i 切断特定 graph edges，由差分定义 direct、pre-cached 与 shared gradient components；三者严格相加为 total batch gradient。",
+        "用 probe direction 与 final checkpoint 定义 feature mismatch，计算每次 path-gradient 对 mismatch 的方向导数，并在 replayed training trajectory 上累加作为 emergence attribution。",
+        "实验包括 10-seed controlled toy tasks、one-seed OthelloGPT、10-seed small TinyStories models；myopic/m-untied variants 分别阻断 pre-caching 或 sharing routes。",
+        "大模型部分研究 Gemma 2 2B layer 15 的 SAE，筛到 14565 features，用自动描述/分类标 semantic categories，并以 local KL ablation ratio Q(w) 分析 future influence 与 steering/look-ahead geometry。"
+      ]
+    },
+    {
+      "title": "核心结果与证据",
+      "paragraphs": [
+        "Proposition 3.1 对固定 residual location 给 exact gradient-path partition；integrated feature influence 是基于 mismatch 的 first-order approximation，随 probe、checkpoint 与 trajectory 改变。",
+        "10-seed toy tasks 中，阻断 pre-caching 与 sharing 会削弱 linearly decoded NTP-useless features；Conditioned-Majority myopic model accuracy 约 0.76，non-myopic variants 为 0.99–1.00。",
+        "one-seed Othello 中，即时有用 board cells 的 probes 更好且 direct influence 正；所谓 NTP-useless cells 仍有正 pre-cached/shared influence。单 seed 无法给训练实例间 uncertainty。",
+        "10-seed TinyStories 中 myopic loss 3.29±0.02，普通模型 2.53±0.10；POS/dependency features 多为 direct，original-story-position feature 在 middle layers 显示 pre-cached influence。",
+        "Gemma 14565 retained SAE features 中，自动标为 formal 的 features 所拟合 log-normal Q width 为 1.63±0.03，其他为 1.23±0.02；这些区间不含自动标签误差。",
+        "high-Q steering 在 64×20-token samples 中产生更多 code/punctuation；Q 与 tested linear look-ahead subspaces 负相关。二者都是 model/layer/probe-specific association。"
+      ]
+    },
+    {
+      "title": "有效性与局限",
+      "paragraphs": [
+        "exact decomposition 不等于 exact feature-emergence causation；后者依赖一阶近似、probe basis、final reference、checkpoint density 和 optimizer path。",
+        "myopic/m-untied interventions 同时改变可表示函数、parameterization 与 optimization，性能/feature 差异不能完全归因于单一路径删除。",
+        "Othello 只有一个 model seed，且 squares/turns 覆盖稀疏；within-run 95% intervals 不是独立训练 replication uncertainty。",
+        "TinyStories Wilcoxon tests 似乎汇集相关的 feature-position observations，未给 seed-level hierarchical analysis；小模型结果不能直接外推 LLM。",
+        "Gemma 证据限于一个 2B model、一个 layer 与一个 SAE；Q 是 local ablation proxy，可能受 reconstruction error 与 off-manifold intervention 影响。",
+        "formal categories 依赖 GPT-generated descriptions 与 GPT classification，无 human-label validation；negative look-ahead correlation 也不因果证明 planning 缺失。"
+      ]
+    },
+    {
+      "title": "复现与资源",
+      "paragraphs": [
+        "验证三项 gradients 的数值闭合，并随 checkpoint spacing/learning rate 比较 first-order attribution 与小段真实 retraining counterfactual。",
+        "用多 probe bases、nonlinear probes 与 feature-tracking/rotation alignment 测 attribution stability；报告 optimizer moments 被忽略的误差。",
+        "Othello/TinyStories 以 training seed 为顶层统计单位，预注册 cells/features/positions，使用 hierarchical bootstrap 或 mixed-effects analysis。",
+        "Gemma 跨 layers、SAE dictionaries、model sizes 与 seeds 重复；加入 matched activation-frequency/reconstruction-error controls 和 on-manifold feature patching。",
+        "抽样人工盲审 automatic feature labels，报告 confusion matrix；steering 用 matched-norm random/low-Q controls，并测 behavior、loss 与 coherence。",
+        "项目网站 https://markfryazino.github.io/useless-features-iclr ，代码 https://github.com/Markfryazino/useless-features-iclr-code；本站未运行，应 pin commit/data/model/SAE revisions。"
+      ]
+    },
+    {
+      "title": "阅读指南",
+      "paragraphs": [
+        "快速路线：pp. 2–5 看三路径定义、Proposition 3.1 与 influence；pp. 5–7 看 toy/Othello/TinyStories；pp. 8–9 看 Gemma Q(w)。",
+        "物理路线：把 path gradients 当分解后的 generalized forces，把 feature mismatch 当 order parameter；注意有限轨迹积分的一阶误差。",
+        "AI 路线：区分 decodability、behavioral use、training influence 与 final-checkpoint ablation，四者不是等价证据。",
+        "批判路线：重点核对 one-seed Othello、feature-position pseudoreplication、SAE off-manifold effects、自动标签和 look-ahead 相关性。"
+      ]
+    }
+  ],
+  "evidence_refs": [
+    "paper.pdf pp. 2–5 and official TeX: direct/pre-cached/shared path definitions, Proposition 3.1 and first-order trajectory influence construction",
+    "paper.pdf pp. 5–7 and appendices pp. 17–18, 21, 24: toy, Othello and TinyStories settings, seeds, losses and statistics",
+    "paper.pdf pp. 8–9, 15–19, 26: Proposition 5.1, Q(w), SAE filtering, automated labels, steering and look-ahead boundaries",
+    "source PDF SHA-256 1fdcf269bedcbeeb480156cbba6e9fbe7e630a6c1d16262c651c719e6e0d7a71",
+    "official arXiv v1 source archive SHA-256 e29ede02efadedbc20db6a3317d8792c32e2664949959770a7c7333ef5ea033d",
+    "MinerU Markdown SHA-256 411cce9c46f9396dea63e28e6051a7fc4db17f8ca66eb4fdf1b54c8b4e066293",
+    "Evidence packet SHA-256 6854f7acdaf2cbe76f85436da85082b2dc9a3d459577384fd15620945a20e46d",
+    "Evidence status: full text, rendered pages and official TeX verified against latest arXiv v1; exact-path versus first-order attribution, NTP-useless definition, probe/use, seed/statistical, SAE/Q, automated-label and look-ahead boundaries recorded; no independent reproduction performed."
+  ]
+}
