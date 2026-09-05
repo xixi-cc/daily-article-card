@@ -1,0 +1,195 @@
+{
+  "arxiv_id": "2603.12901",
+  "source_version": "v2",
+  "source_pdf": "https://arxiv.org/pdf/2603.12901v2",
+  "title_en": "A theory of learning data statistics in diffusion models, from easy to hard",
+  "title_zh": "扩散模型由易到难学习数据统计量的理论",
+  "curation_status": "full_text_verified",
+  "card_standard_version": "2.4",
+  "audience_profile": "physics_ai_literate_physicist",
+  "paper_profile": "theory_experiment",
+  "style_reference": "physicist_daily_arxiv",
+  "provenance": {
+    "program": "Collection",
+    "catalog": "Paper Collection",
+    "catalog_record_id": "2603.12901",
+    "catalog_record_ids": ["2603.12901"],
+    "catalog_topic": "Representation Learning",
+    "collection_date": "2026-08-30",
+    "sampled_at": "2026-08-31",
+    "selected_by": "ziming_mineru_serial_goal",
+    "sampling_seed": "not_applicable_source_complete",
+    "candidate_count": 464
+  },
+  "verified_metadata": {
+    "arxiv_id": "2603.12901",
+    "version": "v2",
+    "title": "A theory of learning data statistics in diffusion models, from easy to hard",
+    "authors": ["Lorenzo Bardone", "Claudia Merger", "Sebastian Goldt"],
+    "categories": ["stat.ML", "cond-mat.dis-nn", "cs.IT", "cs.LG"],
+    "primary_category": "stat.ML",
+    "published": "2026-03-13",
+    "updated": "2026-06-10",
+    "abstract": "The paper analyzes fresh-sample online projected SGD for a single-neuron denoiser on planted mixed-cumulant data and compares its easy-to-hard learning picture with small-seed U-Net clone-loss observations."
+  },
+  "equation_refs": [
+    {
+      "label": "Ornstein-Uhlenbeck forward diffusion",
+      "latex": "dx(t)=-x(t)dt+d\\mathcal W_t,\\qquad x(t)\\overset{\\mathcal D}=e^{-t}x(0)+\\sqrt{\\Delta_t}z",
+      "role": "progressively Gaussianize the data while retaining attenuated information about the original sample",
+      "symbols": {
+        "x_0": "clean data vector",
+        "t": "fixed diffusion time used in the theory",
+        "W_t": "Brownian motion",
+        "z": "standard Gaussian noise",
+        "Delta_t": "noise variance under the chosen convention"
+      },
+      "evidence": "paper.pdf p. 3, Eqs. (1)–(2)",
+      "interpretation": "forward OU dynamics damps non-Gaussian structure by order-dependent factors；较高阶 cumulants 在噪声中更弱，但学习难度还取决于 denoiser nonlinearity 是否与该 Hermite mode 耦合。"
+    },
+    {
+      "label": "single-neuron score denoiser and online pSGD",
+      "latex": "S_t^w(x)=-x-\\sigma(w\\cdot x)w,\\qquad w_{\\tau+1}=\\frac{w_\\tau-\\eta_d\\nabla_{\\mathrm{sph}}\\mathcal L(w_\\tau;x_\\tau)}{\\lVert w_\\tau-\\eta_d\\nabla_{\\mathrm{sph}}\\mathcal L(w_\\tau;x_\\tau)\\rVert}",
+      "role": "track how one spherical weight vector aligns with a planted statistical direction under fresh-sample stochastic updates",
+      "symbols": {
+        "w": "unit-norm learned direction",
+        "sigma": "scalar activation",
+        "eta_d": "dimension-dependent learning rate",
+        "x_tau": "fresh independent training sample at iteration tau"
+      },
+      "evidence": "paper.pdf pp. 3–4, Eqs. (7)–(9)",
+      "interpretation": "该模型把复杂 U-Net 压缩成一个可分析的 order parameter $w\\cdot v$；理论结论首先属于这套 online spherical dynamics。"
+    },
+    {
+      "label": "diffusion information exponent and early overlap drift",
+      "latex": "k^*=\\min\\{k\\geq1:c_k^L c_{k-1}^F\\neq0\\},\\qquad \\alpha_{\\tau+1}=\\alpha_\\tau+\\eta_d c_{k^*}^L c_{k^*-1}^F\\alpha_\\tau^{k^*-1}+O(\\alpha_\\tau^{k^*})",
+      "role": "identify the lowest Hermite order jointly present in the diffused-data likelihood ratio and accessible to the effective nonlinearity",
+      "symbols": {
+        "c_k_L": "k-th Hermite coefficient of the likelihood ratio",
+        "c_k_minus_1_F": "matching coefficient of the effective nonlinearity",
+        "alpha": "overlap w dot v with the planted direction",
+        "k_star": "information exponent controlling exponent-level escape time"
+      },
+      "evidence": "paper.pdf pp. 4–6, Section 4.1 and Propositions 4.3–4.4",
+      "interpretation": "从随机初始化的 $\\alpha\\sim d^{-1/2}$ 出发，漂移的最低非零幂决定弱恢复的维数指数；$k^*=4$ 给约 $d^3$ 级别，但还带 polylog、步长和 little-o/little-omega 条件。"
+    }
+  ],
+  "figure_refs": [
+    {
+      "label": "Figure 1 sequential learning in natural and planted data",
+      "asset_path": "assets/collection-figures/2603.12901/figure-01-sequential-learning.webp",
+      "section": "核心结果与证据",
+      "role": "juxtapose CIFAR-10 versus Gaussian-clone losses, a controlled mixed-cumulant analogue, and generated samples over training",
+      "evidence": "paper.pdf p. 2, Figure 1",
+      "alt_text": "Loss trajectories initially overlap between real and matched-Gaussian data and later separate, alongside a mixed-cumulant experiment and generated image samples.",
+      "caption": "Figure 1：CIFAR-10 与 matched mean/covariance Gaussian clone 的 denoising losses 在约 $10^3$ steps 前接近、随后分离；CIFAR bands 来自 3 initializations。equal scalar loss 不证明网络只使用 pairwise statistics。",
+      "interpretation": "图支持 easy-to-hard 的定性时间顺序，但不识别 U-Net 中具体 cumulant mechanism，也不给真实训练的维数 scaling law。"
+    }
+  ],
+  "cover": {
+    "mode": "source_figure",
+    "asset_path": "assets/collection-figures/2603.12901/figure-01-sequential-learning.webp",
+    "label": "Figure 1 sequential statistics learning",
+    "visual_type": "trajectory",
+    "evidence": "paper.pdf p. 2, Figure 1",
+    "alt_text": "Training trajectories compare real-image and moment-matched clone losses with a planted mixed-cumulant analogue.",
+    "caption": "从 matched low-order statistics 到 higher-order separation 的定性训练轨迹。",
+    "selection_rationale": "It connects the natural-image observation to the controlled model while keeping their evidential levels visibly separate."
+  },
+  "sections": [
+    {
+      "title": "作者信息",
+      "paragraphs": [
+        "作者为 Lorenzo Bardone（EPFL Statistical Physics of Computation Laboratory）、Claudia Merger 与 Sebastian Goldt（SISSA Theoretical and Scientific Data Science Group）。",
+        "本站核验 arXiv:2603.12901v2：初稿提交于 2026-03-13，最新版更新于 2026-06-10；主分类 stat.ML，PDF 22 页。",
+        "Collection 来源为刘子鸣网站的 Representation Learning 条目。"
+      ]
+    },
+    {
+      "title": "研究问题",
+      "paragraphs": [
+        "扩散模型训练时是否先利用 mean/covariance 等低阶统计，再学习 higher-order correlations？若数据中某个 planted covariance/cumulant direction 要从随机初始化中被发现，样本复杂度由什么决定？",
+        "论文先比较真实图像与 mean/covariance-matched Gaussian clones 的 denoising loss，再在 mixed cumulant model 中分析 single-neuron denoiser 的 online projected-SGD dynamics。",
+        "核心理论量是 diffusion information exponent $k^*$：数据 likelihood ratio 与 effective nonlinearity 首次在 Hermite expansion 上相遇的阶数；在严格假设下，weak recovery 时间的维数指数约为 $d^{k^*-1}$。"
+      ]
+    },
+    {
+      "title": "背景",
+      "paragraphs": [
+        "diffusion training 学 score $\\nabla_x\\log p_t(x)$ 或等价 denoising target。低阶 moments 与高阶 cumulants 在加噪后衰减不同，提供研究“先学什么”的统计力学式分层。",
+        "Gaussian clone 与真实数据匹配 mean/covariance，却没有真实 higher cumulants。若同一个模型在两分布上的 loss 后期分离，说明它对某些 matched moments 之外的分布差异变得敏感。",
+        "Hermite polynomials 是 Gaussian measure 下的正交 modes。likelihood ratio 的 Hermite coefficient 表示数据在哪个统计阶偏离 Gaussian；activation 也要对相应 mode 有非零响应，gradient 才能看到它。",
+        "weak recovery 通常指 learned direction 与 planted direction 的 overlap 从随机 $O(d^{-1/2})$ 增长到非消失尺度，不等于完整 density reconstruction 或高质量 generation。"
+      ]
+    },
+    {
+      "title": "给物理学家的 AI 导读",
+      "paragraphs": [
+        "把 $\\alpha=w\\cdot v$ 当 order parameter。随机态 $\\alpha\\approx0$，在线 SGD 的平均漂移从最低允许的 $\\alpha^{k^*-1}$ 项开始；幂次越高，离开无序态越慢。",
+        "$k^*$ 像由对称性与 selection rule 决定的最低耦合阶：数据中有某个 cumulant 还不够，loss/activation 必须能与它形成非零 Hermite overlap。",
+        "isolated fourth-cumulant spike 给 $k^*=4$，因而出现约 cubic-in-$d$ 的 online escape scale；这是特定算法动力学的结果，不是所有估计器的信息论下界。",
+        "若 covariance spike 与 cumulant spike 的 latent variables 正相关，低阶结构可给高阶方向提供 symmetry-breaking seed，使恢复变为 quasi-linear；但需要 activation signs、matching-sign initialization 与规定 learning-rate window。"
+      ]
+    },
+    {
+      "title": "模型与方法",
+      "paragraphs": [
+        "自然图像实验训练 standard U-Net denoisers，对 CIFAR-10/CelebA 及其匹配 mean/covariance 的 Gaussian clones 比较 test loss 随 step 的变化，并展示阶段性 generations。",
+        "理论数据为高维 mixed-cumulant model：Gaussian noise 加上 covariance direction $u$ 与 non-Gaussian cumulant direction $v$，latents 可独立或相关；diffusion time 固定。",
+        "denoiser 是 $S_t^w(x)=-x-\\sigma(w\\cdot x)w$，$w$ 约束在单位球；每步用 fresh independent sample 做 online projected SGD。",
+        "Propositions 4.3–4.4 给 weak-recovery 前后的 sample thresholds，包含 step-size、logarithmic 与 little-o/little-omega qualifications；后续命题分析 correlated latents 的加速。"
+      ]
+    },
+    {
+      "title": "核心结果与证据",
+      "paragraphs": [
+        "在 planted single-neuron setting 中，$k^*$ 是 likelihood-ratio 与 effective-nonlinearity Hermite coefficients 的最低 matched nonzero order；online pSGD weak-recovery 时间在指数层面按 $d^{k^*-1}$ 缩放。",
+        "isolated fourth-cumulant spike 有 $k^*=4$，恢复阈值约为 cubic-in-$d$ up to polylog factors；positive/negative propositions 使用不同的 strict asymptotic 与 learning-rate regimes，不能写成精确 sharp $d^3$ 常数律。",
+        "有 covariance spike 且 latents 正相关时，论文给 quasi-linear joint weak recovery；结论额外依赖 activation coefficient signs、matching-sign initialization 与规定步长窗口。",
+        "CIFAR-10 Figure 1 汇总 3 model initializations 与 5000 test samples：real/clone losses 约在 $10^3$ steps 附近分离；CelebA 只有 2 initializations。",
+        "这些有限 U-Net/Adam observations 与高维 single-neuron online-pSGD theory 定性相似，但 architecture、optimizer、sample reuse、finite dimension 与 data distribution 都不同。"
+      ]
+    },
+    {
+      "title": "有效性与局限",
+      "paragraphs": [
+        "理论限于 fresh-sample online projected SGD、single-neuron denoiser、planted mixed-cumulant data、fixed diffusion time、sphere constraint 与 $d\\to\\infty$；它不是 U-Net theorem。",
+        "所谓 cubic threshold 是 exponent-level、含 polylogs 与 step-size conditions 的算法结果，不是所有 algorithms 的 lower bound，也不是 wall-clock scaling prediction。",
+        "模型在 real 与 Gaussian clone 上的平均 scalar loss 相同，不证明 denoiser 只使用 pairwise statistics；不同内部 functions 可产生相同 expectation。后期分离只说明利用了某种 matched moments 之外的差异。",
+        "CIFAR 3 seeds、CelebA 2 seeds，没有 transition-time CI、clone covariance-estimation sensitivity 或广泛 hyperparameter sweep。5000 test images 不替代独立训练重复。",
+        "natural images 中没有识别 planted $u,v$ 或特定 cumulant direction；定性曲线一致不能建立 mixed-cumulant mechanism 的因果 transfer。",
+        "固定 diffusion time 的学习动力学不能直接覆盖完整 multi-time diffusion schedule、采样质量、mode coverage 或现代 large diffusion transformers。"
+      ]
+    },
+    {
+      "title": "复现与资源",
+      "paragraphs": [
+        "在 mixed-cumulant model 中复现 overlap trajectories，按 $d$ 做 log-log finite-size collapse；分别检验 positive/negative threshold、polylog corrections 与 learning-rate windows。",
+        "改变 activation 使关键 Hermite coefficient 过零，直接测试 $k^*$ selection rule；对 correlated latents 扫 correlation、initialization sign 与 covariance strength。",
+        "自然图像 clone 使用独立 estimation split，报告 mean/covariance estimation error；增加 seeds、bootstrap training runs 与 predeclared change-point method，给 separation-time CI。",
+        "除 scalar loss 外，比较 per-image residuals、score fields 在 Hermite/feature bases 上的 projections，并设计保留 moments 但改变特定 higher-order statistics 的 interventions。",
+        "逐步扩大 theory–practice bridge：multi-neuron teacher/student、mini-batch/sample reuse、Adam、多个 diffusion times，再到小 U-Net；每一步验证 exponent 是否仍可预测。",
+        "本站未运行源码或复现实验；复现需固定 data preprocessing、clone generator/covariance estimator、network init、optimizer schedule 与 sample accounting。"
+      ]
+    },
+    {
+      "title": "阅读指南",
+      "paragraphs": [
+        "快速路线：pp. 2–3 看 clone-loss evidence 与 theory setup；pp. 4–7 看 $k^*$、Propositions 4.3–4.6 与 thresholds。",
+        "物理路线：把 overlap 当 order parameter，把 Hermite order 当 selection rule；仔细区分 finite-size crossover 与 asymptotic escape exponent。",
+        "AI 路线：区分 score matching loss、Gaussian clone probe、weak direction recovery 与 sample generation quality。",
+        "批判路线：核对 fresh-sample pSGD versus U-Net/Adam、positive/negative asymptotic regimes、小 seed counts，以及 equal-loss→pairwise-only 的逻辑跳跃。"
+      ]
+    }
+  ],
+  "evidence_refs": [
+    "paper.pdf pp. 2–3: CIFAR-10 Gaussian-clone loss trajectories, three-initialization protocol, generated samples and theoretical setup",
+    "paper.pdf pp. 4–7 and official TeX: diffusion information exponent, Assumptions 4.1–4.5, Propositions 4.3–4.6, step-size/sample thresholds and correlated-latent conditions",
+    "paper.pdf appendix pp. 11–22: experiment details, CelebA two-initialization scope and proof reductions",
+    "source PDF SHA-256 22f1a073079e0b457df37e3219d7ab2124b01e9500182857164e7355a9dd1f7d",
+    "official arXiv v2 source archive SHA-256 0ea8fa8c8c170b978873d89e6c5585cfbd564855c9e77cd0ce988a8100c0e98a",
+    "MinerU Markdown SHA-256 7eb3b51ed3d0290da792f5a1ef81105acf9c2bf556fe007ed9cd862e52c312e5",
+    "Evidence packet SHA-256 4a252274b72e24eff8a536f51d515c4dff01d50c6febc109757ff0fce27b47df",
+    "Evidence status: full text, rendered pages and official TeX verified against latest arXiv v2; online-pSGD/model, asymptotic-threshold, clone-loss inference, seed/statistical and mixed-cumulant-to-U-Net transfer boundaries recorded; no independent reproduction performed."
+  ]
+}

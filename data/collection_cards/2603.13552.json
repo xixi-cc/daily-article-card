@@ -1,0 +1,194 @@
+{
+  "arxiv_id": "2603.13552",
+  "source_version": "v1",
+  "source_pdf": "https://arxiv.org/pdf/2603.13552v1",
+  "title_en": "Ghosts of Softmax: Complex Singularities That Limit Safe Step Sizes in Cross-Entropy",
+  "title_zh": "Softmax 的幽灵：限制交叉熵安全步长的复奇点",
+  "curation_status": "full_text_verified",
+  "card_standard_version": "2.4",
+  "audience_profile": "physics_ai_literate_physicist",
+  "paper_profile": "theory_experiment",
+  "style_reference": "physicist_daily_arxiv",
+  "provenance": {
+    "program": "Collection",
+    "catalog": "Paper Collection",
+    "catalog_record_id": "2603.13552",
+    "catalog_record_ids": ["2603.13552"],
+    "catalog_topic": "Representation Learning",
+    "collection_date": "2026-08-30",
+    "sampled_at": "2026-08-31",
+    "selected_by": "ziming_mineru_serial_goal",
+    "sampling_seed": "not_applicable_source_complete",
+    "candidate_count": 464
+  },
+  "verified_metadata": {
+    "arxiv_id": "2603.13552",
+    "version": "v1",
+    "title": "Ghosts of Softmax: Complex Singularities That Limit Safe Step Sizes in Cross-Entropy",
+    "authors": ["Piyush Sao"],
+    "categories": ["cs.LG", "cs.AI"],
+    "primary_category": "cs.LG",
+    "published": "2026-03-13",
+    "updated": "2026-03-13",
+    "abstract": "The paper studies the complex-plane Taylor convergence radius of cross-entropy along an update direction, deriving an exact binary formula and a conservative multiclass lower bound under affine logits, then testing a radius-based step cap on small models."
+  },
+  "equation_refs": [
+    {
+      "label": "cross-entropy along an affine-logit ray",
+      "latex": "z_k(\\tau)=z_k(0)+a_k\\tau,\\qquad \\ell(\\tau)=-z_\\gamma(\\tau)+\\log\\sum_k e^{z_k(\\tau)}",
+      "role": "analytically continue the one-dimensional loss along a proposed parameter-space update direction",
+      "symbols": {
+        "tau": "step length along direction nu",
+        "a_k": "directional logit derivative grad z_k dot nu",
+        "gamma": "target class",
+        "partition_sum": "sum of exponentiated affine logits"
+      },
+      "evidence": "paper.pdf pp. 3–5, analytic-continuation setup",
+      "interpretation": "Taylor radius 由复 $\\tau$ 平面中 partition sum 最近的零点决定；这是局部级数解析域，不是实轴 loss landscape 上的物理障碍。"
+    },
+    {
+      "label": "exact binary Taylor radius",
+      "latex": "\\rho^*=\\frac{\\sqrt{\\delta^2+\\pi^2}}{\\Delta_a}",
+      "role": "give the distance to the nearest complex softmax zero for two affine logits",
+      "symbols": {
+        "delta": "current binary logit gap",
+        "Delta_a": "absolute difference between the two directional logit slopes",
+        "pi": "imaginary separation of the nearest cancellation branch",
+        "rho_star": "exact radius under affine logits"
+      },
+      "evidence": "paper.pdf pp. 4–6, binary exact-radius theorem",
+      "interpretation": "margin 越大或 directional slopes 越接近，局部 Taylor disk 越大；但真实网络 logits 沿参数步通常并非全程 affine。"
+    },
+    {
+      "label": "multiclass lower bound and normalized step",
+      "latex": "\\rho_a=\\frac{\\pi}{\\max_k a_k-\\min_k a_k},\\qquad r=\\frac{\\tau}{\\rho_a}",
+      "role": "construct a conservative affine-logit Taylor-radius lower bound and express a proposed step in its units",
+      "symbols": {
+        "rho_a": "lower bound, not the exact multiclass radius",
+        "Delta_a": "spread of directional logit derivatives across classes",
+        "tau": "actual proposed step length",
+        "r": "dimensionless normalized step"
+      },
+      "evidence": "paper.pdf pp. 5–7, multiclass bound and normalized-radius experiments",
+      "interpretation": "$r<1$ 让 affine cross-entropy 的 Taylor series 留在保守圆盘内；这不等于带 minibatch noise、momentum 与 ReLU kinks 的多步训练一定下降。"
+    }
+  ],
+  "figure_refs": [
+    {
+      "label": "Figure 1 one-step retention versus normalized radius",
+      "asset_path": "assets/collection-figures/2603.13552/figure-01-phase-transition.webp",
+      "section": "核心结果与证据",
+      "role": "show accuracy retained after one gradient step across six architectures as a function of r=tau/rho_a",
+      "evidence": "paper.pdf p. 1, Figure 1",
+      "alt_text": "Six architecture curves retain accuracy below normalized radius one and lose accuracy at architecture-dependent larger radii.",
+      "caption": "Figure 1：六种小型/中型架构在单个大步后的 accuracy retention。测试中 $r<1$ 未崩溃，但转变延伸到约 $r\\sim10$，所以 $r=1$ 是保守 sufficient boundary，不是 sharp necessary transition。",
+      "interpretation": "归一化后曲线较集中支持该尺度与稳定性相关；它不证明越过 Taylor disk 必导致真实 loss/accuracy 崩溃。"
+    }
+  ],
+  "cover": {
+    "mode": "source_figure",
+    "asset_path": "assets/collection-figures/2603.13552/figure-01-phase-transition.webp",
+    "label": "Figure 1 normalized one-step stability",
+    "visual_type": "data_plot",
+    "evidence": "paper.pdf p. 1, Figure 1",
+    "alt_text": "One-step test-accuracy retention is plotted against the step size normalized by an affine-logit Taylor-radius bound.",
+    "caption": "单步稳定性按 $r=\\tau/\\rho_a$ 重标度；$r=1$ 是保守线而非精确相变点。",
+    "selection_rationale": "It displays the central empirical correlation across all six tested architectures and visibly reveals the conservative slack."
+  },
+  "sections": [
+    {
+      "title": "作者信息",
+      "paragraphs": [
+        "作者为 Piyush Sao，来自 Oak Ridge National Laboratory。",
+        "本站核验 arXiv:2603.13552v1：提交于 2026-03-13，是当前唯一版本；主分类 cs.LG，PDF 25 页，标注为 research preprint。",
+        "Collection 来源为刘子鸣网站的 Representation Learning 条目。"
+      ]
+    },
+    {
+      "title": "研究问题",
+      "paragraphs": [
+        "优化器常用 gradient/Hessian 构造局部 Taylor model 来判断步长，但级数只在最近复奇点以内收敛。softmax cross-entropy 的 partition function 在复参数平面何处为零？这个距离能否预测大步崩溃？",
+        "论文在线性化 logits 的一维更新射线上求二分类 exact radius，并给多分类 conservative lower bound $\\rho_a$；再把实际步长写成 $r=\\tau/\\rho_a$。",
+        "小模型单步 sweeps 显示 $r$ 与 accuracy collapse 相关，并提出动态 cap/controller；理论最强部分限于 affine logits，真实 nonlinear network 只得到 small-curvature perturbative transfer。"
+      ]
+    },
+    {
+      "title": "背景",
+      "paragraphs": [
+        "实变量 loss 可在训练区间完全光滑，其 Taylor series 仍可能被远离实轴的 complex singularity 限制。经典例子是 $1/(a+x)$ 的级数半径由复/实 pole 距离决定。",
+        "cross-entropy 含 $\\log Z$，$Z=\\sum_k e^{z_k}$。在实 logits 上 $Z>0$，但复延拓后不同 exponentials 可相消，使 log 出现 branch singularity。",
+        "Taylor series 不收敛意味着该局部展开不能表示函数，不意味着真实实轴函数发散或 loss 必然增大；二者必须区分。",
+        "L-smoothness/Hessian bound 控制实域曲率与 descent lemma；complex convergence radius 控制解析级数。它们是不同约束，谁更实用取决于网络非线性与估计成本。"
+      ]
+    },
+    {
+      "title": "给物理学家的 AI 导读",
+      "paragraphs": [
+        "这与解析统计力学很相似：实参数上无奇点，复平面中的 partition-function zeros 仍控制级数收敛。这里 $Z$ 是 softmax partition sum，而不是热力学配分函数，但复零点角色相近。",
+        "二分类时两个 exponential terms 的相消需要 imaginary phase difference $\\pi$；real logit gap $\\delta$ 与 slope spread $\\Delta_a$ 共同决定到最近 zero 的距离。",
+        "多分类 $\\pi/\\Delta_a$ 只是容易算的下界，相当于保守 stability radius。把步长除以它可尝试 data collapse，但实验曲线在 $r=1$ 之后仍有宽 transition band。",
+        "ReLU 网络在 activation kink 处不是解析函数。即使 softmax 部分有一个复半径，完整 network composition 还受激活边界、logit curvature 与 optimizer history 控制。"
+      ]
+    },
+    {
+      "title": "模型与方法",
+      "paragraphs": [
+        "对参数射线 $\\theta(\\tau)=\\theta_0+\\tau\\nu$，先假设 logits 严格 affine，分析 $\\ell(\\tau)$ 的 complex zeros；binary 得 exact formula，multiclass 得由 directional slope spread 构成的 lower bound。",
+        "实践中用 Jacobian–vector product 估每样本各类 $a_k$，并对 batch/subset 聚合 $\\rho_a$；另比较 finite-difference approximation 与 temperature rescaling。",
+        "one-step sweeps 覆盖六种 tested architectures，测超大梯度步后保留的 test accuracy；spike tests 与 controller 以 5 seeds 运行。",
+        "controller 强制 $\\tau\\leq r\\rho_a$ 或用 $\\eta=r\\rho_a/\\lVert\\nu\\rVert$，并在 10-epoch ResNet-18/CIFAR-10 上与 tested fixed learning rates/gradient clipping 比较。"
+      ]
+    },
+    {
+      "title": "核心结果与证据",
+      "paragraphs": [
+        "affine binary cross-entropy 的 exact Taylor radius 为 $\\sqrt{\\delta^2+\\pi^2}/\\Delta_a$；multiclass $\\rho_a=\\pi/\\Delta_a$ 只是 guaranteed lower bound，不是 exact radius。",
+        "六架构 one-step tests 中没有模型在 $r<1$ 崩溃，但 accuracy transitions 可延伸到约 $r=10$；$r=1$ 因而是 sufficient conservative zone，不是必要相变点。",
+        "temperature normalization 后 reported onset-threshold SD 从 0.992 降至 0.164；5-seed spike tests 中 controller 经受最高 10000× learning-rate spikes，而 gradient clipping 在所测设置崩溃。",
+        "5-seed、10-epoch ResNet-18/CIFAR-10 中，controller $r=1$ median accuracy 85.3%，best tested fixed LR 为 82.6%；$r=2$ 为 84.4%。没有长期标准 schedule 或现代 optimizer 的广泛比较。",
+        "RTX 6000 Ada 上 ResNet-18 的 finite-difference/exact-JVP overhead 分别为 +66%/+129%；未测大型模型成本，实际 full-dataset radius 也被 batch/subset estimate 放松。"
+      ]
+    },
+    {
+      "title": "有效性与局限",
+      "paragraphs": [
+        "affine-logit linearization 是 exact formulas 的决定性假设。真实 nonlinear logits 只有在 curvature 小的 perturbative regime 中继承近似 radius；不可把 $\\rho_a$ 当一般网络 exact safe learning rate。",
+        "ReLU kinks 破坏全局 analyticity，论文没有完整组合 activation-boundary 与 softmax-zero radii 的理论。",
+        "离开 Taylor disk 不迫使真实 loss 增大；留在 disk 内也不自动给 stochastic minibatch、momentum/Adam、多步 trajectory 的 descent theorem。",
+        "实践使用 batch/subset 或 finite differences，比 full-dataset exact-JVP definition 更不保守；outlier sample 与 slope-estimation error 可能改变最小 radius。",
+        "架构较小、5 seeds、CIFAR 短训练与 baselines 有限；controller 成本高且未覆盖 LLM/diffusion/pretraining。",
+        "对照没有隔离 complex-singularity formula 与一般 dynamic step-size capping/trust-region benefit，因此性能增益的独特机制尚未识别。"
+      ]
+    },
+    {
+      "title": "复现与资源",
+      "paragraphs": [
+        "先在 affine logistic regression 中数值定位 complex zeros，逐样本验证 binary exact 与 multiclass lower bound；再逐步加入已知 quadratic logits 检验 perturbative error。",
+        "one-step experiments 同时报 actual loss change、Taylor truncation error、accuracy retention、logit curvature 与 activation-kink crossing，区分级数失效和真实 instability。",
+        "controller 应与 line search、trust region、gradient clipping、loss-based backtracking 和相同 compute 的 generic dynamic caps 比较，使用 matched tuning budget。",
+        "在多 seeds/long schedules/AdamW 上记录 $r$ distribution、batch minimum versus quantiles、JVP error 与 failure rate；大型模型先做小比例 layers/tokens 的 profiling。",
+        "报告 hardware、precision、batch/classes、JVP implementation、wall-clock 和 memory；评估 +66%/+129% overhead 是否被减少的 failed steps 抵消。",
+        "代码链接为 https://github.com/piyush314/ghosts-of-softmax；本站未运行或审计，应 pin commit、environment、dataset split 与 checkpoint hashes。"
+      ]
+    },
+    {
+      "title": "阅读指南",
+      "paragraphs": [
+        "快速路线：pp. 3–7 看 complex continuation、binary exact radius 与 multiclass lower bound；pp. 8–14 看 sweeps、temperature/controller 与 ResNet results。",
+        "物理路线：把 softmax zeros 类比 Lee–Yang/Fisher zeros，但牢记这里控制的是局部 Taylor convergence，不是热力学相变。",
+        "AI 路线：区分 parameter step、directional logit slope、batch aggregation 与 optimizer learning rate，量纲要先统一。",
+        "批判路线：重点检查 affine-logit assumption、ReLU analyticity、$r=1$ 的 sufficiency、Taylor divergence versus loss divergence，以及 generic step-cap control。"
+      ]
+    }
+  ],
+  "evidence_refs": [
+    "paper.pdf pp. 3–7 and official TeX radius derivation: analytic continuation, affine logits, exact binary radius and conservative multiclass lower bound",
+    "paper.pdf pp. 8–14 and official TeX controller section: one-step sweeps, temperature normalization, five-seed spike/controller tests and ResNet-18 results",
+    "paper.pdf appendix pp. 16–25: nonlinear-logit perturbation, activation-kink, KL/Hessian, batch-estimation and scope boundaries",
+    "source PDF SHA-256 9d2c8ea78bf87a910ae3e409317c9b31443ef80f1cb49dbf18a076f812be9dca",
+    "official arXiv v1 source archive SHA-256 0ca0cb2442c542109f33f3c3c8b2e5f85b39e674af08e6c94235004d117ac6c9",
+    "MinerU Markdown SHA-256 afd4323ef033ed8a5a6c491be9ab5107d54bbe9f07251b053c071278a2807faf",
+    "Evidence packet SHA-256 74d9d2c03c6eb672121fe71c49f5a29f8348d27eea5d6a9d3cb7871fbb629f93",
+    "Evidence status: full text, rendered pages and official TeX verified against latest arXiv v1; affine/nonlinear, activation analyticity, Taylor-versus-loss, batch-estimation, controller-isolation, compute and large-model extrapolation boundaries recorded; no independent reproduction performed."
+  ]
+}
