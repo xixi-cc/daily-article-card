@@ -1,0 +1,138 @@
+{
+  "arxiv_id": "2606.23637",
+  "source_version": "v1",
+  "source_pdf": "https://arxiv.org/pdf/2606.23637v1",
+  "title_en": "Muown Implicitly Performs Angular Step-size Decay",
+  "title_zh": "Muown 隐式执行角步长衰减",
+  "curation_status": "full_text_verified",
+  "card_standard_version": "2.4",
+  "audience_profile": "physics_ai_literate_physicist",
+  "paper_profile": "theory_experiment",
+  "style_reference": "physicist_daily_arxiv",
+  "provenance": {
+    "program": "Collection", "catalog": "Paper Collection", "catalog_record_id": "2606.23637", "catalog_record_ids": ["2606.23637"],
+    "catalog_topic": "Training Dynamics", "collection_date": "2026-08-30", "sampled_at": "2026-08-31", "selected_by": "ziming_mineru_serial_goal", "sampling_seed": "not_applicable_source_complete", "candidate_count": 464
+  },
+  "verified_metadata": {
+    "arxiv_id": "2606.23637", "version": "v1", "title": "Muown Implicitly Performs Angular Step-size Decay",
+    "authors": ["Florian Hübler", "Kai Lion", "Antonio Orvieto", "Niao He"],
+    "categories": ["cs.LG", "math.OC"], "primary_category": "cs.LG", "published": "2026-06-22", "updated": "2026-06-22",
+    "abstract": "The paper rewrites normalized matrix rows as radial magnitudes and directions on a product of spheres, showing exactly how stored direction-norm growth attenuates Muown's implemented angular step and testing an explicit AngularMuown schedule in finite language-model pretraining experiments."
+  },
+  "equation_refs": [
+    {
+      "label": "Radial–directional matrix parameterization", "latex": "W(g,U)=\\operatorname{Diag}(g)U,\\qquad U\\in\\mathcal M_{\\mathrm{ob}},\\quad g\\in\\mathbb R^m",
+      "role": "separate every matrix row into a learned magnitude and a unit direction on the row-oblique manifold",
+      "symbols": {"g": "row magnitudes", "U": "row-normalized directions", "M_ob": "product of m unit spheres"},
+      "evidence": "paper.pdf pp. 3–4, Equation (1), and official v1 TeX",
+      "interpretation": "每行的径向自由度由 $g_i$ 承担，$U_i$ 只描述方向；方向更新应位于球面的 tangent space。这个分解使 Euclidean update 实际造成的旋转角可被直接计算。"
+    },
+    {
+      "label": "AngularMuown versus Muown row rotation", "latex": "\\tan\\theta_{t,i}^{\\mathrm{Angular}}=\\eta_t\\kappa_t s_{m,n}\\|O_{t,i}^{\\perp}\\|_2,\\qquad \\tan\\theta_{t,i}^{\\mathrm{Muown}}=\\frac{\\eta_t s_{m,n}\\|O_{t,i}^{\\perp}\\|_2}{r_{t,i}}",
+      "role": "expose the exact denominator through which Muown's stored row norm implicitly anneals the implemented angle",
+      "symbols": {"theta_ti": "row rotation angle", "kappa_t": "explicit angular schedule", "r_ti": "stored unnormalized row norm", "O_perp": "tangent component of the update"},
+      "evidence": "paper.pdf pp. 4–5, Equations (4)–(5)/Table 1, and official v1 TeX",
+      "interpretation": "在所用 retraction 下，$r_{t,i}$ 増长会精确缩小该行角步长；但 $r_t\\sim\\sqrt t$、$\\theta_t\\sim t^{-1/2}$ 还要求近似正交、持续增量等条件，不是所有训练轨迹的定律。"
+    },
+    {
+      "label": "Idealized stationarity bound", "latex": "\\frac1T\\sum_{t=1}^{T}\\mathbb E\\|\\operatorname{grad}\\mathcal L(U_t)\\|_F\\le4\\sqrt{\\frac{\\Delta_1L}{T}}+7\\left(\\frac{r\\Delta_1L\\sigma^2}{T}\\right)^{1/4}+4\\frac{\\sqrt r\\sigma}{T^{1/3}}",
+      "role": "bound average expected Riemannian-gradient norm for an idealized tangent-aware directional algorithm",
+      "symbols": {"Delta_1": "initial objective gap", "L": "retraction smoothness constant", "sigma": "stochastic-gradient noise scale", "r": "min(m,n)"},
+      "evidence": "paper.pdf pp. 6 and 11–13, theorem and proof, and official v1 TeX",
+      "interpretation": "这是标准 smoothness/noise assumptions 下的 stationarity guarantee，导出主导复杂度 $O(r\\Delta_1L\\sigma^2\\epsilon^{-4})$；它不直接覆盖完整 practical AngularMuown 的 Adam radial update、ambient momentum、近似 orthogonalization 与 WSD schedule。"
+    }
+  ],
+  "figure_refs": [
+    {
+      "label": "Figure 1 validation-loss horizons", "asset_path": "assets/collection-figures/2606.23637/figure-01-validation-loss.webp", "section": "核心结果与证据",
+      "role": "compare best-tuned validation-loss trajectories after branching a shared 124M checkpoint at four token horizons",
+      "evidence": "paper.pdf p. 1, Figure 1; official vector source files/angular_muown.pdf",
+      "alt_text": "Four panels compare AngularMuown, Muown, NorMuon, and AdamW validation-loss curves after branches at 2.5B, 5B, 7.5B, and 10B tokens.",
+      "caption": "Figure 1：在 124M FineWeb-Edu 预训练的四个有限 token horizon 中，最佳调参的 AngularMuown 曲线最终低于所测基线。",
+      "interpretation": "分支共享此前训练前缀，且每条曲线取各 optimizer 最佳 learning-rate run；图支持该 recipe 下的 token-to-loss 优势，不给 seed uncertainty 或 wall-clock speedup。"
+    }
+  ],
+  "cover": {
+    "mode": "source_figure", "asset_path": "assets/collection-figures/2606.23637/figure-01-validation-loss.webp", "label": "Figure 1 angular schedule", "visual_type": "data_plot",
+    "evidence": "paper.pdf p. 1, Figure 1; official vector source", "alt_text": "Best-tuned optimizer validation losses at four 124M-model token horizons.",
+    "caption": "显式角步长调度在四个预训练 horizon 上降低了最佳调参验证损失。", "selection_rationale": "It is the paper's headline empirical comparison and visibly preserves the finite-model, finite-horizon scope."
+  },
+  "sections": [
+    {"title": "作者信息", "paragraphs": [
+      "作者为 Florian Hübler、Kai Lion、Antonio Orvieto 与 Niao He。",
+      "本站核验 arXiv:2606.23637v1：提交于 2026-06-22，是当前唯一版本；分类 cs.LG、math.OC，PDF 17 页。官方标题使用方法名 “Muown”，本站保持原拼写。",
+      "Collection 来源为刘子鸣网站的 Training Dynamics 条目；本站检查官方 PDF、TeX、Figure 1 与实验表格，未复现约 10,000 GPU-hour 的训练 campaign。"
+    ]},
+    {"title": "研究问题", "paragraphs": [
+      "Muon 类优化器先积累矩阵更新，再做正交化；Muown 又把权重行归一化。为什么这种更新在大模型训练中稳定，实际控制的是 Euclidean step 还是方向旋转？",
+      "论文把矩阵每行分为 magnitude $g_i$ 与 unit direction $U_i$，在 product-of-spheres geometry 上推导一次 update 的精确 angular displacement。",
+      "核心观察是：Muown 保存的未归一化 row norm $r_{t,i}$ 出现在角步长分母中，因此 norm growth 会隐式 anneal rotation。",
+      "作者据此提出 AngularMuown，直接维护 unit directions，并用显式 $\\kappa_t$ 将 angular schedule 与 radial learning 分离。"
+    ]},
+    {"title": "背景", "paragraphs": [
+      "scale-invariant parameterization 中，权重的径向放大不改变前向函数，却会缩小同一 additive update 引起的方向变化，这是一种 optimizer-induced effective learning-rate decay。",
+      "row-oblique manifold 是 $m$ 个单位球面的直积；每一行的 tangent vector 必须与当前方向正交，更新后再通过 row normalization retract 回流形。",
+      "Muon/Muown 的 matrix orthogonalization 试图在 spectral norm geometry 下平衡更新能量；论文加入形状因子 $s_{m,n}=\\sqrt{\\max(1,m/n)}$。",
+      "AngularMuown 同时用 Adam 更新 magnitudes $g$，用 projected momentum 与 orthogonalized direction 更新 $U$，让幅度与方向适用不同优化结构。"
+    ]},
+    {"title": "给物理学家的 AI 导读", "paragraphs": [
+      "把每个 row direction 看成球面上的自旋，magnitude 看成独立径向模；真正改变表示的是自旋转角，而不是 ambient space 中的 chord 长度。",
+      "对 tangent step，$\\tan\\theta=\\|\\xi\\|$；若更新含 radial residue，则分母还有 $1+\\langle\\xi,U\\rangle$。retraction 会把 radial component 吸收而留下有限旋转。",
+      "Muown 的 $r_t$ 类似随时间增长的惯性尺度：固定 ambient kick 除以更大半径后产生更小角位移。显式 $\\kappa_t$ 则把这种退火从隐变量改为可控 schedule。",
+      "$r_t\\propto\\sqrt t$ 的直觉来自近似正交随机增量的 random-walk norm；动量相关、weight decay、gradient alignment 或非平稳噪声都会改变 exponent 或产生 plateau。",
+      "收敛定理研究 idealized Riemannian stochastic method 的 stationarity，不应被当作 Transformer loss 改善的机理证明；理论对象和 practical optimizer 必须分层。"
+    ]},
+    {"title": "模型与方法", "paragraphs": [
+      "方向 gradient 为 Euclidean gradient 的逐行 tangent projection，并由 $g_i$ 加权；算法对 projected-gradient momentum 做矩阵 orthogonalization，再以 $\\eta_t\\kappa_t s_{m,n}$ 更新 $U$ 并 row-normalize。",
+      "默认 angular multiplier 为 inverse-polynomial $\\kappa_t=[1+c(t-t_w)_+]^{-p}$，其中 $c=0.001,p=1$，warmup 后开始衰减。",
+      "practical Muown 的 momentum 在 ambient space 累积，orthogonalized direction 未再次投影到当前 tangent space；因此将它称为严格 textbook Riemannian optimizer 需要保留限定。",
+      "实验使用 FineWeb-Edu、通常 sequence length 1024、batch 512，WSD schedule 含 100 warmup steps 与 0.1 cooldown ratio。",
+      "124M 实验从 2.5B/5B/7.5B/10B token checkpoints 分支；另有 Qwen2-0.5B 六点 learning-rate sweep、67M/124M/300M width transfer，以及 1.1B-total/370M-active MoE 的 30B-token 训练。"
+    ]},
+    {"title": "核心结果与证据", "paragraphs": [
+      "精确几何关系显示 Muown 的 per-row rotation 由 $1/r_{t,i}$ 衰减，而 AngularMuown 用显式 $\\kappa_t$ 控制；这部分是 normalization/retraction 下的代数结果。",
+      "Figure 1 的 124M 模型在四个 branch horizons 上，最佳调参 AngularMuown validation loss 最终都低于 AdamW、NorMuon 与 Muown；作者概括为约 2× AdamW、1.5× NorMuon/Muown 的 token-to-loss speedup。",
+      "在 124M/2.5B-token 角度测量中，constant-$\\kappa$ AngularMuown 的 mean row rotation 近似平坦，scheduled AngularMuown 与 Muown 会退火，weight-decayed Muon 趋于非零 plateau。",
+      "Qwen2-0.5B 的六点 sweep 中，polynomial AngularMuown 最佳 loss 2.648（$\\eta=4\\times10^{-2}$）；constant-$\\kappa$ 为 2.694，NorMuon 为 2.692。scheduled 方法不是每个 learning rate 都更好。",
+      "width 512/768/1280、训练 5100 iterations 时，测试网格 $2^{-8}$ 至 $2^{-3}$ 给出相同 grid-optimal learning rate；这是三个有限宽度的迁移观察，不是 asymptotic invariance。",
+      "1.1B-total/370M-active MoE 中，AngularMuown RMS-matching scale、spectral-condition scale 与 Muon 最佳 losses 分别为 2.4807、2.4914、2.5255；部分 optimum 位于搜索网格边界。",
+      "理论在 smoothness、unbiased finite-variance oracle 等条件下给出 idealized tangent-aware update 的 average-gradient stationarity bound。"
+    ]},
+    {"title": "有效性与局限", "paragraphs": [
+      "headline curves/tables 是各 optimizer 最佳 learning-rate run，而非多 seeds 均值；没有 seed count、error bars、confidence intervals 或显著性检验。",
+      "不同 optimizer 使用适配后的不同搜索范围，取网格最优引入 tuning-selection uncertainty；MoE 的最佳点落在边界，真实 optimum 与 margin 尚不确定。",
+      "124M 各 horizon 共享 checkpoint prefix，并非独立重复；Qwen、width 与 MoE 也都是有限 grid、有限 recipe 的实验。",
+      "所谓 speedup 是达到相同 loss 所需 token 数，不是 wall-clock speedup；matrix orthogonalization 的吞吐、通信与显存开销需单独比较。",
+      "形状因子依赖 typical-row energy 的平均 heuristic，不能保证每行具有相同 angle，也未建立宽度渐近律。",
+      "$t^{-1/2}$ 角衰减需要持续近似正交增量和无正则 norm growth，不能推广为每个 row、每个 regime 的 universal law。",
+      "AngularMuown 同时改变 schedule、shape scaling 与内部参数处理；缺少完整 factorial ablation 时，不能把 performance gain 唯一归因于显式角控制。",
+      "实验最大为 1.1B total parameters；其他模态、100B scale、fine-tuning 和 deployment 均未测试，公开 speedrun 排名也不是受控论文实验。"
+    ]},
+    {"title": "复现与资源", "paragraphs": [
+      "复现应记录每层每行的 $r_{t,i}$、radial/tangent update、$\\theta_{t,i}$、orthogonalization residual 与 singular-value spectrum，而不只看平均 angle。",
+      "用相同 FineWeb-Edu tokens、architecture、batch、WSD schedule 与总 FLOPs，对 AdamW、NorMuon、Muown、constant-$\\kappa$ 和 scheduled AngularMuown 做 matched grid。",
+      "每个 learning rate 至少多 seeds，报告 validation loss mean/CI、divergence rate、token-to-loss 与真实 wall-clock/energy-to-loss。",
+      "机制实验应分别控制 row-norm freezing、显式 $1/r_t$ schedule、weight decay、tangent reprojection、momentum space 与 shape scale，形成 factorial ablation。",
+      "对 $r_t$ 与 angle decay 应逐层拟合局部 exponent，检查 momentum correlations、gradient alignment 与 plateau，而非预设 $1/2$ 指数。",
+      "理论复核需把 idealized tangent spectral direction 与代码中的 Newton–Schulz/PolarExpress approximation、Adam radial update 和 warmup/cooldown 一一对齐。"
+    ]},
+    {"title": "阅读指南", "paragraphs": [
+      "快速路线：p. 1 看 Figure 1；pp. 3–5 看 radial/directional geometry 与 Equation (5)；pp. 7–9 看 124M、Qwen、width 与 MoE 结果。",
+      "物理路线：用 product-of-spheres、tangent projection、retraction、random-walk norm 与 angular annealing 理解机制。",
+      "AI 路线：区分 Muon、Muown、NorMuon 与 AngularMuown 的 normalization、momentum、orthogonalization、radial optimizer 和 schedule。",
+      "批判路线：检查 best-of-grid selection、缺失 seeds、共享 checkpoint prefix、token-vs-wall-clock、MoE grid edge 和 theorem-to-code gap。"
+    ]}
+  ],
+  "evidence_refs": [
+    "paper.pdf pp. 3–6 and official v1 TeX: row-oblique parameterization, tangent projection/retraction, exact angle formula, Muown denominator and AngularMuown schedule",
+    "paper.pdf pp. 6 and 11–13 and official proofs: idealized Riemannian stationarity theorem, assumptions, rate and practical-optimizer scope boundary",
+    "paper.pdf pp. 1 and 7–9, Figures 1/3/4 and tables: 124M checkpoint branches, angle trajectories, Qwen2-0.5B sweep, width transfer and MoE results",
+    "paper.pdf experimental appendix and official v1 TeX: FineWeb-Edu setup, WSD schedule, hyperparameter grids, hardware/project cost and reproduction boundaries",
+    "source PDF SHA-256 6424269189e7f5187b43461cf15c693d34d267d245e04afbd16fb5f982b4f7c0",
+    "official arXiv v1 source archive SHA-256 d71a8c5833c4e057ce68c1a32a435aadfdebcd2d525535bdf01c4aa5c657bd80",
+    "MinerU Markdown SHA-256 b2b7693cb58b960e5750b8f62cd1ac7e2f01a8701f880c5267251d0c1286f085",
+    "Evidence packet SHA-256 4c5077724cfd2f2e945a06f22637ca964ec55300a4932d5c6f39363592ecc187",
+    "Representative Figure 1 WebP SHA-256 96c58fa0e65f0dfe2d87dd02581e356b4ddcf2377544ac885d66a6b9a7ed099d",
+    "Evidence status: full text, official v1 TeX, Figure 1 and experiment tables verified; angular-law, Riemannian-implementation, shape-scale, best-grid/statistical, shared-prefix, token/wall-clock, MoE-boundary, scale-transfer and theorem-to-practice boundaries recorded; no independent reproduction performed."
+  ]
+}

@@ -1,0 +1,136 @@
+{
+  "arxiv_id": "2607.17624",
+  "source_version": "v1",
+  "source_pdf": "https://arxiv.org/pdf/2607.17624v1",
+  "title_en": "Can Transformers Really Do It All? On the Compatibility of Inductive Biases Across Tasks",
+  "title_zh": "Transformer 真能包办一切吗？跨任务归纳偏置的兼容性",
+  "curation_status": "full_text_verified",
+  "card_standard_version": "2.4",
+  "audience_profile": "physics_ai_literate_physicist",
+  "paper_profile": "ai_empirical",
+  "style_reference": "physicist_daily_arxiv",
+  "provenance": {
+    "program": "Collection", "catalog": "Paper Collection", "catalog_record_id": "2607.17624", "catalog_record_ids": ["2607.17624"],
+    "catalog_topic": "AI Agents", "collection_date": "2026-08-30", "sampled_at": "2026-08-31", "selected_by": "ziming_mineru_serial_goal", "sampling_seed": "not_applicable_source_complete", "candidate_count": 464
+  },
+  "verified_metadata": {
+    "arxiv_id": "2607.17624", "version": "v1", "title": "Can Transformers Really Do It All? On the Compatibility of Inductive Biases Across Tasks",
+    "authors": ["Damien Teney", "Liangze Jiang", "Hemanth Saratchandran", "Simon Lucey"],
+    "categories": ["cs.LG"], "primary_category": "cs.LG", "published": "2026-07-20", "updated": "2026-07-20",
+    "abstract": "The paper replaces GeLU and, optionally, softmax attention with dataset-selected one-dimensional splines in small GPT-2-style models, then freezes these nonlinearities and retrains weights to study task-specific gains and uneven transfer across synthetic algorithms, language, and code."
+  },
+  "equation_refs": [
+    {
+      "label": "Learnable MLP nonlinearity", "latex": "x\\leftarrow W'\\,\\phi_{\\theta_{\\mathrm{MLP}}}(Wx+b)+b'",
+      "role": "replace each fixed GeLU with a shared one-dimensional linear spline whose keypoint values are architecture parameters",
+      "symbols": {"phi_theta": "learned scalar spline applied elementwise", "theta_MLP": "spline keypoint values", "W_Wprime": "ordinary trainable weights"},
+      "evidence": "paper.pdf pp. 2–3, Methods MLP definition, and official v1 TeX 2_methods.tex",
+      "interpretation": "搜索空间只改变逐元素标量函数，不会表示 GLU 的乘法交互或更一般的 block topology；找到更好 spline 只说明 baseline 在该受限邻域和协议下不是最佳点。"
+    },
+    {
+      "label": "Normalized kernel attention", "latex": "x_i\\leftarrow\\frac{\\sum_{j=1}^{n}K(Q_i,K_j)V_j}{\\sum_{j=1}^{n}K(Q_i,K_j)}",
+      "role": "generalize softmax attention to a normalized learned kernel over query and key vectors",
+      "symbols": {"K": "query–key kernel", "Q_i": "query at position i", "K_j_V_j": "key and value at source j"},
+      "evidence": "paper.pdf pp. 2–3, Methods attention definition, and official v1 TeX",
+      "interpretation": "归一化形式像 attention average，但若 learned kernel 可为负，weights 不必是概率，分母也可能带来数值敏感性；不能自动沿用 softmax 的概率解释。"
+    },
+    {
+      "label": "Spline feature-map kernel", "latex": "K(Q,K)=\\phi_{\\theta_{\\mathrm A}}(Q)^\\top\\phi_{\\theta_{\\mathrm A}}(K)",
+      "role": "parameterize attention similarity through an elementwise learned feature map",
+      "symbols": {"phi_theta_A": "learned one-dimensional attention spline", "theta_A": "shared attention-architecture parameters", "inner_product": "feature-space similarity"},
+      "evidence": "paper.pdf pp. 2–3 and Algorithm 1; official v1 TeX 2_methods.tex/algorithm.tex",
+      "interpretation": "同一个 scalar spline 施于各坐标后取内积，归纳偏置来自 feature map 形状；这仍是很小的 kernel family，并非任意 attention mechanism 搜索。"
+    }
+  ],
+  "figure_refs": [
+    {
+      "label": "Figure 5 algorithmic-task compatibility", "asset_path": "assets/collection-figures/2607.17624/figure-05-algorithmic-task-compatibility.webp", "section": "核心结果与证据",
+      "role": "show how an architecture spline selected on each row task transfers when weights are retrained on each column task",
+      "evidence": "paper.pdf p. 6, Figure 5; official vector source figCrossAlg/figCrossAlg8-1.pdf",
+      "alt_text": "An eight-by-eight heatmap reports percentage-point test-accuracy changes for transferring task-selected nonlinearities across algorithmic tasks.",
+      "caption": "Figure 5：跨任务兼容矩阵既有大量正迁移，也有若干强负迁移；对角线并不总是最大。",
+      "interpretation": "每格在目标任务指定的有限 training step 读数，因此混合 convergence speed 与 eventual generalization；它支持不均匀兼容性，不支持任务间普遍互斥。"
+    }
+  ],
+  "cover": {
+    "mode": "source_figure", "asset_path": "assets/collection-figures/2607.17624/figure-05-algorithmic-task-compatibility.webp", "label": "Figure 5 compatibility matrix", "visual_type": "data_plot",
+    "evidence": "paper.pdf p. 6, Figure 5; official vector source", "alt_text": "Cross-task transfer heatmap for learned Transformer nonlinearities on eight synthetic tasks.",
+    "caption": "任务选择的非线性可以迁移，但兼容性具有明显的任务对依赖。", "selection_rationale": "It directly tests the paper's central compatibility question and exposes positive, negative, and non-diagonal transfer rather than only headline gains."
+  },
+  "sections": [
+    {"title": "作者信息", "paragraphs": [
+      "作者为 Damien Teney、Liangze Jiang、Hemanth Saratchandran 与 Simon Lucey；官方首页标注为 ICLR 2026 conference paper。",
+      "本站核验 arXiv:2607.17624v1：提交于 2026-07-20，是当前唯一版本；主分类 cs.LG，PDF 26 页。",
+      "Collection 归在刘子鸣网站的 AI Agents 标签，但本文研究小型 decoder-only Transformer 的算法、语言与代码任务，并未评估 autonomous agents。"
+    ]},
+    {"title": "研究问题", "paragraphs": [
+      "标准 Transformer 用同一组 GeLU 与 softmax bias 处理记忆、括号、加法、复制、语言和代码；这套统一归纳偏置对所有任务都接近最优吗？",
+      "论文在 GPT-2-style 模型附近搜索逐元素 MLP spline 与 attention feature-map spline，并在 held-out task data 上选择 architecture parameters。",
+      "选择后的 spline 被冻结，普通 weights 从头训练；把 source-task spline 转移到 target task，则形成经验 compatibility test。",
+      "研究对象是有限的 spline architecture neighborhood，不提供“Transformer 无法通用”或“任务具有互斥 bias”的一般定理。"
+    ]},
+    {"title": "背景", "paragraphs": [
+      "归纳偏置决定有限数据和优化预算下哪些函数更容易被学习；固定激活函数与 attention kernel 是架构层面的 bias。",
+      "作者把 spline keypoint values 视作共享 architecture hyperparameters，而把每次随机初始化的网络 weights 视作 inner training variables。",
+      "Stage I 用一个 split 训练多个普通模型 weights，用 held-out split 更新共享 splines；算法任务用 $M=8$，语言任务用 $M=3$。",
+      "Stage II 固定 splines 并重新初始化所有 weights，减少同一组 weights 与 architecture 的直接 co-adaptation，但 architecture selection bias 仍存在。"
+    ]},
+    {"title": "给物理学家的 AI 导读", "paragraphs": [
+      "可把 GeLU/softmax 看作局部 constitutive law，而 spline search 是在有限函数族内反演最适介质响应；ordinary weights 则是在给定介质中的微观自由度。",
+      "held-out architecture split 类似用一组观测选择 Hamiltonian，再用另一组轨迹拟合状态；它降低过拟合到单次轨迹，却不是独立 confirmatory experiment。",
+      "compatibility heatmap 类似不同任务间 transfer matrix，但各 column 在不同 training step 取值，因而单位都是 percentage points，动力学时间却未统一。",
+      "正 off-diagonal cells 表示一种 bias 可帮助多个任务；负 cells 表示在固定 recipe 下产生 trade-off。有限矩阵不能估计所有任务的总体 incompatibility rate。",
+      "Copy 的 architecture 选择已经看过长度 11–15，weights 只看 2–10，测试 16–20；因此结果是为 extrapolation 专门调 bias，而不是完全未见 OOD 长度上的自发泛化。"
+    ]},
+    {"title": "模型与方法", "paragraphs": [
+      "baseline 是 GPT-2-style decoder-only Transformer：MLP 用 GeLU，attention 用 exponential dot-product softmax kernel。",
+      "MLP spline 是 $\\mathbb R\\to\\mathbb R$ 的一维分段线性函数；attention spline 逐元素映射 Q/K 后取 inner product，再按全部 keys 的 kernel sum 归一化。",
+      "算法任务有 Memorize、Parentheses、AddMod、Haystack、Add、AddReversed、Copy 与 Mano；baseline hyperparameters 先按任务调优，optimized architecture 沿用。",
+      "Stage II 算法结果平均六个 random seeds；曲线展示 individual seeds，但没有 confidence intervals 或 hypothesis tests。",
+      "语言/代码覆盖 TinyStories、Shakespeare、enwik8 与 CodeSearchNet Java/Python；主模型通常四层、width 512、四 heads、3000 steps、batch 64。"
+    ]},
+    {"title": "核心结果与证据", "paragraphs": [
+      "作者报告 Add 与 Mano 在 architecture optimization 后约快 2–3 倍 convergence；多个算法任务的 seed-to-seed variance 与有限步 test accuracy 也改善，但幅度依任务和读数时刻而变。",
+      "Figure 5 中大量 off-diagonal transfer 为正，强负迁移集中在部分任务对；例如 Add-selected architecture 转到 Mano 为 +29 points，而 Mano 自选对角线为 +22。",
+      "Memorize row 转到本任务为 +43，但到 Haystack/Copy 为 -10/-15；Copy row 转 Add/Mano 为 -11/-11，却转 Copy 为 +19，说明 trade-off 不是统一方向。",
+      "语言数据的收益通常很小，代码曲线变化较大；将差异归因于代码更 systematic/compositional 是解释，不是被隔离的因果机制。",
+      "TinyStories 小模型中 GeLU 与 learned MLP spline 的 training perplexity 为 1.58/1.57，validation accuracy 为 63.7%/64.4%，绝对差异有限。",
+      "FineWeb scaling check 在 91M–162M、三 seeds 平均中，12-layer learned spline loss 3.68，GeLU/ReLU 均 3.72；exact spline 训练耗时 81,720 秒，远高于 GeLU 34,020 秒和 polynomial approximation 29,100 秒。"
+    ]},
+    {"title": "有效性与局限", "paragraphs": [
+      "搜索只覆盖 elementwise one-dimensional splines 与一个 feature-map attention kernel，不能代表 GLU、state-space layers 或完整 Transformer architecture space。",
+      "同一 validation data 参与 architecture/hyperparameter selection；重新训练 weights 不会把探索性选择自动变成独立确认。",
+      "算法任务虽有六 seeds，但缺 CI、formal tests 与 multiple-comparison correction；compatibility cells 共享任务、recipes 和有限 seed pool，并非独立样本。",
+      "compatibility 每列使用 150–3000 不同 target-specific steps，混合学习速度与渐近泛化；对角线不总最大，不能表述为普遍 task-specific incompatibility。",
+      "语言主实验的实现参数写 `nModelsRetraining=1`，并以“variance 不大”为注释；没有明确多-seed panel 时，不应声称其统计稳定。",
+      "FineWeb 最大只到 162M，且 exact spline wall-clock 较慢；这只是 modest scale check，不支持 frontier LLM 或 autonomous-agent 结论。",
+      "找到有限邻域内更好的非线性不识别具体 causal bias，也不证明标准 Transformer 在不受限架构空间中不是局部或全局 optimum。"
+    ]},
+    {"title": "复现与资源", "paragraphs": [
+      "代码链接为 https://github.com/idiap/lm-afs；本站未执行。复现需固定 commit、task generators、splits、spline ranges/keypoints、$M$、seed 与 readout steps。",
+      "Stage I 应分别记录 architecture split 与 weight split losses，以及每个共享 spline 接收的多模型 gradients；Stage II 必须重新初始化 ordinary weights。",
+      "compatibility matrix 应对每个 task pair 报六-seed mean、dispersion、完整 learning curves 与多个统一/任务特定 time slices，并做 multiplicity-aware uncertainty。",
+      "Copy 应将 architecture-selection lengths、weight-training lengths 与 final test lengths明确拆开，再增加完全未参与任何选择的 length regime。",
+      "语言/代码比较应增加 seeds、token-matched budgets 与 exact spline/polynomial approximation 的 wall-clock、memory、FLOPs；避免只比较最后单点。",
+      "规模验证需在更大模型上预注册 spline transfer，而非每一规模重新选择；同时和 GLU、temperature-scaled softmax 等结构化 baselines 对比。"
+    ]},
+    {"title": "阅读指南", "paragraphs": [
+      "快速路线：pp. 2–3 看 spline search/two-stage protocol；pp. 4–6 看算法任务与 Figure 5；pp. 7–9 看语言代码；p. 24 看 FineWeb scaling。",
+      "物理路线：把 activation/kernel 当 constitutive law，把共享 spline 当少量 coarse architecture coordinates，再分析 task-to-task response matrix。",
+      "AI 路线：区分 architecture selection split、weight training split、Stage II retraining 与 cross-task transfer，尤其注意 softmax replacement 可能有负 weights。",
+      "批判路线：检查 search-space restriction、selection reuse、不同 readout steps、Copy 的 OOD split、语言单次重训、FineWeb wall-clock 与 scale ceiling。"
+    ]}
+  ],
+  "evidence_refs": [
+    "paper.pdf pp. 2–3 and official v1 TeX: MLP/attention spline parameterization, normalized kernel, two-stage multi-initialization architecture selection and retraining protocol",
+    "paper.pdf pp. 4–6 and p. 19, Figures 2–5/tables: eight algorithmic tasks, six-seed Stage II setup, length splits, convergence claims and exact compatibility matrix",
+    "paper.pdf pp. 7–9 and pp. 20–22: TinyStories/Shakespeare/enwik8/CodeSearchNet settings, small effects, attention-search limitation and language seed boundary",
+    "paper.pdf p. 24 and official appendix: 91M–162M FineWeb three-seed losses, timing values and scale limitation",
+    "source PDF SHA-256 19bbfb3ae191fdf8e3501637b0a104f7cbaf0a94da786a45584dae277b84d306",
+    "official arXiv v1 source archive SHA-256 07185cd0fc0329983ef0f448743a095842a1ad814ba5441863cffef00f290380",
+    "MinerU Markdown SHA-256 06afe4721d2afb02562221d972eb8ba455e0110957da7598bba01f4f5f37bdec",
+    "Evidence packet SHA-256 4541119edbb8cee07b13d7204a6efec13cee1862905bf5db447af16797edd4f0",
+    "Representative Figure 5 WebP SHA-256 1ee46fc34de4ea195b15d299af8d533af1ac8e3092ef34865ae629d20eeac47f",
+    "Evidence status: full text, official v1 TeX, Figure 5 and quantitative tables verified; campaign-topic, restricted-search, architecture-selection, kernel-sign, finite-step compatibility, Copy-OOD, seed/multiplicity, wall-clock and scale boundaries recorded; no independent reproduction performed."
+  ]
+}
