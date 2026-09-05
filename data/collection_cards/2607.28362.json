@@ -1,0 +1,143 @@
+{
+  "arxiv_id": "2607.28362",
+  "source_version": "v1",
+  "source_pdf": "https://arxiv.org/pdf/2607.28362v1",
+  "title_en": "ShadowDancer: Teaching Video World Models Any Action by Learning Unified Dynamics Representations from a Video and Its Shadow",
+  "title_zh": "ShadowDancer：从视频及其“影子”学习统一动力学表征，为视频世界模型传授动作",
+  "curation_status": "full_text_verified",
+  "card_standard_version": "2.4",
+  "audience_profile": "physics_ai_literate_physicist",
+  "paper_profile": "theory_experiment",
+  "style_reference": "physicist_daily_arxiv",
+  "provenance": {
+    "program": "Collection", "catalog": "Paper Collection", "catalog_record_id": "2607.28362", "catalog_record_ids": ["2607.28362"],
+    "catalog_topic": "World Models", "collection_date": "2026-08-30", "sampled_at": "2026-08-31",
+    "selected_by": "ziming_mineru_serial_goal", "sampling_seed": "not_applicable_source_complete", "candidate_count": 464
+  },
+  "verified_metadata": {
+    "arxiv_id": "2607.28362", "version": "v1",
+    "title": "ShadowDancer: Teaching Video World Models Any Action by Learning Unified Dynamics Representations from a Video and Its Shadow",
+    "authors": ["Jin Cao", "Zian Meng", "Kaipeng Zhang"], "categories": ["cs.CV", "cs.AI", "cs.LG"], "primary_category": "cs.CV",
+    "published": "2026-07-30", "updated": "2026-07-30",
+    "abstract": "ShadowDancer uses synchronized synthetic shadow pairs to learn demonstration-conditioned dynamics representations and combines them with source-video assets in a block-causal video world model for action transfer and long command rollouts."
+  },
+  "equation_refs": [
+    {
+      "label": "Shadow-pair intervention",
+      "latex": "x=R(d,c),\\qquad \\tilde x=R(d,\\tilde c),\\qquad \\tilde c\\sim p(c)",
+      "role": "hold dynamics fixed while independently resampling appearance, scene, material, lighting or camera nuisance factors",
+      "symbols": {"d": "shared dynamics trajectory", "c_c_tilde": "source and independently resampled context", "R": "family-specific renderer", "x_x_tilde": "frame-synchronized videos"},
+      "evidence": "paper.pdf pp. 3-4, Equations (1)-(2); official v1 TeX",
+      "interpretation": "这是由 data generator 定义的 controlled intervention。只有被独立重采样的因素才获得不变性监督；renderer 中未消除的相关性会泄漏到所谓 dynamics。"
+    },
+    {
+      "label": "Cross-shadow variational objective",
+      "latex": "\\mathcal L_{\\theta,\\phi}^{\\mathrm{CSP}}=\\frac1{T-1}\\sum_{t=1}^{T-1}\\left[-\\mathbb E_{q_\\phi(z_t|x_t,x_{t+1})}\\log p_\\theta(\\tilde x_{t+1}|\\tilde x_t,z_t)+\\beta\\,\\mathrm{KL}(q_\\phi\\|p)\\right]",
+      "role": "force a source-derived latent to predict the other shadow's transition while regularizing its information capacity",
+      "symbols": {"z_t": "32-dimensional inverse-dynamics latent", "q_phi": "variational encoder", "p_theta": "cross-shadow decoder", "beta": "KL coefficient, reported as 0.01"},
+      "evidence": "paper.pdf p. 4, Equation (3); official method TeX",
+      "interpretation": "cross-prediction discourages source appearance leakage，但约三分之一训练样本是 self-pairs，有限数据和 non-convex optimization 也不保证最终 $z$ 是最小或无外观信息。"
+    },
+    {
+      "label": "Population identification assumptions",
+      "latex": "D=h(X),\\qquad X\\perp(B,Y)\\mid D,\\qquad K_d=K_{d'}\\Rightarrow d=d'",
+      "role": "state observability, independent context resampling and effect separation needed to identify dynamics from cross-shadow prediction",
+      "symbols": {"D": "underlying dynamics", "X": "source video", "B": "target context", "Y": "target next observation", "K_d": "conditional target-transition kernel"},
+      "evidence": "paper.pdf pp. 14-15, Appendix C and Equation (4); official supplement TeX",
+      "interpretation": "在 overlap、minimality 与 population optimum 等条件下，只能把 dynamics 识别到 one-to-one reparameterization；若 separation 失败，只能识别等价类。"
+    }
+  ],
+  "figure_refs": [
+    {
+      "label": "Figure 1 ShadowDancer teaser",
+      "asset_path": "assets/collection-figures/2607.28362/figure-01-shadowdancer-teaser.webp",
+      "section": "模型与方法",
+      "role": "illustrate synchronized shadow pairs and the breadth of demonstration-conditioned action generation across human, robot and game domains",
+      "evidence": "paper.pdf p. 1, Figure 1; official teaser.pdf",
+      "alt_text": "Paired renders preserve motion while changing appearance across human, robot and game settings, followed by generated command sequences from stored action demonstrations.",
+      "caption": "Figure 1：上部用同步 shadow pairs 固定动作、改变外观；下部把预编码动作资产串接成不同 command sequences。",
+      "interpretation": "该图解释系统接口与覆盖范围，是定性示意而非性能或真实世界可识别性的定量证据。"
+    }
+  ],
+  "cover": {
+    "mode": "source_figure", "asset_path": "assets/collection-figures/2607.28362/figure-01-shadowdancer-teaser.webp",
+    "label": "Figure 1 shadow-pair teaser", "visual_type": "schematic", "evidence": "paper.pdf p. 1, Figure 1; official teaser source",
+    "alt_text": "Synthetic shadow pairs and demonstration-conditioned action generation across several visual domains.",
+    "caption": "把动作视为在外观变换下保持不变的动力学，再用示范驱动视频世界模型。",
+    "selection_rationale": "It makes the pairing intervention, invariant-learning intent and multi-domain system interface legible in one official figure."
+  },
+  "sections": [
+    {"title": "作者信息", "paragraphs": [
+      "作者为 Jin Cao、Zian Meng 与 Kaipeng Zhang。",
+      "本站核验 arXiv:2607.28362v1：提交于 2026-07-30，是当前唯一版本；主分类 cs.CV，PDF 18 页。",
+      "Collection 来源为刘子鸣网站的 World Models 条目；本站对照官方 PDF、TeX、Figure 1 原图和附录。论文链接的 GitHub 在本次核验时只有 README/assets，并说明 code 与 model weights 仍在内部审查。"
+    ]},
+    {"title": "研究问题", "paragraphs": [
+      "文本、键盘按键或低维轨迹很难完整描述挥剑、舞蹈或复杂相机运动。能否直接把一段 reference video 当作 action instruction，让 world model 在另一角色和场景中复现其动力学？",
+      "核心数据构造是 video 与 shadow：两次渲染逐帧共享同一 dynamics，却独立改变人物、环境、材质、光照或 camera 等上下文。",
+      "encoder 从 source transition 提取 latent $z$，decoder 必须用它预测另一 shadow 的下一帧；部署时再把 $z$ 与 source-video VAE features $s$ 一起保存为可拼接 action asset。",
+      "标题中的“any action”必须理解为：已有可编码 demonstration、且训练/生成分布能支持的动作；不是无需示范、无需精确 pairing 就能控制任意现实动力学。"
+    ]},
+    {"title": "背景", "paragraphs": [
+      "video world model 生成未来画面，但 control signal 常比视频本身稀疏。inverse dynamics 希望从相邻帧反推动作，却容易把人物外观、背景和运动纠缠在同一 latent。",
+      "paired-view learning 的思路是主动改变 nuisance variables，同时保持关心的 causal factor 不变。若两个 shadow 的共同信息只有 dynamics，cross-reconstruction bottleneck 就有机会保留它。",
+      "实际生成还需要高频运动细节。ShadowDancer 因而不只输入 $z$：冻结 3D-VAE 提取的 source assets $s$ 通过 input concatenation 与 attention context 进入 DiT。",
+      "长 rollout 把 action assets 当离散指令片段，按 command 顺序拼接；训练时也构造不连续 asset chunks，并改造成三 latent frames 一块的 block-causal generation 与 KV cache。"
+    ]},
+    {"title": "给物理学家的 AI 导读", "paragraphs": [
+      "shadow pair 类似受控对称变换：改变外观自由度而保持轨迹 $d$。在两次观测中保持不变的相关结构，被当作 dynamics 的候选 sufficient statistic。",
+      "这里的不变群不是自然给定的，而由 simulator pairing protocol 定义。若“人物身份”与动作库仍相关，训练出的 invariant 就可能保留隐藏标签，正如不完美实验控制留下 confounder。",
+      "identifiability theorem 类似把 order parameter 恢复到可逆坐标变换：它不选择唯一的 latent basis，也不说明 32-D beta-VAE 在有限样本下会收敛到最小 sufficient representation。",
+      "需要区分三个证据层：shadow data 是因果控制；asset/z ablation 是系统级干预；VLM preference、linear probes 与 qualitative rollout 是训练后观测。它们的结论强度不同。",
+      "部署中的真正 control variable 是 $(z,s)$，而不是孤立的 $z$。assets 是强运动载体，因而“统一 dynamics latent 独自承载动作”会与 ablation 证据冲突。"
+    ]},
+    {"title": "模型与方法", "paragraphs": [
+      "shadow library 覆盖 SMPL-X/character renders、ManiSkill robot arms、第一/第三人称游戏与 camera trajectories，总量为数百万 frames 的近似统计；MiraData 与 OpenX 只作为退化 self-pairs 增加真实外观。",
+      "variational inverse-dynamics encoder 产生 32-D $z_t$，cross-shadow decoder 从 target context 和 source-derived $z_t$ 预测 target next frame，$\\beta=0.01$；约三分之一样本为 self-pair。",
+      "camera、scene dynamics 与 full 三个 heads 共用 encoder/latent space，以 source mask 选择监督因子。跨 family 的 latent unity 是 architecture choice，不由 identification theorem 自动推出。",
+      "world model 以 SkyReels-V2-1.3B image-to-video DiT 为起点；$z$ 进入 AdaLN 与专用 cross-attention，$s$ 同时进入输入和 attention context。reference clip 只需编码一次，再复用 variable-length assets。",
+      "transfer 输出为 480×720；长 rollout 为 544×960，并在 8 张 H200、FSDP 下从 warm start fine-tune 10k steps。inference 用 30 flow-matching steps、CFG 5.0；完整总训练预算和全部 optimizer details 未报告。"
+    ]},
+    {"title": "核心结果与证据", "paragraphs": [
+      "held-out synchronized shadow pairs 上，ShadowDancer 对 Olaf-World 的 human PSNR/LPIPS 为 22.4/.184 vs 18.2/.288，first-person 17.0/.354 vs 13.0/.532，third-person 17.4/.309 vs 12.6/.506，robot 22.6/.116 vs 14.0/.478；camera ATE/RPE 为 .005/.003 vs .072/.021。",
+      "这些 ground truth 是另一 synthetic paired render，不是机器人或人物在真实世界完成任务。human/first-/third-person 每类约 45–50 pairs，robot/camera 样本数未明确，且无 seeds、confidence intervals 或 significance tests。",
+      "长 rollout 只有 16 条 command streams，每个 baseline 切成约 64 个 240-frame segments，由单一 Fable 5 VLM 无 tie 强制二选一。对 Olaf/Yume/LingBot 的 control/fidelity/consistency win rates 分别为 94/95/94%、88/86/91%、78/83/64%；abstract 的 86% 是这些 cells 的平均。",
+      "segments 在同一 16 streams 内聚类，不能当独立 trials；20% human audit 未报告 human–VLM agreement，因此不能称“86% human-validated superiority”。不同 baseline 接口的信息密度也不同。",
+      "12-pair component ablation 中，full model 为 16.35 PSNR/.376 LPIPS，assets+unpaired-$z$ 为 14.92/.428，支持 paired $z$ 的增益；但 assets-only 15.07/.420 高于 paired-$z$-only 14.75/.448，说明 assets 是强载体。",
+      "FVD 在 first-person/third-person/human motion 从 555.8/842.0/511.6 降到 318.3/422.2/253.9；windows 重叠且无 uncertainty。modded character 与双手剑只是一次 qualitative unseen-action test。"
+    ]},
+    {"title": "有效性与局限", "paragraphs": [
+      "识别定理要求 source/target contexts 在给定 dynamics 后条件独立，source 可观测 $D$，target context overlap，不同 dynamics 的 transition kernels 可分，并达到 minimal population sufficient optimum。",
+      "定理只保证表示与 $D$ 在 one-to-one reparameterization 下等价；不保证 finite beta-VAE、有限 paired data 或 non-convex SGD 得到 appearance-free $z$。nonminimal optimum 可保留外观。",
+      "真实视频仅以 self-pairs 加入，无法提供 theorem 所需的 nuisance intervention；主要训练和评测严重依赖 simulator、rendered games 与精确 replay。",
+      "action-transfer 没有模型级重复与区间；camera metric 依赖 learned pose estimator 和 Sim(3) alignment。latent probe 样本为 24 pairs/60 clips，且 character identity 与 action set confounded。",
+      "第三人称 cross/self reconstruction ratio 1.103 反而差于 baseline 1.067；作者解释 baseline latent 无信息，但这一数值不能当作单调胜出证据。",
+      "VLM rollout 使用 clustered segments、单 judge、forced choice 和不等信息接口，只能说明 system/interface preference，不能证明 equal-information algorithm superiority 或物理 task success。",
+      "未评估 noisy/adversarial demonstrations、identity leakage、copyright/simulator licensing、misuse 与安全 failure。"
+    ]},
+    {"title": "复现与资源", "paragraphs": [
+      "官方 arXiv source 提供 TeX 与原始 figures；项目页有视频，但公开 GitHub 在本次 Stage A 时尚无 runnable training/inference code 或 weights。dataset-generation scripts、checkpoints、完整训练预算和 independent seeds 也不可得，本站未独立复现。",
+      "数据复现首先要发布每个 family 的 renderer、随机化分布、frame synchronization、pair masks 与 exact split，测量 shadow 间 dynamics equality 和 nuisance independence，而非只核对视觉相似。",
+      "表示复现应分别评估 $z$ 与 $s$ 的 conditional information，加入 adversarial appearance probes、mismatched pairs、non-overlap contexts、违反 separation 的动作与不同 latent dimensions。",
+      "transfer 需报告 per-pair raw metrics、多个 training seeds 与 bootstrap intervals；camera 应同时给 estimator-free checks，FVD 应按 source clip 聚类而非把重叠 windows 当独立样本。",
+      "rollout 应预注册 command streams，加入 tie 与多 VLM/human raters，报告 cluster-aware intervals 和 agreement，并在 equal-information interfaces 下比较；真实机器人或交互环境还需任务成功率。"
+    ]},
+    {"title": "阅读指南", "paragraphs": [
+      "快速路线：p. 1 看 Figure 1；pp. 3–6 看 shadow pairing、CSP objective、$z$ 与 $s$ 的双通道；pp. 7–8 看 quantitative results 与 ablations。",
+      "物理路线：把 pairing 当 nuisance intervention，把 minimal sufficient statistic 当可逆重参数化的 order parameter；再逐项检查 independence、overlap 与 separation。",
+      "AI 路线：追踪 inverse-dynamics encoder、VAE bottleneck、AdaLN/cross-attention injection、block-causal rollout 与 asset concatenation。",
+      "批判路线：重点检查 synthetic-to-real gap、$z$-alone 误读、clustered VLM judging、小/未说明样本、third-person probe 反例、qualitative unseen action 和代码未发布。"
+    ]}
+  ],
+  "evidence_refs": [
+    "paper.pdf pp. 3-6 and official method TeX: shadow-pair definition, cross-shadow objective, z-versus-source-asset distinction and block-causal world-model architecture",
+    "paper.pdf pp. 7-8 and official v1 TeX: transfer metrics, rollout win rates, baseline interfaces, component ablations and qualitative unseen-action test",
+    "paper.pdf pp. 13-18 and official supplement TeX: limitations, identification assumptions, population/minimality result, compute, probes, FVD and statistical units",
+    "source PDF SHA-256 c9d0e44c615147e08612e3321a31fff2ff387b287d2662edfaf92de70f17c50c",
+    "official arXiv v1 source archive SHA-256 9bb67131cf84d41c35355decccd23e7bf8dc2136dc45725a2fe56a1c85529fbf",
+    "MinerU Markdown SHA-256 5c8e492848b736766d73962d4e1ec437895667842e9a9dcc2742441b929e9ab3",
+    "Evidence packet SHA-256 88ff1e4b06897f8757148be2d73fef9b78df850fbee0732ff06748273188c53e",
+    "Representative Figure 1 WebP SHA-256 2e8145a9915157d0b3e2f49e8b74bcc1e4962054f40c601d7565683c05c71ab6",
+    "Evidence status: full text, official v1 TeX and Figure 1 verified; identifiability, synthetic-pair, z-versus-assets, clustered-judging, sample-size, qualitative-generalization and unreleased-code boundaries retained; no independent reproduction performed."
+  ]
+}

@@ -1,0 +1,142 @@
+{
+  "arxiv_id": "2607.27731",
+  "source_version": "v1",
+  "source_pdf": "https://arxiv.org/pdf/2607.27731v1",
+  "title_en": "Towards joint scaling laws with optimal batch size schedules",
+  "title_zh": "走向带最优批大小调度的联合缩放律",
+  "curation_status": "full_text_verified",
+  "card_standard_version": "2.4",
+  "audience_profile": "physics_ai_literate_physicist",
+  "paper_profile": "theory_experiment",
+  "style_reference": "physicist_daily_arxiv",
+  "provenance": {
+    "program": "Collection", "catalog": "Paper Collection", "catalog_record_id": "2607.27731", "catalog_record_ids": ["2607.27731"],
+    "catalog_topic": "Training Dynamics", "collection_date": "2026-08-30", "sampled_at": "2026-08-31",
+    "selected_by": "ziming_mineru_serial_goal", "sampling_seed": "not_applicable_source_complete", "candidate_count": 464
+  },
+  "verified_metadata": {
+    "arxiv_id": "2607.27731", "version": "v1", "title": "Towards joint scaling laws with optimal batch size schedules",
+    "authors": ["Jiaxiang Li", "Zhiqi Bu", "Shiyun Xu"], "categories": ["cs.LG", "cs.AI", "math.OC"], "primary_category": "cs.LG",
+    "published": "2026-07-30", "updated": "2026-07-30",
+    "abstract": "The paper derives a continuous batch-size schedule that minimizes the variance term of a convex-SGD last-iterate upper bound at fixed data budget, then evaluates discretized schedules in selected dense, MoE, vision-language and math-training configurations."
+  },
+  "equation_refs": [
+    {
+      "label": "Batch-dependent gradient-noise envelope",
+      "latex": "\\mathbb E\\|g_t\\|^2\\le G^2+\\frac{X}{B_t}",
+      "role": "separate a bounded mean-gradient contribution from covariance noise suppressed by batch averaging",
+      "symbols": {"g_t": "stochastic gradient", "G": "bound on mean-gradient norm", "X": "bound on per-example gradient covariance trace", "B_t": "batch size at training time t"},
+      "evidence": "paper.pdf p. 4, Equation (2.2); official v1 TeX",
+      "interpretation": "它把 batch 看成控制测量噪声的采样数；$G$ 与 $X$ 被当作时间不变 envelope。真实深网中把上界近似成等式是回归 ansatz，不是定理推论。"
+    },
+    {
+      "label": "Fixed-data variational problem",
+      "latex": "\\min_{B(t)>0}\\int_0^T\\frac{\\eta(t)^2}{B(t)\\int_t^T\\eta(k)\\,dk}\\,dt,\\qquad\\int_0^T B(t)\\,dt=K",
+      "role": "allocate a fixed number of training examples over time to minimize the bound-derived accumulated variance",
+      "symbols": {"eta_t": "prescribed learning-rate schedule", "T": "training horizon", "K": "fixed total example or token budget", "B_t": "continuous relaxed batch schedule"},
+      "evidence": "paper.pdf p. 5, Equation (3.3); official v1 TeX",
+      "interpretation": "这是受约束资源分配问题：在未来累计 learning rate 较少、噪声更昂贵的时刻重新分配样本。被优化的是 proxy functional，不是神经网络真实 loss trajectory。"
+    },
+    {
+      "label": "Closed-form surrogate-optimal schedule",
+      "latex": "B_{\\mathrm{opt}}(t)=\\frac{K}{2}\\frac{\\eta(t)}{\\sqrt{\\left(\\int_0^T\\eta(k)\\,dk\\right)\\left(\\int_t^T\\eta(k)\\,dk\\right)}}",
+      "role": "give the exact continuum optimum for the modeled variance term",
+      "symbols": {"B_opt": "surrogate-optimal continuous batch", "K": "fixed total data budget", "eta": "learning-rate curve"},
+      "evidence": "paper.pdf p. 5, Theorem 3/Equation (3.4); official v1 TeX",
+      "interpretation": "整体缩放 $\\eta$ 会约掉，所以归一化调度只依赖 learning-rate shape；但 real batch 必须取整数并受 microbatch、memory、communication 与 utilization 约束，裁剪后的最优性未被证明。"
+    }
+  ],
+  "figure_refs": [
+    {
+      "label": "Figure 5 joint scaling experiments",
+      "asset_path": "assets/collection-figures/2607.27731/figure-05-joint-scaling.webp",
+      "section": "核心结果与证据",
+      "role": "compare dynamic and static batching across dense Llama and Qwen3-MoE fixed-compute optima, fitted loss-compute curves and token trajectories",
+      "evidence": "paper.pdf p. 9, Figure 5",
+      "alt_text": "Panels compare dense and mixture-of-experts model families under dynamic versus static batch schedules using fixed-compute optima, fitted loss curves and training trajectories.",
+      "caption": "Figure 5：选定 dense Llama 与 Qwen3-MoE scaling fits 给出约 1.15× 与 1.06× 的名义 compute equivalence。",
+      "interpretation": "这些因子来自少量 scale points 的曲线拟合，不是 wall-clock、能耗或置信区间控制的人群效应。"
+    }
+  ],
+  "cover": {
+    "mode": "source_figure", "asset_path": "assets/collection-figures/2607.27731/figure-05-joint-scaling.webp",
+    "label": "Figure 5 joint scaling", "visual_type": "data_plot", "evidence": "paper.pdf p. 9, Figure 5",
+    "alt_text": "Dynamic versus static batch scaling plots for dense Llama and Qwen3 MoE families.",
+    "caption": "解析调度改善的是一个噪声代理；Figure 5 检验它在有限模型族中的实际表现。",
+    "selection_rationale": "It directly supports the headline 6-15 percent nominal-compute claim while exposing its sparse-fit and family-specific evidence."
+  },
+  "sections": [
+    {"title": "作者信息", "paragraphs": [
+      "作者为 Jiaxiang Li、Zhiqi Bu 与 Shiyun Xu。",
+      "本站核验 arXiv:2607.27731v1：提交于 2026-07-30，是当前唯一版本；主分类 cs.LG，PDF 29 页。",
+      "Collection 来源为刘子鸣网站的 Training Dynamics 条目；本站对照官方 PDF、TeX 与 Figure 5。官方 source 有绘图文件但无训练/分析代码、config、raw logs、checkpoints 或明确仓库链接。"
+    ]},
+    {"title": "研究问题", "paragraphs": [
+      "训练预算固定时，batch size 不必始终不变。给定 learning-rate curve，怎样把相同数量的样本分配到训练的不同时刻，才能尽量降低随机梯度噪声对最终 iterate 的影响？",
+      "论文从 convex SGD 的 last-iterate loss upper bound 出发，只取其中含 $1/B_t$ 的 variance term，连续化后求出闭式 $B_{\\mathrm{opt}}(t)$。",
+      "随后把这一 schedule 离散化，用 Muon-NSGD 或 AdamW 测试 dense Llama-style、Qwen3-MoE、一个 VLM recipe 和一个数学 fine-tune。",
+      "最重要的层级区分是：解析式对连续 proxy objective 精确最优；它并没有证明对真实非凸 Transformer、实际硬件和所有 optimizer 全局最优。"
+    ]},
+    {"title": "背景", "paragraphs": [
+      "batch 增大能降低 stochastic-gradient covariance，却减少固定 token budget 下可做的 parameter updates。静态 batch 把采样资源均匀放在时间上，未考虑不同阶段的噪声权重。",
+      "在 last-iterate bound 中，时刻 $t$ 的噪声要被剩余 learning-rate integral 重新加权；同样大小的 gradient fluctuation，在训练早期和末期对最终状态的影响不同。",
+      "论文把 loss curve 回归到定理导出的三个 features，发现经过 initial transient 后可高质量拟合。这个 in-sample fit 使 proxy 有经验动机，但没有 held-out predictive error、seed uncertainty 或唯一参数辨识。",
+      "所谓 joint scaling 是同时随训练 horizon 调 peak learning rate、weight decay 与 batch schedule；不是把 model-size scaling law 从头严格推导出来。"
+    ]},
+    {"title": "给物理学家的 AI 导读", "paragraphs": [
+      "可把 stochastic gradient 当作带噪 force estimator。$B_t$ 是每个时刻投入的测量次数，$X/B_t$ 是 shot-noise-like variance；问题是在总测量预算 $K$ 下怎样安排时间分辨率。",
+      "变分问题用 Cauchy–Schwarz/Jensen 结构得到闭式解，类似把测量资源集中到 response kernel 最敏感的时段。但 kernel 来自一个上界，而不是完整的非平衡训练生成泛函。",
+      "连续极限很关键：linear/WSD cooldown 给有限 terminal batch，cosine schedule 使理想 batch 趋零，constant learning rate 反而使末端 batch 发散。真实系统必须设上下限，因而离开解析最优问题。",
+      "Figure 5 的 loss-curve collapse 类似有限数据的 scaling collapse。四条同一 Qwen3-MoE recipe 曲线再用 endpoint quantities 归一化，远不足以建立 universality class。",
+      "名义 FLOPs 相等也不等于物理成本相等：dynamic batching 会改变 kernel efficiency、通信、内存、gradient accumulation 和 device utilization。"
+    ]},
+    {"title": "模型与方法", "paragraphs": [
+      "理论假设 convex loss、SGD、bounded parameters、$\\mathbb E\\|g_t\\|^2\\le G^2+X/B_t$，并把 discrete integer batches 与 sums 松弛为正连续函数和 integrals；固定 horizon $T$ 与总数据 $K$。",
+      "在同一 proxy 和预算下，动态调度的 variance term 由不等式保证不大于 static batch。cosine 的示例系数从 1.061 降到 1，10% cooldown WSD 从 2.47 降到 1.9。",
+      "joint prescription 令 peak learning rate 与 weight decay 均按 $1/\\sqrt T$ 缩放；在额外条件下，静态与动态方案都有 $O(T^{-1/2})$ convex excess-loss rate，但这不比较 finite-$T$ 常数。",
+      "dense sweep 包含 111M–6.585B 的十个 Llama3-style sizes，sequence 1024、base batch 256；MoE sweep 含 438M–1.127B active parameters 的四个 Qwen3-style sizes，sequence 4096、base batch 512。",
+      "实验还用 Qwen3-0.6B 做相同 $\\eta/B$ 的九配置 control，用 SmoLM2-360M-Instruct+SigLIP2-large 做 VLM post-training，并做 Qwen3-0.6B OrcaMath fine-tune。"
+    ]},
+    {"title": "核心结果与证据", "paragraphs": [
+      "Llama3-style 1B/FineWeb-Edu/Muon-NSGD 中，dynamic batch 相对 static 的 best-perplexity 改善在 cosine、WSD、constant-LR schedules 下分别报告为 0.8%、2.5%、14.6%；主图没有 seed bands 或 hypothesis tests。",
+      "Figure 5 对 dense Llama 与 Qwen3-MoE 拟合约 1.15× 和 1.06× compute efficiency，论文概括为 15% 与 6%。实验延伸到约 $10^{21}$ nominal FLOPs，但拟合点少且 $R^2$ 近 1 不等于 out-of-sample scaling validation。",
+      "compute 使用 $C=6NK$ 简化 proxy；dense 的 TPP 用 total parameters、MoE 用 active parameters。它没有测 wall-clock、memory、communication、utilization 或 energy。",
+      "Qwen3-0.6B 的九个 matched-$\\eta/B$ controls 中，LR-schedule 条件全部更好，validation-loss gap 为 +0.017 到 +0.743。这说明 $\\eta/B$ 不是该 setup 的充分描述量，却不证明本文 $B_{\\mathrm{opt}}$ 全局最优。",
+      "VLM 的九个 headline tasks 中 dynamic batch 在七个更高，static 在 MME-Cognition 与 MMStar average 更高；数学 fine-tune 的 validation loss 与 5-shot GSM8K curves 倾向 dynamic，但均无 seeds/error bars。",
+      "precision ablation 是重要反例：优势在 FP32 与 mixed precision 中保留，却在 pure BF16 下消失，因此不能宣称 hardware/precision independence。"
+    ]},
+    {"title": "有效性与局限", "paragraphs": [
+      "闭式解严格优化的是 convex-SGD upper bound 导出的 continuous variance term。把该 bound 当深网 loss 的近似等式、并应用到 AdamW/Muon，是经验桥梁而非证明。",
+      "$G$ 与 $X$ 被视为时间不变，$B(t)$ 可取任意正实数，并忽略最小 microbatch、gradient accumulation、data order、memory 与 communication；离散裁剪 schedule 的 optimality 未覆盖。",
+      "大多数 pretraining/post-training comparisons 没有说明独立 seed 数、confidence interval 或 statistical test；小的 benchmark 差异也没有 multiple-comparison/evaluation variance analysis。",
+      "1.15×/1.06× 是 selected fitted curves 的名义 compute equivalence，不是保证节省 6–15% wall-clock 或 energy，更不是 population effect。",
+      "相同 static-baseline learning rate 和 weight decay 是有用的保守比较，但双方没有在相同 tuning budget 下分别调优，因此不建立 joint global optimum。",
+      "四条 endpoint-normalized MoE curves 的视觉 collapse 只是一项描述性观察；模型族、optimizer、数据集与 precision 的有限覆盖不能支持 universal training dynamics。",
+      "pure BF16 failure 与部分下游任务由 static 获胜，说明 schedule 的实际收益依赖数值和系统条件。"
+    ]},
+    {"title": "复现与资源", "paragraphs": [
+      "官方 source archive 提供 TeX 与 plot PDFs，但没有 executable training/analysis package、configs、raw logs、checkpoints 或明确 repository。本站未复现训练、曲线拟合或 compute-equivalence 数字。",
+      "理论复现应先对给定 $\\eta(t)$ 数值积分 $B_{\\mathrm{opt}}$，再显式施加 integer/min/max batch、accumulation 和 hardware granularity，比较裁剪后 proxy 与 static baseline。",
+      "实验复现必须公开 seeds、data preprocessing/order、optimizer 实现、precision、distributed setup、per-step batch 与 wall-clock trace，并同时报告 token/FLOP、时间、能耗和 utilization。",
+      "统计上应给 per-seed raw curves、fixed-compute optimum 的 bootstrap interval、fit-parameter covariance 和 held-out scale prediction，避免用少量点的 in-sample $R^2$ 代替外推验证。",
+      "公平比较应给 dynamic/static 相同 tuning budget，跨 AdamW/Muon、dense/MoE、BF16/FP32/mixed precision 和多数据集做预注册测试，并保留失败配置。"
+    ]},
+    {"title": "阅读指南", "paragraphs": [
+      "快速路线：pp. 3–7 看 convex bound、连续变分问题、闭式调度与 variance comparison；pp. 8–10 看 Figure 5、scaling fits 和 curve collapse。",
+      "物理路线：把 $B(t)$ 当测量资源、$X/B$ 当噪声、remaining-$\\eta$ integral 当 response kernel，同时牢记优化的是 bound-derived action。",
+      "AI 路线：区分 SGD theorem 与 AdamW/Muon experiments，追踪 WSD/cosine/constant endpoint behavior、dense/MoE TPP 与 post-training setup。",
+      "批判路线：重点核查 continuous-to-integer gap、少 seeds/无 uncertainty、fitted compute vs wall-clock、endpoint-normalized collapse、equal-tuning 缺口和 pure-BF16 failure。"
+    ]}
+  ],
+  "evidence_refs": [
+    "paper.pdf pp. 3-7 and official v1 TeX: convex-SGD bound, gradient-noise envelope, continuous constrained problem, closed-form schedule, endpoint behavior and modeled variance inequality",
+    "paper.pdf pp. 8-10 and Figure 5: schedule comparisons, dense/MoE scaling fits, nominal compute scope and normalized curve collapse",
+    "paper.pdf pp. 10-11 and 21-25: VLM/math post-training, matched eta/B control, base-batch studies and pure-BF16 failure",
+    "source PDF SHA-256 65b6518de624eb69f7ecc5f9bddb317f054084d8068fcd4a61bde49b18e59e3a",
+    "official arXiv v1 source archive SHA-256 b2ed71c764fcf72527231830c2883e6f0050c6aacb5d372596c8abbbae9a56f1",
+    "MinerU Markdown SHA-256 5b88d1dc1b6858e6db2b9fa6791407d220e1a7e3e9c63182bd7f485450927582",
+    "Evidence packet SHA-256 baf08962ac9b0598d8614b21b22412f37145bfd467082f3e3f6c28c62f5cf66e",
+    "Representative Figure 5 WebP SHA-256 2297f0ff5b96d9ad494574af4c3377b6256df7b56ab5fc436075ec3cfa5e6eef",
+    "Evidence status: full text, official v1 TeX and Figure 5 verified; convex/non-convex, continuous/discrete, fit/statistics, nominal-compute, precision failure and missing-code boundaries retained; no independent reproduction performed."
+  ]
+}
