@@ -1,0 +1,194 @@
+{
+  "arxiv_id": "2603.11673",
+  "source_version": "v2",
+  "source_pdf": "https://arxiv.org/pdf/2603.11673v2",
+  "title_en": "Context-dependent manifold learning: A neuromodulated constrained autoencoder approach",
+  "title_zh": "依赖情境的流形学习：神经调制约束自编码器方法",
+  "curation_status": "full_text_verified",
+  "card_standard_version": "2.4",
+  "audience_profile": "physics_ai_literate_physicist",
+  "paper_profile": "theory_experiment",
+  "style_reference": "physicist_daily_arxiv",
+  "provenance": {
+    "program": "Collection",
+    "catalog": "Paper Collection",
+    "catalog_record_id": "2603.11673",
+    "catalog_record_ids": ["2603.11673"],
+    "catalog_topic": "Representation Learning",
+    "collection_date": "2026-08-30",
+    "sampled_at": "2026-08-31",
+    "selected_by": "ziming_mineru_serial_goal",
+    "sampling_seed": "not_applicable_source_complete",
+    "candidate_count": 464
+  },
+  "verified_metadata": {
+    "arxiv_id": "2603.11673",
+    "version": "v2",
+    "title": "Context-dependent manifold learning: A neuromodulated constrained autoencoder approach",
+    "authors": ["Jérôme Adriaens", "Gustave Bainier", "Guillaume Drion", "Pierre Sacré"],
+    "categories": ["cs.LG"],
+    "primary_category": "cs.LG",
+    "published": "2026-03-12",
+    "updated": "2026-05-18",
+    "abstract": "The paper builds a context-conditioned constrained autoencoder whose encoder and decoder remain exact inverses on latent space under biorthogonal weights, paired inverse activations, shared biases, and admissible context modulation."
+  },
+  "equation_refs": [
+    {
+      "label": "autoencoder reconstruction risk",
+      "latex": "\\mathcal{L}(\\rho,\\varphi)=\\mathbb{E}_{x\\sim\\mathcal D}\\lVert x-\\varphi(\\rho(x))\\rVert^2",
+      "role": "fit an encoder rho and decoder phi so their composition reconstructs states drawn from the physical-data distribution",
+      "symbols": {
+        "rho": "encoder from ambient state space to m-dimensional latent coordinates",
+        "phi": "decoder from latent coordinates to ambient state space",
+        "D": "state distribution at sampled contexts",
+        "m": "assumed fixed intrinsic dimension"
+      },
+      "evidence": "paper.pdf p. 2, autoencoder objective",
+      "interpretation": "小 reconstruction loss 只约束训练分布附近的近似；它本身不保证 $P=\\varphi\\circ\\rho$ 是投影、也不保证 learned manifold 等于真实 invariant manifold。"
+    },
+    {
+      "label": "right inverse and idempotent reconstruction",
+      "latex": "\\rho_c\\circ\\varphi_c=\\operatorname{id}_{\\mathbb R^m}\\quad\\Longrightarrow\\quad P_c^2=(\\varphi_c\\circ\\rho_c)^2=P_c",
+      "role": "make repeated encode-decode projection exactly idempotent for each admissible context",
+      "symbols": {
+        "c": "observed context or physical control parameter",
+        "P_c": "context-specific reconstruction map",
+        "id": "identity on latent space",
+        "A1_to_A3": "biorthogonal weights, mutually inverse activations, and paired shared biases"
+      },
+      "evidence": "paper.pdf pp. 3–4, Eq. (1) and Proposition 3.1",
+      "interpretation": "这是一条 architecture identity：一旦投影到模型自己的 decoder image，再投影不再移动；它不说明第一次投影离真实数据 manifold 很近。"
+    },
+    {
+      "label": "local context-to-manifold continuity",
+      "latex": "d_H(\\widehat{\\mathcal M}_c\\cap K,\\widehat{\\mathcal M}_{c+\\delta c}\\cap K)\\leq L\\lVert\\delta c\\rVert",
+      "role": "bound local movement of the learned decoder-image family on a compact observation set",
+      "symbols": {
+        "M_hat_c": "learned manifold at context c",
+        "d_H": "Hausdorff distance",
+        "K": "fixed compact subset of ambient space",
+        "L": "existence constant not estimated numerically"
+      },
+      "evidence": "paper.pdf pp. 4–5, Proposition 3.3",
+      "interpretation": "命题只给 compact/local qualitative continuity；未知且未优化的 $L$ 不能转化为 OOD reconstruction certificate。"
+    }
+  ],
+  "figure_refs": [
+    {
+      "label": "Figure 2 repeated-projection idempotency error",
+      "asset_path": "assets/collection-figures/2603.11673/figure-02-idempotency.webp",
+      "section": "核心结果与证据",
+      "role": "compare drift after repeated reconstruction maps across two simulated systems and seven methods",
+      "evidence": "paper.pdf p. 7, Figure 2",
+      "alt_text": "Idempotency error is plotted over repeated projection steps for constrained and context-aware autoencoder variants on pendulum and Lorenz96 data.",
+      "caption": "Figure 2：重复应用 reconstruction map 后的漂移。NcAE/cAE 维持约 $10^{-5}$，普通 context-aware baselines 漂移更大，FiLM+AE 在 Lorenz96 后续步数值爆炸；这是模型投影的一致性，不是物理流形 fidelity。",
+      "interpretation": "图直接验证 architecture-level idempotency；不能据此证明跨 bifurcation 的真实 attractor topology 被保存。"
+    }
+  ],
+  "cover": {
+    "mode": "source_figure",
+    "asset_path": "assets/collection-figures/2603.11673/figure-02-idempotency.webp",
+    "label": "Figure 2 idempotency",
+    "visual_type": "data_plot",
+    "evidence": "paper.pdf p. 7, Figure 2",
+    "alt_text": "Repeated-projection error stays near numerical precision for constrained autoencoders and grows for several context-aware baselines.",
+    "caption": "重复投影稳定性对比：精确 idempotency 是模型几何约束，而非真实流形准确性的证明。",
+    "selection_rationale": "It most directly tests the defining guarantee and reveals the distinction between internal consistency and physical fidelity."
+  },
+  "sections": [
+    {
+      "title": "作者信息",
+      "paragraphs": [
+        "作者为 Jérôme Adriaens、Gustave Bainier、Guillaume Drion 与 Pierre Sacré，均来自 University of Liège。",
+        "本站核验 arXiv:2603.11673v2：初稿提交于 2026-03-12，最新版更新于 2026-05-18；主分类 cs.LG，PDF 26 页。PDF 页眉使用较短题名 Neuromodulated Constrained Autoencoders for Context-Dependent Manifold Learning，本卡采用官方 arXiv metadata 题名。",
+        "Collection 来源为刘子鸣网站的 Representation Learning 条目。"
+      ]
+    },
+    {
+      "title": "研究问题",
+      "paragraphs": [
+        "物理系统的低维 state manifold 会随 link length、forcing 等 context 改变。如何让一个 conditional autoencoder 在不同 context 下既能重构，又始终是精确的 idempotent projection？",
+        "论文提出 NcAE：以 context hypernetwork 同时调制成对的 activation slopes 与 biases，同时保持 encoder/decoder weights biorthogonal 和 activation pairs 互逆。",
+        "由此可证明每个 admissible context 下模型 projection 幂等、learned decoder images 彼此 diffeomorphic，并在局部随 context 连续；实验在 16-DoF pendulum 与 Lorenz96 上表现有竞争力。"
+      ]
+    },
+    {
+      "title": "背景",
+      "paragraphs": [
+        "普通 autoencoder 学 $x\\to z\\to\\hat x$，但再次输入 $\\hat x$ 可能继续漂移。若 $P^2=P$，模型像真正的 projection：到达 image 后重复施加不再变化，这对 latent dynamics 的迭代很重要。",
+        "decoder image $\\widehat{\\mathcal M}_c=\\varphi_c(\\mathbb R^m)$ 是模型定义的嵌入子流形。它与真实 physical attractor 是否接近，仍由数据、reconstruction 与 dynamical validation 决定。",
+        "biorthogonality $\\Psi_l^T\\Phi_l=I$ 让线性 encoder/decoder 部分互逆；再配对 $\\sigma_-\\circ\\sigma_+=id$ 和相同 bias cancellation，可逐层构造 right inverse。",
+        "context modulation 类似外参量改变 effective constitutive law。若只改变 activation/bias 而不破坏逆关系，就能让一族模型 manifold 平滑移动，同时保持内部坐标一致。"
+      ]
+    },
+    {
+      "title": "给物理学家的 AI 导读",
+      "paragraphs": [
+        "把 decoder 看成从 generalized coordinates $z$ 到 ambient state $x$ 的嵌入，把 encoder 看成 chart inverse。$\\rho_c\\circ\\varphi_c=id$ 保证 chart 上往返精确，因此 $P_c$ 是对 decoder image 的 retract。",
+        "这是 kinematic consistency，而非 equation-of-motion accuracy。即使一个错误曲面也可有完美 projection；所以 idempotency error 与 reconstruction/dynamics error 必须分开报告。",
+        "Proposition 3.2 说 learned manifolds 随 context 彼此 diffeomorphic，因为同一 latent domain 经可逆 maps 参数化。若真实 Lorenz96 attractor 在 bifurcation 处改变 topology，模型的固定拓扑族反而可能无法忠实表示这一变化。",
+        "Hausdorff Lipschitz bound 像连续介质中的局部 constitutive regularity，但常数 $L$ 未给，且只在 compact set/local perturbation 上。因此不能把它当作有限距离 extrapolation error bar。"
+      ]
+    },
+    {
+      "title": "模型与方法",
+      "paragraphs": [
+        "NcAE 继承 constrained AE 的 paired encoder/decoder layers：weights 满足 exact biorthogonality，activation slopes 使用有界 context-hypernetwork 输出，biases 成对共享。A1–A3 保证 right inverse/idempotency，A4 加入 context map regularity。",
+        "比较 AE、cAE、context concatenation、FiLM+AE/cAE、slope-only 与 NcAE 等七类模型；metrics 包括 position/velocity RMSE、latent geometry、OOD/noise behavior 与多次投影 idempotency error。",
+        "第一个系统是 simulated 16-DoF pendulum，四个 lengths 位于 [0.35,0.65] m；第二个是 n=36 Lorenz96，forcing $F\\in[3.133,3.193]$，跨过论文报告约 3.163 的 bifurcation。",
+        "主表统计 10 seeds；architecture-specific optimizers、batch sizes 与 hyperparameters 不完全相同，部分 slope-only runs 发散后被排除。"
+      ]
+    },
+    {
+      "title": "核心结果与证据",
+      "paragraphs": [
+        "Proposition 3.1 在 A1–A3 下逐层给出 $\\rho_c\\circ\\varphi_c=id$，因此 $P_c$ 对所有 context 精确 idempotent；这是代数性质，不依赖训练是否找到低 reconstruction loss。",
+        "Proposition 3.2 在 A1–A4 下给出 learned decoder images 间的 diffeomorphic equivalence；Proposition 3.3 给 compact/local Hausdorff continuity，但 Lipschitz constant 未估计。",
+        "Table 1 的 10-seed NcAE pendulum position/velocity RMSE 为 0.012±0.002/0.059±0.003；Lorenz96 为 0.079±0.050/0.329±0.186，后者 seed variability 较大。",
+        "Figure 2 中 NcAE/cAE 的 repeated-projection error 约 $10^{-5}$；其他 context-aware baselines 高四至六个数量级，FiLM+AE 在 Lorenz96 后续 projection steps 数值爆炸。",
+        "实验显示 NcAE 在这两个 simulated systems 上兼顾重构与模型内部几何一致性；它没有验证真实 attractor topology、真实测量噪声或 time-varying/unobserved context。"
+      ]
+    },
+    {
+      "title": "有效性与局限",
+      "paragraphs": [
+        "所有 guarantees 都以 A1–A4 精确成立为条件；它们不证明 reconstruction fidelity、真实 physical manifold recovery，或 constraints 因有限精度/implementation error 破坏后的鲁棒性。",
+        "learned-family diffeomorphism 不等于真实 attractors 拓扑相同。Lorenz96 evaluation 明确跨过论文所称 topology fundamentally changes 的 regime，这是结论边界而不是自动成功。",
+        "Proposition 3.3 只给未知 $L$ 的 compact/local qualitative bound，不能作为数值 OOD certificate；extrapolated context 只保证落在模型自己构造的几何族中。",
+        "统计为 10 seeds 的 mean±SD，无 inferential tests。slope-only ablation 排除 3/10 pendulum 与 2/10 Lorenz96 divergent runs，结果受 survivor conditioning。",
+        "baselines 在 architecture、parameterization、batch size、optimizer family/hyperparameters 上不同，因此 performance gap 不能识别为 neuromodulation 本身的严格 causal effect。",
+        "两个模拟系统且 context 静态可观测，不能外推到 intrinsic dimension 随参量变化、unobserved/time-varying contexts、真实传感器噪声或任意物理系统。"
+      ]
+    },
+    {
+      "title": "复现与资源",
+      "paragraphs": [
+        "先逐层数值验证 $\\Psi_l^T\\Phi_l-I$、inverse-activation residual 与 bias cancellation，并随训练/精度记录 $\\lVert P_c^2(x)-P_c(x)\\rVert$；加入可控 constraint-violation sweep。",
+        "分开评估 model idempotency、one-step reconstruction、latent dynamics rollout 与 distance to independently estimated physical manifold，避免把内部一致性当 fidelity。",
+        "对 Lorenz96 在 bifurcation 两侧估计真实/learned attractor invariants：Lyapunov spectrum、dimension、Betti/persistent-homology signatures；检查固定 latent topology 在何处失配。",
+        "所有 baselines 匹配 parameter count、optimizer、batch、trial budget 与 stopping；发散 run 作为 failure 纳入 aggregate，报告 paired seeds 与 uncertainty。",
+        "扩展到 context interpolation/extrapolation distance sweep、noisy/partial context 与 time-varying control；实测或合成改变 intrinsic dimension 的系统是关键 stress test。",
+        "本站未运行官方 source 或复现实验；复现应固定 code revision、ODE solver、initial-condition/context splits、seed 与 float precision。"
+      ]
+    },
+    {
+      "title": "阅读指南",
+      "paragraphs": [
+        "快速路线：pp. 3–5 看 A1–A4 与 Propositions 3.1–3.3；pp. 5–9 看两个系统、Tables 1–3 与 Figure 2。",
+        "物理路线：把 encoder/decoder 当 chart 与 embedding，把 $P_c$ 当 retract；始终区分 learned image 和 true invariant manifold。",
+        "AI 路线：关注 hard architectural constraint 与 ordinary conditioning/FiLM 的区别，以及 exact identity 与 empirical loss 的不同证据层。",
+        "批判路线：重点看 Lorenz96 bifurcation 对 diffeomorphism claim 的边界、unknown Lipschitz constant、divergent-run exclusion 与 unmatched baselines。"
+      ]
+    }
+  ],
+  "evidence_refs": [
+    "paper.pdf pp. 3–5 and official TeX: assumptions A1–A4, paired encoder/decoder equations, Propositions 3.1–3.3 and their exact conditional scope",
+    "paper.pdf pp. 5–9: two simulated systems, Tables 1–3, Figure 2, OOD/noise claims and stated limitations",
+    "paper.pdf appendix and official TeX: architecture-specific hyperparameters, data generation, 10-seed protocol, slope-only divergent-run exclusion and full numerical tables",
+    "source PDF SHA-256 d27bf20938b10bffd66ce2d14f9780edcdf7b93233570d728dea9945f22338ec",
+    "official arXiv v2 source archive SHA-256 9c92ad57ef5f0c5fac9eddd7187fcd2c3ca2270834e8cdb5878a79068dd143a6",
+    "MinerU Markdown SHA-256 8f9cb48dd74541db3e6be8a26424b1486ea283bb8e5367ded6043f7ceced687a",
+    "Evidence packet SHA-256 e58f362fde96e6c289f8da8334dfd7d70f391ad2ad05021af95bb3bca5baa755",
+    "Evidence status: full text, rendered pages and official TeX verified against latest arXiv v2; architectural-identity, physical-manifold fidelity, bifurcation topology, local-continuity/OOD, seed/survivor, baseline-fairness and system-scope boundaries recorded; no independent reproduction performed."
+  ]
+}
