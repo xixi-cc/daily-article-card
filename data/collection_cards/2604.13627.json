@@ -1,0 +1,198 @@
+{
+  "arxiv_id": "2604.13627",
+  "source_version": "v2",
+  "source_pdf": "https://arxiv.org/pdf/2604.13627v2",
+  "title_en": "(How) Learning Rates Regulate Catastrophic Overtraining",
+  "title_zh": "学习率如何调节灾难性过训练",
+  "curation_status": "full_text_verified",
+  "card_standard_version": "2.4",
+  "audience_profile": "physics_ai_literate_physicist",
+  "paper_profile": "theory_experiment",
+  "style_reference": "physicist_daily_arxiv",
+  "provenance": {
+    "program": "Collection",
+    "catalog": "Paper Collection",
+    "catalog_record_id": "2604.13627",
+    "catalog_record_ids": ["2604.13627"],
+    "catalog_topic": "Training Dynamics",
+    "collection_date": "2026-08-30",
+    "sampled_at": "2026-08-31",
+    "selected_by": "ziming_mineru_serial_goal",
+    "sampling_seed": "not_applicable_source_complete",
+    "candidate_count": 464
+  },
+  "verified_metadata": {
+    "arxiv_id": "2604.13627",
+    "version": "v2",
+    "title": "(How) Learning Rates Regulate Catastrophic Overtraining",
+    "authors": ["Mark Rofin", "Aditya Varre", "Nicolas Flammarion"],
+    "categories": ["cs.LG", "cs.CL"],
+    "primary_category": "cs.LG",
+    "published": "2026-04-15",
+    "updated": "2026-08-03",
+    "abstract": "The paper studies how supervised-finetuning learning rate affects retention of six out-of-SFT capabilities at matched training loss, relates this to representation drift and a parameter-noise sharpness proxy, and tests parts of a proposed pretraining-cooldown causal story."
+  },
+  "equation_refs": [
+    {
+      "label": "Mean principal-angle drift",
+      "latex": "\\operatorname{MPA}(X_{\\mathrm{base}}^L,X_{\\mathrm{FT}}^L)=\\frac1k\\sum_{i=1}^k\\arccos\\!\\left[\\sigma_i(Q_{\\mathrm{base}}Q_{\\mathrm{FT}}^\\top)\\right]",
+      "role": "measure rotation between top-k residual-stream subspaces before and after finetuning",
+      "symbols": {
+        "X_base": "centered base-model activations at layer L",
+        "X_FT": "centered finetuned-model activations at the same layer",
+        "Q_base": "top-k right singular vectors of base activations",
+        "Q_FT": "top-k right singular vectors of finetuned activations",
+        "sigma_i": "i-th singular value"
+      },
+      "evidence": "paper.pdf pp. 4–5 and official v2 TeX",
+      "interpretation": "MPA 是两个表示子空间的平均 principal angle；它对选层、数据和 rank $k$ 敏感，且 rotation 与 capability forgetting 是共同结果，不自动构成因果链。"
+    },
+    {
+      "label": "Within-step interpolation",
+      "latex": "\\theta(\\alpha)=(1-\\alpha)\\theta_t+\\alpha\\theta_{t+1},\\qquad 0\\leq\\alpha\\leq1",
+      "role": "probe loss and representation drift continuously along each of the first 100 optimizer update chords",
+      "symbols": {
+        "theta_t": "parameters before one SFT update",
+        "theta_t1": "parameters after that update",
+        "alpha": "fractional step coordinate"
+      },
+      "evidence": "paper.pdf pp. 5–6 and official v2 TeX, first-100-step interpolation experiment",
+      "interpretation": "这是参数空间 chord 上的诊断，不是 optimizer 的真实连续时间轨迹；约线性 MPA 与凸 loss change 只在检查的局部 updates 中成立。"
+    },
+    {
+      "label": "KL parameter-noise sharpness proxy",
+      "latex": "\\widehat{\\mathcal S}(\\theta)=\\mathbb E_{x,\\varepsilon\\sim\\mathcal N(0,\\sigma^2I)}\\!\\left[D_{\\mathrm{KL}}\\!\\left(\\mathrm{LM}_{\\theta+\\varepsilon}(x),\\mathrm{LM}_\\theta(x)\\right)\\right]",
+      "role": "estimate local output sensitivity to isotropic Gaussian parameter perturbations",
+      "symbols": {
+        "theta": "model parameters",
+        "epsilon": "Gaussian parameter noise with fixed sigma",
+        "x": "pretraining-domain text",
+        "D_KL": "KL divergence between perturbed and unperturbed token distributions"
+      },
+      "evidence": "paper.pdf pp. 8 and 16–17, sharpness-proxy definition and construction",
+      "interpretation": "小噪声下它近似某种 curvature trace-weighted response，不等于 Hessian top eigenvalue；固定 $\\sigma=10^{-5}$ 在不同参数化/架构间不是 invariant scale。"
+    }
+  ],
+  "figure_refs": [
+    {
+      "label": "Figure 1 matched-loss retention",
+      "asset_path": "assets/collection-figures/2604.13627/figure-01-loss-vs-ood-hh.webp",
+      "section": "核心结果与证据",
+      "role": "compare six-task out-of-SFT capability retention versus SFT training loss across learning rates and four 1B base models",
+      "evidence": "paper.pdf p. 3, Figure 1; official source loss_vs_OOD_score_hh.pdf",
+      "alt_text": "Four panels plot average out-of-SFT task accuracy against Anthropic-HH training loss for five learning rates on four 1B language models.",
+      "caption": "Figure 1：在相近 Anthropic-HH SFT train loss 下，更低 learning rate 通常保留更高六任务 OOD score；这没有测量 test-SFT quality。",
+      "interpretation": "学习率是直接干预变量，因此 retention difference 比 checkpoint correlations 更有因果分量；但 matched scalar loss 不代表等价 downstream solutions。"
+    }
+  ],
+  "cover": {
+    "mode": "source_figure",
+    "asset_path": "assets/collection-figures/2604.13627/figure-01-loss-vs-ood-hh.webp",
+    "label": "Figure 1 matched-loss capability retention",
+    "visual_type": "data_plot",
+    "evidence": "paper.pdf p. 3, Figure 1; official source figure",
+    "alt_text": "At comparable supervised-finetuning loss, lower learning rates retain more out-of-SFT benchmark performance.",
+    "caption": "直接改变 SFT learning rate 后的 matched-training-loss 能力保留。",
+    "selection_rationale": "It is the paper's cleanest intervention-level result and does not depend on accepting the later sharpness causal chain."
+  },
+  "sections": [
+    {
+      "title": "作者信息",
+      "paragraphs": [
+        "作者为 Mark Rofin、Aditya Varre、Nicolas Flammarion。",
+        "本站核验 arXiv:2604.13627v2：初稿 2026-04-15，当前版 2026-08-03；主分类 cs.LG，PDF 27 页。",
+        "Collection 来源为刘子鸣网站的 Training Dynamics 条目。"
+      ]
+    },
+    {
+      "title": "研究问题",
+      "paragraphs": [
+        "同一个 pretrained LLM 用不同 learning rates 做 SFT，即使达到相同 training loss，为什么通用能力保留程度不同？长期预训练后更易忘记的 catastrophic overtraining 是否由 sharpness 介导？",
+        "论文直接改变 SFT learning rate，比较 OOD capability、表示 subspace drift 和局部 step geometry；再用 toy diagonal network 与 KL noise proxy 提出 sharpness explanation。",
+        "最强结论是 tested 1B models/Anthropic-HH 中低 SFT LR 的 retention intervention；“pretraining decay→sharpness→forgetting”因 v2 direct test 为负而没有闭合。"
+      ]
+    },
+    {
+      "title": "背景",
+      "paragraphs": [
+        "catastrophic forgetting 指学习新任务时旧能力下降；catastrophic overtraining 指更晚、更强的 pretrained checkpoint 反而在同类 finetuning 后忘得更多。",
+        "implicit regularization 意味着相同 training loss 的众多 solutions 中，optimizer 和 step size 选择了不同参数路径；大 LR 往往离 initialization 更远。",
+        "sharpness 常指 loss Hessian 最大特征值，但也有 perturbation-based definitions。坐标 rescaling 会改变 parameter-space curvature，所以跨架构比较需要谨慎。",
+        "edge-of-stability 的 $2/\\eta$ 来自特定 GD curvature picture；LLM 预训练用 stochastic adaptive optimizers，不能直接套作 theorem。"
+      ]
+    },
+    {
+      "title": "给物理学家的 AI 导读",
+      "paragraphs": [
+        "把 pretrained solution 看成高维 free-energy landscape 中的初态；SFT 施加新势能，大步长可跨过较窄 basin 并重排原有 features，小步长更像 quasi-local response。",
+        "MPA 测 residual-stream 子空间的 rotation，类似比较两个低维 slow manifolds。它忽略 manifold 上的坐标与非线性 readout，因此只是 representation drift proxy。",
+        "固定 train loss 是一条等高面，不是相同微观态；沿等高面移动仍可改变旧任务可观测量，所以 matched loss comparison 有意义但不完全控制 solution quality。",
+        "KL noise sensitivity 是 susceptibility-like observable；固定 isotropic parameter noise 会受 parameterization metric 影响，不能当作 coordinate-free curvature。",
+        "v2 Figure 24 是关键 falsification attempt：直接在同一 SmolLM3 checkpoint 改变后续 LR schedule，却未产生预期 sharpness split。这比跨 checkpoint correlation 更能约束机制。"
+      ]
+    },
+    {
+      "title": "模型与方法",
+      "paragraphs": [
+        "OLMo-1B、OLMo-2-1B、Hubble-1B、Gemma-3-1B 在 Anthropic-HH 上用五个 constant LRs（$10^{-6}$ 到 $10^{-4}$，带 warmup）SFT 至 overfit。",
+        "主要横轴为 SFT train loss，纵轴为六个 multiple-choice OOD tasks 的平均 accuracy；这里 OOD 仅指不属于 SFT instruction task 的 base capabilities。",
+        "用 residual activations 的 MPA 比较 base 与 finetuned models；沿前 100 updates 的参数 chord 测 loss 和 MPA 对 fractional step 的变化。",
+        "d=100 two-layer diagonal network 以 pretrained-only 与 finetuning features 分解，10 runs 比较不同 LR 下哪些旧 coordinates 被遗忘。",
+        "sharpness proxy 在 4k Pile subset 上加 $\\sigma=10^{-5}$ Gaussian parameter noise，每 batch 10 noise samples；比较五组 public checkpoint series 与 WSD cooldown。",
+        "v2 direct intervention 从 SmolLM3 3.8M-step checkpoint 再训 2000 steps，对比恒定 $2\\\\times10^{-4}$ 与 step 1000 后 decay。"
+      ]
+    },
+    {
+      "title": "核心结果与证据",
+      "paragraphs": [
+        "Figure 1 四个 1B models 中，matched SFT train loss 时更低 LR 通常有更高六任务 OOD accuracy；这是 setup-specific 直接干预结果。",
+        "更高 LR 同时给更大 MPA；OLMo-1 前 100 steps 的 chord probes 显示 MPA 随 step size 近似线性增长，而 loss change 对 step size 呈 convex。",
+        "diagonal-network toy 的 10 runs 重现 LR-dependent retention，并把 sharper-region residence 与 pretrained-only coordinates 遗忘关联；它是机制类比，不是 LLM derivation。",
+        "KL proxy 在五个 checkpoint series 随训练及 SmolLM3/Apertus cooldown 附近上升；只在 Pythia-14m 上对 Hessian dynamics 做定性 proxy check。",
+        "最重要的反证是 v2 Figure 24：同一 SmolLM3 3.8M checkpoint 后，flat 与 decay variants 的 proxy sharpness 相近且略降，方向与 observational pattern 不符。",
+        "LLM 主图没有 seed counts 或 confidence intervals；connected checkpoints 也不是独立 samples，只有 toy Figure 4 明确聚合 10 runs。"
+      ]
+    },
+    {
+      "title": "有效性与局限",
+      "paragraphs": [
+        "SFT LR 是直接干预，支持低 LR retention；MPA 和 OOD score 是共同 outcomes，未通过单独操纵 MPA 证明它导致 forgetting。",
+        "later checkpoint 同时改变 pretraining exposure、capability、data/optimizer history 与 proxy sharpness；相关不能识别 sharpness mediation。",
+        "direct partial-pretraining test 未复现预期 sharpness 分化，因此不能说 LR decay causes sharpness，更不能继续推出 sharpness causes overtraining。",
+        "固定 $\\sigma$ 的 KL proxy 与 Hessian eigenvalues 都依赖 parameterization/scale；跨不同 model families 的数值不可视作统一物理 curvature。",
+        "相等 scalar train loss 不保证相同 displacement、等价 functions 或相同 test-SFT performance；后者明确不在本文评估范围。",
+        "范围集中在 1–3B、Anthropic-HH/Tulu、六个 multiple-choice tasks 与 SFT；frontier models、RL/post-training 和 instruction usefulness 未验证。"
+      ]
+    },
+    {
+      "title": "复现与资源",
+      "paragraphs": [
+        "官方代码为 https://github.com/tml-epfl/eos-overtraining 。本站未运行；复现应 pin commit、model checkpoints、datasets、optimizer schedules、evaluation harness 与 seeds。",
+        "对每个 model/LR 做多个 SFT training seeds，并在 matched train-loss bins 报 OOD 与 test-SFT 的 paired intervals、Pareto frontier 和 early-stopping sensitivity。",
+        "要检验 MPA mediation，应直接 regularize、project 或 patch representation drift，同时保持 LR/step count matched，观察旧/新任务指标是否相应改变。",
+        "sharpness comparisons 应加入 scale-normalized or function-space metrics、multiple $\\sigma$、Hessian-vector probes 与 reparameterization controls。",
+        "优先扩大 direct pretraining schedule intervention：同 checkpoint、matched tokens/data/optimizer，多 seeds 比较 flat/decay/cooldown，再做 identical SFT。",
+        "用 formal mediation 或 factorial design 分离 pretraining LR、proxy sharpness、SFT LR 与 checkpoint age；负结果必须与正 correlations 同时报告。"
+      ]
+    },
+    {
+      "title": "阅读指南",
+      "paragraphs": [
+        "快速路线：pp. 3–6 看 Figure 1、MPA 和 step interpolation；pp. 7–10 看 toy、sharpness proxy 与主叙事；p. 27 必看 direct negative intervention。",
+        "物理路线：把 MPA 与 KL proxy 当坐标相关 observables，分清等高面、local susceptibility 和真正控制变量。",
+        "AI 路线：区分 SFT learning-rate intervention、cross-checkpoint correlation、toy analogy 与 direct pretraining-schedule test。",
+        "批判路线：先接受低-LR retention，再用 Figure 24、无 LLM intervals、fixed-$\\\\sigma$ parameterization 和缺失 test-SFT 限制 sharpness causal claim。"
+      ]
+    }
+  ],
+  "evidence_refs": [
+    "paper.pdf pp. 3–7 and official v2 TeX: matched-loss SFT learning-rate intervention, MPA definition, first-100-step interpolation and diagonal-network toy",
+    "paper.pdf pp. 8–10 and 16–17 plus official v2 TeX: KL parameter-noise sharpness proxy, checkpoint/cooldown correlations, Pythia-14m proxy check and stated limitations",
+    "paper.pdf p. 27 and official v2 appendix: direct SmolLM3 partial-pretraining flat-versus-decay intervention with negative sharpness result",
+    "source PDF SHA-256 9b8ad2e6824a44350771847ca194d3958c12a340c7b10c0eceddf3b6f18088ca",
+    "official arXiv v2 source archive SHA-256 94aefbad91fb62b26ee2d955301392879fb0c403103aa68a58d0e275f084fb4a",
+    "MinerU Markdown SHA-256 fac80e506afc8ff9a33fcc2c6f95954159882a14203740248961faf404925da9",
+    "Evidence packet SHA-256 7cfaea234c1addeefe947f536125a8bc641639f0383a151c05c34acb00155bc3",
+    "Evidence status: full text, rendered figure and official TeX verified against latest arXiv v2; intervention-versus-correlation, negative-test, mediation, uncertainty, parameterization, matched-loss and scope boundaries recorded; no independent reproduction performed."
+  ]
+}

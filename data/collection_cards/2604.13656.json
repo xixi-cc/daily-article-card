@@ -1,0 +1,195 @@
+{
+  "arxiv_id": "2604.13656",
+  "source_version": "v1",
+  "source_pdf": "https://arxiv.org/pdf/2604.13656v1",
+  "title_en": "Ordinary Least Squares is a Special Case of Transformer",
+  "title_zh": "普通最小二乘是 Transformer 的一个特例",
+  "curation_status": "full_text_verified",
+  "card_standard_version": "2.4",
+  "audience_profile": "physics_ai_literate_physicist",
+  "paper_profile": "theory_experiment",
+  "style_reference": "physicist_daily_arxiv",
+  "provenance": {
+    "program": "Collection",
+    "catalog": "Paper Collection",
+    "catalog_record_id": "2604.13656",
+    "catalog_record_ids": ["2604.13656"],
+    "catalog_topic": "Transformer Theory",
+    "collection_date": "2026-08-30",
+    "sampled_at": "2026-08-31",
+    "selected_by": "ziming_mineru_serial_goal",
+    "sampling_seed": "not_applicable_source_complete",
+    "candidate_count": 464
+  },
+  "verified_metadata": {
+    "arxiv_id": "2604.13656",
+    "version": "v1",
+    "title": "Ordinary Least Squares is a Special Case of Transformer",
+    "authors": ["Xiaojun Tan", "Yuchen Zhao"],
+    "categories": ["cs.LG", "cs.AI", "math.ST", "stat.ML"],
+    "primary_category": "cs.LG",
+    "published": "2026-04-15",
+    "updated": "2026-04-15",
+    "abstract": "The paper gives a dataset-specific factorization of ordinary least-squares fitted values as a custom softmax-free linear-attention expression whose constructed parameters already depend on the design matrix and labels, plus a one-dimensional scalar optimization illustration."
+  },
+  "equation_refs": [
+    {
+      "label": "Ordinary least-squares fitted values",
+      "latex": "\\widehat Y=X\\widehat\\beta=X(X^\\top X)^{-1}X^\\top Y",
+      "role": "state the target projection for a fixed full-column-rank design matrix",
+      "symbols": {
+        "X": "n by d design matrix with full column rank",
+        "Y": "observed response matrix",
+        "beta_hat": "OLS coefficient estimate",
+        "Y_hat": "in-sample fitted responses"
+      },
+      "evidence": "paper.pdf p. 2, Equation (1), and official MAIN.tex",
+      "interpretation": "这是 training-design points 上的 orthogonal projection；满列秩保证 $X^\\top X$ 可逆，rank-deficient/underdetermined 情形需要 pseudoinverse 或 regularization。"
+    },
+    {
+      "label": "Data-dependent whitening and head",
+      "latex": "L=V\\Lambda^{-1/2},\\qquad P=\\frac1nL^\\top X^\\top Y,\\qquad \\frac1nX^\\top X=V\\Lambda V^\\top",
+      "role": "construct the parameters used to embed the OLS solution into the custom attention map",
+      "symbols": {
+        "V": "eigenvectors of the empirical covariance",
+        "Lambda": "positive eigenvalues of the empirical covariance",
+        "L": "dataset-specific whitening factor",
+        "P": "dataset-and-label-specific output head"
+      },
+      "evidence": "paper.pdf pp. 2–3, Equations (3)–(6), and official MAIN.tex",
+      "interpretation": "$L$ 已包含 $(X^\\top X)^{-1/2}$，$P$ 已包含 $X^\\top Y$；真正的 covariance inversion 与 label dependence 在 forward 前写入 weights。"
+    },
+    {
+      "label": "Custom linear-attention identity",
+      "latex": "\\widehat Y=\\frac1n(XL)(XL)^\\top(XL)P=\\operatorname{Output}(X)",
+      "role": "show algebraic equality after setting Q, K and V weights to L, FFN to identity, and the head to P",
+      "symbols": {
+        "XL": "whitened design features",
+        "Output": "paper's unnormalized softmax-free linear-attention map",
+        "P": "precomputed dataset-specific head"
+      },
+      "evidence": "paper.pdf p. 3, Equations (7)–(8), and official MAIN.tex",
+      "interpretation": "矩阵乘法等式成立；逻辑量词是“对每个固定 $(X,Y)$ 存在一组 weights”，不是“存在一组固定 weights 对任意新 $(X,Y)$ 求 OLS”。"
+    }
+  ],
+  "figure_refs": [
+    {
+      "label": "Figure 1 one-dimensional scalar training",
+      "asset_path": "assets/collection-figures/2604.13656/figure-01-structural-emergence.webp",
+      "section": "核心结果与证据",
+      "role": "show convergence of the bespoke scalar parameter and training outputs toward their analytic target in the sole experiment",
+      "evidence": "paper.pdf p. 4, Figure 1; official source Structural_Emergence.pdf",
+      "alt_text": "Three plots show training MSE, distance to analytic output, and one learned scalar L over 5000 epochs for a one-dimensional regression dataset.",
+      "caption": "Figure 1：$y=2x+$noise、$n=500$ 的单一 1D 实验中，一个共享 scalar $L$ 接近解析值；没有 holdout、seeds、error bars 或 standard Transformer baseline。",
+      "interpretation": "图证明该受限 parameterization 可在一个数据集上优化到构造值，不证明一个通用 Transformer 从 context 中计算 matrix inverse。"
+    }
+  ],
+  "cover": {
+    "mode": "source_figure",
+    "asset_path": "assets/collection-figures/2604.13656/figure-01-structural-emergence.webp",
+    "label": "Figure 1 scalar convergence",
+    "visual_type": "data_plot",
+    "evidence": "paper.pdf p. 4, Figure 1; official source figure",
+    "alt_text": "The only experiment trains one scalar linear-attention parameter on one one-dimensional OLS dataset.",
+    "caption": "单数据集、单标量构造的训练收敛，而非通用上下文 OLS solver。",
+    "selection_rationale": "It makes the validation scope visible and prevents the algebraic existence result from being mistaken for broad algorithmic evidence."
+  },
+  "sections": [
+    {
+      "title": "作者信息",
+      "paragraphs": [
+        "作者为 Xiaojun Tan、Yuchen Zhao。",
+        "本站核验 arXiv:2604.13656v1：提交于 2026-04-15，是当前唯一版本；主分类 cs.LG，PDF 6 页。",
+        "Collection 来源为刘子鸣网站的 Transformer Theory 条目。"
+      ]
+    },
+    {
+      "title": "研究问题",
+      "paragraphs": [
+        "能否把 OLS fitted-value matrix 写成 attention-like matrix products，从而建立线性回归与 Transformer 结构的代数联系？",
+        "论文对固定满秩 $(X,Y)$ 先分解 empirical covariance，构造 $L(X)$ 与 $P(X,Y)$，再把它们代入无 softmax 的 linear attention。",
+        "等式本身正确；决定解释上限的是 weights 的数据依赖性。它不是一个固定模型从任意新 context 的 feature–label pairs 计算 OLS 的 uniform solver theorem。"
+      ]
+    },
+    {
+      "title": "背景",
+      "paragraphs": [
+        "OLS 将 $Y$ 投影到 $X$ 的 column space；normal equation 解为 $(X^\\top X)^{-1}X^\\top Y$，前提是 full column rank。",
+        "linear attention 去掉 softmax，把 $QK^\\top V$ 作为核心；它便于写矩阵恒等式，但不等同 standard causal multi-head Transformer。",
+        "representation theorem 必须检查量词：$\\forall(X,Y)\\,\\exists\\theta(X,Y)$ 只说每个问题能硬编码；$\\exists\\theta\\,\\forall(X,Y)$ 才接近一个统一算法。",
+        "in-context OLS 通常要求 context 同时包含 covariates 和 labels，并用固定 weights 预测 held-out query；本文 forward 写作 Output$(X)$，$Y$ 只进入参数 $P$。"
+      ]
+    },
+    {
+      "title": "给物理学家的 AI 导读",
+      "paragraphs": [
+        "$L=V\\Lambda^{-1/2}$ 是对 empirical covariance 的 whitening transform；先求它已经完成了谱分解和 inverse square root。",
+        "$P=n^{-1}L^\\top X^\\top Y$ 是 whitened basis 中的 regression coefficient。把它称作 output head，相当于把待求物理响应写进 apparatus calibration。",
+        "因此 identity 更像 tensor-network refactorization：同一个已知 linear operator 可以拆成 attention-shaped contractions；它没有展示网络怎样在线求出 operator。",
+        "慢/快 memory 式用 inference set 的完整 $Y_z$，所以是 reconstruction identity。若要预测，应隐藏 query label 并只允许 train-context labels 进入。",
+        "Hopfield/associative-memory analogy 可提示 $QK^\\top V$ 的检索结构，但 memory capacity 不由本 OLS factorization 自动推出。"
+      ]
+    },
+    {
+      "title": "模型与方法",
+      "paragraphs": [
+        "令 $n^{-1}X^\\top X=V\\Lambda V^\\top$，取 $L=V\\Lambda^{-1/2}$，从而 $n^{-1}LL^\\top=(X^\\top X)^{-1}$。",
+        "再取 $P=n^{-1}L^\\top X^\\top Y$，并设置 $W_Q=W_K=W_V=L$、$W_{\\mathrm{FFN}}=I$、$W_P=P$；代数化简得到 OLS fitted values。",
+        "这里的 attention 无 softmax、无 causal mask，也不含 residual、normalization、multi-head 或 tokenized label interface；输出是整批 in-sample $\\widehat Y$。",
+        "唯一实验为 $y=2x+$noise、$n=500$、一维；将 Q/K/V 全限制为一个 scalar $L$，从 0.5 初始化，用 Adam 训练 5000 epochs。",
+        "slow/fast memory extension 在新的 $Z,Y_z$ 上构造类似式，在 noiseless shared-$\\beta$ 条件下化为 $Z[\\\\Sigma_x^{-1}\\\\Sigma_z]\\beta$。"
+      ]
+    },
+    {
+      "title": "核心结果与证据",
+      "paragraphs": [
+        "对固定 full-column-rank $X,Y$，论文的 matrix identity 精确成立：构造的 custom attention output 等于 $X(X^\\top X)^{-1}X^\\top Y$。",
+        "但 $L$ 依赖 $X$，$P$ 同时依赖 $X,Y$；外部 eigendecomposition、inverse square root 与 $X^\\top Y$ preprocessing 已完成 OLS 的实质运算。",
+        "Figure 1 的一个 1D run 中 training MSE、output distance 与 scalar $L$ 在约 1000 epochs 内接近解析 target，此后训练到 5000 epochs。",
+        "实验没有 holdout、random seeds、uncertainty、$x$/noise distribution 细节或 standard Transformer baseline，不能估计泛化或优化稳定性。",
+        "fast-memory 式读取相同 inference set 的 $Y_z$；没有 held-out query，因此没有展示 prediction 或 in-context learning。"
+      ]
+    },
+    {
+      "title": "有效性与局限",
+      "paragraphs": [
+        "最重要的逻辑边界是 dataset-specific existence，不是 fixed-parameter uniform computation；标题若按后一含义理解会过度。",
+        "forward 输入只有 $X$，labels $Y$ 被预先放入 $W_P$；模型没有从新 context 同时读取 $X,Y$ 并一次前向推断 $\\widehat\\beta$。",
+        "full-rank assumption 排除 rank-deficient、underdetermined、高维 $d>n$、pseudoinverse 与 ridge；conditioning/noise robustness 未分析。",
+        "custom map 排除 softmax、causal masking、multi-head/deep blocks、residual/norm 和 tokenization，因此不是 standard Transformer equivalence。",
+        "唯一标量实验是 construction fitting，不能支持 dimension scaling、random-design generalization、held-out prediction 或 training universality。",
+        "Hopfield capacity、evolution 与 modern LLM claims 来自文献类比，不是本文 theorem 或实验的推论。"
+      ]
+    },
+    {
+      "title": "复现与资源",
+      "paragraphs": [
+        "论文未给 pinned implementation。代数复现可从官方 MAIN.tex 逐式实现，并保存 $X,Y$、rank、condition number 与 matrix residual。",
+        "先对随机 full-rank matrices 检查 $\\lVert\\\\widehat Y_{\\mathrm{OLS}}-\\operatorname{Output}_{L(X),P(X,Y)}(X)\\rVert$ 到 machine precision，再故意固定 weights 跨 datasets 测失败。",
+        "加入 rank-deficient/underdetermined cases，用 pseudoinverse/ridge 明确新构造；扫描 condition number 和 precision 量化 inverse-square-root instability。",
+        "真正的 in-context OLS test 应把 $(x_i,y_i)$ 编码进 tokens，固定同一 weights 跨 tasks，只给 query $x_\\star$、隐藏 $y_\\star$，并与 analytical OLS 比较。",
+        "逐步加入 causal mask、softmax、multi-head、residual/norm 和 finite depth，记录 approximation error 与 compute scaling。",
+        "实验需跨 dimensions、sample sizes、noise、random seeds 和 holdout queries，报告与 analytical solver、gradient descent 和已知 in-context linear-regression Transformers 的基线。"
+      ]
+    },
+    {
+      "title": "阅读指南",
+      "paragraphs": [
+        "快速路线：pp. 2–3 看 Equations (1)–(8)；p. 4 看唯一 Figure 1 和 memory 式；pp. 5–6 看外推讨论。",
+        "物理路线：把 $L$ 看成 whitening operator、$P$ 看成已预计算 response coefficient，然后检查这些量是否由系统自身产生。",
+        "AI 路线：区分 linear-attention-shaped factorization、固定权重算法、in-context labels 与 standard Transformer。",
+        "批判路线：逐字检查量词和 input interface；问 $Y$ 在哪里进入、matrix inverse 谁计算、query label 是否真的 withheld。"
+      ]
+    }
+  ],
+  "evidence_refs": [
+    "paper.pdf pp. 2–3 and official MAIN.tex: full-rank OLS, covariance factorization, data-dependent L/P construction, custom linear-attention map and exact matrix identity",
+    "paper.pdf p. 4 and official MAIN.tex: one-dimensional scalar-L Adam experiment, Figure 1, slow/fast-memory equations and use of full inference labels",
+    "paper.pdf pp. 5–6 and official MAIN.tex: standard-Transformer/Hopfield extrapolations and literature-based scope",
+    "source PDF SHA-256 3c4c38eb4f754da101aa06bebb5d473775bc6a9148d40594cad527fb80e31d32",
+    "official arXiv v1 source archive SHA-256 e2aabfba4c4f2fc5d6fea213944669456f9bc709f51ee6adb053a3c6b268232b",
+    "MinerU Markdown SHA-256 9903c37a87b955247b289639905227990108cc420ad4eead7a028bfdd2f9d679",
+    "Evidence packet SHA-256 51b0ea0f7f6ed0359ab5fd9cd9ba9ec3ada38e70d03cc7d07e1b028bef286930",
+    "Evidence status: full text, rendered figure and official TeX verified against latest arXiv v1; quantifier, data-dependent-weight, preprocessing, rank, architecture, held-out-label and Hopfield/LLM extrapolation boundaries recorded; no independent reproduction performed."
+  ]
+}

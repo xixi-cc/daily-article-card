@@ -1,0 +1,196 @@
+{
+  "arxiv_id": "2604.13206",
+  "source_version": "v1",
+  "source_pdf": "https://arxiv.org/pdf/2604.13206v1",
+  "title_en": "Numerical Instability and Chaos: Quantifying the Unpredictability of Large Language Models",
+  "title_zh": "数值不稳定性与混沌：量化大型语言模型的不可预测性",
+  "curation_status": "full_text_verified",
+  "card_standard_version": "2.4",
+  "audience_profile": "physics_ai_literate_physicist",
+  "paper_profile": "theory_experiment",
+  "style_reference": "physicist_daily_arxiv",
+  "provenance": {
+    "program": "Collection",
+    "catalog": "Paper Collection",
+    "catalog_record_id": "2604.13206",
+    "catalog_record_ids": ["2604.13206"],
+    "catalog_topic": "AI Agents",
+    "collection_date": "2026-08-30",
+    "sampled_at": "2026-08-31",
+    "selected_by": "ziming_mineru_serial_goal",
+    "sampling_seed": "not_applicable_source_complete",
+    "candidate_count": 464
+  },
+  "verified_metadata": {
+    "arxiv_id": "2604.13206",
+    "version": "v1",
+    "title": "Numerical Instability and Chaos: Quantifying the Unpredictability of Large Language Models",
+    "authors": ["Chashi Mahiul Islam", "Alan Villarreal", "Mao Nishino", "Shaeke Salman", "Xiuwen Liu"],
+    "categories": ["cs.AI", "cs.LG", "math.NA"],
+    "primary_category": "cs.AI",
+    "published": "2026-04-14",
+    "updated": "2026-04-14",
+    "abstract": "The paper measures finite-difference responses of selected LLM hidden-state programs at extremely small perturbation scales, reporting plateaus, jumps, near-tie decision-region fragmentation, precision dependence, and one illustrative noise-averaging experiment."
+  },
+  "equation_refs": [
+    {
+      "label": "Exact directional condition number",
+      "latex": "\\kappa_{\\mathrm{abs}}(f,x,v)=\\lVert L_f(x;v)\\rVert_2=\\lVert J(x)v\\rVert_2",
+      "role": "define the local directional response of a differentiable real-valued map",
+      "symbols": {
+        "f": "ideal mathematical map from input embedding to selected hidden state",
+        "x": "base input",
+        "v": "unit perturbation direction",
+        "J": "Jacobian of f at x",
+        "L_f": "directional Fréchet derivative"
+      },
+      "evidence": "paper.pdf pp. 2–3, Equation (1), and official main TeX",
+      "interpretation": "这是实数光滑 map 的 infinitesimal quantity；实际 floating-point program 是分段常数/跳变的离散映射，不能直接把 $Jv$ 当作其 $\\epsilon\\to0$ 极限。"
+    },
+    {
+      "label": "Finite-epsilon response quotient",
+      "latex": "D(\\epsilon,v)=\\frac{\\lVert f(x+\\epsilon v)-f(x)\\rVert_2}{\\epsilon}",
+      "role": "measure scale-dependent hidden-state sensitivity in the actually executed finite-precision program",
+      "symbols": {
+        "epsilon": "perturbation magnitude",
+        "v": "selected singular-vector direction",
+        "f_x": "last hidden state before the LM head"
+      },
+      "evidence": "paper.pdf pp. 2–4, Equation (2), Figure 1, and official experiment TeX",
+      "interpretation": "在 quantization plateau 内 numerator 为零；跨 rounding/branch boundary 时突然非零，除以极小 $\\epsilon$ 会产生巨大 quotient。这是数值台阶，不自动是 Lyapunov exponent。"
+    },
+    {
+      "label": "Adjacent-scale jump indicator",
+      "latex": "I_i=\\frac{\\lVert m_i-m_{i-1}\\rVert_2}{\\epsilon_i-\\epsilon_{i-1}},\\qquad i=2,\\ldots,T",
+      "role": "localize changes between measurements along a finite perturbation scan",
+      "symbols": {
+        "m_i": "measured hidden representation at perturbation scale epsilon_i",
+        "epsilon_i": "ordered scan scale",
+        "I_i": "empirical boundary-crossing intensity"
+      },
+      "evidence": "paper.pdf pp. 4–5, Equation (5), and official exp-cond TeX",
+      "interpretation": "它依赖离散 scan spacing 和 floating-point execution path；峰值标记相邻采样点间的 jump，不给出 boundary 的 fractal dimension 或典型测度。"
+    }
+  ],
+  "figure_refs": [
+    {
+      "label": "Figure 1 directional finite-difference sweep",
+      "asset_path": "assets/collection-figures/2604.13206/figure-01-directional-number-fp32.webp",
+      "section": "核心结果与证据",
+      "role": "show how five Jacobian singular directions retain ordering at large epsilon but converge to a scale-driven finite-precision regime at microscopic epsilon",
+      "evidence": "paper.pdf p. 3, Figure 1; official source overview_layer32_directional_number_FP32.png",
+      "alt_text": "Log-scale curves of finite-epsilon directional response for five singular-vector directions at the final Llama hidden layer in FP32.",
+      "caption": "Figure 1：Llama-3.1-8B 的五个方向在 $\\epsilon=0.1$ 保留谱序，而到约 $10^{-10}$ 时受 finite-precision plateaus/jumps 主导；这不是 chaos exponent 测量。",
+      "interpretation": "图清楚展示 classical smooth conditioning 与 executed floating-point response 的差异，但只覆盖选定 prompt/model/hardware 与 hidden observable。"
+    }
+  ],
+  "cover": {
+    "mode": "source_figure",
+    "asset_path": "assets/collection-figures/2604.13206/figure-01-directional-number-fp32.webp",
+    "label": "Figure 1 finite-epsilon sensitivity",
+    "visual_type": "data_plot",
+    "evidence": "paper.pdf p. 3, Figure 1; official source figure",
+    "alt_text": "Finite-difference sensitivity curves transition from direction-dependent to scale-dominated behavior.",
+    "caption": "极小扰动下，有限精度执行的台阶与跳变压过光滑 Jacobian 谱。",
+    "selection_rationale": "It directly displays the paper's strongest observation while allowing a clean distinction between numerical discontinuities and dynamical chaos."
+  },
+  "sections": [
+    {
+      "title": "作者信息",
+      "paragraphs": [
+        "Chashi Mahiul Islam、Alan Villarreal、Shaeke Salman、Xiuwen Liu 来自 Florida State University 计算机系，Mao Nishino 来自数学系。",
+        "本站核验 arXiv:2604.13206v1：提交于 2026-04-14，是当前唯一版本；主分类 cs.AI，PDF 8 页。",
+        "Collection 来源为刘子鸣网站的 AI Agents 条目。"
+      ]
+    },
+    {
+      "title": "研究问题",
+      "paragraphs": [
+        "理论上的 Transformer 是光滑或分段光滑函数，但真实推理由有限精度 kernels 执行。输入 embedding 的微小扰动在何种尺度上表现为 Jacobian response，又何时被 rounding plateaus 与 jumps 主导？",
+        "论文沿 selected singular directions 扫描 $\\epsilon$，追踪最后 hidden state、层间传播和 near-logit-tie planes，并比较 FP32/其他精度。",
+        "最可靠结论是 finite-precision hidden program 存在尺度依赖的 plateau-and-jump response；“chaos”“fractal”和 agent failure explanation 远强于本文直接测量。"
+      ]
+    },
+    {
+      "title": "背景",
+      "paragraphs": [
+        "condition number 是光滑 real-arithmetic map 的局部敏感度；finite differences 只有在 truncation error 与 roundoff error 间存在可用窗口时才逼近 derivative。",
+        "当 $\\epsilon$ 小于 machine spacing 或 kernel accumulation resolution，$x+\\epsilon v$ 可能量化回同一点，输出完全相同；跨过临界格点又会突然变化。",
+        "数学上的 chaos 需要对动力系统、时间演化、Lyapunov exponent、topological mixing 等作明确定义。一次 feed-forward map 的不连续数值 response 不能直接满足这些条件。",
+        "LLM 最终文本还受 decoding temperature、sampling RNG 和 logit margin 影响；本文主要测最后 hidden state，不是端到端 sampled-output reproducibility。"
+      ]
+    },
+    {
+      "title": "给物理学家的 AI 导读",
+      "paragraphs": [
+        "可把 floating-point execution 想成在高维输入空间上的晶格化 response surface：cell 内输出近似常数，cell boundary 处发生 jump。",
+        "$D(\\epsilon,v)$ 在 plateau 为零、跨 boundary 时近似 jump/$\\epsilon$，因此均值可被少数巨峰支配而 median 为零；heavy tail 不等于 positive Lyapunov exponent。",
+        "near-tie logits 类似靠近 decision separatrix：极小 hidden change 可交换 argmax。但构造在 tie 附近的切片不是从自然 prompt ensemble 抽到的 typical section。",
+        "不同 precision 只是改变有效 lattice spacing；它可移动 crossover，却不说明所有方向都具有相同物理 instability，更不证明 scale invariance。",
+        "向输入加独立 noise 再平均类似 mollification：得到 smoothed response。真实 rounding errors 有相关性、bias 和 hardware structure，不能默认 i.i.d. zero-mean。"
+      ]
+    },
+    {
+      "title": "模型与方法",
+      "paragraphs": [
+        "模型为 Meta-Llama-3.1-8B-Instruct 与 OpenAI-GPT-OSS-20B；Llama 在双 RTX A5000 GPU 上，GPT-OSS 因 FP32 memory constraint 在 Intel i9-10900X CPU 上。",
+        "对输入 embedding Jacobian 做 singular-direction analysis，在多个 layers 与 scales 计算有限差分 quotient；Llama 每 dataset 100 prompts，GPT-OSS 每 dataset 10 prompts。",
+        "near-tie 实验先构造 logits 几乎相等的 prompt plane，再沿三对 singular directions 网格扫描 adjacent-cell label flips、connected regions 与 angular boundaries。",
+        "全 4096 directions 的 scan 估计每个方向的 plateau/jump threshold；precision comparison 检查 boundary 随 arithmetic format 移动。",
+        "mitigation illustration 沿一个方向注入幅度 $10^{-9}$ 的 noise，多次执行平均 finite-difference estimate，与理论 singular value 比较。"
+      ]
+    },
+    {
+      "title": "核心结果与证据",
+      "paragraphs": [
+        "Figure 1 中 $\\epsilon=0.1$ 时五个 singular directions 保留谱 ordering；到 $\\epsilon\\sim10^{-10}$，方向曲线随深度趋向相似的 scale-driven behavior。",
+        "Table I 四个 model–dataset cells 的 median instability 为 0，mean 为 $2.63\\\\times10^5$ 到 $8.84\\\\times10^6$，与稀疏 jumps/heavy tail 相容；没有 intervals 或 seed counts。",
+        "构造 near-tie planes 上，三组 plane 的 adjacent-cell flips 为 15.42–16.29%，connected regions 779–866；没有 random-plane baseline 或 uncertainty。",
+        "4096 directions 的 mean $s_{\\max}=8.96\\\\times10^{-11}$、SD $4.12\\\\times10^{-11}$，约 3× variation；它支持该 local setup 的 boundary-scale concentration。",
+        "一条 averaging curve 从 $n=1$ 时 estimate >900，随 $n=10$–100 接近约 600，对应 singular value 615.31；未重复、未扩展 directions/models，也未计 compute。",
+        "source 把 $1.80\\\\times10^{-11}$ 到 $7.03\\\\times10^{-11}$ 约 4× range 写成 four orders，并在 singular span 与放大倍数处还有数量级表述冲突。"
+      ]
+    },
+    {
+      "title": "有效性与局限",
+      "paragraphs": [
+        "plateau/jump 说明 finite-precision program 非光滑，不建立 deterministic chaos、Lyapunov instability、fractal dimension 或 sampled text failure rate。",
+        "Llama/GPU 与 GPT-OSS/CPU 完全混杂；不能把差异归因于 architecture、normalization 或 model size。GPT-OSS 每 dataset 只有 10 prompts。",
+        "dataset subset、prompt selection、random seeds、checkpoint replications 与多数 uncertainty 缺失，mean/median 也未给 sampling distribution。",
+        "near-tie plane 是 deliberately constructed case；所谓 >50× smooth expectation 没报告 numerical baseline，不能代表 typical decision-boundary geometry。",
+        "noise averaging 只是一条 smoothed-input示意曲线，不证明真实 roundoff 独立零均值，也不证明 mitigation 在生产中通用或低成本。",
+        "论文没有 multi-agent experiment；Discussion 将本测量解释为 cited 23%/31% agent failures 的原因，是未经干预验证的因果外推。"
+      ]
+    },
+    {
+      "title": "复现与资源",
+      "paragraphs": [
+        "论文未提供可核验的 pinned code repository。复现需固定 model revision、tokenizer、PyTorch/CUDA/BLAS、kernel deterministic flags、compiler、CPU/GPU 与完整 prompts。",
+        "先以 FP64/高精度或自动微分构造 smooth-reference $Jv$，扫描 $\\epsilon$ 找 truncation–roundoff balance，并保存 exact input/output bit patterns。",
+        "做 2×2 matched controls：同模型跨 CPU/GPU × 同硬件跨模型，同时固定 kernels、precision 与 batch，才能分离 architecture 和 hardware。",
+        "随机抽 prompts、directions 与 checkpoints，报告 plateau threshold、jump size、mean/median/tail index 的 hierarchical intervals；near-tie 和 natural-margin ensembles 分开。",
+        "若使用 chaos/fractal 术语，应先定义迭代动力系统，估计 Lyapunov spectrum、box-counting stability 和 resolution scaling，并排除纯 quantization artifact。",
+        "averaging mitigation 要测 correlated hardware noise、bias、sample complexity、latency/energy，以及最终 logits/text 和真实 agent task success；与 deterministic kernels 和 mixed precision 比较。"
+      ]
+    },
+    {
+      "title": "阅读指南",
+      "paragraphs": [
+        "快速路线：pp. 2–4 看 condition number、Figure 1 与 aggregate；pp. 5–6 看 near-tie planes、4096 directions 和 precision；p. 7 看 averaging 与 limitations。",
+        "物理路线：先把现象建模为 quantized response surface，再问是否存在真正时间演化与 resolution-independent chaos 指标。",
+        "AI 路线：区分 hidden-state numerical sensitivity、logit argmax flip、sampling nondeterminism 与 multi-agent workflow failure。",
+        "批判路线：核查 hardware confound、10-prompt GPT cells、constructed tie plane、source 数量级错误、无 smooth baseline 和 agent-causality gap。"
+      ]
+    }
+  ],
+  "evidence_refs": [
+    "paper.pdf pp. 2–4 and official main/experiment TeX: directional condition number, finite-epsilon quotient, model/hardware split, Figure 1, layer propagation and prompt aggregate table",
+    "paper.pdf pp. 5–6 and official exp-cond TeX: constructed near-tie planes, flip/region metrics, angular scan, 4096-direction thresholds and precision comparison",
+    "paper.pdf p. 7 and official TeX: one noise-averaging curve, discussion extrapolations, limitations and internal numeric conflicts",
+    "source PDF SHA-256 de16263fd62aa62f036c7366414304512ab06c3a35d939e438b7ec5b51b52a38",
+    "official arXiv v1 source archive SHA-256 5baf5f7360365caa126791cd9a85f8f835e81d35a37c4b0c4a7e69df44a9542d",
+    "MinerU Markdown SHA-256 7767b1b962957126c766d6a979b86cdf1a5c2578dc771e644068e5b2a3c8f036",
+    "Evidence packet SHA-256 c395d61a3f33da5f2acbee48c09ce808a387142ea9ecd815dddde30585b8e272",
+    "Evidence status: full text, rendered figure and official TeX verified against latest arXiv v1; finite-precision-versus-chaos, hardware, sampling, near-tie, numeric-conflict, mitigation and agent-causality boundaries recorded; no independent reproduction performed."
+  ]
+}
