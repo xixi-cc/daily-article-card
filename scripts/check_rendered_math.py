@@ -47,6 +47,8 @@ async def audit(widths):
     await page.route('**/*', serve)
     try:
      await page.goto(ORIGIN + row['path'], wait_until='load')
+     if row['path'] == 'index.html' and await page.locator('meta[http-equiv=refresh]').count():
+      await page.wait_for_url('**/physics_AI.html', wait_until='load')
      if await page.evaluate('Boolean(window.MathJax?.startup?.promise)'):
       await asyncio.wait_for(page.evaluate('MathJax.startup.promise'), 20)
      if row['path'] in ('index.html','collection.html'):
