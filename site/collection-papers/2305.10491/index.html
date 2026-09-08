@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Bayesian Renormalization - physics+AI Collection 随机精选</title>
+    <title>Bayesian Renormalization - physics+AI Collection 论文卡</title>
     <meta name="description" content="论文把贝叶斯学习随数据增加的模型空间流反向，定义丢弃数据、让posterior predictive变宽的Bayesian Renormalization（DB-RG）。 Fisher metric量化相邻概率模型的可区分性，充当非物理数据模型中的涌现尺度；stiff/sloppy方向类比relevant/irrelevant operators。 作者把一类exact RG写成Fokker–Planck扩散/Markov粗粒化，再将反向Dynamical Bayes映射到由Fisher信息控制的ERG kernel。 数值示例仅是在MNIST线性autoencoder上按encoder Fisher diagonal硬剪枝；它演示信息层级，不是完整动态DB-RG算法的端到端验证。" />
     <link rel="canonical" href="https://xixi-cc.github.io/daily-article-card/collection-papers/2305.10491/" />
     <script type="application/ld+json">{"@context": "https://schema.org", "@type": "Article", "headline": "Bayesian Renormalization", "description": "论文把贝叶斯学习随数据增加的模型空间流反向，定义丢弃数据、让posterior predictive变宽的Bayesian Renormalization（DB-RG）。 Fisher metric量化相邻概率模型的可区分性，充当非物理数据模型中的涌现尺度；stiff/sloppy方向类比relevant/irrelevant operators。 作者把一类exact RG写成Fokker–Planck扩散/Markov粗粒化，再将反向Dynamical Bayes映射到由Fisher信息控制的ERG kernel。 数值示例仅是在MNIST线性autoencoder上按encoder Fisher diagonal硬剪枝；它演示信息层级，不是完整动态DB-RG算法的端到端验证。", "url": "https://xixi-cc.github.io/daily-article-card/collection-papers/2305.10491/", "mainEntityOfPage": "https://xixi-cc.github.io/daily-article-card/collection-papers/2305.10491/", "inLanguage": "zh-CN", "author": {"@type": "Person", "name": "Xineng Cao", "alternateName": ["Xixi Cao", "曹溪能"], "url": "https://xixi-cc.github.io/"}, "isBasedOn": "https://arxiv.org/abs/2305.10491"}</script>
@@ -67,7 +67,7 @@
         <div class="detail-page-topbar">
           <a class="back-link" href="../../collection.html">返回列表</a>
           <div class="detail-topbar-actions">
-            <span class="detail-site-name">physics+AI Collection 随机精选</span>
+            <span class="detail-site-name">physics+AI Collection 论文卡</span>
             <button id="detail-favorite" class="detail-favorite-button" type="button" aria-pressed="false">☆ 收藏</button>
             <button class="theme-toggle" type="button" data-theme-toggle aria-label="当前主题：设备，点击切换主题" title="当前主题：设备">
   <span class="theme-toggle-icons" aria-hidden="true">
@@ -89,15 +89,10 @@
         </div>
 
         <div class="detail-hero-grid">
-          <div class="detail-hero-cover"><article class="note-cover note-cover-title-abstract" style="--cover-from: #316b57; --cover-to: #8bb174; --cover-spot: #d9e7c7; --cover-ink: #fbfff6; --cover-muted: rgba(251, 255, 246, 0.82); --cover-chip: rgba(251, 255, 246, 0.16); --cover-stroke: rgba(251, 255, 246, 0.24)">
-  <div class="note-cover-mesh"></div>
-  <div class="note-cover-title-shell">
-    <span class="note-cover-kicker">TITLE · ABSTRACT</span>
-    <h1 class="note-cover-title">Bayesian Renormalization</h1>
-    <p class="note-cover-title-zh">贝叶斯重整化</p>
-    <p class="note-cover-abstract">In this note we present a fully information theoretic approach to renormalization inspired by Bayesian statistical inference, which we refer to as Bayesian Renormalization. The main insight of Bayesian Renormalization is that the Fisher metric defines a correlation length that plays the role of an emergent RG scale quantifying the distinguishability between nearby points in the space of probability distributions. This RG scale can be interpreted as a proxy for the maximum number of unique observations that can be made about a given system during a statistical inference experiment. The role of the Bayesian Renormalization scheme is subsequently to prepare an effective model for a given system up to a precision which is bounded by the aforementioned scale. In applications of Bayesian Renormalization to physical systems, the emergent information theoretic scale is naturally identified with</p>
-  </div>
-</article></div>
+          <div class="detail-hero-cover"><figure class="paper-figure-card paper-figure-card-detail">
+  <img class="paper-figure-image" src="../../assets/collection-figures/2305.10491/cover-source.webp" alt="Fisher 信息剪枝与随机剪枝的重建误差对比。" loading="lazy" onclick="window.openPaperFigureImage && window.openPaperFigureImage(this)" />
+  <figcaption class="paper-figure-caption">Fisher 信息剪枝与随机剪枝的重建误差对比。来源：原论文 Figure 2（PDF 第 20 页）。</figcaption>
+</figure></div>
           <div class="detail-hero-copy">
             <p class="eyebrow">Collection 全文卡</p>
             <h1 class="detail-page-title">Bayesian Renormalization</h1>
@@ -149,7 +144,7 @@
     <span class="reading-step-note">模型与方法</span>
   </div>
   <h2>模型与方法</h2>
-  <div class="reading-card-content"><ul><li>参数族p(\(y\)|\(\theta\))的Fisher metric来自score covariance，也给KL divergence在邻近模型间的二阶展开；小eigenvalue方向被称sloppy，大eigenvalue方向为stiff。</li><li>模型空间反向Bayes让posterior宽度随τ增加；经生成映射G推到data space后，作者识别出Bayesian diffusion kernel与ERG kernel的对应。</li><li>实验网络是784输入/输出、20维latent、无bias的两层dense autoencoder，encoder与decoder均ReLU，MSE loss、Adam(0.001,0.9,0.999,10^−8)。</li><li>训练后固定decoder，只计算encoder共15680个权重的Fisher信息；阈值Λ从0到2.375以0.125步长扫描。</li><li>实际information-shell rule用Iii>Λ保留、Iii≤Λ置零；这按坐标对角元素剪枝，而不是对Fisher eigenvectors整模积分。</li><li>比较基线在每一步删除同样数量的随机参数或最小绝对值参数，从而把sparsity控制为相同。</li></ul></div>
+  <div class="reading-card-content"><ul><li>参数族p(\(y\)|\(\theta\))的Fisher metric来自score covariance，也给KL divergence在邻近模型间的二阶展开；小eigenvalue方向被称sloppy，大eigenvalue方向为stiff。</li><li>模型空间反向Bayes让posterior宽度随τ增加；经生成映射G推到data space后，作者识别出Bayesian diffusion kernel与ERG kernel的对应。</li><li>实验网络是784输入/输出、20维latent、无bias的两层dense autoencoder，encoder与decoder均ReLU，MSE loss、Adam(0.001,0.9,0.999,10^−8)。</li><li>训练后固定decoder，只计算encoder共15680个权重的Fisher信息；阈值Λ从0到2.375以0.125步长扫描。</li><li>实际information-shell rule用Iii&gt;Λ保留、Iii≤Λ置零；这按坐标对角元素剪枝，而不是对Fisher eigenvectors整模积分。</li><li>比较基线在每一步删除同样数量的随机参数或最小绝对值参数，从而把sparsity控制为相同。</li></ul></div>
 </section>
 <section class="reading-card reading-card-section">
   <div class="reading-card-topline">
@@ -188,8 +183,8 @@
           <nav id="detail-toc-nav" class="detail-toc-nav"></nav>
         </aside>
       </div>
-      <nav class="paper-nav"><a class="paper-nav-link paper-nav-prev" href="../../collection-papers/2305.01582/"><span class="paper-nav-label">← 上一篇</span><span class="paper-nav-title">Interpretable Machine Learning for Science with PySR and SymbolicRegression.jl</span></a>
-      <a class="paper-nav-link paper-nav-next" href="../../collection-papers/2305.11078/"><span class="paper-nav-label">下一篇 →</span><span class="paper-nav-title">Active matter under control: Insights from response theory</span></a></nav>
+      <nav class="paper-nav"><a class="paper-nav-link paper-nav-prev" href="../../collection-papers/2305.11078/"><span class="paper-nav-label">← 上一篇</span><span class="paper-nav-title">Active matter under control: Insights from response theory</span></a>
+      <a class="paper-nav-link paper-nav-next" href="../../collection-papers/2305.13266/"><span class="paper-nav-label">下一篇 →</span><span class="paper-nav-title">Coarse-to-Fine: a Hierarchical Diffusion Model for Molecule Generation in 3D</span></a></nav>
       <section id="comments" class="comments-panel" aria-labelledby="comments-title">
         <div class="comments-heading">
           <div>

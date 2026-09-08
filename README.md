@@ -70,3 +70,31 @@ python scripts/validate_paper_cards.py
 Every completed website update must be pushed to GitHub. 发布完成的定义包括：验证与构建通过、提交当前变更、无强制推送到 GitHub `origin`、确认本地 `HEAD` 与 GitHub 分支头一致，并核验 GitHub Actions / Pages。OpenAI Sites 是并行发布目标，不能替代 GitHub 同步；两者同时发布时必须来自同一份已验证源码树。
 
 站点地址：<https://xixi-cc.github.io/daily-article-card/>
+
+### Card rendering and cover maintenance
+
+Collection lists use verified publication dates in descending order, with the card ID
+as a stable tie-break. New campaign selection follows descending arXiv IDs; it does
+not randomly sample the catalog. Existing campaign provenance remains historical.
+
+Write explicit `\(...\)` or `\[...\]` around new mathematics in card JSON. The
+renderer protects math from Markdown and summary truncation, typesets dynamically
+inserted feed cards, and bundles the TeX extensions needed by MathJax. Filenames
+remain plain text. Wide equations scroll inside the article instead of widening
+the page.
+
+Use a reviewed source figure for a cover when it communicates the paper's method,
+physical object, or central evidence. Record its figure label and PDF page in
+`cover.evidence`; preserve panels, axes, legends, and attribution. Title/abstract
+covers remain appropriate for papers without a useful scientific figure. A failed
+PDF download is a pending review, not evidence that a paper has no figures.
+
+After rebuilding, check all details and both feeds at mobile and desktop widths:
+
+```bash
+uv run --with playwright python scripts/check_rendered_math.py \
+  --output ../../local-state/performance/paper-card-rendering.json
+```
+
+The browser check uses bundled assets without a server, covers lazy-loaded Daily
+cards and search rerenders, and fails on raw TeX, MathJax errors, or page overflow.

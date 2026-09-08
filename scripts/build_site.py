@@ -225,7 +225,7 @@ def generate_atom_feed(
                 f"    <id>urn:xixi-paper:{escape(program)}:{escape(identifier)}</id>",
                 f'    <link href="{PUBLIC_BASE_URL}{escape(detail_path, quote=True)}" />',
                 f"    <updated>{atom_timestamp(date_value)}</updated>",
-                f"    <summary>{escape(summary)}</summary>",
+                f"    <summary>{render_math_text(summary)}</summary>",
                 "  </entry>",
             ]
         )
@@ -293,12 +293,44 @@ def auto_add_linebreaks(text: str) -> str:
     return fixed.strip()
 
 
+MATH_SPAN_RE = re.compile(r"\\\[[\s\S]*?\\\]|\\\([\s\S]*?\\\)|(?<!\\)\$\$[\s\S]*?(?<!\\)\$\$|(?<!\\)\$[^$\n]+(?<!\\)\$")
+
+
+def protect_math(text: str) -> tuple[str, list[str]]:
+    spans = []
+    def save(match):
+        spans.append(match.group())
+        return f"MATHPLACEHOLDER{len(spans)-1}TOKEN"
+    return MATH_SPAN_RE.sub(save, text), spans
+
+
+def restore_math(text: str, spans: list[str], *, html_escape: bool = False) -> str:
+    for index, value in enumerate(spans):
+        text = text.replace(f"MATHPLACEHOLDER{index}TOKEN", escape(value) if html_escape else value)
+    return text
+
+
+def render_math_text(text: object) -> str:
+    return escape(normalize_inline_math_notation(str(text)))
+
+
 def markdown_to_html(md: str) -> str:
+    md = "\n".join(normalize_inline_math_notation(line.removeprefix("- ")) if line.startswith("- 关键关系：") else line for line in md.splitlines())
+    displays = []
+    def save_display(match):
+        value = match.group()
+        if value.startswith("$$"):
+            value = r"\[" + value[2:-2] + r"\]"
+        displays.append(value)
+        return f"\nDISPLAYPLACEHOLDER{len(displays)-1}TOKEN\n"
+    md = re.sub(r"\\\[[\s\S]*?\\\]|(?<!\\)\$\$[\s\S]*?(?<!\\)\$\$", save_display, md)
     lines = md.splitlines()
     html_lines: List[str] = []
 
     def render_inline(text: str) -> str:
         text = normalize_inline_math_notation(text)
+        text, math_spans = protect_math(text)
+        text = escape(text, quote=False)
         text = re.sub(r"`([^`]+)`", r"<code>\1</code>", text)
         text = re.sub(r"\*\*([^*]+)\*\*", r"<strong>\1</strong>", text)
         text = re.sub(
@@ -306,7 +338,7 @@ def markdown_to_html(md: str) -> str:
             r'<a href="\2" target="_blank" rel="noopener noreferrer">\1</a>',
             text,
         )
-        return text
+        return restore_math(text, math_spans, html_escape=True)
 
     index = 0
     while index < len(lines):
@@ -314,6 +346,12 @@ def markdown_to_html(md: str) -> str:
 
         if not line:
             html_lines.append("")
+            index += 1
+            continue
+
+        display_match = re.fullmatch(r"DISPLAYPLACEHOLDER(\d+)TOKEN", line.strip())
+        if display_match:
+            html_lines.append('<div class="display-math">' + escape(displays[int(display_match.group(1))]) + '</div>')
             index += 1
             continue
 
@@ -385,7 +423,7 @@ def normalize_section_title(title: str) -> str:
 
 
 def strip_markdown(text: str) -> str:
-    plain = text
+    plain, math_spans = protect_math(text)
     plain = re.sub(r"<[^>]+>", " ", plain)
     plain = re.sub(r"\[([^\]]+)\]\(([^)]+)\)", r"\1", plain)
     plain = re.sub(r"`([^`]+)`", r"\1", plain)
@@ -394,14 +432,19 @@ def strip_markdown(text: str) -> str:
     plain = re.sub(r"^\s*[-*]\s+", "", plain, flags=re.MULTILINE)
     plain = re.sub(r"^\s*\d+\.\s+", "", plain, flags=re.MULTILINE)
     plain = re.sub(r"\s+", " ", plain)
-    return plain.strip()
+    return restore_math(plain.strip(), math_spans)
 
 
 def truncate_text(text: str, limit: int) -> str:
     compact = re.sub(r"\s+", " ", text).strip()
     if len(compact) <= limit:
         return compact
-    return compact[: max(0, limit - 1)].rstrip(" ，,.;；。:：") + "…"
+    cut = max(0, limit - 1)
+    for span in MATH_SPAN_RE.finditer(compact):
+        if span.start() < cut < span.end():
+            cut = span.start()
+            break
+    return compact[:cut].rstrip(" ，,.;；。:：") + "…"
 
 
 def extract_bullets(markdown: str) -> List[str]:
@@ -635,16 +678,16 @@ def render_note_cover(record: Dict[str, object], standalone: bool = False) -> st
   <div class="note-cover-mesh"></div>
   <div class="note-cover-title-shell">
     <span class="note-cover-kicker">TITLE · ABSTRACT</span>
-    <h1 class="note-cover-title">{escape(str(record["title"]))}</h1>
-    {f'<p class="note-cover-title-zh">{escape(str(record["title_zh"]))}</p>' if record.get("title_zh") else ''}
-    {f'<p class="note-cover-abstract">{escape(summary)}</p>' if summary else ''}
+    <h1 class="note-cover-title">{render_math_text(record["title"])}</h1>
+    {f'<p class="note-cover-title-zh">{render_math_text(record["title_zh"])}</p>' if record.get("title_zh") else ''}
+    {f'<p class="note-cover-abstract">{render_math_text(summary)}</p>' if summary else ''}
   </div>
 </article>
 """.strip()
 
 
 def render_paper_figure(record: Dict[str, object], image_src: str, context: str) -> str:
-    caption = escape(str(record.get("cover_caption") or record["hook_text"]))
+    caption = render_math_text(record.get("cover_caption") or record["hook_text"])
     title = escape(str(record.get("cover_alt_text") or record["title"]))
 
     return f"""
@@ -664,8 +707,8 @@ def render_source_cover(record: Dict[str, object], image_src: str) -> str:
   <div class="source-cover-shade"></div>
   <div class="source-cover-copy">
     <span class="source-cover-label">{label}</span>
-    <h1>{escape(str(record["title"]))}</h1>
-    {f'<p>{escape(str(record["title_zh"]))}</p>' if record.get("title_zh") else ''}
+    <h1>{render_math_text(record["title"])}</h1>
+    {f'<p>{render_math_text(record["title_zh"])}</p>' if record.get("title_zh") else ''}
   </div>
 </article>
 """.strip()
@@ -676,9 +719,9 @@ def render_evidence_figure(figure: Dict[str, object]) -> str:
     image_src = f"../../{asset_path}"
     label = escape(str(figure["label"]))
     alt_text = escape(str(figure["alt_text"]), quote=True)
-    caption = escape(str(figure["caption"]))
-    interpretation = escape(str(figure["interpretation"]))
-    evidence = escape(str(figure["evidence"]))
+    caption = render_math_text(figure["caption"])
+    interpretation = render_math_text(figure["interpretation"])
+    evidence = render_math_text(figure["evidence"])
     return f"""
 <figure class="evidence-figure">
   <button class="evidence-figure-image-button" type="button" aria-label="放大查看 {label}" onclick="window.openPaperFigureImage && window.openPaperFigureImage(this.querySelector('img'))">
@@ -860,7 +903,7 @@ def build_collection_records(paper_image_manifest: Dict[str, Dict[str, object]])
         cards[card_id] = card
         raw_records.append(
             {
-                "date": "Paper Collection · 随机精选",
+                "date": "Paper Collection · 全文精读",
                 "title": f'{card.get("title_zh", "")}<br>{card.get("title_en", "")}',
                 "link": source_url,
                 "card_id": card_id,
@@ -881,6 +924,7 @@ def build_collection_records(paper_image_manifest: Dict[str, Dict[str, object]])
                 "program": "Collection",
                 "program_label": "Paper Collection",
                 "topic": str(topic),
+                "published": str((card.get("verified_metadata") or {}).get("published") or ""),
                 "feed_date": str(provenance.get("sampled_at") or provenance.get("collection_date") or "")
                 if isinstance(provenance, dict)
                 else "",
@@ -902,6 +946,7 @@ def build_collection_records(paper_image_manifest: Dict[str, Dict[str, object]])
                 record["paper_image_path"] = str(cover.get("asset_path", ""))
             elif record["cover_mode"] == "title_abstract":
                 record["paper_image_path"] = ""
+    records.sort(key=lambda r: (str(r.get("published", "")), str(r.get("page_dir", ""))), reverse=True)
     return records
 
 
@@ -911,23 +956,23 @@ def build_list_data(records: List[Dict[str, object]], thumb_map: Dict[str, str] 
     for record in records:
         item = {
             "date": record["date"],
-            "title": record["title"],
-            "title_zh": record["title_zh"],
+            "title": normalize_inline_math_notation(str(record["title"])),
+            "title_zh": normalize_inline_math_notation(str(record["title_zh"])),
             "link": record["link"],
             "arxiv_id": record["arxiv_id"],
             "detail_path": record["detail_path"],
             "cover_path": record["cover_path"],
             "paper_image_path": thumb_map.get(str(record["paper_image_path"]), record["paper_image_path"]),
             "paper_image_full_path": record["paper_image_path"],
-            "preview_text": record["preview_text"],
-            "research_unit": record["research_unit"],
-            "hook_text": record["hook_text"],
+            "preview_text": normalize_inline_math_notation(str(record["preview_text"])),
+            "research_unit": normalize_inline_math_notation(str(record["research_unit"])),
+            "hook_text": normalize_inline_math_notation(str(record["hook_text"])),
             "key_points": record["key_points"],
             "reading_minutes": record["reading_minutes"],
             "section_count": record["section_count"],
             "cover_theme": record["cover_theme"],
             "cover_mode": record.get("cover_mode", ""),
-            "cover_summary": record.get("cover_summary", record.get("hook_text", "")),
+            "cover_summary": normalize_inline_math_notation(str(record.get("cover_summary", record.get("hook_text", "")))),
             "cover_alt_text": record.get("cover_alt_text", ""),
             "program": record.get("program", "Daily"),
             "category": record.get("category", "跨学科"),
@@ -938,13 +983,14 @@ def build_list_data(records: List[Dict[str, object]], thumb_map: Dict[str, str] 
         if record.get("program") == "Collection":
             item["program_label"] = record.get("program_label", "Paper Collection")
             item["topic"] = record.get("topic", "")
+            item["published"] = record.get("published", "")
         output.append(item)
     return output
 
 
 def render_detail_meta(record: Dict[str, object]) -> str:
     if record.get("program") == "Collection":
-        parts = ["Paper Collection", escape(str(record.get("topic", "随机精选")))]
+        parts = ["Paper Collection", escape(str(record.get("topic", "全文精读")))]
     else:
         parts = [escape(str(record["date"]))]
     parts.append(f'<a href="{escape(str(record["link"]), quote=True)}" target="_blank" rel="noopener noreferrer">原文</a>')
@@ -1066,16 +1112,16 @@ def render_theme_toggle() -> str:
 def generate_index_html(program: str = "Daily") -> str:
     keyword = get_arxiv_keyword_label()
     is_collection = program == "Collection"
-    site_title = f"{keyword} Collection 随机精选" if is_collection else DAILY_SITE_TITLE
+    site_title = f"{keyword} Collection 论文卡" if is_collection else DAILY_SITE_TITLE
     site_description = (
-        "从 Paper Collection 随机抽取并经全文证据核验的论文卡片"
+        "Paper Collection 已完成全文核验的论文卡片，按发表日期排序"
         if is_collection
         else f"{keyword} 论文精选卡片"
     )
-    eyebrow = "Paper Collection Sample" if is_collection else "Physics + AI Feed"
-    headline = "Collection <span class=\"site-title-nowrap\">随机精选</span>" if is_collection else DAILY_SITE_TITLE
+    eyebrow = "Paper Collection" if is_collection else "Physics + AI Feed"
+    headline = "Collection <span class=\"site-title-nowrap\">论文卡</span>" if is_collection else DAILY_SITE_TITLE
     subtitle = (
-        "从长期 Paper Collection 中随机抽取，逐篇核对全文、公式、证据位置与适用边界；这些卡片不继承 Daily 的日期、分数或 S 级评级。"
+        "汇集长期 Paper Collection 中已完成的全文精读卡片，按发表日期从新到旧排列；这些卡片不继承 Daily 的日期、分数或 S 级评级。"
         if is_collection
         else "聚合最新论文，提炼核心贡献、方法与实验结果，用更清晰的阅读路径持续跟进前沿研究。"
     )
@@ -1083,7 +1129,7 @@ def generate_index_html(program: str = "Daily") -> str:
     script_name = "collection-app.js" if is_collection else "app.js"
     feed_path = "collection-feed.xml" if is_collection else "feed.xml"
     hero_tags = (
-        ("全文证据", "公式与适用边界", "随机抽样")
+        ("全文证据", "公式与适用边界", "按发表日期")
         if is_collection
         else ("中文精读", "核心贡献提炼", "论文原图速览")
     )
@@ -1113,7 +1159,7 @@ def generate_index_html(program: str = "Daily") -> str:
     return f"""<!doctype html>
 <html lang="zh-CN">
   <head>
-    {generate_head(page_title, site_description, canonical_url=canonical_url, structured_data=structured_data)}
+    {generate_head(page_title, site_description, include_math=True, canonical_url=canonical_url, structured_data=structured_data)}
     <link rel="alternate" type="application/atom+xml" title="{escape(site_title)} 更新" href="{PUBLIC_BASE_URL}{feed_path}" />
     <link rel="alternate" type="application/atom+xml" title="全部论文卡更新" href="{PUBLIC_BASE_URL}all-feed.xml" />
   </head>
@@ -1211,7 +1257,7 @@ def generate_index_html(program: str = "Daily") -> str:
 def generate_paper_html(record: Dict[str, object], prev_record: Dict[str, object] | None = None, next_record: Dict[str, object] | None = None) -> str:
     keyword = get_arxiv_keyword_label()
     is_collection = record.get("program") == "Collection"
-    site_title = f"{keyword} Collection 随机精选" if is_collection else DAILY_SITE_TITLE
+    site_title = f"{keyword} Collection 论文卡" if is_collection else DAILY_SITE_TITLE
     back_document = COLLECTION_DOCUMENT_NAME if is_collection else SITE_DOCUMENT_NAME
     detail_root = "collection-papers" if is_collection else "papers"
     canonical_url = f"{PUBLIC_BASE_URL}{detail_root}/{record['page_dir']}/"
@@ -1289,9 +1335,9 @@ def generate_paper_html(record: Dict[str, object], prev_record: Dict[str, object
           <div class="detail-hero-copy">
             <p class="eyebrow">{'Collection 全文卡' if is_collection else '论文详情'}</p>
             <h1 class="detail-page-title">{escape(page_title)}</h1>
-            {f'<p class="detail-page-title-zh">{escape(str(record["title_zh"]))}</p>' if record.get("title_zh") else ''}
+            {f'<p class="detail-page-title-zh">{render_math_text(record["title_zh"])}</p>' if record.get("title_zh") else ''}
             <div class="detail-meta">{meta_html}</div>
-            <p class="detail-summary">{escape(str(record["preview_text"]))}</p>
+            <p class="detail-summary">{render_math_text(record["preview_text"])}</p>
             <div class="detail-micro-meta">
               <span class="meta-pill">{escape(str(record.get("category", "跨学科")))}</span>
               <span class="meta-pill">{escape(str(record.get("research_type", "理论")))}</span>
@@ -1373,7 +1419,7 @@ def generate_cover_html(record: Dict[str, object]) -> str:
     return f"""<!doctype html>
 <html lang="zh-CN">
   <head>
-    {generate_head(page_title, description, "../../", noindex=True)}
+    {generate_head(page_title, description, "../../", include_math=True, noindex=True)}
   </head>
   <body class="cover-page">
     <div class="page-noise"></div>
@@ -1819,11 +1865,15 @@ input[type=search]:focus {
   min-height: 100%;
 }
 
+.reading-flow, .reading-card, .detail-layout > *, .detail-hero-grid > *, .detail-main, .detail-content, .detail-hero, .detail-copy, .detail-section, .feed-card-body { min-width: 0; }
+.reading-card-content mjx-container:not([display="true"]), .detail-summary mjx-container:not([display="true"]) { display: inline-block; vertical-align: middle; }
+.reading-card-content mjx-container, .detail-summary mjx-container, .display-math, mjx-container[display="true"] { max-width: 100%; overflow-x: auto; overflow-y: hidden; }
+.detail-page { overflow-wrap: anywhere; }
 .paper-figure-image {
   display: block;
   width: 100%;
   height: 100%;
-  object-fit: cover;
+  object-fit: contain;
   background: linear-gradient(180deg, rgba(255,255,255,0.6), rgba(241, 226, 211, 0.9));
 }
 
@@ -3109,7 +3159,9 @@ def generate_app_js() -> str:
       modalCleanupTimerId = null;
     }
     modalReturnFocusEl = settings.returnFocus || modalReturnFocusEl || document.activeElement;
+    if(window.MathJax?.typesetClear){ MathJax.typesetClear([paperModalTitleEl]); }
     paperModalTitleEl.textContent = item.title || '论文详情';
+    typesetSurface(paperModalTitleEl);
     paperModalOpenLinkEl.href = getStandalonePaperURL(item.detail_path);
     paperModalFrameEl.title = `论文详情：${item.title || ''}`;
     paperModalFrameEl.classList.remove('is-ready');
@@ -3341,6 +3393,17 @@ def generate_app_js() -> str:
     if(tags.includes(selectedTag)) tagFilterEl.value = selectedTag;
   }
 
+  let mathQueue = Promise.resolve();
+  function typesetSurface(element){
+    if(!window.MathJax || !MathJax.startup){ return; }
+    mathQueue = mathQueue.then(async () => {
+      if(!MathJax.typesetPromise){ await new Promise(resolve => window.addEventListener('load', resolve, {once:true})); }
+      await MathJax.startup.promise;
+    }).then(() => {
+      if(element.isConnected){ return MathJax.typesetPromise([element]); }
+    }).catch(error => console.error('公式排版失败', error));
+  }
+
   function createFeedCard(item){
     const cardShell = document.createElement('div');
     cardShell.className = 'feed-card-shell';
@@ -3560,7 +3623,9 @@ def generate_app_js() -> str:
     removeSentinel();
 
     batch.forEach((date) => {
-      groupsEl.appendChild(createGroupSection(date, pendingGrouped.get(date)));
+      const section = createGroupSection(date, pendingGrouped.get(date));
+      groupsEl.appendChild(section);
+      typesetSurface(section);
     });
 
     if(pendingDates.length){
@@ -3576,6 +3641,7 @@ def generate_app_js() -> str:
 
   function renderGroups(items){
     destroyLazyObserver();
+    if(window.MathJax?.typesetClear){ MathJax.typesetClear([groupsEl]); }
     groupsEl.innerHTML = '';
 
     if(!items.length){
@@ -3596,7 +3662,9 @@ def generate_app_js() -> str:
     pendingDates = dates.slice(GROUPS_PER_BATCH);
 
     dates.slice(0, GROUPS_PER_BATCH).forEach((date) => {
-      groupsEl.appendChild(createGroupSection(date, grouped.get(date)));
+      const section = createGroupSection(date, grouped.get(date));
+      groupsEl.appendChild(section);
+      typesetSurface(section);
     });
 
     if(pendingDates.length){
@@ -4284,6 +4352,9 @@ def main() -> int:
     MATHJAX_SITE_DIR.mkdir(parents=True, exist_ok=True)
     shutil.copy2(MATHJAX_SOURCE_DIR / "tex-chtml.js", MATHJAX_SITE_DIR / "tex-chtml.js")
     shutil.copy2(MATHJAX_SOURCE_DIR.parent / "LICENSE", MATHJAX_SITE_DIR / "LICENSE")
+    # TeX autoload must resolve locally too (boldsymbol, physics, etc.).
+    shutil.copytree(MATHJAX_SOURCE_DIR / "input" / "tex" / "extensions",
+                    MATHJAX_SITE_DIR / "input" / "tex" / "extensions", dirs_exist_ok=True)
     shutil.copytree(
         MATHJAX_SOURCE_DIR / "output" / "chtml" / "fonts" / "woff-v2",
         MATHJAX_SITE_DIR / "output" / "chtml" / "fonts" / "woff-v2",

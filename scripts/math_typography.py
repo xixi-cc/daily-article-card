@@ -30,12 +30,12 @@ OPERATOR_LATEX = {
 }
 
 PROTECTED_SPAN_RE = re.compile(
-    r"(\\\[[\s\S]*?\\\]|\\\([\s\S]*?\\\)|\$[^$\n]+\$|https?://[^\s，。；]+|`[^`]+`)"
+    r"(\\\[[\s\S]*?\\\]|\\\([\s\S]*?\\\)|\$\$[\s\S]*?\$\$|\$[^$\n]+\$|https?://[^\s，。；]+|`[^`]+`|[A-Za-z][A-Za-z0-9]+(?:_[A-Za-z0-9]+){2,})"
 )
 
 IDENTIFIER = (
     r"[A-Za-zΑ-Ωα-ω][A-Za-z0-9Α-Ωα-ω]*"
-    r"(?:_[A-Za-z0-9{}]+|\^[A-Za-z0-9{}+\-]+)*"
+    r"(?:_(?:\{[^{}]+\}|[A-Za-z0-9]+)|\^(?:\{[^{}]+\}|[A-Za-z0-9+\-]+))*"
 )
 
 ATOM = (
@@ -47,11 +47,11 @@ AUTO_MATH_RE = re.compile(
     rf"(?<![\w\\])(?:"
     rf"{ATOM}(?:\s*(?:→|≈|≥|≤|=|∈|∼|±|≠)\s*{ATOM})+(?:d[A-Za-z])?"
     rf"|(?:SE|SO|SU|O|L)\([0-9A-Za-z]+\)"
-    rf"|[A-Za-zΑ-Ωα-ω][A-Za-z0-9Α-Ωα-ω]*(?:_[A-Za-z0-9{{}}]+|\^[A-Za-z0-9{{}}+\-]+)+"
+    rf"|[A-Za-zΑ-Ωα-ω][A-Za-z0-9Α-Ωα-ω]*(?:_\{{[^{{}}]+\}}|_[A-Za-z0-9]+|\^\{{[^{{}}]+\}}|\^[A-Za-z0-9+\-]+)+"
     rf"|[∇∂√]{IDENTIFIER}(?:\([^()\s，。；]*\))?"
     rf"|[A-Za-z][0-9]+"
     rf"|[TXYZQNMLKCDHJxyzthfgupqrknmd]"
-    rf"|[Α-Ωα-ω](?:_[A-Za-z0-9{{}}]+|\^[A-Za-z0-9{{}}+\-]+)*"
+    rf"|[Α-Ωα-ω](?:_\{{[^{{}}]+\}}|_[A-Za-z0-9]+|\^\{{[^{{}}]+\}}|\^[A-Za-z0-9+\-]+)*"
     rf")(?![\w])"
 )
 
@@ -61,6 +61,14 @@ def _latex_identifier_scripts(text: str) -> str:
         marker, value = match.group(1), match.group(2)
         if value.startswith("{"):
             return marker + value
+        # Unbraced TeX scripts bind one atom. Keep descriptive lowercase
+        # subscripts, but do not swallow the next multiplied variable.
+        if marker == '^' and value.isalpha() and len(value) > 1:
+            return marker + '{' + value[0] + '}' + value[1:]
+        m = re.match(r'(\d+)([A-Za-z].*)$|([a-z]+)([A-Z].*)$', value)
+        if m:
+            first, rest = (m.group(1), m.group(2)) if m.group(1) else (m.group(3), m.group(4))
+            return marker + '{' + first + '}' + rest
         if value.isalpha() and len(value) > 1:
             return f"{marker}{{\\mathrm{{{value}}}}}"
         return f"{marker}{{{value}}}"
@@ -72,7 +80,7 @@ def to_latex(text: str) -> str:
     """Convert unambiguous Unicode/operator notation to MathJax-safe TeX."""
     converted = text
     for source, target in GREEK_LATEX.items():
-        converted = converted.replace(source, target)
+        converted = converted.replace(source, target + " " if re.search(re.escape(source) + r"[A-Za-z]", converted) else target)
     for source, target in OPERATOR_LATEX.items():
         converted = converted.replace(source, target)
     converted = _latex_identifier_scripts(converted)
@@ -90,17 +98,55 @@ def to_latex(text: str) -> str:
     return re.sub(r"\s+", " ", converted).strip()
 
 
+def wrap_legacy_math(text: str) -> str:
+    # Old imported cards use ordinary parentheses as math delimiters. Balance
+    # nested function calls first, so a subscript cannot be wrapped halfway.
+    output = []
+    cursor = 0
+    while cursor < len(text):
+        if text[cursor] != "(":
+            output.append(text[cursor]); cursor += 1; continue
+        end, depth = cursor + 1, 1
+        while end < len(text) and depth:
+            if text[end] == "(": depth += 1
+            elif text[end] == ")": depth -= 1
+            end += 1
+        if depth:
+            output.append(text[cursor:]); break
+        # Adjacent function names keep their argument parentheses. Existing
+        # expression matching handles these; they are not prose delimiters.
+        if cursor and re.match(r"[A-Za-z0-9_Α-Ωα-ω]", text[cursor-1]):
+            output.append(text[cursor:end]); cursor = end; continue
+        content = text[cursor + 1:end - 1]
+        unmistakable = re.search(r"\\[A-Za-z]+|[_^]|[Α-Ωα-ω]|[=≈≤≥∈∇]", content)
+        if unmistakable and not re.search(r"[\u3400-\u9fff]", content):
+            output.append(r"\(" + to_latex(content) + r"\)")
+        else:
+            output.append(text[cursor:end])
+        cursor = end
+    return "".join(output)
+
+
 def normalize_inline_math_notation(text: str) -> str:
-    """Wrap unmistakable bare notation in inline MathJax delimiters."""
+    """Keep explicit TeX intact; normalize only unmistakable legacy notation."""
+    # These legacy rows contain complete aligned equations without delimiters.
+    if text.startswith("关键关系："):
+        relation = text[len("关键关系："):].strip()
+        if not PROTECTED_SPAN_RE.fullmatch(relation):
+            if "&" in relation or r"\\" in relation:
+                return "关键关系：\n" + r"\[\begin{aligned}" + relation + r"\end{aligned}\]"
+            return "关键关系：" + r"\(" + relation + r"\)"
     parts = PROTECTED_SPAN_RE.split(text)
-    normalized: list[str] = []
+    normalized = []
     for part in parts:
-        if not part:
-            continue
+        if not part: continue
         if PROTECTED_SPAN_RE.fullmatch(part):
-            normalized.append(part)
-            continue
-        normalized.append(
-            AUTO_MATH_RE.sub(lambda match: rf"\({to_latex(match.group(0))}\)", part)
-        )
+            normalized.append(part); continue
+        part = wrap_legacy_math(part)
+        for piece in PROTECTED_SPAN_RE.split(part):
+            if not piece: continue
+            if PROTECTED_SPAN_RE.fullmatch(piece):
+                normalized.append(piece)
+            else:
+                normalized.append(AUTO_MATH_RE.sub(lambda m: r"\(" + to_latex(m.group()) + r"\)", piece))
     return "".join(normalized)

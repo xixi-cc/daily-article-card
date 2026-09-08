@@ -1,6 +1,7 @@
 import unittest
 
 from scripts.build_site import (
+    truncate_text,
     generate_head,
     markdown_to_html,
     render_detail_sections,
@@ -22,6 +23,16 @@ class MathRenderingTests(unittest.TestCase):
     def test_non_detail_head_does_not_load_mathjax(self):
         head = generate_head("Title", "Description")
         self.assertNotIn("tex-chtml.js", head)
+
+    def test_summary_never_cuts_inside_formula(self):
+        text = r"前言 \(x_{long}+y_{long}\) 后文"
+        short = truncate_text(text, 12)
+        self.assertEqual(short.count(r"\("), short.count(r"\)"))
+
+    def test_markdown_keeps_inequalities_and_aligned_equations(self):
+        rendered = markdown_to_html(r"\[\begin{aligned}x &< y \\ z &= 1\end{aligned}\]")
+        self.assertIn(r"x &amp;&lt; y", rendered)
+        self.assertIn(r"\\ z", rendered)
 
     def test_markdown_preserves_inline_tex_for_mathjax(self):
         rendered = markdown_to_html(r"模型为 $\partial_t\rho+\nabla\cdot\mathbf J=0$。")

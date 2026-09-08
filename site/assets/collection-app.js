@@ -243,7 +243,9 @@
       modalCleanupTimerId = null;
     }
     modalReturnFocusEl = settings.returnFocus || modalReturnFocusEl || document.activeElement;
+    if(window.MathJax?.typesetClear){ MathJax.typesetClear([paperModalTitleEl]); }
     paperModalTitleEl.textContent = item.title || '论文详情';
+    typesetSurface(paperModalTitleEl);
     paperModalOpenLinkEl.href = getStandalonePaperURL(item.detail_path);
     paperModalFrameEl.title = `论文详情：${item.title || ''}`;
     paperModalFrameEl.classList.remove('is-ready');
@@ -475,6 +477,17 @@
     if(tags.includes(selectedTag)) tagFilterEl.value = selectedTag;
   }
 
+  let mathQueue = Promise.resolve();
+  function typesetSurface(element){
+    if(!window.MathJax || !MathJax.startup){ return; }
+    mathQueue = mathQueue.then(async () => {
+      if(!MathJax.typesetPromise){ await new Promise(resolve => window.addEventListener('load', resolve, {once:true})); }
+      await MathJax.startup.promise;
+    }).then(() => {
+      if(element.isConnected){ return MathJax.typesetPromise([element]); }
+    }).catch(error => console.error('公式排版失败', error));
+  }
+
   function createFeedCard(item){
     const cardShell = document.createElement('div');
     cardShell.className = 'feed-card-shell';
@@ -694,7 +707,9 @@
     removeSentinel();
 
     batch.forEach((date) => {
-      groupsEl.appendChild(createGroupSection(date, pendingGrouped.get(date)));
+      const section = createGroupSection(date, pendingGrouped.get(date));
+      groupsEl.appendChild(section);
+      typesetSurface(section);
     });
 
     if(pendingDates.length){
@@ -710,6 +725,7 @@
 
   function renderGroups(items){
     destroyLazyObserver();
+    if(window.MathJax?.typesetClear){ MathJax.typesetClear([groupsEl]); }
     groupsEl.innerHTML = '';
 
     if(!items.length){
@@ -730,7 +746,9 @@
     pendingDates = dates.slice(GROUPS_PER_BATCH);
 
     dates.slice(0, GROUPS_PER_BATCH).forEach((date) => {
-      groupsEl.appendChild(createGroupSection(date, grouped.get(date)));
+      const section = createGroupSection(date, grouped.get(date));
+      groupsEl.appendChild(section);
+      typesetSurface(section);
     });
 
     if(pendingDates.length){

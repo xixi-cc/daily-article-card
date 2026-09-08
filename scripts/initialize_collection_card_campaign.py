@@ -5,7 +5,6 @@ from __future__ import annotations
 
 import argparse
 import json
-import random
 import re
 import unicodedata
 from pathlib import Path
@@ -44,8 +43,8 @@ def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--catalog", type=Path, required=True)
     parser.add_argument("--output", type=Path, required=True)
-    parser.add_argument("--target", type=int, default=50)
-    parser.add_argument("--seed", default="paper-collection-random50-2026-08-26-v1")
+    parser.add_argument("--target", type=int, help="Total cards; defaults to existing Collection count plus 50")
+    parser.add_argument("--seed", help="Deprecated compatibility option; selection no longer uses randomness")
     args = parser.parse_args()
 
     records = json.loads(args.catalog.read_text(encoding="utf-8"))
@@ -54,6 +53,8 @@ def main() -> int:
 
     daily = load_cards(ROOT / "data" / "curated_cards")
     collection = load_cards(ROOT / "data" / "collection_cards")
+    if args.target is None:
+        args.target = len(collection) + 50
     by_arxiv: dict[str, dict[str, object]] = {}
     seen_titles: dict[str, str] = {}
     duplicate_catalog_records: list[dict[str, str]] = []
@@ -100,8 +101,9 @@ def main() -> int:
     needed = args.target - len(selected)
     if needed < 0 or len(eligible) < needed:
         raise SystemExit(f"cannot select {args.target} unique papers from {len(eligible)} eligible records")
-    rng = random.Random(args.seed)
-    for paper_id, record in rng.sample(eligible, needed):
+    # Newer arXiv work first, with the full identifier as a stable tie-break.
+    eligible.sort(key=lambda item: item[0], reverse=True)
+    for paper_id, record in eligible[:needed]:
         selected.append({
             "sequence": len(selected) + 1,
             "status": "pending",
@@ -120,9 +122,9 @@ def main() -> int:
         raise SystemExit("campaign selection is not duplicate-free")
 
     manifest = {
-        "campaign": "paper-collection-random50-2026-08-26",
+        "campaign": "paper-collection-ordered",
         "card_standard_version": "2.3",
-        "selection_seed": args.seed,
+        "selection_policy": "arxiv_id_descending_no_random_sampling",
         "target_unique_cards": args.target,
         "existing_cards_at_start": len(collection),
         "new_cards_required": needed,

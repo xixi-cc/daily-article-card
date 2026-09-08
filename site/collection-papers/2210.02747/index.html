@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Flow Matching for Generative Modeling - physics+AI Collection 随机精选</title>
+    <title>Flow Matching for Generative Modeling - physics+AI Collection 论文卡</title>
     <meta name="description" content="Flow Matching 直接回归生成指定 probability path 的时间依赖 vector field，用 continuous normalizing flow 的 ODE 从 noise 推到 data。 难以求取的 marginal target 被拆为以单个 data sample 为条件的 Gaussian paths；Conditional Flow Matching 可采样训练，且对参数的期望梯度与原 FM 完全相同。 路径选择不局限于 diffusion；论文重点使用 conditional optimal-transport displacement interpolation，得到直线、常速 conditional trajectories，并在实验中改善训练/采样折衷。" />
     <link rel="canonical" href="https://xixi-cc.github.io/daily-article-card/collection-papers/2210.02747/" />
     <script type="application/ld+json">{"@context": "https://schema.org", "@type": "Article", "headline": "Flow Matching for Generative Modeling", "description": "Flow Matching 直接回归生成指定 probability path 的时间依赖 vector field，用 continuous normalizing flow 的 ODE 从 noise 推到 data。 难以求取的 marginal target 被拆为以单个 data sample 为条件的 Gaussian paths；Conditional Flow Matching 可采样训练，且对参数的期望梯度与原 FM 完全相同。 路径选择不局限于 diffusion；论文重点使用 conditional optimal-transport displacement interpolation，得到直线、常速 conditional trajectories，并在实验中改善训练/采样折衷。", "url": "https://xixi-cc.github.io/daily-article-card/collection-papers/2210.02747/", "mainEntityOfPage": "https://xixi-cc.github.io/daily-article-card/collection-papers/2210.02747/", "inLanguage": "zh-CN", "author": {"@type": "Person", "name": "Xineng Cao", "alternateName": ["Xixi Cao", "曹溪能"], "url": "https://xixi-cc.github.io/"}, "isBasedOn": "https://arxiv.org/abs/2210.02747"}</script>
@@ -67,7 +67,7 @@
         <div class="detail-page-topbar">
           <a class="back-link" href="../../collection.html">返回列表</a>
           <div class="detail-topbar-actions">
-            <span class="detail-site-name">physics+AI Collection 随机精选</span>
+            <span class="detail-site-name">physics+AI Collection 论文卡</span>
             <button id="detail-favorite" class="detail-favorite-button" type="button" aria-pressed="false">☆ 收藏</button>
             <button class="theme-toggle" type="button" data-theme-toggle aria-label="当前主题：设备，点击切换主题" title="当前主题：设备">
   <span class="theme-toggle-icons" aria-hidden="true">
@@ -89,15 +89,10 @@
         </div>
 
         <div class="detail-hero-grid">
-          <div class="detail-hero-cover"><article class="note-cover note-cover-title-abstract" style="--cover-from: #316b57; --cover-to: #8bb174; --cover-spot: #d9e7c7; --cover-ink: #fbfff6; --cover-muted: rgba(251, 255, 246, 0.82); --cover-chip: rgba(251, 255, 246, 0.16); --cover-stroke: rgba(251, 255, 246, 0.24)">
-  <div class="note-cover-mesh"></div>
-  <div class="note-cover-title-shell">
-    <span class="note-cover-kicker">TITLE · ABSTRACT</span>
-    <h1 class="note-cover-title">Flow Matching for Generative Modeling</h1>
-    <p class="note-cover-title-zh">用于生成建模的流匹配</p>
-    <p class="note-cover-abstract">We introduce a new paradigm for generative modeling built on Continuous Normalizing Flows (CNFs), allowing us to train CNFs at unprecedented scale. Specifically, we present the notion of Flow Matching (FM), a simulation-free approach for training CNFs based on regressing vector fields of fixed conditional probability paths. Flow Matching is compatible with a general family of Gaussian probability paths for transforming between noise and data samples -- which subsumes existing diffusion paths as specific instances. Interestingly, we find that employing FM with diffusion paths results in a more robust and stable alternative for training diffusion models. Furthermore, Flow Matching opens the door to training CNFs with other, non-diffusion probability paths. An instance of particular interest is using Optimal Transport (OT) displacement interpolation to define the conditional probability pat</p>
-  </div>
-</article></div>
+          <div class="detail-hero-cover"><figure class="paper-figure-card paper-figure-card-detail">
+  <img class="paper-figure-image" src="../../assets/collection-figures/2210.02747/cover-source.webp" alt="Flow Matching 生成的 ImageNet 图像示例。" loading="lazy" onclick="window.openPaperFigureImage && window.openPaperFigureImage(this)" />
+  <figcaption class="paper-figure-caption">Flow Matching 生成的 ImageNet 图像示例。来源：原论文 Figure 1（PDF 第 1 页）。</figcaption>
+</figure></div>
           <div class="detail-hero-copy">
             <p class="eyebrow">Collection 全文卡</p>
             <h1 class="detail-page-title">Flow Matching for Generative Modeling</h1>
@@ -149,7 +144,7 @@
     <span class="reading-step-note">模型与方法</span>
   </div>
   <h2>模型与方法</h2>
-  <div class="reading-card-content"><ul><li>CNF vector field vt(\(x\);\(\theta\)) 通过 dφt/\(dt=vt(\phit)\)、\(\phi0=x\) 定义 flow，并令 pt=[φt]*\(p_{0}\)。FM loss 是 Et,\(x\)~pt ||vt−ut||²。</li><li>给定 conditional pt(\(x\)|\(x_{1}\)) 与其 vector field ut(\(x\)|\(x_{1}\))，Eq. (8) 按 posterior weight 聚合得到 marginal ut；Theorem 1 证明它生成 mixture marginal pt。</li><li>CFM loss 对 \(t\)~U[0,1]、\(x_{1}\)~\(q\)、\(x\)~pt(.|\(x_{1}\)) 回归 conditional vector field；Theorem 2 在 pt>0 条件下证明 LCFM 与 LFM 只差 \(\theta\)-independent constant，因此 gradients 相同。</li><li>Gaussian conditional family由 mean μt(\(x_{1}\))、std σt(\(x_{1}\)) 定义；包含 reversed VP/VE diffusion paths，也包含由 \(N\)(0,I) 到 \(N\)(\(x_{1}\),σmin²I) 的 OT Gaussian displacement。</li><li>conditional OT flow 是两 Gaussian 间 Wasserstein-2 optimal map、轨迹直线常速；作者明确提醒，这不意味着聚合后的 marginal vector field 是 global OT solution。</li><li>训练用 Dhariwal–Nichol U-Net variants；评测 BPD/NLL、FID 与 adaptive ODE NFE，固定步低成本实验比较 Euler、midpoint、RK4。</li></ul></div>
+  <div class="reading-card-content"><ul><li>CNF vector field vt(\(x\);\(\theta\)) 通过 dφt/\(dt=vt(\phi t)\)、\(\phi0=x\) 定义 flow，并令 pt=[φt]*\(p_{0}\)。FM loss 是 Et,\(x\)~pt ||vt−ut||²。</li><li>给定 conditional pt(\(x\)|\(x_{1}\)) 与其 vector field ut(\(x\)|\(x_{1}\))，Eq. (8) 按 posterior weight 聚合得到 marginal ut；Theorem 1 证明它生成 mixture marginal pt。</li><li>CFM loss 对 \(t\)~U[0,1]、\(x_{1}\)~\(q\)、\(x\)~pt(.|\(x_{1}\)) 回归 conditional vector field；Theorem 2 在 pt&gt;0 条件下证明 LCFM 与 LFM 只差 \(\theta\)-independent constant，因此 gradients 相同。</li><li>Gaussian conditional family由 mean μt(\(x_{1}\))、std σt(\(x_{1}\)) 定义；包含 reversed VP/VE diffusion paths，也包含由 \(N\)(0,I) 到 \(N\)(\(x_{1}\),σmin²I) 的 OT Gaussian displacement。</li><li>conditional OT flow 是两 Gaussian 间 Wasserstein-2 optimal map、轨迹直线常速；作者明确提醒，这不意味着聚合后的 marginal vector field 是 global OT solution。</li><li>训练用 Dhariwal–Nichol U-Net variants；评测 BPD/NLL、FID 与 adaptive ODE NFE，固定步低成本实验比较 Euler、midpoint、RK4。</li></ul></div>
 </section>
 <section class="reading-card reading-card-section">
   <div class="reading-card-topline">
@@ -165,7 +160,7 @@
     <span class="reading-step-note">有效性与局限</span>
   </div>
   <h2>有效性与局限</h2>
-  <div class="reading-card-content"><ul><li>Theorems 1–2 证明路径生成与梯度等价，不证明有限网络、SGD、有限数据会学到准确 target field，也不证明某条路径对所有任务最优。</li><li>conditional endpoint \(p_{1}=N(x_{1},\sigmamin²I)\) 是 data distribution 的平滑 mixture approximation；σmin 带来 bias，且 pt>0 是 Theorem 2 条件。</li><li>FM-OT 的“OT”仅逐样本 Gaussian coupling；marginal OT claim 被论文明确否定，不能把方法等同于 dataset-level optimal transport。</li><li>实验主要是早期 unconditional image benchmarks；没有 text-to-image、video、tabular/scientific data、robustness、memorization 或 human evaluation。</li><li>CIFAR FID 被作者称比既有报告异常偏高，可能因 architecture 未针对该数据优化；跨论文 SOTA 比较还受 preprocessing/evaluator差异影响。</li><li>训练比较虽尽量同架构，ImageNet-128 模型尺寸和 batch/throughput并不完全一致；energy saving 在 Social Responsibility 中是潜在影响，未实测功耗。</li></ul></div>
+  <div class="reading-card-content"><ul><li>Theorems 1–2 证明路径生成与梯度等价，不证明有限网络、SGD、有限数据会学到准确 target field，也不证明某条路径对所有任务最优。</li><li>conditional endpoint \(p_{1}=N(x_{1},\sigma min²I)\) 是 data distribution 的平滑 mixture approximation；σmin 带来 bias，且 pt&gt;0 是 Theorem 2 条件。</li><li>FM-OT 的“OT”仅逐样本 Gaussian coupling；marginal OT claim 被论文明确否定，不能把方法等同于 dataset-level optimal transport。</li><li>实验主要是早期 unconditional image benchmarks；没有 text-to-image、video、tabular/scientific data、robustness、memorization 或 human evaluation。</li><li>CIFAR FID 被作者称比既有报告异常偏高，可能因 architecture 未针对该数据优化；跨论文 SOTA 比较还受 preprocessing/evaluator差异影响。</li><li>训练比较虽尽量同架构，ImageNet-128 模型尺寸和 batch/throughput并不完全一致；energy saving 在 Social Responsibility 中是潜在影响，未实测功耗。</li></ul></div>
 </section>
 <section class="reading-card reading-card-section">
   <div class="reading-card-topline">
@@ -188,8 +183,8 @@
           <nav id="detail-toc-nav" class="detail-toc-nav"></nav>
         </aside>
       </div>
-      <nav class="paper-nav"><a class="paper-nav-link paper-nav-prev" href="../../collection-papers/2209.05557/"><span class="paper-nav-label">← 上一篇</span><span class="paper-nav-title">Blurring Diffusion Models</span></a>
-      <a class="paper-nav-link paper-nav-next" href="../../collection-papers/2210.06662/"><span class="paper-nav-label">下一篇 →</span><span class="paper-nav-title">Action Matching: Learning Stochastic Dynamics from Samples</span></a></nav>
+      <nav class="paper-nav"><a class="paper-nav-link paper-nav-prev" href="../../collection-papers/2210.06662/"><span class="paper-nav-label">← 上一篇</span><span class="paper-nav-title">Action Matching: Learning Stochastic Dynamics from Samples</span></a>
+      <a class="paper-nav-link paper-nav-next" href="../../collection-papers/doi-10.1103-physrevd.106.065013/"><span class="paper-nav-label">下一篇 →</span><span class="paper-nav-title">Numerical fluid dynamics for FRG flow equations: Zero-dimensional QFTs as numerical test cases. II. Entropy production and irreversibility of RG flows</span></a></nav>
       <section id="comments" class="comments-panel" aria-labelledby="comments-title">
         <div class="comments-heading">
           <div>

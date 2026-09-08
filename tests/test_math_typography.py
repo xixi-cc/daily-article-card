@@ -31,6 +31,17 @@ class MathTypographyTests(unittest.TestCase):
         rendered = normalize_inline_math_notation("表示 T 对输入 X 和标签 Y 的信息。")
         self.assertEqual(rendered, r"表示 \(T\) 对输入 \(X\) 和标签 \(Y\) 的信息。")
 
+    def test_filenames_are_not_multiple_subscripts(self):
+        text = "资源 Paper1_Manuscript_withAppendix_and_Supplement.pdf 和 fig1_erank_profiles。"
+        self.assertEqual(normalize_inline_math_notation(text), text)
+
+    def test_script_does_not_eat_adjacent_factor(self):
+        rendered = normalize_inline_math_notation("力为 (f_0n_i)。")
+        self.assertIn(r"f_{0}n_{i}", rendered)
+
+    def test_greek_command_does_not_merge_with_latin_suffix(self):
+        self.assertNotIn(r"\phic", normalize_inline_math_notation("φc=0.8"))
+
 
 if __name__ == "__main__":
     unittest.main()

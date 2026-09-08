@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Fisher information flow in artificial neural networks - physics+AI Collection 随机精选</title>
+    <title>Fisher information flow in artificial neural networks - physics+AI Collection 论文卡</title>
     <meta name="description" content="论文用 linear Fisher information (LFI) 从各层 activation 样本的均值、协方差和参数有限差分估计信息下界，再用随机线性扩维、分量非线性与微小噪声逐步抬升 LFI，逼近真实 Fisher information。 层间无 skip 的确定性前馈网络形成 Markov chain，数据处理不等式保证 FI 不随深度增加；训练的作用是把随机初始化时的信息 sink 调整为尽量保真的压缩映射。 在可解析 Gaussian 数据与低信噪光学成像实验中，训练后输出分别近乎保留全部 FI 和约 80%；作者据此提出训练损失达到 CRLB 时的 early-stopping criterion。" />
     <link rel="canonical" href="https://xixi-cc.github.io/daily-article-card/collection-papers/2509.02407/" />
     <script type="application/ld+json">{"@context": "https://schema.org", "@type": "Article", "headline": "Fisher information flow in artificial neural networks", "description": "论文用 linear Fisher information (LFI) 从各层 activation 样本的均值、协方差和参数有限差分估计信息下界，再用随机线性扩维、分量非线性与微小噪声逐步抬升 LFI，逼近真实 Fisher information。 层间无 skip 的确定性前馈网络形成 Markov chain，数据处理不等式保证 FI 不随深度增加；训练的作用是把随机初始化时的信息 sink 调整为尽量保真的压缩映射。 在可解析 Gaussian 数据与低信噪光学成像实验中，训练后输出分别近乎保留全部 FI 和约 80%；作者据此提出训练损失达到 CRLB 时的 early-stopping criterion。", "url": "https://xixi-cc.github.io/daily-article-card/collection-papers/2509.02407/", "mainEntityOfPage": "https://xixi-cc.github.io/daily-article-card/collection-papers/2509.02407/", "inLanguage": "zh-CN", "author": {"@type": "Person", "name": "Xineng Cao", "alternateName": ["Xixi Cao", "曹溪能"], "url": "https://xixi-cc.github.io/"}, "isBasedOn": "https://arxiv.org/abs/2509.02407"}</script>
@@ -67,7 +67,7 @@
         <div class="detail-page-topbar">
           <a class="back-link" href="../../collection.html">返回列表</a>
           <div class="detail-topbar-actions">
-            <span class="detail-site-name">physics+AI Collection 随机精选</span>
+            <span class="detail-site-name">physics+AI Collection 论文卡</span>
             <button id="detail-favorite" class="detail-favorite-button" type="button" aria-pressed="false">☆ 收藏</button>
             <button class="theme-toggle" type="button" data-theme-toggle aria-label="当前主题：设备，点击切换主题" title="当前主题：设备">
   <span class="theme-toggle-icons" aria-hidden="true">
@@ -89,15 +89,10 @@
         </div>
 
         <div class="detail-hero-grid">
-          <div class="detail-hero-cover"><article class="note-cover note-cover-title-abstract" style="--cover-from: #3f6ee8; --cover-to: #6fa7ff; --cover-spot: #d5e6ff; --cover-ink: #f7fbff; --cover-muted: rgba(247, 251, 255, 0.82); --cover-chip: rgba(247, 251, 255, 0.16); --cover-stroke: rgba(247, 251, 255, 0.24)">
-  <div class="note-cover-mesh"></div>
-  <div class="note-cover-title-shell">
-    <span class="note-cover-kicker">TITLE · ABSTRACT</span>
-    <h1 class="note-cover-title">Fisher information flow in artificial neural networks</h1>
-    <p class="note-cover-title-zh">人工神经网络中的 Fisher 信息流</p>
-    <p class="note-cover-abstract">The estimation of continuous parameters from measured data plays a central role in many fields of physics. A key tool in understanding and improving such estimation processes is the concept of Fisher information, which quantifies how information about unknown parameters propagates through a physical system and determines the ultimate limits of precision. With Artificial Neural Networks (ANNs) gradually becoming an integral part of many measurement systems, it is essential to understand how they process and transmit parameter-relevant information internally. Here, we present a method to monitor the flow of Fisher information through an ANN performing a parameter estimation task, tracking it from the input to the output layer. We show that optimal estimation performance corresponds to the maximal transmission of Fisher information, and that training beyond this point results in information</p>
-  </div>
-</article></div>
+          <div class="detail-hero-cover"><figure class="paper-figure-card paper-figure-card-detail">
+  <img class="paper-figure-image" src="../../assets/collection-figures/2509.02407/cover-source.webp" alt="基于成像与神经网络的粒子位置估计装置。" loading="lazy" onclick="window.openPaperFigureImage && window.openPaperFigureImage(this)" />
+  <figcaption class="paper-figure-caption">基于成像与神经网络的粒子位置估计装置。来源：原论文 Figure 1（PDF 第 3 页）。</figcaption>
+</figure></div>
           <div class="detail-hero-copy">
             <p class="eyebrow">Collection 全文卡</p>
             <h1 class="detail-page-title">Fisher information flow in artificial neural networks</h1>
@@ -141,7 +136,7 @@
     <span class="reading-step-note">背景</span>
   </div>
   <h2>背景</h2>
-  <div class="reading-card-content"><ul><li>Mutual information 在确定性连续网络中可能发散，高维 density estimation 又遭遇维数灾难；FI 针对连续确定参数，直接约束无偏估计方差 σ²≥1/I。</li><li>LFI \(J\)=(\(\partial \theta\mu\))^\(T\Sigma^{-1}\)(\(\partial \theta\mu\)) 只利用一二阶矩且满足 \(J\le I\)；它给最佳线性无偏估计器的局部精度，但对由方差携带信息的零均值 Gaussian 可退化为 0。</li><li>实验把刻蚀 space-invader 的水平位置作为 \(\theta\)：32×64 相机图像在约 13% SNR 下由 readout noise 主导，像素分布明显非 Gaussian，因此是检验 data-driven FI estimate 的现实案例。</li></ul></div>
+  <div class="reading-card-content"><ul><li>Mutual information 在确定性连续网络中可能发散，高维 density estimation 又遭遇维数灾难；FI 针对连续确定参数，直接约束无偏估计方差 σ²≥1/I。</li><li>LFI \(J\)=\(\partial \theta\mu\)^\(T\Sigma^{-1}\)\(\partial \theta\mu\) 只利用一二阶矩且满足 \(J\le I\)；它给最佳线性无偏估计器的局部精度，但对由方差携带信息的零均值 Gaussian 可退化为 0。</li><li>实验把刻蚀 space-invader 的水平位置作为 \(\theta\)：32×64 相机图像在约 13% SNR 下由 readout noise 主导，像素分布明显非 Gaussian，因此是检验 data-driven FI estimate 的现实案例。</li></ul></div>
 </section>
 <section class="reading-card reading-card-section">
   <div class="reading-card-topline">
@@ -188,8 +183,8 @@
           <nav id="detail-toc-nav" class="detail-toc-nav"></nav>
         </aside>
       </div>
-      <nav class="paper-nav"><a class="paper-nav-link paper-nav-prev" href="../../collection-papers/2508.14807/"><span class="paper-nav-label">← 上一篇</span><span class="paper-nav-title">Source-Guided Flow Matching</span></a>
-      <a class="paper-nav-link paper-nav-next" href="../../collection-papers/2509.05041/"><span class="paper-nav-label">下一篇 →</span><span class="paper-nav-title">Dynamical Learning in Deep Asymmetric Recurrent Neural Networks</span></a></nav>
+      <nav class="paper-nav"><a class="paper-nav-link paper-nav-prev" href="../../collection-papers/2509.05041/"><span class="paper-nav-label">← 上一篇</span><span class="paper-nav-title">Dynamical Learning in Deep Asymmetric Recurrent Neural Networks</span></a>
+      <a class="paper-nav-link paper-nav-next" href="../../collection-papers/2508.14807/"><span class="paper-nav-label">下一篇 →</span><span class="paper-nav-title">Source-Guided Flow Matching</span></a></nav>
       <section id="comments" class="comments-panel" aria-labelledby="comments-title">
         <div class="comments-heading">
           <div>
