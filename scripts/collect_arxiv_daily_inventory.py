@@ -48,7 +48,10 @@ def clean_html(value: str) -> str:
 
 def parse_listing_day(html: str, listing_date: date, category: str) -> List[Dict[str, str]]:
     label = listing_date.strftime("%a, %d %b %Y")
-    heading = re.search(rf"<h3>\s*{re.escape(label)}\b[^<]*</h3>", html, re.IGNORECASE)
+    weekday_month_year = listing_date.strftime("%a, %b %Y")
+    weekday, month_year = weekday_month_year.split(", ", 1)
+    label_pattern = rf"{re.escape(weekday)},\s+0?{listing_date.day}\s+{re.escape(month_year)}"
+    heading = re.search(rf"<h3>\s*{label_pattern}\b[^<]*</h3>", html, re.IGNORECASE)
     if not heading:
         raise ValueError(f"listing date {label} not present for {category}")
     next_heading = re.search(r"<h3>", html[heading.end():], re.IGNORECASE)
