@@ -66,7 +66,7 @@ def main() -> int:
         ("Every completed website update must be pushed to GitHub", "git ls-remote origin", "never replaced by a Sites"),
     ))
     errors.extend(require(
-        ROOT / "README.md",
+        ROOT / "MAINTENANCE.md",
         ("Every completed website update must be pushed to GitHub", "OpenAI Sites", "HEAD"),
     ))
 

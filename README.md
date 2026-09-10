@@ -1,100 +1,11 @@
-# 每日论文卡
+# physics+AI Daily Paper Cards
 
-一个展示 physics+AI arXiv 精选论文的静态网站。每日 Codex 自动任务直接检查 arXiv daily listing，独立完成筛选、全文证据核验、S 级判定、中文论文卡片生成和 GitHub Pages 发布。
+每天从 arXiv 挑一些物理与 AI 相关的论文，整理成中文卡片，方便浏览和回头查找。每张卡片介绍论文的问题、方法和主要结果，并附上原文链接。
 
-## 许可与引用
+[浏览每日论文卡](https://xixi-cc.github.io/daily-article-card/)
 
-原创中文概述、评价、证据综合、局限和阅读指南采用 CC BY-NC 4.0；原创网站、
-构建器和验证器代码采用 MIT。原论文、摘要、公式、图表和其他第三方材料不在
-本站授权范围内。完整边界见 [`LICENSE.md`](LICENSE.md)，具体卡片的中英文引用
-格式见 [`CITATION.md`](CITATION.md) 和 [`CITATION.cff`](CITATION.cff)。引用卡片
-不能替代对原始论文的正式引用。
+支持搜索、收藏和订阅。个人长期收藏放在另一个网站：[Paper Collection](https://xixi-cc.github.io/paper-collection/)。
 
-## 功能
+想在本地运行或了解更新方式，可以看[维护说明](MAINTENANCE.md)。
 
-- 每日自动收录 Codex 按固定 40 分标准评为 S 的论文
-- 按无版本号 arXiv ID 去重
-- 展示中文概述、核心贡献、方法、证据与局限
-- 按 Paper Card Standard v2.3 选择论文最重要的物理可视化作为封面；无合适图片时使用题目与摘要封面
-- 支持标题、机构、摘要亮点和 arXiv ID 搜索
-- 为每篇论文生成独立详情页
-- 支持浏览器本地收藏、只看收藏以及 JSON 导入导出
-- 提供 Daily、Collection 和二者合并的 Atom 订阅源
-- 详情页通过 `xixi-cc/xixi-research-comments` GitHub Discussions 提供评论
-- 响应式界面与亮色、暗色主题
-
-本项目不在 GitHub Actions 中调用外部 LLM API，也不需要 ModelScope token。Codex 直接完成 arXiv 检索、筛选、全文卡片写作、验证与发布；GitHub Actions 只执行确定性图片处理、构建和 Pages 部署。
-
-Codex 的端到端筛选和发布合同见 [`docs/CODEX_DAILY_SCREENING_AND_PUBLICATION.md`](docs/CODEX_DAILY_SCREENING_AND_PUBLICATION.md)。论文卡片的 canonical 编辑、公式、证据、数据与发布标准见 [`docs/PAPER_CARD_STANDARD.md`](docs/PAPER_CARD_STANDARD.md)；所有制卡入口与校验、渲染、部署消费者见 [`docs/PAPER_CARD_STANDARD_INTEGRATION.md`](docs/PAPER_CARD_STANDARD_INTEGRATION.md)。Paper Collection 的长期补卡与 Daily feed 是两个独立数据流；Collection 卡不得进入 Daily 时间线或继承日报评级。
-
-## 本地构建
-
-```bash
-python3 -m venv .venv
-source .venv/bin/activate
-pip install -r requirements.txt
-npm ci
-npx playwright install chromium
-python scripts/build_site.py
-cd site && python -m http.server 8000
-```
-
-主页面文件为 `site/physics_AI.html`。`site/index.html` 仅作为 GitHub Pages 的入口重定向。
-
-## 数据与构建
-
-- `papers.md`：经过 GPT 筛选并由 Codex 验证的论文数据源
-- `scripts/fetch_paper_images.py`：抓取论文首图
-- `scripts/build_paper_image_fallback_queue.py`：生成截图兜底队列
-- `scripts/render_paper_image_fallbacks.mjs`：渲染兜底截图
-- `scripts/register_paper_image_fallbacks.py`：登记论文图片
-- `scripts/build_site.py`：生成主页、数据、详情页和封面
-- `site/`：GitHub Pages 静态产物
-
-运行完整的确定性构建：
-
-```bash
-python3 scripts/check_card_standard_sync.py
-python scripts/fetch_paper_images.py --max-items 30
-python scripts/build_paper_image_fallback_queue.py --max-items 20
-npm run paper-image:fallbacks
-python scripts/register_paper_image_fallbacks.py
-python scripts/build_site.py
-python scripts/validate_paper_cards.py
-```
-
-## 部署
-
-推送到 `master` 或 `main` 后，`.github/workflows/deploy.yml` 会构建并部署 `site/`。论文选择由 Codex 的每日自动任务完成；GitHub Actions 只执行确定性的图片处理、构建和 Pages 发布。
-
-Every completed website update must be pushed to GitHub. 发布完成的定义包括：验证与构建通过、提交当前变更、无强制推送到 GitHub `origin`、确认本地 `HEAD` 与 GitHub 分支头一致，并核验 GitHub Actions / Pages。OpenAI Sites 是并行发布目标，不能替代 GitHub 同步；两者同时发布时必须来自同一份已验证源码树。
-
-站点地址：<https://xixi-cc.github.io/daily-article-card/>
-
-### Card rendering and cover maintenance
-
-Collection lists use verified publication dates in descending order, with the card ID
-as a stable tie-break. New campaign selection follows descending arXiv IDs; it does
-not randomly sample the catalog. Existing campaign provenance remains historical.
-
-Write explicit `\(...\)` or `\[...\]` around new mathematics in card JSON. The
-renderer protects math from Markdown and summary truncation, typesets dynamically
-inserted feed cards, and bundles the TeX extensions needed by MathJax. Filenames
-remain plain text. Wide equations scroll inside the article instead of widening
-the page.
-
-Use a reviewed source figure for a cover when it communicates the paper's method,
-physical object, or central evidence. Record its figure label and PDF page in
-`cover.evidence`; preserve panels, axes, legends, and attribution. Title/abstract
-covers remain appropriate for papers without a useful scientific figure. A failed
-PDF download is a pending review, not evidence that a paper has no figures.
-
-After rebuilding, check all details and both feeds at mobile and desktop widths:
-
-```bash
-uv run --with playwright python scripts/check_rendered_math.py \
-  --output ../../local-state/performance/paper-card-rendering.json
-```
-
-The browser check uses bundled assets without a server, covers lazy-loaded Daily
-cards and search rerenders, and fails on raw TeX, MathJax errors, or page overflow.
+原创卡片文字采用 CC BY-NC 4.0，网站代码采用 MIT；论文及其图表遵循原作者的授权。详见[许可证](LICENSE.md)与[引用说明](CITATION.md)。
