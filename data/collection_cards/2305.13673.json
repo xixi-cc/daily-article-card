@@ -1,0 +1,108 @@
+{
+  "arxiv_id": "2305.13673",
+  "source_version": "v4",
+  "source_pdf": "https://arxiv.org/pdf/2305.13673",
+  "title_en": "Physics of Language Models: Part 1, Learning Hierarchical Language Structures",
+  "title_zh": "语言模型物理学（一）：学习层级语言结构",
+  "curation_status": "full_text_verified",
+  "card_standard_version": "2.3",
+  "paper_profile": "ai_empirical",
+  "style_reference": "physicist_daily_arxiv",
+  "provenance": {
+    "program": "Collection", "catalog": "Paper Collection", "catalog_record_id": "2305.13673",
+    "catalog_record_ids": ["2305.13673"], "catalog_topic": "Language Model Mechanisms",
+    "collection_date": "2026-08-30", "sampled_at": "2026-08-31",
+    "selected_by": "ziming_mineru_serial_goal", "sampling_seed": "not_applicable_source_complete", "candidate_count": 464
+  },
+  "verified_metadata": {
+    "arxiv_id": "2305.13673", "version": "v4",
+    "title": "Physics of Language Models: Part 1, Learning Hierarchical Language Structures",
+    "authors": ["Zeyuan Allen-Zhu", "Yuanzhi Li"],
+    "categories": ["cs.CL"], "primary_category": "cs.CL",
+    "published": "2023-05-23T00:00:00Z", "updated": "2025-05-19T00:00:00Z",
+    "comment": "46 pages; v4 adds uniform-attention experiments"
+  },
+  "sections": [
+    {
+      "title": "作者信息",
+      "paragraphs": ["作者：Zeyuan Allen-Zhu（Meta/FAIR）、Yuanzhi Li（MBZUAI）。arXiv:2305.13673v4。论文构造必须进行全局层级解析的 synthetic CFG，训练 GPT 类模型，并用 probing 与 attention 分析检验其内部是否形成类似动态规划的信息流。"]
+    },
+    {
+      "title": "研究问题",
+      "paragraphs": [
+        "许多机制可解释性任务只需复制或局部匹配，不能代表递归推理。作者问：当字符串长达数百 token、局部高度歧义且需要 CFG parsing 时，autoregressive transformer 能否学到正确分布；隐藏状态和 attention 又如何承载 nonterminal（NT）祖先与边界信息？",
+        "合成 CFG 给出了已知生成树和动态规划基线，便于精确标注内部状态；代价是符号、规则和训练分布都远比自然语言受控，因此不能把结果直接等同于真实语言模型的句法推理。"
+      ]
+    },
+    {
+      "title": "模型与方法",
+      "paragraphs": [
+        "作者设计多组分层概率 CFG，每条规则展开为 2 或 3 个子符号，生成长且局部不可消歧的字符串。模型包括绝对位置 GPT、relative attention、RoPE、仅位置 attention、固定多窗口 uniform attention，以及 encoder-only DeBERTa 对照。",
+        "外部评价同时检查生成字符串是否属于 CFG、生成分布的 entropy/support diversity，以及模型 next-token distribution 与已知 CFG distribution 的 KL divergence，避免把记忆少量合法字符串误当规则学习。",
+        "内部评价用 multi-head linear probes 从各层 hidden states 预测不同深度的 NT ancestor、NT boundary 和 subtree index；再按相对位置和 boundary relation 汇总 attention，寻找从邻近低层子树边界向高层边界传递信息的模式。robustness 部分给输入/预训练数据注入结构扰动。"
+      ]
+    },
+    {
+      "title": "核心结果与证据",
+      "paragraphs": [
+        "Results 1–3：relative 与 rotary GPT 在多数 synthetic CFG 上能高准确率生成合法且多样的字符串，并逼近真实 next-token distribution；绝对位置 GPT 在较难 CFG 上显著较差，甚至落后固定 uniform attention 变体。该比较限于本文架构、训练长度和 CFG family。",
+        "Results 4–5：训练后 hidden states 可被线性 probe 以接近完美准确率读出多层 NT ancestors 和 boundaries，信息尤其集中在相应 subtree 的结束位置。Figure 2 把 CFG/DP 解析树与模型中的 boundary encoding、跨边界 attention 对齐。",
+        "Results 6–9 显示部分 heads 具有 position-based 与 boundary-based attention：当前高层边界会关注相邻低层 NT boundaries，类似 inside-style DP 合并子区间。作者称其为 DP-like information flow；由于证据主要来自 probe 和 attention pattern，而非逐步 causal replacement，不能认定模型严格执行某个唯一 DP 程序。",
+        "额外结果表明 encoder-only masked-LM 对深层 CFG 较弱；在训练语料加入约 10% 结构噪声可显著提高对 corrupted prompts 的恢复，并诱发是否继续犯语法错误的 mode switch。"
+      ]
+    },
+    {
+      "title": "有效性与局限",
+      "paragraphs": [
+        "linear decodability 不等于该变量被模型因果使用，attention weight 也不等于完整信息流。更强验证应干预特定 NT code、边界 heads 或 residual directions，并测量 CFG completion 退化；不同 probes 还可能从分布冗余中读出标签。",
+        "语法是人工分层且 terminal vocabulary 很小，模型、序列窗 512、训练步数和规则族均受控。对 relative/RoPE、uniform attention、autoregressive/encoder-only 与噪声训练的优劣结论不应外推为所有自然语言任务或相同参数预算下的普遍架构排名。"
+      ]
+    },
+    {
+      "title": "复现与资源",
+      "paragraphs": [
+        "原文：https://arxiv.org/abs/2305.13673。项目页：https://physics.allen-zhu.com/part-1-hierarchical-language-structure/。官方 PDF SHA-256：2b76821e8b6b0c6a53527bfdefda3649f5f71e798e8d19704106e781ce768814。",
+        "复现需冻结 CFG rule tables、语料 seed、architecture/position variant、100k-step 训练设定、generation sampler、20,000-sample KL 估计和 probe split；还应报告 random-feature probe 与 label-frequency baselines。Evidence status: full-text verified; no independent reproduction performed."
+      ]
+    },
+    {
+      "title": "阅读指南",
+      "paragraphs": ["先读 pp. 2–6 的 CFG 动机、符号和 Figure 2；再读 pp. 6–8 的生成准确率/多样性/KL；重点看 pp. 8‑6 的 NT probing 与 attention analysis；最后查 robustness、Appendices A–C/H，核对模型规模、uniform-attention 对照和 probe 边界。"]
+    }
+  ],
+  "cover": {
+    "mode": "source_figure", "asset_path": "assets/collection-figures/2305.13673/figure-2-cfg-dp-boundaries.webp",
+    "label": "Figure 2", "visual_type": "schematic", "evidence": "paper.pdf p. 4, Figure 2",
+    "alt_text": "上方是 CFG 动态规划层级和 NT ancestors，中间是 token 序列，下方标出 transformer 编码的 NT boundaries 与跨边界 attention。",
+    "caption": "模型在子树结束位置编码 NT 标签，并以 boundary-based attention 连接相邻层级，形成 DP-like 信息流。",
+    "selection_rationale": "Figure 2 将可观测的 hidden-state labels、attention paths 与已知 CFG parse tree 放在同一证据图中。"
+  },
+  "figure_refs": [
+    {
+      "label": "Figure 2", "asset_path": "assets/collection-figures/2305.13673/figure-2-cfg-dp-boundaries.webp",
+      "section": "核心结果与证据", "role": "align transformer boundary representations with hierarchical CFG parsing",
+      "evidence": "paper.pdf p. 4, Figure 2", "alt_text": "CFG 层级、token 边界和 transformer attention 的对应示意。",
+      "caption": "不同颜色表示不同层级 NT；高层边界从相邻低层边界汇集信息。",
+      "interpretation": "The diagram summarizes probe and attention evidence for DP-like computation, not a causal proof of one exact parser implementation."
+    }
+  ],
+  "equation_refs": [
+    {
+      "label": "CFG next-token KL estimate",
+      "latex": "\\widehat D_{KL}=\\frac{1}{|S|}\\sum_{x\\in S}\\frac{1}{|x|+1}\\sum_i\\sum_t p^*(t|x_{<i})\\log\\frac{p^*(t|x_{<i})}{p(t|x_{<i})}",
+      "role": "measure whether the transformer learns the full probabilistic grammar rather than only valid samples",
+      "symbols": {"S": "held-out strings sampled from the CFG", "p^*": "ground-truth CFG next-token distribution", "p": "model next-token distribution", "t": "terminal or EOS token", "i": "sequence position"},
+      "evidence": "paper.pdf p. 7, Result 3",
+      "interpretation": "The estimate is distributional evidence on the synthetic grammar and does not identify the internal algorithm by itself."
+    }
+  ],
+  "evidence_refs": [
+    "paper.pdf pp. 2–6: synthetic CFG construction, ambiguity and DP benchmark",
+    "paper.pdf pp. 6‘: completion accuracy, diversity and next-token KL",
+    "paper.pdf pp. 8‑6: NT ancestor/boundary probes and attention patterns",
+    "paper.pdf later Results 10‑3: implicit CFGs, corruption robustness and mode switching",
+    "paper.pdf Appendices A–C and H: training details, baselines, probes and uniform-attention experiments",
+    "source PDF SHA-256 2b76821e8b6b0c6a53527bfdefda3649f5f71e798e8d19704106e781ce768814",
+    "Evidence status: full-text verified; no independent reproduction performed."
+  ]
+}

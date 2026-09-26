@@ -1,0 +1,108 @@
+{
+  "arxiv_id": "2302.12250",
+  "source_version": "v2",
+  "source_pdf": "https://arxiv.org/pdf/2302.12250",
+  "title_en": "Phase diagram of early training dynamics in deep neural networks: effect of the learning rate, depth, and width",
+  "title_zh": "深度神经网络早期训练动力学相图：学习率、深度与宽度的作用",
+  "curation_status": "full_text_verified",
+  "card_standard_version": "2.3",
+  "paper_profile": "theory_experiment",
+  "style_reference": "physicist_daily_arxiv",
+  "provenance": {
+    "program": "Collection", "catalog": "Paper Collection", "catalog_record_id": "2302.12250",
+    "catalog_record_ids": ["2302.12250"], "catalog_topic": "Training Dynamics",
+    "collection_date": "2026-08-30", "sampled_at": "2026-08-31",
+    "selected_by": "ziming_mineru_serial_goal", "sampling_seed": "not_applicable_source_complete",
+    "candidate_count": 464
+  },
+  "verified_metadata": {
+    "arxiv_id": "2302.12250", "version": "v2",
+    "title": "Phase diagram of early training dynamics in deep neural networks: effect of the learning rate, depth, and width",
+    "authors": ["Dayal Singh Kalra", "Maissam Barkeshli"],
+    "categories": ["cs.LG", "cond-mat.dis-nn"], "primary_category": "cs.LG",
+    "published": "2023-02-23T18:59:30Z", "updated": "2023-10-24T17:59:46Z",
+    "comment": "NeurIPS 2023; 10+32 pages, 8+35 figures"
+  },
+  "sections": [
+    {
+      "title": "作者信息",
+      "paragraphs": ["作者：Dayal Singh Kalra、Maissam Barkeshli（University of Maryland）。arXiv:2302.12250v2，发表于 NeurIPS 2023。论文用 Hessian top eigenvalue 追踪 DNN 从初始化到 edge-of-stability 的早期与中期动力学。"]
+    },
+    {
+      "title": "研究问题",
+      "paragraphs": [
+        "局部二次优化给出 η<2/λ_max(H) 的稳定直觉，但深网曲率在训练初期快速变化，超临界步长可能先 catapult 再落入更平坦区域。作者问：以初始 sharpness 归一化 η=c/λ_0^H 后，loss/sharpness 的瞬态如何随 depth d 和 width w 改变？",
+        "论文区分早期 transient、intermediate saturation、progressive sharpening 与晚期 EoS 四阶段，重点绘制前两阶段的 phase diagram，而不是把训练全程压成单一稳定阈值。"
+      ]
+    },
+    {
+      "title": "模型与方法",
+      "paragraphs": [
+        "实验覆盖 FCN、Myrtle-style CNN 与无 batch normalization 的 ResNet，在 MNIST、Fashion-MNIST、CIFAR-10 上用 vanilla SGD；主结果用 MSE，附录加入 cross-entropy。每次初始化计算 λ_0^H，并扫描 c、d、w，早期约 10 steps 密集测量 loss 与 λ_t^H。",
+        "定义 c_loss 为 early window 内 loss 首次高于初值所需的最小 c，c_sharp 类似地针对 sharpness，c_max 是仍能训练的最大 c；另用 c_crit/response derivatives 标记 intermediate sharpness transition。把这些临界线画在 (c,1/w) 或 (c,d) 平面，得到 normal、sharpness reduction、loss catapult、loss–sharpness catapult 与 divergence 区域。",
+        "为理解机制，作者研究两层线性 uv model f(x)=v^Tux/√w，在单样本 (1,0) 上解析更新 f_t 与 tr(H_t)。其中 1/w 修正把无限宽阈值分裂，说明 finite width 与大 initial output 可打开 sharpness-reduction phase。"
+      ]
+    },
+    {
+      "title": "核心结果与证据",
+      "paragraphs": [
+        "Figure 3 的 width phase diagram 显示：宽网络接近 c≈2 的经典 catapult picture；随 1/w 增大，c_loss、c_sharp、c_max 分离，并出现 loss 仍下降但 sharpness 先下降的区域。增加 depth 产生相似扩展，深而窄的网络可在远高于 2 的 c 才发生 loss catapult。",
+        "论文报告两个此前未强调的区：sharpness reduction，以及 loss–sharpness catapult。把网络最后一层置零或对输出做 centering 后，超临界 sharpness reduction 大幅缩小/消失，支持初始输出相对标签尺度是关键驱动，而不只是 Hessian eigenvalue 本身。",
+        "uv model 复现相图的定性拓扑，并把 tr(H) 更新中的 ηf_t²(ηtrH_t−4)/w 项识别为 finite-width 来源。它是单样本线性模型，解释的是一种机制而非对 ReLU CNN 全部临界线的精确预测。MSE 主图每点平均 10 次初始化；部分深窄区随机波动使边界难以分辨。"
+      ]
+    },
+    {
+      "title": "有效性与局限",
+      "paragraphs": [
+        "λ_max(H) 只刻画最尖方向，不能完整描述非正规、梯度噪声或多方向 instability；有限 batch 下 Hessian 与 trajectory 都有随机性。以 λ_0^H 归一化有利于比较，但不同 parameterization、loss/output scale、normalization 与数据编码会改变 c。",
+        "主相图针对短 early window、固定 optimizer 和 architecture families；momentum、Adam、weight decay、augmentation、schedule 与 batch normalization 未纳入核心结论。sharpness reduction 不等同于更好 generalization，catapult 后的 basin connectivity 也只用线性插值等有限诊断。"
+      ]
+    },
+    {
+      "title": "复现与资源",
+      "paragraphs": [
+        "原文：https://arxiv.org/abs/2302.12250；代码：https://github.com/dayal-kalra/early-training。官方 PDF SHA-256：c7d5c8a78aa63a431b397b5a96da3f6eae1a1ff8ba9c58d9d77d4b446676adb7。",
+        "复现需冻结 JAX/Flax 模型定义、parameterization、initialization/output scale、dataset preprocessing、B=512 主协议、Hessian eigensolver/tolerance、early window、c grid、临界线插值和 10 初始化；同时保存每步 loss、accuracy、λ_max、seed 与 non-convergence 分类。Evidence status: full-text verified; no independent reproduction performed."
+      ]
+    },
+    {
+      "title": "阅读指南",
+      "paragraphs": ["先看 pp. 1–2 Figure 1 区分四个时间阶段；再读 pp. 3–6 的临界常数、Figure 2/3 phase diagrams 与 depth/width trends；用 pp. 7–9 的 output-centering 与 uv model 检查机制；最后读 Discussion 和附录 A–J 的 CE、batch-size、parameterization 与复现细节。"]
+    }
+  ],
+  "cover": {
+    "mode": "source_figure", "asset_path": "assets/collection-figures/2302.12250/figure-3-width-phase-diagram.webp",
+    "label": "Figure 3(a)", "visual_type": "phase_diagram", "evidence": "paper.pdf p. 5, Figure 3(a)",
+    "alt_text": "横轴为归一化学习率常数 c、纵轴为逆宽度 1/w 的相图，多条临界线分隔绿色、黄色、橙色和红色训练区。",
+    "caption": "有限宽使 loss、sharpness 与 divergence 阈值分裂，并打开新的早期 sharpness-reduction 区域。",
+    "selection_rationale": "Figure 3(a) 直接展示论文的主发现：经典 c≈2 阈值在有限宽下展开成多条相边界。"
+  },
+  "figure_refs": [
+    {
+      "label": "Figure 3(a)", "asset_path": "assets/collection-figures/2302.12250/figure-3-width-phase-diagram.webp",
+      "section": "核心结果与证据", "role": "show how finite width separates early-training loss, sharpness and divergence thresholds",
+      "evidence": "paper.pdf p. 5, Figure 3(a)", "alt_text": "FCN/MNIST 的 c–1/w phase diagram 与四种临界标记。",
+      "caption": "虚线 c=2 只是参照；经验临界线随 1/w 系统移动。",
+      "interpretation": "The colored regions classify short-time trajectories under the stated initialization, loss and SGD protocol; they are not universal thermodynamic phases."
+    }
+  ],
+  "equation_refs": [
+    {
+      "label": "Finite-width uv dynamics",
+      "latex": "f_{t+1}=f_t\\left(1-\\eta\\operatorname{tr}H_t+\\frac{\\eta^2f_t^2}{w}\\right),\\qquad \\operatorname{tr}H_{t+1}=\\operatorname{tr}H_t+\\frac{\\eta f_t^2}{w}(\\eta\\operatorname{tr}H_t-4)",
+      "role": "isolate the inverse-width correction that changes early loss and sharpness thresholds",
+      "symbols": {"f_t": "two-layer linear network output", "H_t": "loss Hessian", "eta": "gradient-descent learning rate", "w": "hidden width"},
+      "evidence": "paper.pdf p. 9, Eq. (1); appendix Eq. (10)",
+      "interpretation": "The 1/w terms vanish at infinite width and can drive an early decrease in trace-based sharpness at finite width."
+    }
+  ],
+  "evidence_refs": [
+    "paper.pdf pp. 1–2: four training stages, normalized learning rate and Figure 1 trajectories",
+    "paper.pdf pp. 3–6: critical constants and depth/width phase diagrams",
+    "paper.pdf pp. 6–8: intermediate transition, output-scale and centering controls",
+    "paper.pdf pp. 8–10: uv-model mechanism and discussion",
+    "paper.pdf appendices A–J: architectures, reproducibility, CE loss, batch size and additional phase diagrams",
+    "source PDF SHA-256 c7d5c8a78aa63a431b397b5a96da3f6eae1a1ff8ba9c58d9d77d4b446676adb7",
+    "Evidence status: full-text verified; no independent reproduction performed."
+  ]
+}

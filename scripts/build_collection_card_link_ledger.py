@@ -6,6 +6,8 @@ from __future__ import annotations
 import argparse
 import json
 import re
+import unicodedata
+from urllib.parse import unquote, urlsplit
 from pathlib import Path
 
 
@@ -28,6 +30,39 @@ def arxiv_id(record: dict[str, object]) -> str | None:
     return None
 
 
+def work_keys(record: dict[str, object]) -> set[str]:
+    """Use public work identities and exact normalized titles, never fuzzy matching."""
+    keys: set[str] = set()
+    metadata = record.get("verified_metadata", {})
+    if not isinstance(metadata, dict):
+        metadata = {}
+    values = [record.get("url", ""), record.get("source_pdf", ""),
+              record.get("arxiv_id", ""), metadata.get("arxiv_id", "")]
+    links = record.get("links", {})
+    if isinstance(links, dict):
+        values.extend(value for key, value in links.items() if key != "card")
+    for value in values:
+        value = str(value)
+        match = re.search(r"(?:arxiv\.org/(?:abs|pdf)/)?(\d{4}\.\d{4,5})(?:v\d+)?(?:\.pdf)?$", value.split("?")[0])
+        if match:
+            keys.add("arxiv:" + match.group(1))
+        doi = re.search(r"(?:doi\.org/|/abstract/|/articles/)(10\.\d{4,9}/[^?#]+)", unquote(value), re.I)
+        if doi:
+            keys.add("doi:" + doi.group(1).rstrip("/").lower())
+        if value.startswith("https://") or value.startswith("http://"):
+            parts = urlsplit(value)
+            keys.add("url:" + parts.netloc.lower().removeprefix("www.") + unquote(parts.path).rstrip("/"))
+    for doi in [record.get("doi", ""), metadata.get("doi", "")]:
+        if doi:
+            keys.add("doi:" + str(doi).lower().removeprefix("https://doi.org/").rstrip("/"))
+    for title in [record.get("title", ""), record.get("title_en", ""), metadata.get("title", "")]:
+        if title:
+            text = unicodedata.normalize("NFKC", str(title)).casefold()
+            text = re.sub(r"\s+-\s+(?:PMC|ScienceDirect)$", "", text, flags=re.I)
+            keys.add("title:" + re.sub(r"[^\w]", "", text))
+    return keys
+
+
 def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--catalog", type=Path, required=True)
@@ -43,10 +78,13 @@ def main() -> int:
         raise SystemExit("catalog must be a JSON list")
     by_arxiv: dict[str, list[dict[str, object]]] = {}
     by_record_id = {str(record["id"]): record for record in records}
+    by_work_key: dict[str, list[dict[str, object]]] = {}
     for record in records:
         paper_id = arxiv_id(record)
         if paper_id:
             by_arxiv.setdefault(paper_id, []).append(record)
+        for key in work_keys(record):
+            by_work_key.setdefault(key, []).append(record)
 
     ledger: list[dict[str, str]] = []
     seen_record_ids: set[str] = set()
@@ -65,6 +103,10 @@ def main() -> int:
                 explicit_ids.append(str(provenance["catalog_record_id"]))
         paper_id = str(card.get("arxiv_id", ""))
         matches = list(by_arxiv.get(paper_id, []))
+        for key in work_keys(card):
+            for record in by_work_key.get(key, []):
+                if record not in matches:
+                    matches.append(record)
         for record_id in explicit_ids:
             record = by_record_id.get(record_id)
             if record is not None and record not in matches:

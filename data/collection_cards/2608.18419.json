@@ -1,0 +1,170 @@
+{
+  "arxiv_id": "2608.18419",
+  "source_version": "v1",
+  "source_pdf": "https://arxiv.org/pdf/2608.18419",
+  "title_en": "Mechanistic Interpretability of Structure-Aware Numerical Reasoning in LLaMA 3.1 8B",
+  "title_zh": "LLaMA 3.1–8B 结构感知数值推理的机制可解释性",
+  "curation_status": "full_text_verified",
+  "card_standard_version": "2.3",
+  "paper_profile": "ai_empirical",
+  "style_reference": "physicist_daily_arxiv",
+  "provenance": {
+    "program": "Collection",
+    "catalog": "Paper Collection",
+    "catalog_record_id": "2608.18419",
+    "catalog_record_ids": [
+      "2608.18419"
+    ],
+    "catalog_topic": "Mechanistic Interpretability",
+    "collection_date": "2026-08-30",
+    "sampled_at": "2026-08-31",
+    "selected_by": "ziming_mineru_serial_goal",
+    "sampling_seed": "not_applicable_source_complete",
+    "candidate_count": 464
+  },
+  "verified_metadata": {
+    "arxiv_id": "2608.18419",
+    "version": "v1",
+    "title": "Mechanistic Interpretability of Structure-Aware Numerical Reasoning in LLaMA 3.1 8B",
+    "authors": [
+      "Rahul Chowdhury",
+      "Timothy A Rupprecht",
+      "Senhao Cao",
+      "Jiahao Liu",
+      "Octavia Camps",
+      "David Bau",
+      "Pu Zhao",
+      "Yanzhi Wang"
+    ],
+    "categories": [
+      "cs.LG",
+      "cs.AI"
+    ],
+    "primary_category": "cs.LG",
+    "published": "2026-08-19T01:09:51Z",
+    "abstract": "Recent work has shown that large language models (LLMs) exhibit strong numerical sequence modeling capabilities and show promise in time-series prediction. While LLMs display in-context learning capabilities, the mechanisms with which they accomplish time-series prediction remain unclear. Specifically, whether they truly understand the underlying structure, which at a minimum requires reasoning over first differences in the sequence of numbers. To study this, we investigate Llama 3.1-8B from a mechanistic interpretability point of view. Mechanistic interpretability is an emerging field concerned with the reverse engineering of the algorithms learned by neural networks such as LLMs. To assess Llamas' numerical sequence modeling capabilities and to facilitate our mechanistic interpretability analysis, we create a sequence modeling task that cannot be solved without picking up structural cues. Specifically, we sample n random numbers and repeat them with an offset. We find that Llama displays strong performance on our tasks suggesting that it can pick up on the underlying structure. To understand the mechanisms that allow it to do so, we perform probing experiments and activation patching based counterfactual analysis. Probing reveals that the model computes and stores first differences in its internal representations without explicit supervision, indicating that it tracks structural information about the sequence. Activation patching reveals that Llama retrieves the relevant first-difference with a mechanism similar to an induction circuit and subsequently adds it to the current value. Notably, our work represents one of the first studies to identify this form of concept induction in LLMs.",
+    "comment": ""
+  },
+  "sections": [
+    {
+      "title": "作者信息",
+      "paragraphs": [
+        "作者：Rahul Chowdhury、Timothy A Rupprecht、Senhao Cao、Jiahao Liu、Octavia Camps、David Bau、Pu Zhao、Yanzhi Wang；来自 Northeastern University、EmbodyX 与 Mobi.ai。arXiv:2608.18419v1，全文 11 页；手稿列出 RichMediaGAI ’26 与 DOI 10.1145/3841458.3841545。"
+      ]
+    },
+    {
+      "title": "研究问题",
+      "paragraphs": [
+        "LLaMA 3.1–8B 能补全数值序列，但高准确率可能来自表面复制或熟悉模式。论文设计一个只有对序列做一阶差分后才出现重复结构的任务，追问模型是否在隐藏状态中表示 delta、是否因果性地检索正确 delta，并把它与最后一个数相加。",
+        "证据链分成三层：线性 probe 只检验信息能否解码；activation patching 检验某位置/层的表示是否影响反事实输出；attention-head 与 key-swap 干预进一步区分 delta 内容和 RoPE 位置/相位线索。"
+      ]
+    },
+    {
+      "title": "模型与方法",
+      "paragraphs": [
+        "数据中的整数均在 0–999，恰好各由 LLaMA 3.1–8B tokenizer 编成一个 token。每条序列的前半段由不重复的非零整数 delta 随机游走生成，后半段按相同顺序重复 delta；全部数值和前 17 个 delta 被设计为唯一。输入前 29 个数，模型生成第 30 个数，完整输入含 BOS、数字和逗号共 59 tokens。",
+        "任务算法先计算 $d_i=s_{i+1}-s_i$，识别重复 delta 模式和末端所处相位，再预测 $s_{n+1}=s_n+d_p$。评测含 10,000 条序列；论文报告整体 MAE 和 $R^2$。",
+        "线性 probe 在每层分别从 token 27 解码待检索的一阶差分、从 token 57 解码最后数值；普通最小二乘使用 4,500 个训练样本和 500 个 held-out 样本，并以错位位置或 shuffled labels 作控制。",
+        "因果实验构造带重复 delta 的 clean 序列和全为 100 的 corrupt 序列。从候选层起，把 clean 的某位置 hidden state 以及最终 token 的 query 注入 corrupt 运行，以反事实标签概率增量 $\\Delta P$ 度量恢复。随后逐头 patch 输出，并用“因果概率增量 × value-weighted attention”构造 token importance。最后交换 positions 27/25 的 RoPE keys、保留各自 values，测试位置相位和 delta 内容谁更主导。"
+      ]
+    },
+    {
+      "title": "核心结果与证据",
+      "paragraphs": [
+        "LLaMA 3.1–8B 在 10,000 条构造序列上得到 MAE 4.2748、$R^2=0.9958$。这表明预测与目标高度相关，但 MAE 非零，也不能单凭 $R^2$ 证明模型采用作者提出的算法。",
+        "Figure 3 的 probe 显示 token 27 的 delta 从第 7 层之后开始线性可解码，$R^2$ 稳定在 0.8 以上并在前 16 层较稳定；token 57 的最后数值则在第 8 层后逐渐更难线性解码。错位位置和 shuffled-label controls 明显更差，支持表示具有位置特异性，但 probe 本身仍只是相关证据。",
+        "Figure 5 在筛出的 100 条零 MAE 样本上显示：从 layer 14 开始，patch token 27 并让最终 token query 与之交互会显著提高反事实标签概率；作者据此定位到约第 15 层以后的 delta 检索与算术组合。Figure 6 的 token importance 前五位为 57、33、27、55、25，分别对应末值、重复开始、应取 delta、计算末 delta 所需数值及相位匹配位置。",
+        "交换 positions 27/25 的 keys 会提高错误相位反事实标签并降低真标签概率，说明位置/相位线索参与检索；但干预后真标签概率仍高于反事实标签。因而结果更支持“delta 内容主导、位置线索调制”，而不是位置键单独决定输出。"
+      ]
+    },
+    {
+      "title": "有效性与局限",
+      "paragraphs": [
+        "任务被刻意设计为单 token 整数、固定长度、无噪声且严格重复的一阶差分模式，远比真实时间序列、长算术或多 token 数字简单。只研究一个 8B 模型和一种 tokenizer，不能据此推广到其他模型、精度、语言环境或连续值预测。随机生成输入降低逐条记忆的可能性，但没有训练数据审计能排除模型在预训练中学过同类算法模板。",
+        "probe 的线性可解码不意味着模型实际使用该变量；patching 提供更强因果证据，但 clean→corrupt 的多层激活替换可能引入分布外状态。关键因果图只使用 100 条本来就零 MAE 的成功样本，因此解释的是成功子集中的机制，不能说明剩余误差案例为何失败，也不能给出机制出现的总体频率。",
+        "论文把 layer/position 热区解释为类似 induction circuit 的检索，但没有给出最小充分电路、完整头列表消融或跨随机种子复现。key swap 没有使反事实输出超过真输出，说明 RoPE 相位只是部分因素。作者关于“结构推理”和“识别算法”的表述应限于这一个合成 delta 任务，不能等同于通用数值理解。"
+      ]
+    },
+    {
+      "title": "复现与资源",
+      "paragraphs": [
+        "原文：https://arxiv.org/abs/2608.18419；DOI：https://doi.org/10.1145/3841458.3841545。全文 PDF SHA-256：42ff141e383599933cb106769cae79422369f24901312872c4c6159c92a82d76。文中说明使用 NNsight 与 NDIF，但未给出独立代码仓库链接。",
+        "复现需固定 LLaMA 3.1–8B checkpoint/tokenizer、整数与 delta 采样、序列 token 位置、10,000 条评测集、probe 划分与 controls、clean/corrupt 构造、跨层 patch 范围、反事实概率定义、零 MAE 子集选择、attention-head patch、value norm 加权和 RoPE key swap。必须同时报告全体样本与成功子集结果。",
+        "Evidence status: full-text verified; no independent reproduction performed."
+      ]
+    },
+    {
+      "title": "阅读指南",
+      "paragraphs": [
+        "先看 p. 2 Algorithm 1 与 Figure 1，手算为何要复制“匹配 delta 之后的下一个 delta”；再读 pp. 2–3 的唯一性约束和 token 位置。随后把 p. 4 probe 当作表示证据、pp. 5–6 patching 当作因果证据分开审视，最后用 pp. 7–8 的 token importance 与 key swap 检查“内容优先、相位调制”的结论及其未完全翻转输出的边界。"
+      ]
+    }
+  ],
+  "cover": {
+    "mode": "source_figure",
+    "asset_path": "assets/collection-figures/2608.18419/figure-1-delta-induction.webp",
+    "label": "Figure 1",
+    "visual_type": "schematic",
+    "evidence": "paper.pdf p. 2, Figure 1",
+    "alt_text": "数值序列先转为一阶差分，匹配末端 delta 的先前位置，复制其后继 delta 并与最后数相加得到预测。",
+    "caption": "模型需要在 delta 空间找到重复相位，复制后继差分，再把它加到最后数值上。",
+    "selection_rationale": "该图完整呈现论文所声称的三步内部算法：一阶差分、结构检索和算术组合，是理解所有 probe 与 patching 实验的入口。"
+  },
+  "figure_refs": [
+    {
+      "label": "Figure 1",
+      "asset_path": "assets/collection-figures/2608.18419/figure-1-delta-induction.webp",
+      "section": "模型与方法",
+      "role": "define the latent-delta induction algorithm tested by interventions",
+      "evidence": "paper.pdf p. 2, Figure 1 and Algorithm 1",
+      "alt_text": "403、405、400 等整数经差分得到重复 delta，模型检索后继 -8 并计算 450-8=442。",
+      "caption": "原序列数值不重复，只有一阶差分暴露周期；正确预测要求找回匹配相位后的 delta。",
+      "interpretation": "The figure specifies the intended algorithm; probing and patching test whether model activations implement parts of it."
+    }
+  ],
+  "equation_refs": [
+    {
+      "label": "Delta-cycle extrapolation",
+      "latex": "s_{n+1}=s_n+d_p",
+      "role": "state the final arithmetic composition after retrieving the phase-matched first difference",
+      "symbols": {
+        "s_n": "last observed integer",
+        "d_p": "delta following the matched phase in the repeated difference pattern"
+      },
+      "evidence": "paper.pdf p. 2, Algorithm 1, steps 5–7",
+      "interpretation": "Prediction requires both structural retrieval of the correct delta and addition to the final value."
+    },
+    {
+      "label": "Counterfactual probability recovery",
+      "latex": "\\Delta P=\\mathbb E_{x\\sim\\mathcal D}[P_{patched}(y_{cf}\\mid x)-P_{corrupt}(y_{cf}\\mid x)]",
+      "role": "measure causal recovery of the counterfactual answer under activation patching",
+      "symbols": {
+        "y_cf": "answer implied by the clean delta inserted into the corrupt sequence",
+        "P_patched": "model probability after intervention",
+        "P_corrupt": "baseline probability on the corrupt run"
+      },
+      "evidence": "paper.pdf p. 6, Eq. (4)",
+      "interpretation": "A positive value localizes components whose clean activation causally raises the intended counterfactual output."
+    },
+    {
+      "label": "Token importance",
+      "latex": "\\mathrm{TI}_t=\\frac{1}{N}\\sum_{n=1}^{N}\\lambda_n^{(l,h)}\\,\\alpha_{t,s}^{(l,h)}\\lVert V_t^{(l,h)}\\rVert_2",
+      "role": "combine head-level causal effect with value-weighted attention at each source position",
+      "symbols": {
+        "lambda": "counterfactual probability change caused by patching a head",
+        "alpha": "attention weight",
+        "V_t": "value vector at attended position t"
+      },
+      "evidence": "paper.pdf p. 7, Eqs. (5)–(6)",
+      "interpretation": "The score ranks positions that both receive causal support and contribute substantial value content; it is not attention weight alone."
+    }
+  ],
+  "evidence_refs": [
+    "paper.pdf pp. 2–3: synthetic unique-number/repeated-delta task, Algorithm 1 and overall MAE/R2",
+    "paper.pdf p. 4: layerwise linear probes, 4,500/500 split and shuffled/wrong-position controls",
+    "paper.pdf pp. 5–6: clean/corrupt activation patching and token-27 causal effect after layer 14",
+    "paper.pdf pp. 7–8: token importance, RoPE key swap, incomplete counterfactual flip and conclusion",
+    "source PDF SHA-256 42ff141e383599933cb106769cae79422369f24901312872c4c6159c92a82d76",
+    "Evidence status: full-text verified; no independent reproduction performed."
+  ]
+}

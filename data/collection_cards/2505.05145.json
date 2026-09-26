@@ -1,0 +1,140 @@
+{
+  "arxiv_id": "2505.05145",
+  "source_version": "v3",
+  "source_pdf": "https://arxiv.org/pdf/2505.05145",
+  "title_en": "Understanding In-context Learning of Addition via Activation Subspaces",
+  "title_zh": "通过激活子空间理解加法的上下文学习",
+  "curation_status": "full_text_verified",
+  "card_standard_version": "2.3",
+  "paper_profile": "ai_empirical",
+  "style_reference": "physicist_daily_arxiv",
+  "provenance": {
+    "program": "Collection",
+    "catalog": "Paper Collection",
+    "catalog_record_id": "2505.05145",
+    "catalog_record_ids": ["2505.05145"],
+    "catalog_topic": "Transformer Theory",
+    "collection_date": "2026-08-30",
+    "sampled_at": "2026-08-31",
+    "selected_by": "ziming_mineru_serial_goal",
+    "sampling_seed": "not_applicable_source_complete",
+    "candidate_count": 464
+  },
+  "verified_metadata": {
+    "arxiv_id": "2505.05145",
+    "version": "v3",
+    "title": "Understanding In-context Learning of Addition via Activation Subspaces",
+    "authors": ["Xinyan Hu", "Kayo Yin", "Michael I. Jordan", "Jacob Steinhardt", "Lijie Chen"],
+    "affiliations": ["UC Berkeley", "INRIA"],
+    "categories": ["cs.LG"],
+    "primary_category": "cs.LG",
+    "updated": "2025-10-09",
+    "comment": "PDF title page states arXiv:2505.05145v3 [cs.LG]; Xinyan Hu is marked corresponding author and Jacob Steinhardt/Lijie Chen equal advisors."
+  },
+  "sections": [
+    {
+      "title": "作者信息",
+      "paragraphs": [
+        "作者为 Xinyan Hu、Kayo Yin、Michael I. Jordan、Jacob Steinhardt 与 Lijie Chen；PDF 首页列出 UC Berkeley 和 INRIA。所核对版本为 arXiv:2505.05145v3，主分类 cs.LG。论文是一项针对预训练 LLM 的机制可解释性个案研究，重点是 add-k 上下文学习，而非提出一个适用于所有 ICL 任务的完备模型。"
+      ]
+    },
+    {
+      "title": "研究问题",
+      "paragraphs": [
+        "少样本 ICL 必须从示例对中提取任务规则、聚合该规则并作用于新查询；已有 function-vector 工作能显示这种向量可恢复行为，却较少说明它在大模型一次前向传播中的细粒度表示。论文以 $y=x+k$ 的 add-k 任务追问：任务信息存在哪些 attention heads、以什么低维坐标表示、又从哪类 token 汇集到最后输出？",
+        "这种任务族使不同 prompt 的输入域相同，只有隐藏常数 $k$ 改变，因而比 product-company 一类示例更能排除“仅凭查询域猜答案”的捷径。它仍是算术合成任务：解释结果不能直接当作自然语言 ICL 的一般机制。"
+      ]
+    },
+    {
+      "title": "背景",
+      "paragraphs": [
+        "本文把 transformer 的 residual stream 视为信息载体，把 head 输出、attention 权重和 token 位置作为可干预变量。物理式的变量映射是：任务常数 $k$ 是被编码的信号，head activation 的 PCA 子空间是状态表示，activation patching/mean ablation 是局部干预，intervention accuracy 是可观测输出；这些只是计算机制分析，不意味着网络存在热力学子空间或守恒律。",
+        "主模型 Llama-3-8B-instruct 有 32 层、每层 32 个 head、residual dimension 为 4096。作者也报告 Llama-3.2-3B-instruct、Llama-3.2-3B 与 Qwen-2.5-7B 的附录结果；正文的定量因果链主要来自 Llama-3-8B-instruct（p. 3）。"
+      ]
+    },
+    {
+      "title": "模型与方法",
+      "paragraphs": [
+        "五示例 prompt 的每个 demonstration 为 $x_i\\to y_i$，满足 $y_i=x_i+k$；取 $x\\in[1,100]$、$k\\in[1,30]$。作者对每个 head 的 task-specific 平均输出构造 function vector，把它加到零示例 prompt 的 residual stream，并以输出正确率检验该向量是否携带 $k$（pp. 3--4）。",
+        "为从 1024 个 heads 中定位机制，定义加权向量 $v_k(c)=\\sum_hc_hh_k$，最小化交叉熵加 $\\ell_1$ 稀疏项。25 个任务用于训练/域内测试，5 个任务留作 OOD；AdamW 使用 learning rate 0.01、batch 128、$\\lambda=0.05$。随后用 mean ablation、单 head 缩放、PCA、周期函数拟合和子空间投影逐层缩小解释对象（pp. 4--7）。",
+        "最后，作者把末 token 的投影 head 输出展开为此前 token residual streams 的 attention 加权和，再比较每个示例的 extraction signal。该代数分解把“最后位置的聚合表示”与标签 token 位置的候选信息源联系起来（p. 8）。"
+      ]
+    },
+    {
+      "title": "核心结果与证据",
+      "paragraphs": [
+        "Figure 1（p. 2）概括主链条：1024 个 attention heads 中仅三个 $(15,2)$、$(15,1)$、$(13,6)$ 对 add-k 的 task signal 关键；每个 head 的 128 维激活可局域到 6 维，再分成 4 维 unit-digit 与 2 维 tens/magnitude 子空间。图是作者对 Llama-3-8B-instruct 的机制示意，具体可检验的效果须由随后 ablation 与 intervention 数据支持。",
+        "稀疏优化得到 33 个 significant heads；其无权重和在同样设置下 intervention accuracy 为 0.85，而按先前 AIE 规则取 top 33 只有 0.31（p. 5）。对 33 个 head 的 mean-ablation 再定位为三主 head：三者合成函数向量的 accuracy 为 0.79、两者 0.61、单 head 0.21；在原 five-shot prompt 中 mean-ablate 三者，clean accuracy 从 0.87 降至 0.43，而随机三 significant heads 大多保持至少 0.86（p. 6）。这是特定干预协议下的必要性/充分性证据。",
+        "每个主 head 的 6 个 PCA 方向解释 30 个 task vector 变异的 97%，投影后的函数向量 accuracy 仍为 0.76，对比投影前 0.79（p. 7）。四个周期方向对应 periods 2、5、10，另两个低频方向编码较粗粒度数值；子空间投影的保留/移除实验用于检验 units 与 tens 信息。对 mixed-k prompt，信号在 $y_i$ token 最强，并且不同示例的信号多为负相关，作者将此解释为后示例倾向修正早示例噪声的 self-correction（pp. 8--9）。"
+      ]
+    },
+    {
+      "title": "有效性与局限",
+      "paragraphs": [
+        "机制结论受限于加常数、整数范围 $x\\in[1,100]$ 与 $k\\in[1,30]$、五示例格式和 selected Llama/Qwen 模型；add-k 特意消除了领域捷径，却也牺牲了自然任务的语义复杂性。79%、0.85 或 0.43 都是所定义 activation intervention 的准确率，不能与正常对话、任意 prompt 或模型总体能力等同。",
+        "三 head、六维与周期分解来自稀疏优化、mean-ablation、PCA 和对坐标函数的拟合。前几步自动化较强，但作者在 Discussion 中承认 mean-ablation 有定性判断，最终子空间的定性检查也仍可受分析选择影响（p. 10）。负相关支持“self-correction”解释，但没有单独证明一个普适的纠错算法。"
+      ]
+    },
+    {
+      "title": "复现与资源",
+      "paragraphs": [
+        "原文：https://arxiv.org/abs/2505.05145；PDF：https://arxiv.org/pdf/2505.05145。已核对 PDF 共 36 页，SHA-256 为 9bb3b4d49dd28b6205d315c0c0a1f768f2b56727e80385521433f040040137ed。所核对正文未给出可确认的公开代码仓库，因此不把代码可用性宣称为已验证资源。",
+        "复现须冻结模型 checkpoint/chat template、tokenization、add-k 数据采样、100-prompt 均值构造、patch 位置、zero-shot accuracy 计分、稀疏优化的 split/AdamW/$\\lambda$、head ablation 的 mean 定义、PCA 样本及周期拟合。尤其应区分 clean、weighted-head、top-head 和投影后的 intervention accuracy。Evidence status: full-text verified; no independent reproduction performed."
+      ]
+    },
+    {
+      "title": "阅读指南",
+      "paragraphs": [
+        "快速阅读先看 p. 2 的 Figure 1，再读 pp. 4--6 的稀疏定位和三 head ablation；随后读 pp. 7--9 的六维分解及 token-level extraction。深入检查应从 p. 3 的 prompt/模型定义和 p. 4 的 Eq. (1) 开始，逐项确认干预对象；最后读 p. 10 Discussion，避免将 add-k 个案写成所有 ICL 的因果解释。最关键图是 Figure 1，最关键关系是稀疏 function-vector 目标。"
+      ]
+    }
+  ],
+  "cover": {
+    "mode": "source_figure",
+    "asset_path": "assets/collection-figures/2505.05145/figure-1-icl-addition-mechanism.webp",
+    "label": "Figure 1",
+    "visual_type": "schematic",
+    "evidence": "paper.pdf p. 2, Figure 1",
+    "alt_text": "add-12 prompt 中三条关键 attention head 路径把前面标签 token 的信号聚合到最后 token；下方显示 128 维激活局域为六维，再分为个位和十位子空间。",
+    "caption": "Figure 1 以 Llama-3-8B-instruct 的 add-12 示例串起三 head 定位、六维子空间、个位/十位分解与从标签 token 到末 token 的信息流；它是此特定任务的机制图，而非通用 transformer 电路图。",
+    "selection_rationale": "Figure 1 同时保留 prompt、三关键 heads、128→6 维局域和两个数字子信号，是全文中最能直接呈现“信息从示例到函数向量”的科学中心可视化。"
+  },
+  "figure_refs": [
+    {
+      "label": "Figure 1",
+      "asset_path": "assets/collection-figures/2505.05145/figure-1-icl-addition-mechanism.webp",
+      "section": "核心结果与证据",
+      "role": "show the paper's complete localization-and-information-flow mechanism for add-k ICL",
+      "evidence": "paper.pdf p. 2, Figure 1; MinerU image d581c51ed120e644807248fa6803f472d1118bd62b7bc3d72dc3b3ce0153e146.jpg",
+      "alt_text": "三条橙色 attention head 路径从演示 token 指向最后 token，旁边是三 head、六维表示、4+2 维数字分解和 self-correction 的标注。",
+      "caption": "图把 head-level 定位、低维表示和跨 token 聚合放在同一 add-12 prompt 上；后续 ablation/PCA 数据才量化这些箭头所代表的因果贡献。",
+      "interpretation": "The schematic summarizes author results for Llama-3-8B-instruct on add-k prompts. It does not establish that arbitrary ICL tasks use the same three heads or digit decomposition."
+    }
+  ],
+  "equation_refs": [
+    {
+      "label": "Sparse function-vector objective",
+      "latex": "\\mathcal L(c)=\\mathbb E_{k,x_q}[\\ell(x_q,x_q+k;v_k(c))]+\\lambda\\|c\\|_1,\\qquad v_k(c)=\\sum_hc_hh_k",
+      "role": "identify a sparse collection of head outputs that can carry the add-k task signal under residual-stream intervention",
+      "symbols": {"c_h": "coefficient of attention head h", "h_k": "task-specific mean output of head h", "v_k": "weighted function vector for task k", "ell": "cross-entropy loss after intervention", "lambda": "sparsity regularization weight"},
+      "evidence": "paper.pdf p. 4, Eq. (1)",
+      "interpretation": "This is an optimization definition for the selected intervention protocol; high intervention accuracy identifies useful heads within that protocol, not an intrinsic unique circuit."
+    },
+    {
+      "label": "Projected attention contribution",
+      "latex": "W_hh(p)=\\sum_{t\\in p}\\alpha_tW_hO_hV_hz_t",
+      "role": "trace the final-token signal in a head's six-dimensional subspace back to earlier token residual streams",
+      "symbols": {"W_h": "projection onto head h's six-dimensional subspace", "h(p)": "head output at the final token of prompt p", "alpha_t": "attention weight from the final token to token t", "O_h,V_h": "head output and value matrices", "z_t": "residual-stream input at token t"},
+      "evidence": "paper.pdf p. 8, Section 5.1",
+      "interpretation": "This is an exact attention-layer decomposition once the selected projection is fixed; interpreting its components as task extraction depends on the empirical subspace identification."
+    }
+  ],
+  "evidence_refs": [
+    "paper.pdf pp. 1--3: abstract, model family, add-k prompt construction and Figure 1",
+    "paper.pdf pp. 4--6: sparse objective, data split, optimization protocol, 33-to-3 head localization and ablations",
+    "paper.pdf pp. 7--9: six-dimensional PCA subspaces, periodic decomposition and token-level self-correction analysis",
+    "paper.pdf p. 10: methodological scope and remaining qualitative judgment",
+    "source PDF SHA-256 9bb3b4d49dd28b6205d315c0c0a1f768f2b56727e80385521433f040040137ed",
+    "Evidence status: full-text verified; no independent reproduction performed."
+  ]
+}

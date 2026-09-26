@@ -1,0 +1,142 @@
+{
+  "arxiv_id": "2211.05641",
+  "source_version": "v2",
+  "source_pdf": "https://arxiv.org/pdf/2211.05641",
+  "title_en": "Regression as Classification: Influence of Task Formulation on Neural Network Features",
+  "title_zh": "将回归表述为分类：任务形式如何影响神经网络特征",
+  "curation_status": "full_text_verified",
+  "card_standard_version": "2.3",
+  "paper_profile": "theory_experiment",
+  "style_reference": "physicist_daily_arxiv",
+  "provenance": {
+    "program": "Collection",
+    "catalog": "Paper Collection",
+    "catalog_record_id": "2211.05641",
+    "catalog_record_ids": [
+      "2211.05641"
+    ],
+    "catalog_topic": "Machine Learning",
+    "collection_date": "2026-08-30",
+    "sampled_at": "2026-08-31",
+    "selected_by": "ziming_mineru_serial_goal",
+    "sampling_seed": "not_applicable_source_complete",
+    "candidate_count": 464
+  },
+  "verified_metadata": {
+    "arxiv_id": "2211.05641",
+    "version": "v2",
+    "title": "Regression as Classification: Influence of Task Formulation on Neural Network Features",
+    "authors": [
+      "Lawrence Stewart",
+      "Francis Bach",
+      "Quentin Berthet",
+      "Jean-Philippe Vert"
+    ],
+    "categories": [
+      "cs.LG",
+      "cs.AI",
+      "stat.ML"
+    ],
+    "primary_category": "cs.LG",
+    "published": "2022-11-10T15:13:23Z",
+    "updated": "2023-03-01T13:50:09Z",
+    "comment": "AISTATS 2023, PMLR 206"
+  },
+  "sections": [
+    {
+      "title": "作者信息",
+      "paragraphs": [
+        "作者：Lawrence Stewart、Francis Bach、Quentin Berthet、Jean-Philippe Vert。arXiv:2211.05641v2，发表于 AISTATS 2023（PMLR 206）。作者来自 Inria/ENS/PSL 与 Google Brain Paris。"
+      ]
+    },
+    {
+      "title": "研究问题",
+      "paragraphs": [
+        "连续标签通常用平方损失回归，但实践中把标签离散成 bins、用交叉熵训练分类器，再取各 bin 中点的期望，有时反而更准。论文问：这种“binning phenomenon”能否由梯度优化的隐式偏置解释，而不只归因于损失曲线或正则化？",
+        "作者聚焦带偏置的两层 ReLU 网络，把无限宽网络表示为特征空间上的向量测度。输入层神经元对应一维分段线性函数的 kink；回归与分类的隐式范数问题可能选择不同的最优 support，从而影响有限宽网络能否学到所需 kink。"
+      ]
+    },
+    {
+      "title": "模型与方法",
+      "paragraphs": [
+        "有限网络 F(x)=Σ_j b_j(a_j^Tx)_+ 在无限宽极限写成单位球面上向量测度 ν 的积分。回归的最小总变差插值问题要求 Fν(x_i)=y_i；分类的 margin 问题要求正确类别相对其余类别至少有指定间隔。",
+        "对一维输入，作者把特征重新参数化为方向 s∈{-1,1} 与 kink 位置 c。定理构造回归 support R_reg（分段线性插值斜率发生变化的点及端点）和分类 support R_class（类别切换/bin 边界诱导的点）；两者可能差异很大。Figure 3 用 y=|x| 展示分类离散化会引入跨整个输入域的更多候选 kink。",
+        "合成实验用多尺度三角形 teacher，50 个等宽 label bins，训练/验证各 250 点。比较 10,000 隐藏神经元的平方损失回归与 500 神经元、50 维输出的交叉熵分类；各做 30 次随机初始化和学习率扫描，分类输出通过 bin 中点期望还原连续值。"
+      ]
+    },
+    {
+      "title": "核心结果与证据",
+      "paragraphs": [
+        "理论结果给出一维隐式偏置问题的稀疏最优 support：R_reg 只在真实分段线性插值的斜率变化处需要特征，而 R_class 还受每个类别边界和类别数 k 影响。它说明任务表述会改变被偏好的输入特征位置，但没有证明有限网络梯度下降一定到达这些最优测度。",
+        "合成任务中，30 次初始化的回归 RMSE×10² 为 best 3.70、mean 4.55、worst 6.85；分类为 0.86、1.21、1.54，且方差更小。最差回归模型只恢复大三角形的 kink，遗漏小尺度 support；分类模型恢复更密集特征并降低误差。",
+        "高维实验给出类似的临界线分布迹象，但主定理仍是一维。附录中三层回归网络没有出现同样欠拟合，说明现象不是“分类天然优于回归”，而是特定深度、数据几何、离散化与优化偏置的交互。"
+      ]
+    },
+    {
+      "title": "有效性与局限",
+      "paragraphs": [
+        "分析限于两层 ReLU 和与既有隐式偏置理论相近的最小范数问题；重参数化后总变差中出现的因子被作者为简化而忽略。最优 support 与实际有限网络训练困难之间只有经验联系，尚无定理保证何时平方损失会卡住。",
+        "实验是人工一维 teacher，两个模型的隐藏宽度、输出维度和参数数不同，并分别调学习率；classification 使用 label order 不敏感的普通交叉熵，bin 邻接关系没有显式利用。bin 数、边界、解码规则和噪声都会改变结论，真实回归任务上是否获益需独立验证。"
+      ]
+    },
+    {
+      "title": "复现与资源",
+      "paragraphs": [
+        "原文：https://arxiv.org/abs/2211.05641；作者代码入口：https://github.com/LawrenceMMStewart/。官方 PDF SHA-256：e7dff1c3d8d69bfa0abc8c9ad948f878323e2daa6c572f29a5558822f2153407。",
+        "复现需固定 teacher 三角形尺度、采样使各 bin 等量的规则、50 个 bin 与中点解码、两模型宽度/参数量、初始化、学习率搜索、早停和 30 个种子；报告连续 RMSE、训练/验证损失、feature kink support 与三层反例。Evidence status: full-text verified; no independent reproduction performed."
+      ]
+    },
+    {
+      "title": "阅读指南",
+      "paragraphs": [
+        "先看 Figure 1 的 binning 流程和 §3 的测度网络；再用 §4 把每个 ReLU 特征换成 kink 位置；重点读 §6 的 R_reg/R_class 定理与 Figure 3；随后核对 §7 的宽度、参数量和 RMSE；最后读 §1.2 与附录 G，确认三层网络反例和未证明的优化联系。"
+      ]
+    }
+  ],
+  "cover": {
+    "mode": "source_figure",
+    "asset_path": "assets/collection-figures/2211.05641/figure-3-regression-classification-support.webp",
+    "label": "Figure 3",
+    "visual_type": "comparison",
+    "evidence": "paper.pdf p. 5, Figure 3",
+    "alt_text": "绝对值回归数据上，回归最优 support 集中在端点和原点 kink，而分类 support 还分布在各离散 bin 边界附近。",
+    "caption": "同一连续函数换成分类表述后，隐式偏置问题偏好的 ReLU kink 支持集发生改变。",
+    "selection_rationale": "Figure 3 直接可视化全文的理论机制，比只展示 RMSE 更能解释为什么任务表述可能改变可学习特征。"
+  },
+  "figure_refs": [
+    {
+      "label": "Figure 3",
+      "asset_path": "assets/collection-figures/2211.05641/figure-3-regression-classification-support.webp",
+      "section": "模型与方法",
+      "role": "contrast the optimal kink supports induced by regression and binned classification",
+      "evidence": "paper.pdf p. 5, Figure 3",
+      "alt_text": "y=|x| 数据、水平 bins、R_reg 方块和 R_class 三角形。",
+      "caption": "R_reg 追踪真实斜率变化，R_class 还响应类别边界。",
+      "interpretation": "The support difference is a one-dimensional optimal-measure result; finite-network optimization is linked empirically."
+    }
+  ],
+  "equation_refs": [
+    {
+      "label": "Infinite-width ReLU measure",
+      "latex": "F_\\nu(x)=\\int_{S^{d-1}}(a^Tx)_+\\,d\\nu(a)\\in\\mathbb R^k",
+      "role": "represent a two-layer ReLU network as a vector-valued measure over input features",
+      "symbols": {
+        "nu": "signed or vector-valued feature measure",
+        "a": "normalized input-layer feature direction",
+        "k": "output dimension or number of bins",
+        "F_nu": "network function in the infinite-width representation"
+      },
+      "evidence": "paper.pdf p. 3, Eq. (3)",
+      "interpretation": "The support of ν identifies which ReLU feature directions and kink locations the implicit-bias problem selects."
+    }
+  ],
+  "evidence_refs": [
+    "paper.pdf pp. 1–2: binning phenomenon, scope and explicit limitations",
+    "paper.pdf pp. 3–5: measure representation, kink reparameterization and R_reg/R_class supports",
+    "paper.pdf pp. 6–7: generalized implicit-bias optimization and support theorem",
+    "paper.pdf pp. 7–9: synthetic setup, 30-seed RMSE and learned-support comparisons",
+    "paper.pdf appendices F–G: nonlinear optimization paths and three-layer counterexample",
+    "source PDF SHA-256 e7dff1c3d8d69bfa0abc8c9ad948f878323e2daa6c572f29a5558822f2153407",
+    "Evidence status: full-text verified; no independent reproduction performed."
+  ]
+}

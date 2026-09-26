@@ -1,0 +1,141 @@
+{
+  "arxiv_id": "2505.06032",
+  "source_version": "v1",
+  "source_pdf": "https://arxiv.org/pdf/2505.06032",
+  "title_en": "Short-circuiting Shortcuts: Mechanistic Investigation of Shortcuts in Text Classification",
+  "title_zh": "短路捷径：文本分类中捷径机制的可解释性研究",
+  "curation_status": "full_text_verified",
+  "card_standard_version": "2.3",
+  "paper_profile": "ai_empirical",
+  "style_reference": "physicist_daily_arxiv",
+  "provenance": {
+    "program": "Collection",
+    "catalog": "Paper Collection",
+    "catalog_record_id": "2505.06032",
+    "catalog_record_ids": ["2505.06032"],
+    "catalog_topic": "Mechanistic Interpretability",
+    "collection_date": "2026-08-30",
+    "sampled_at": "2026-08-31",
+    "selected_by": "ziming_mineru_serial_goal",
+    "sampling_seed": "not_applicable_source_complete",
+    "candidate_count": 464
+  },
+  "verified_metadata": {
+    "arxiv_id": "2505.06032",
+    "version": "v1",
+    "title": "Short-circuiting Shortcuts: Mechanistic Investigation of Shortcuts in Text Classification",
+    "authors": ["Leon Eshuijs", "Shihan Wang", "Antske Fokkens"],
+    "affiliations": ["Vrije Universiteit Amsterdam", "Utrecht University"],
+    "categories": ["cs.LG"],
+    "primary_category": "cs.LG",
+    "updated": "2025-05-09",
+    "comment": "PDF title page states arXiv:2505.06032v1 [cs.LG]."
+  },
+  "sections": [
+    {
+      "title": "作者信息",
+      "paragraphs": [
+        "作者为 Leon Eshuijs、Shihan Wang 与 Antske Fokkens，分别来自 Vrije Universiteit Amsterdam、Utrecht University 与 Vrije Universiteit Amsterdam。所核对版本是 arXiv:2505.06032v1（cs.LG）。论文提供一个专门注入可控捷径的文本分类实验台，并用它研究 transformer 内部如何过早利用单一 token 作出标签决策。"
+      ]
+    },
+    {
+      "title": "研究问题",
+      "paragraphs": [
+        "捷径是训练数据中与标签相关、却不反映任务语义的模式；输入级探测只能说明“哪个 token 影响了预测”，不能说明模型怎样在内部处理它。本文问：在含演员姓名捷径的电影评论分类中，哪些组件将 shortcut token 转成类别 logit、这种中间决策何时出现，以及能否据此构造更有针对性的 attribution 与缓解方法？",
+        "作者并不把所有高归因 token 都称为捷径。其因果对照是用中性、等长度且性别匹配的名字替换 shortcut name，再以激活 patching 比较输出 logit，因此主张只覆盖被人工插入的 ActorCorr shortcut。"
+      ]
+    },
+    {
+      "title": "背景",
+      "paragraphs": [
+        "这是一项 mechanistic interpretability 的因果干预工作：decoder-only GPT-2 的 residual stream、MLP 输出和 attention-head 输出是状态变量，名字相关性是控制量，标签 token 的 logit difference 是主要观测量。若晚层 head 先把姓名映射为正/负标签，分类就可能在语句语义尚未充分汇聚时发生 premature decision；这是一条具体计算路径，而不是“注意力权重就是解释”的一般结论。",
+        "ActorCorr 从电影评论构造三类样本：原名字、与情感同向的 correlated actor、与情感反向的 anti-correlated actor。作者报告原评论平均准确率约 77%，当每个 shortcut 在训练中占 0.3% 时，anti-correlated names 造成 ACAC 约 33%（pp. 4--5）。"
+      ]
+    },
+    {
+      "title": "模型与方法",
+      "paragraphs": [
+        "作者把 GPT-2 通过固定 prompt 变成 A（negative）/B（positive）分类器，只读取末 token stream，并只在两个标签 token 的 logits 上归一化。ActorCorr 训练集有 24,862 条评论；分析以同 token 数的 counterfactual 名字构造 patching 对，并在 200 个样本上测量 Bad actor 出现在 positive review 时的平均效应（pp. 4, 6）。",
+        "shortcut 效果用 $\\mathrm{ACAC}=\\frac12\\sum_{c\\in\\{\\mathrm{Pos},\\mathrm{Neg}\\}}[\\operatorname{Acc}(X_{og}^{c})-\\operatorname{Acc}(X_{ac}^{c})]$ 衡量。path patching 先找直接改变末位置标签 logit difference 的 attention heads（Label Heads），再经这些 heads 的 value 路径追溯上游 MLP；因而区分“head 本身改变标签”与“哪些 earlier component 提供其 value”（pp. 4, 6）。",
+        "基于该电路，Head-based Token Attribution（HTA）先选出绝对 logit difference 超阈值 $\\tau$ 的 heads，再把其 attention pattern 和 $W_{VO}$ 对前层 residual 的变换分解到输入 token。它比较 HTA.max/HTA.sum 与 LIME、integrated gradients（IG），使用 AUROC、Cohen's $d$ 和分数分布分离度（pp. 7--8）。"
+      ]
+    },
+    {
+      "title": "核心结果与证据",
+      "paragraphs": [
+        "Figure 1（p. 1）给出论文的负责任图解：早层 MLP 为 shortcut name 写入可用信息，晚层 attention heads 聚焦该名字并改写标签方向。它说明主假设与拆解对象；真正的因果证据来自 Figure 4 的 patching，而非图中的箭头本身。",
+        "Figure 4（p. 6）在 ActorCorr 的 Bad actor/positive review 对照中定位 head 11.2 为最大直接贡献者，10.10 与 10.6 次之；没有单个 MLP 直接显著改变 logit difference。经 Label Heads 的 value-path patching 则显示主要是 MLP，尤其早层，提供了该路径的可用信息。head 11.2 对 shortcut names 的 attention 和自身标签 logit difference 都高于随机名字，支持“早层写入、晚头读取并决策”的链条。",
+        "Table 2 与 Conclusion（p. 8）给出干预后果：ablate Label Heads 后，anti-correlated cases 的 ACAC 从 30 降至 6；但作者也指出较晚 heads 可补偿被 ablate 的行为。Figure 5（p. 8）中 HTA 相对 LIME、IG 对 shortcut/non-shortcut 分数具有更好的分布分离；它还只需一次 forward pass，而 LIME 在此协议要约 3000 个扰动 forward passes。性能差异是该数据生成与检测设定下的结果。"
+      ]
+    },
+    {
+      "title": "有效性与局限",
+      "paragraphs": [
+        "核心限制是任务范围：实验只覆盖电影评论中的 actor-name shortcut 和 decoder transformer。作者明确说其他捷径是否由类似电路处理、HTA 是否能在其他情形可靠归因，仍需验证（p. 10）。因此不能把 Label Head 11.2 或 ACAC 数值外推到自然分布偏差、其他架构或生产安全性。",
+        "HTA 识别的是“含类别信息的 token stream”，不必等于最终因果语义来源。作者举例，模型若按上下文正确处理句子，类别信息也可能累积到句末句点，使 HTA 对该 token 给高分；这会误导为句点本身最重要。head ablation 也存在 later-layer compensation，故选择性关头并非完整或永久的 mitigation（pp. 8--10）。"
+      ]
+    },
+    {
+      "title": "复现与资源",
+      "paragraphs": [
+        "原文：https://arxiv.org/abs/2505.06032；PDF：https://arxiv.org/pdf/2505.06032；首页声明代码：https://github.com/watermeleon/shortcut_mechanisms。所核对 PDF 共 21 页，SHA-256 为 08cd123fa6343a95c61c7c1bd501f0d121966cce4a80e0370fd888c7ba6a5ae3。",
+        "复现应固定 GPT-2 checkpoint、A/B prompt、ActorCorr 的姓名词表/性别/长度匹配、shortcut frequency 与 purity、counterfactual pairing、patch site、200-sample 评估集、logit-difference 定义、HTA threshold $\\tau$ 和 LIME/IG 的 aggregation。还要分别报告 original、correlated、anti-correlated accuracy 与 ACAC，避免均值掩盖不对称错分。Evidence status: full-text verified; no independent reproduction performed."
+      ]
+    },
+    {
+      "title": "阅读指南",
+      "paragraphs": [
+        "快速路线：先看 p. 1 Figure 1，然后读 pp. 4--6 的 ActorCorr、ACAC 与 Figure 4；再看 pp. 7--8 的 HTA/ Figure 5 和 Table 2。深入路线：从 Section 3 的 transformer logit attribution 记号开始，检查 path patching 的 counterfactual 条件与 Label Head 的定义，最后读 p. 10 Limitations。最关键图是 Figure 4，最关键量是 ACAC；二者共同限定了“捷径被电路处理”的可检验含义。"
+      ]
+    }
+  ],
+  "cover": {
+    "mode": "source_figure",
+    "asset_path": "assets/collection-figures/2505.06032/figure-1-shortcut-circuit.webp",
+    "label": "Figure 1",
+    "visual_type": "schematic",
+    "evidence": "paper.pdf p. 1, Figure 1",
+    "alt_text": "电影评论中加粗的 Morgan Freeman 经早层 MLP 和晚层 attention head 影响末 token 的正负标签；右侧展示 head 的 value-output 分解。",
+    "caption": "Figure 1 将 shortcut actor name、早层 MLP 写入、晚层 head 读取和标签方向改变连成一条待检验的电路；它是 ActorCorr 的机制示意，Figure 4 的 path patching 才量化该路径。",
+    "selection_rationale": "Figure 1 直接呈现论文的中心因果假设与 HTA 的分解对象：孤立名字如何经 MLP 和 attention head 在完整上下文处理前偏转类别决策。"
+  },
+  "figure_refs": [
+    {
+      "label": "Figure 1",
+      "asset_path": "assets/collection-figures/2505.06032/figure-1-shortcut-circuit.webp",
+      "section": "核心结果与证据",
+      "role": "visualize the proposed shortcut circuit from name token through MLP and attention-head computation to label logits",
+      "evidence": "paper.pdf p. 1, Figure 1; MinerU image 783f0bcc776795c346253146482ee1d75ecee385e9753685c7121de3c091463d.jpg",
+      "alt_text": "shortcut actor name token 在多层 transformer 中被处理，晚层 head 将其指向标签 B；右侧画出 residual、value-output 和 attention 的分解。",
+      "caption": "加粗演员名是受控 shortcut；图将早层信息写入与晚层标签改变连在一起，但没有以此单独证明所有组件的因果大小。",
+      "interpretation": "This author-created schematic states the tested mechanism for injected ActorCorr names. The paper's path-patching experiments, not the schematic alone, support the causal claims."
+    }
+  ],
+  "equation_refs": [
+    {
+      "label": "Anti-Correlated Accuracy Change",
+      "latex": "\\mathrm{ACAC}=\\frac{1}{2}\\sum_{c\\in\\{\\mathrm{Pos},\\mathrm{Neg}\\}}\\left[\\operatorname{Acc}(X_{og}^{c})-\\operatorname{Acc}(X_{ac}^{c})\\right]",
+      "role": "quantify the accuracy loss caused by inserting an anti-correlated actor shortcut relative to the original actor",
+      "symbols": {"c": "sentiment class", "X_og^c": "class-c examples with original actor names", "X_ac^c": "class-c examples with anti-correlated shortcut names", "Acc": "subset classification accuracy"},
+      "evidence": "paper.pdf p. 4, Eq. (1)",
+      "interpretation": "This is a dataset-specific observational metric: a high value demonstrates shortcut vulnerability under the defined name substitutions, not a general measure of model bias."
+    },
+    {
+      "label": "Head-based token score ingredients",
+      "latex": "\\widehat A_{T,i}^{l,h}\\,W_{VO}^{l,h}x_i^{l-1}",
+      "role": "express the attention-mediated contribution used by HTA to trace a selected Label Head's label information back to an input token",
+      "symbols": {"widehat A_{T,i}^{l,h}": "attention pattern from label stream T to input token i", "W_VO^{l,h}": "value-output matrix of head h in layer l", "x_i^{l-1}": "previous-layer residual stream at token i"},
+      "evidence": "paper.pdf p. 7, Section 6.1",
+      "interpretation": "This is a component decomposition after selecting heads by label-logit threshold. It identifies a token stream containing label-relevant information, which need not be the semantic origin of that information."
+    }
+  ],
+  "evidence_refs": [
+    "paper.pdf pp. 1--2: authors, ActorCorr shortcut hypothesis, Figure 1 and public code declaration",
+    "paper.pdf pp. 4--5: GPT-2 classifier protocol, ActorCorr construction, ACAC definition and shortcut frequency/purity results",
+    "paper.pdf p. 6: Figure 4 path patching, Label Heads and upstream MLP value-path contribution",
+    "paper.pdf pp. 7--8: HTA construction, Figure 5 attribution comparison, Table 2 head-ablation mitigation",
+    "paper.pdf p. 10: limitations on shortcut type, architecture, attribution interpretation and head compensation",
+    "source PDF SHA-256 08cd123fa6343a95c61c7c1bd501f0d121966cce4a80e0370fd888c7ba6a5ae3",
+    "Evidence status: full-text verified; no independent reproduction performed."
+  ]
+}

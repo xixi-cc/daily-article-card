@@ -1,0 +1,132 @@
+{
+  "arxiv_id": "2301.11934",
+  "source_version": "v3",
+  "source_pdf": "https://arxiv.org/pdf/2301.11934",
+  "title_en": "Compression theory for inhomogeneous systems",
+  "title_zh": "非均匀系统的压缩理论",
+  "curation_status": "full_text_verified",
+  "card_standard_version": "2.3",
+  "paper_profile": "theory_numerics",
+  "style_reference": "physicist_daily_arxiv",
+  "provenance": {
+    "program": "Collection",
+    "catalog": "Paper Collection",
+    "catalog_record_id": "2301.11934",
+    "catalog_record_ids": ["2301.11934"],
+    "catalog_topic": "Machine Learning",
+    "collection_date": "2026-08-30",
+    "sampled_at": "2026-08-31",
+    "selected_by": "ziming_mineru_serial_goal",
+    "sampling_seed": "not_applicable_source_complete",
+    "candidate_count": 464
+  },
+  "verified_metadata": {
+    "arxiv_id": "2301.11934",
+    "version": "v3",
+    "title": "Compression theory for inhomogeneous systems",
+    "authors": ["Doruk Efe Gökmen", "Sounak Biswas", "Sebastian D. Huber", "Zohar Ringel", "Felix Flicker", "Maciej Koch-Janusz"],
+    "categories": ["cond-mat.stat-mech", "cond-mat.dis-nn"],
+    "primary_category": "cond-mat.stat-mech",
+    "published": "2023-01-27T19:00:00Z",
+    "updated": "2024-11-26T09:30:39Z",
+    "comment": "Version accepted in Nature Communications; Nature Communications 15, 10214 (2024)"
+  },
+  "sections": [
+    {
+      "title": "作者信息",
+      "paragraphs": [
+        "作者：Doruk Efe Gökmen、Sounak Biswas、Sebastian D. Huber、Zohar Ringel、Felix Flicker、Maciej Koch-Janusz。arXiv:2301.11934v3，发表于 Nature Communications 15, 10214 (2024)。工作把 real-space mutual information neural estimation（RSMI-NE）推广到任意局域图。"
+      ]
+    },
+    {
+      "title": "研究问题",
+      "paragraphs": [
+        "传统 RG 借助平移不变性和波长组织自由度；准晶、无序图、生物组织等非均匀系统没有统一 Fourier 模式，局部粗粒化的形状和输出维数也可能随位置变化。作者问：能否只从图结构与配置样本出发，自动选出保留长程物理的局域集体变量？",
+        "核心主张不是机器学习替代 RG，而是把“相关自由度”定义为受容量限制、同时最大保留与远处环境互信息的压缩变量；神经网络用于估计目标并优化映射。该定义依赖采样分布、block/environment 划分和压缩容量。"
+      ]
+    },
+    {
+      "title": "模型与方法",
+      "paragraphs": [
+        "把图分成局域 block Vᶦ、与其隔开缓冲区的远环境 Eᶦ，并学习 Hᶦ=τ(Λᶦ·Vᶦ)。每个位置的 Λᶦ独立优化，使 I(Hᶦ:Eᶦ) 最大；离散化 τ 限制 H 的信息容量，迫使短程细节被丢弃而长程相关保留。压缩变量间相关性再定义 emergent supergraph。",
+        "高维互信息不可直接算，RSMI-NE 用 contrastive classification 的可微下界：critic f(H,E)=u(H)^T v(E) 区分联合样本与独立重排样本。本文用线性/多线性 Λ、退火离散化以及小型两层 critic；逐步增加 bit 数，以 mutual-information plateau 选择不同 block 所需的 code length。",
+        "主案例是 Ammann–Beenker（AB）准晶上的 close-packed dimer model。block 取自 σ⁻² 或 σ⁻⁴ deflation 的局域星形 patch，Monte Carlo 配置作为训练数据。补充案例把方法用于近二分随机图上的反铁磁 Ising 模型，学习与最大割相关的全局 order parameter。"
+      ]
+    },
+    {
+      "title": "核心结果与证据",
+      "paragraphs": [
+        "Figure 1 概括 geometry-independent coarse graining：组织或胶体都抽象为不规则图，各位置用自己的 Λᶦ 将局部向量 Vᶦ压成 Hᶦ；压缩目标由远环境 Eᶦ决定，而非预设平移或旋转卷积核。",
+        "在 AB dimer 模型中，8-coordinated 与 3-coordinated supervertices 的保留互信息分别在 4 bits 与 2 bits 饱和。学到的 code 状态稀疏占据 bitstring 空间，形成抽象 Z₈ 与 Z₃ clock variables；Λ 的 C₈/镜面对称作用正好诱导这些 clock 状态的循环/反射。",
+        "相邻 clock variables 的相关性把每个 supervertex 与唯一邻居配成 emergent super-dimer，并在 σ⁻²、σ⁻⁴ 两个尺度复现微观 dimer constraint 与长程相关，支持 discrete scale invariance。作者据此称其为连续 conformal/scale symmetry 破缺到离散子群的 exotic criticality；证据来自所研究模型和有限尺度数值，不是任意准晶的普适定理。"
+      ]
+    },
+    {
+      "title": "有效性与局限",
+      "paragraphs": [
+        "方法需要足够且平衡的 equilibrium samples，并预先选择图距离、block/environment/buffer、bit capacity、Λ ansatz 和 MI estimator。神经互信息下界可能有估计偏差或局部最优；互信息 plateau 与 learned code 的物理解读仍需对称性、相关函数和已知约束交叉验证。",
+        "AB 结果覆盖特定 close-packed dimer ensemble 与两个可达 deflation 尺度；有限大小和 Monte Carlo mixing 限制对渐近临界性的判断。随机图附例说明几何适应性，但近二分构造比一般强挫折图更受控。动态图或节点置换不固定时，文中固定索引技巧不能直接使用。"
+      ]
+    },
+    {
+      "title": "复现与资源",
+      "paragraphs": [
+        "原文：https://arxiv.org/abs/2301.11934；RSMI-NE 软件：https://github.com/RSMI-NE/RSMI-NE。官方 PDF SHA-256：a7a1e76055b5103f4bceb3f5f73a8b2dede20fe7b2ea374b9c4cc030485b5bfe。",
+        "复现需保存 AB tiling/deflation 实例、dimer Monte Carlo 更新与热化/抽样间隔、V/E/buffer 几何、σ⁻²/σ⁻⁴ block、bit sweep、Λ 初始化、binary annealing、critic 架构、negative-pair 构造和全部随机种子；同时报告 MI plateau、code occupancy、对称作用与多尺度 correlators。Evidence status: full-text verified; no independent reproduction performed."
+      ]
+    },
+    {
+      "title": "阅读指南",
+      "paragraphs": [
+        "先读 pp. 1–3 的 Figure 1 与 Eqs. (1)–(3)，理解局域信息瓶颈；再看 pp. 3–6 的 AB blocks、Figure 3 code-length plateau 与 Z₈/Z₃ states；用 Figure 4 检查 super-dimer correlations；最后读 pp. 7–9 Methods 与 Supplementary random-graph 案例，核对估计器和适用边界。"
+      ]
+    }
+  ],
+  "cover": {
+    "mode": "source_figure",
+    "asset_path": "assets/collection-figures/2301.11934/figure-1-graph-compression.webp",
+    "label": "Figure 1",
+    "visual_type": "schematic",
+    "evidence": "paper.pdf p. 2, Figure 1",
+    "alt_text": "组织和胶体被抽象成不规则图；三个局域向量分别经位置依赖的压缩映射成为粗粒化变量。",
+    "caption": "每个局域 neighbourhood 学自己的压缩 Λᶦ，以保留对远环境最有信息的集体自由度。",
+    "selection_rationale": "Figure 1 直接展示方法如何脱离规则晶格和共享卷积核，是全文 geometry-independent RG 的核心概念图。"
+  },
+  "figure_refs": [
+    {
+      "label": "Figure 1",
+      "asset_path": "assets/collection-figures/2301.11934/figure-1-graph-compression.webp",
+      "section": "模型与方法",
+      "role": "show position-dependent information-theoretic coarse graining on an irregular graph",
+      "evidence": "paper.pdf p. 2, Figure 1",
+      "alt_text": "不规则图上 V¹、V²、V³ 经 Λ¹、Λ²、Λ³ 映射为不同维数的 H¹、H²、H³。",
+      "caption": "非均匀系统允许每个位置的 block、映射和输出 cardinality 不同。",
+      "interpretation": "Geometry independence comes from optimizing local relevance against the sampled distant environment, not from ignoring graph structure."
+    }
+  ],
+  "equation_refs": [
+    {
+      "label": "RSMI coarse-graining objective",
+      "latex": "\\mathcal H^i=\\tau(\\boldsymbol\\Lambda^i\\cdot\\mathcal V^i),\\qquad \\boldsymbol\\Lambda^i=\\arg\\max_{\\Lambda} I(\\mathcal H^i:\\mathcal E^i)",
+      "role": "define a capacity-limited local variable that maximally preserves long-range information",
+      "symbols": {
+        "V^i": "microscopic degrees of freedom in local graph block i",
+        "E^i": "distant environment separated by a buffer",
+        "Lambda^i": "learned position-dependent compression map",
+        "tau": "discretization enforcing limited capacity",
+        "H^i": "coarse-grained collective variable"
+      },
+      "evidence": "paper.pdf p. 2, Eqs. (1)–(2)",
+      "interpretation": "The optimizer keeps block features predictive of the distant environment and discards local information that does not propagate."
+    }
+  ],
+  "evidence_refs": [
+    "paper.pdf pp. 1–3: inhomogeneous-RG problem, Figure 1 and RSMI objective",
+    "paper.pdf pp. 3–5: Ammann–Beenker dimer setup, deflation blocks and learned code lengths",
+    "paper.pdf pp. 5–7: Z8/Z3 clock variables, emergent super-dimers and discrete scale invariance",
+    "paper.pdf pp. 7–9: discussion, graph construction, MI estimation and implementation",
+    "paper.pdf Supplementary Information: nearly bipartite random-graph antiferromagnet and robustness details",
+    "source PDF SHA-256 a7a1e76055b5103f4bceb3f5f73a8b2dede20fe7b2ea374b9c4cc030485b5bfe",
+    "Evidence status: full-text verified; no independent reproduction performed."
+  ]
+}

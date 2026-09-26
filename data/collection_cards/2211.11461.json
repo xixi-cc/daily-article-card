@@ -1,0 +1,142 @@
+{
+  "arxiv_id": "2211.11461",
+  "source_version": "v2",
+  "source_pdf": "https://arxiv.org/pdf/2211.11461",
+  "title_en": "Exhaustive Symbolic Regression",
+  "title_zh": "穷举符号回归",
+  "curation_status": "full_text_verified",
+  "card_standard_version": "2.3",
+  "paper_profile": "theory_experiment",
+  "style_reference": "physicist_daily_arxiv",
+  "provenance": {
+    "program": "Collection",
+    "catalog": "Paper Collection",
+    "catalog_record_id": "2211.11461",
+    "catalog_record_ids": [
+      "2211.11461"
+    ],
+    "catalog_topic": "Symbolic Regression",
+    "collection_date": "2026-08-30",
+    "sampled_at": "2026-08-31",
+    "selected_by": "ziming_mineru_serial_goal",
+    "sampling_seed": "not_applicable_source_complete",
+    "candidate_count": 464
+  },
+  "verified_metadata": {
+    "arxiv_id": "2211.11461",
+    "version": "v2",
+    "title": "Exhaustive Symbolic Regression",
+    "authors": [
+      "Deaglan J. Bartlett",
+      "Harry Desmond",
+      "Pedro G. Ferreira"
+    ],
+    "categories": [
+      "astro-ph.CO",
+      "astro-ph.IM",
+      "cs.LG"
+    ],
+    "primary_category": "astro-ph.CO",
+    "published": "2022-11-21T13:48:52Z",
+    "updated": "2023-05-29T09:17:33Z",
+    "comment": "15 pages, 7 figures, 2 tables; accepted in IEEE Transactions on Evolutionary Computation"
+  },
+  "sections": [
+    {
+      "title": "作者信息",
+      "paragraphs": [
+        "作者：Deaglan J. Bartlett、Harry Desmond、Pedro G. Ferreira。arXiv:2211.11461v2，已被 IEEE Transactions on Evolutionary Computation 接收。工作把可审计的穷举搜索与 minimum description length 引入符号回归。"
+      ]
+    },
+    {
+      "title": "研究问题",
+      "paragraphs": [
+        "遗传编程、强化学习等符号回归通常随机搜索表达式空间，可能漏掉真正最优式；同时“拟合更准”和“表达式更简单”形成 Pareto front，选哪一个常依赖主观规则。作者问：在限定 operator basis 与最大复杂度后，能否完整枚举表达式，并用一个信息论量统一排名？",
+        "Exhaustive Symbolic Regression（ESR）的保证是条件性的：若树复杂度不超过上限、表达式来自给定基函数集、重复化简正确且连续参数找到全局最优，则搜索不会漏掉该有限空间中的最优式。它不保证真实物理规律位于搜索空间，也不保证参数优化绝不失败。"
+      ]
+    },
+    {
+      "title": "模型与方法",
+      "paragraphs": [
+        "表达式写成含 nullary、unary、binary operator 的有根树，并用 preorder operator list 唯一生成树。算法先枚举合法树拓扑，再装饰节点；随后用代数/SymPy 化简、数值检验和参数重命名识别重复式，只对唯一且含参数的函数做多次 BFGS 拟合。",
+        "复杂度 k 定义为树节点数。示例 basis {x,a,inv,+,-,×,÷,pow} 到 k≤10 时，朴素 1.68×10⁸ 个列表缩为 5.2×10⁶ 个合法树、134,234 个唯一表达式和 119,861 个需参数优化的函数。Figure 1 展示表达式、树与 operator list 的对应。",
+        "模型选择采用 two-part minimum description length：编码残差似然、树结构/节点选择，以及参数值所需精度。Fisher/Hessian 对角项刻画参数必须调得多精细；最终用单一 description length 排名，而不仅保留 accuracy–complexity Pareto front。"
+      ]
+    },
+    {
+      "title": "核心结果与证据",
+      "paragraphs": [
+        "在 cosmic chronometers 与 Pantheon+ supernovae 上，ESR 对 y(x=1+z)=H(z)² 搜索到约 40 个 description length 比 ΛCDM Friedmann 形式更短的函数。若把 x³ 作为单个 pow 结构计入，ΛCDM 分别约排第 38 与 34；自由幂 Λfluid 仍在 top 100。",
+        "这些低红移函数在 z≲1 区间几乎不可区分，简单单项式可近似 ΛCDM 的低阶 Taylor 系数。因此结果说明现有低红移数据与 MDL 编码下并不唯一选择标准膨胀史，而不是证明 ΛCDM 被推翻；CMB、BAO、结构形成等外部证据不在该拟合中。",
+        "mock ΛCDM chronometer 研究显示，在约 20% 当前误差下需约 10³ 个测量才常把 ΛCDM 排首；误差减半后只需数百个，1–5% 精度时少量点也可能恢复。该 forecast 依赖相同 basis、MDL 与模拟分布。"
+      ]
+    },
+    {
+      "title": "有效性与局限",
+      "paragraphs": [
+        "搜索规模随复杂度和 basis 指数增长，合理资源下只能到复杂度约 10，本文仅做单变量。重复检测不完美，仍会留下等价式；穷举阶段可保证覆盖，但每个表达式的非线性参数优化仍可能停在局部解。",
+        "MDL 的树编码、operator multiplicity、参数精度近似和 Fisher 对角化都是建模选择；更换 basis 或把 x³ 视为原子 operator 会改变复杂度与排名。符号回归式的简短、外推明确不意味着物理因果正确；宇宙学示例也没有联合系统误差或全部 cosmological probes。"
+      ]
+    },
+    {
+      "title": "复现与资源",
+      "paragraphs": [
+        "原文：https://arxiv.org/abs/2211.11461；代码：https://github.com/DeaglanBartlett/ESR；完整函数集：https://doi.org/10.5281/zenodo.7339113。官方 PDF SHA-256：592f0aa261cd38ff3df56c6f1d9db0eeba0e72a96ef35a455cb9c80d0d136941。",
+        "复现需冻结 operator basis、最大节点数、合法树遍历、化简/重复阈值、参数边界与初始化、BFGS 重启、MDL 编码常数、Fisher 估计、chronometer/Pantheon+ covariance 和 H(z) 变量变换；发布完整表达式清单和逐式 likelihood/MDL。Evidence status: full-text verified; no independent reproduction performed."
+      ]
+    },
+    {
+      "title": "阅读指南",
+      "paragraphs": [
+        "先用 Figure 1 理解树复杂度与 operator list；再读 §II 的合法拓扑、化简和参数优化；逐项核对式 (6) 的 MDL 编码；随后看 Tables I–II 与 Figures 3–5 的 ΛCDM 排名和低红移退化；最后读 §V-A，确认穷举保证只覆盖受限函数空间。"
+      ]
+    }
+  ],
+  "cover": {
+    "mode": "source_figure",
+    "asset_path": "assets/collection-figures/2211.11461/figure-1-expression-tree.webp",
+    "label": "Figure 1",
+    "visual_type": "schematic",
+    "evidence": "paper.pdf p. 3, Figure 1",
+    "alt_text": "一个由对数、幂、指数、乘法和加法组成的解析式及其有根表达式树与前序 operator list。",
+    "caption": "ESR 把每个候选公式编码为有类型节点的树，才能系统枚举和去重有限复杂度空间。",
+    "selection_rationale": "Figure 1 展示穷举搜索的基本对象和唯一遍历表示，比某一宇宙学拟合曲线更能概括算法本身。"
+  },
+  "figure_refs": [
+    {
+      "label": "Figure 1",
+      "asset_path": "assets/collection-figures/2211.11461/figure-1-expression-tree.webp",
+      "section": "模型与方法",
+      "role": "show how analytic expressions are converted into typed trees and operator lists for exhaustive enumeration",
+      "evidence": "paper.pdf p. 3, Figure 1",
+      "alt_text": "表达式 (log x)^θ0+exp(θ1x) 的树结构与 operator list。",
+      "caption": "树节点数定义复杂度，遍历列表用于合法拓扑生成。",
+      "interpretation": "Enumeration is exhaustive only for trees constructed from the fixed basis up to the chosen node count."
+    }
+  ],
+  "equation_refs": [
+    {
+      "label": "Minimum description length score",
+      "latex": "L(D)=-\\log\\mathcal L(\\hat\\theta)+k\\log n-\\frac p2\\log 3+\\sum_j\\log c_j+\\sum_{i=1}^p\\left[\\frac12\\log I_{ii}+\\log|\\hat\\theta_i|\\right]",
+      "role": "rank expressions by residual fit, structural complexity and parameter precision in one objective",
+      "symbols": {
+        "L(D)": "description length of data given the fitted expression",
+        "k": "number of expression-tree nodes",
+        "n": "operator-basis size",
+        "p": "number of continuous parameters",
+        "c_j": "multiplicity of the selected operator type",
+        "I_ii": "diagonal observed Fisher information at the optimum"
+      },
+      "evidence": "paper.pdf p. 6, Eq. (6)",
+      "interpretation": "A function must pay for both a longer symbolic code and finely tuned parameter values, not only residual error."
+    }
+  ],
+  "evidence_refs": [
+    "paper.pdf pp. 1–4: ESR motivation, tree enumeration, duplicate removal and parameter optimization",
+    "paper.pdf pp. 4–6: two-part coding and MDL derivation",
+    "paper.pdf pp. 7–10: chronometer/Pantheon+ likelihoods, equation rankings and low-redshift degeneracy",
+    "paper.pdf pp. 10–13: ESR limitations, comparisons and mock ΛCDM recovery",
+    "source PDF SHA-256 592f0aa261cd38ff3df56c6f1d9db0eeba0e72a96ef35a455cb9c80d0d136941",
+    "Evidence status: full-text verified; no independent reproduction performed."
+  ]
+}

@@ -1,0 +1,125 @@
+{
+  "arxiv_id": "2501.17727",
+  "source_version": "v2",
+  "source_pdf": "https://arxiv.org/pdf/2501.17727",
+  "title_en": "Automated Interpretability Metrics Do Not Distinguish Trained and Random Transformers",
+  "title_zh": "自动可解释性指标无法区分训练过与随机 Transformer",
+  "curation_status": "full_text_verified",
+  "card_standard_version": "2.3",
+  "style_reference": "physicist_daily_arxiv",
+  "paper_profile": "ai_empirical",
+  "provenance": {
+    "program": "Collection",
+    "catalog": "Paper Collection",
+    "catalog_record_id": "2501.17727",
+    "catalog_record_ids": [
+      "2501.17727"
+    ],
+    "catalog_topic": "Mechanistic Interpretability",
+    "collection_date": "2026-08-30",
+    "sampled_at": "2026-08-31",
+    "selected_by": "ziming_mineru_serial_goal",
+    "sampling_seed": "not_applicable_source_complete",
+    "candidate_count": 464
+  },
+  "verified_metadata": {
+    "arxiv_id": "2501.17727",
+    "version": "v2",
+    "title": "Automated Interpretability Metrics Do Not Distinguish Trained and Random Transformers",
+    "authors": [
+      "Thomas Heap",
+      "Tim Lawson",
+      "Lucy Farnik",
+      "Laurence Aitchison"
+    ],
+    "categories": [
+      "cs.LG"
+    ],
+    "primary_category": "cs.LG",
+    "published": "2025-01-29",
+    "updated": "2026-01-27",
+    "comment": ""
+  },
+  "sections": [
+    {
+      "title": "作者信息",
+      "paragraphs": [
+        "Thomas Heap、Tim Lawson、Lucy Farnik 与 Laurence Aitchison。论文用 Pythia 系列及多种随机化方案检验稀疏自编码器（SAE）的自动解释与重构指标，arXiv:2501.17727v2。"
+      ]
+    },
+    {
+      "title": "研究问题",
+      "paragraphs": [
+        "SAE 的高重构质量、稀疏度或自动生成解释分数，是否真的说明它找到了训练塑造、对模型计算有意义的特征？一个必要的 sanity check 是这些指标能否区分正常训练模型与随机权重模型。",
+        "作者特别区分模型初始化、按已训练权重统计量重新随机化、保留或随机化 embedding，以及每次 token 都换高斯 embedding 的负控制，避免把任意可压缩结构误叫成机制。"
+      ]
+    },
+    {
+      "title": "模型与方法",
+      "paragraphs": [
+        "在 70M 到 6.9B 的 Pythia residual stream 上逐层训练 SAE，主要使用 RedPajama 数据和统一训练预算；比较 trained、step-0、重新随机化（含/不含 embedding）及随机输入控制。",
+        "评价包括 fuzzing/detection 自动解释 AUROC、重构余弦、explained variance、L1、CE loss recovered 等，并提出激活 token-ID 分布熵作为特征抽象程度的粗略补充指标；附录扩展到数据量、超参数和随机种子。"
+      ]
+    },
+    {
+      "title": "核心结果与证据",
+      "paragraphs": [
+        "Figure 1 中训练模型与随机化变体的 fuzzing ROC 曲线在多数层高度重叠，而真正的随机输入控制接近 chance；更大模型与多项标准 SAE 指标也出现相似趋势。",
+        "这不表示 trained-model SAE 没有有意义特征，而是说明聚合指标对“由训练形成的复杂计算”缺乏特异性。训练模型后层特征在定性上更抽象，token 分布熵能揭示一部分聚合 auto-interp 遗漏的差异。",
+        "随机化且保留参数尺度的网络往往比 step-0 更像训练模型，提示模型几何、数据与权重尺度本身即可制造看似良好的 SAE 分数。"
+      ]
+    },
+    {
+      "title": "有效性与局限",
+      "paragraphs": [
+        "实验集中于 Pythia、RedPajama 和特定 SAE/解释流水线；不同架构、激活位置、字典学习方法与解释模型可能改变结果。token 熵只是抽象性的代理，也会受 tokenizer 和语料频率影响。",
+        "研究批评的是指标的充分性而非 SAE 方法整体。未做完整因果介入来判断各 latent 是否驱动模型行为；因此结论应表述为要求随机基线与任务相关验证，而非否定所有自动解释。"
+      ]
+    },
+    {
+      "title": "复现与资源",
+      "paragraphs": [
+        "原文：https://arxiv.org/abs/2501.17727。复现需保存具体 Pythia revision、随机化规则、SAE expansion/k、训练 token 数、抽样 latent、解释模型与 prompt、ROC 实现及全部 seeds。",
+        "最关键的复现表应把 trained、step-0、norm-matched rerandomized 与 per-token Gaussian control 并列，并报告置信区间，而不只给平均 auto-interp 分数。",
+        "官方 v2 PDF 共 81 页，SHA-256：981e27c85d85ffeb1e29f8919615e6e16aba3ecdd4e5f6c1981f5bd2c015fa0a。Evidence status: full-text verified; no independent reproduction performed."
+      ]
+    },
+    {
+      "title": "阅读指南",
+      "paragraphs": [
+        "先看 Figure 1 建立随机基线直觉，再看 Figure 2 的模型尺度×指标矩阵；第 3 节解释控制条件，第 5 节限定结论，附录 B–J 用于检查 seeds、数据预算和具体 feature examples。"
+      ]
+    }
+  ],
+  "cover": {
+    "mode": "source_figure",
+    "asset_path": "assets/collection-figures/2501.17727/figure-1-fuzz-roc.webp",
+    "label": "Figure 1",
+    "visual_type": "data_plot",
+    "evidence": "paper.pdf p. 4, Figure 1",
+    "alt_text": "Pythia-6.9B 各层的 fuzzing ROC 曲线，训练模型与多种随机化模型高度重合，随机输入控制接近对角线。",
+    "caption": "常用 SAE 自动解释 AUROC 在训练模型和随机化 Transformer 上可能相近。",
+    "selection_rationale": "Figure 1 以最直接的随机化对照呈现论文的核心否证结果：高自动解释分数并非训练所得计算特征的充分证据，同时保留了真正负控制接近随机的校准。"
+  },
+  "figure_refs": [
+    {
+      "label": "Figure 1",
+      "asset_path": "assets/collection-figures/2501.17727/figure-1-fuzz-roc.webp",
+      "section": "模型与方法",
+      "role": "show the failure of aggregate fuzzing AUROC to separate trained from randomized transformers",
+      "evidence": "paper.pdf p. 4, Figure 1",
+      "alt_text": "Pythia-6.9B 各层的 fuzzing ROC 曲线，训练模型与多种随机化模型高度重合，随机输入控制接近对角线。",
+      "caption": "常用 SAE 自动解释 AUROC 在训练模型和随机化 Transformer 上可能相近。",
+      "interpretation": "Overlap with randomized baselines makes the metric insufficient as standalone evidence of learned computational features, while the chance-level control shows the pipeline is not completely uncalibrated."
+    }
+  ],
+  "equation_refs": [],
+  "evidence_refs": [
+    "paper.pdf pp. 1–4: motivation, randomized controls and primary ROC result",
+    "paper.pdf pp. 5–12: metric suite, token entropy and toy superposition analysis",
+    "paper.pdf pp. 13–18: limitations and conclusion",
+    "paper.pdf pp. 19–81: robustness plots and feature examples",
+    "source PDF SHA-256 981e27c85d85ffeb1e29f8919615e6e16aba3ecdd4e5f6c1981f5bd2c015fa0a",
+    "Evidence status: full-text verified; no independent reproduction performed."
+  ]
+}

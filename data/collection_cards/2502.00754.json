@@ -1,0 +1,127 @@
+{
+  "arxiv_id": "2502.00754",
+  "source_version": "v1",
+  "source_pdf": "https://arxiv.org/pdf/2502.00754",
+  "title_en": "Continuity-Preserving Convolutional Autoencoders for Learning Continuous Latent Dynamical Models from Images",
+  "title_zh": "用于从图像学习连续潜在动力学的连续性保持卷积自编码器",
+  "curation_status": "full_text_verified",
+  "card_standard_version": "2.3",
+  "style_reference": "physicist_daily_arxiv",
+  "paper_profile": "theory_experiment",
+  "provenance": {
+    "program": "Collection",
+    "catalog": "Paper Collection",
+    "catalog_record_id": "2502.00754",
+    "catalog_record_ids": [
+      "2502.00754"
+    ],
+    "catalog_topic": "AI for Science",
+    "collection_date": "2026-08-30",
+    "sampled_at": "2026-08-31",
+    "selected_by": "ziming_mineru_serial_goal",
+    "sampling_seed": "not_applicable_source_complete",
+    "candidate_count": 464
+  },
+  "verified_metadata": {
+    "arxiv_id": "2502.00754",
+    "version": "v1",
+    "title": "Continuity-Preserving Convolutional Autoencoders for Learning Continuous Latent Dynamical Models from Images",
+    "authors": [
+      "Aiqing Zhu",
+      "Yuting Pan",
+      "Qianxiao Li"
+    ],
+    "categories": [
+      "cs.LG",
+      "cs.CV"
+    ],
+    "primary_category": "cs.LG",
+    "published": "2025-02-02",
+    "updated": "2025-02-02",
+    "comment": ""
+  },
+  "sections": [
+    {
+      "title": "作者信息",
+      "paragraphs": [
+        "Aiqing Zhu、Yuting Pan 与 Qianxiao Li。论文提出 continuity-preserving convolutional autoencoder（CpAE），从离散图像帧学习连续潜在状态及其连续动力学，arXiv:2502.00754v1。"
+      ]
+    },
+    {
+      "title": "研究问题",
+      "paragraphs": [
+        "真实运动随时间连续，但相机像素和物体边界的栅格化会跳变；普通卷积自编码器是否会把这种观测不连续带入 latent，使后续 ODE/动力学辨识失真？",
+        "目标不是简单让相邻帧 latent 接近，而是从卷积算子的结构出发给出保持连续性的条件，并验证所得坐标能支持长期动力学预测。"
+      ]
+    },
+    {
+      "title": "模型与方法",
+      "paragraphs": [
+        "作者形式化连续状态到离散图像观测及卷积编码的映射，指出卷积核在空间上的不连续响应会导致 latent 跳变；CpAE 对滤波器施加连续性/平滑结构，使物体跨像素移动时卷积响应平滑变化。",
+        "在平移、旋转、摆和流体/复杂视觉动力学等场景中训练编码器—解码器及 latent dynamics，比较普通 CAE 与连续性约束变体，评价重构、latent 轨迹平滑度、向量场和 rollout。"
+      ]
+    },
+    {
+      "title": "核心结果与证据",
+      "paragraphs": [
+        "Figure 1 表明即使底层位置匀速变化，单像素观测也会先增后减并跳变；普通 CAE latent 可产生折角或断裂，从而给连续动力学模型制造非物理导数。",
+        "CpAE 在报告任务中形成更连续、拓扑更合理的低维轨迹，并改善 latent dynamical model 的预测和长期 rollout；提升来自结构先验而不只是增加网络容量。",
+        "结果支持连续图像生成机制下的表示学习，但连续 latent 未必唯一，也不自动保证其坐标对应真实物理变量或满足守恒律。"
+      ]
+    },
+    {
+      "title": "有效性与局限",
+      "paragraphs": [
+        "方法假设底层状态及成像随状态具有适当连续性；遮挡、接触、拓扑改变、事件相机或真实测量跳变可能本来就不连续，强平滑会抹掉重要事件。",
+        "实验规模和图像生成设置有限，latent continuity 指标也可能偏好过度平滑解。需要在相同预测误差下评估可识别性、跨分辨率与真实视频鲁棒性。",
+        "自编码器存在任意可逆坐标变换，连续性本身不能挑出唯一 latent；若下游动力学模型容量很高，它还可能补偿较差坐标。应控制 decoder 与 dynamics 容量，并比较局部 Lipschitz 常数和导数误差。"
+      ]
+    },
+    {
+      "title": "复现与资源",
+      "paragraphs": [
+        "原文：https://arxiv.org/abs/2502.00754。复现需固定渲染器、像素分辨率、帧间隔、卷积核参数化、continuity 权重、latent 维数、动力学模型、训练 horizon 与 seeds。",
+        "应同时保存原始状态（若可得）、逐帧 latent、时间导数、重构误差和 rollout；用分辨率/速度扫描区分结构连续性与简单 temporal smoothing。",
+        "官方 v1 PDF 共 24 页，SHA-256：1f33a2bf7f5f7593b1904f6b978459eac17b3ed7d5de5c25edfae29d4c761070。Evidence status: full-text verified; no independent reproduction performed."
+      ]
+    },
+    {
+      "title": "阅读指南",
+      "paragraphs": [
+        "先看 Figure 1 明确观测跳变，再读数学形式化和 CpAE 滤波器条件；实验中优先比较 latent 轨迹与 rollout，而不是只看重构图。最后检查附录的实现与超参数。",
+        "建议沿同一物理轨迹逐帧画 latent 速度、曲率和最近邻距离，并把帧率或像素分辨率变化作为干预；若连续性只在训练采样率成立，就不能视为结构保证，也不足以支撑可靠的长期动力学外推、参数辨识、预测与控制。"
+      ]
+    }
+  ],
+  "cover": {
+    "mode": "source_figure",
+    "asset_path": "assets/collection-figures/2502.00754/figure-1-pixel-continuity.webp",
+    "label": "Figure 1",
+    "visual_type": "schematic",
+    "evidence": "paper.pdf p. 2, Figure 1",
+    "alt_text": "连续移动的白色方块经过像素采样后产生离散图像序列，并标出单个像素值的跳变。",
+    "caption": "连续物体运动在像素观测中表现为离散跳变，普通卷积编码可能继承这种不连续。",
+    "selection_rationale": "Figure 1 用最小例子展示问题根源：物理状态连续而像素坐标跳变。它直接解释为何仅靠普通重构损失无法保证潜变量连续，以及 CpAE 约束卷积滤波器的必要性。"
+  },
+  "figure_refs": [
+    {
+      "label": "Figure 1",
+      "asset_path": "assets/collection-figures/2502.00754/figure-1-pixel-continuity.webp",
+      "section": "模型与方法",
+      "role": "demonstrate how continuous motion becomes discontinuous at the pixel-observation level",
+      "evidence": "paper.pdf p. 2, Figure 1",
+      "alt_text": "连续移动的白色方块经过像素采样后产生离散图像序列，并标出单个像素值的跳变。",
+      "caption": "连续物体运动在像素观测中表现为离散跳变，普通卷积编码可能继承这种不连续。",
+      "interpretation": "The observation example isolates the representation problem that CpAE addresses; it does not imply every real image sequence should be smoothed across genuine events."
+    }
+  ],
+  "equation_refs": [],
+  "evidence_refs": [
+    "paper.pdf pp. 1–4: pixel discontinuity problem and formulation",
+    "paper.pdf pp. 5–10: continuity-preserving convolutional construction",
+    "paper.pdf pp. 11–18: latent dynamics experiments and comparisons",
+    "paper.pdf pp. 19–24: ablations, details and discussion",
+    "source PDF SHA-256 1f33a2bf7f5f7593b1904f6b978459eac17b3ed7d5de5c25edfae29d4c761070",
+    "Evidence status: full-text verified; no independent reproduction performed."
+  ]
+}

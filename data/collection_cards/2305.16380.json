@@ -1,0 +1,108 @@
+{
+  "arxiv_id": "2305.16380",
+  "source_version": "v4",
+  "source_pdf": "https://arxiv.org/pdf/2305.16380",
+  "title_en": "Scan and Snap: Understanding Training Dynamics and Token Composition in 1-layer Transformer",
+  "title_zh": "扫描与冻结：理解单层 Transformer 的训练动力学和 token 组合",
+  "curation_status": "full_text_verified",
+  "card_standard_version": "2.3",
+  "paper_profile": "theory_experiment",
+  "style_reference": "physicist_daily_arxiv",
+  "provenance": {
+    "program": "Collection", "catalog": "Paper Collection", "catalog_record_id": "2305.16380",
+    "catalog_record_ids": ["2305.16380"], "catalog_topic": "Training Dynamics",
+    "collection_date": "2026-08-30", "sampled_at": "2026-08-31",
+    "selected_by": "ziming_mineru_serial_goal", "sampling_seed": "not_applicable_source_complete", "candidate_count": 464
+  },
+  "verified_metadata": {
+    "arxiv_id": "2305.16380", "version": "v4",
+    "title": "Scan and Snap: Understanding Training Dynamics and Token Composition in 1-layer Transformer",
+    "authors": ["Yuandong Tian", "Yiping Wang", "Beidi Chen", "Simon Du"],
+    "categories": ["cs.CL"], "primary_category": "cs.CL",
+    "published": "2023-05-25T00:00:00Z", "updated": "2023-10-30T00:00:00Z",
+    "comment": "37 pages; theory plus synthetic and WikiText experiments"
+  },
+  "sections": [
+    {
+      "title": "作者信息",
+      "paragraphs": ["作者：Yuandong Tian、Yiping Wang、Beidi Chen、Simon Du。arXiv:2305.16380v4。论文从 SGD 轨迹出发分析一个 self-attention 加 decoder 的单层 transformer，提出 attention 先“扫描”判别性 token、后在相变处近似“冻结”的机制。"]
+    },
+    {
+      "title": "研究问题",
+      "paragraphs": [
+        "next-token loss 如何从均匀初始化中塑造 token composition？作者关心 attention 是否偏向对某个输出类别独有的 distinct tokens、抑制跨多个输出共有的 common tokens，以及这种稀疏选择是否最终退化为 winner-takes-all。",
+        "分析假设无 positional encoding、序列长度趋于无穷、decoder 学得显著快于 attention，并把 token embeddings 诱导的矩阵重新参数化为可独立研究的 Y、Z；它不是对一般多层 LLM 训练的完整定理。"
+      ]
+    },
+    {
+      "title": "模型与方法",
+      "paragraphs": [
+        "数据由 sequence classes 生成：给定 query token m 和待预测 token n，上下文 token l 服从 P(l|m,n)。若 l 只与一个 n 共现则为 distinct token；若跨多个 n 出现则为 common token。attention score 是该共现频率与可学习 logit exp(z_ml) 的乘积再归一化。",
+        "模型用一层 softmax attention、LayerNorm 和线性 decoder，在 cross-entropy 下做 batch-size-one SGD 理论分析。作者先求出快变量 decoder 的反传梯度，再推导慢变量 attention logits 的相对增长率、common-token 抑制与 distinct-token 之间的频率排序。",
+        "理论把轨迹分为两段：早期 decoder 梯度增强，attention 扫描并稀疏化；约在 t0=O(K log M/ηY) 后 decoder 接近高置信度，反传速度下降，attention 只按对数速度变化，视觉上形成固定 token mixture。"
+      ]
+    },
+    {
+      "title": "核心结果与证据",
+      "paragraphs": [
+        "Theorems 1–2 给出 discriminative bias：common tokens 因对多个输出类别贡献相互竞争而被系统性压低，distinct tokens 获得正相对增益。对同一类别的 distinct tokens，共现概率较高者更早占优，形成 frequency bias。",
+        "Theorem 3 描述 scan-and-snap 相变：attention 早期向少数高频 distinct tokens 集中，却在 decoder 学习使梯度衰减后停止快速尖化，而非达到 one-hot stationary point。Figure 2(d) 显示冻结后蓝色 distinct-token 组合仍保留多个非零成分，黄色 common tokens 接近被抑制。",
+        "Syn-Small/Syn-Medium 实验复现了学习率控制：固定 attention 学习率时，提高 decoder 学习率会更早 snap 并留下更稠密组合；提高 attention 相对学习率则得到更稀疏表示。WikiText2 的一层和三层模型也显示底层 attention 随训练稀疏并近似冻结，但真实语料实验只支持现象，不验证所有生成模型假设。",
+        "Adam 会随学习率选择不同 distinct-token subsets，论文将其视为可调归纳偏置，但没有给出 Adam 对应理论。"
+      ]
+    },
+    {
+      "title": "有效性与局限",
+      "paragraphs": [
+        "无位置编码与 T→∞ 使 token 频率等于条件概率，排除了顺序、有限样本涨落和长程结构；ηY≫ηZ 的双时间尺度也不代表常见端到端超参数。Y/Z 独立参数化忽略共享 embedding 低秩约束，理论初始化为零而实际只近似均值为零。",
+        "distinct/common 是相对数据分布的标签：小数据可能把偶然 token 误判为 distinct。WikiText 可视化没有建立 token 语义、预测因果贡献或下游性能之间的定量链条；多层模型的层间 token composition 也未被理论覆盖。"
+      ]
+    },
+    {
+      "title": "复现与资源",
+      "paragraphs": [
+        "原文：https://arxiv.org/abs/2305.16380。官方 PDF SHA-256：2b52dce2d2bef66dbe44ce320af71e5c0f624b7d48b6f78e4228e614b0b89a70。论文未在主文提供专用代码仓库链接。",
+        "复现需固定 sequence-class probabilities、M/K/T、Y/Z 参数化、ηY/ηZ、optimizer、batch size 和 zero initialization；报告 distinct/common attention mass、entropy、transition time 与多 seed 误差，并将 synthetic 与 WikiText 结论分开。Evidence status: full-text verified; no independent reproduction performed."
+      ]
+    },
+    {
+      "title": "阅读指南",
+      "paragraphs": ["先读 pp. 1–5 的 setting、sequence classes 和 Figure 2；再读 pp. 5–8 的 decoder/attention dynamics 与 snap time；随后看 pp. 9‑0 的 synthetic/WikiText 实验；证明在 Appendices C–F，优先核对无位置、无限序列、快 decoder 和 reparameterization 假设。"]
+    }
+  ],
+  "cover": {
+    "mode": "source_figure", "asset_path": "assets/collection-figures/2305.16380/figure-2d-attention-frozen.webp",
+    "label": "Figure 2(d)", "visual_type": "schematic", "evidence": "paper.pdf p. 5, Figure 2(d)",
+    "alt_text": "冻结阶段的二维 attention-score 示意：蓝色 distinct tokens 保留多个不同大小的柱，黄色 common tokens 聚集在接近零的位置。",
+    "caption": "相变后 attention 不再快速走向 one-hot，而保留近似固定的判别性 token 组合。",
+    "selection_rationale": "Figure 2(d) 凝练展示论文最具辨识度的 snap 结论，并明确区分 distinct 与 common tokens。"
+  },
+  "figure_refs": [
+    {
+      "label": "Figure 2(d)", "asset_path": "assets/collection-figures/2305.16380/figure-2d-attention-frozen.webp",
+      "section": "核心结果与证据", "role": "illustrate the post-transition frozen token composition",
+      "evidence": "paper.pdf p. 5, Figure 2(d)", "alt_text": "冻结 attention 中 distinct-token 多柱组合与被抑制的 common tokens。",
+      "caption": "decoder 梯度衰减使 attention 只剩对数慢变，视觉上近似固定。",
+      "interpretation": "This panel is a schematic of the theorem's idealized sequence-class dynamics, not a measured WikiText attention map."
+    }
+  ],
+  "equation_refs": [
+    {
+      "label": "Class-conditional attention mass",
+      "latex": "c_{l|m,n}=\\frac{P(l|m,n)e^{z_{ml}}}{\\sum_{l'}P(l'|m,n)e^{z_{ml'}}}",
+      "role": "separate data co-occurrence frequency from learned attention-logit amplification",
+      "symbols": {"l": "contextual token", "m": "query token", "n": "next-token class", "P(l|m,n)": "class-conditional co-occurrence probability", "z_ml": "learned attention logit", "c": "normalized attention mass"},
+      "evidence": "paper.pdf p. 5, Eq. (5)",
+      "interpretation": "The expression relies on the infinite-sequence frequency limit and omits positional structure."
+    }
+  ],
+  "evidence_refs": [
+    "paper.pdf pp. 1―: model, sequence classes, assumptions and class-conditional attention",
+    "paper.pdf pp. 5‘: decoder gradient, common-token suppression and distinct-token ranking",
+    "paper.pdf pp. 7’: phase transition, learning-rate control and token composition",
+    "paper.pdf pp. 9‑0: synthetic, Adam and WikiText experiments",
+    "paper.pdf Appendices C–F: derivations and assumption-dependent bounds",
+    "source PDF SHA-256 2b52dce2d2bef66dbe44ce320af71e5c0f624b7d48b6f78e4228e614b0b89a70",
+    "Evidence status: full-text verified; no independent reproduction performed."
+  ]
+}

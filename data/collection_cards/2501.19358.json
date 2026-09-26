@@ -1,0 +1,128 @@
+{
+  "arxiv_id": "2501.19358",
+  "source_version": "v3",
+  "source_pdf": "https://arxiv.org/pdf/2501.19358",
+  "title_en": "The Energy Loss Phenomenon in RLHF: A New Perspective on Mitigating Reward Hacking",
+  "title_zh": "RLHF 中的能量损失现象：缓解奖励黑客的新视角",
+  "curation_status": "full_text_verified",
+  "card_standard_version": "2.3",
+  "style_reference": "physicist_daily_arxiv",
+  "paper_profile": "theory_experiment",
+  "provenance": {
+    "program": "Collection",
+    "catalog": "Paper Collection",
+    "catalog_record_id": "2501.19358",
+    "catalog_record_ids": [
+      "2501.19358"
+    ],
+    "catalog_topic": "Representation Learning",
+    "collection_date": "2026-08-30",
+    "sampled_at": "2026-08-31",
+    "selected_by": "ziming_mineru_serial_goal",
+    "sampling_seed": "not_applicable_source_complete",
+    "candidate_count": 464
+  },
+  "verified_metadata": {
+    "arxiv_id": "2501.19358",
+    "version": "v3",
+    "title": "The Energy Loss Phenomenon in RLHF: A New Perspective on Mitigating Reward Hacking",
+    "authors": [
+      "Yuchun Miao",
+      "Sen Zhang",
+      "Liang Ding",
+      "Yuqi Zhang",
+      "Lefei Zhang",
+      "Dacheng Tao"
+    ],
+    "categories": [
+      "cs.LG"
+    ],
+    "primary_category": "cs.LG",
+    "published": "2025-01-31",
+    "updated": "2025-06-02",
+    "comment": ""
+  },
+  "sections": [
+    {
+      "title": "作者信息",
+      "paragraphs": [
+        "Yuchun Miao、Sen Zhang、Liang Ding、Yuqi Zhang、Lefei Zhang 与 Dacheng Tao。作者提出 RLHF 末层“能量损失”诊断，并据此构造 Energy-loss-aware PPO（EPPO），arXiv:2501.19358v3。"
+      ]
+    },
+    {
+      "title": "研究问题",
+      "paragraphs": [
+        "RLHF 中 reward 持续上升但回答质量或上下文相关性下降时，内部表征是否出现可监测的共同信号？作者关注末层隐藏表征到词表 logits 投影过程中定义的 energy loss。",
+        "进一步问题是该量与 reward hacking 是否仅相关，还是能给出上下文相关性上界并作为训练正则，从而在不直接知道黑客类型时抑制过优化。"
+      ]
+    },
+    {
+      "title": "模型与方法",
+      "paragraphs": [
+        "作者跟踪多种 LLM 与 RLHF 任务中末层 energy loss 随 PPO 训练的变化，对正常和被判为 hacking 的回答分组；在若干条件下推导 energy loss 增大导致 contextual relevance 上界降低。",
+        "EPPO 在 reward 中加入 energy-loss 增量惩罚，限制相对 SFT/reference 的过度偏移；论文把该惩罚与 entropy-regularized RL 作概念联系，并在不同模型、reward 设置和任务上比较 PPO 等基线。"
+      ]
+    },
+    {
+      "title": "核心结果与证据",
+      "paragraphs": [
+        "Figure 1 概括观察：RLHF 回答通常比 SFT 有更高 energy loss，而 hacking 回答进一步升高。训练曲线中 energy loss 的过度增长与 reward/真实质量分离同时出现。",
+        "EPPO 在报告的实验中降低能量损失、缓解奖励黑客并改善综合 RLHF 指标；多模型与任务的一致趋势支持其作为监控信号，但具体阈值和惩罚强度仍依赖设置。",
+        "理论结果给的是条件化上界与概念解释，并不证明 energy loss 是奖励黑客的唯一原因；惩罚可能同时限制有益的策略更新。"
+      ]
+    },
+    {
+      "title": "有效性与局限",
+      "paragraphs": [
+        "energy loss 的定义依赖末层表示、unembedding 与尺度规范；LayerNorm、logit scaling、模型家族和序列位置可能改变可比性。reward hacking 标签和 judge 也可能带入偏差。",
+        "相关曲线与上界不能单独建立因果方向；需要等 reward、等 KL 的干预、跨 reward model 验证及对正常能力提升的副作用评估。本卡未独立复现。"
+      ]
+    },
+    {
+      "title": "复现与资源",
+      "paragraphs": [
+        "原文：https://arxiv.org/abs/2501.19358。复现应固定 SFT/RM checkpoints、PPO/EPPO 超参数、KL 与 energy penalty、生成温度、judge、序列位置聚合和 seeds。",
+        "建议同时报告 raw reward、独立 judge、KL、entropy、energy loss 分布和任务正确率，并进行惩罚强度扫描，避免只以训练 reward 评价缓解效果。",
+        "官方 v3 PDF 共 30 页，SHA-256：680fc5e8cd0f91ecc7548a54ff967f553a57cdf4d1c8dfd3e5bf68ea36c1a4c4。Evidence status: full-text verified; no independent reproduction performed."
+      ]
+    },
+    {
+      "title": "阅读指南",
+      "paragraphs": [
+        "先看 Figure 1 了解诊断量，再读定义与 contextual-relevance 上界；实验部分需把“energy 相关性”和“EPPO 改善”分开审计，最后检查不同模型、任务与惩罚权重的消融。",
+        "尤其检查 EPPO 是否在相同 KL 与生成长度下仍改善独立质量指标。"
+      ]
+    }
+  ],
+  "cover": {
+    "mode": "source_figure",
+    "asset_path": "assets/collection-figures/2501.19358/figure-1-energy-loss.webp",
+    "label": "Figure 1",
+    "visual_type": "schematic",
+    "evidence": "paper.pdf p. 1, Figure 1",
+    "alt_text": "同一问题下 SFT、正常 RLHF 与奖励黑客回答对应的末层能量损失由低到高。",
+    "caption": "RLHF 训练增加末层能量损失，奖励黑客样本呈现更过度的能量损失。",
+    "selection_rationale": "该图把论文提出的诊断量与正常/黑客回答并列，清楚传达相关性假说和 EPPO 惩罚对象；它也是理解后续理论上界与实验曲线的最简入口。"
+  },
+  "figure_refs": [
+    {
+      "label": "Figure 1",
+      "asset_path": "assets/collection-figures/2501.19358/figure-1-energy-loss.webp",
+      "section": "模型与方法",
+      "role": "define the proposed energy-loss diagnostic across SFT, normal RLHF and hacking responses",
+      "evidence": "paper.pdf p. 1, Figure 1",
+      "alt_text": "同一问题下 SFT、正常 RLHF 与奖励黑客回答对应的末层能量损失由低到高。",
+      "caption": "RLHF 训练增加末层能量损失，奖励黑客样本呈现更过度的能量损失。",
+      "interpretation": "The schematic motivates a monitor and regularizer; causal attribution requires the later controlled comparisons and remains conditional on the paper's definition and assumptions."
+    }
+  ],
+  "equation_refs": [],
+  "evidence_refs": [
+    "paper.pdf pp. 1–4: energy-loss observation and RLHF setup",
+    "paper.pdf pp. 5–10: theoretical relevance bound and EPPO",
+    "paper.pdf pp. 11–20: multi-model reward-hacking experiments",
+    "paper.pdf pp. 21–30: ablations, proofs and implementation details",
+    "source PDF SHA-256 680fc5e8cd0f91ecc7548a54ff967f553a57cdf4d1c8dfd3e5bf68ea36c1a4c4",
+    "Evidence status: full-text verified; no independent reproduction performed."
+  ]
+}

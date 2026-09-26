@@ -1,0 +1,135 @@
+{
+  "arxiv_id": "2502.02732",
+  "source_version": "v3",
+  "source_pdf": "https://arxiv.org/pdf/2502.02732",
+  "title_en": "Peri-LN: Revisiting Normalization Layer in the Transformer Architecture",
+  "title_zh": "Peri-LN：重新审视 Transformer 中归一化层的位置",
+  "curation_status": "full_text_verified",
+  "card_standard_version": "2.3",
+  "style_reference": "physicist_daily_arxiv",
+  "paper_profile": "theory_experiment",
+  "provenance": {
+    "program": "Collection",
+    "catalog": "Paper Collection",
+    "catalog_record_id": "2502.02732",
+    "catalog_record_ids": [
+      "2502.02732"
+    ],
+    "catalog_topic": "Machine Learning",
+    "collection_date": "2026-08-30",
+    "sampled_at": "2026-08-31",
+    "selected_by": "ziming_mineru_serial_goal",
+    "sampling_seed": "not_applicable_source_complete",
+    "candidate_count": 464
+  },
+  "verified_metadata": {
+    "arxiv_id": "2502.02732",
+    "version": "v3",
+    "title": "Peri-LN: Revisiting Normalization Layer in the Transformer Architecture",
+    "authors": [
+      "Jeonghoon Kim",
+      "Byeongchan Lee",
+      "Cheonbok Park",
+      "Yeontaek Oh",
+      "Beomjun Kim",
+      "Taehwan Yoo",
+      "Seongjin Shin",
+      "Dongyoon Han",
+      "Jinwoo Shin",
+      "Kang Min Yoo"
+    ],
+    "categories": [
+      "cs.LG",
+      "cs.AI",
+      "cs.CL"
+    ],
+    "primary_category": "cs.LG",
+    "published": "2025-02-04",
+    "updated": "2025-06-06",
+    "comment": ""
+  },
+  "sections": [
+    {
+      "title": "作者信息",
+      "paragraphs": [
+        "Jeonghoon Kim 等十位作者系统比较 Post-LN、Pre-LN 与外围包围子层的 Peri-LN，并用解析方差/梯度分析和最高 3.2B 参数预训练验证，arXiv:2502.02732v3。"
+      ]
+    },
+    {
+      "title": "研究问题",
+      "paragraphs": [
+        "Post-LN 控制激活却可能削弱深层梯度，Pre-LN 保持 residual highway 却让隐藏状态方差和 massive activations 累积。能否通过归一化位置同时稳定前向尺度与反向传播？",
+        "Peri-LN 在模块输入和输出外围放置归一化；论文问它为何在若干开放模型中有效，以及相对于已有两种布局的稳定区间、收敛和下游表现如何。"
+      ]
+    },
+    {
+      "title": "模型与方法",
+      "paragraphs": [
+        "作者在统一记号下分析三种 LN placement 对 residual variance、模块输出和梯度 Jacobian 的影响，推导前向方差增长和梯度传递的区别。",
+        "实验训练 400M、1.5B、3.2B Transformer，各用 30B tokens、五个 seeds 和学习率扫描；比较预训练损失、梯度范数、hidden variance、massive activations、instruction tuning 与评测，并在 RMSNorm/LayerNorm、序列长度、预算等设置下消融。"
+      ]
+    },
+    {
+      "title": "核心结果与证据",
+      "paragraphs": [
+        "Figure 1 显示 Pre-LN 的隐藏方差随深度/训练明显增长，而 Post-LN 的方差受控；后续结果显示 Post-LN 在较大学习率下梯度不稳或收敛变慢。",
+        "Peri-LN 通过规范化模块输入及输出，在报告的规模上取得更平衡的方差、较稳定梯度和更好的/相当的训练损失；趋势跨模型尺寸和多个消融保持。",
+        "结果支持把 Peri-LN 作为大规模训练候选，而不是普适最优结论：不同 optimizer、残差缩放、初始化和架构可能改变比较。"
+      ]
+    },
+    {
+      "title": "有效性与局限",
+      "paragraphs": [
+        "最大规模为 3.2B、30B tokens，与长期大模型训练仍有数量级差距；学习率范围、RMSNorm、数据和 Megatron 实现共同决定稳定性。下游差异也可能受训练损失而非布局本身中介。",
+        "解析方差采用简化独立性/尺度假设，不能覆盖全部训练阶段。选择 Peri-LN 还需计算额外 normalization 成本并在目标架构上做等算力扫描。",
+        "稳定 run 的筛选若只比较各布局最佳学习率，会混入调参预算差异；完整复核应给每个 seed 和整个学习率网格的失败率、最终 loss 与吞吐。"
+      ]
+    },
+    {
+      "title": "复现与资源",
+      "paragraphs": [
+        "原文：https://arxiv.org/abs/2502.02732。复现需固定 LN/RMSNorm 位置与 epsilon、初始化、residual scaling、optimizer、weight decay、learning-rate sweep、tokenizer、30B-token 数据顺序和五个 seeds。",
+        "应逐层记录均值/方差、activation maxima、gradient norms、loss 和吞吐，并按等 token 与等 wall-clock 两种口径比较，防止只挑最佳稳定 run。",
+        "官方 v3 PDF 共 37 页，SHA-256：a4a665a3882043b60a185da58469bbe3fa880574aeef469993a8f08fc22988e1。Evidence status: full-text verified; no independent reproduction performed."
+      ]
+    },
+    {
+      "title": "阅读指南",
+      "paragraphs": [
+        "先看 Figure 1，再用 Figure 2 对齐三种布局；第 4 节看等设置预训练比较，第 5 节读方差/大激活机制。附录中的 learning-rate、LN 类型、预算和位置消融决定结论外推范围。",
+        "把“方差受控”“梯度稳定”“最终损失更低”和“下游更好”视为四条证据链；一条成立并不自动推出其余三条。"
+      ]
+    }
+  ],
+  "cover": {
+    "mode": "source_figure",
+    "asset_path": "assets/collection-figures/2502.02732/figure-1-variance-growth.webp",
+    "label": "Figure 1",
+    "visual_type": "data_plot",
+    "evidence": "paper.pdf p. 2, Figure 1",
+    "alt_text": "1.5B Transformer 在初始化及训练到 6.3B tokens 时，Pre-LN 与 Post-LN 的隐藏状态方差随层深变化。",
+    "caption": "不同归一化放置在深度和训练过程中产生截然不同的隐藏状态方差演化。",
+    "selection_rationale": "Figure 1 直接呈现论文试图同时解决的两种病态：Pre-LN 主路径方差累积与 Post-LN 深层优化困难，并为随后 Peri-LN 的输入/输出双端归一化设计提供量化动机。"
+  },
+  "figure_refs": [
+    {
+      "label": "Figure 1",
+      "asset_path": "assets/collection-figures/2502.02732/figure-1-variance-growth.webp",
+      "section": "模型与方法",
+      "role": "motivate Peri-LN by showing depthwise variance behavior of Pre-LN and Post-LN",
+      "evidence": "paper.pdf p. 2, Figure 1",
+      "alt_text": "1.5B Transformer 在初始化及训练到 6.3B tokens 时，Pre-LN 与 Post-LN 的隐藏状态方差随层深变化。",
+      "caption": "不同归一化放置在深度和训练过程中产生截然不同的隐藏状态方差演化。",
+      "interpretation": "The variance contrast identifies one axis of the tradeoff; overall architectural choice also depends on gradients, convergence, compute and downstream evaluations."
+    }
+  ],
+  "equation_refs": [],
+  "evidence_refs": [
+    "paper.pdf pp. 1–4: normalization placements and variance motivation",
+    "paper.pdf pp. 5–12: analytical gradient and variance comparison",
+    "paper.pdf pp. 13–22: pretraining, tuning and evaluation results",
+    "paper.pdf pp. 23–37: robustness checks and implementation details",
+    "source PDF SHA-256 a4a665a3882043b60a185da58469bbe3fa880574aeef469993a8f08fc22988e1",
+    "Evidence status: full-text verified; no independent reproduction performed."
+  ]
+}

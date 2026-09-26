@@ -4,7 +4,25 @@ Version: 1.0
 Effective date: 2026-08-25
 Status: canonical
 
-Codex owns the complete Daily workflow: arXiv discovery, scientific screening, full-text card curation, repository mutation, deployment, and public verification. The ChatGPT task `arXiv 物理与AI日报` is no longer an input, gate, or authority for this pipeline.
+Codex owns the complete Daily workflow: arXiv discovery, scientific screening, full-text card curation, repository mutation, deployment, and public verification. The routine automated pipeline does not depend on the ChatGPT task `arXiv 物理与AI日报`. User-requested recovery of historical reports follows the bounded exception below.
+
+## User-requested historical report recovery (2026-09-26)
+
+The user explicitly requested recovery of the daily arXiv reports that had not
+reached the website. Those historical reports may nominate candidates; their
+grades, equations, counts and interpretations are not scientific evidence.
+Codex must independently confirm each candidate's official identity and listing,
+read the complete paper, apply the same eight-axis rubric, and publish only
+independently confirmed S papers under the original report date. Preserve the
+report source, exact reviewed version, PDF hash, evidence and new score sheet.
+
+This is a candidate-recovery pass, not a claim that every paper in each official
+listing was screened. Record `screening_scope: user_requested_report_candidates`
+in recovery receipts and selection records. Missing reports, truncated S
+sections, unavailable papers, lower grades and unresolved listing dates remain
+explicit pending or excluded records. Never mark a listing fully screened from
+this pass alone. Collection provenance remains separate. All card and
+publication gates below still apply.
 
 ## 1. Daily batch boundary
 

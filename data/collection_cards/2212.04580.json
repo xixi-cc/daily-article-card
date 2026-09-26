@@ -1,0 +1,144 @@
+{
+  "arxiv_id": "2212.04580",
+  "source_version": "v1",
+  "source_pdf": "https://arxiv.org/pdf/2212.04580",
+  "title_en": "Effective Dynamics of Generative Adversarial Networks",
+  "title_zh": "生成对抗网络的有效动力学",
+  "curation_status": "full_text_verified",
+  "card_standard_version": "2.3",
+  "paper_profile": "theory_experiment",
+  "style_reference": "physicist_daily_arxiv",
+  "provenance": {
+    "program": "Collection",
+    "catalog": "Paper Collection",
+    "catalog_record_id": "2212.04580",
+    "catalog_record_ids": [
+      "2212.04580"
+    ],
+    "catalog_topic": "Generative Models",
+    "collection_date": "2026-08-30",
+    "sampled_at": "2026-08-31",
+    "selected_by": "ziming_mineru_serial_goal",
+    "sampling_seed": "not_applicable_source_complete",
+    "candidate_count": 464
+  },
+  "verified_metadata": {
+    "arxiv_id": "2212.04580",
+    "version": "v1",
+    "title": "Effective Dynamics of Generative Adversarial Networks",
+    "authors": [
+      "Steven Durr",
+      "Youssef Mroueh",
+      "Yuhai Tu",
+      "Shenshen Wang"
+    ],
+    "categories": [
+      "cond-mat.dis-nn",
+      "cs.LG",
+      "stat.ML"
+    ],
+    "primary_category": "cond-mat.dis-nn",
+    "published": "2022-12-08T22:04:01Z",
+    "updated": "2022-12-08T22:04:01Z",
+    "comment": "19 pages, 21 figures"
+  },
+  "sections": [
+    {
+      "title": "作者信息",
+      "paragraphs": [
+        "作者：Steven Durr、Youssef Mroueh、Yuhai Tu、Shenshen Wang。arXiv:2212.04580v1，共 19 页、21 图。团队来自 UCLA Physics and Astronomy 与 IBM T. J. Watson Research Center。"
+      ]
+    },
+    {
+      "title": "研究问题",
+      "paragraphs": [
+        "GAN 的 mode collapse 表现为生成器输出集中于少数模式并在模式间切换。完整参数空间动力学难以解释。作者问：在宽网络和高维 latent seeds 极限下，能否把生成器替换成数据空间中的相互耦合粒子，用少量 effective NTK 参数解释何时粒子簇能裂开覆盖多模态目标？",
+        "该模型旨在提取一种可解释机制：每个输出粒子的局部 discriminator gradient 与整个粒子云共享的平均 gradient 竞争。它不是对任意实际 GAN 的精确缩约，也不直接预测图像 GAN 的样本质量。"
+      ]
+    },
+    {
+      "title": "模型与方法",
+      "paragraphs": [
+        "固定一批 latent seeds z_a，跟踪 X_a(t)=G_{θ(t)}(z_a)。在无限宽、lazy-training 极限，generator NTK 近似静态；高维球面上不同 seeds 近乎正交，NTK Gram matrix 被压缩为对角 g₁=Γ(z,z) 与非对角 g₂=Γ(z,z′) 两个数。",
+        "粒子速度由所有点的 discriminator gradients 经 NTK 耦合。重写后，每个粒子同时受到 (g₁-g₂)∇D(X_a)/N 的局部项与 g₂⟨∇D(X)⟩ 的集体项。g₂/g₁ 小时粒子沿不同局部坡度分裂；集体项占优时整簇一起滑走，产生模式切换。",
+        "实验用 200 个二维 generator particles、八个目标 modes 与单隐藏层 ReLU/Tanh discriminator，扫描 g₂/g₁、discriminator 每轮步数/学习率。mode-collapse metric 是粒子到最近模式占比 P_i 相对均匀分布的熵缺失；另加入 gradient regularizer 并扫描强度。"
+      ]
+    },
+    {
+      "title": "核心结果与证据",
+      "paragraphs": [
+        "对角 NTK（g₂=0）下粒子独立沿局部梯度散开并覆盖八个 modes；g₂/g₁=1/5 的全局耦合使簇难以裂开，持续在模式间移动。扫描得到从均匀覆盖到 collapse 的相变式边界：g₂/g₁ 越大，discriminator 需更多训练时间学习足够细的空间结构。",
+        "ReLU discriminator 的边界近似 power law，Tanh 近似 exponential；作者用 frequency principle 解释不同激活学习高空间频率的速度。但该解释是 heuristic，在较大 g₂/g₁ 区域的假设会失效，附录也明确称其不完整。",
+        "中等 gradient regularization 可让粒子平滑收敛；太弱时振荡/塌缩，太强时过阻尼且慢，形成类比 under/critical/over-damped regimes。Figure 9 的临界正则只在简化二维模型中验证，不能直接给真实 GAN 的通用最优系数。"
+      ]
+    },
+    {
+      "title": "有效性与局限",
+      "paragraphs": [
+        "模型假设无限宽 generator、静态 NTK、固定 latent mini-batch、seeds 在高维球面且 NTK 只依赖夹角，并把真实 NTK 分布压成两个常数。有限宽 feature learning、每轮重新采样、batch normalization、非各向同性 latent 分布和高维数据几何都会破坏这些条件。",
+        "mode collapse 用八点二维目标和最近模式熵衡量；真实生成任务还涉及 within-mode quality、连续流形、precision/recall 与 discriminator capacity。粒子耦合机制是充分可观察的模型现象，不证明实际 GAN 塌缩只有这一原因。critical damping 是物理类比而非严格线性化全局定理。"
+      ]
+    },
+    {
+      "title": "复现与资源",
+      "paragraphs": [
+        "原文：https://arxiv.org/abs/2212.04580。官方 PDF SHA-256：3d8d819dd28c39ce231b7848ea198ed2756249effd05360705bb48874e3c34e2。附录给出 NTK sweep、frequency-principle 估计、正则化与有限宽检查。",
+        "复现需固定 200 粒子及初始化、八 modes、g₁+g₂(N-1) 归一化、g₂/g₁、discriminator 激活/宽度、α_D/α_G、n_disc、迭代数、熵指标和 regularizer β；报告多种子 phase boundary、时间平均和粒子轨迹。Evidence status: full-text verified; no independent reproduction performed."
+      ]
+    },
+    {
+      "title": "阅读指南",
+      "paragraphs": [
+        "先用 Figure 1 把参数轨迹映射到输出粒子；再从 §III 的 generator NTK 推导两值近似与粒子速度；用 Figures 3–5 对比局部/集体梯度和 collapse boundary；最后读 Figures 8–9、§VI 及附录，核查正则化类比、频率解释与静态 NTK 假设。"
+      ]
+    }
+  ],
+  "cover": {
+    "mode": "source_figure",
+    "asset_path": "assets/collection-figures/2212.04580/figure-1-effective-gan-particles.webp",
+    "label": "Figure 1",
+    "visual_type": "schematic",
+    "evidence": "paper.pdf p. 2, Figure 1",
+    "alt_text": "固定高维球面 latent seeds 经随时间变化的生成器映射成数据空间中的移动粒子云。",
+    "caption": "有效模型不直接跟踪全部生成器参数，而跟踪固定 seeds 的输出粒子及其 NTK 耦合。",
+    "selection_rationale": "Figure 1 清楚定义从真实生成器到粒子模型的粗粒化对象，是后续 g₁/g₂ 与 mode collapse 分析的入口。"
+  },
+  "figure_refs": [
+    {
+      "label": "Figure 1",
+      "asset_path": "assets/collection-figures/2212.04580/figure-1-effective-gan-particles.webp",
+      "section": "模型与方法",
+      "role": "map parameter-space GAN training to coupled output-particle dynamics",
+      "evidence": "paper.pdf p. 2, Figure 1",
+      "alt_text": "θ 参数空间、球面 seed 空间 Z、生成器 Gθ 和输出粒子空间 X。",
+      "caption": "固定 z 后，θ(t) 的变化诱导 X_a(t)=G_{θ(t)}(z_a) 的粒子运动。",
+      "interpretation": "The reduction is controlled only under the wide-network, static-NTK and fixed-seed assumptions."
+    }
+  ],
+  "equation_refs": [
+    {
+      "label": "Effective generator-particle velocity",
+      "latex": "\\dot X_a^i=\\alpha_G\\left[\\frac{g_1-g_2}{N}\\,\\partial_iD(X_a)+g_2\\langle\\partial_iD(X)\\rangle\\right]",
+      "role": "separate local discriminator motion from collective all-to-all generator coupling",
+      "symbols": {
+        "X_a": "output particle associated with latent seed a",
+        "g_1": "diagonal generator NTK value",
+        "g_2": "off-diagonal NTK value for distinct seeds",
+        "D": "current discriminator field",
+        "N": "number of fixed generator particles",
+        "alpha_G": "generator learning-rate scale"
+      },
+      "evidence": "paper.pdf pp. 4–6, Eqs. (20)–(26)",
+      "interpretation": "Large off-diagonal coupling makes a cluster respond coherently to the mean gradient, hindering mode-by-mode splitting."
+    }
+  ],
+  "evidence_refs": [
+    "paper.pdf pp. 1–2: GAN failure motivation and Figure 1 effective mapping",
+    "paper.pdf pp. 2–5: fixed-seed output dynamics, static NTK and two-value coarse graining",
+    "paper.pdf pp. 5–8: eight-mode experiments, entropy metric and collapse transition",
+    "paper.pdf pp. 8–10: frequency-principle interpretation, gradient regularization and discussion",
+    "paper.pdf appendices A–D: sweep controls, heuristic limits, finite-width/static-NTK checks",
+    "source PDF SHA-256 3d8d819dd28c39ce231b7848ea198ed2756249effd05360705bb48874e3c34e2",
+    "Evidence status: full-text verified; no independent reproduction performed."
+  ]
+}

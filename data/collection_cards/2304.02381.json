@@ -1,0 +1,107 @@
+{
+  "arxiv_id": "2304.02381",
+  "source_version": "v2",
+  "source_pdf": "https://arxiv.org/pdf/2304.02381",
+  "title_en": "Physics-Inspired Interpretability Of Machine Learning Models",
+  "title_zh": "物理启发的机器学习模型可解释性",
+  "curation_status": "full_text_verified",
+  "card_standard_version": "2.3",
+  "paper_profile": "ai_empirical",
+  "style_reference": "physicist_daily_arxiv",
+  "provenance": {
+    "program": "Collection", "catalog": "Paper Collection", "catalog_record_id": "2304.02381",
+    "catalog_record_ids": ["2304.02381"], "catalog_topic": "Machine Learning",
+    "collection_date": "2026-08-30", "sampled_at": "2026-08-31",
+    "selected_by": "ziming_mineru_serial_goal", "sampling_seed": "not_applicable_source_complete",
+    "candidate_count": 464
+  },
+  "verified_metadata": {
+    "arxiv_id": "2304.02381", "version": "v2",
+    "title": "Physics-Inspired Interpretability Of Machine Learning Models",
+    "authors": ["Maximilian P Niroomand", "David J Wales"],
+    "categories": ["cs.LG", "cs.AI"], "primary_category": "cs.LG",
+    "published": "2023-04-05T11:35:17Z", "updated": "2024-12-15T17:17:01Z",
+    "comment": "6 pages, 2 figures; ICLR 2023 Workshop on Physics for Machine Learning"
+  },
+  "sections": [
+    {
+      "title": "作者信息",
+      "paragraphs": ["作者：Maximilian P. Niroomand、David J. Wales（University of Cambridge）。arXiv:2304.02381v2，发表于 ICLR 2023 Physics for Machine Learning Workshop。短文把分子 energy-landscape 的 disconnectivity graph 与 order-parameter 思路移植到小型神经网络 loss landscapes。"]
+    },
+    {
+      "title": "研究问题",
+      "paragraphs": [
+        "常见 feature importance 往往围绕一个训练解的权重或输入梯度，但过参数网络存在大量功能相近的局部 minima，单点解释可能依赖偶然 parameterization。作者问：能否先按 transition-state barriers 组织整片 loss landscape，再找同一 minima group 中跨解保持不变的 weights，把它们视为驱动决策的候选 order parameters？",
+        "这里的“可解释性”是定位稳定关联的输入连接，不等同于完整因果解释。方法假设 conserved raw weights 能跨 minima 对齐；隐藏单元 permutation、scale symmetry 或 reparameterization 会破坏这种直接比较。"
+      ]
+    },
+    {
+      "title": "模型与方法",
+      "paragraphs": [
+        "流程先用 energy-landscape optimization 收集 loss minima 和连接它们的一阶 transition states。disconnectivity graph 的叶节点是 minima，分支合并高度表示连接 basin 所需越过的最低 barrier；在某一 level 下共享祖先的 minima 构成 group。",
+        "对 group 中每个 network weight 计算跨 minima 标准差；若 σ(w)<n（实验取 n=0.01），就标为 conserved。再把这些边映射回 input–hidden–output 网络，检查它们是否集中连接某个输入 feature。",
+        "实验用单隐藏层小网络处理二维 synthetic checkerboard 和匿名、PCA-reduced 的 29 维 credit-card fraud 数据。最佳解 AUC 均超过 0.95；验证通过随机置换 conserved weights，并与置换同 cardinality 的随机 weight set 比较性能下降。"
+      ]
+    },
+    {
+      "title": "核心结果与证据",
+      "paragraphs": [
+        "Figure 1 展示 checkerboard 模型的 disconnectivity graph：不同 minima groups 具有不同颜色的 conserved edges，且两个真实输入节点都在不同 group 的稳定连接中出现。它说明 landscape 可能支持多种实现同一任务的机制，而不是唯一 feature circuit。",
+        "credit-card 图中一组包含 global minimum 的 minima 共享指向 input node 6 的 conserved weights。置换这些 weights 比置换任意同样数量的随机 weights 更强地降低性能，支持其功能重要性；但原数据匿名且经 PCA，作者只能定位第 6 个分量，不能给出可读业务含义。",
+        "论文只报告两个小任务和少量图示，没有系统给出 group 数、minima sampling coverage、置换效应分布或与 saliency/SHAP 等基线的定量比较。“适用于任意 architecture”明确被作者写作待验证建议，而非结果。"
+      ]
+    },
+    {
+      "title": "有效性与局限",
+      "paragraphs": [
+        "完整枚举深网 minima/transition states 极其昂贵，disconnectivity graph 对采样算法、起点、barrier search 和重复解去重敏感。原始 weight 坐标受 neuron permutation、sign/scale symmetry 影响；若不先做 symmetry alignment，同一函数可能看似不 conserved。",
+        "阈值 n=0.01 依赖参数尺度，没有跨层归一化或统计显著性解释。permutation ablation 会把权重移到分布外位置，性能下降不一定等于该 feature 的独立因果作用；更稳健的检验需 retraining、conditional interventions 和 matched random controls。fraud 数据的类别不平衡与 split protocol 也未在主文充分展开。"
+      ]
+    },
+    {
+      "title": "复现与资源",
+      "paragraphs": [
+        "原文：https://arxiv.org/abs/2304.02381。官方 PDF SHA-256：e61dfc2c033e969d0a942de8c71a1cf1dcad7cf2ef71304441fc91bcb53cc7f0。论文引用 Cambridge energy-landscape 工具传统，但主文未给出完整可执行代码仓库。",
+        "复现需冻结网络拓扑、数据 split/preprocessing、loss、minima search、transition-state search、symmetry/duplicate handling、disconnectivity level、n=0.01 与 permutation seed；报告 minima coverage、barrier graph、conserved-set stability和 matched ablation distribution。Evidence status: full-text verified; no independent reproduction performed."
+      ]
+    },
+    {
+      "title": "阅读指南",
+      "paragraphs": ["先读 pp. 1–2 的 energy/loss landscape 类比和 disconnectivity graph 定义；再读 p. 3 的 minima grouping、σ(w)<n 规则与 checkerboard Figure 1；随后看 p. 4 credit-card Figure 2 与 permutation ablation；最后用 pp. 4–5 Discussion 核对作者对规模扩展的保留表述。"]
+    }
+  ],
+  "cover": {
+    "mode": "source_figure", "asset_path": "assets/collection-figures/2304.02381/figure-1-disconnectivity-conserved-weights.webp",
+    "label": "Figure 1", "visual_type": "schematic", "evidence": "paper.pdf p. 3, Figure 1",
+    "alt_text": "checkerboard 网络的 disconnectivity tree，若干低能分支着色，并附三幅突出 conserved edges 的小网络图。",
+    "caption": "loss minima 先按 barrier 组织成 basin groups，再寻找组内跨解保持稳定的连接。",
+    "selection_rationale": "Figure 1 同时展示 landscape hierarchy 与映射回网络的 conserved weights，是该方法区别于单解 saliency 的关键。"
+  },
+  "figure_refs": [
+    {
+      "label": "Figure 1", "asset_path": "assets/collection-figures/2304.02381/figure-1-disconnectivity-conserved-weights.webp",
+      "section": "模型与方法", "role": "connect minima-basin hierarchy to conserved neural-network weights",
+      "evidence": "paper.pdf p. 3, Figure 1", "alt_text": "disconnectivity graph 与三个 minima 对应的彩色稳定连接。",
+      "caption": "不同 basin groups 可保存不同 weight subsets，提示任务存在多种局部机制实现。",
+      "interpretation": "Conservation is coordinate- and threshold-dependent and must be checked against parameter symmetries and functional interventions."
+    }
+  ],
+  "equation_refs": [
+    {
+      "label": "Conserved-weight criterion",
+      "latex": "w\\in\\widetilde W\\quad\\Longleftrightarrow\\quad \\sigma_{m\\in\\mathcal G}(w_m)<n,\\qquad n=0.01",
+      "role": "select weights that vary little across minima in one disconnectivity-graph group",
+      "symbols": {"G": "selected group of loss minima", "w_m": "aligned value of a network weight at minimum m", "sigma": "standard deviation across the group", "n": "conservation threshold", "W_tilde": "conserved weight subset"},
+      "evidence": "paper.pdf p. 3, §3",
+      "interpretation": "The threshold is an empirical coordinate-space rule, not an invariant statistical test."
+    }
+  ],
+  "evidence_refs": [
+    "paper.pdf pp. 1–2: interpretability motivation and energy/loss-landscape analogy",
+    "paper.pdf pp. 2–3: disconnectivity graphs, minima grouping and conserved-weight rule",
+    "paper.pdf pp. 3–4: checkerboard and credit-card experiments with Figures 1–2",
+    "paper.pdf pp. 4–5: permutation ablation, interpretation and explicit future-work limits",
+    "source PDF SHA-256 e61dfc2c033e969d0a942de8c71a1cf1dcad7cf2ef71304441fc91bcb53cc7f0",
+    "Evidence status: full-text verified; no independent reproduction performed."
+  ]
+}

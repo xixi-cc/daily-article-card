@@ -1,0 +1,107 @@
+{
+  "arxiv_id": "2302.07253",
+  "source_version": "v2",
+  "source_pdf": "https://arxiv.org/pdf/2302.07253",
+  "title_en": "Energy Transformer",
+  "title_zh": "能量 Transformer",
+  "curation_status": "full_text_verified",
+  "card_standard_version": "2.3",
+  "paper_profile": "theory_experiment",
+  "style_reference": "physicist_daily_arxiv",
+  "provenance": {
+    "program": "Collection", "catalog": "Paper Collection", "catalog_record_id": "2302.07253",
+    "catalog_record_ids": ["2302.07253"], "catalog_topic": "Generative Models",
+    "collection_date": "2026-08-30", "sampled_at": "2026-08-31",
+    "selected_by": "ziming_mineru_serial_goal", "sampling_seed": "not_applicable_source_complete",
+    "candidate_count": 464
+  },
+  "verified_metadata": {
+    "arxiv_id": "2302.07253", "version": "v2", "title": "Energy Transformer",
+    "authors": ["Benjamin Hoover", "Yuchen Liang", "Bao Pham", "Rameswar Panda", "Hendrik Strobelt", "Duen Horng Chau", "Mohammed J. Zaki", "Dmitry Krotov"],
+    "categories": ["cs.LG", "cond-mat.dis-nn", "cs.CV", "q-bio.NC", "stat.ML"],
+    "primary_category": "cs.LG", "published": "2023-02-14T18:51:22Z",
+    "updated": "2023-11-01T00:14:30Z", "comment": "NeurIPS 2023"
+  },
+  "sections": [
+    {
+      "title": "作者信息",
+      "paragraphs": ["作者：Benjamin Hoover、Yuchen Liang、Bao Pham、Rameswar Panda、Hendrik Strobelt、Duen Horng Chau、Mohammed J. Zaki、Dmitry Krotov。arXiv:2302.07253v2，发表于 NeurIPS 2023。论文把 attention、dense associative memory 与 energy-based dynamics 组合成 recurrent Energy Transformer（ET）。"]
+    },
+    {
+      "title": "研究问题",
+      "paragraphs": [
+        "标准 Transformer block 由 attention、MLP、residual 和 layer normalization 经验拼装，通常没有一个保证随层深下降的全局标量。作者问：能否反向设计 attention 与 Hopfield-style MLP，使整个 block 成为某个有下界 energy 的离散梯度流，从而给 token routing 一个动力系统解释？",
+        "ET 的目标不是证明所有 Transformer 都在优化显式 energy，而是构造一个特定架构：共享同一 recurrent block，在每个 time step 更新 token，使工程化 energy 单调不增，并测试这种约束是否仍有实际任务能力。"
+      ]
+    },
+    {
+      "title": "模型与方法",
+      "paragraphs": [
+        "ET 定义总能量 E=E^ATT+E^HN。attention 能量是 key–query 相似度的 log-sum-exp，Hopfield 能量对每个 token 的 normalized representation 施加高容量 associative-memory potential。LayerNorm 被写成凸 L(x) 的梯度 g=∂L/∂x，使 Jacobian/Hessian M=∂g/∂x 半正定。",
+        "连续动力学 τ dx/dt=−∂E/∂g 给出 dE/dt=−(1/τ)(∂E/∂g)^T M(∂E/∂g)≤0；Euler 离散化得到 x^{t+1}=x^t−α∇_gE。由能量导数得到的 attention 同时含 query-to-key 与 key-to-query 两个对称项，HN 项对应共享 MLP-like memory update。",
+        "图任务中 token 是节点，只在邻接集合内做 energy attention，并加入 positional/Laplacian embedding；图分类还加入 CLS token。图像 completion 把 patch token 中 50% 替换为 learned MASK token，再迭代 12 steps 观察 reconstruction 与两个能量分量的作用。"
+      ]
+    },
+    {
+      "title": "核心结果与证据",
+      "paragraphs": [
+        "Figure 1 展示单个共享 ET block 反复更新图节点或图像 patches，并沿时间下降 energy；与独立多层 Transformer 不同，计算深度对应同一动力系统的迭代时间。Figure 4 的 decoder 可视化表明早期 Energy Attention 补全全局结构，后期 Hopfield term 锐化局部细节。",
+        "图异常检测在 YelpChi、Amazon、T-Finance、T-Social 上用 1% 与 40% labels，报告 5 个 split 的 macro-F1/AUC；ET 在表中多数设置达到或接近当时基线最好结果。图分类在 8 个 TUDataset 上按 100 次 10-fold CV 报 accuracy，除 MUTAG 外均超过所列基线。",
+        "这些结果跨数据表引用不同 prior-work 数字，部分 baseline 没有标准差；“state of the art”限于论文选取的协议和 2023 年基线。图像 completion 是定性展示，没有与专门 inpainting 模型作统一 FID/PSNR 比较，因此不能从图像示例推断生成质量领先。"
+      ]
+    },
+    {
+      "title": "有效性与局限",
+      "paragraphs": [
+        "连续时间能量下降依赖 LayerNorm-derived M 半正定和精确定义的 update；有限 α 的 Euler step 若过大不自动保证每步 E 下降，训练后的参数共享也不等于对任意输入全局收敛到唯一最小值。energy 可以有许多 attractors 或 saddle points。",
+        "标准 ET attention 含双向对称项，不能直接复用常规 Transformer checkpoint；recurrent steps 增加 FLOPs，尽管共享权重降低参数内存。图任务的 subgraph sampling、Laplacian positional encoding、validation tuning 和 dataset size 可能影响比较；未系统覆盖 NLP、audio 或大规模 foundation-model scaling。"
+      ]
+    },
+    {
+      "title": "复现与资源",
+      "paragraphs": [
+        "原文：https://arxiv.org/abs/2302.07253；代码：https://github.com/IBM/energy-transformer。官方 PDF SHA-256：c90ed4990aef2a5cc8369e3536c32a4ce12105125d4ec8555ea70d808da62e8a。",
+        "复现需冻结 energy 公式、LayerNorm γ/δ/ε、Euler α、time steps、heads/query dimension/Hopfield memories、graph splits、subgraph sampling、Laplacian eigenvectors和 validation selection；同时记录每步 E、E^ATT、E^HN、任务指标与多种子方差。Evidence status: full-text verified; no independent reproduction performed."
+      ]
+    },
+    {
+      "title": "阅读指南",
+      "paragraphs": ["先读 pp. 2–4 的 LayerNorm potential、E^ATT/E^HN 与 Eqs. (6)–(8)；再看 Figure 1/2 把能量导数映射到 recurrent block；用 pp. 6–7 图像 completion 理解动力学；最后核对 pp. 7–10 的 graph protocols、表格和 Discussion 中的参数/计算成本边界。"]
+    }
+  ],
+  "cover": {
+    "mode": "source_figure", "asset_path": "assets/collection-figures/2302.07253/figure-1-energy-transformer.webp",
+    "label": "Figure 1", "visual_type": "schematic", "evidence": "paper.pdf p. 3, Figure 1",
+    "alt_text": "共享 Energy Transformer block 反复沿能量梯度更新 token，并分别用于图节点传播和遮挡图像补全。",
+    "caption": "ET 把网络深度解释为同一 energy-decreasing token dynamics 的时间迭代。",
+    "selection_rationale": "Figure 1 同时展示更新方程、能量下降和图/图像两种 tokenization，是理论架构与实验用途的统一入口。"
+  },
+  "figure_refs": [
+    {
+      "label": "Figure 1", "asset_path": "assets/collection-figures/2302.07253/figure-1-energy-transformer.webp",
+      "section": "模型与方法", "role": "show recurrent energy descent for graph and image tokens",
+      "evidence": "paper.pdf p. 3, Figure 1", "alt_text": "ET block 循环、energy-time 曲线、图传播和 patch completion 流程。",
+      "caption": "每步用 x^{t+1}=x^t−α∇_gE 更新同一组 token。",
+      "interpretation": "The architecture is engineered around a shared global energy; monotonicity is exact in continuous time and step-size dependent after discretization."
+    }
+  ],
+  "equation_refs": [
+    {
+      "label": "Energy-descent dynamics",
+      "latex": "\\tau\\frac{dx_{iA}}{dt}=-\\frac{\\partial E}{\\partial g_{iA}},\\qquad \\frac{dE}{dt}=-\\frac{1}{\\tau}\\sum_{i,j,A}\\frac{\\partial E}{\\partial g_{iA}}M^A_{ij}\\frac{\\partial E}{\\partial g_{jA}}\\le 0",
+      "role": "guarantee non-increasing global energy for the continuous recurrent token dynamics",
+      "symbols": {"x_iA": "component i of token A", "g_iA": "layer-normalized token coordinate", "E": "attention plus Hopfield energy", "M^A": "Jacobian of g, equal to a positive-semidefinite Hessian", "tau": "time scale"},
+      "evidence": "paper.pdf p. 4, Eqs. (6)–(8)",
+      "interpretation": "The Lyapunov argument applies to the continuous ODE; discrete Euler updates require a sufficiently controlled step size."
+    }
+  ],
+  "evidence_refs": [
+    "paper.pdf pp. 1–4: motivation, global energy, LayerNorm potential and descent proof",
+    "paper.pdf pp. 3–5: Figures 1–2 and derivation of energy attention/Hopfield updates",
+    "paper.pdf pp. 6–7: masked-image completion dynamics and qualitative component roles",
+    "paper.pdf pp. 7–10: graph anomaly/classification protocols, baselines and results",
+    "paper.pdf appendices C–G: graph implementations, hyperparameters, splits and computational cost",
+    "source PDF SHA-256 c90ed4990aef2a5cc8369e3536c32a4ce12105125d4ec8555ea70d808da62e8a",
+    "Evidence status: full-text verified; no independent reproduction performed."
+  ]
+}

@@ -1,0 +1,147 @@
+{
+  "arxiv_id": "2309.03886",
+  "source_version": "v3",
+  "source_pdf": "https://arxiv.org/pdf/2309.03886",
+  "title_en": "FIND: A Function Description Benchmark for Evaluating Interpretability Methods",
+  "title_zh": "FIND：评估可解释性方法的函数描述基准",
+  "curation_status": "full_text_verified",
+  "card_standard_version": "2.3",
+  "paper_profile": "ai_empirical",
+  "style_reference": "physicist_daily_arxiv",
+  "provenance": {
+    "program": "Collection",
+    "catalog": "Paper Collection",
+    "catalog_record_id": "2309.03886",
+    "catalog_record_ids": [
+      "2309.03886"
+    ],
+    "catalog_topic": "Mechanistic Interpretability",
+    "collection_date": "2026-08-30",
+    "sampled_at": "2026-08-31",
+    "selected_by": "ziming_mineru_serial_goal",
+    "sampling_seed": "not_applicable_source_complete",
+    "candidate_count": 464
+  },
+  "verified_metadata": {
+    "arxiv_id": "2309.03886",
+    "version": "v3",
+    "title": "FIND: A Function Description Benchmark for Evaluating Interpretability Methods",
+    "authors": [
+      "Sarah Schwettmann",
+      "Tamar Rott Shaham",
+      "Joanna Materzynska",
+      "Neil Chowdhury",
+      "Shuang Li",
+      "Jacob Andreas",
+      "David Bau",
+      "Antonio Torralba"
+    ],
+    "categories": [
+      "cs.CL",
+      "cs.AI",
+      "cs.LG"
+    ],
+    "primary_category": "cs.CL",
+    "published": "2023-09-07T17:47:26Z",
+    "updated": "2023-12-08T05:18:40Z",
+    "comment": "28 pages; benchmark for black-box function interpretation"
+  },
+  "sections": [
+    {
+      "title": "作者信息",
+      "paragraphs": [
+        "作者为 Sarah Schwettmann、Tamar Rott Shaham、Joanna Materzynska、Neil Chowdhury、Shuang Li、Jacob Andreas、David Bau 与 Antonio Torralba，来自 MIT CSAIL 和 Northeastern University。arXiv:2309.03886v3。"
+      ]
+    },
+    {
+      "title": "研究问题",
+      "paragraphs": [
+        "自动可解释性系统开始让语言模型为神经网络单元或模块写自然语言描述，但真实模型通常没有唯一、完备的 ground truth，因而很难判断描述究竟正确还是只听起来合理。FIND 试图先在已知函数上拆解这个评价问题。",
+        "核心问题不是‘LM 能否解释任意网络’，而是：给解释器黑盒查询权限后，它能否恢复函数的全局规律、局部例外、噪声和组合结构，并用可执行代码或可检验语言准确表达？"
+      ]
+    },
+    {
+      "title": "模型与方法",
+      "paragraphs": [
+        "FIND 程序化生成 2000 余个函数解释任务，覆盖数值函数、字符串操作、实体/关系映射和由 Vicuna 模拟的 synthetic neural modules。复杂性通过函数组合、缩放/偏置、近似、噪声及局部 domain corruption 引入；结构在生成时已知。",
+        "解释器可得到固定 exemplars（non-interactive）、自主选择输入查询黑盒函数（Automated Interpretability Agent, AIA），或先看 exemplars 再交互。AIA 被提示形成假设、设计实验并根据输出更新描述，实验比较 GPT-4、GPT-3.5、Llama-2 等 off-the-shelf LMs。",
+        "代码描述按测试集执行：数值函数用 normalized MSE，阈值 NMSE<0.1；字符串可用 exact match。自然语言描述通过 LM evaluator 的三选一 input-output unit test 评分。这种 protocol 可扩展，但 evaluator 本身是模型，且三选一只测试描述能否区分所给 distractors。"
+      ]
+    },
+    {
+      "title": "核心结果与证据",
+      "paragraphs": [
+        "Table 2 显示 GPT-4 AIA 在各函数类别上普遍优于 GPT-3.5 与 Llama-2；摘要同时指出最佳方法也只描述约 48% 的函数。论文观察到 Llama-2 有时不调用函数便编造输出，说明 agent interface 本身不保证有效实验。",
+        "交互并非一概优于固定 exemplars：AIA 能主动寻找 informative inputs、识别部分组合和例外，但初始化 exemplars 的收益取决于函数类别。Figure 3 展示成功的假设—实验—修正轨迹，Figure 4 与附录也保留失败和只拟合全局趋势而漏掉局部 corruption 的案例。",
+        "自然语言 unit test 分数常高于生成代码的精确执行分数，因为宽泛但不够具体的描述仍可能选对代表性 I/O。结果支持把 FIND 当作解释器能力诊断台，而不是把某个自动解释系统认证为适用于真实模型。"
+      ]
+    },
+    {
+      "title": "有效性与局限",
+      "paragraphs": [
+        "程序化函数提供明确 ground truth，却仍是代理任务：单一黑盒函数的可识别性与大模型中分布式、上下文依赖的子计算不同。Vicuna 模拟的 neural modules 还引入生成模型随机性与提示依赖。",
+        "unit-test evaluator 可能受描述措辞、distractor 难度和 evaluator 模型偏差影响；三选一 chance level 为 1/3，不能等同于精确语义恢复。数值 NMSE 的区间、测试点和 0.1 阈值也决定结论，局部窄异常可能被平均误差掩盖。",
+        "比较混合了 base model 能力、agent 提示、查询预算和工具使用纪律；更长交互不自动意味着更好科学推理。论文没有证明自动描述能解释真实神经网络的因果机制，结论应限定为所构造 FIND 任务上的 baseline。"
+      ]
+    },
+    {
+      "title": "复现与资源",
+      "paragraphs": [
+        "原文：https://arxiv.org/abs/2309.03886。官方 PDF SHA-256：e77d56ac2821ae27f906e1abefc96c2d5babd102017aa24c0751b670a429bd83。论文提供 FIND 代码仓库、函数生成 API、baseline prompts 和完整交互记录。",
+        "复现应固定函数 seed/类别配比、noise/corruption 参数、解释器模型版本与 temperature、query budget、initial exemplars、evaluator prompt/model、测试集和成功阈值；同时分别报告 code execution 与 language unit test，避免用一个汇总率掩盖类别差异。Evidence status: full-text verified; no independent reproduction performed."
+      ]
+    },
+    {
+      "title": "阅读指南",
+      "paragraphs": [
+        "先读 pp. 1–3 与 Figure 1 理解 benchmark contract；pp. 3–7 核对函数生成和评分；pp. 7–10 看三种解释器设置、Table 2 与失败模式，最后用 Appendix 的完整案例判断评分是否符合你的解释标准。"
+      ]
+    }
+  ],
+  "cover": {
+    "mode": "source_figure",
+    "asset_path": "assets/collection-figures/2309.03886/figure-1-find-benchmark.webp",
+    "label": "Figure 1",
+    "visual_type": "schematic",
+    "evidence": "paper.pdf p. 2, Figure 1",
+    "alt_text": "FIND 从数值、字符串、实体和关系等原子函数出发，加入组合、噪声、近似与偏置，再由解释器查询并生成代码或语言描述。",
+    "caption": "已知结构的程序化函数让自动解释从‘听起来合理’变成可执行、可评分的任务。",
+    "selection_rationale": "Figure 1 概括函数类别、复杂化机制和解释—评价闭环，是基准设计的最完整总览。"
+  },
+  "figure_refs": [
+    {
+      "label": "Figure 1",
+      "asset_path": "assets/collection-figures/2309.03886/figure-1-find-benchmark.webp",
+      "section": "模型与方法",
+      "role": "summarize FIND function generation and interpretation evaluation",
+      "evidence": "paper.pdf p. 2, Figure 1",
+      "alt_text": "程序化函数、复杂性注入、黑盒交互、代码/自然语言解释和 ground-truth 评价流程。",
+      "caption": "FIND 通过程序化 ground truth 测量解释器是否恢复函数，而非只生成流畅文本。",
+      "interpretation": "The benchmark isolates components of automated interpretation; it is not a faithful replica of every real neural-network mechanism."
+    }
+  ],
+  "equation_refs": [
+    {
+      "label": "Normalized function-reconstruction error",
+      "latex": "\\mathrm{NMSE}(f,g)=\\frac{\\mathbb{E}_{x}[(f(x)-g(x))^2]}{\\mathbb{E}_{x}[f(x)^2]},\\qquad \\mathrm{success}\\iff\\mathrm{NMSE}<0.1",
+      "role": "score executable numeric interpretations against the known FIND function",
+      "symbols": {
+        "f": "ground-truth FIND function",
+        "g": "interpreter-generated implementation",
+        "x": "evaluation input",
+        "NMSE": "normalized mean-squared error"
+      },
+      "evidence": "paper.pdf p. 6, Section 3.1",
+      "interpretation": "The score measures behavior on the chosen evaluation distribution; it can miss rare local errors outside or underweighted within that set."
+    }
+  ],
+  "evidence_refs": [
+    "paper.pdf pp. 1–3: motivation, task contract and Figure 1",
+    "paper.pdf pp. 3–6: function families, corruption and synthetic modules",
+    "paper.pdf pp. 6–7: NMSE, exact-match and LM unit-test metrics",
+    "paper.pdf pp. 7–10: interpreter variants, Table 2, results and conclusion",
+    "paper.pdf Appendix: prompts, dialogues and additional successes/failures",
+    "source PDF SHA-256 e77d56ac2821ae27f906e1abefc96c2d5babd102017aa24c0751b670a429bd83",
+    "Evidence status: full-text verified; no independent reproduction performed."
+  ]
+}

@@ -1,0 +1,26 @@
+{
+  "arxiv_id": "1906.02613",
+  "source_version": "v2",
+  "source_pdf": "https://arxiv.org/pdf/1906.02613",
+  "title_en": "Bad Global Minima Exist and SGD Can Reach Them",
+  "title_zh": "坏的全局极小值确实存在，而且 SGD 能到达它们",
+  "curation_status": "full_text_verified",
+  "card_standard_version": "2.3",
+  "paper_profile": "ai_empirical",
+  "style_reference": "physicist_daily_arxiv",
+  "provenance": {"program":"Collection","catalog":"Paper Collection","catalog_record_id":"1906.02613","catalog_record_ids":["1906.02613"],"catalog_topic":"Training Dynamics","collection_date":"2026-08-30","sampled_at":"2026-08-31","selected_by":"ziming_mineru_serial_goal","sampling_seed":"not_applicable_source_complete","candidate_count":464},
+  "verified_metadata": {"arxiv_id":"1906.02613","version":"v2","title":"Bad Global Minima Exist and SGD Can Reach Them","authors":["Shengchao Liu","Dimitris Papailiopoulos","Dimitris Achlioptas"],"categories":["cs.LG","stat.ML"],"primary_category":"cs.LG","published":"2019-06-06T14:24:56Z","updated":"2021-02-23T02:58:27Z"},
+  "sections": [
+    {"title":"作者信息","paragraphs":["作者：Shengchao Liu、Dimitris Papailiopoulos、Dimitris Achlioptas。arXiv:1906.02613v2；论文发表于 NeurIPS 2020。全文实验与补充材料共 14 页，代码仓库由论文明确给出。"]},
+    {"title":"研究问题","paragraphs":["过参数化网络中，SGD 常被解释为隐式偏向低复杂度解。作者把问题改写为一个可干预的反事实：若先让同一网络记忆随机标签，把参数放到高复杂度且训练误差很低的区域，再用正确标签训练，vanilla SGD 是否仍会自动找到泛化良好的全局极小值？","关键比较是随机初始化与这种“对抗初始化”，以及无显式正则的 vanilla SGD 和包含数据增强、L2 正则与动量的 SOTA SGD。论文检验的是训练路径依赖和正则化作用，而不是证明所有坏极小值的几何分类。"]},
+    {"title":"模型与方法","paragraphs":["实验覆盖 CIFAR10、CIFAR100、CINIC10 和缩放后的 Restricted ImageNet，模型包括 VGG16、ResNet18、ResNet50 与 DenseNet40，共 16 个数据集—架构组合。CIFAR、CINIC10、Restricted ImageNet 的训练样本规模分别约为 50k、90k、123k。","对抗初始化先复制训练图像 R 次，随机抹去 N% 像素并赋均匀随机标签，用 vanilla SGD 训练到记忆该集合；随后切换回真实标签。SOTA SGD 同时使用随机裁剪/翻转、L2 正则和动量，vanilla SGD 则去掉这些机制。每种设置运行 5 个随机种子并报告准确率与复杂度代理。","作者还逐项移除数据增强、正则和动量，比较参数移动距离、Frobenius/path norms 与 FGSM 鲁棒性，用以区分“能拟合真实标签”和“回到低复杂度、较好泛化区域”。"]},
+    {"title":"核心结果与证据","paragraphs":["两类初始化最终都能把真实训练集拟合到几乎 100%，所以训练损失本身不能区分解的质量。Figure 3 显示：对抗初始化后，vanilla SGD 的测试准确率显著低于随机初始化；加入数据增强、L2 正则和动量后，两类初始化的测试曲线接近。","参数距离结果表明，SOTA SGD 能从随机标签模型走得更远，而 vanilla SGD 更容易停留在其附近。复杂度代理与 FGSM 测试方向一致：对抗初始化加 vanilla SGD 得到的模型通常范数更大、鲁棒性更差；正则化训练降低了这种初始化依赖。","论文因此提供了一个存在性反例：SGD 的随机性或隐式偏置不足以保证摆脱一个可达的复杂初态。它支持“正则化改变整个搜索动力学”这一解释，但没有把数据增强、权重衰减和动量的因果贡献完全分离。"]},
+    {"title":"有效性与局限","paragraphs":["对抗初始化是人为构造的两阶段训练协议，不代表常规训练会高概率进入同一坏盆地；结论是坏全局极小值可达，而不是其体积或现实发生频率。随机标签预训练还同时改变了参数范数、表示和优化器状态，不能只归因于某一种复杂度。","“SOTA SGD”捆绑数据增强、L2 正则和动量。消融提供方向性证据，但不同模型和数据集上的贡献并不完全相同；文中范数与 FGSM 都只是复杂度或泛化的代理。实验使用较早的 PyTorch 0.3 与图像分类架构，不能直接外推到现代大模型、Adam 类优化器或自监督训练。"]},
+    {"title":"复现与资源","paragraphs":["原文：https://arxiv.org/abs/1906.02613；代码：https://github.com/chao1224/BadGlobalMinima。官方 PDF SHA-256：806c91f4243d246f0d6d28dc15089250eb756d21adf2a3c0bfe7a43223df8a4e。","复现应固定四个数据集预处理、四种架构、R/N、随机标签与抹像素过程、两套优化配置、学习率日程和 5 个随机种子，并同时保存训练/测试曲线、参数距离、范数及 FGSM 设置。Evidence status: full-text verified; no independent reproduction performed."]},
+    {"title":"阅读指南","paragraphs":["先读 pp. 2–3 的四种玩具设置和 Algorithm 1，理解坏初始化怎样构造；再看 pp. 4–6 的训练/测试准确率与移动距离，确认“训练集同样拟合、测试表现不同”；最后用 pp. 7–8 的消融、范数和鲁棒性结果检查作者对显式正则化的解释边界。"]}
+  ],
+  "cover": {"mode":"source_figure","asset_path":"assets/collection-figures/1906.02613/figure-1-decision-boundaries.webp","label":"Figure 1","visual_type":"comparison","evidence":"paper.pdf pp. 2–3, Figure 1","alt_text":"四种训练设置下的二维分类决策边界，对比随机初始化、随机标签记忆和正则化后的边界复杂度。","caption":"先记忆随机标签会留下复杂边界；显式正则和数据增强帮助 SGD 逃离该初态。","selection_rationale":"Figure 1 直接呈现论文的核心反事实设计与路径依赖，比单独的准确率曲线更能解释何谓可达的坏全局极小值。"},
+  "figure_refs": [{"label":"Figure 1","asset_path":"assets/collection-figures/1906.02613/figure-1-decision-boundaries.webp","section":"模型与方法","role":"compare decision-boundary complexity across the four initialization and training protocols","evidence":"paper.pdf pp. 2–3, Figure 1","alt_text":"二维高斯分类样本上的四个决策边界面板。","caption":"随机标签预训练制造复杂初态，正则化训练恢复更大间隔边界。","interpretation":"The toy example motivates the large-scale intervention; it does not quantify basin volume."}],
+  "equation_refs": [{"label":"Adversarial initialization dataset","latex":"C=\\{(x_i,y_i):x_i=\\operatorname{mask}_N(x),\\ y_i\\sim\\operatorname{Unif}(\\mathcal Y)\\}_{i=1}^{R}","role":"formalize the random-label replicated dataset used to construct the complex initialization","symbols":{"C":"adversarial pretraining set","R":"replication factor","N":"percentage of pixels zeroed","y_i":"uniform random label"},"evidence":"paper.pdf p. 3, Algorithm 1","interpretation":"Training on C intentionally uses model capacity to memorize labels unrelated to the image."}],
+  "evidence_refs": ["paper.pdf pp. 2–3: four-setting toy example and Algorithm 1 adversarial initialization","paper.pdf pp. 3–5: datasets, architectures, optimizer definitions and train/test accuracy curves","paper.pdf pp. 6–8: parameter distance, component ablations, complexity proxies, FGSM and conclusion","source PDF SHA-256 806c91f4243d246f0d6d28dc15089250eb756d21adf2a3c0bfe7a43223df8a4e","Evidence status: full-text verified; no independent reproduction performed."]
+}
