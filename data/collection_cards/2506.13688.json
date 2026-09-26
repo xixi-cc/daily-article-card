@@ -1,0 +1,159 @@
+{
+  "arxiv_id": "2506.13688",
+  "source_version": "v2",
+  "source_pdf": "https://arxiv.org/pdf/2506.13688v2",
+  "title_en": "What Happens During the Loss Plateau? Understanding Abrupt Learning in Transformers",
+  "title_zh": "损失平台期里发生了什么？理解 Transformer 的突变式学习",
+  "curation_status": "full_text_verified",
+  "card_standard_version": "2.3",
+  "paper_profile": "ai_empirical",
+  "style_reference": "physicist_daily_arxiv",
+  "provenance": {
+    "program": "Collection",
+    "catalog": "Paper Collection",
+    "catalog_record_id": "2506.13688",
+    "catalog_record_ids": [
+      "2506.13688"
+    ],
+    "catalog_topic": "Representation Learning",
+    "collection_date": "2026-08-30",
+    "sampled_at": "2026-09-26",
+    "selected_by": "collection_serial_goal_continuation",
+    "sampling_seed": "not_applicable_source_complete",
+    "candidate_count": 916
+  },
+  "verified_metadata": {
+    "arxiv_id": "2506.13688",
+    "version": "v2",
+    "title": "What Happens During the Loss Plateau? Understanding Abrupt Learning in Transformers",
+    "authors": [
+      "Pulkit Gopalani",
+      "Wei Hu"
+    ],
+    "categories": [
+      "cs.LG"
+    ],
+    "primary_category": "cs.LG",
+    "published": "2025-06-16",
+    "updated": "2025-10-22",
+    "comment": "NeurIPS 2025 main conference paper; verified against official proceedings.",
+    "doi": "10.52202/085713-1838"
+  },
+  "sections": [
+    {
+      "title": "作者信息",
+      "paragraphs": [
+        "Pulkit Gopalani、Wei Hu，University of Michigan, Ann Arbor（PDF 第1页）。本卡核对 arXiv:2506.13688v2，2025-10-22 更新，共26个物理PDF页；NeurIPS 2025 正式论文集以同名收录，DOI 10.52202/085713-1838。"
+      ]
+    },
+    {
+      "title": "研究问题",
+      "paragraphs": [
+        "总损失很久几乎不变，随后准确率突然跃升，是否意味着平台期没有学习？作者在可解释的算法任务中观察中间表示与注意力，并做训练期间干预，寻找被总损失掩盖的进展。核心问题是：先学会部分简单输出、重复偏置、表示几乎平行与注意力逐渐对准所需输入之间，存在怎样的联系？（第1–2页）",
+        "读者桥：输入是一串整数 token，后面接分隔符及应预测的答案序列；每个位置编码成隐藏向量。模型通过注意力汇合前面位置的信息，经非线性层输出下一个 token 的概率；所有参数用预测交叉熵训练。可观测量除总损失与逐位置准确率，还有注意力分配、生成 token 重复程度及隐藏向量间夹角。损失的快速下降是有限训练中的经验现象，论文未证明热力学极限中的不连续相变。"
+      ]
+    },
+    {
+      "title": "模型与方法",
+      "paragraphs": [
+        "主体任务是长度 $n=16$ 的 moving-window-sum（MWS），输入 $x_i$ 独立均匀取1到16，分隔 token 为17，模数 $p=17$；标签定义为：",
+        "\\[y_1=x_1,\\qquad y_i=(x_{i-1}+x_i)\\bmod p\\quad(i\\ge2)\\]",
+        "首个输出只需复制，第2个及之后必须结合相邻两个输入。因此已会复制首 token、却未会模加法，是可以明确检查的部分解，不需凭总损失推断。（第3页任务定义）",
+        "主要模型为1层1头、带因果掩码的线性注意力 Transformer：token/位置嵌入相加，注意力将过去位置的 value 向量按 query–key 内积汇合，再经残差、MLP 与语言模型头输出。这里移除 softmax，注意力分数可以为负；用 pre-LayerNorm。全序列做交叉熵，但准确率只评价答案部分。Adam 恒定学习率为 $10^{-4}$，批量256、不用 weight decay，每步从分布抽取新样本；这是在线训练，不是有限数据集先记忆再泛化。（第3–4、14页）",
+        "设 $A_{ij}$ 为预测位置 $i$ 汇合位置 $j$ 时的注意力分数，$\\Omega$ 为已知正确算法所需的输入–输出位置对。作者用这些位置上注意力绝对值占全部绝对值之比，测量隐藏进展：",
+        "\\[\\mathrm{APM}=\\frac{\\sum_{(i,j)\\in\\Omega}|A_{ij}|}{\\sum_{i,j}|A_{ij}|}\\]",
+        "绝对值不可省去，因为线性注意力允许带符号权重；$\\Omega$ 来自任务真值而非模型预测。APM 是任务相关诊断量，既不等同准确率，也不是面对未知任务可直接计算的通用训练信号。（第4页 Eq. (3)，第15页 Table 2）",
+        "内部表示用第 $i$ 个答案位置的隐藏向量 $h_i\\in\\mathbb R^d$ 测夹角：",
+        "\\[\\mathrm{COS}_{i,j}=\\frac{\\langle h_i,h_j\\rangle}{\\lVert h_i\\rVert\\lVert h_j\\rVert}\\]",
+        "成对余弦在随机样本批次上平均，主体分析排除很早已正确的第一个输出位置。接近1说明方向近乎平行，不能仅凭该指标断言所有范数相同或整个表示空间严格降为秩1；重复频率则统计相邻预测 token 相等的比例。（第5页 Eqs. (4)–(5)）",
+        "两种干预分别改注意力分数和初始化：将 $\\Omega$ 对应条目乘以 $c$，其余不变，首输出位置作为早学会部分解例外；$c>1$ 帮助正确连接，$0<c<1$ 抑制它。另把注意力相关参数及嵌入固定为已训练终态，随机初始化并重训后续层，与固定 MLP/嵌入的对照比较。两种设计都利用已知任务或终态信息，属于机制诊断，不能直接当作未知任务的训练加速算法。（第6–7页）"
+      ]
+    },
+    {
+      "title": "核心结果与证据",
+      "paragraphs": [
+        "MWS 的 Figure 2 中，首输出准确率先上升，而整体平台尚未结束；APM 已逐渐增长。初期约50步内，相邻重复频率可增至约0.8，不含首位置的隐藏向量成对余弦增至约0.95；这两种退化并非初始化时已经存在。后续APM提高、重复和余弦下降，才伴随明显的损失骤降。（第3–5页 Figure 2）",
+        "将正确注意力位置从训练开始放大10倍，余弦峰值从约0.95降到约0.6且收敛更快；反向缩小到0.2或0.5则延长平台。终态注意力参数的固定初始化显著减弱平台和重复，固定其他组件没有同样效果。对照支持在这些任务中注意力学习是瓶颈；“搜索正确 token”仍是作者假说，并无严格理论时间尺度推导。（第6–7页 Figures 3–5，第10页讨论）",
+        "平台期的注意力输出还能被独立训练的两层探针更早解码：每10个训练步取表示，以1024份样本训练、另1024份样本验证探针。Figure 20 中探针准确率先于原模型上升，说明信息已部分存在但还未被原输出路径利用；可解码性本身不证明原模型实际使用了这种信息。（第19–20页 Appendix C）",
+        "前缀和任务没有相邻真值重复，但模型仍偏向只生成少数 token，需要序列经验熵而非只看相邻重复率。附录还检查不同任务、softmax、深度、头数、优化器与配方；退化程度、平台长度随制度改变。REPEAT 类简单重复任务反而没有明显损失平台，所以“重复”等于“训练停滞”也不是普遍命题。（第8–9、14–25页）",
+        "真实语言模型部分是检查早期公开训练检查点：Pythia 14M、1B、1.4B、2.8B，用100个 ARC-Easy 测试问题各生成8个 token，最后层成对余弦早期升到0.9以上；OLMo-2 7B 最早可用150步检查点约0.93，600步约0.43。其他数据与随机采样也有类似现象。这证实相关退化出现在这些大模型早期状态，却没有对大模型做与合成任务相同的注意力因果干预。（第9、14、21页 Figure 8、Appendix A/E）"
+      ]
+    },
+    {
+      "title": "有效性与局限",
+      "paragraphs": [
+        "已知算法允许定义正确注意力位置，并做带真值信息的乘法干预；自然语言通常没有这样的唯一 $\\Omega$。研究没有证明表示坍缩为何必然出现，也未严格验证搜索假说。注意力重要不排除数据、初始化、其他层协同造成不同平台。（第10页讨论）",
+        "本论文是每步新数据的在线训练，不能把平台期称为传统固定数据 grokking 的记忆阶段。后者以先拟合有限训练集、迟后泛化为特征，这里的训练/测试统计近似重合；有限步准确率突变也不能单凭图形推出普适临界指数。（第4、10页）",
+        "夹角与重复依赖层、输出位置、生成策略和所选检查点；APM 使用绝对值及任务定义，跨模型数值不宜直接混比。LLM 检查只有少量问题和短输出，主要支持早期状态的观察，未建立普遍因果机制或通用优化方法。完整效果需要换任务、种子、采样与控制组继续检验。"
+      ]
+    },
+    {
+      "title": "复现与资源",
+      "paragraphs": [
+        "论文第1、4页公布代码 https://github.com/pulkitgopalani/tf-loss-plateau；附录 A 第14页说明基于 minGPT，实验为单块 A100 或 L40S，多数训练运行耗时数小时。LLM 使用 Hugging Face 的 Pythia/OLMo-2 检查点；生成关闭 cache，分别采用 greedy decoding 与默认温度的随机采样。",
+        "复现时须保存在线数据生成器、首输出位置的排除规则、每种任务的 $\\Omega$、线性/softmax 注意力、干预起点和乘数、探针训练测试切分、LLM检查点与输出长度。官方 v2 PDF SHA-256：87c9a7ae61eb16c3d8230b18a0168f34d19e66bec768129661bed1e456778e0e；MinerU 仅作辅助，26页正文、参考文献及附录均按物理页核对。Evidence status: full-text verified; no independent reproduction performed."
+      ]
+    },
+    {
+      "title": "阅读指南",
+      "paragraphs": [
+        "先看第2页 Figure 1 的平台前后注意力、隐藏状态和输出对比，再用第3页 Figure 2 比较外部损失与内部 APM 时间顺序。深入读第4–5页诊断定义、第6–7页两种干预及第19–20页探针；最后读第9–10页，区分大模型检查点观察和浅层任务因果证据。源图可在 https://arxiv.org/pdf/2506.13688v2 的第2页查看，本卡不在许可未明确时复制图像。"
+      ]
+    }
+  ],
+  "cover": {
+    "mode": "title_abstract",
+    "abstract_text": "浅层 Transformer 的损失平台期内，正确注意力已逐步形成，同时出现重复输出与近乎平行的表示。已知算法上的注意力干预会改变平台，但大模型检查点观察尚不能证明同一因果机制。",
+    "selection_rationale": "已完整检查源 Figure 1 的机制示意、Figure 2 的诊断曲线及附录。Figure 1 最适合作为视觉入口，但当前 arXiv 为非独占分发许可；官方会议页不提供明确的图像再使用授权，OpenReview 许可元数据读取受验证阻挡。因此使用忠实题名与摘要封面，正文指向公开 Figure 1，不将公开可读等同于可再许可。"
+  },
+  "figure_refs": [],
+  "equation_refs": [
+    {
+      "label": "Section 2, MWS task definition",
+      "latex": "y_1=x_1,\\qquad y_i=(x_{i-1}+x_i)\\bmod p\\quad(i\\ge2)",
+      "role": "exact target algorithm distinguishing the early partial solution from the remaining task",
+      "symbols": {
+        "x_i": "input integer token at position i",
+        "y_i": "ground-truth answer token",
+        "p": "modulus,17 in main experiment",
+        "n": "input and output length,16"
+      },
+      "evidence": "paper.pdf p. 3, Section 2",
+      "interpretation": "The first answer only copies; subsequent answers require two adjacent inputs."
+    },
+    {
+      "label": "Eq. (3)",
+      "latex": "\\mathrm{APM}=\\frac{\\sum_{(i,j)\\in\\Omega}|A_{ij}|}{\\sum_{i,j}|A_{ij}|}",
+      "role": "definition of task-aware attention progress measure",
+      "symbols": {
+        "A_ij": "signed attention score from position i to j",
+        "Omega": "position pairs prescribed by the known target algorithm",
+        "APM": "fraction of absolute score mass at those pairs"
+      },
+      "evidence": "paper.pdf p. 4, Eq. (3); p. 15 Table 2",
+      "interpretation": "Using absolute scores is required for linear attention; progress can be hidden by flat loss."
+    },
+    {
+      "label": "Eq. (5)",
+      "latex": "\\mathrm{COS}_{i,j}=\\frac{\\langle h_i,h_j\\rangle}{\\lVert h_i\\rVert\\lVert h_j\\rVert}",
+      "role": "definition of representation direction similarity",
+      "symbols": {
+        "h_i,h_j": "hidden vectors at output positions i,j",
+        "d": "embedding dimension",
+        "COS_i,j": "normalized inner product"
+      },
+      "evidence": "paper.pdf p. 5, Eq. (5)",
+      "interpretation": "Near-parallel directions describe empirical collapse but do not alone prove an exact rank-one representation."
+    }
+  ],
+  "evidence_refs": [
+    "paper.pdf pp. 1–4: identity, exact MWS targets, architecture, online training and APM",
+    "paper.pdf pp. 5–7: Eq. (4)–(5), biasing and fixed-terminal-component interventions",
+    "paper.pdf pp. 8–10: alternate repetition measure, repeat task, LLM checkpoints and unresolved search hypothesis",
+    "paper.pdf pp. 14–18: resources and algorithmic task/attention sets",
+    "paper.pdf pp. 19–21: probe, repeat variants, additional LLM observations",
+    "paper.pdf pp. 22–26: architectural/optimizer robustness checks and related mechanisms",
+    "source PDF SHA-256 87c9a7ae61eb16c3d8230b18a0168f34d19e66bec768129661bed1e456778e0e",
+    "Evidence status: full-text verified; no independent reproduction performed."
+  ]
+}

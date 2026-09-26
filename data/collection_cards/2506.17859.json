@@ -1,0 +1,198 @@
+{
+  "arxiv_id": "2506.17859",
+  "source_version": "v2",
+  "source_pdf": "https://arxiv.org/pdf/2506.17859v2",
+  "title_en": "In-Context Learning Strategies Emerge Rationally",
+  "title_zh": "上下文学习策略的理性涌现：损失与复杂度之间的权衡",
+  "curation_status": "full_text_verified",
+  "card_standard_version": "2.3",
+  "paper_profile": "theory_numerics",
+  "style_reference": "physicist_daily_arxiv",
+  "provenance": {
+    "program": "Collection",
+    "catalog": "Paper Collection",
+    "catalog_record_id": "2506.17859",
+    "catalog_record_ids": [
+      "2506.17859"
+    ],
+    "catalog_topic": "In-Context Learning",
+    "collection_date": "2026-08-30",
+    "sampled_at": "2026-09-26",
+    "selected_by": "collection_serial_goal_continuation",
+    "sampling_seed": "not_applicable_source_complete",
+    "candidate_count": 916
+  },
+  "verified_metadata": {
+    "arxiv_id": "2506.17859",
+    "version": "v2",
+    "title": "In-Context Learning Strategies Emerge Rationally",
+    "authors": [
+      "Daniel Wurgaft",
+      "Ekdeep Singh Lubana",
+      "Core Francisco Park",
+      "Hidenori Tanaka",
+      "Gautam Reddy",
+      "Noah D. Goodman"
+    ],
+    "categories": [
+      "cs.LG",
+      "cs.AI"
+    ],
+    "primary_category": "cs.LG",
+    "published": "2025-06-21",
+    "updated": "2025-06-26",
+    "comment": "Preprint; PDF labels under review. Wurgaft and Lubana contributed equally."
+  },
+  "sections": [
+    {
+      "title": "作者信息",
+      "paragraphs": [
+        "Daniel Wurgaft 与 Ekdeep Singh Lubana 为同等贡献，另有 Core Francisco Park、Hidenori Tanaka、Gautam Reddy、Noah D. Goodman。机构分别为 Stanford 心理学/计算机系、Harvard 的 CBS–NTT Physics of Intelligence 项目和 Princeton 物理系。核对 arXiv:2506.17859v2（2025-06-26），52个物理PDF页；第1页标注预印本、审稿中，不能据此写成已被会议接收。"
+      ]
+    },
+    {
+      "title": "研究问题",
+      "paragraphs": [
+        "为什么从同一个任务分布训练的 Transformer，有时先学会概括到新任务，继续训练后却偏向记住见过的任务？仅说容量不足，解释不了为何早期恰好学到可泛化的解。本论文将几种上下文学习行为统一为两个理想预测器，再用损失收益与实现复杂度的竞争解释训练阶段的策略偏好。（第1–3页）",
+        "读者桥：每个任务是一个带参数的生成函数；先抽取有限组任务用于训练，再从某个任务生成一段序列。可训练对象是 Transformer 权重，训练信号是下一项预测误差；上下文是输入序列，推理时不更新权重。观测量包括预测分布、已见/新任务误差，以及预测行为更接近哪个理想解。本文拟合这些输出行为，尚未追踪内部电路如何实现策略。"
+      ]
+    },
+    {
+      "title": "模型与方法",
+      "paragraphs": [
+        "从真实任务分布 $\\mathcal T_{\\rm true}$ 抽取 $D$ 个参数 $w_d$，构成有限混合 $\\mathcal T_{\\rm train}$；每步抽任务生成长度 $C$ 的序列，训练 GPT-NeoX 架构。$N$ 表示训练迭代，$D$ 是不同任务数，不是上下文长度。三类人工任务是 Dirichlet 分布的彩球罐、带噪声线性回归、带噪声的物品–二元标签匹配；分类查询的真物品已在当前上下文出现，因而概括策略可做带噪声复制。（第3–4、27、29–32页）",
+        "记忆预测器 $M$ 用已见任务的离散先验，概括预测器 $G$ 用真实生成分布的连续先验；两者都在给定上下文后做后验预测。记忆并非直接背答案或简单最近邻。其一般形式为：",
+        "\\[\\begin{aligned}M(s_i\\mid s_{<i})&=\\sum_{w\\in\\mathcal T_{\\rm train}}p(w\\mid s_{<i})f_w(s_i\\mid s_{<i}),\\\\G(s_i\\mid s_{<i})&=\\int p(w\\mid s_{<i})f_w(s_i\\mid s_{<i})\\,dw\\end{aligned}\\]",
+        "$s_{<i}$ 是已见前缀，$f_w$ 是任务的条件分布；$p(w\\mid s_{<i})$ 的先验支持分别为有限集合和真实参数空间。回归中的 $G$ 对应 ridge 解，分类中的 $M$ 可只凭查询检索训练物品标签，$G$ 从当前上下文估计对应关系。（第5、29–32页 Eqs. (1)–(2)）",
+        "层级模型把两个预测器作为策略假设：训练数据更新策略概率，推理时按该概率混合输出。这一层与策略内部的任务参数后验不同。作者假设 $L(N)\\simeq L(\\infty)+A/N^\\alpha$，用 $p(Q)\\propto2^{-K(Q)^\\beta}$ 表示简单策略偏好。$K$ 不是可计算的真实 Kolmogorov 复杂度，而是代码与必要数据无损压缩所得代理量。（第6–7、23–24、28页）",
+        "将有效训练样本量近似为 $\\gamma N^{1-\\alpha}$，后验对数比为：",
+        "\\[\\begin{aligned}\\eta(N,D)&=\\gamma N^{1-\\alpha}\\Delta L(D)-C_\\beta(D),\\\\\\Delta L(D)&=L_G(D)-L_M(D),\\\\C_\\beta(D)&=(\\log 2)\\big[K_M(D)^\\beta-K_G(D)^\\beta\\big]\\end{aligned}\\]",
+        "$\\eta=\\log[P(M\\mid S)/P(G\\mid S)]$，$\\Delta L$ 是已见任务上两预测器的平均损失差；$\\alpha,\\beta,\\gamma$ 为拟合参数。本卡以 $C_\\beta$ 记正文 $\\Delta K(D)^\\beta$ 的整项：它是分别取幂后的复杂度之差，不是先相减再取幂。（第7页 Eq. (4)）",
+        "转成后验权重，得到：",
+        "\\[h_{\\rm pred}(s_i\\mid s_{<i})=\\sigma(\\eta)M(s_i\\mid s_{<i})+[1-\\sigma(\\eta)]G(s_i\\mid s_{<i}),\\qquad\\sigma(z)=\\frac1{1+e^{-z}}\\]",
+        "复杂度项早期抑制较复杂的记忆解，训练损失收益积累后可能反超。这是受学习曲线与简单性偏置启发的规范性模型，未由 Transformer 梯度流严格推导。拟合实际检查点输出而无需读取权重，不等于无需访问模型输出，也不等于三个参数事先已知。（第6–7、22–24页）",
+        "行为坐标取 $d$ 为对称 KL 或欧氏距离：",
+        "\\[d_{\\rm rel}=\\frac12\\left[1+\\frac{d(h,G)-d(h,M)}{d(G,M)}\\right]\\]",
+        "$h=G$ 时为0，$h=M$ 时为1。真实输出不在两预测器连线上时可能越界，作者将其截到 $[0,1]$；KL也非满足三角不等式的几何距离。该坐标与拟合后验相关，不能当成已测到网络内部策略概率。（第5、28页）"
+      ]
+    },
+    {
+      "title": "核心结果与证据",
+      "paragraphs": [
+        "Figure 1/4 显示固定训练步数提高 $D$，行为由记忆趋向概括；中间多样性下继续训练，OOD误差先改善再恶化，出现短暂泛化。Appendix H.1–H.3 分开检查分布内效果、分布外轨迹和绝对预测距离。“阶段”是有限实验中的行为交叉，尚无热力学极限、普适性或临界指数证明。（第2、5、33–44页）",
+        "Appendix H.4 检查72张训练步数–多样性图，每图覆盖11种训练运行。回归平均 R² 为0.97，分类平均agreement为0.92，彩球平均Spearman相关为0.97；后验记忆权重与相对距离的相关分别为0.99、0.98、0.99。不同指标不能都写成97%准确率，也不能写成同一组三参数覆盖全部架构条件。（第7、45–49页）",
+        "拟合最小化预测之间的 KL 或 MSE，三参数在每种条件网格80%上拟合、20%留出，用 L-BFGS-B。去掉采样幂律、复杂度幂指数或损失尺度后拟合更差，支持这些项在当前设置中有用，不证明形式在所有任务都必要。（第29、50页）",
+        "在两策略已可解释输出、$C_\\beta,\\gamma\\Delta L$ 为正且 $\\alpha<1$ 的制度内，由 $\\eta=0$ 得交叉步数：",
+        "\\[N^*(D)=\\left[\\frac{C_\\beta(D)}{\\gamma\\Delta L(D)}\\right]^{1/(1-\\alpha)}\\]",
+        "适用条件不能省去；这不是无条件有限的时间定理。Figure 6 彩球实验支持多样性增加时交叉时间超线性增长，高 $D$ 的长训练加入退火。结果只支持所测范围的趋势，不能保证任意大多样性最终都遗忘。（第8–9、27页）"
+      ]
+    },
+    {
+      "title": "有效性与局限",
+      "paragraphs": [
+        "两假设近似排除了很早训练的高误差区。Appendix E 用插值误差相对其范围的经验阈值筛选：彩球/分类20%，回归10%；适用性带有阈值与数据选择依赖，并非全训练过程每一步都精确。（第26、28页）",
+        "复杂度代理取 lzma、bzip2、brotli、zstd 压缩代码和必要数组的最小比特数，排除共同外部库；不等于实际 Transformer 实现成本。Figure 26 的关键例外：分类维数16的三组条件把概括预测器代码比特数手动乘5，才较好解释低多样性时的记忆偏好，仍有欠权重。整体高拟合度必须与这项经验修正一起阅读。（第28、49页）",
+        "主拟合针对分布内序列；虽另有OOD性能实验，尚未验证同一模型为通用分布外预测机制。研究使用有限人工任务和小模型；自然语言、多策略、电路形成及大型语言模型仍是推广方向。（第10、22页）",
+        "恒定学习率的行为坐标可停在低于1的平台，偏离理论最终记忆解；退火效果依赖时长与warmup，并不总成功。更接近此任务的训练最优解还可能损害新任务泛化。Appendix K 对Gibbs退火的类比是粗略解释，不是Transformer全局收敛定理。（第52页）",
+        "源文第29页 Dirichlet 后验预测分母与多类别归一化不一致，本卡不复制该式；部分回归网格图的上下文长度标注与第27页配置不同。第27页与第52页对退火日程的文字描述也不一致，复现应核验配置，不能自行补定精确日程。"
+      ]
+    },
+    {
+      "title": "复现与资源",
+      "paragraphs": [
+        "Appendix F 每层1个注意力头、顺序残差、隐藏维数64、梯度裁剪范数1，通常训练 $10^5$ 步、学习率 $5\\times10^{-4}$，多样性 $2^2$ 至 $2^{12}$。彩球和分类batch64，回归128且warmup5000；维数、上下文长度、MLP扩张须按任务表独立记录，不可把一幅图注套用全部实验。（第27页）",
+        "作者用A100，回归最高训练预算约两天；高多样性彩球另做200万/1000万步退火。ID/OOD分别采样500序列；分类IWL测试排除上下文中的查询副本，与普通ID不同。压缩程序、median-of-means估计、网格80/20切分、最优插值阈值均需保留。（第27–29页）",
+        "核对的版本未提供明确可定位的作者源代码和训练检查点发布链接，本卡不虚构资源，未重新训练。官方v2 PDF SHA-256：6d904c5321947e8945073257abc0e24043c41dd8c9058d4d7811ff745cc75de9。52个物理页的正文、参考文献、附录均核对；Eq. (4)–(5) 和复杂度修正另与PDF图像对照。Evidence status: full-text verified; no independent reproduction performed."
+      ]
+    },
+    {
+      "title": "阅读指南",
+      "paragraphs": [
+        "先读第2页 Figure 1、第4页 Figure 3，分清两种先验；再看第7页 Eqs. (4)–(5)，区分训练策略权重与推理参数后验。重点检查第26页适用阈值、第28–29页拟合、第49页复杂度修正和第52页退火偏差，再回到第8页交叉时间。源图入口：https://arxiv.org/pdf/2506.17859v2 。"
+      ]
+    }
+  ],
+  "cover": {
+    "mode": "title_abstract",
+    "abstract_text": "有限任务混合训练中的上下文学习可由记忆和概括两个预测器近似。损失与压缩复杂度的竞争解释策略交叉，但有早期适用阈值、经验修正及退火偏差。",
+    "selection_rationale": "已核对Figure1/3机制图和Figure26复杂度修正。公开版本标明arXiv非独占分发许可，采用忠实题名摘要封面，指南给出源图入口。"
+  },
+  "figure_refs": [],
+  "equation_refs": [
+    {
+      "label": "Eqs. (1)–(2)",
+      "latex": "\\begin{aligned}M(s_i\\mid s_{<i})&=\\sum_{w\\in\\mathcal T_{\\rm train}}p(w\\mid s_{<i})f_w(s_i\\mid s_{<i}),\\\\G(s_i\\mid s_{<i})&=\\int p(w\\mid s_{<i})f_w(s_i\\mid s_{<i})\\,dw\\end{aligned}",
+      "role": "discrete and continuous posterior predictions",
+      "symbols": {
+        "w": "task parameters",
+        "s_i,s_<i": "next element and prefix",
+        "f_w": "task law",
+        "M,G": "reference predictors"
+      },
+      "evidence": "paper.pdf p. 5, Eqs. (1)–(2)",
+      "interpretation": "discrete and continuous posterior predictions. Behavioral abstraction; not an internal-circuit measurement."
+    },
+    {
+      "label": "Eq. (4), complexity term expanded",
+      "latex": "\\begin{aligned}\\eta(N,D)&=\\gamma N^{1-\\alpha}\\Delta L(D)-C_\\beta(D),\\\\\\Delta L(D)&=L_G(D)-L_M(D),\\\\C_\\beta(D)&=(\\log 2)\\big[K_M(D)^\\beta-K_G(D)^\\beta\\big]\\end{aligned}",
+      "role": "assumed loss-complexity competition",
+      "symbols": {
+        "N,D": "training iterations and task diversity",
+        "alpha,beta,gamma": "three fitted parameters",
+        "DeltaL": "generalizing minus memorizing ID loss",
+        "C_beta": "difference of separately exponentiated complexities times log2",
+        "eta": "log strategy odds"
+      },
+      "evidence": "paper.pdf p. 7, Eq. (4); pp. 23–24",
+      "interpretation": "assumed loss-complexity competition. Behavioral abstraction; not an internal-circuit measurement."
+    },
+    {
+      "label": "Eq. (5)",
+      "latex": "h_{\\rm pred}(s_i\\mid s_{<i})=\\sigma(\\eta)M(s_i\\mid s_{<i})+[1-\\sigma(\\eta)]G(s_i\\mid s_{<i}),\\qquad\\sigma(z)=\\frac1{1+e^{-z}}",
+      "role": "training-weighted inference mixture",
+      "symbols": {
+        "sigma": "logistic function",
+        "h_pred": "modeled prediction",
+        "eta": "training odds",
+        "M,G": "contextual reference outputs"
+      },
+      "evidence": "paper.pdf p. 7, Eq. (5); p. 24 Eq. (10)",
+      "interpretation": "training-weighted inference mixture. Behavioral abstraction; not an internal-circuit measurement."
+    },
+    {
+      "label": "Section4.1 crossover time",
+      "latex": "N^*(D)=\\left[\\frac{C_\\beta(D)}{\\gamma\\Delta L(D)}\\right]^{1/(1-\\alpha)}",
+      "role": "conditional crossing-time prediction",
+      "symbols": {
+        "N_star": "equal-odds crossing iteration",
+        "C_beta": "positive complexity penalty",
+        "gammaDeltaL": "positive loss gain scale",
+        "alpha": "sampling exponent below1"
+      },
+      "evidence": "paper.pdf p. 8, Section 4.1; p. 26 validity",
+      "interpretation": "conditional crossing-time prediction. Behavioral abstraction; not an internal-circuit measurement."
+    },
+    {
+      "label": "Section3.1 relative distance",
+      "latex": "d_{\\rm rel}=\\frac12\\left[1+\\frac{d(h,G)-d(h,M)}{d(G,M)}\\right]",
+      "role": "empirical strategy coordinate",
+      "symbols": {
+        "h": "Transformer output",
+        "d": "prediction discrepancy",
+        "d_rel": "clipped empirical coordinate"
+      },
+      "evidence": "paper.pdf p. 5, Section 3.1; p. 28 clipping",
+      "interpretation": "empirical strategy coordinate. Behavioral abstraction; not an internal-circuit measurement."
+    }
+  ],
+  "evidence_refs": [
+    "paper.pdf pp. 1–5: authors, task mixtures and predictor definitions",
+    "paper.pdf pp. 6–9: hierarchical mixture, A1/A2 and crossover",
+    "paper.pdf pp. 10–11,22–26: limitations and validity threshold",
+    "paper.pdf pp. 27–32: training, fitting, compression and task specifics",
+    "paper.pdf pp. 33–49: ID/OOD grids and manual5x complexity correction",
+    "paper.pdf pp. 50–52: ablations and annealing deviations",
+    "source PDF SHA-256 6d904c5321947e8945073257abc0e24043c41dd8c9058d4d7811ff745cc75de9",
+    "Evidence status: full-text verified; no independent reproduction performed."
+  ]
+}

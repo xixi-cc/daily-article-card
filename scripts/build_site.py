@@ -701,14 +701,19 @@ def render_paper_figure(record: Dict[str, object], image_src: str, context: str)
 def render_source_cover(record: Dict[str, object], image_src: str) -> str:
     label = escape(str(record.get("cover_label") or "SOURCE FIGURE"))
     alt_text = escape(str(record.get("cover_alt_text") or record["title"]), quote=True)
+    caption = render_math_text(record.get("cover_caption") or "")
+    source_link = escape(str(record.get("link") or ""), quote=True)
     return f"""
 <article class="source-cover source-cover-standalone">
-  <img class="source-cover-image" src="{escape(image_src, quote=True)}" alt="{alt_text}" />
-  <div class="source-cover-shade"></div>
+  <a class="source-cover-image-link" href="{escape(image_src, quote=True)}" aria-label="查看原图">
+    <img class="source-cover-image" src="{escape(image_src, quote=True)}" alt="{alt_text}" />
+  </a>
   <div class="source-cover-copy">
     <span class="source-cover-label">{label}</span>
     <h1>{render_math_text(record["title"])}</h1>
     {f'<p>{render_math_text(record["title_zh"])}</p>' if record.get("title_zh") else ''}
+    {f'<p class="source-cover-caption">{caption}</p>' if caption else ''}
+    {f'<p><a href="{source_link}" target="_blank" rel="noopener noreferrer">论文原文</a></p>' if source_link else ''}
   </div>
 </article>
 """.strip()
@@ -859,6 +864,20 @@ def assert_daily_eligibility(record: Dict[str, object], card: Dict[str, object],
     raise ValueError(f"Daily row {card_id} has no recognized Daily provenance")
 
 
+def source_cover_caption(card: Dict[str, object]) -> str:
+    cover = card.get("cover", {})
+    if not isinstance(cover, dict):
+        return ""
+    caption = str(cover.get("caption", ""))
+    attribution = str(cover.get("attribution", ""))
+    if attribution and attribution not in caption:
+        metadata = card.get("verified_metadata", {})
+        authors = metadata.get("authors", []) if isinstance(metadata, dict) else []
+        author_text = "、".join(str(author) for author in authors) if isinstance(authors, list) else ""
+        caption += f" 来源：{author_text + '；' if author_text else ''}{attribution}"
+    return caption
+
+
 def attach_daily_metadata(records: List[Dict[str, object]]) -> None:
     legacy_dates = load_legacy_daily_dates()
     for record in records:
@@ -869,6 +888,19 @@ def attach_daily_metadata(records: List[Dict[str, object]]) -> None:
         record.update(classify_card(card, fallback))
         record["program"] = "Daily"
         record["feed_date"] = record.get("date", "")
+        record["figure_refs"] = card.get("figure_refs", [])
+        record["cover"] = card.get("cover", {})
+        cover = record["cover"]
+        if isinstance(cover, dict):
+            record["cover_mode"] = str(cover.get("mode", ""))
+            record["cover_summary"] = str(cover.get("abstract_text", ""))
+            record["cover_label"] = str(cover.get("label", ""))
+            record["cover_alt_text"] = str(cover.get("alt_text", ""))
+            record["cover_caption"] = source_cover_caption(card)
+            if record["cover_mode"] == "source_figure":
+                record["paper_image_path"] = str(cover.get("asset_path", ""))
+            elif record["cover_mode"] == "title_abstract":
+                record["paper_image_path"] = ""
 
 
 def render_collection_card_markdown(card: Dict[str, object]) -> str:
@@ -941,7 +973,7 @@ def build_collection_records(paper_image_manifest: Dict[str, Dict[str, object]])
             record["cover_summary"] = str(cover.get("abstract_text", ""))
             record["cover_label"] = str(cover.get("label", ""))
             record["cover_alt_text"] = str(cover.get("alt_text", ""))
-            record["cover_caption"] = str(cover.get("caption", ""))
+            record["cover_caption"] = source_cover_caption(card)
             if record["cover_mode"] == "source_figure":
                 record["paper_image_path"] = str(cover.get("asset_path", ""))
             elif record["cover_mode"] == "title_abstract":

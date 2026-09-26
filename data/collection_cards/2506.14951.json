@@ -1,0 +1,208 @@
+{
+  "arxiv_id": "2506.14951",
+  "source_version": "v4",
+  "source_pdf": "https://arxiv.org/pdf/2506.14951v4",
+  "title_en": "Flat Channels to Infinity in Neural Loss Landscapes",
+  "title_zh": "神经网络损失景观中通向无穷的平坦通道",
+  "curation_status": "full_text_verified",
+  "card_standard_version": "2.3",
+  "paper_profile": "theory_numerics",
+  "style_reference": "physicist_daily_arxiv",
+  "provenance": {
+    "program": "Collection",
+    "catalog": "Paper Collection",
+    "catalog_record_id": "2506.14951",
+    "catalog_record_ids": [
+      "2506.14951"
+    ],
+    "catalog_topic": "Training Dynamics",
+    "collection_date": "2026-08-30",
+    "sampled_at": "2026-09-26",
+    "selected_by": "collection_serial_goal_continuation",
+    "sampling_seed": "not_applicable_source_complete",
+    "candidate_count": 916
+  },
+  "verified_metadata": {
+    "arxiv_id": "2506.14951",
+    "version": "v4",
+    "title": "Flat Channels to Infinity in Neural Loss Landscapes",
+    "authors": [
+      "Flavio Martinelli",
+      "Alexander van Meegen",
+      "Berfin Şimşek",
+      "Wulfram Gerstner",
+      "Johanni Brea"
+    ],
+    "categories": [
+      "cs.LG"
+    ],
+    "primary_category": "cs.LG",
+    "published": "2025-06-17",
+    "updated": "2026-05-08",
+    "comment": "NeurIPS 2025; Flavio Martinelli and Alexander van Meegen contributed equally."
+  },
+  "sections": [
+    {
+      "title": "作者信息",
+      "paragraphs": [
+        "Flavio Martinelli 与 Alexander van Meegen 为共同第一贡献，Berfin Şimşek、Wulfram Gerstner、Johanni Brea。第1页标注：Şimşek 来自 Flatiron Institute，其余作者来自 EPFL；论文为 NeurIPS 2025。本卡核对2026-05-08更新的 arXiv:2506.14951v4，共32个物理PDF页。"
+      ]
+    },
+    {
+      "title": "研究问题",
+      "paragraphs": [
+        "训练损失几乎不变、梯度很小，是否已经停在有限参数的局部极小值？本文辨认另一种情况：两个神经元输入方向趋同，读出权重却朝相反方向变大；函数值仍可有限，而参数沿极慢下降的通道走向无穷。它与可分分类中为扩大间隔而发散的权重，机制不同。（第1–4页）",
+        "读者桥：输入向量被每个隐藏神经元投影，再经激活函数；输出是这些特征的加权和，训练对象是输入权重和读出权重，信号是回归误差的梯度。我们要同时跟踪损失、参数范数、神经元间输入方向距离，以及 Hessian 不同方向的曲率；只看损失会把缓慢运动误判为收敛。"
+      ]
+    },
+    {
+      "title": "模型与方法",
+      "paragraphs": [
+        "主体理论使用固定数据 $\\mathcal D=\\{(x^{(k)},y^{(k)})\\}_{k=1}^N$、$r$ 个隐藏神经元的单隐藏层网络。$w_j$ 为输入权重，$a_j$ 为标量读出权重，$\\sigma$ 为连续激活，后续有限差分展开需要相应光滑性。$x$ 的最后一维固定为1以包含偏置。正文 Eq. (1) 的均方损失为：",
+        "\\[\\mathcal L_r(\\theta;\\mathcal D)=\\frac1N\\sum_{k=1}^{N}\\left[y^{(k)}-\\sum_{j=1}^{r}a_j\\sigma(w_j\\cdot x^{(k)})\\right]^2\\]",
+        "训练动力学为梯度流 $\\dot\\theta=-\\nabla_\\theta\\mathcal L_r$，并与有限步长 GD、SGD、Adam 比较。这里损失不带 $1/2$；附录的部分总体损失另选带 $1/2$ 的归一化，不能直接混用梯度幅度。（第3–4、27页）",
+        "复制一枚神经元，使输入权重相等、读出权重为 $\\gamma a_*$ 与 $(1-\\gamma)a_*$，网络输出不变；原临界点被嵌入为等损失临界线。邻近通道与该线渐近平行，但全参数空间中并不一定靠近。对通道中的两神经元，取 $w=(w_i+w_j)/2$、$\\epsilon=\\lVert w_i-w_j\\rVert/2>0$、单位方向 $\\Delta=(w_i-w_j)/\\lVert w_i-w_j\\rVert$，以及 $a=\\epsilon(a_i-a_j)$、$c=a_i+a_j$。等价参数化为：",
+        "\\[w_i=w+\\epsilon\\Delta,\\quad w_j=w-\\epsilon\\Delta,\\quad a_i=\\frac c2+\\frac{a}{2\\epsilon},\\quad a_j=\\frac c2-\\frac{a}{2\\epsilon}\\]",
+        "对应的两个输出是均值与中心有限差分之和（第7页 Eq. (3)）：",
+        "\\[\\begin{aligned}a_i\\sigma(w_i\\cdot x)+a_j\\sigma(w_j\\cdot x)&=\\frac c2\\left[\\sigma((w+\\epsilon\\Delta)\\cdot x)+\\sigma((w-\\epsilon\\Delta)\\cdot x)\\right]\\\\&\\quad+\\frac{a}{2\\epsilon}\\left[\\sigma((w+\\epsilon\\Delta)\\cdot x)-\\sigma((w-\\epsilon\\Delta)\\cdot x)\\right]\\end{aligned}\\]",
+        "在固定 $w,\\Delta,a,c$ 且激活可微时，$\\epsilon\\to0$ 给出：",
+        "\\[a_i\\sigma(w_i\\cdot x)+a_j\\sigma(w_j\\cdot x)\\xrightarrow{\\epsilon\\to0}c\\sigma(w\\cdot x)+a(\\Delta\\cdot x)\\sigma^{\\prime}(w\\cdot x)\\]",
+        "第二项正是 $v\\cdot x$ 乘上门控 $\\sigma^{\\prime}(w\\cdot x)$，其中 $v=a\\Delta$。softplus 的导数为 sigmoid，因此两个普通神经元在参数发散极限中实现门控线性项；有限参数时只是有限差分近似，不能把它写成已经修改了网络架构。（第7页 Eq. (4)）",
+        "光滑条件下中心差分的奇次误差抵消，函数及损失首个修正为二阶；$\\theta^0$ 指重参数化后在 $\\epsilon\\to0$ 时保持有限的坐标（两神经元部分为 $w,\\Delta,a,c$，加其余有限参数），不是原读出权重的有限极限。$\\mathcal L_r(\\theta^0;\\mathcal D)$ 用门控极限函数 $f_0$ 计算，$h$ 为修正系数，则：",
+        "\\[\\mathcal L_r(\\theta;\\mathcal D)=\\mathcal L_r(\\theta^0;\\mathcal D)+\\epsilon^2 h(\\theta^0;\\mathcal D)+O(\\epsilon^4)\\]",
+        "若极限参数是损失极小值且 $h>0$，减小 $\\epsilon$ 在这个方向上降低损失。完整稳定性还需检查全部横向方向，不能仅凭该条件宣称一般网络中的通道端点都是稳定极小值。（第8页，第26页 Eqs. (11)–(13)）"
+      ]
+    },
+    {
+      "title": "核心结果与证据",
+      "paragraphs": [
+        "Figure 3 中，小扰动后的梯度流进入缓降通道，读出权重增长、输入权重距离缩小、更新方向趋于平行于鞍点线。二维切片看似存在两条通道，但全空间轨迹检查表明，其中一个方向其实流向有限范数极小值。这说明仅画一个平面切片不足以确认通道。（第4–5页 Figure 3）",
+        "系统扫描4420个小网络，包括1层宽度2、4、8、16，输入维数2、4、8、16，及部分2–3层网络；任务为修正 Rosenbrock 与不同粗糙度的 Gaussian-process 回归。操作判据包括参数范数超过 $10^3$、至少一对输入权重余弦距离小于 $10^{-3}$、超过90%的更新落在候选通道子空间。各设置有显著的入通道比例，但这属于阈值定义下的有限规模统计，不是所有大模型的概率定律。（第6–7、19–20页 Figure 4、Appendix B.3）",
+        "沿通道执行“将 $\\epsilon$ 减半再继续梯度流”的跳跃程序，Figure 5 中函数误差与损失差按 $\\epsilon^2$ 降低；沿通道的斜率渐近平缓，而最陡方向的曲率却随 $1/\\epsilon^2$ 增长。所以“越来越平坦”只适用于通道方向，不能说整个 Hessian 都变小。（第7–8、26页 Figure 5、Appendix C.1–2）",
+        "两枚无偏置 erf 神经元拟合特定一维目标的总体损失，可解析消去读出权重并检查剩余方向，得到无穷参数端点的稳定极小值例子。有限步长 GD 的稳定边界接近 $\\lambda_{\\max}=2/\\eta$，与 $\\lambda_{\\max}\\sim\\epsilon^{-2}$ 合起来给出最小可达距离的量级 $\\epsilon_{\\min}\\sim\\sqrt\\eta$。这是该模型的局部稳定性和渐近解释；SGD/Adam 进入通道后停滞的数值行为不能被替换成普遍的优化器精确边界定理。（第8–9、29–30页 Figure 6、Appendix C.3.3/C.5）"
+      ]
+    },
+    {
+      "title": "有效性与局限",
+      "paragraphs": [
+        "一般情况下，端点是局部极小值仍需完整稳定性证明；文中的严格可分析例子采用特定激活、教师目标与高斯总体数据。32页中没有证明所有通道都通向最优解，也没有完成 Transformer 或大卷积模型中的发生概率统计，这些扩展明确仍是展望。（第8–10页）",
+        "非光滑 ReLU 可出现使梯度流停住的 cusp；附录 B.4/C.3 的无限数据例子不能直接取代有限数据 ReLU 的光滑展开。权重衰减可能在损失极缓下降时截断通道，固定步长也会受增长的最陡曲率限制；实测低梯度范数不代表权重已收敛。",
+        "通道分类依赖有限参数范数、角度和更新投影阈值；ODE 求解也受时间、容差和 maxnorm 截断。更粗糙目标更常进入通道，以及损失分布与有限范数解类似，均为所测任务的观察；它们不自动证明更好的泛化、鲁棒性或实际训练收益。"
+      ]
+    },
+    {
+      "title": "复现与资源",
+      "paragraphs": [
+        "第10页公布代码 https://github.com/flavio-martinelli/channels-to-infinity，梯度流使用 Julia 的 MLPGradientFlow.jl。附录 A.2/B.3 给出数据生成、50个初始化的配置扫描、ODE 容差和停止规则；CPU 为 AMD EPYC 9454，每次模拟使用单核。本卡没有在本机或集群重新运行这些研究实验。",
+        "复现时应同时保存逐步参数范数、输入权重距离、读出符号、更新投影与 Hessian 极值；比较无偏置 plateau saddle 和带偏置通道时保持实验组定义。Appendix C.3.3 的两处参数定义存在印刷笔误，应与第7页的 $\\epsilon$、$c$ 正确定义对照后再实现，不能逐字复制错误表达式。",
+        "官方 v4 PDF SHA-256：986a0a831dfe1219291b09977fbf1a09825c8a50d8477660838f46b865ff823b；32个物理页的正文、参考文献与附录均检查，所用 Eq. (3)–(4) 另与 PDF 第7页图像核对。Evidence status: full-text verified; no independent reproduction performed."
+      ]
+    },
+    {
+      "title": "阅读指南",
+      "paragraphs": [
+        "先看第1页 Figure 1，把“复制产生临界线”和“近邻缓降通道”分开；第5页 Figure 3 展示二维图形可能误导的例子。理论主线是第3页损失、第7页两神经元重参数化及有限差分极限、第26页二阶修正，再读第8–9页有限步长的稳定限制。最后对照附录 B 的判据、C.3.3 的特例稳定性和正文讨论，避免将参数发散的存在例子扩大为大模型通用优化结论。"
+      ]
+    }
+  ],
+  "cover": {
+    "mode": "source_figure",
+    "asset_path": "assets/collection-figures/2506.14951/figure-1-channels-and-gated-unit.png",
+    "label": "Figure 1",
+    "visual_type": "schematic",
+    "evidence": "paper.pdf p. 1, Figure 1",
+    "alt_text": "复制神经元的临界线、局部景观中的缓降通道及门控线性项的三个相邻机制面板。",
+    "caption": "作者 Figure 1（v4 PDF 第1页，CC BY 4.0）：左侧复制神经元使输出权重之和保持固定，产生等损失临界线；中间在分裂参数与最负曲率方向的切片上，红线为鞍点线、绿线为趋向无穷的缓降通道；右侧示意其有限函数极限中出现 $\\sigma^{\\prime}$ 门控的线性项。这是机制与局部切片示意，不是一般网络所有训练轨迹的保证。",
+    "selection_rationale": "作者自绘三面板同时给出参数对称性、景观几何与函数极限，最直接支持论文机制；原始PDF只裁去周围题名/摘要和印刷图注，所有面板、变量、坐标和门控结构保持完整，已与第1页视觉核对。"
+  },
+  "figure_refs": [
+    {
+      "label": "Figure 1",
+      "asset_path": "assets/collection-figures/2506.14951/figure-1-channels-and-gated-unit.png",
+      "section": "模型与方法",
+      "role": "connect neuron duplication, asymptotically parallel channels and the gated-linear functional limit",
+      "evidence": "paper.pdf p. 1, Figure 1",
+      "alt_text": "红色复制神经元与鞍点线、绿色无穷通道和激活导数门控的函数结构。",
+      "caption": "作者 Figure 1（v4 PDF 第1页，CC BY 4.0）：左侧复制神经元使输出权重之和保持固定，产生等损失临界线；中间在分裂参数与最负曲率方向的切片上，红线为鞍点线、绿线为趋向无穷的缓降通道；右侧示意其有限函数极限中出现 $\\sigma^{\\prime}$ 门控的线性项。这是机制与局部切片示意，不是一般网络所有训练轨迹的保证。",
+      "interpretation": "Opposing divergent readouts can cancel to a finite directional derivative; the schematic is not a proof that all trajectories reach stable minima at infinity."
+    }
+  ],
+  "equation_refs": [
+    {
+      "label": "Eq. (1)",
+      "latex": "\\mathcal L_r(\\theta;\\mathcal D)=\\frac1N\\sum_{k=1}^{N}\\left[y^{(k)}-\\sum_{j=1}^{r}a_j\\sigma(w_j\\cdot x^{(k)})\\right]^2",
+      "role": "definition of the finite-data scalar regression loss without a 1/2 factor",
+      "symbols": {
+        "N": "number of fixed training samples",
+        "r": "hidden neuron count",
+        "theta": "input and readout parameters",
+        "a_j,w_j": "readout scalar and bias-augmented input vector",
+        "sigma": "activation",
+        "x^(k),y^(k)": "training input and scalar target"
+      },
+      "evidence": "paper.pdf p. 3, Eq. (1)",
+      "interpretation": "The finite-data objective fixes which parameters evolve; keep its normalization separate from Appendix C population conventions."
+    },
+    {
+      "label": "Eq. (3), equivalent parameter definitions",
+      "latex": "w_i=w+\\epsilon\\Delta,\\quad w_j=w-\\epsilon\\Delta,\\quad a_i=\\frac c2+\\frac{a}{2\\epsilon},\\quad a_j=\\frac c2-\\frac{a}{2\\epsilon}",
+      "role": "exact symmetric and antisymmetric parameterization for the neuron pair",
+      "symbols": {
+        "w": "average input weight",
+        "epsilon": "half the input-weight distance, positive",
+        "Delta": "unit direction of the input-weight difference",
+        "a": "epsilon times readout difference",
+        "c": "readout sum",
+        "i,j": "the two neurons"
+      },
+      "evidence": "paper.pdf p. 7, definitions below Eq. (3)",
+      "interpretation": "At fixed nonzero a, small epsilon forces opposite readout divergence."
+    },
+    {
+      "label": "Eq. (3)",
+      "latex": "\\begin{aligned}a_i\\sigma(w_i\\cdot x)+a_j\\sigma(w_j\\cdot x)&=\\frac c2\\left[\\sigma((w+\\epsilon\\Delta)\\cdot x)+\\sigma((w-\\epsilon\\Delta)\\cdot x)\\right]\\\\&\\quad+\\frac{a}{2\\epsilon}\\left[\\sigma((w+\\epsilon\\Delta)\\cdot x)-\\sigma((w-\\epsilon\\Delta)\\cdot x)\\right]\\end{aligned}",
+      "role": "exact identity exposing the central finite-difference term",
+      "symbols": {
+        "x": "bias-augmented input",
+        "w,epsilon,Delta,a,c": "as defined in symmetric parameterization",
+        "sigma": "activation"
+      },
+      "evidence": "paper.pdf p. 7, Eq. (3)",
+      "interpretation": "The diverging antisymmetric readout multiplies a vanishing activation difference."
+    },
+    {
+      "label": "Eq. (4)",
+      "latex": "a_i\\sigma(w_i\\cdot x)+a_j\\sigma(w_j\\cdot x)\\xrightarrow{\\epsilon\\to0}c\\sigma(w\\cdot x)+a(\\Delta\\cdot x)\\sigma^{\\prime}(w\\cdot x)",
+      "role": "controlled functional limit of the central difference for smooth activation",
+      "symbols": {
+        "sigma_prime": "activation derivative",
+        "a*Delta": "linear gate input direction v",
+        "epsilon": "tends to zero with w,Delta,a,c fixed"
+      },
+      "evidence": "paper.pdf p. 7, Eq. (4)",
+      "interpretation": "A finite ordinary activation plus derivative-gated linear term survives despite infinite readout norm."
+    },
+    {
+      "label": "Eq. (13)",
+      "latex": "\\mathcal L_r(\\theta;\\mathcal D)=\\mathcal L_r(\\theta^0;\\mathcal D)+\\epsilon^2 h(\\theta^0;\\mathcal D)+O(\\epsilon^4)",
+      "role": "controlled small-epsilon loss expansion",
+      "symbols": {
+        "theta0": "finite reparameterized coordinates (w,Delta,a,c and remaining finite parameters); loss evaluated on f0, not a finite limit of original readout weights",
+        "h": "coefficient of the leading correction",
+        "O(epsilon4)": "next even-order remainder under the required smoothness"
+      },
+      "evidence": "paper.pdf p. 26, Eqs. (11)–(13); p. 8 interpretation",
+      "interpretation": "Positive h at a minimum favors approaching zero epsilon in that direction; full transverse stability remains to be checked."
+    }
+  ],
+  "evidence_refs": [
+    "paper.pdf pp. 1–4: authors/equal contribution, objective and saddle-line symmetry",
+    "paper.pdf pp. 5–7: channel trajectories, finite-network statistics and Eq. (3)–(4)",
+    "paper.pdf pp. 8–10: gated limit, flat/sharp directions, toy stability and large-model limitations",
+    "paper.pdf pp. 15–20: solver/data protocol, thresholds, total4420fits and resource boundaries",
+    "paper.pdf pp. 21–25: additional channel geometry and non-smooth ReLU boundary",
+    "paper.pdf pp. 26–31: finite-difference expansion, Gaussian population integrals, toy stability and higher derivatives",
+    "source PDF SHA-256 986a0a831dfe1219291b09977fbf1a09825c8a50d8477660838f46b865ff823b",
+    "Evidence status: full-text verified; no independent reproduction performed."
+  ]
+}

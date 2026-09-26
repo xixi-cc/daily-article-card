@@ -1,0 +1,207 @@
+{
+  "arxiv_id": "2506.19125",
+  "source_version": "v2",
+  "source_pdf": "https://arxiv.org/pdf/2506.19125v2",
+  "title_en": "Transformer Circuits Can Realize Clustering Algorithms",
+  "title_zh": "用 Transformer 电路实现聚类算法",
+  "curation_status": "full_text_verified",
+  "card_standard_version": "2.3",
+  "paper_profile": "theory_numerics",
+  "style_reference": "physicist_daily_arxiv",
+  "provenance": {
+    "program": "Collection",
+    "catalog": "Paper Collection",
+    "catalog_record_id": "2506.19125",
+    "catalog_record_ids": [
+      "2506.19125"
+    ],
+    "catalog_topic": "In-Context Learning",
+    "collection_date": "2026-08-30",
+    "sampled_at": "2026-09-26",
+    "selected_by": "collection_serial_goal_continuation",
+    "sampling_seed": "not_applicable_source_complete",
+    "candidate_count": 916
+  },
+  "verified_metadata": {
+    "arxiv_id": "2506.19125",
+    "version": "v2",
+    "title": "Transformer Circuits Can Realize Clustering Algorithms",
+    "authors": [
+      "Kenneth L. Clarkson",
+      "Lior Horesh",
+      "Takuya Ito",
+      "Charlotte Park",
+      "Parikshit Ram"
+    ],
+    "categories": [
+      "cs.LG",
+      "cs.AI"
+    ],
+    "primary_category": "cs.LG",
+    "published": "2025-06-23",
+    "updated": "2026-08-07",
+    "comment": "arXiv preprint; no verified venue specified in the reviewed source."
+  },
+  "sections": [
+    {
+      "title": "作者信息",
+      "paragraphs": [
+        "Kenneth L. Clarkson、Lior Horesh、Takuya Ito、Parikshit Ram 来自 IBM Research，Charlotte Park 来自 MIT。核对2026-08-07更新的 arXiv:2506.19125v2，共45个物理PDF页；当前核对的源文未明确给出已核验会议或期刊信息，按预印本处理。"
+      ]
+    },
+    {
+      "title": "研究问题",
+      "paragraphs": [
+        "Transformer 能否用一套显式电路准确执行经典算法，而非只在行为上近似它？作者选用 k-means 的 Lloyd 迭代，构造让注意力分配样本并计算中心的编码器–解码器；然后再把此结构作为可训练算法族，研究训练后能否改善聚类目标。（第1–3页）",
+        "读者桥：输入是无标签数据点及初始聚类中心，点向量和中心向量分别是两组 token。隐状态中的附加坐标存放簇归属和簇编号，输出是更新后的中心；手工构造阶段固定权重，以前向层数充当算法迭代，学习阶段才通过聚类损失优化投影权重。中心是随前向步骤变化的状态，不是训练时更新的网络参数。"
+      ]
+    },
+    {
+      "title": "模型与方法",
+      "paragraphs": [
+        "给定 $n$ 个点 $x_i\\in\\mathbb R^d$ 和 $k$ 个中心 $c_j$，平方距离聚类目标为：",
+        "\\[L(X,C)=\\sum_{i=1}^{n}\\min_{j\\in[k]}\\lVert x_i-c_j\\rVert^2\\]",
+        "Lloyd 交替将每个点分给最近中心，再将中心改为所属点的均值；每一步在固定另一组变量时减小目标，不保证达到全局最优。该问题一般NP困难，本文实现其迭代算法并未解决全局优化困难。（第3页 Eq. (1)）",
+        "构造将点矩阵与归属矩阵堆叠成 $\\mathsf X^{(t)}\\in\\mathbb R^{(d+k)\\times n}$，将中心与固定簇编号堆叠成 $\\widetilde C^{(t)}\\in\\mathbb R^{(d+k)\\times k}$。$X$ 每列一个数据点，$Y$ 每列存点的簇归属；初始 $Y=0$。以下精确Lloyd对应限定每步每点的最近中心唯一、各簇非空，使归属为one-hot。核心更新可写成：",
+        "\\[\\begin{aligned}\\mathsf X^{(t)}&=\\begin{bmatrix}X\\\\Y^{(t)}\\end{bmatrix},\\quad\\widetilde C^{(t)}=\\begin{bmatrix}C^{(t)}\\\\I_k\\end{bmatrix},\\\\Y^{(t+1)}&=\\sigma_\\infty(A),\\quad A_{ji}=-\\lVert x_i-c_j^{(t)}\\rVert^2,\\\\C^{(t+1)}&=X\\,\\sigma_\\infty\\!\\left((Y^{(t+1)})^\\top\\right)\\end{aligned}\\]",
+        "$\\sigma_\\infty$ 按列作用。点作query、中心作key时，负平方距离注意力找最近簇，得到 $Y$；反向用中心编号作query、点归属作key时，所属点具有相同最大分数，平均这些value恰好是新中心。自注意力取负value抵消残差中的旧归属/中心，再加交叉注意力的新状态；并非把历史中心反复相加。（第4–5页 Eqs. (2)–(5)，第27、30–31页）",
+        "精确构造用逆温 $\\gamma\\to\\infty$ 的极限softmax：",
+        "\\[\\sigma_\\gamma(a)_i=\\frac{e^{\\gamma a_i}}{\\sum_j e^{\\gamma a_j}},\\qquad\\sigma_\\infty(a)_i=\\begin{cases}1/|M|&i\\in M,\\\\0&i\\notin M,\\end{cases}\\quad M=\\arg\\max_j a_j\\]",
+        "最大值并列时平均全部最大项，不能用只返回一个索引的argmax替代。精确Lloyd对应要求每点最近中心唯一且各簇非空；第一步因此生成one-hot，第二步利用同簇点归属值同为1的并列来等权平均。若出现最近中心距离并列，第一步产生分数归属，第二次极限softmax只保留这些归属值的最大项，既不等于通常的硬分簇均值，也不一般等于分数加权均值；须另加产生one-hot的tie-breaking或重新定义算法。有限 $\\gamma$ 通常只是近似，不能由数值重合推出无条件数学等价。（第26–28、31页）",
+        "另一构造把 $\\lVert x\\rVert^2$、$-1/2$ 加进token，点积算出距离分数：",
+        "\\[x^\\top c-\\frac12\\lVert x\\rVert^2-\\frac12\\lVert c\\rVert^2=-\\frac12\\lVert x-c\\rVert^2\\]",
+        "再用二次激活的FFN刷新新中心平方范数，嵌入宽度为 $d+k+2$。正文 Eq. (7) 用 rectified quadratic，而附录 F 明写平方激活及常数偏置；它并非无需额外条件的普通ReLU语言模型层。Theo­rem2.2/F.1 给出该构造的算法实现存在性。（第9–10、33–35页）",
+        "学习实验重新随机初始化一层权重，用 $\\gamma=1$ 和以下平滑上界训练：",
+        "\\[\\widetilde L_\\lambda(X,C)=\\sum_{i=1}^{n}\\frac{\\sum_{j=1}^{k}e^{-\\lVert x_i-c_j\\rVert^2/\\lambda}\\lVert x_i-c_j\\rVert^2}{\\sum_{j=1}^{k}e^{-\\lVert x_i-c_j\\rVert^2/\\lambda}}\\]",
+        "$\\lambda>0$ 控制训练损失平滑程度，与注意力逆温 $\\gamma$ 不同；$\\lambda\\to0^+$ 趋于原目标。它是距离的softmax加权平均，不是负温度乘log-sum-exp。训练多任务的一步中心更新，再迭代复用单层；附录 B.3 每次将当前中心重新嵌入并把归属槽置零。（第19–21页 Eqs. (10)–(12)）"
+      ]
+    },
+    {
+      "title": "核心结果与证据",
+      "paragraphs": [
+        "Theorem2.1/E.1 在上述唯一最近中心、非空簇条件下，为指定投影参数和极限softmax证明每层执行一次Lloyd迭代，$T$层执行 $T$步。Corollary2.1 的 $O(d+k)$ 应结合嵌入宽度阅读：正文矩阵各为 $(d+k)\\times(d+k)$，不宜把它写成所有稠密可训练参数总数只有线性量级。Figure3 的二维 $n=10000,k=5,\\gamma=10^4$ 数值例在10步中重合，Appendix A进一步显示点数、簇数、尺度影响有限温对应误差。（第6–7、17–18页）",
+        "训练模型在 $d=32,n=512,k=10$ 的320个新高斯混合任务上，20步平均log目标约5.0052，Lloyd约5.2636；仅用 $d$ 维token的消融约5.35，低于性能更好的 $d+k$ 方案。改用k-means++初始化仍有改善；$n=128$至2048的测试保持较好效果，但这是同类生成任务上的数据规模泛化。（第6–8、22页 Figure4/Table1）",
+        "必须同时保留分布外负结果：高斯训练模型在Cauchy混合上平均log目标3.3443，Lloyd3.2528，模型更差。在15个真实OpenML数据集的40次试验中，模型都改善初始中心，却全部逊于Lloyd；Table2的相对差0.93%–7.07%是对平均log目标的比较，不能直接转换成原始平方距离目标只差同样百分比。（第22–23页 Tables1–2）",
+        "改变部件可得到soft、球面、trimmed聚类：soft版本需有限温归属与线性归一化中心更新；球面版本需单位范数和相应规范化，LayerNorm证明还要求坐标和为零，RMSNorm变体可移除此假设。换一个常规模型的默认LayerNorm不自动等价全部球面算法。（第11、25、29–31、36–39页）",
+        "稀疏权重和Gumbel选择又给出鲁棒聚类与随机medoids。Appendix I 的真实数据初步比较并非稳胜：trimmed方法4/10、作者鲁棒方法6/10超过Lloyd；medoids测试显示采样gap需权衡簇内与簇外候选，但未建立优于成熟PAM/CLARANS的全面基准。（第40–45页）"
+      ]
+    },
+    {
+      "title": "有效性与局限",
+      "paragraphs": [
+        "核心理论是算法表达能力与显式参数构造，不是学习必然找到这些权重，也不是训练模型的泛化证明。极限softmax易做前向却难反传，有限温训练网络改变了算法，因此“精确实现Lloyd”和“学习后更好”属于不同制度。（第12–13页）",
+        "簇编号用 $k$ 个附加坐标，使模型结构绑定 $k$；跨数据点数 $n$ 的泛化不能写成自动支持更大的 $k$。真实数据与重尾负结果显示从高斯任务迁移仍有限，本文没有证明训练模型每一步都单调减小目标或找到全局最优。",
+        "正文及附录存在一些记号/排版问题，例如第19页提取首d行的索引与文字说明不一致、附录球面证明V4的一处符号与实际减去旧中心的展开不一致。复现应以矩阵维度、前后状态和完整更新核对。空簇、距离并列、零范数规范化也须明确定义；本卡不宣称独立完成了全篇定理证明审计。",
+        "鲁棒和trimmed算法的实验多用普通聚类目标，而污染标签未知；低目标值不单独证明抗异常点能力。有限偏移下普通softmax对外簇一般保留非零权重；严格过滤应与稀疏激活或极限条件区分，不能泛称任何足够大有限偏移都产生精确零。"
+      ]
+    },
+    {
+      "title": "复现与资源",
+      "paragraphs": [
+        "作者在第17、19页给出 https://github.com/rithram/kmeans-trf 。训练任务为随机高斯混合，平移/缩放至单位超立方体，初始中心从点中随机选；每步32任务、训练10000步、初始学习率0.01，验证损失连续250步不降则减半。验证320任务，主要平滑温度0.1；重复试验及图中区间定义需分别保存。（第19–21页）",
+        "Figure4色带是320任务的min–max，而Figure8/9训练曲线是10次试验的四分位区间，不能都叫置信区间。OpenML测试选32维子集及至多1024点，40次试验跑10步；应保持两算法同一初始化、迭代预算、log前后平均次序，另报耗时才可谈速度。（第8、20–23页）",
+        "官方v2 PDF SHA-256：be19fb22cad06dadaf6600050b69af030e078ef9e6ff61e5ea64b88d86ba81cb；45个物理页正文、参考文献及附录核对，核心softmax、平滑目标和负结果表另与PDF图像比较。作者Figure1采用CC BY4.0，保留完整面板。本卡未重跑聚类或训练实验。Evidence status: full-text verified; no independent reproduction performed."
+      ]
+    },
+    {
+      "title": "阅读指南",
+      "paragraphs": [
+        "先读第2页Figure1，再将第4页Figure2的两组token与第5页Eq.(4)残差清零过程对应。数学主线是第26–27页极限softmax、第31页状态更新、第19页训练损失。读学习结果时一定同时看第22–23页的Cauchy/OpenML负结果；最后读第36–45页部件替换条件，分清存在性、数值近似和可学习性。"
+      ]
+    }
+  ],
+  "cover": {
+    "mode": "source_figure",
+    "asset_path": "assets/collection-figures/2506.19125/figure-1-clustering-circuits.png",
+    "label": "Figure 1",
+    "visual_type": "schematic",
+    "evidence": "paper.pdf p. 2, Figure 1",
+    "alt_text": "Lloyd算法、Transformer电路和聚类变体与架构修改的完整对应图。",
+    "caption": "作者 Figure1（v2 PDF第2页，CC BY4.0）：A为Lloyd迭代，B为编码器–解码器电路；蓝框关联已有算法与部件替换，绿框为作者探索的新变体。图示算法结构，不代表所有训练网络自然学到这些电路或所有变体都有最优性保证。",
+    "selection_rationale": "核心作者机制图完整保留A/B面板、原算法、部件替换框及连接方向，与PDF第2页逐项对照。"
+  },
+  "figure_refs": [
+    {
+      "label": "Figure 1",
+      "asset_path": "assets/collection-figures/2506.19125/figure-1-clustering-circuits.png",
+      "section": "模型与方法",
+      "role": "connect prescribed Lloyd updates with encoder-decoder circuits and conditional algorithm variants",
+      "evidence": "paper.pdf p. 2, Figure 1",
+      "alt_text": "Lloyd伪代码及编码器解码器聚类电路，含已有和新变体。",
+      "caption": "作者 Figure1（v2 PDF第2页，CC BY4.0）：A为Lloyd迭代，B为编码器–解码器电路；蓝框关联已有算法与部件替换，绿框为作者探索的新变体。图示算法结构，不代表所有训练网络自然学到这些电路或所有变体都有最优性保证。",
+      "interpretation": "A structural overview, not a proof of arbitrary learned model optimality."
+    }
+  ],
+  "equation_refs": [
+    {
+      "label": "Eq. (1)",
+      "latex": "L(X,C)=\\sum_{i=1}^{n}\\min_{j\\in[k]}\\lVert x_i-c_j\\rVert^2",
+      "role": "squared-distance clustering objective",
+      "symbols": {
+        "X,C": "data matrix and centers",
+        "n,k,d": "point count,cluster count,dimension",
+        "x_i,c_j": "point and center vectors"
+      },
+      "evidence": "paper.pdf p. 3, Eq. (1)",
+      "interpretation": "squared-distance clustering objective. Preserve the stated parameter, tie and limiting conditions."
+    },
+    {
+      "label": "Eqs. (2), (18)–(20), reduced state update",
+      "latex": "\\begin{aligned}\\mathsf X^{(t)}&=\\begin{bmatrix}X\\\\Y^{(t)}\\end{bmatrix},\\quad\\widetilde C^{(t)}=\\begin{bmatrix}C^{(t)}\\\\I_k\\end{bmatrix},\\\\Y^{(t+1)}&=\\sigma_\\infty(A),\\quad A_{ji}=-\\lVert x_i-c_j^{(t)}\\rVert^2,\\\\C^{(t+1)}&=X\\,\\sigma_\\infty\\!\\left((Y^{(t+1)})^\\top\\right)\\end{aligned}",
+      "role": "Lloyd assignment and averaging as columnwise attention",
+      "symbols": {
+        "mathsfX,Ctilde": "augmented point and center token matrices",
+        "Y": "cluster assignment matrix",
+        "I_k": "fixed cluster identity slots",
+        "sigma_infinity": "columnwise averaging-hard attention",
+        "t": "forward iteration"
+      },
+      "evidence": "paper.pdf pp. 4,27,31, Eqs. (2),(18)–(20),(24)–(25)",
+      "interpretation": "Exact Lloyd correspondence requires a unique nearest center for each point at each step and nonempty clusters. Equal-score ties among one-hot members implement center averaging; distance ties yielding fractional assignments require a separate one-hot tie-break or a different update."
+    },
+    {
+      "label": "Eq. (13) and limiting-softmax definition",
+      "latex": "\\sigma_\\gamma(a)_i=\\frac{e^{\\gamma a_i}}{\\sum_j e^{\\gamma a_j}},\\qquad\\sigma_\\infty(a)_i=\\begin{cases}1/|M|&i\\in M,\\\\0&i\\notin M,\\end{cases}\\quad M=\\arg\\max_j a_j",
+      "role": "equal weighting of all maximizing entries at zero temperature",
+      "symbols": {
+        "gamma": "inverse temperature",
+        "M": "set of maximizing coordinates",
+        "a": "attention score vector"
+      },
+      "evidence": "paper.pdf p. 26, Eq. (13) and definition",
+      "interpretation": "equal weighting of all maximizing entries at zero temperature. Preserve the stated parameter, tie and limiting conditions."
+    },
+    {
+      "label": "Eq. (11)",
+      "latex": "\\widetilde L_\\lambda(X,C)=\\sum_{i=1}^{n}\\frac{\\sum_{j=1}^{k}e^{-\\lVert x_i-c_j\\rVert^2/\\lambda}\\lVert x_i-c_j\\rVert^2}{\\sum_{j=1}^{k}e^{-\\lVert x_i-c_j\\rVert^2/\\lambda}}",
+      "role": "smoothed upper-bound loss for training",
+      "symbols": {
+        "lambda": "loss smoothing temperature, not inverse attention temperature",
+        "X,C": "data and predicted centers",
+        "i,j": "point and center indices"
+      },
+      "evidence": "paper.pdf p. 19, Eq. (11)",
+      "interpretation": "smoothed upper-bound loss for training. Preserve the stated parameter, tie and limiting conditions."
+    },
+    {
+      "label": "Section2.4 lifted-score identity",
+      "latex": "x^\\top c-\\frac12\\lVert x\\rVert^2-\\frac12\\lVert c\\rVert^2=-\\frac12\\lVert x-c\\rVert^2",
+      "role": "distance score via squared-norm feature lifting",
+      "symbols": {
+        "x,c": "point and center",
+        "norm_squared": "extra lifted coordinate"
+      },
+      "evidence": "paper.pdf p. 10, Section 2.4; p. 33 Lemma F.1",
+      "interpretation": "distance score via squared-norm feature lifting. Preserve the stated parameter, tie and limiting conditions."
+    }
+  ],
+  "evidence_refs": [
+    "paper.pdf pp. 1–6: identity, objective, embedding and prescribed update",
+    "paper.pdf pp. 7–13: learned results, architectural variants and theoretical limits",
+    "paper.pdf pp. 17–23: finite-temperature parity, training and OOD negative results",
+    "paper.pdf pp. 24–35: component map, limiting attention and explicit constructions",
+    "paper.pdf pp. 36–45: normalization, robust/trimmed conditions and medoids tests",
+    "source PDF SHA-256 be19fb22cad06dadaf6600050b69af030e078ef9e6ff61e5ea64b88d86ba81cb",
+    "Evidence status: full-text verified; no independent reproduction performed."
+  ]
+}

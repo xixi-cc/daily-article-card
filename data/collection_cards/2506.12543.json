@@ -1,0 +1,163 @@
+{
+  "arxiv_id": "2506.12543",
+  "source_version": "v1",
+  "source_pdf": "https://arxiv.org/pdf/2506.12543v1",
+  "title_en": "Is your batch size the problem? Revisiting the Adam-SGD gap in language modeling",
+  "title_zh": "批量才是问题吗？重新审视语言模型中的 Adam–SGD 差距",
+  "curation_status": "full_text_verified",
+  "card_standard_version": "2.3",
+  "paper_profile": "ai_empirical",
+  "style_reference": "physicist_daily_arxiv",
+  "provenance": {
+    "program": "Collection",
+    "catalog": "Paper Collection",
+    "catalog_record_id": "2506.12543",
+    "catalog_record_ids": [
+      "2506.12543"
+    ],
+    "catalog_topic": "Training Dynamics",
+    "collection_date": "2026-08-30",
+    "sampled_at": "2026-09-26",
+    "selected_by": "collection_serial_goal_continuation",
+    "sampling_seed": "not_applicable_source_complete",
+    "candidate_count": 916
+  },
+  "verified_metadata": {
+    "arxiv_id": "2506.12543",
+    "version": "v1",
+    "title": "Is your batch size the problem? Revisiting the Adam-SGD gap in language modeling",
+    "authors": [
+      "Teodora Srećković",
+      "Jonas Geiping",
+      "Antonio Orvieto"
+    ],
+    "categories": [
+      "cs.LG"
+    ],
+    "primary_category": "cs.LG",
+    "published": "2025-06-14",
+    "updated": "2025-06-14",
+    "comment": "Short version accepted at HiLD Workshop at ICML 2025; full paper under review."
+  },
+  "sections": [
+    {
+      "title": "作者信息",
+      "paragraphs": [
+        "Teodora Srećković、Jonas Geiping、Antonio Orvieto；PDF 第1页列出 Max Planck Institute for Intelligent Systems、ELLIS Institute Tübingen 和 Tübingen AI Center。核对的是 arXiv:2506.12543v1，共20个物理页。标题页注明全文仍在审稿，短版获 ICML 2025 的 HiLD Workshop 接收；不能把全文写成已获 ICML 主会录用。"
+      ]
+    },
+    {
+      "title": "研究问题",
+      "paragraphs": [
+        "语言模型通常用 Adam 训练，已有解释将它优于 SGD 归因于稀有词、曲率异质性或梯度方向。本论文倒过来问：经过同样认真的调参，有没有让带动量 SGD 接近 Adam 的训练制度？批量改变时，哪些解释还能成立？（PDF 第1–3页）",
+        "读者桥：输入是已分词文本，Transformer 将前缀表示为隐藏向量，输出下一 token 的概率分布；网络参数随小批量梯度更新，以降低预测损失。评价量是独立验证集上的困惑度，越低越好。批量是每次更新使用的序列数；它同时改变梯度估计噪声与给定 token 预算下的更新次数，不能只当作硬件吞吐参数。（第4–6、16页）"
+      ]
+    },
+    {
+      "title": "模型与方法",
+      "paragraphs": [
+        "主体是12层、160M 参数的因果语言模型，训练 SlimPajama，并检查 FineWeb 及250M、410M、1B 参数模型。基础比较不使用 weight decay；Adam 的第二矩衰减系数固定为0.95；文中 SGD 默认含动量。原始梯度先做全局范数裁剪，再更新动量。RMSNorm、RoPE 与 SwiGLU 等实现细节在附录 A，不能把这里的结论直接当作所有 Transformer 的性质。（第4、16–17页）",
+        "Figure 1 控制序列长512、13亿训练 token、1亿验证 token、10% warmup 后余弦学习率，扫描批量64、256、1024及两种优化器各自的学习率与动量。Section 2.3 另用序列2048、WSD 调度及不同训练长度，分别固定 token 总数和更新步数；这两组实验的序列长度、调度与预算不同，数字不应混算。（第2、4–6页）",
+        "机制检查分两步：grafting 交换两种优化器的更新方向与幅度，检验哪部分对大批量 SGD 更不利；另在固定相同谱、改变分块结构的二次损失上研究噪声与符号更新。后者是解释用的简化动力学，不是语言模型的精确约化。（第9–12、20页）",
+        "设网络参数为向量 $X_t$，平均损失为 $f$，学习率为 $\\eta$，小批量大小为 $B$，单样本梯度噪声协方差为 $\\Sigma(X)$，$W_t$ 为标准多维 Wiener 过程。原文 Eq. (2) 给出 SGD 的连续时间扩散近似，矩阵根作用于噪声：",
+        "\\[dX_t=-\\nabla f(X_t)\\,dt+\\sqrt{\\frac{\\eta\\Sigma(X_t)}{B}}\\,dW_t\\]",
+        "该近似中，增大批量减弱扩散幅度，而平均梯度漂移没有显式批量因子。它在论文的早期训练解释中提示 SGD 的进展更取决于更新次数；不能据此断言噪声对长期泛化或实际 SGD 动量无影响。（第11页 Eq. (2)）",
+        "在独立高斯梯度噪声、对角协方差下，原文 Theorem 1 引用已有结果，得到 SignSGD 的一阶弱近似。其漂移项为：",
+        "\\[b_{\\mathrm{sign}}(X)=-\\operatorname{erf}\\!\\left(\\sqrt{\\frac{B}{2}}\\,\\Sigma(X)^{-1/2}\\nabla f(X)\\right)\\]",
+        "这里 $b_{\\mathrm{sign}}$ 是 Eq. (3) 中 $dt$ 的系数，$\\operatorname{erf}$ 及协方差逆根按坐标作用。梯度相对噪声较小时，误差函数近似线性，漂移随 $\\sqrt{B}$ 增强；大信噪比后逐渐饱和。SignSGD 先取梯度符号，因而“符号正确的概率”直接受批量影响。此式只写漂移，未把原式的扩散项设成零；定理针对 SignSGD，作者对 Adam 的联系是机制解释，不能转写为已证明的 Adam 收敛律。（第11–12页 Eq. (3)、Theorem 1）"
+      ]
+    },
+    {
+      "title": "核心结果与证据",
+      "paragraphs": [
+        "最直接的定量结果在第18页 Table 1：批量64时，最佳 Adam/SGD 的验证困惑度为28.77/30.76；批量256时为28.20/33.08；批量1024时为29.36/65.94。各值对应各自调好的学习率与动量。小批量显著缩小差距，但表中 SGD 并未严格达到与 Adam 相同的数值；大批量优势仍明显属于 Adam。（第2页 Figure 1，第18页 Table 1）",
+        "Figure 3 左侧固定 token 预算，SGD 随批量增大而变差；右侧固定更新步数，增加训练步数会缩小差距。Figure 5 进一步给出410M 与1B 参数的两组小批量训练，在足够长训练后 SGD 可超过 Adam。它们分别用批量8、500k步和批量16、850k步，不能把“某些长训练可超过”外推为相同时间预算下的一般优势。（第5–6页 Figures 3–5）",
+        "稀有 token 的困惑度差异、沿更新方向的曲率和 Hessian 分块异质性都与部分失败制度相符，但不能单独解释这里的小批量成功。Figure 10 的 grafting 中，保留 Adam 方向、改用 SGD 幅度仍接近 Adam；反向组合更像 SGD。对动量最大坐标做5%、10%、20%裁剪能改善大批量 SGD，但 Figure 11 并未完全补平差距；这是受控干预的有限证据，不能声称方向问题已被彻底解决。（第7–10页 Figures 6–11）",
+        "Figure 9 的二次模型及 Figure 13 的高斯噪声实验与“符号方法漂移受信噪比影响”一致。统计模型说明一种可能的批量加速来源；它并未识别语言模型所有噪声结构，也没有证明 Adam 的完整经验差距只由该机制决定。（第9、11–12页）"
+      ]
+    },
+    {
+      "title": "有效性与局限",
+      "paragraphs": [
+        "固定 token 总数不是固定墙钟时间：小批量需要更多参数更新且硬件利用率较差。作者在第6页明确指出 SGD 在现实大批量预训练中效率仍不足。1B 结果来自单块 A100 80GB、无梯度累积的小批量长训练；不能当作多设备工业训练建议。",
+        "所有性能都是给定网格中的最佳结果，反映调参制度而非无条件优势。序列长度、学习率调度、动量、裁剪与比较预算必须一起固定；当它们改变时需重做比较。附录 A 对精度同时出现 bfloat16 训练配方与 FP16 设置描述，复现者需以公开代码的实际配置核对，不能凭卡片消除原文差异。（第16–17页）",
+        "SDE 是小步长弱近似，Theorem 1 的高斯、独立、对角协方差假设与语言模型中可能相关且重尾的噪声不等价。早期平均漂移的区别不自动控制最终验证困惑度；已有稀有词、曲率解释是被限定适用范围，未被这项实验全面推翻。（第7–12页）"
+      ]
+    },
+    {
+      "title": "复现与资源",
+      "paragraphs": [
+        "附录 A.1 第16页给出训练代码 https://github.com/Niccolo-Ajroldi/plainLM，并指向 Pythia 的模型配置；数据为 SlimPajama 与 FineWeb，验证子集1亿 token，实验硬件为单块 NVIDIA A100-SXM4-80GB。核对复现时须保存数据切分、tokenizer、序列长度、裁剪顺序、动量、学习率网格和 WSD/余弦日程；本卡未运行训练或确认远端仓库与全部实验配置的逐项对应。",
+        "来源为官方版本化 PDF https://arxiv.org/pdf/2506.12543v1，SHA-256：843998ee7e7c7b356e28c7bbfbbd55f8df149906fa3c76ed77c2395d65136948。MinerU 仅辅助提取，正文、附录、关键数字与所用公式另按20个物理PDF页核对。Evidence status: full-text verified; no independent reproduction performed."
+      ]
+    },
+    {
+      "title": "阅读指南",
+      "paragraphs": [
+        "快速读第2页 Figure 1 和第18页 Table 1，先看调参后差距随批量的变化；再读第5–6页，区分 token 预算、更新步数与训练时间。深入读第10页 grafting 和裁剪实验，再沿第11页 Eq. (2)、Theorem 1/Eq. (3) 理解“未取符号的平均梯度”与“符号正确概率”的区别。最后用附录 A 核对训练配方，勿把 SignSGD 的模型证明替换成 Adam 的定理。"
+      ]
+    }
+  ],
+  "cover": {
+    "mode": "source_figure",
+    "asset_path": "assets/collection-figures/2506.12543/figure-1-batch-optimizer-gap.jpg",
+    "label": "Figure 1",
+    "visual_type": "comparison",
+    "evidence": "paper.pdf p. 2, Figure 1",
+    "alt_text": "六面板比较 Adam 与 SGD 在三种批量下扫描学习率和动量后的验证困惑度，保留坐标轴、图例和最佳 Adam 虚线。",
+    "caption": "作者 Figure 1（v1 PDF 第2页，CC BY 4.0）：上排 Adam、下排带动量 SGD，三列为批量64、256、1024；横轴学习率，纵轴最终验证困惑度，颜色区分动量，虚线为各列最佳 Adam。160M 模型、SlimPajama、序列512与13亿训练 token 的扫描中，小批量使 SGD 接近 Adam；这不是相同墙钟时间下的效率证明。",
+    "selection_rationale": "批量依赖是论文的决定性经验结果；六面板扫描直接显示调参后差距，并避免只截取对 SGD 有利的点。Figure 18 的 Hessian 可视化仅描述附录二次模型，代表性低于这个完整的主体比较；已与 PDF 第2页逐面板核对。"
+  },
+  "figure_refs": [
+    {
+      "label": "Figure 1",
+      "asset_path": "assets/collection-figures/2506.12543/figure-1-batch-optimizer-gap.jpg",
+      "section": "核心结果与证据",
+      "role": "show the optimizer gap after explicit learning-rate and momentum sweeps at each batch size",
+      "evidence": "paper.pdf p. 2, Figure 1",
+      "alt_text": "Adam/SGD 六面板调参曲线，三种批量及各自最佳 Adam 水平线。",
+      "caption": "作者 Figure 1（v1 PDF 第2页，CC BY 4.0）：上排 Adam、下排带动量 SGD，三列为批量64、256、1024；横轴学习率，纵轴最终验证困惑度，颜色区分动量，虚线为各列最佳 Adam。160M 模型、SlimPajama、序列512与13亿训练 token 的扫描中，小批量使 SGD 接近 Adam；这不是相同墙钟时间下的效率证明。",
+      "interpretation": "At a fixed token budget the SGD–Adam gap shrinks with batch size; neither the sweep nor the table establishes equal wall-clock efficiency."
+    }
+  ],
+  "equation_refs": [
+    {
+      "label": "Eq. (2)",
+      "latex": "dX_t=-\\nabla f(X_t)\\,dt+\\sqrt{\\frac{\\eta\\Sigma(X_t)}{B}}\\,dW_t",
+      "role": "continuous-time SGD diffusion approximation",
+      "symbols": {
+        "X_t": "model-parameter vector",
+        "f": "mean training loss",
+        "eta": "learning rate",
+        "Sigma": "single-sample gradient-noise covariance",
+        "B": "minibatch size",
+        "W_t": "standard vector Wiener process"
+      },
+      "evidence": "paper.pdf p. 11, Eq. (2)",
+      "interpretation": "Increasing batch size suppresses diffusion without introducing an explicit B factor in the average-gradient drift in this approximation."
+    },
+    {
+      "label": "Eq. (3), drift term",
+      "latex": "b_{\\mathrm{sign}}(X)=-\\operatorname{erf}\\!\\left(\\sqrt{\\frac{B}{2}}\\,\\Sigma(X)^{-1/2}\\nabla f(X)\\right)",
+      "role": "signed-gradient drift in the first-order weak SDE approximation under the stated Gaussian assumptions",
+      "symbols": {
+        "b_sign": "coefficient of dt in Eq. (3), not its full dynamics",
+        "erf": "componentwise error function",
+        "Sigma^-1/2": "inverse square root of diagonal covariance",
+        "X,f,B": "as defined for Eq. (2)"
+      },
+      "evidence": "paper.pdf pp. 11–12, Theorem 1 and Eq. (3)",
+      "interpretation": "The drift increases as sqrt(B) in the small-signal Gaussian regime and saturates; the quoted theorem concerns SignSGD, not Adam."
+    }
+  ],
+  "evidence_refs": [
+    "paper.pdf pp. 1–4: source identity, setup, batch-size/learning-rate/momentum controls",
+    "paper.pdf pp. 5–6, Figures 3–5: fixed tokens versus fixed steps and scale experiments",
+    "paper.pdf pp. 7–10, Figures 6–12: prior explanations, grafting and adaptive clipping",
+    "paper.pdf pp. 11–12, Eqs. (2)–(3), Theorem 1: SGD and signed-gradient noise models, discussion",
+    "paper.pdf pp. 16–19, Appendix A/B/C, Table 1: resources, training grids, perplexities and clipping algorithm",
+    "paper.pdf p. 20, Appendix D: construction and stochasticity of quadratic toy model",
+    "source PDF SHA-256 843998ee7e7c7b356e28c7bbfbbd55f8df149906fa3c76ed77c2395d65136948",
+    "Evidence status: full-text verified; no independent reproduction performed."
+  ]
+}
