@@ -1,0 +1,234 @@
+{
+  "arxiv_id": "2506.19852",
+  "source_version": "v2",
+  "source_pdf": "https://arxiv.org/pdf/2506.19852v2",
+  "title_en": "Radial Attention: $O(n\\log n)$ Sparse Attention with Energy Decay for Long Video Generation",
+  "title_zh": "径向注意力：利用时空衰减加速长视频生成",
+  "curation_status": "full_text_verified",
+  "card_standard_version": "2.3",
+  "paper_profile": "ai_empirical",
+  "style_reference": "physicist_daily_arxiv",
+  "provenance": {
+    "program": "Collection",
+    "catalog": "Paper Collection",
+    "catalog_record_id": "2506.19852",
+    "catalog_record_ids": [
+      "2506.19852"
+    ],
+    "catalog_topic": "Machine Learning",
+    "collection_date": "2026-08-30",
+    "sampled_at": "2026-09-26",
+    "selected_by": "collection_serial_goal_continuation",
+    "sampling_seed": "not_applicable_source_complete",
+    "candidate_count": 916
+  },
+  "verified_metadata": {
+    "arxiv_id": "2506.19852",
+    "version": "v2",
+    "title": "Radial Attention: $O(n\\log n)$ Sparse Attention with Energy Decay for Long Video Generation",
+    "authors": [
+      "Li, Xingyang",
+      "Li, Muyang",
+      "Cai, Tianle",
+      "Xi, Haocheng",
+      "Yang, Shuo",
+      "Lin, Yujun",
+      "Zhang, Lvmin",
+      "Yang, Songlin",
+      "Hu, Jinbo",
+      "Peng, Kelly",
+      "Agrawala, Maneesh",
+      "Stoica, Ion",
+      "Keutzer, Kurt",
+      "Han, Song"
+    ],
+    "categories": [
+      "cs.CV",
+      "cs.AI"
+    ],
+    "primary_category": "cs.CV",
+    "published": "2025-06-24",
+    "updated": "2025-12-06",
+    "license_url": "https://creativecommons.org/licenses/by/4.0/",
+    "pdf_pages": 25,
+    "source_pdf_sha256": "43375b7ef5bad7ddd4ff5a1a2667f706f06c923e844be8373f26d45073c2475b",
+    "comment": "Official v2 camera-ready version; NeurIPS 2025 is printed on PDF p.1."
+  },
+  "sections": [
+    {
+      "title": "作者信息",
+      "paragraphs": [
+        "Xingyang Li、Muyang Li、Tianle Cai、Haocheng Xi、Shuo Yang、Yujun Lin、Lvmin Zhang、Songlin Yang、Jinbo Hu、Kelly Peng、Maneesh Agrawala、Ion Stoica、Kurt Keutzer、Song Han；前两人标等贡献。首页列 MIT、NVIDIA、Princeton、UC Berkeley、Stanford、First Intelligence，但没有逐作者机构编号或通讯标签，不猜分工。核读arXiv:2506.19852v2，2025-12-06更新，NeurIPS 2025 camera-ready，25个物理页。（第1、11页）"
+      ]
+    },
+    {
+      "title": "研究问题",
+      "paragraphs": [
+        "视频扩散一次注意力需同时处理空间与时间，长视频增加帧数后，两两token相互作用成本迅速增长。能否保留附近的强作用和少量远处联系，使用一个可训练的静态稀疏图替代每个head在线选空间/时间mask？本文把视频模型中观测到的平均注意力衰减变成分层稀疏预算，并用LoRA使已有模型适应长视频。（第2–6页）",
+        "读者桥：输入是加噪视频latent token；Q/K给出不同token间的匹配，softmax行是归一化权重，V是被加权的内容。本文改变允许发生的相互作用图，默认长度推理固定权重，长度扩展再训练LoRA。时间轴是视频帧索引和扩散采样步，不能混作真实物理耗散；所谓energy是注意力权重的类比，没有测量物理能量或证明热力学定律。"
+      ]
+    },
+    {
+      "title": "背景",
+      "paragraphs": [
+        "FlashAttention降低密集注意力的访存代价；已有空间或时间稀疏方法则限制不同的作用轴，并可能逐head选择mask。本文希望用同一静态分层图覆盖时空相关性，在减少配对数量的同时保留视频生成质量，再用低秩适配把预训练模型扩展到更长序列。它是算法与系统实证研究，借注意力衰减类比物理而不建立新的热力学理论。（第2–4页。）"
+      ]
+    },
+    {
+      "title": "模型与方法",
+      "paragraphs": [
+        "视频latent有f帧，每帧s个token，总数n=fs；Q/K/V为n×d矩阵。保留原有softmax，将mask中被禁的配对置为负无穷：",
+        "\\[\\operatorname{Attn}_M(Q,K,V)=\\operatorname{softmax}\\!\\left(\\frac{QK^\\top+M}{\\sqrt d}\\right)V,\\qquad M\\in\\{-\\infty,0\\}^{n\\times n}\\]",
+        "M的零项代表保留，d是每head维数。原Eq.(2)将M与logit一起除以√d，因M只取0或负无穷，不改变允许集。FlashAttention可改善内存/常数，却不自行消除密集注意力的二次时间成本。（第4页 Eqs.(1)–(2)）",
+        "HunyuanVideo中的若干head及扩散步的平均行权重随时空距离下降，指数回归的R²超过0.985。作者用下列逐位置相对上界做理论假设：",
+        "\\[p_{js+l}\\le C_{\\rm rel}e^{-\\alpha|j-i_0|-\\beta|l-k_0|}\\,p_{i_0s+k_0}\\]",
+        "$p$ 是一个query $(i_0,k_0)$ 的softmax行，j/l为key帧/空间索引，$\\alpha,\\beta>0$ 是衰减率，$C_{\\rm rel}>0$ 是相对幅度。空间距离采用序列索引差，不是任意二维视频欧氏距离；平均曲线拟合也不自动建立每head、每行和每token对的统一上界。（第5页 Eq.(3)，第10页 Figure8b）",
+        "静态图以时间距离的二进制层级组织配对：",
+        "\\[r_{ij}=\\lfloor\\log_2\\max(|i-j|,1)\\rfloor,\\quad w_{ij}=\\frac{s}{2^{r_{ij}}},\\quad K_{ij}=\\left\\lceil\\frac{2^{r_{ij}}}{s}\\right\\rceil\\]",
+        "$r_{ij}$ 是帧对带号的绝对值，$w_{ij}$ 是保留空间对角带宽，$K_{ij}$ 是远处保留帧对的间隔。逐带减半的密度按对数距离层级衰减，作为真实距离函数大致呈倒数型，不可写成对所有时间距离直接指数衰减。近处用 $|k-l|+1\\le w_{ij}$；宽度降至1以下后以 $|i-j|\\bmod K_{ij}=0$ 选帧对，并仅保留k=l。另加每token读取首帧的attention sink。（第5–6页 Eq.(4)、Figure5；第16页）",
+        "模型部署以128×128block稀疏核实现，不是逐token理想mask的无开销执行。默认长度推理前12个扩散步仍密集并保留首DiT block；长视频训练保留前两个DiT blocks。原文明示4倍长度推理采用前2步密集，并在HunyuanVideo上做消融；不能据此确认所有2倍设置的warm-up或长视频推理dense-block数量。长视频使用低秩适配（LoRA）：在Q/K/V及输出投影加入rank128的可训练低秩修正，保留原softmax与大部分预训练参数。（第7–8、18–20页。）"
+      ]
+    },
+    {
+      "title": "核心结果与证据",
+      "paragraphs": [
+        "逐带计数给长帧数、固定每帧分辨率s下的保留配对上界：",
+        "\\[N_{\\rm keep}\\le4s^2f\\log_2f=4sn(\\log_2n-\\log_2s),\\qquad n=fs\\]",
+        "$N_{\\rm keep}$ 是mask中的零项数，中心带与首帧sink计入上界。由每带面积增长与密度缩小相抵，带数是对数级，注意力算术工作量在固定s下为O(n log n)；随s提高仍有二次分辨率代价。它不是全部生成网络、密集warm-up或完整训练成本都变成同一个渐近式。（第6页 Eqs.(5)–(6)，第16–17页 A.1）",
+        "Table1在单H100默认长度推理中，HunyuanVideo117帧768p耗时1649→876秒，约1.88倍，计算612→339PFLOPs；PSNR27.3、SSIM0.886、LPIPS0.114，均相对原视频而非ground truth。STA使用FA3只需719秒、更快，但其PSNR26.7；SVG为867秒且SSIM0.895略高，故不称所有指标或基线全面领先。Wan2.1-14B69帧为1630→917秒、1.77倍。（第7–9页）",
+        "Table2的HunyuanVideo509帧720p微调用8H100：训练时间93.6→21.4小时、4.37倍；推理2895→781秒、3.71倍，后者此设置也使用8H100。VisionReward0.133→0.134，subject/aesthetic/image质量三项并非逐项全优。Mochi667帧推理同样用8H100，992→386秒、2.57倍，训练49.2→17.4小时、2.83倍。Wan受成本限制只展示2倍161帧，推理在单H100上5735→2847秒约2.01倍，不能宣称三模型都测试4倍。（第8–9页 Table2）",
+        "训练采样各扩展长度OpenVid-1M中美学/运动排名较高的2000段视频。原模型不微调或仅RIFLEx的4倍输出明显较差；LoRA稀疏调优保持指定代理指标，但VisionReward是评分模型、PSNR是对密集输出的相似度，都不替代人类评审或保证每段内容质量。Wan注意力输出平均MSE为3.9×10⁻³，对SVG4.4×10⁻³、STA1.5×10⁻²；这是具体输出误差实验，不是下一段的逐行理论证明。（第8–10页）",
+        "删去配对后重新归一化的softmax行有精确代数关系：",
+        "\\[\\|\\widetilde p-p\\|_1=2\\frac{Z_{\\rm out}}{Z},\\qquad Z=\\sum_{j,l}a_{j,l},\\quad Z_{\\rm out}=\\sum_{(j,l)\\notin\\mathrm{keep}}a_{j,l}\\]",
+        "$a_{j,l}$ 为正的未归一化权重，Z为总权重，$Z_{\\rm out}$ 是丢弃质量；$\\widetilde p$ 是保留集上的重新归一化行。这里是L1误差，通常定义的total variation是它的一半。作者由相对指数上界进一步声称误差以s指数变小，但该更强界的推导存在下述未闭合步骤，不能与此恒等式的证据强度混同。（第17–18页 A.2，第6页 Eq.(7)）"
+      ]
+    },
+    {
+      "title": "有效性与局限",
+      "paragraphs": [
+        "第18页A.2空间尾部推导使用“Δt≤s时w(Δt)≥s/2”，但其第17页定义w(Δt)=s/2^floor(log₂ max(Δt,1))；取s≥4、Δt=4便得到s/4，已不满足该前提。空间尾求和还包含更远时刻；Eq.(4)的|k-l|+1边界与附录的|l-k₀|≤w也未完全一致。因此本卡保留原文Eq.(7)的出处，但不把O(C_rel exp[-min(β/2,α)s])当作经独立核验成立的统一误差保证。这里是解析代入发现证明缺口，没有另做训练或数值反证；不据此否定mask计数或作者实测效果。",
+        "指数衰减只是受测平均权重的经验启发，不能把首段“thermodynamic principles”当作物理定律的推导。跨head异常远程联系、分辨率变化和内容运动会影响统一mask；论文自己指出分辨率仍二次，尚未解决所有长高分辨率视频的成本。静态图被LoRA适应后，其注意力分布也可能改变。（第5、10页）",
+        "必须保留协议差异：Table1默认117/69帧768p，模型概述另列125/81帧720p；Table2使用125/163/81帧作长度倍数基准。第20页TableC/D标题讨论4倍视频，模型标签却仍写117帧，相关FigureC的dense-LoRA训练cost749GPUh又与Table2的93.6×8约749、Figure1的746略有差别，按具体表图报告，不能默改为同一口径。StyleLoRA合并仅给视觉例子，附录承认风格偏差，不是普适无损兼容。（第7–8、19–20、23、25页）",
+        "比较倍数仅适用于对应模型、长度和硬件的密集基线。稀疏方法及warm-up消融按所测稀疏率或PFLOPs匹配，未保证使用同一kernel或相同总训练预算；不能把注意力算术量与整网wall-clock耗时等同。（第7–9、19–20页。）"
+      ]
+    },
+    {
+      "title": "复现与资源",
+      "paragraphs": [
+        "首页与摘要给作者仓库 https://github.com/mit-han-lab/radial-attention 。实现依FlashInfer推理、Block-Sparse-Attention与FA2训练；算法可与FA3等系统优化组合，但此论文1.88/3.71倍来自其实际核，不能以未来实现推算更快值。训练global batch Hunyuan/Mochi为1且sequence parallel、Wan为8；2400/1200步训练Hunyuan2/4倍，Mochi两长度5000步，Wan2倍2500步。（第8、18页）",
+        "官方CC BY4.0元数据支持署名复用作者Figure5，选用静态mask机制图，完整保留三面板、全部轴、sink与图例。第20页另列模型/数据的不同资产许可，不能把本文许可推广成所有权重与数据的许可。官方v2 PDF SHA-256：43375b7ef5bad7ddd4ff5a1a2667f706f06c923e844be8373f26d45073c2475b；全文25个物理页含参考文献和附录已核读。本轮未运行生成器、训练LoRA或重测性能，无独立数值复现。Evidence status: full-text verified; no independent reproduction performed."
+      ]
+    },
+    {
+      "title": "阅读指南",
+      "paragraphs": [
+        "先读第5–6页Figure4/5：分清经验衰减、理论逐位置上界和mask实际形状。接第16–18页检查固定分辨率计数及误差推导缺口，再用第7–8页两表分别读默认/延长视频的质量与硬件。复现最后检查第18–20页batch、步数、密集warm-up与block数；视频美观示例只能补充，不能替代这些比较。"
+      ]
+    }
+  ],
+  "cover": {
+    "mode": "source_figure",
+    "asset_path": "assets/collection-figures/2506.19852/figure-5-radial-mask.png",
+    "label": "Figure 5",
+    "visual_type": "schematic",
+    "evidence": "paper.pdf p. 6, Figure 5",
+    "caption": "Li等，Figure5（arXiv:2506.19852v2，PDF第6页，CC BY4.0）：a/b为12帧示意，横轴key、纵轴query；时间距离按二进制带分组，空间对角带先变窄，继而降低远帧配对频率，首帧sink保留。mask中0允许配对，负无穷禁止配对；c展示253帧720p HunyuanVideo的实际稀疏图。三面板、轴与箭头完整保留。这是算法图，不能据此证明物理耗散或附录A.2的统一指数误差界。",
+    "alt_text": "时间分带的计算密度、带宽与频率变化后的注意力mask、实际HunyuanVideo三面板矩阵示意。",
+    "selection_rationale": "作者机制图直接解释对数级分带与空间带宽缩小，完整保留相邻两个mask，是比生成样本或单项速度曲线更合适的论文入口。已对比PDF第6页原图。",
+    "license_url": "https://creativecommons.org/licenses/by/4.0/",
+    "source_pdf": "https://arxiv.org/pdf/2506.19852v2",
+    "source_pdf_sha256": "43375b7ef5bad7ddd4ff5a1a2667f706f06c923e844be8373f26d45073c2475b"
+  },
+  "figure_refs": [
+    {
+      "label": "Figure 5",
+      "asset_path": "assets/collection-figures/2506.19852/figure-5-radial-mask.png",
+      "section": "模型与方法",
+      "role": "hierarchical static sparse graph",
+      "evidence": "paper.pdf p. 6, Figure 5",
+      "caption": "Li等，Figure5（arXiv:2506.19852v2，PDF第6页，CC BY4.0）：a/b为12帧示意，横轴key、纵轴query；时间距离按二进制带分组，空间对角带先变窄，继而降低远帧配对频率，首帧sink保留。mask中0允许配对，负无穷禁止配对；c展示253帧720p HunyuanVideo的实际稀疏图。三面板、轴与箭头完整保留。这是算法图，不能据此证明物理耗散或附录A.2的统一指数误差界。",
+      "alt_text": "时间分带的计算密度、带宽与频率变化后的注意力mask、实际HunyuanVideo三面板矩阵示意。",
+      "interpretation": "Static algorithmic mask; does not demonstrate physical energy decay or certify Appendix A.2."
+    }
+  ],
+  "equation_refs": [
+    {
+      "label": "Eq. (2)",
+      "latex": "\\operatorname{Attn}_M(Q,K,V)=\\operatorname{softmax}\\!\\left(\\frac{QK^\\top+M}{\\sqrt d}\\right)V,\\qquad M\\in\\{-\\infty,0\\}^{n\\times n}",
+      "role": "Eq. (2)",
+      "symbols": {
+        "Q,K,V": "queries, keys, values",
+        "M": "zero/negative-infinity mask",
+        "d": "per-head feature dimension",
+        "n": "total tokens"
+      },
+      "evidence": "paper.pdf p.4 Eq.(2)",
+      "interpretation": "Unchanged softmax on a restricted interaction graph."
+    },
+    {
+      "label": "Eq. (3), conditional relative decay assumption",
+      "latex": "p_{js+l}\\le C_{\\rm rel}e^{-\\alpha|j-i_0|-\\beta|l-k_0|}\\,p_{i_0s+k_0}",
+      "role": "Eq. (3), conditional relative decay assumption",
+      "symbols": {
+        "p": "softmax row",
+        "i0,k0": "query frame and flattened spatial index",
+        "j,l": "key frame and spatial index",
+        "alpha,beta": "positive temporal/spatial decay parameters",
+        "Crel": "relative amplitude",
+        "s": "tokens per frame"
+      },
+      "evidence": "paper.pdf p.5 Eq.(3), p.17 A1",
+      "interpretation": "Uniform rowwise envelope is an assumption; average regression is not proof."
+    },
+    {
+      "label": "Eq. (4) mask bandwidth and subsampling parameters",
+      "latex": "r_{ij}=\\lfloor\\log_2\\max(|i-j|,1)\\rfloor,\\quad w_{ij}=\\frac{s}{2^{r_{ij}}},\\quad K_{ij}=\\left\\lceil\\frac{2^{r_{ij}}}{s}\\right\\rceil",
+      "role": "Eq. (4) mask bandwidth and subsampling parameters",
+      "symbols": {
+        "r_ij": "dyadic temporal band index",
+        "w_ij": "within-block spatial bandwidth",
+        "K_ij": "subsampling period",
+        "i,j": "frame indices",
+        "s": "tokens per frame"
+      },
+      "evidence": "paper.pdf pp.5–6 Eq.(4), p.16",
+      "interpretation": "Density halves by logarithmic distance band, not exponential in raw distance."
+    },
+    {
+      "label": "Eqs. (5)–(6), Appendix A.1",
+      "latex": "N_{\\rm keep}\\le4s^2f\\log_2f=4sn(\\log_2n-\\log_2s),\\qquad n=fs",
+      "role": "Eqs. (5)–(6), Appendix A.1",
+      "symbols": {
+        "Nkeep": "kept token pair count including dense center and sink",
+        "f": "latent frame count",
+        "s": "fixed tokens per frame",
+        "n": "f*s"
+      },
+      "evidence": "paper.pdf p.6 Eqs.(5)–(6), pp.16–17",
+      "interpretation": "Fixed s and long f; excludes a universal whole-network time claim."
+    },
+    {
+      "label": "Appendix A.2, local Eq. (1)",
+      "latex": "\\|\\widetilde p-p\\|_1=2\\frac{Z_{\\rm out}}{Z},\\qquad Z=\\sum_{j,l}a_{j,l},\\quad Z_{\\rm out}=\\sum_{(j,l)\\notin\\mathrm{keep}}a_{j,l}",
+      "role": "Appendix A.2, local Eq. (1)",
+      "symbols": {
+        "a": "positive unnormalized attention weights",
+        "Z": "total normalization",
+        "Zout": "discarded weight mass",
+        "p,p_tilde": "exact/masked normalized rows"
+      },
+      "evidence": "paper.pdf p.17, A.2 exact normalization identity",
+      "interpretation": "Exact L1 identity; the stronger claimed exponential bound has a documented proof gap."
+    }
+  ],
+  "evidence_refs": [
+    "paper.pdf pp.1–4: authors, affiliations listed without author mapping, NeurIPS2025 camera-ready and attention definition",
+    "paper.pdf pp.5–6: empirical decay, rowwise assumption, sparse mask and fixed-resolution complexity",
+    "paper.pdf pp.7–10: default/extended comparison, hardware, proxy quality, ablations and limitations",
+    "paper.pdf pp.16–18: pair counting, exact normalization identity, unresolved error-bound step and tuning parameters",
+    "paper.pdf pp.19–25: warm-up, dense layers, ablations, mixed third-party licenses, generated examples and style bias",
+    "source PDF SHA-256 43375b7ef5bad7ddd4ff5a1a2667f706f06c923e844be8373f26d45073c2475b",
+    "Evidence status: full-text verified; no independent reproduction performed."
+  ],
+  "source_pdf_sha256": "43375b7ef5bad7ddd4ff5a1a2667f706f06c923e844be8373f26d45073c2475b"
+}

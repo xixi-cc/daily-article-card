@@ -1,0 +1,245 @@
+{
+  "arxiv_id": "2609.02049",
+  "source_version": "v1",
+  "source_pdf": "https://arxiv.org/pdf/2609.02049v1",
+  "source_pdf_sha256": "e46d7fce670154c32b4e431d8e1b4d58dcae1af69ee05196c41967ce061b1e1d",
+  "title_en": "The Dynamics of Continuous Mixture Collapse in Language Models",
+  "title_zh": "语言模型中的连续混合为何坍缩：架构、读出与反馈动力学",
+  "curation_status": "full_text_verified",
+  "card_standard_version": "2.3",
+  "paper_profile": "theory_numerics",
+  "style_reference": "physicist_daily_arxiv",
+  "selection_record": {
+    "selected_by": "codex_direct_arxiv",
+    "screening_scope": "user_requested_report_candidates",
+    "discovery_source": "chatgpt_user_report",
+    "report_source": "用户指定的网页版arXiv日报（2026-09-04）",
+    "report_date": "2026-09-04",
+    "listing_date": "2026-09-03",
+    "score": "36/40",
+    "score_breakdown": [
+      5,
+      4,
+      5,
+      5,
+      4,
+      4,
+      5,
+      4
+    ],
+    "grade": "S",
+    "rubric_version": "CODEX_DAILY_SCREENING_AND_PUBLICATION v1.0 (2026-08-25)",
+    "selection_rationale": "36/40 S：在理想线性传输下仍存在几何读出和闭环信息失真的负载机制；两分支域及未实测K-way满秩条件保留。",
+    "listing_verification": "official_historical_listing_confirmed",
+    "listing_url": "https://arxiv.org/catchup/cs.LG/2026-09-03",
+    "complete_listing_screened": false,
+    "report_score_inherited": false
+  },
+  "verified_metadata": {
+    "title": "The Dynamics of Continuous Mixture Collapse in Language Models",
+    "authors": [
+      "Backour, Ali"
+    ],
+    "categories": [
+      "cs.LG",
+      "cs.CL"
+    ],
+    "published": "2026-09-02T03:25:41Z",
+    "arxiv_url": "https://arxiv.org/abs/2609.02049",
+    "pdf_url": "https://arxiv.org/pdf/2609.02049v1",
+    "license": "http://creativecommons.org/licenses/by/4.0/",
+    "source_version": "v1",
+    "pdf_sha256": "e46d7fce670154c32b4e431d8e1b4d58dcae1af69ee05196c41967ce061b1e1d",
+    "arxiv_id": "2609.02049",
+    "version": "v1",
+    "abstract": "LLMs latent-state reasoning methods replace discrete intermediate tokens with continuous states, such as weighted mixtures of token embeddings, to retain multiple possible reasoning directions rather than committing to one. Yet pretrained language models often fail to preserve these mixtures. We study why through a combination of theoretical analysis and controlled empirical investigations on a variety of models. We identify three independent, distinct sources of failure. First, transformer architectures already distort mixture geometry, and training substantially amplifies this effect. Moreover, the failure can occur even if the model transports mixtures perfectly linearly: the softmax readout and autoregressive feedback form a dynamical system that either amplifies small differences until one component of the mixture dominates or contracts different mixtures until they become indistinguishable. We verify this theoretical prediction empirically: the observed transition between contraction and amplification occurs near the theoretical threshold derived by our analysis, and pretrained-model rollouts lie predominantly on the amplifying side. Finally, we generalize to mixtures of many components and show that exact preservation generally requires context-dependent correction, whose required dimensionality can grow with the number of components.",
+    "primary_category": "cs.LG",
+    "metadata_url": "https://arxiv.org/abs/2609.02049v1"
+  },
+  "equation_refs": [
+    {
+      "label": "Eq. (3): geometric mixture",
+      "latex": "q_w(y)\\propto q_A(y)^wq_B(y)^{1-w}",
+      "role": "即使隐状态传输完全线性，概率读出也变成几何而非算术混合",
+      "symbols": {
+        "q_A,q_B": "固定上下文下两个纯分支的下一token分布",
+        "w": "A分支的混合权重，0到1",
+        "y": "词表输出token",
+        "q_w": "线性插值logit后softmax所得分布"
+      },
+      "evidence": "PDF p.4 Eq.(3)",
+      "interpretation": "即使隐状态传输完全线性，概率读出也变成几何而非算术混合",
+      "epistemic_status": "exact identity under linear logit transport"
+    },
+    {
+      "label": "Eqs. (4)-(7): feedback dynamics",
+      "latex": "u_t=2w_t-1,\\quad L_t=\\frac{\\Delta_{A,t}-\\Delta_{B,t}}2,\\quad b_t=\\frac{\\Delta_{A,t}+\\Delta_{B,t}}2,\\quad u_{t+1}=\\tanh\\!\\left(\\frac{b_t+L_tu_t}{2}\\right)",
+      "role": "同一递推可放大多数或抹去初始比例；上下文变化使系数非自治",
+      "symbols": {
+        "t": "解码轮次，非物理时间",
+        "w_t,u_t": "A概率及中心化混合权重",
+        "Delta_A,t/Delta_B,t": "纯分支A/B对两个竞争下一token的对数概率比",
+        "L_t": "两分支相对偏好的差的一半",
+        "b_t": "共同对数偏好的偏置",
+        "A,B": "两个当前竞争分支"
+      },
+      "evidence": "PDF pp.4-5 Eqs.(4)-(7)",
+      "interpretation": "同一递推可放大多数或抹去初始比例；上下文变化使系数非自治",
+      "epistemic_status": "exact binary reduced model"
+    },
+    {
+      "label": "Theorems 1/2",
+      "latex": "b_t=0,\\ L_t\\ge L_{\\min}>2\\ \\Longrightarrow\\ \\liminf_t|u_t|\\ge u^*(L_{\\min}),\\quad u^*=\\tanh(L_{\\min}u^*/2);\\qquad 0\\le L_t\\le L_{\\max}<2\\ \\Longrightarrow\\quad\\lvert u_T\\rvert\\le (L_{\\max}/2)^T|u_0|+\\frac12\\sum_{t=0}^{T-1}(L_{\\max}/2)^{T-1-t}|b_t|",
+      "role": "均匀超临界保持极化；次临界初始信息几何衰减，非零场仍可留下偏置",
+      "symbols": {
+        "L_min,L_max": "全程耦合下/上界",
+        "u^*": "正稳定固定点",
+        "u_0": "非零初始偏差，极化结论需要此条件",
+        "u_T": "T轮后中心化比例",
+        "T,t": "总轮次及求和轮次",
+        "b_t": "随上下文改变的场",
+        "L_t": "有效耦合"
+      },
+      "evidence": "PDF pp.5-6 Theorems1/2; pp.11-12 proofs",
+      "interpretation": "均匀超临界保持极化；次临界初始信息几何衰减，非零场仍可留下偏置",
+      "epistemic_status": "proved bounds within binary model"
+    },
+    {
+      "label": "Theorem 3 / Eq. (18)",
+      "latex": "\\Phi(x,f(\\bar a,r(x)))=\\bar a\\quad\\Longrightarrow\\quad m\\ge\\operatorname{rank}D_x\\Phi;\\qquad\\operatorname{rank}D_x\\Phi=K-1\\ \\Longrightarrow\\ m\\ge K-1",
+      "role": "链式法则的秩下界要求可微及邻域内精确保真；满秩条件未实测",
+      "symbols": {
+        "K": "混合分支数",
+        "a_bar": "固定内点混合的K-1维对数比目标",
+        "x": "连续上下文表示",
+        "r(x)": "m维上下文信息",
+        "f": "利用目标和上下文信息的修正器",
+        "Phi": "一次解码的混合状态映射",
+        "D_xPhi": "固定第二参数时对上下文的偏导Jacobian",
+        "m": "上下文修正信息维数"
+      },
+      "evidence": "PDF p.8 Eqs.(12)-(19); p.13 proof",
+      "interpretation": "链式法则的秩下界要求可微及邻域内精确保真；满秩条件未实测",
+      "epistemic_status": "proved local differentiable obstruction"
+    }
+  ],
+  "figure_refs": [
+    {
+      "label": "Figure 1",
+      "asset_path": "assets/backfill-0901-0905/2609.02049/cover.png",
+      "section": "核心结果与证据",
+      "role": "原图承载的机制或数值证据",
+      "evidence": "Official PDF p. 2, Figure 1",
+      "alt_text": "作者 Figure 1：三token混合单纯形，左为忠实权重参考，右两幅为Qwen3.5-4B与Gemma-4-E4B-it的颜色概率。内部大量点转成近纯分支；只代表受控混合探针，不代表完整推理性能。",
+      "caption": "作者 Figure 1：三token混合单纯形，左为忠实权重参考，右两幅为Qwen3.5-4B与Gemma-4-E4B-it的颜色概率。内部大量点转成近纯分支；只代表受控混合探针，不代表完整推理性能。",
+      "interpretation": "选择三分支单纯形的直接状态可视化：请求混合与两模型输出几何并列，比仅展示CALIB或温度曲线更直接呈现论文的失真对象。保留三个模型标题、三角顶点颜色名和完整点阵。",
+      "license": "CC BY 4.0",
+      "source_url": "https://arxiv.org/pdf/2609.02049v1",
+      "attribution": "The Dynamics of Continuous Mixture Collapse in Language Models; https://arxiv.org/pdf/2609.02049v1; CC BY 4.0"
+    }
+  ],
+  "cover": {
+    "mode": "source_figure",
+    "selection_rationale": "选择三分支单纯形的直接状态可视化：请求混合与两模型输出几何并列，比仅展示CALIB或温度曲线更直接呈现论文的失真对象。保留三个模型标题、三角顶点颜色名和完整点阵。",
+    "asset_path": "assets/backfill-0901-0905/2609.02049/cover.png",
+    "label": "Figure 1",
+    "visual_type": "comparison",
+    "evidence": "Official PDF p. 2, Figure 1",
+    "alt_text": "作者 Figure 1：三token混合单纯形，左为忠实权重参考，右两幅为Qwen3.5-4B与Gemma-4-E4B-it的颜色概率。内部大量点转成近纯分支；只代表受控混合探针，不代表完整推理性能。",
+    "caption": "作者 Figure 1：三token混合单纯形，左为忠实权重参考，右两幅为Qwen3.5-4B与Gemma-4-E4B-it的颜色概率。内部大量点转成近纯分支；只代表受控混合探针，不代表完整推理性能。",
+    "attribution": "The Dynamics of Continuous Mixture Collapse in Language Models; https://arxiv.org/pdf/2609.02049v1; CC BY 4.0",
+    "license": "CC BY 4.0",
+    "source_url": "https://arxiv.org/pdf/2609.02049v1",
+    "source_figure_label": "Figure 1"
+  },
+  "sections": [
+    {
+      "title": "作者信息",
+      "paragraphs": [
+        "Ali Backour，Massachusetts Institute of Technology，首页通讯邮箱abackour@mit.edu。完整核读arXiv:2609.02049v1，共13页；官方分类cs.LG、cs.CL，论文为under review预印本（p.1）。报告日期2026-09-04保留，官方listing日期独立核验。"
+      ]
+    },
+    {
+      "title": "研究问题",
+      "paragraphs": [
+        "把多条思路的token嵌入混成一个连续向量，是否真的保留了各条思路的比例？论文分离三个失真来源：Transformer架构、学习到的权重、以及即使传输线性仍存在的softmax反馈。二分支模型给出多数放大和初态抹除两侧界限，多分支则给出上下文修正的局部维数下界。贡献是受控诊断与条件性动力学结果，不是已提升完整推理任务性能（pp.2-9）。"
+      ]
+    },
+    {
+      "title": "背景",
+      "paragraphs": [
+        "连续思维方法试图绕过每步必须选择一个离散token的瓶颈。embedding是token对应的连续输入向量；隐藏状态是多层网络处理后的表示；logit是输出词表概率归一化前的分数。输入混合的权重在这些空间之间可能失真，不能把“连续”本身当成“保存多个独立推理分支”的证明（pp.1-4）。"
+      ]
+    },
+    {
+      "title": "读者桥梁",
+      "paragraphs": [
+        "输入为题目上下文和两个或三个token嵌入的凸组合；表示状态是网络层内隐向量与被读出的混合比例；本论文不训练新模型，而比较预训练模型和同架构随机权重控制；目标是测量几何保真与闭环反馈；输出为恢复比例、CALIB及随解码轮次变化的权重。",
+        "softmax把加性分数转成正归一化概率；线性插值分数后所得是几何混合，因此移除Transformer非线性仍不能去掉读出失真。rollout指反复将本步提案送回下一步。与Curie–Weiss迭代共享tanh固定点形式，但此处序参量是token比例，耦合随上下文变动，不能据此断言语言模型发生真实热力学相变（pp.4-6）。"
+      ]
+    },
+    {
+      "title": "模型与方法",
+      "paragraphs": [
+        "先将二分支的logit按w线性插值。由于两个纯分布分别经过同一softmax，乘性归一化常数抵消，可得到几何混合。公式中的y是词表位置，不是空间坐标（p.4）。",
+        "\\[q_w(y)\\propto q_A(y)^wq_B(y)^{1-w}\\]",
+        "即使隐状态传输完全线性，概率读出也变成几何而非算术混合。符号：q_A,q_B：固定上下文下两个纯分支的下一token分布；w：A分支的混合权重，0到1；y：词表输出token；q_w：线性插值logit后softmax所得分布。（PDF p.4 Eq.(3)。）",
+        "限制到两个竞争下一token，定义每个纯分支的对数概率比Delta；差的一半是耦合L，和的一半是场b。中心化权重u=2w-1于是满足非自治递推。这里不把所有词表压缩的损失忽略掉，而把二元归一化作为理论作用域。",
+        "\\[u_t=2w_t-1,\\quad L_t=\\frac{\\Delta_{A,t}-\\Delta_{B,t}}2,\\quad b_t=\\frac{\\Delta_{A,t}+\\Delta_{B,t}}2,\\quad u_{t+1}=\\tanh\\!\\left(\\frac{b_t+L_tu_t}{2}\\right)\\]",
+        "同一递推可放大多数或抹去初始比例；上下文变化使系数非自治。符号：t：解码轮次，非物理时间；w_t,u_t：A概率及中心化混合权重；Delta_A,t/Delta_B,t：纯分支A/B对两个竞争下一token的对数概率比；L_t：两分支相对偏好的差的一半；b_t：共同对数偏好的偏置；A,B：两个当前竞争分支。（PDF pp.4-5 Eqs.(4)-(7)。）",
+        "1000个受控binary样本覆盖颜色、温度、大小、速度、硬度、重量、亮度七类。词与答案必须在两家模型tokenizer下都是单token，且纯输入对应答案概率至少0.5；因此是筛过的明确定义任务池。八个预训练模型各有五个同架构随机初始化控制，用隐藏端点连线上的投影测量恢复权重；CALIB归一化为完美线性1、在0.5硬阈值0（pp.3-4、10-11）。"
+      ]
+    },
+    {
+      "title": "核心结果与证据",
+      "paragraphs": [
+        "Table1的最终CALIB：Qwen3.5-4B预训练0.332，同架构未训练控制0.732±0.003；Gemma-4-E4B-it为0.475对0.765±0.003。误差条是五个随机初始化的标准差，不是训练语料差异的因果估计。预训练组失真更大，但第一层及中间深度并非统一单调，不能声称每层都随训练恶化（pp.3-4）。",
+        "二元模型中零场、固定正耦合的均衡点在L=2改变稳定性；作者进一步证明全程超临界的极化下界和次临界含时场上界。下面保留非零初态条件和场项；在零场且耦合始终次临界时，中心化权重趋于0；对相同系数序列，不同初始比例的影响几何衰减。一般含时场下，上界只控制初态项与累积场项，持续偏置仍可推动近纯输出；实际上下文依赖的不同轨迹不能仅由L_t<2推出趋同。（物理第6、12页 Theorem2/Remark1；第7页 Eq.11后的rollout定义。）",
+        "\\[b_t=0,\\ L_t\\ge L_{\\min}>2\\ \\Longrightarrow\\ \\liminf_t|u_t|\\ge u^*(L_{\\min}),\\quad u^*=\\tanh(L_{\\min}u^*/2);\\qquad 0\\le L_t\\le L_{\\max}<2\\ \\Longrightarrow\\quad\\lvert u_T\\rvert\\le (L_{\\max}/2)^T|u_0|+\\frac12\\sum_{t=0}^{T-1}(L_{\\max}/2)^{T-1-t}|b_t|\\]",
+        "均匀超临界保持极化；次临界初始信息几何衰减，非零场仍可留下偏置。符号：L_min,L_max：全程耦合下/上界；u^*：正稳定固定点；u_0：非零初始偏差，极化结论需要此条件；u_T：T轮后中心化比例；T,t：总轮次及求和轮次；b_t：随上下文改变的场；L_t：有效耦合。（PDF pp.5-6 Theorems1/2; pp.11-12 proofs。）",
+        "Figure3用纯分支正常运行、仅在输出logit混合的50轮轨迹隔离softmax效应；Figure4温度扫描使有效耦合跨过2，观测多数极化与比例收缩转换。它们支持指定受控递推，不保证真实连续推理全过程都满足零场或一致耦合界（pp.6-7）。",
+        "K分支把比例写成K-1个对数比。若修正器要在连续上下文邻域内保持一个固定内点目标，链式法则要求上下文信息维数至少为输出对上下文的Jacobian秩；满秩时至少K-1。这是条件性局部下界，不是每个模型必须线性增长的无条件定理（pp.8、13）。",
+        "\\[\\Phi(x,f(\\bar a,r(x)))=\\bar a\\quad\\Longrightarrow\\quad m\\ge\\operatorname{rank}D_x\\Phi;\\qquad\\operatorname{rank}D_x\\Phi=K-1\\ \\Longrightarrow\\ m\\ge K-1\\]",
+        "链式法则的秩下界要求可微及邻域内精确保真；满秩条件未实测。符号：K：混合分支数；a_bar：固定内点混合的K-1维对数比目标；x：连续上下文表示；r(x)：m维上下文信息；f：利用目标和上下文信息的修正器；Phi：一次解码的混合状态映射；D_xPhi：固定第二参数时对上下文的偏导Jacobian；m：上下文修正信息维数。（PDF p.8 Eqs.(12)-(19); p.13 proof。）"
+      ]
+    },
+    {
+      "title": "有效性与局限",
+      "paragraphs": [
+        "受控词嵌入组合未必涵盖全部潜在语义状态；数据经过single-token与端点概率筛选，实证主要binary且仅两模型家族。随机权重对照隔离“与训练权重关联”的变化，却不能识别训练的哪个步骤造成失真（p.9）。",
+        "多分支满秩条件未直接测量，精确保真与可微邻域是假设。使用Curie–Weiss形式是数学映射，不建立热力学极限、自由能或普适临界指数。本文未训练完整连续推理系统，也没有证明保真改进会提升最终任务正确率。"
+      ]
+    },
+    {
+      "title": "复现与资源",
+      "paragraphs": [
+        "Appendix A给出样本构造、门槛和提示策略，Table2列10个示例；需保留相同模型tokenizer、chat template与关闭reasoning block的策略，才有可比较的下一token读出。全文未核实到作者公开的完整1000样本列表、专属代码仓库或运行硬件成本，不以通用模型链接代替这些资源（pp.10-11）。",
+        "已完成全文和公式核读；full-text verified; no independent reproduction performed。",
+        "原图复用署名：The Dynamics of Continuous Mixture Collapse in Language Models，Backour, Ali；Official PDF p. 2, Figure 1；https://arxiv.org/pdf/2609.02049v1。许可：CC BY 4.0（https://creativecommons.org/licenses/by/4.0/）。仅裁切 PDF 版面中的图区，未改动图内科学内容；完整 PDF 页与裁切图已逐一视觉比对。"
+      ]
+    },
+    {
+      "title": "阅读指南",
+      "paragraphs": [
+        "先p.2 Figure1对比请求混合与实际概率，再p.4 Eq.(3)理解线性为何仍失真；随后p.5 Eq.(7)及p.6 Theorem2把两种失败分开。深读p.13的链式法则证明与p.11的数据筛选；可以暂跳相关工作，但不能跳过p.9的任务和满秩限制。"
+      ]
+    }
+  ],
+  "evidence_refs": [
+    "PDF pp.3-5 Eqs.(1)-(7), Table1: probe and model",
+    "PDF pp.5-8 Theorems1-3, Figures3-4: results",
+    "PDF pp.10-11 AppendixA: controlled benchmark",
+    "PDF p.9 Limitations and p.13 chain-rule proof: boundary",
+    "Evidence status: full-text verified; no independent reproduction performed."
+  ],
+  "provenance": {
+    "program": "Daily",
+    "screening_scope": "user_requested_report_candidates",
+    "discovery_source": "chatgpt_user_report",
+    "report_date": "2026-09-04",
+    "report_source": "用户指定的网页版arXiv日报（2026-09-04）",
+    "listing_date": "2026-09-03",
+    "listing_verification": "official_historical_listing_confirmed",
+    "complete_listing_screened": false
+  }
+}

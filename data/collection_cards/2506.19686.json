@@ -1,0 +1,191 @@
+{
+  "arxiv_id": "2506.19686",
+  "source_version": "v3",
+  "source_pdf": "https://arxiv.org/pdf/2506.19686v3",
+  "title_en": "From Memories to Maps: Mechanisms of In-Context Reinforcement Learning in Transformers",
+  "title_zh": "从记忆到地图：Transformer 上下文强化学习的机制",
+  "curation_status": "full_text_verified",
+  "card_standard_version": "2.3",
+  "paper_profile": "ai_empirical",
+  "style_reference": "physicist_daily_arxiv",
+  "provenance": {
+    "program": "Collection",
+    "catalog": "Paper Collection",
+    "catalog_record_id": "2506.19686",
+    "catalog_record_ids": [
+      "2506.19686"
+    ],
+    "catalog_topic": "Machine Learning",
+    "collection_date": "2026-08-30",
+    "sampled_at": "2026-09-26",
+    "selected_by": "collection_serial_goal_continuation",
+    "sampling_seed": "not_applicable_source_complete",
+    "candidate_count": 916
+  },
+  "verified_metadata": {
+    "arxiv_id": "2506.19686",
+    "version": "v3",
+    "title": "From Memories to Maps: Mechanisms of In-Context Reinforcement Learning in Transformers",
+    "authors": [
+      "Ching Fang",
+      "Kanaka Rajan"
+    ],
+    "categories": [
+      "cs.AI"
+    ],
+    "primary_category": "cs.AI",
+    "published": "2025-06-24",
+    "updated": "2025-12-01",
+    "license_url": "https://creativecommons.org/licenses/by/4.0/",
+    "pdf_pages": 36,
+    "source_pdf_sha256": "132f384aad22adad2257d151ce5e00d2f98b6ca540b969be7456f477bcf358b5",
+    "comment": "Official arXiv v3; no independently verified venue in this review."
+  },
+  "sections": [
+    {
+      "title": "作者信息",
+      "paragraphs": [
+        "作者Ching Fang、Kanaka Rajan 均列 Harvard Medical School 的 Department of Neurobiology 与 Harvard University 的 Kempner Institute；Kanaka Rajan 为通讯作者。核对 arXiv:2506.19686v3（2025-12-01更新），36个物理PDF页，保留作者提出的机制假说强度，不把与海马活动相似写成已验证生物机制。（第1–2页）"
+      ]
+    },
+    {
+      "title": "研究问题",
+      "paragraphs": [
+        "一段经验记忆不仅保存过去发生了什么，能否在层间计算中缓存中间结果，让新环境中的动作选择无需现场重算整条路径？作者训练Transformer从离线探索轨迹预测最优动作，并在网格与树状迷宫中分别研究结构表征、跨环境对齐、token调用和干预，提出记忆token充当计算工作空间的机制。（第1–3、7–9页）",
+        "读者桥：输入是转移四元组D={(s,a,s′,r)}和当前查询状态s_q；记忆token与查询token的激活是随网络层改变的状态，输出为动作分布。外层训练以oracle最优动作做监督，内层“强化学习”是固定权重下从含奖励的上下文推断策略，没有在测试环境更新网络参数。这里记忆的计算缓存是激活与key–value表示，不是另写持久数据库或把每层当成生物时间。",
+        "PCA（主成分分析）用于将激活投影到少数方差方向，CKA（中心化核对齐）比较激活关系与任务距离核；ridge是带正则的线性读出，积分梯度是沿基线到输入路径积分得到的归因量。它们各提供表征证据，不单独完成因果证明。（第5–8、27–31页。）"
+      ]
+    },
+    {
+      "title": "背景",
+      "paragraphs": [
+        "上下文强化学习可以在固定权重下利用新经验，但跨任务最优动作监督已给网络强先验。本文要区别简单转移记忆检索、上下文中形成环境结构、查询时读取缓存策略与即时规划，属于AI实证机制研究。海马与内嗅皮层的联系是计算类比，并无新动物神经记录或因果验证。（第1–3、14页。）"
+      ]
+    },
+    {
+      "title": "模型与方法",
+      "paragraphs": [
+        "网格为5×5、25状态，动作上下左右及停留，图拓扑固定而感官编码与目标位置改变；树训练集由分支概率0.9的7层二叉树生成，并排除完整7层树，测试拓扑为完整树、最多127状态，动作是父节点、两个子节点及停留，奖励仅在叶节点。每状态用10维随机感官向量，默认包含距离相关；未见任务的感官编码不同。（第3、15–16页）",
+        "默认模型为GPT-2型因果Transformer，3层4头、嵌入512、无位置嵌入。每条网格转移拼为26维token，树为25维，query用当前感官编码补零；推断时query在全部记忆之后。训练为提高效率将query间隔插入轨迹，但通过额外mask禁止记忆token读取这些query：",
+        "\\[A_{\\rm mask}=A_{\\rm causal}+A_{\\rm query},\\qquad A_{\\rm query}[i,j]=\\begin{cases}-\\infty& D_{\\rm train}[j]=s_q,\\ i\\ne j,\\\\0&\\text{otherwise},\\end{cases}\\]",
+        "$D_{\\rm train}$ 是插入query的训练序列，i/j为被更新/被关注位置；$A_{\\rm causal}$ 为通常因果mask，$A_{\\rm query}$ 屏蔽query列的非对角项。query输出位置才计算最优动作交叉熵。训练最大上下文为网格200、树800；测试图使用250、800或更长上下文，因而需记录长度外推。（第16页 Eq.(1)）",
+        "作者以PCA显示查询表征，再用CKA比较隐层几何与真实图距离。环境核与表征核定义为：",
+        "\\[(K_{\\rm input})_{ij}=\\gamma^{D_{ij}},\\qquad K_{\\rm latents}=(X-\\bar X)(X-\\bar X)^\\top\\]",
+        "$D_{ij}$ 是两个环境状态间最少动作数，$0<\\gamma<1$ 控制尺度；X收集各状态的隐藏表示，$\\bar X$ 为均值。主图选择令总体对齐较高的 $\\gamma=0.8$（网格）和0.6（树），所以CKA不是无超参数的唯一几何认证。树的粗分支结构与这个核未必匹配，作者承认需要更合适的指标。（第27页 Appendix H）",
+        "信息诊断使用ridge线性回归、角度的sin/cos读出以及logistic分类；探针的600任务作90/10拆分，正则强度再用5-fold交叉验证。网格探针任务来自原模型训练集，树探针来自原测试集，探针自己的held-out不等于对基础模型训练任务也独立。因果检查则逐层屏蔽query到指定记忆的注意力，区分必要性和只保留部分token后的充分性；另用20步integrated gradients、动作置零基线定位输入归因。（第29、32–35页）"
+      ]
+    },
+    {
+      "title": "核心结果与证据",
+      "paragraphs": [
+        "在50个未见环境的归一化return曲线中，网格模型常在一次奖励曝光后接近最优，树也在少量曝光后改进；grid查询选择为已见状态且距目标至少6步，horizon15，树horizon100。两组捷径测试各100个感官编码环境，主文报告成功率超过60%，给定测试的chance约0.02；它不是全部新迷宫上的一次学习保证。（第3–4、20–23页）",
+        "Figure3表明上下文增多时，网格PCA表示更接近空间网格；树呈粗分支结构，对齐水平较低且更受奖励影响。Figure4中相同潜在节点跨感官环境的相关逐渐高于不同节点，根和叶附近的树对齐更强。这些是结构表征与跨环境共享证据；PCA投影和CKA升高本身不证明唯一的内部地图。（第5–7、25–28页）",
+        "网格中XY坐标及目标角度到第2层更可读出，query屏蔽附近起点/目标记忆在第2层明显增大损失，中间路径token的直接query屏蔽影响较小。作者提出先在记忆间拼出空间结构，再在query计算相对目标方向的策略。这个解释结合线性读出、注意力干预和局部到分布式关注变化，仍是机制假说而非全部网络计算的形式化反向工程。（第8、32–34页） Figure21的路径必要性测试仅纳入成功到达目标的情形；网格路径是模型策略实际会采取的状态序列。该负证据未覆盖失败轨迹、所有合法或最短路径，且局部query屏蔽不删除此前缓存的信息。（第32–33页。）",
+        "树中只有通往奖励叶节点的6个祖先需要左/右动作，大多数状态的最优选择是父节点。末层query只保留包含当前状态的相关记忆仍可选对动作；记忆中通往目标路径标签及反向动作可线性读出。进一步只保留路径内、朝向或背离目标的转移均可维持表现，保留路径外转移则损害表现，支持“先在memory缓存路径标签，再在query读取动作”的假说。目标路径标签沿层的解码变化尚不唯一确定完整拼接算法。（第9、35–36页）",
+        "模型不是在所有意义上排除了价值表示。附录明确比较动作距离与欧氏距离的价值探针：",
+        "\\[V^*(s)=\\gamma^{d(s,s_{\\rm goal})},\\qquad V_e(s)=\\gamma^{d_e(s,s_{\\rm goal})}\\]",
+        "$d$ 为实际动作距离，$d_e$ 为欧氏距离，$\\gamma$ 为价值折扣（与CKA尺度是不同用途）。网格 $\\gamma=0.8$ 时末层动作价值绝对误差低至0.04，而欧氏价值更好；树同折扣下最多约 $R^2=0.53$，低折扣只在目标附近有意义。故负证据是这些读出不足以解释全程决策，不是任何价值信息都不存在，也不排除非线性/缓存形式的模型式计算。（第30–31页）"
+      ]
+    },
+    {
+      "title": "有效性与局限",
+      "paragraphs": [
+        "外层经过大量最优动作监督，Q-learning对照则每个新任务从有限探索buffer训练到TD误差趋稳，缺少同样的跨任务先验。作者承认差距反映meta-learning先验；不能把更少新环境奖励曝光直接换成同等总训练资源的优势。模型仅选每种任务验证最好的一个进行机制分析，图中的环境置信区间不能替代跨模型训练seed的稳定机制证明。（第4、16、24页）",
+        "路径干预只屏蔽query流对中间记忆的直接访问，并不删除已经由memory–memory计算整合进去的信息。因而结果反对的是所测的决策时完整路径调用方式；本文的缓存策略仍可能使用先前的图结构计算，不能据此排除所有model-based定义。线性不可解码也不证明信息在任何坐标/非线性读出中不存在。（第7、29–35页） 该路径实验还按成功到达目标条件化，不能把成功样本上的较小影响外推到失败轨迹或全部可行路线。（第32–33页 Figure21。）",
+        "只包含两类小型、已知行动拓扑的任务，网格和树分别训练，未展示两者间无需训练的互相迁移。感官编码默认有结构相关，但附录无相关刺激消融保留部分定性结果；不能把输入先验与学习新结构混为一谈。没有新神经记录或动物因果实验，海马–内嗅皮层联系为可检验的计算类比。（第2、14、18–20页）",
+        "附录有复现时需要核对的版式/索引问题：第15页感官编码扩展矩阵写N×N，与10维状态及26/25维token描述不一致；第6页图注 pooled PCA 写15环境而正文写50，图8/9沿用若干旧任务名称。本文第29页实际探针、归因方法位于J/K，主文部分附录字母引用未同步。复查应采用具体物理页的操作定义，不能靠错误的交叉引用补想象。"
+      ]
+    },
+    {
+      "title": "复现与资源",
+      "paragraphs": [
+        "第16页给Adam、weight decay10⁻⁵、初始学习率10⁻⁴线性降至10⁻⁵；网格batch1024、25epochs，树batch512、50epochs。每次两张H100，分别约1/1.5小时；每任务5初始化、dropout0或0.2后按验证选择。Q-learning用相同上下文buffer，tabular1000epochs、DQN1500epochs并各选温度和折扣，需另报成本才能做速度比较。（第16、24页）",
+        "v3第10页仍说代码将在最终稿去匿名后公开，没有可核实的已公开本文专属仓库地址；不把未来发布写为当前可下载。官方PDF SHA-256：132f384aad22adad2257d151ce5e00d2f98b6ca540b969be7456f477bcf358b5；正文、参考文献与所有附录36个物理页已核读。Figure3依CC BY4.0署名引用，保留A–H面板、全部轴和图例。本轮未训练任何代理、未重跑迷宫或探针，无独立数值复现。Evidence status: full-text verified; no independent reproduction performed."
+      ]
+    },
+    {
+      "title": "阅读指南",
+      "paragraphs": [
+        "先看第2页任务图和第5页Figure3，把感官编码、记忆token、query与输出动作对应起来。随后第16页mask解释为何memory可先于query保存中间计算；第8–9、34–36页读必要性/充分性干预。第30–31页必须与主文“不是model-free”的表述一起读，保留网格可解码价值的反例。复现最后检查第15–16、24、29页的任务、训练与探针拆分。"
+      ]
+    }
+  ],
+  "cover": {
+    "mode": "source_figure",
+    "asset_path": "assets/collection-figures/2506.19686/figure-3-in-context-representations.png",
+    "label": "Figure 3",
+    "visual_type": "comparison",
+    "evidence": "paper.pdf p. 5, Figure 3",
+    "caption": "Fang、Rajan，Figure3（arXiv:2506.19686v3，PDF第5页，CC BY4.0）：网格PCA表示从context1到250、树从1到800；C/G横轴为context、纵轴为与距离核的中心化核对齐，虚线为原始输入基线。网格中间层结构对齐增强，树较粗且更受奖励消融影响。PCA轴不是真实地图坐标；核尺度经选择，环境95%置信区间不能证明跨训练seed稳定或唯一内部地图。A–H和原轴图例完整保留。",
+    "alt_text": "网格与树任务上下文增多前后的表征PCA，含两任务的CKA曲线和奖励消融八个面板。",
+    "selection_rationale": "优先展示作者空间结构的可视化并保留相邻定量/消融面板，直接解释从感官状态到结构表征的桥梁；不同于单独动作return图。图形与PDF第5页逐项核对。",
+    "license_url": "https://creativecommons.org/licenses/by/4.0/",
+    "source_pdf": "https://arxiv.org/pdf/2506.19686v3",
+    "source_pdf_sha256": "132f384aad22adad2257d151ce5e00d2f98b6ca540b969be7456f477bcf358b5"
+  },
+  "figure_refs": [
+    {
+      "label": "Figure 3",
+      "asset_path": "assets/collection-figures/2506.19686/figure-3-in-context-representations.png",
+      "section": "模型与方法",
+      "role": "representation geometry and reward-ablation comparison",
+      "evidence": "paper.pdf p. 5, Figure 3",
+      "caption": "Fang、Rajan，Figure3（arXiv:2506.19686v3，PDF第5页，CC BY4.0）：网格PCA表示从context1到250、树从1到800；C/G横轴为context、纵轴为与距离核的中心化核对齐，虚线为原始输入基线。网格中间层结构对齐增强，树较粗且更受奖励消融影响。PCA轴不是真实地图坐标；核尺度经选择，环境95%置信区间不能证明跨训练seed稳定或唯一内部地图。A–H和原轴图例完整保留。",
+      "alt_text": "网格与树任务上下文增多前后的表征PCA，含两任务的CKA曲线和奖励消融八个面板。",
+      "interpretation": "PCA and CKA indicate representation organization, not a unique internal map or demonstrated biological mechanism."
+    }
+  ],
+  "equation_refs": [
+    {
+      "label": "Appendix C, Eq. (1)",
+      "latex": "A_{\\rm mask}=A_{\\rm causal}+A_{\\rm query},\\qquad A_{\\rm query}[i,j]=\\begin{cases}-\\infty& D_{\\rm train}[j]=s_q,\\ i\\ne j,\\\\0&\\text{otherwise},\\end{cases}",
+      "role": "prevent memory tokens from reading interleaved query tokens during supervision",
+      "symbols": {
+        "D_train": "training sequence with interleaved query tokens",
+        "s_q": "query state token",
+        "A_causal": "causal attention mask",
+        "A_query": "query-column mask",
+        "i,j": "updated and attended token indices"
+      },
+      "evidence": "paper.pdf p. 16, Eq. (1) and combined mask",
+      "interpretation": "prevent memory tokens from reading interleaved query tokens during supervision. These define the experiment, not a proof of a unique learned circuit."
+    },
+    {
+      "label": "Appendix H, unnumbered kernel definitions",
+      "latex": "(K_{\\rm input})_{ij}=\\gamma^{D_{ij}},\\qquad K_{\\rm latents}=(X-\\bar X)(X-\\bar X)^\\top",
+      "role": "define the structural comparison and its scale-dependent kernel",
+      "symbols": {
+        "D_ij": "shortest action distance between states",
+        "gamma": "CKA structural-kernel scale",
+        "X": "matrix of state representations",
+        "Xbar": "representation mean"
+      },
+      "evidence": "paper.pdf p. 27, Appendix H",
+      "interpretation": "define the structural comparison and its scale-dependent kernel. These define the experiment, not a proof of a unique learned circuit."
+    },
+    {
+      "label": "Appendix L, action/geometric value probes",
+      "latex": "V^*(s)=\\gamma^{d(s,s_{\\rm goal})},\\qquad V_e(s)=\\gamma^{d_e(s,s_{\\rm goal})}",
+      "role": "distinguish action-distance value from a spatially correlated control",
+      "symbols": {
+        "Vstar": "optimal action-distance value probe",
+        "Ve": "Euclidean-distance control",
+        "gamma": "value discount, distinct from CKA scale",
+        "d,d_e": "action and Euclidean distances",
+        "s,s_goal": "query and goal state"
+      },
+      "evidence": "paper.pdf pp. 30–31, Appendix L",
+      "interpretation": "distinguish action-distance value from a spatially correlated control. These define the experiment, not a proof of a unique learned circuit."
+    }
+  ],
+  "evidence_refs": [
+    "paper.pdf pp. 1–4: identity, supervised meta-learning, tasks and behavioral tests",
+    "paper.pdf pp. 5–9: representation and memory-caching hypotheses",
+    "paper.pdf pp. 15–16: task/sensory encoding, architecture, masking and training selection",
+    "paper.pdf pp. 18–24: sensitivity, behavioral selection and unequal-prior Q-learning controls",
+    "paper.pdf pp. 27–31: CKA scale selection, probe splits and positive/negative value evidence",
+    "paper.pdf pp. 32–36: restricted query-path tests and memory-caching interventions",
+    "source PDF SHA-256 132f384aad22adad2257d151ce5e00d2f98b6ca540b969be7456f477bcf358b5",
+    "Evidence status: full-text verified; no independent reproduction performed."
+  ]
+}

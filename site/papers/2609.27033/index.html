@@ -1,0 +1,274 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>WTF?! Simulation-Free Reinforcement Learning with Wasserstein-Tilted Flow Maps - 每日论文卡</title>
+    <meta name="description" content="Abbas Mammadov、Jerry Y. Huang、Justin Lin 为共同第一作者；其余作者为 Partha Kaushik、Sheel Shah、Kartik Nair、Yee Whye Teh、Nicholas M. Boffi。Mammadov 与 Teh 来自 University of Oxford，其余来自 Carnegie Mellon University；通讯作者为 Mammadov 与 Huang（PDF p. 1）。核读 arXiv:2609.27033v1；首次提交 2026-09-22、cs.LG listing 2026-09-24、原用户报告 2026-09-25。" />
+    <link rel="canonical" href="https://xixi-cc.github.io/daily-article-card/papers/2609.27033/" />
+    <script type="application/ld+json">{"@context": "https://schema.org", "@type": "Article", "headline": "WTF?! Simulation-Free Reinforcement Learning with Wasserstein-Tilted Flow Maps", "description": "Abbas Mammadov、Jerry Y. Huang、Justin Lin 为共同第一作者；其余作者为 Partha Kaushik、Sheel Shah、Kartik Nair、Yee Whye Teh、Nicholas M. Boffi。Mammadov 与 Teh 来自 University of Oxford，其余来自 Carnegie Mellon University；通讯作者为 Mammadov 与 Huang（PDF p. 1）。核读 arXiv:2609.27033v1；首次提交 2026-09-22、cs.LG listing 2026-09-24、原用户报告 2026-09-25。", "url": "https://xixi-cc.github.io/daily-article-card/papers/2609.27033/", "mainEntityOfPage": "https://xixi-cc.github.io/daily-article-card/papers/2609.27033/", "inLanguage": "zh-CN", "author": {"@type": "Person", "name": "Xineng Cao", "alternateName": ["Xixi Cao", "曹溪能"], "url": "https://xixi-cc.github.io/"}, "isBasedOn": "https://arxiv.org/abs/2609.27033", "datePublished": "2026-09-25", "dateModified": "2026-09-25"}</script>
+    <script>
+      (function() {
+        try {
+          var themePreference = window.localStorage.getItem('color-theme') || 'system';
+          var systemUsesDarkTheme = window.matchMedia('(prefers-color-scheme: dark)').matches;
+          var resolvedTheme = themePreference === 'system'
+            ? (systemUsesDarkTheme ? 'dark' : 'light')
+            : themePreference;
+          document.documentElement.dataset.theme = resolvedTheme;
+          document.documentElement.dataset.themePreference = themePreference;
+          document.documentElement.style.colorScheme = resolvedTheme;
+        } catch (error) {
+          document.documentElement.dataset.theme = 'light';
+          document.documentElement.dataset.themePreference = 'system';
+        }
+      })();
+    </script>
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='18' fill='%23111827'/%3E%3Ctext x='50%25' y='55%25' text-anchor='middle' dominant-baseline='middle' font-size='30' font-family='Arial, sans-serif' fill='white'%3EV%3C/text%3E%3C/svg%3E" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700;800&family=Noto+Sans+SC:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <script>document.documentElement.classList.add('math-pending');</script>
+    <script>
+      window.MathJax = {
+        tex: {
+          inlineMath: [['$', '$'], ['\\(', '\\)']],
+          displayMath: [['$$', '$$'], ['\\[', '\\]']],
+          processEscapes: true
+        },
+        options: {
+          skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+        },
+        chtml: {
+          scale: 1,
+          displayAlign: 'center'
+        },
+        startup: {
+          ready: function() {
+            MathJax.startup.defaultReady();
+            MathJax.startup.promise.then(function() {
+              document.documentElement.classList.remove('math-pending');
+              document.documentElement.dataset.mathReady = 'true';
+            });
+          }
+        }
+      };
+    </script>
+    <script defer src="../../assets/vendor/mathjax/tex-chtml.js"></script>
+    <link rel="stylesheet" href="../../assets/style.css" />
+  </head>
+  <body class="detail-page" data-paper-id="2609.27033" data-paper-program="daily">
+    <div class="page-noise"></div>
+    <div class="page-blur page-blur-a"></div>
+    <div class="page-blur page-blur-b"></div>
+
+    <header class="header detail-page-header">
+      <div class="container">
+        <div class="detail-page-topbar">
+          <a class="back-link" href="../../physics_AI.html">返回列表</a>
+          <div class="detail-topbar-actions">
+            <span class="detail-site-name">每日论文卡</span>
+            <button id="detail-favorite" class="detail-favorite-button" type="button" aria-pressed="false">☆ 收藏</button>
+            <button class="theme-toggle" type="button" data-theme-toggle aria-label="当前主题：设备，点击切换主题" title="当前主题：设备">
+  <span class="theme-toggle-icons" aria-hidden="true">
+    <svg class="theme-toggle-icon theme-toggle-icon-light" viewBox="0 0 24 24" fill="none">
+      <circle cx="12" cy="12" r="3.5" stroke="currentColor" stroke-width="1.8"/>
+      <path d="M12 2.5v2M12 19.5v2M2.5 12h2M19.5 12h2M5.3 5.3l1.4 1.4M17.3 17.3l1.4 1.4M18.7 5.3l-1.4 1.4M6.7 17.3l-1.4 1.4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+    </svg>
+    <svg class="theme-toggle-icon theme-toggle-icon-dark" viewBox="0 0 24 24" fill="none">
+      <path d="M20 15.2A8.1 8.1 0 0 1 8.8 4a8.2 8.2 0 1 0 11.2 11.2z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>
+    </svg>
+    <svg class="theme-toggle-icon theme-toggle-icon-system" viewBox="0 0 24 24" fill="none">
+      <rect x="3" y="4" width="18" height="13" rx="2.5" stroke="currentColor" stroke-width="1.8"/>
+      <path d="M8 21h8M12 17v4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+    </svg>
+  </span>
+  <span class="theme-toggle-label" data-theme-toggle-label>设备</span>
+</button>
+          </div>
+        </div>
+
+        <div class="detail-hero-grid">
+          <div class="detail-hero-cover"><figure class="paper-figure-card paper-figure-card-detail">
+  <img class="paper-figure-image" src="../../assets/curated_figures/2609.27033/figure-2.png" alt="Wasserstein局部运输与KL奖励重加权的双面板机制示意" loading="lazy" onclick="window.openPaperFigureImage && window.openPaperFigureImage(this)" />
+  <figcaption class="paper-figure-caption">Figure 2 示意两类正则化：左侧按预训练漂移诱导的运输成本将粒子移向附近高奖励区域；右侧 KL tilt 对原分布按奖励重加权。横轴为样本坐标，曲线和箭头是机制示意，不是统计实验或保证多样性不会下降。原作者 Abbas Mammadov 等，CC BY 4.0，来源 https://arxiv.org/pdf/2609.27033v1，PDF \(p\). 2。</figcaption>
+</figure></div>
+          <div class="detail-hero-copy">
+            <p class="eyebrow">论文详情</p>
+            <h1 class="detail-page-title">WTF?! Simulation-Free Reinforcement Learning with Wasserstein-Tilted Flow Maps</h1>
+            <p class="detail-page-title-zh">WTF：用 Wasserstein 倾斜流映射进行免逐步模拟的强化学习</p>
+            <div class="detail-meta">2026-09-25 · <a href="https://arxiv.org/abs/2609.27033" target="_blank" rel="noopener noreferrer">原文</a></div>
+            <p class="detail-summary">Abbas Mammadov、Jerry \(Y\). Huang、Justin Lin 为共同第一作者；其余作者为 Partha Kaushik、Sheel Shah、Kartik Nair、Yee Whye Teh、Nicholas \(M\). Boffi。Mammadov 与 Teh 来自 University of Oxford，其余来自 Carnegie Mellon University；通讯作者为 Mammadov 与 Huang（PDF \(p\). 1）。核读 arXiv:2609.27033v1；首次提交 2026-09-22、cs.LG listing 2026-09-24、原用户报告 2026-09-25。</p>
+            <div class="detail-micro-meta">
+              <span class="meta-pill">AI 基础理论</span>
+              <span class="meta-pill">理论与数值</span>
+              <span class="meta-pill">#机器学习</span><span class="meta-pill">#计算机视觉</span><span class="meta-pill">#生成模型</span>
+              <span class="meta-pill">15 分钟读完</span>
+              <span class="meta-pill">9 张阅读卡</span>
+              <span class="meta-pill">Abbas Mammadov、Jerry Y.</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <main class="container detail-layout">
+      <div class="detail-shell">
+        <article id="detail-body" class="reading-flow"><section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 01</span>
+    <span class="reading-step-note">作者信息</span>
+  </div>
+  <h2>作者信息</h2>
+  <div class="reading-card-content"><p>Abbas Mammadov、Jerry \(Y\). Huang、Justin Lin 为共同第一作者；其余作者为 Partha Kaushik、Sheel Shah、Kartik Nair、Yee Whye Teh、Nicholas \(M\). Boffi。Mammadov 与 Teh 来自 University of Oxford，其余来自 Carnegie Mellon University；通讯作者为 Mammadov 与 Huang（PDF \(p\). 1）。核读 arXiv:2609.27033v1；首次提交 2026-09-22、cs.LG listing 2026-09-24、原用户报告 2026-09-25。</p></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 02</span>
+    <span class="reading-step-note">研究问题</span>
+  </div>
+  <h2>研究问题</h2>
+  <div class="reading-card-content"><p>生成模型已有从噪声到图像的确定性流映射，为什么奖励微调还要展开长随机轨道？本文同时更换“接近基准生成器”的定义与训练计算方式：以基准漂移诱导的运输作用量取代末端 KL，再用流映射直接跳到未来状态，更新价值梯度而非回传整个多步轨道。关键不是减少一个既定目标的求解步数，而是研究一个不同的正则化目标（PDF pp. 2–8）。</p></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 03</span>
+    <span class="reading-step-note">背景</span>
+  </div>
+  <h2>背景</h2>
+  <div class="reading-card-content"><p>这是生成式 AI 与最优控制的基础方法及数值实验。经典奖励倾斜 \(\widetilde\rho_1\propto e^{\lambda r}\rho_1\) 是 KL 正则奖励目标的解；它重加权已有分布。WTF 把输入先验沿已知漂移运输到新终端律，付残差控制的平方代价。该代价在漂移为零时退化为平方Wasserstein距离的一半，普通情形却由漂移决定。此处的生成时间是算法坐标，不是材料或图像的真实物理时间（PDF pp. 4–6）。</p></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 04</span>
+    <span class="reading-step-note">读者桥接</span>
+  </div>
+  <h2>读者桥接</h2>
+  <div class="reading-card-content"><p>输入是初始噪声 \(x_0\sim\rho_0\) 和类别或文本条件；状态 \(x_t\) 是生成过程中的图像或压缩坐标。预训练漂移 \(b_t\) 已固定，可训练的两时间map把当前状态跳到未来。奖励函数给末端图像打分，回归其未来价值梯度并维持跨时间跳转一致性，输出同一个奖励对齐、仍可少步采样的map。</p>
+<p>flow map 指常微分方程的有限时间解算子；它将逐步积分成本预先吸收到网络内。“价值函数”是未来奖励减去剩余控制代价，非热力学自由能。“critic-free”表示不另训价值估计网络；“simulation-free”表示不逐步数值积分整条轨道，仍然采样初态和随机时间并调用神经网络。NFE 是推理时网络调用次数，不能直接当作 GPU 时间（PDF pp. 3, 6–10）。</p></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 05</span>
+    <span class="reading-step-note">模型与方法</span>
+  </div>
+  <h2>模型与方法</h2>
+  <div class="reading-card-content"><p>先定义粒子与分布的先验运输代价：</p>
+
+<div class="display-math">\[ c_b(x,y)=\inf_{\omega_0=x,\omega_1=y}\int_0^1\frac12\|\dot\omega_t-b_t(\omega_t)\|^2dt,\qquad T_b(\rho_0,\nu)=\inf_{\pi\in\Pi(\rho_0,\nu)}\int c_b(x,y)\pi(dx\,dy) \]</div>
+
+<p>公式定位：PDF \(p\). 5, Eqs. (10)–(11)。约束的是改变已有生成动力学所需的残差控制；一般不等于普通Wasserstein距离。</p>
+<p>\(\omega\) 是连接 \(x,y\) 的轨道，\(b_t\) 为固定基准漂移，\(\rho_0\) 为初始分布、\(\nu\) 为候选末端律，\(\pi\in\Pi(\rho_0,\nu)\) 为耦合。与奖励联合后最大化 \(\lambda\mathbb E_\nu r-T_b(\rho_0,\nu)\)。命题3.1允许每个源样本选择奖励与运输代价最优的终点，而KL倾斜保留同奖励水平集内的相对密度（PDF pp. 5–6, 11）。</p>
+<p>命题3.2在附录假设下等价于：</p>
+
+<div class="display-math">\[ \sup_u\mathbb E_{x_0\sim\rho_0}\left[\lambda r(x_1^u)-\frac12\int_0^1\|u_t(x_t^u)\|^2dt\right],\qquad \dot x_t^u=b_t(x_t^u)+u_t(x_t^u) \]</div>
+
+<p>公式定位：PDF \(p\). 6, Proposition 3.2, Eq. (14); proof pp. 24–25。在声明的正则性和可实现性下与末端分布目标具有相同最优值；不是任意有限神经网络的全局训练保证。</p>
+<p>\(u_t\) 是残差控制、\(x_t^u\) 是受控轨道、\(r\) 是终端奖励，\(\lambda\) 决定奖励和偏离基准的权衡。最优控制为价值梯度；实际更新采用冻结参考控制的策略改进回归，避免只改变终端map而不学到对应对角速度的失败（PDF pp. 7, 20–23）。</p>
+<p>两次未来map调用和一个随机时间给出价值估计：</p>
+
+<div class="display-math">\[ \widehat V(t,x)=\lambda r(x_1)-\frac{1-t}{2}\|\bar u_\tau(x_\tau)\|^2,\qquad \tau\sim\mathrm{Unif}[t,1] \]</div>
+
+<p>公式定位：PDF \(p\). 8, Eq. (18); Appendix E.4 pp. 28–29。参考map满足流映射半群性质时，对随机时间平均恢复控制代价积分；理想无偏性不排除有限map误差。</p>
+<p>\(\bar u\) 是参考控制，\(x_\tau\) 为中间跳转状态，\(x_1\) 为终点。梯度 \(\widehat g=\nabla_x\widehat V\) 用来回归可训练的对角速度，另外约束非对角跳转的一致性：</p>
+
+<div class="display-math">\[ \mathcal L_{\mathrm{WTF}}(\widehat w)=\mathbb E_{x_0,t,\tau}\!\left[\|\widehat w_{t,t}(\bar x_t)-b_t(\bar x_t)-\widehat g(t,\bar x_t)\|^2\right]+\beta\mathcal L_{\mathrm{dist}}(\widehat w) \]</div>
+
+<p>公式定位：PDF \(p\). 8, Eq. (19), Proposition 4.2; assumptions \(p\). 21, proof pp. 27–29。对角回归传递奖励控制信号，非对角蒸馏让少步跳转与该动力学一致；停梯度目标在更新时冻结。</p>
+<p>\(\widehat w_{t,t}\) 是可训练的对角漂移，\(\bar x_t\) 来自冻结参考map，\(\beta\) 是蒸馏权重。stop-gradient表示更新时不对目标求导；ImageNet用参数指数平均作参考，文本图像用当前权重的停梯度副本（PDF pp. 8–9, 31）。</p><figure class="evidence-figure">
+  <button class="evidence-figure-image-button" type="button" aria-label="放大查看 Figure 2" onclick="window.openPaperFigureImage && window.openPaperFigureImage(this.querySelector('img'))">
+    <img class="paper-figure-image evidence-figure-image" src="../../assets/curated_figures/2609.27033/figure-2.png" alt="Wasserstein局部运输与KL奖励重加权的双面板机制示意" loading="lazy" />
+  </button>
+  <figcaption>
+    <strong>Figure 2</strong> · Figure 2 示意两类正则化：左侧按预训练漂移诱导的运输成本将粒子移向附近高奖励区域；右侧 KL tilt 对原分布按奖励重加权。横轴为样本坐标，曲线和箭头是机制示意，不是统计实验或保证多样性不会下降。原作者 Abbas Mammadov 等，CC BY 4.0，来源 https://arxiv.org/pdf/2609.27033v1，PDF \(p\). 2。
+    <span class="evidence-figure-reading">物理解读：改变运输成本与奖励权重会改变粒子的移动，不只是样本权重；示意图本身不提供最优性或性能证据。</span>
+    <span class="evidence-figure-source">来源：PDF \(p\). 2, Figure 2</span>
+  </figcaption>
+</figure></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 06</span>
+    <span class="reading-step-note">核心结果与证据</span>
+  </div>
+  <h2>核心结果与证据</h2>
+  <div class="reading-card-content"><p>解析部分证明先验运输问题与确定性控制最优值相同，并给策略改进恒等式与理想总体固定点最优性。无偏随机时间价值估计依赖真实流map的半群性质；附录E.4专门在固定点利用蒸馏条件建立它。实际有限网络、有限训练和未收敛map不自动得到这些保证（PDF pp. 6–8, 24–29）。</p>
+<p>ImageNet-256 使用 DMF XL/2，训练覆盖1000类，但评测取固定前32类、每类16张图；WTF以三个匹配训练种子平均。表6中1 NFE的 HPSv2为0.319，VFM为0.307；DreamSim多样性同为0.482，而PickScore和ImageReward上VFM更高，不能写成全部指标全面领先。多样性衡量同类样本在固定嵌入中的平均平方距离，并非物理多样性的证明（PDF pp. 10–11, 31–32）。</p>
+<p>文本图像使用 TiM-T2I、固定100个 photo/painting 提示池、1000次评分；多样性另用32个提示各16样本。表8的4 NFE WTF HPSv2为0.401，对比50 NFE Adjoint Matching的0.357；同checkpoint可用多种步数。但奖励模型是训练信号，分数提升不等于人类安全或对任意提示泛化（PDF pp. 12, 31–32）。</p>
+<p>Figure 7在共同8×H100环境下比较达到基线峰值HPSv2所需累计GPU小时，给出最高280×和47×较少计算；表11则列各展示checkpoint的总微调成本，二者端点不同。基准预训练、评估、已有flow map的蒸馏成本均未计入；不能拿280×替代全流程计算比（PDF pp. 11–12, 33）。</p></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 07</span>
+    <span class="reading-step-note">有效性与局限</span>
+  </div>
+  <h2>有效性与局限</h2>
+  <div class="reading-card-content"><p>命题4.2是具有全支撑初始分布、足够丰富且凸的两时间函数类、正则性与冻结目标变分条件下的总体固定点结论；并未保证给定神经参数训练达到固定点。大规模图像实验用欧氏奖励梯度代替精确map Jacobian拉回，属于理论目标的实际变体。附录H.2支持它在受测协议下更好，不能因此宣称同一个精确最优性定理成立（PDF pp. 12, 21, 27–29, 33）。</p>
+<p>增加奖励权重可减小多样性；文本图像实验将原始奖励梯度作范数归一化和截断。该方法要求预训练flow map，只有速度模型时要先蒸馏，这一成本排除在本文比较外。表征的模拟时间可以反转，附录F.1的最优控制梯度符号随之翻转；本文卡片仅使用正文从噪声到数据的正向约定（PDF pp. 12, 29–33）。</p></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 08</span>
+    <span class="reading-step-note">复现与资源</span>
+  </div>
+  <h2>复现与资源</h2>
+  <div class="reading-card-content"><p>算法4、附录F–G和表10给训练配置：ImageNet训练12,500步，文本图像训练1,460步、LoRA rank16，均使用8×\(H_{100}\)，HPSv2 \(v_{2}\).1作奖励。预训练checkpoint、文本编码与压缩模型名称均在附录G.1；全文没有给出可确认的本论文独立代码仓库链接，不猜URL。原文 https://arxiv.org/abs/2609.27033。本轮仅全文、公式与图表核读，未独立训练或计算实验。</p></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 09</span>
+    <span class="reading-step-note">阅读指南</span>
+  </div>
+  <h2>阅读指南</h2>
+  <div class="reading-card-content"><p>快速路径从 \(p\). 2 Figure 2 理解目标差异，再读 \(p\). 5–8 的代价、控制与估计链，接 \(p\). 12 的局限和 \(p\). 33 的计算端点。深读 \(p\). 21 正则性假设与 \(p\). 27–29 固定点证明，再看 \(p\). 29–32 奖励梯度、归一化、评测切分。生成样本网格可后读；主结论的科学支撑不取决于挑选的漂亮样本。</p></div>
+</section></article>
+        <aside id="detail-toc" class="detail-toc hidden" aria-label="内容目录">
+          <p class="detail-toc-title">阅读目录</p>
+          <nav id="detail-toc-nav" class="detail-toc-nav"></nav>
+        </aside>
+      </div>
+      <nav class="paper-nav"><a class="paper-nav-link paper-nav-prev" href="../../papers/2609.27158/"><span class="paper-nav-label">← 上一篇</span><span class="paper-nav-title">The Linear Representation Hypothesis Needs a Group Action</span></a>
+      <a class="paper-nav-link paper-nav-next" href="../../papers/2609.26679/"><span class="paper-nav-label">下一篇 →</span><span class="paper-nav-title">A Spectral Theory of Grokking: Weight Decay induces Feature Learning</span></a></nav>
+      <section id="comments" class="comments-panel" aria-labelledby="comments-title">
+        <div class="comments-heading">
+          <div>
+            <p class="eyebrow">Discussion</p>
+            <h2 id="comments-title">评论与讨论</h2>
+          </div>
+          <a href="https://github.com/xixi-cc/xixi-research-comments/discussions" target="_blank" rel="noopener noreferrer">在 GitHub 查看</a>
+        </div>
+        <p class="comments-note">评论公开保存在 GitHub Discussions；阅读无需登录，发表评论需要 GitHub 账号。</p>
+        <script src="https://giscus.app/client.js"
+                data-repo="xixi-cc/xixi-research-comments"
+                data-repo-id="R_kgDOUIl8MQ"
+                data-category="Announcements"
+                data-category-id="DIC_kwDOUIl8Mc4DEftB"
+                data-mapping="specific"
+                data-term="daily:2609.27033"
+                data-strict="1"
+                data-reactions-enabled="1"
+                data-emit-metadata="0"
+                data-input-position="top"
+                data-theme="preferred_color_scheme"
+                data-lang="zh-CN"
+                data-loading="lazy"
+                crossorigin="anonymous"
+                async></script>
+        <noscript><p>请启用 JavaScript，或直接前往 GitHub Discussions 参与讨论。</p></noscript>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <div class="container">
+        <p>内容来自 <a href="https://arxiv.org" target="_blank" rel="noopener noreferrer">arXiv.org</a>；原创解读采用 CC BY-NC 4.0。<a href="../../rights.html">许可与引用</a></p>
+      </div>
+    </footer>
+
+    <script src="../../assets/theme.js"></script>
+    <script src="../../assets/media.js"></script>
+    <script src="../../assets/paper.js"></script>
+    <!-- Cloudflare Web Analytics -->
+<script type="module" src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon='{"token":"73522e5dee9b42b0be84b4847e4dd502"}'></script>
+<!-- End Cloudflare Web Analytics -->
+  </body>
+</html>
