@@ -7,6 +7,11 @@ import json
 import re
 from pathlib import Path
 
+try:
+    from .enrich_daily_cards import verified_local_metadata
+except ImportError:
+    from enrich_daily_cards import verified_local_metadata
+
 
 ROOT = Path(__file__).resolve().parents[1]
 PAPERS_MD = ROOT / "papers.md"
@@ -299,6 +304,12 @@ def main() -> int:
             errors.extend(validate_v2_card(card, arxiv_id, program))
 
         if program == "Daily":
+            if not re.fullmatch(r"v\d+", str(card.get("source_version", ""))):
+                errors.append(f"{arxiv_id}: Daily source_version must be a version such as v1")
+            try:
+                verified_local_metadata(card)
+            except ValueError as error:
+                errors.append(str(error))
             row = rows.get(arxiv_id)
             if row is None:
                 errors.append(f"{arxiv_id}: missing from papers.md")
