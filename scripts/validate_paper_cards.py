@@ -279,7 +279,13 @@ def main() -> int:
         evidence_refs = card.get("evidence_refs", [])
         if not isinstance(evidence_refs, list) or len(evidence_refs) < 3:
             errors.append(f"{arxiv_id}: insufficient evidence_refs")
-        elif not any("no independent reproduction" in str(ref) for ref in evidence_refs):
+        elif not (
+            any("no independent reproduction" in str(ref) for ref in evidence_refs)
+            or (
+                card.get("independent_reproduction") is False
+                and any("independent_reproduction=false" in str(ref) for ref in evidence_refs)
+            )
+        ):
             errors.append(f"{arxiv_id}: missing independent-reproduction boundary")
 
         content = json.dumps(sections, ensure_ascii=False)

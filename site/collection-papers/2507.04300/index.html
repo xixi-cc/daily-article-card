@@ -145,11 +145,11 @@
   </div>
   <h2>模型与方法</h2>
   <div class="reading-card-content"><ul><li>设目标线性层权重W将u映射到输出，v代表该匹配式中的其余贡献；无指令时相应量带prime。作者希望在同一位置满足激活约束，并在所有满足该约束的修正中选最小范数：</li></ul>
-<p>-</p>
+
 <div class="display-math">\[Wu+v=W^{\prime}u^{\prime}+v^{\prime},\qquad \min_{W^{\prime}}\|W^{\prime}-W\|_F^2\]</div>
 
 <ul><li>$W,W^{\prime}$ 是更新前后矩阵，$u,u^{\prime}$ 是记录的有/无指令输入激活，$v,v^{\prime}$ 为相应旁路项，$\|\cdot\|_F$ 为元素平方和的平方根。单位置可取 $u\in\mathbb R^D,v\in\mathbb R^N,W\in\mathbb R^{N\times D}$；批量时每个词元占一列。这里维数是本卡对Eq.(1)的相容解释：附录把v写成D×\(T\)、W写成N×\(D\)，若N不等于D则不相容，不能把它原样抄成维度正确的陈述。（第3页 Eqs.(1)–(2)、第8页附录。）</li><li>在记录激活固定且Gram矩阵可逆时，闭式更新为：</li></ul>
-<p>-</p>
+
 <div class="display-math">\[W^{\prime}=W-\left[W(u^{\prime}-u)+(v^{\prime}-v)\right]\left((u^{\prime})^\top u^{\prime}\right)^{-1}(u^{\prime})^\top\]</div>
 
 <ul><li>这就是第3页Eq.(3)；u及v在批量情形表示T列匹配样本，$((u^{\prime})^\top u^{\prime})^{-1}$ 要求无指令输入列线性独立，单列要求 $u^{\prime}\ne0$。它对固定局部约束是最小二乘范数的精确解，不是全网络答案正确性的定理。若列相关或T&gt;\(D\)，普通逆可能不存在；原文未给正则化、伪逆或不可满足约束处理，不能把这些额外实现当作论文已经提供。（第3、8页。）</li><li>最后一页拉格朗日推导的最终解与Eq.(3)一致，但中间gradient行使用未带prime的u转置、下一行又恢复prime；本卡按最终解和约束的相容读法解释，明示源内下标不一致。局部解把u、v及带prime量看作固定；若修改位置还改变后续或缓存激活，原有约束不自动覆盖整个自回归生成。第3页的无指令update阶段使用instruct答案作为下一词元输入，即用目标答案前缀取得匹配激活，不是仅凭原始问题一次并行求解所有未来词元。（第3、8页。）</li><li>Figure2给具体输入“Qi started Oxinnovate”与“Who started Oxinnovate?”：上方有指令路径记录u/v，下方把修正后的W置入无指令路径；红色标示事实相关信号。Figure3的QF cutoff表示权重求解无需上方层的匹配激活，不代表取得正确目标答案或之后完整推理都可忽略上方网络。Figure4的qfsignificance是词元选择掩码；它不证明被选词元对应可独立定位的真实知识神经元。（第2、4、6页 Figures2–4。）</li></ul><figure class="evidence-figure">
@@ -170,7 +170,7 @@
   </div>
   <h2>核心结果与证据</h2>
   <div class="reading-card-content"><ul><li>Table1列8个连续问答步骤。原模型无事实提示对Oxinnovate创始人回答“Need more information”；加事实后回答Qi；更新W之后去掉事实仍回答Qi。既有问题“Who started Alibaba?”更新前后都回答Jack Ma；换问法“The person behind Oxinnovate?”得到Founded by Qi。再加入位于北京PKU Science Park的新事实、更新为第二组权重后，地点回答北京、创始人仍回答Qi。这支持该示例中的写入、一次改写问法及两条事实连续保留，不能把8步骤当成8个独立数据集、训练seed或编辑成功率百分比。（第5–6页Table1。）</li><li>为什么最小权重变化不能证明无遗忘？从Eq.(3)对另一输入a直接得到局部变化：</li></ul>
-<p>-</p>
+
 <div class="display-math">\[\Delta W\,a=-\left[W(u^{\prime}-u)+(v^{\prime}-v)\right]\left((u^{\prime})^\top u^{\prime}\right)^{-1}(u^{\prime})^\top a,\qquad (u^{\prime})^\top a=0\ \Longrightarrow\ \Delta W\,a=0\]</div>
 
 <ul><li>$\Delta W=W^{\prime}-W$，a是固定的另一目标层输入。与全部编辑输入正交时该层线性输出不变；一般a有投影时仍会变化。此式为本卡从已核对Eq.(3)直接推出的边界解释，不是作者额外测得的结果；且a自身可因网络/缓存状态变化，不能升级为全网络不变性。最小Frobenius范数仅在满足目标约束的修正之间取最小，未限制所有历史问题的输出或事实记忆。（第3、8页。）</li><li>实验只报告单个1.5B模型和单张RTX4090上的示例；没有大规模事实编辑成功率、语义改写集、邻近/无关事实保留率、长编辑序列、置信区间、wall-clock时间或峰值显存对照。正文“最高四倍存储开销”“更快反馈/节省资源”等说法没有本文相同硬件的测量曲线；不能发布成QF已验证四倍内存节省。闭式解避免了这一步的梯度回传，但构造批量Gram及求逆的成本、病态性和全模型推理成本仍在。（第1、5–7页。）</li></ul></div>

@@ -145,19 +145,19 @@
   </div>
   <h2>模型与方法</h2>
   <div class="reading-card-content"><ul><li>在Pre-LN的一个注意力或FFN子层之后，先做残差相加，再减去stop-gradient缩放分支：</li></ul>
-<p>-</p>
+
 <div class="display-math">\[x_{\ell+1}^{\prime}=x_\ell+f(\operatorname{LN}(x_\ell)),\qquad x_{\ell+1}=x_{\ell+1}^{\prime}-\operatorname{SiLU}(\alpha_\ell)\operatorname{sg}(x_{\ell+1}^{\prime})\]</div>
 
 <ul><li>$x_\ell$ 是第ℓ子层的残差激活，f是注意力或FFN模块，LN代表所用归一化，α是标量门；$\operatorname{SiLU}(a)=a/(1+e^{-a})$。定义β后，前向数值与自动微分局部规则分别为：</li></ul>
-<p>-</p>
+
 <div class="display-math">\[\beta_\ell=1-\operatorname{SiLU}(\alpha_\ell),\qquad x_{\ell+1}=\beta_\ell x_{\ell+1}^{\prime},\quad \left.\frac{\partial x_{\ell+1}}{\partial x_{\ell+1}^{\prime}}\right|_{\rm autodiff}=I,\quad \left.\frac{\partial x_{\ell+1}}{\partial\alpha_\ell}\right|_{\rm autodiff}=-\operatorname{SiLU}^{\prime}(\alpha_\ell)x_{\ell+1}^{\prime}\]</div>
 
 <ul><li>I为恒等矩阵。sg分支仍对门α求导，而不向其输入传梯度，所以可以学习门值。这里的I是计算图指定的替代导数：将前向数值当普通函数求导实际得到βI，不能混称同一个经典Jacobian。每层attention与FFN共用门，初始化α=0；起始激活及旧参数的梯度与基线一致，但新增门已有自己的学习梯度。（第3、5、15页 Eqs.(1)–(2)，AppendixB）</li><li>若固定这些状态与局部模块Jacobian，用一个子层简化表示整条反传链，普通缩放额外乘门，而GPAS删去这些显式因子：</li></ul>
-<p>-</p>
+
 <div class="display-math">\[\left.\frac{\partial\mathcal L}{\partial x_1}\right|_{\rm naive}=\frac{\partial\mathcal L}{\partial x_L}\left(\prod_{\ell=1}^{L-1}J_\ell\right)\left(\prod_{\ell=1}^{L-1}\beta_\ell\right),\qquad\left.\frac{\partial\mathcal L}{\partial x_1}\right|_{\rm GPAS}=\frac{\partial\mathcal L}{\partial x_L}\prod_{\ell=1}^{L-1}J_\ell\]</div>
 
 <ul><li>$J_\ell=\partial x_{\ell+1}^{\prime}/\partial x_\ell$，L是层数，$\mathcal L$ 是末端训练损失。矩阵乘积保留链式顺序。它只比较局部规则；GPAS前向状态和后续训练权重本来就不同，因此不保证整网梯度等于未缩放基线，也不保证任意J乘积不收缩。普通缩放指数衰减还需 $0&lt;\beta_\ell&lt;1$ 等条件；负门可使β&gt;1，而SiLU无正上界，β的正性没有自动保证。（第3–4、7、15页）</li><li>Sandwich与LayerNorm Scaling在残差相加后用同式；DeepNorm则只缩放捷径，保留f读取的原x：</li></ul>
-<p>-</p>
+
 <div class="display-math">\[x_\ell^{\prime}=x_\ell-\operatorname{SiLU}(\alpha_\ell)\operatorname{sg}(x_\ell),\qquad x_{\ell+1}=\operatorname{LN}(a\,x_\ell^{\prime}+f(x_\ell))\]</div>
 
 <ul><li>a是DeepNorm固定的残差比例（原Eq.(6)写α，为避免与门混淆在此改名），α_ℓ才是学习门。Mix-LN按Pre/Post位置采用不同规则。作者发现Post归一化后直接插GPAS无收益，计算预算改投DeepNorm，并未完成独立Post+GPAS全尺度实验。（第4页 Eqs.(3)–(8)）</li></ul><figure class="evidence-figure">

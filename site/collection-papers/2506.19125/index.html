@@ -137,23 +137,23 @@
   </div>
   <h2>模型与方法</h2>
   <div class="reading-card-content"><ul><li>给定 $n$ 个点 $x_i\in\mathbb R^d$ 和 $k$ 个中心 $c_j$，平方距离聚类目标为：</li></ul>
-<p>-</p>
+
 <div class="display-math">\[L(X,C)=\sum_{i=1}^{n}\min_{j\in[k]}\lVert x_i-c_j\rVert^2\]</div>
 
 <ul><li>Lloyd 交替将每个点分给最近中心，再将中心改为所属点的均值；每一步在固定另一组变量时减小目标，不保证达到全局最优。该问题一般NP困难，本文实现其迭代算法并未解决全局优化困难。（第3页 Eq. (1)）</li><li>构造将点矩阵与归属矩阵堆叠成 $\mathsf X^{(t)}\in\mathbb R^{(d+k)\times n}$，将中心与固定簇编号堆叠成 $\widetilde C^{(t)}\in\mathbb R^{(d+k)\times k}$。$X$ 每列一个数据点，$Y$ 每列存点的簇归属；初始 $Y=0$。以下精确Lloyd对应限定每步每点的最近中心唯一、各簇非空，使归属为one-hot。核心更新可写成：</li></ul>
-<p>-</p>
+
 <div class="display-math">\[\begin{aligned}\mathsf X^{(t)}&amp;=\begin{bmatrix}X\\Y^{(t)}\end{bmatrix},\quad\widetilde C^{(t)}=\begin{bmatrix}C^{(t)}\\I_k\end{bmatrix},\\Y^{(t+1)}&amp;=\sigma_\infty(A),\quad A_{ji}=-\lVert x_i-c_j^{(t)}\rVert^2,\\C^{(t+1)}&amp;=X\,\sigma_\infty\!\left((Y^{(t+1)})^\top\right)\end{aligned}\]</div>
 
 <ul><li>$\sigma_\infty$ 按列作用。点作query、中心作key时，负平方距离注意力找最近簇，得到 $Y$；反向用中心编号作query、点归属作key时，所属点具有相同最大分数，平均这些value恰好是新中心。自注意力取负value抵消残差中的旧归属/中心，再加交叉注意力的新状态；并非把历史中心反复相加。（第4–5页 Eqs. (2)–(5)，第27、30–31页）</li><li>精确构造用逆温 $\gamma\to\infty$ 的极限softmax：</li></ul>
-<p>-</p>
+
 <div class="display-math">\[\sigma_\gamma(a)_i=\frac{e^{\gamma a_i}}{\sum_j e^{\gamma a_j}},\qquad\sigma_\infty(a)_i=\begin{cases}1/|M|&amp;i\in M,\\0&amp;i\notin M,\end{cases}\quad M=\arg\max_j a_j\]</div>
 
 <ul><li>最大值并列时平均全部最大项，不能用只返回一个索引的argmax替代。精确Lloyd对应要求每点最近中心唯一且各簇非空；第一步因此生成one-hot，第二步利用同簇点归属值同为1的并列来等权平均。若出现最近中心距离并列，第一步产生分数归属，第二次极限softmax只保留这些归属值的最大项，既不等于通常的硬分簇均值，也不一般等于分数加权均值；须另加产生one-hot的tie-breaking或重新定义算法。有限 $\gamma$ 通常只是近似，不能由数值重合推出无条件数学等价。（第26–28、31页）</li><li>另一构造把 $\lVert x\rVert^2$、$-1/2$ 加进token，点积算出距离分数：</li></ul>
-<p>-</p>
+
 <div class="display-math">\[x^\top c-\frac12\lVert x\rVert^2-\frac12\lVert c\rVert^2=-\frac12\lVert x-c\rVert^2\]</div>
 
 <ul><li>再用二次激活的FFN刷新新中心平方范数，嵌入宽度为 $d+k+2$。正文 Eq. (7) 用 rectified quadratic，而附录 F 明写平方激活及常数偏置；它并非无需额外条件的普通ReLU语言模型层。Theo­rem2.2/F.1 给出该构造的算法实现存在性。（第9–10、33–35页）</li><li>学习实验重新随机初始化一层权重，用 $\gamma=1$ 和以下平滑上界训练：</li></ul>
-<p>-</p>
+
 <div class="display-math">\[\widetilde L_\lambda(X,C)=\sum_{i=1}^{n}\frac{\sum_{j=1}^{k}e^{-\lVert x_i-c_j\rVert^2/\lambda}\lVert x_i-c_j\rVert^2}{\sum_{j=1}^{k}e^{-\lVert x_i-c_j\rVert^2/\lambda}}\]</div>
 
 <ul><li>$\lambda&gt;0$ 控制训练损失平滑程度，与注意力逆温 $\gamma$ 不同；$\lambda\to0^+$ 趋于原目标。它是距离的softmax加权平均，不是负温度乘log-sum-exp。训练多任务的一步中心更新，再迭代复用单层；附录 B.3 每次将当前中心重新嵌入并把归属槽置零。（第19–21页 Eqs. (10)–(12)）</li></ul><figure class="evidence-figure">

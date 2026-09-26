@@ -150,19 +150,19 @@
   </div>
   <h2>模型与方法</h2>
   <div class="reading-card-content"><ul><li>Euler Multi-Quadrants含512×512网格、5通道的能量/密度/压力及二维动量，初态多不连续界面，周期或开放边界、不同热容量参数，模拟100步并以4步间隔取状态。Rayleigh–Bénard（RB）是下热上冷的二维对流，512×128、4通道，200步，参数为Rayleigh与Prandtl数。Turbulence Gravity Cooling（TGC）是受重力和辐射冷却的三维湍流星际介质，64³、6通道，50步，参数包括初始氢密度、温度、金属丰度。正文称Euler矢量为动量、RB矢量为速度，附录Table2却分别写velocity与momentum；本卡保留这一源内命名不一致，不猜代码字段。时间步是数据模拟的离散单位，不赋予未报告的秒单位。（第3、17页Table2。）</li><li>本文用编码器/解码器和条件未来分布组织预测：</li></ul>
-<p>-</p>
+
 <div class="display-math">\[z_i=E_\psi(x_i),\quad \widehat x_i=D_\psi(z_i),\quad q_\phi(z_{i+1:i+n}\mid z_i,\theta),\quad n=4,\quad C_{\mathrm{comp}}=\frac{r^d C_{\mathrm{pixel}}}{C_{\mathrm{latent}}}\]</div>
 
 <ul><li>$x_i$ 是第i个网格状态，$E_\psi,D_\psi$ 是共同训练的编码与解码网络，$z_i$ 是潜状态，$\theta$ 是已知模拟参数，$q_\phi$ 表示学习的未来条件分布（本卡用q与真实分布p区分），n是一次生成的未来帧数。$d=2$ 或3为空间维数，r是每一轴的降采样因子，$C_{\mathrm{pixel}},C_{\mathrm{latent}}$ 是通道数。二维r=32、三维r=8不随压缩档改变，潜通道64/16/4产生Euler压缩80/320/1280倍、RB64/256/1024倍、TGC48/192/768倍。一次预测四帧减少递推次数，不等于已建立无记忆闭合理论。（第3–4页、Figure1、Table3。）</li><li>卷积编码器含残差块、SiLU激活与LayerNorm，下/上采样附近初始化为恒等映射；输出施加逐分量饱和，不使用弱KL正则、感知或对抗损失。重建目标按每个场的空间方差归一化，再对场平均：</li></ul>
-<p>-</p>
+
 <div class="display-math">\[z\mapsto\frac{z}{\sqrt{1+z^2/B^2}},\quad B=5,\qquad \operatorname{VMSE}(u,v)=\frac{\langle(u-v)^2\rangle}{\langle(u-\langle u\rangle)^2\rangle+10^{-2}}\]</div>
 
 <ul><li>第一式中的z是饱和前的某一潜分量，B设定绝对值的渐近上界；该变换不使潜分布变成标准高斯。VMSE中u是目标场、v是重建场，$\langle\cdot\rangle$ 是空间平均，稳定项为0.01。附录实际采用这个平方损失，而不是泛称的任意L1/L2损失。先对Euler、TGC非负标量取指定对数变换，再按训练集统计标准化。（第4、17–19页 Eqs.(5)–(6)、(14)、Figure7。）</li><li>为说明已知状态如何提供条件，记Z为包含当前及四个未来潜状态的序列：</li></ul>
-<p>-</p>
+
 <div class="display-math">\[Z_t=\alpha_t Z+\sigma_t\epsilon,\quad \epsilon\sim\mathcal N(0,I),\quad \alpha_t=1-t,\quad \sigma_t=t,\qquad \min_\phi\,\mathbb E\left\|d_\phi(Z\odot b+Z_t\odot(1-b),b,\theta,t)-Z\right\|_2^2\]</div>
 
 <ul><li>$t\in[0,1]$ 是辅助去噪时间，$\epsilon$ 是独立标准高斯噪声，b是时间位置的0/1掩码，$\odot$ 是逐分量乘法；已知帧b=1保持无噪声。$d_\phi$ 是去噪网络、$\theta$ 为物理参数，期望涵盖训练样本、掩码及噪声/时间采样。网络用全时空注意力、QK归一化、旋转位置编码、value residual，16层、1024嵌入维数；这些组件是预测参数化，不等于真实物理相互作用。以截断在1–4的Poisson(2)随机已知帧数训练，同一模型可测试不同上下文长度。采样使用概率流ODE（原Eq.(2)中η=0）及16步三阶Adams–Bashforth；初始噪声不同，故ODE采样仍产生随机轨迹。（第2、4–5、17–19页 Eqs.(7)、(15)。）</li><li>去噪均值与score的连接应按同页Tweedie恒等式读取：</li></ul>
-<p>-</p>
+
 <div class="display-math">\[\mathbb E[x\mid x_t]=\frac{x_t+\sigma_t^2\nabla_{x_t}\log p(x_t)}{\alpha_t}\quad\Longrightarrow\quad \nabla_{x_t}\log p(x_t)=\frac{\alpha_t\mathbb E[x\mid x_t]-x_t}{\sigma_t^2}\]</div>
 
 <ul><li>x为未加噪数据、$x_t$ 为加噪数据，$\alpha_t,\sigma_t$ 为信号/噪声系数；后式是本卡由第2页Eq.(4)直接移项得到的关系，适用于系数非零的内部时间。原文紧接Eq.(4)印成 $s_\phi=\sigma_t^{-2}(d_\phi-\alpha_t x_t)$，但前面已定义d为预测x的去噪器；按Eq.(4)应为 $\sigma_t^{-2}(\alpha_t d_\phi-x_t)$。两者代数不一致，本卡不默改成作者原式、不据此声称代码实现必错；未执行代码核查。（第2页 Eqs.(3)–(4)，PDF视觉核对。）</li><li>对照的潜空间回归器采用同结构、同优化器/掩码/训练配置，只把目标改为条件均值回归。像素回归器用16×16补丁、2048嵌入，8.6亿参数；二维编码器加潜预测器合计3.1亿+2.2亿参数。作者未训练TGC像素代理，不能把三维结论写成已击败同配置三维像素基线。每个数据集随机选测试集64轨迹，每个初态生成16条；确定性回归器的16条实际相同。（第5–6、17–19、25页。）</li></ul></div>
@@ -174,11 +174,11 @@
   </div>
   <h2>核心结果与证据</h2>
   <div class="reading-card-content"><ul><li>点对点轨迹误差的测量先逐场计算再平均，较小更好：</li></ul>
-<p>-</p>
+
 <div class="display-math">\[\operatorname{VRMSE}(u,v)=\sqrt{\frac{\langle(u-v)^2\rangle}{\langle(u-\langle u\rangle)^2\rangle+10^{-6}}}\]</div>
 
 <ul><li>u为真实场，v为预测场，$\langle\cdot\rangle$ 为空间平均；评价稳定项是百万分之一，与训练VMSE的0.01不同。用方差而非未中心化的场均方归一化，避免非负压力/密度的均值让误差看似很小。Table6是指定提前量区间平均的VRMSE，不能直接当成ensemble均值的Skill或守恒误差。（第5、22页 Eq.(9)、Table6。）</li><li>Euler在61–100步区间，压缩80→1280时重建VRMSE从0.020升至0.144，扩散预测仅从0.395至0.400；像素回归器为1.102，1280倍潜回归器为0.592。这支持“长期轨迹误差对压缩较稳”，但Euler前20步扩散误差0.\(075\to 0\).093会变差。RB在61–180步区间，重建0.\(019\to 0.092\)，而扩散0.\(704\to 0.670\)；TGC在Table6的21–50步区间，重建0.\(129\to 0.276\)，扩散0.\(673\to 0.694\)。三者是具体测试区间和不同压缩档的数值，不是逐点不变或严格单调改善。（第6–8、20、22页 Figures3–5、8、Table6。）</li><li>误差小并不意味着完整细节保留。Figure4显示Euler波前位置仍接近真值，但涡旋变形；RB羽流生长速度合理，具体路径却发散。谱评价按各向同性功率谱划分对数等分的低/中/高频带，计算相对谱与1的RMSE。Euler最后区间的高频谱RMSE随80→1280压缩由0.184升至0.569，重建相应0.\(096\to 0.577\)；这说明解码瓶颈对高频严重。Table8个别高压缩高频项中扩散也未优于回归器，例如1280倍最后区间0.569对0.545。Figure9改为与重建真值比较时高频误差较小，是改变比较对象后的诊断，不能说原真值高频已恢复。（第6–8、20–23页 Figures4–5、8–9、Tables8–10。）</li><li>不确定性以16条轨迹的均值误差及样本散布比较：</li></ul>
-<p>-</p>
+
 <div class="display-math">\[\overline v=\frac1K\sum_{k=1}^K v_k,\quad \operatorname{Skill}=\sqrt{\langle(u-\overline v)^2\rangle},\quad \operatorname{Spread}=\sqrt{\left\langle\frac1{K-1}\sum_{k=1}^K(v_k-\overline v)^2\right\rangle},\quad \rho_{\mathrm{SS}}=\sqrt{\frac{K+1}{K}}\frac{\operatorname{Spread}}{\operatorname{Skill}}\]</div>
 
 <ul><li>K是轨迹数，本实验K=16；$v_k$ 是第k条预测场，u是真值，$\overline v$ 是集合均值，$\langle\cdot\rangle$ 为空间平均。$\rho_{\mathrm{SS}}$ 是按完美预测下Skill≈√((\(K\)+1)/\(K\))Spread关系构造的校正比值，有限交换性假设下1为理想基准；小于1可指偏置或欠散布，大于1为过散布，但等于1不是充分的校准证据。Figures5/8显示比值大体接近1并随压缩下降；作者解释为L2平滑及可能的过拟合，后者没有独立训练集规模消融证明。确定性模型的散布为零，不能用复制16条给它伪造集合不确定性。（第6–7、16、20–21页 Eqs.(10)–(13)。）</li><li>其他负面/边界证据同样保留：TGC密度值分布Wasserstein距离在最后31–50步区间随48→768倍压缩由0.0266增至0.0425；中档192倍中段11–30步，扩散0.0172与回归0.0171近乎相同，不能宣称所有统计量都严格胜出。Table7增加上下文1→3帧没有显著一致改善；Table4的RB编码器消融中PSGD+恒等初始化在100轮的MAE0.015已接近无恒等Adam1000轮0.017，但整次计时为25小时对19小时，收敛按轮数更快不等于整次运行更省时。（第18、22、25页 Tables4、7、13。）</li><li>推理成本另看Table1：Euler每个预测状态含生成与解码，潜扩散84ms、潜回归13ms、像素回归56ms；像素扩散只给约秒量级，不是表中精确值。潜扩散较潜回归仍慢，并非普遍最快。第8页另报告100个模拟步、7次递推的整轨迹约3秒（单张A100），对照原数值模拟约1 CPU小时；这是作者不同硬件的总时长报告，不能当作同硬件加速比，亦不能把模拟步与按stride抽取的预测状态混成一个单位。本卡未独立计时。（第7–8页Table1。）</li><li>有限观测还可在采样中提供额外信息：Figure6用MMPS引导，RB观测是16倍降采样状态，TGC为域边界条带；图中的轨迹发散减轻。它说明有额外观测的条件生成能力，不是同信息量下无条件预测获胜。附录D的潜空间距离、参数预测MLP与t-SNE展示不同模拟参数可分性；\(t\)-SNE取的是经监督参数预测MLP后的激活，因此不能把分离图独自解释成未经监督的潜坐标等价于物理参数或动力学闭合证明。（第8–9、38–39页 Figures6、22–23、Tables15–17。）</li></ul></div>

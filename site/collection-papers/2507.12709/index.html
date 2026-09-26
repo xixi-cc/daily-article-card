@@ -145,27 +145,27 @@
   </div>
   <h2>模型与方法</h2>
   <div class="reading-card-content"><ul><li>原矩阵模型及谱变量为：</li></ul>
-<p>-</p>
+
 <div class="display-math">\[dW=-\eta\nabla_W\mathcal L\,dt+\sqrt{2\eta D}\,dB,\qquad W=U\operatorname{diag}(\sigma_k)V^\top,\quad\lambda_k=\sigma_k^2\]</div>
 
 <ul><li>$W\in\mathbb R^{m\times n}$ 是选定线性层权重，$\mathcal L$ 为损失，η为源有效学习率，D为假定扩散强度，B为各元素独立标准矩阵Brownian运动；U、V列向量是左/右奇异方向。损失梯度、η和噪声尺度组成的是连续近似。源第11页离散式到连续式没有充分明确dt与√dt缩放及小批次极限，中央极限定理本身也不使协方差变成各向同性，因此不称从实际SGD无条件精确导出该SDE。（第2、8、11页。）</li><li>源Theorem3.1和Lemma6.5打印的奇异值方程是：</li></ul>
-<p>-</p>
+
 <div class="display-math">\[d\sigma_k=\left[-\eta u_k^\top(\nabla_W\mathcal L)v_k+\eta D\left(\frac{m-n+1}{2\sigma_k}+\sum_{j\ne k}\frac{\sigma_k}{\sigma_k^2-\sigma_j^2}\right)\right]dt+\sqrt{2\eta D}\,d\beta_k\]</div>
 
 <ul><li>$u_k,v_k$ 为第k模态的单位左右奇异向量，$\beta_k$ 为投影噪声，j遍历其他正奇异值；分母要求非重合奇异值，1/σ又要求离零边界有适当处理。梯度项是矩阵梯度沿该模式的投影。此式在本卡仅作为作者打印的、系数有问题的主张展示；不是认证过的通用SDE。（第2、8、11页，原PDF视觉核对。）</li><li>对原文明确的元素噪声规范，最简单的编辑性核查是m=\(n=1\)、零损失梯度，并在首次触零以前取W&gt;0：</li></ul>
-<p>-</p>
+
 <div class="display-math">\[m=n=1,\ W&gt;0:\ \sigma=W,\quad\Delta_W\sigma=0,\quad d\lambda=2W\sqrt{2\eta D}\,dB+2\eta D\,dt\]</div>
 
 <ul><li>这是由原矩阵SDE和λ=W²直接得到的Itô恒等式，不是训练复现。\(\sigma\)=W为线性函数，Laplacian必须为零；打印式却给ηD/\(2\sigma\)的额外漂移，打印的平方谱式再给3ηD而正确标量Itô项为2ηD。因源定理未排除该维数且Lemma同样声称一般正σ，本卡不能将其“exact”作已证结论。零点可能需要局部时，与此停止区间上的反例无关。（第8、11页及源定义的直接计算。）</li><li>稳态部分进一步丢弃显式模式相互作用，将其平均作用替为线性恢复漂移；在给定这个单粒子模型与零概率流条件下：</li></ul>
-<p>-</p>
+
 <div class="display-math">\[d\lambda=(\alpha_0-\beta_1\lambda)dt+\sqrt{8\eta D\lambda}\,dB,\quad a=\frac{\alpha_0}{4\eta D}=\frac{m-n+3}{4},\quad q=\frac{\beta_1}{4\eta D},\quad p_\lambda(\lambda)=\frac{q^a}{\Gamma(a)}\lambda^{a-1}e^{-q\lambda},\quad p_\sigma(\sigma)=\frac{2q^a}{\Gamma(a)}\sigma^{2a-1}e^{-q\sigma^2}\]</div>
 
 <ul><li>$\alpha_0=\eta D(m-n+3)$ 是作者从其平方谱方程选的常数，$\beta_1&gt;0$ 在此是恢复率，$a&gt;0$ 为Gamma形状，$q&gt;0$ 为逆尺度，Γ为Gamma函数。\(\lambda\)&gt;0、ηD&gt;0及零流边界是归一化条件；σ密度包含变量变换Jacobian2σ。此密度解是该简化SDE的条件结果，即使原矩阵谱系数有误也可作为独立有效模型求解，不能由此认证其参数就是实际SGD谱参数。（第3、9、12页Theorem3.2/Proposition6.8。）</li><li>该恢复率与噪声估计之间并不等同：正文称β₁是均场恢复力，第15页Lemma6.19却用同符号表示小批次梯度减全梯度的矩阵/向量，再说用其经验方差拟合。矩阵噪声、噪声方差和1/时间的线性恢复率不是同一量，源没有完整投影/校准映射。Lemma6.18用谱宽平方除批次数给D尺度估计，也不是独立测得协方差的无偏估计。二次谱势cΣ(\(\lambda\)−\(\lambda\)*)²还没有被严格推成本文采用的单模线性λ漂移；均场拟合应保留为假设。（第3、9、15页。）</li><li>一般协方差的部分可写为：</li></ul>
-<p>-</p>
+
 <div class="display-math">\[d\sigma_k=\langle\nabla_W\sigma_k,-\eta\nabla_W\mathcal L\rangle dt+\frac12\sum_{i,j,p,q}\frac{\partial^2\sigma_k}{\partial W_{ij}\partial W_{pq}}[2\eta\mathcal C(W,t)]_{ij,pq}\,dt+\langle\nabla_W\sigma_k,\mathcal B(W,t)\,dB\rangle,\quad\mathcal B\mathcal B^\top=2\eta\mathcal C\]</div>
 
 <ul><li>$\mathcal C$ 是在矩阵元素展平空间上的噪声协方差，$\mathcal B$ 是其扩散因子；为区别源SVD的Σ，本卡仅将源协方差Σ改名为C、扩散矩阵B改名为带花体B，含义和因子2η保持。内积为矩阵Frobenius内积，Hessian按元素对收缩。Itô公式要在奇异值平滑、协方差合理的区域使用；它展示为什么方向性噪声会改变漂移和波动，没有证明实际协方差造成全部观测偏差。（第14–15页Proposition6.17。）</li><li>Algorithm1起始做SVD，随后每个时间步都读取当前损失梯度，投影到保留k个模式：</li></ul>
-<p>-</p>
+
 <div class="display-math">\[G_t=-\eta\nabla_W\ell(t),\quad M_t=U_k^\top G_tV_k,\qquad\sigma_i\leftarrow\max(\sigma_i+(M_t)_{ii},\delta)\]</div>
 
 <ul><li>$G_t$ 为当前更新矩阵，$M_t\in\mathbb R^{k\times k}$ 为其投影；δ是防负值阈值，与理论噪声Brownian增量不同。还更新左右向量、对σ差/和加epsilon正则，再正交化和对齐符号。这个算法没有显式独立采样上述SDE噪声，也不是只凭初始谱无未来梯度预测未来训练。只跟踪前k模式且近简并须小心，它不认证全部谱的动力学。（第4、16页。）</li><li>实验均使用SGD。小型nanoGPT式decoder为4层、每层4头、embedding256，Shakespeare文本，batch12×256token，学习率5×10⁻⁴ cosine降到5×10⁻⁵；视觉Transformer为2层、4头、embedding256、FFN扩张2，MNIST用28×28图/7×7patch、CIFAR100用32×32/8×8patch。MLP三个隐藏层、每层1024，偏置零、按fan-in高斯初始化。主设置称MNIST/CIFAR100，但Figure2正文称CIFAR10，不自行统一。没有给具体GPU、总时长、重复seed或统一谱拟合误差表。（第3、16–17页。）</li></ul></div>

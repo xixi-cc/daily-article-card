@@ -7,6 +7,7 @@ from scripts.build_site import (
     render_detail_sections,
     render_note_cover,
     render_source_cover,
+    render_collection_card_markdown,
 )
 from scripts.validate_paper_cards import validate_v2_card
 
@@ -41,6 +42,17 @@ class MathRenderingTests(unittest.TestCase):
     def test_markdown_preserves_display_tex_for_mathjax(self):
         rendered = markdown_to_html(r"\[S(k)\sim k^{-2+\eta}\]")
         self.assertIn(r"\[S(k)\sim k^{-2+\eta}\]", rendered)
+
+    def test_structured_display_entry_keeps_equation_without_orphan_bullet(self):
+        for formula in [r"\[S(k)\sim k^{-2+\eta}\]", "$$S(k)=1$$"]:
+            card = {"sections": [{"title": "模型与方法", "paragraphs": [
+                "模型定义如下。", formula, r"这里 \(k\) 是波数。",
+            ]}]}
+            rendered = markdown_to_html(render_collection_card_markdown(card))
+            self.assertEqual(rendered.count('class="display-math"'), 1)
+            self.assertNotIn("<p>-</p>", rendered)
+            self.assertIn("<li>模型定义如下。</li>", rendered)
+            self.assertIn(r"<li>这里 \(k\) 是波数。</li>", rendered)
 
     def test_detail_section_places_evidence_figure_by_claim(self):
         record = {

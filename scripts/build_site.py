@@ -316,6 +316,9 @@ def render_math_text(text: object) -> str:
 
 def markdown_to_html(md: str) -> str:
     md = "\n".join(normalize_inline_math_notation(line.removeprefix("- ")) if line.startswith("- 关键关系：") else line for line in md.splitlines())
+    # Structured entries can wrap an entire display in a list item. Once the
+    # display is extracted, its marker must not become a visible paragraph.
+    md = re.sub(r"(?m)^[ \t]*-[ \t]+(?=\\\[|\$\$)", "", md)
     displays = []
     def save_display(match):
         value = match.group()

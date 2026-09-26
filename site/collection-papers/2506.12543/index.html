@@ -137,11 +137,11 @@
   </div>
   <h2>模型与方法</h2>
   <div class="reading-card-content"><ul><li>主体是12层、160M 参数的因果语言模型，训练 SlimPajama，并检查 FineWeb 及250M、410M、1B 参数模型。基础比较不使用 weight decay；Adam 的第二矩衰减系数固定为0.95；文中 SGD 默认含动量。原始梯度先做全局范数裁剪，再更新动量。RMSNorm、RoPE 与 SwiGLU 等实现细节在附录 A，不能把这里的结论直接当作所有 Transformer 的性质。（第4、16–17页）</li><li>Figure 1 控制序列长512、13亿训练 token、1亿验证 token、10% warmup 后余弦学习率，扫描批量64、256、1024及两种优化器各自的学习率与动量。Section 2.3 另用序列2048、WSD 调度及不同训练长度，分别固定 token 总数和更新步数；这两组实验的序列长度、调度与预算不同，数字不应混算。（第2、4–6页）</li><li>机制检查分两步：grafting 交换两种优化器的更新方向与幅度，检验哪部分对大批量 SGD 更不利；另在固定相同谱、改变分块结构的二次损失上研究噪声与符号更新。后者是解释用的简化动力学，不是语言模型的精确约化。（第9–12、20页）</li><li>设网络参数为向量 $X_t$，平均损失为 $f$，学习率为 $\eta$，小批量大小为 $B$，单样本梯度噪声协方差为 $\Sigma(X)$，$W_t$ 为标准多维 Wiener 过程。原文 Eq. (2) 给出 SGD 的连续时间扩散近似，矩阵根作用于噪声：</li></ul>
-<p>-</p>
+
 <div class="display-math">\[dX_t=-\nabla f(X_t)\,dt+\sqrt{\frac{\eta\Sigma(X_t)}{B}}\,dW_t\]</div>
 
 <ul><li>该近似中，增大批量减弱扩散幅度，而平均梯度漂移没有显式批量因子。它在论文的早期训练解释中提示 SGD 的进展更取决于更新次数；不能据此断言噪声对长期泛化或实际 SGD 动量无影响。（第11页 Eq. (2)）</li><li>在独立高斯梯度噪声、对角协方差下，原文 Theorem 1 引用已有结果，得到 SignSGD 的一阶弱近似。其漂移项为：</li></ul>
-<p>-</p>
+
 <div class="display-math">\[b_{\mathrm{sign}}(X)=-\operatorname{erf}\!\left(\sqrt{\frac{B}{2}}\,\Sigma(X)^{-1/2}\nabla f(X)\right)\]</div>
 
 <ul><li>这里 $b_{\mathrm{sign}}$ 是 Eq. (3) 中 $dt$ 的系数，$\operatorname{erf}$ 及协方差逆根按坐标作用。梯度相对噪声较小时，误差函数近似线性，漂移随 $\sqrt{B}$ 增强；大信噪比后逐渐饱和。SignSGD 先取梯度符号，因而“符号正确的概率”直接受批量影响。此式只写漂移，未把原式的扩散项设成零；定理针对 SignSGD，作者对 Adam 的联系是机制解释，不能转写为已证明的 Adam 收敛律。（第11–12页 Eq. (3)、Theorem 1）</li></ul></div>

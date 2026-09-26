@@ -145,27 +145,27 @@
   </div>
   <h2>模型与方法</h2>
   <div class="reading-card-content"><ul><li>本文只用欧氏Cl(\(n\),0)，记Cl(\(n\))。向量的几何乘积是内积加反对称外积：</li></ul>
-<p>-</p>
+
 <div class="display-math">\[uv=u\cdot v+u\wedge v,\quad e_i^2=1,\quad e_ie_j=-e_je_i\ (i\ne j),\quad\dim\operatorname{Cl}(n)=2^n\]</div>
 
 <ul><li>\(u\)、v为生成空间中的向量，$e_i$ 为正交生成元；$\cdot$ 是内积、$\wedge$ 为外积。多向量含标量、向量、双向量直到n阶的全部分量，故有2^n个系数；它与n维向量不同。reversion符号dagger反转乘法次序，是实Clifford反演，不是复Hilbert空间共轭转置。双向量是若干有向平面系数的线性组合，简单双向量只对应一个平面。（第2–5页。）</li><li>双向量指数生成旋量，旋量r满足单位反演范数；对任意简单分量，指数可用三角函数闭式。一般双向量精确分成不超过floor(\(n\)/2)个两两对易、正交的简单分量时：</li></ul>
-<p>-</p>
+
 <div class="display-math">\[b=\sum_{j=1}^k b_j,\quad k\le\lfloor n/2\rfloor,\quad[b_i,b_j]=0,\qquad r=e^b=\prod_{j=1}^k\left(\cos\|b_j\|+\frac{\sin\|b_j\|}{\|b_j\|}b_j\right)\]</div>
 
 <ul><li>b是总双向量、$b_j$ 为简单分量，$[b_i,b_j]=b_ib_j-b_jb_i$，k为非零平面数；r是总旋量。每个括号来自原Eq.(5)，零范数取连续极限而非做零除。只有分解准确且分量对易时，闭式积严格等于原指数；有限容差迭代得到近似分量，不能把整个数值算法误写为无误差精确解。几何原语的范数决定参数化角度，向量夹乘出现两倍生成量，不能把同一个B的矩阵指数直接说成exp(B)而忽略2。（第4–6、22–26页。）</li><li>推广模块允许不同左右旋量，并将输入坐标的多个子集映到多个输出子集：</li></ul>
-<p>-</p>
+
 <div class="display-math">\[\psi_{r,s}(x)=rxs^\dagger,\qquad\psi(x)=\sigma\!\left(\{\psi_{r_{ij},s_{ij}}(x_{I_i})\}_{i\le c_1,j\le c_2}\right)\]</div>
 
 <ul><li>$r,s\in\operatorname{Spin}(n)$，x是对应2^n坐标的多向量，dagger仍为reversion；$I_i,O_j$ 为各含2^n坐标的输入/输出子集，$c_1,c_2$ 为子集数，σ为原文pooling汇集算子。所有子集的并集要覆盖完整输入/输出。Figure4取c1=3、\(c_{2}=2\)，形成6条块间映射；图中的“Six rotors”按上下文是6条双旋量模块路径，而不是完整参数计数只需6个独立系数。不同左右旋量不自动保阶，第24页明说附录同旋量的正交/分块证明未覆盖这个推广。（第6页 Eqs.(6)–(7)、Figure4，第24页。）</li><li>每条双旋量映射使用两组双向量系数，直接参数计数为：</li></ul>
-<p>-</p>
+
 <div class="display-math">\[N_{\mathrm{bivector}}\le2c_1c_2\binom n2=O\!\left(c_1c_2\log^2 d\right),\quad2^n\le d=\min(d_{\mathrm{in}},d_{\mathrm{out}})\]</div>
 
 <ul><li>N是双向量系数数，n为Clifford生成元数，d是较小输入/输出维数。原Theorems1/4写O(log²d)时隐含把c1、c2视作常量；任意维数且子块尺寸固定时，要覆盖坐标可使模块数增长，故本卡保留c1c2。增加width、depth又乘相应因子；这里数的是旋量系数，不能认证PReLU等其他可训练对象或整个语言模型的总参数都同样缩小。可训练族的自由维数依然有限，不是任意稠密线性变换的参数化。（第6、24、29–32页。）</li><li>Alg.2在右缩并表示下做幂迭代，取优势平面；Alg.1逐次减去该简单分量，再处理残余：</li></ul>
-<p>-</p>
+
 <div class="display-math">\[v\leftarrow\frac{b\mathbin{\lrcorner}(b\mathbin{\lrcorner}v)}{\|b\mathbin{\lrcorner}(b\mathbin{\lrcorner}v)\|_2},\quad B^2=-B^\top B,\quad b_s=(b\mathbin{\lrcorner}v)\wedge v\]</div>
 
 <ul><li>v为迭代向量、B是b对应的反对称矩阵，$\lrcorner$ 为原文右缩并、$b\lrcorner v=Bv$；$b_s$ 是近似提取的简单分量。归一化分母要求非零，随机初向量需有优势子空间分量；优势奇异值在平面内成对，负平方映射可使符号交替，收敛检测使用新旧v的和。近退化不同平面时不保证唯一方向或统一光滑导数。原算法只近似投影，误差可留在残余中；正文把若干步骤称可微，不构成退化点的全局稳定性证明。（第5–6、22–24页 Alg.1–2、Theorems2–3。）</li><li>为控制计算图，前期迭代不记录梯度、只给最后一次前向启用追踪，warm-start沿用上一步奇异方向。该做法缩小图大小，但文中没有完整隐式微分解或相对精确分解导数的误差界；不能由引用DEQ断言一次追踪等于完全固定点导数。小扰动下非退化谱隙帮助热启动，Figure6测的是特定随机旋转拟合、epsilon=.001、50次运行的迭代数均值与1标准差，不是语言模型准确率的50seed置信区间。（第6、22–24、31–32页。）</li><li>预训练LLM实验通过从当前模型抽取隐藏向量及原投影输出来拟合替代层：</li></ul>
-<p>-</p>
+
 <div class="display-math">\[\min_\theta\sum_{i=1}^N\|H_\theta(x_i)-Wx_i\|_2^2\]</div>
 
 <ul><li>$W\in\mathbb R^{d_{out}\times d_{in}}$ 是原稠密投影，$x_i$ 是抽取的token隐藏状态，$H_\theta$ 为替代模块，θ包含几何系数，N是样本数。是拟合投影的MSE，不是从零训练LLM交叉熵或直接最小化问答错误。替换多个层时按I&lt;\(J\)&lt;K顺序训练，前面替代先放入模型、重新抽后面层的校准输入；每次也重新训练同注意力块的输出投影Wo。因此下游结果不是只替换Q/\(K\)/V且全模型其他权重全冻结。未给清晰校准/测试完全独立的样本计数，不能补造无泄漏结论。（第7、28–29页。）</li><li>实际Rotor网络每个map之后有固定置换、归一化及非线性，Table6最终用PReLU；因此整个替代网络不能无条件视作单个严格线性层。Table6 Rotor学习率.05、batch64，LR/BH学习率.01、batch256，均无L2衰减、使用cosine annealing。附录给chunk2048、width1或2、depth1或3，但第31页计算说明又称最高depth2/width3，本卡保留源内配置表述不一致，不任选一套当全部实验协议。（第29–31页Table6。）</li></ul><figure class="evidence-figure">
@@ -186,11 +186,11 @@
   </div>
   <h2>核心结果与证据</h2>
   <div class="reading-card-content"><ul><li>参数账目很小，但只计所替代投影。Table7的LLaMa-3.2 1B原Q/\(K\)/V总数6,291,456；Rotor列≤3,056（\(Q\le 896\)、\(K\)/V各≤1080），LR4为36,864，BH1为49,152。原Q alone4,194,304对≤896的约4700倍比值是投影参数减少，不是整个1B模型减少4700倍；输出Wo重训练且其稠密参数保留。Qwen三投影原3,145,728对≤2,704。都是所列架构的系数上界，没有认证峰值显存、全部权重文件或推理速度同倍改善。（第8、10、32页Tables4/7。）</li><li>Table1单注意力块替换时，Wikitext2的LLaMa log-PPL原2.575，Rotor2.629、BH2.636、LR4 2.658；Qwen原2.287，Rotor2.307、BH2.323、LR4 2.342。接近的是替代基线，仍逊于原稠密模型。Arc Challenge单块：LLaMa原58.37%、Rotor55.31%、BH54.83%；Qwen原66.09%、Rotor61.34%、BH60.11%、LR4 57.48%。第9页正文该句选择LR4的57.48作比较，未同时列出更高的BH60.11，本卡按视觉核对表格列值，不据文字制造更大的胜幅。数值为log-PPL，不能把2.629直接称未取对数的perplexity。（第7页Table1、第9页，PDF视觉核对。）</li><li>更多替换有明确失败情形：Table1 Qwen三块Arc准确率Rotor47.28%，低于LR4 60.77%和BH60.68%；HellaSwag Rotor6.868%，低于LR1 13.93%、BH13.06%，原模型55.00%。两块HellaSwag Rotor40.60%，也不及BH42.73%。所以不能发布“所有指标最佳／无损”。Table1单块对所有所测层取平均，两/三块对五个随机层组合取平均；这是层选择平均，不是五个独立训练seed或误差条。源Checklist明确准确率未报告误差条。（第7、17页。）</li><li>层位置也影响比较：Table2为LLaMa-3.2 1B层1–15及后部两层组合。第9页把12/13层的59.66%例子说成Qwen，但Table2标题明确LLaMa；本卡不搬成Qwen结果。附录另有Qwen27层、LLaMa3B27层和Fox31层，不能用主文“up to1.5B”抹去附录的3B试验。Fox两块Arc Rotor30.22%不及BH31.42%，而HellaSwag32.87%较基线好；代表性优劣都保留。（第8–9、33–35页Tables2、8–11。）</li><li>FMNIST端到端MLP提供另一种可行性：除最终分类头外替换两隐藏层，10轮dense89.67%、Rotor88.36%，早期dense更快。第31页dense隐藏512，Rotor用Cl(15)、width3/depth1，验证选择学习率分别.002和.005，并非参数量相同或每个超参数完全相同；没有大语言模型全层替换或从零端到端训练结果。Figure5只在Qwen第13层扫width/depth，PPL逐渐接近原9.845，不能当全部层、全部任务调参后都恢复。（第9、31页Table3、Figure5。）</li><li>旋量的数学性质也有精确范围。同旋量夹乘在各阶分量上的矩阵为：</li></ul>
-<p>-</p>
+
 <div class="display-math">\[rvr^\dagger=e^{2B}v,\quad M=\operatorname{diag}\left(\bigwedge^0 R,\ldots,\bigwedge^n R\right),\quad R=e^{2B}\in SO(n)\]</div>
 
 <ul><li>v为n维向量，B为b的反对称矩阵，R是向量旋转，$\bigwedge^k R$ 为k阶外幂作用；M在2^n多向量坐标上分块，保阶、正交。系数2来自夹乘，dagger为reversion。此结论是已限定同旋量作用，并不自动适用于不同左右旋量、pooling、PReLU及置换后的完整替代网络；附录原文亦区分这两种情况。（第24–26页Definition3、Theorem5、Properties1–2。）</li><li>附录Property3反向证明把整个多向量变换的det=+1用于推断g为偶versor；本卡直接检查一个边界反例：</li></ul>
-<p>-</p>
+
 <div class="display-math">\[\operatorname{Cl}(2,0):\ g=e_1,\quad N_g=\operatorname{diag}(1,1,-1,-1),\quad\det N_g=1,\quad\det(N_g|_{\operatorname{Cl}^1})=-1\]</div>
 
 <ul><li>取基序 $(1,e_1,e_2,e_1e_2)$，单位奇versor $g=e_1$ 的夹乘保阶且全空间正交、总行列式+1，但向量块为diag(1,−1)、行列式−1，不能属于Spin(2)夹乘像。故原文未限制n的交集刻画不能由所给全空间行列式条件成立；至少需要更强的取向/偶性条件。本例为本卡使用源定义的直接代数核查，不是作者发现、也不是训练复现；不据此否定Properties1–2的正向性质或有限实验性能。（第27–28页Property3，PDF视觉核对。）</li></ul></div>

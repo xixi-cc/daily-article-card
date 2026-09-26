@@ -142,7 +142,7 @@
   </div>
   <h2>背景</h2>
   <div class="reading-card-content"><ul><li>经典有限HMM以有限隐藏状态间的概率转移生成符号；量子生成器以有限维密度矩阵及带经典符号输出的量子仪器更新记忆；广义概率理论（GPT）允许更一般的凸状态集与线性变换。三种有限模型能精确生成的随机过程集合满足：</li></ul>
-<p>-</p>
+
 <div class="display-math">\[\mathcal C\subsetneq\mathcal Q\subsetneq\mathcal G\]</div>
 
 <ul><li>$\mathcal C$ 为有限状态经典HMM过程，$\mathcal Q$ 为有限Hilbert空间量子生成过程，$\mathcal G$ 为有限维GPT生成过程。这个严格包含关系来自所引既有理论，特别是Fanizza、Lumbreras、Winter的结果；本文不是重新证明整个分类。有限经典模型限制的是有限HMM、精确产生全部长度的序列分布，不能把它扩大成任何使用浮点连续变量的经典算法都不能近似预测。（第3页及Refs.[6]–[7]。）</li><li>一个有限HMM也能有无限多个历史条件信念，因为隐藏状态的概率混合连续变化；“信念点无限”本身不能证明隐藏状态数无限。反过来，密度矩阵虽然有连续参数，也不表示实际浮点神经网络可无误存储无限精度。作者的数值证据限于FP32与最大8词元上下文，几何相近并不认证所有长度的精确有限实现。GPT中的post-quantum在本研究是模型范畴，没有验证物理世界超越量子理论或大模型可执行任意量子电路。（第3–4、12–13、20–24页。）</li></ul></div>
@@ -154,23 +154,23 @@
   </div>
   <h2>模型与方法</h2>
   <div class="reading-card-content"><ul><li>作者把各类生成器写成广义HMM形式：每个符号x对应线性矩阵，初始信念为行向量，右边界向量是总转移的特征值1右特征向量。词概率为：</li></ul>
-<p>-</p>
+
 <div class="display-math">\[\Pr(w)=\eta^{(\varnothing)}T^{(w)}\mathbf 1,\quad T^{(w)}=T^{(x_1)}\cdots T^{(x_\ell)},\quad T\mathbf 1=\mathbf 1,\quad T=\sum_xT^{(x)}\]</div>
 
 <ul><li>w由长度 $\ell$ 的词元 $x_1,\ldots,x_\ell$ 组成，$\eta^{(\varnothing)}$ 是空历史信念，$T^{(x)}$ 为该符号的更新算子，T为总转移；符号 $\mathbf1$ 沿用原文的右边界写法，在广义模型中不必是逐项全1向量。需有 $\eta^{(\varnothing)}\mathbf1=1$、所有允许词概率非负。广义矩阵和坐标可含负元素，不能把它们逐项解释为经典隐状态概率；经典HMM是非负转移与概率单纯形的特例。（第5页 Eq.(1)、GHMM归一化，第15页附录B及第19页Eq.(\(D_{22}\))右边界例。）</li><li>给定正概率历史后，贝叶斯更新及下一符号概率为：</li></ul>
-<p>-</p>
+
 <div class="display-math">\[\eta^{(w)}=\frac{\eta^{(\varnothing)}T^{(w)}}{\Pr(w)},\quad p(x\mid w)=\eta^{(w)}T^{(x)}\mathbf 1,\quad\eta^{(wx)}=\frac{\eta^{(w)}T^{(x)}}{p(x\mid w)}\]</div>
 
 <ul><li>$\eta^{(w)}$ 为读到w后的归一化信念，wx表示追加x；只有对应分母非零时定义条件更新。下一符号分布是信念的一个线性读出，却不一定一一确定信念；后者能预测全部未来，而不只一步。譬如FRDN只有两种符号，下一步概率是一维，但最小生成信念需要更多维度。（第6页 Eqs.(2)–(3)及紧后未编号词元更新，第19–20页FRDN。）</li><li>量子情形先以Kraus算子表示符号仪器，再把Hermitian密度矩阵展开到实坐标：</li></ul>
-<p>-</p>
+
 <div class="display-math">\[p(x\mid\rho)=\operatorname{tr}\left(\sum_jK_{xj}\rho K_{xj}^{\dagger}\right),\quad\rho^{\prime}=\frac{\sum_jK_{xj}\rho K_{xj}^{\dagger}}{p(x\mid\rho)},\quad\sum_{x,j}K_{xj}^{\dagger}K_{xj}=I\]</div>
 
 <ul><li>$\rho$ 是单位迹正半定密度矩阵，$K_{xj}$ 为输出符号x的第j个Kraus算子，$\dagger$ 为共轭转置，I为恒等算子；p是观察x概率，prime为观察后的状态。此式写的是正文II.B的一般量子仪器，附录B给出GHMM坐标展开，单Kraus例中去掉j求和即可；零概率事件不更新。Hilbert维数d时Hermitian算子有d²个实坐标，归一化后仿射空间维数d²−1，并非d²个独立概率。单qubit的Bloch球与经典概率单纯形有不同凸结构，但所有输出仍为普通经典符号。（第6页§II.B未编号Kraus概率、更新及完备式；第14–15页附录B Eqs.(\(B_{1}\))–(\(B_{9}\))为坐标展开，第2页Figure1。）</li><li>四个过程分别覆盖三个范畴。Mess3为三隐藏状态、三符号经典HMM，参数α=0.85、\(x=0.05\)，真实信念在二维单纯形中呈分形。Bloch Walk为四符号单qubit仪器，实验使用：</li></ul>
-<p>-</p>
+
 <div class="display-math">\[K_0=\gamma(\alpha I+\beta\sigma_z),\ K_1=\gamma(\alpha I-\beta\sigma_z),\ K_2=\gamma(\alpha I+\beta\sigma_x),\ K_3=\gamma(\alpha I-\beta\sigma_x),\quad\gamma=\frac{1}{2\sqrt{\alpha^2+\beta^2}},\quad\alpha=1,\ \beta=\sqrt{51}\]</div>
 
 <ul><li>$\sigma_x,\sigma_z$ 为Pauli矩阵，\(\alpha\)、β为原文参数，γ使四项 $\sum_xK_x^\dagger K_x=I$；β确为根号51，不是根号5或下标1。初始状态为I/2，相关信念留在Bloch的xz平面，因此可以用包含归一化坐标的三维GHMM表示。虽然Kraus矩阵有 $K_3=K_0+K_1-K_2$ 的线性关系，不能把这个关系未经平方交叉项分析直接传给密度矩阵超算子。本文援引该过程不存在有限HMM的性质，不把附录构造矩阵称作本卡已独立证明的最小性定理。（第17页 Eqs.(\(D_{4}\))–(\(D_{7}\))，第16、21页γ及β参数，第18–19页GHMM约化 Eqs.(\(D_{18}\))–(\(D_{22}\))，PDF视觉核对。）</li><li>FRDN为二符号量子过程，可用qutrit实现、最小GHMM维数4；在规定非有理角条件下没有有限HMM。实验α=2000、\(\lambda=0.49\)，α是旋转角参数，不是π/2000。Moon为三符号、三维GHMM过程，参数α=e、\(\beta=0\).5及按谱半径选择的ν，所引理论证明该类参数下不存在有限维量子实现。作者给定平稳遍历初始分布来训练；一般GHMM框架并不要求所有过程平稳遍历。各过程的有限/无限分类取决于所列条件，不能仅凭圆形或月牙散点判定模型范畴。（第19–21页附录D–E及Ref.[6]。）</li><li>共16个架构×过程配置。Transformer为4层、4头、每头16维，模型宽64、前馈256维、ReLU、pre-LayerNorm及学习位置编码；最大上下文8。三类循环网络也是4层、每层64维，普通RNN用tanh，输入one-hot，输出线性层；层数一样不表示参数量一样。网络交叉熵训练20000轮，固定seed42，Adam学习率0.0001、β1/β2=.9/.999、epsilon1e−8，无weight decay、dropout或gradient clipping。多数配置batch128、每轮200batch；Transformer-FRDN和Moon改为16、每轮20batch，前者不降学习率，其余按ReduceLROnPlateau配置。每100轮保存checkpoint，共201个；不能把这些checkpoint当201个独立训练seed。（第20–22页 TablesI–III。）</li><li>冻结网络后拼接同一最后词元的所有层激活，再用全体可出现的1–8长度历史构造仿射探针：</li></ul>
-<p>-</p>
+
 <div class="display-math">\[L^*=(P^{1/2}A)^+_rP^{1/2}\Gamma,\quad\widehat\eta^{(w)}=[1,\mathbf a_w]L^*,\quad\operatorname{RMSE}=\sqrt{\sum_w p_w\|\eta^{(w)}-\widehat\eta^{(w)}\|_2^2}\]</div>
 
 <ul><li>$\mathbf a_w$ 为历史w的拼接激活，A的每行是 $[1,\mathbf a_w]$，$\Gamma$ 为对应真实信念行，P为概率权重对角阵，$p_w=\Pr(w)/8$（完整1–8长度集合）。$L^*$ 包含截距；带r的伪逆用SVD截断，只保留奇异值大于r倍最大奇异值的方向。重复前缀只取首次激活、累计权重。10折90/10交叉验证从三个指定值与50个对数间隔候选选r，然后在全部anchor上重新拟合并报告加权RMSE；这是探针正则化选择，不能当最终全部结果独立测试或长上下文泛化。Eq.(\(F_{3}\))的期望记号未显式展开权重，本卡按紧邻文字与Eq.(\(F_{4}\))/(\(F_{8}\))采用概率加权定义，不默认为均匀词频。（第22–24页 Eqs.(\(F_{1}\))–(\(F_{9}\))。）</li></ul></div>
@@ -182,7 +182,7 @@
   </div>
   <h2>核心结果与证据</h2>
   <div class="reading-card-content"><ul><li>Figure2主文展示训练后Transformer/LSTM激活经仿射映射呈现经典分形、Bloch圆盘结构与Moon几何；附录Figures5–8补齐四类架构及FRDN。训练图更接近真实信念，随机初始化对照与三阶Markov-HMM近似通常拟合较差。三阶近似在四符号例有4³=64个记忆状态，是特定经典对照，不是对所有有限HMM、参数相同神经网络或最优近似方法的穷尽比较。（第4页Figure2、第7–8页解释、第25–28页Figures5–8。）</li><li>第25页Figure5的Transformer加权探针RMSE：Mess3训练模型0.002、随机初始化0.050；Bloch Walk训练模型0.003，三阶经典近似0.066、随机模型0.066；FRDN训练值图中显示0.000、经典近似0.162、随机模型0.057；Moon训练0.005、经典近似0.053、随机0.080。上述柱图的颜色/图例已视觉逐项核对，尤其FRDN经典与随机顺序不由数值大小猜测。显示0.000是三位小数的舍入，不能说精确误差为零或获得全词长的精确实现。RMSE测已拟合读出的有限anchor信念，不是原始激活逐分量等于生成器状态。（第25页Figure5。）</li><li>其他架构也能读出：第26页LSTM对Bloch Walk为0.001，对应经典0.052、随机0.057；第28页GRU对Bloch Walk为0.001，对应经典0.053、随机0.060，Moon为0.001、经典0.039、随机0.040。各架构与过程的几何和误差有差异；固定一个seed的这些点不足以证明所有网络训练必然得到同样表示，也不提供多seed置信区间。RNN、LSTM、GRU的共同结果增加“不同归纳偏置仍可学到”的证据，但不是架构普适性定理。（第26–28页Figures6–8。）</li><li>Figure3追踪Bloch Walk在训练中的演化：每个checkpoint重新拟合仿射映射，图形从无结构逐渐接近信念几何，作者报告前20–40轮归一化RMSE下降超过80%。读出误差随验证损失和层位置的变化与学习相关；由于映射每次重拟合且没有干预网络中的信念方向，这不是一个固定解码器全程稳定的检验，也不证明下一词元目标必然因果地产生唯一贝叶斯算法。（第9页Figure3、第10页正文，第22–24页附录F。）</li><li>Figure4比较真实与读出信念的两两余弦相似度，理论最小坐标下报告R²≈0.99–1，经典三阶读出的几何一致性较低。这些角度是仿射探针之后的坐标，不是未经映射的原始神经活动角度；一般仿射变换或换规范不保欧氏角度，信念几何的内禀性不能解释成任何坐标下距离/余弦相同。成对比较共享anchor、并非独立样本；R²高也不证明所有未来条件分布逐项精确匹配。（第11页Figure4、第10–12页解释、第24页Eq.(\(F_{10}\))。）</li><li>为什么真实信念比下一步输出有更丰富内容？对任意未来词f都有：</li></ul>
-<p>-</p>
+
 <div class="display-math">\[\Pr(f\mid w)=\eta^{(w)}T^{(f)}\mathbf 1,\qquad(\eta^{(w)}-\eta^{(v)})T^{(f)}\mathbf 1=0\ \text{for all }f\ \Longrightarrow\ \Pr(f\mid w)=\Pr(f\mid v)\]</div>
 
 <ul><li>f表示任意有限未来序列，v与w是两个已知历史；第二关系是在所有未来上不可区分的条件，是从原概率公式直接得到的判据。非最小模型中两个不同信念向量可能对所有未来给相同预测；需去除这些不可观测方向才谈最小实现的内禀信念几何。这个代数结构来自已知生成器，本文的有限anchor探针检验没有遍历所有未来，因而不把该判据误报为神经网络已验证的充分状态或闭合定理。（第6页Eq.(2)及非最小模型段落，第7页future-span/nullspace续述；后式为本卡直接代数推论。）</li></ul></div>

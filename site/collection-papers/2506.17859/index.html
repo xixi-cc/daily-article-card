@@ -142,19 +142,19 @@
   </div>
   <h2>模型与方法</h2>
   <div class="reading-card-content"><ul><li>从真实任务分布 $\mathcal T_{\rm true}$ 抽取 $D$ 个参数 $w_d$，构成有限混合 $\mathcal T_{\rm train}$；每步抽任务生成长度 $C$ 的序列，训练 GPT-NeoX 架构。$N$ 表示训练迭代，$D$ 是不同任务数，不是上下文长度。三类人工任务是 Dirichlet 分布的彩球罐、带噪声线性回归、带噪声的物品–二元标签匹配；分类查询的真物品已在当前上下文出现，因而概括策略可做带噪声复制。（第3–4、27、29–32页）</li><li>记忆预测器 $M$ 用已见任务的离散先验，概括预测器 $G$ 用真实生成分布的连续先验；两者都在给定上下文后做后验预测。记忆并非直接背答案或简单最近邻。其一般形式为：</li></ul>
-<p>-</p>
+
 <div class="display-math">\[\begin{aligned}M(s_i\mid s_{&lt;i})&amp;=\sum_{w\in\mathcal T_{\rm train}}p(w\mid s_{&lt;i})f_w(s_i\mid s_{&lt;i}),\\G(s_i\mid s_{&lt;i})&amp;=\int p(w\mid s_{&lt;i})f_w(s_i\mid s_{&lt;i})\,dw\end{aligned}\]</div>
 
 <ul><li>$s_{&lt;i}$ 是已见前缀，$f_w$ 是任务的条件分布；$p(w\mid s_{&lt;i})$ 的先验支持分别为有限集合和真实参数空间。回归中的 $G$ 对应 ridge 解，分类中的 $M$ 可只凭查询检索训练物品标签，$G$ 从当前上下文估计对应关系。（第5、29–32页 Eqs. (1)–(2)）</li><li>层级模型把两个预测器作为策略假设：训练数据更新策略概率，推理时按该概率混合输出。这一层与策略内部的任务参数后验不同。作者假设 $L(N)\simeq L(\infty)+A/N^\alpha$，用 $p(Q)\propto2^{-K(Q)^\beta}$ 表示简单策略偏好。$K$ 不是可计算的真实 Kolmogorov 复杂度，而是代码与必要数据无损压缩所得代理量。（第6–7、23–24、28页）</li><li>将有效训练样本量近似为 $\gamma N^{1-\alpha}$，后验对数比为：</li></ul>
-<p>-</p>
+
 <div class="display-math">\[\begin{aligned}\eta(N,D)&amp;=\gamma N^{1-\alpha}\Delta L(D)-C_\beta(D),\\\Delta L(D)&amp;=L_G(D)-L_M(D),\\C_\beta(D)&amp;=(\log 2)\big[K_M(D)^\beta-K_G(D)^\beta\big]\end{aligned}\]</div>
 
 <ul><li>$\eta=\log[P(M\mid S)/P(G\mid S)]$，$\Delta L$ 是已见任务上两预测器的平均损失差；$\alpha,\beta,\gamma$ 为拟合参数。本卡以 $C_\beta$ 记正文 $\Delta K(D)^\beta$ 的整项：它是分别取幂后的复杂度之差，不是先相减再取幂。（第7页 Eq. (4)）</li><li>转成后验权重，得到：</li></ul>
-<p>-</p>
+
 <div class="display-math">\[h_{\rm pred}(s_i\mid s_{&lt;i})=\sigma(\eta)M(s_i\mid s_{&lt;i})+[1-\sigma(\eta)]G(s_i\mid s_{&lt;i}),\qquad\sigma(z)=\frac1{1+e^{-z}}\]</div>
 
 <ul><li>复杂度项早期抑制较复杂的记忆解，训练损失收益积累后可能反超。这是受学习曲线与简单性偏置启发的规范性模型，未由 Transformer 梯度流严格推导。拟合实际检查点输出而无需读取权重，不等于无需访问模型输出，也不等于三个参数事先已知。（第6–7、22–24页）</li><li>行为坐标取 $d$ 为对称 KL 或欧氏距离：</li></ul>
-<p>-</p>
+
 <div class="display-math">\[d_{\rm rel}=\frac12\left[1+\frac{d(h,G)-d(h,M)}{d(G,M)}\right]\]</div>
 
 <ul><li>$h=G$ 时为0，$h=M$ 时为1。真实输出不在两预测器连线上时可能越界，作者将其截到 $[0,1]$；KL也非满足三角不等式的几何距离。该坐标与拟合后验相关，不能当成已测到网络内部策略概率。（第5、28页）</li></ul></div>
@@ -166,7 +166,7 @@
   </div>
   <h2>核心结果与证据</h2>
   <div class="reading-card-content"><ul><li>Figure 1/4 显示固定训练步数提高 $D$，行为由记忆趋向概括；中间多样性下继续训练，OOD误差先改善再恶化，出现短暂泛化。Appendix \(H\).1–\(H\).3 分开检查分布内效果、分布外轨迹和绝对预测距离。“阶段”是有限实验中的行为交叉，尚无热力学极限、普适性或临界指数证明。（第2、5、33–44页）</li><li>Appendix \(H\).4 检查72张训练步数–多样性图，每图覆盖11种训练运行。回归平均 R² 为0.97，分类平均agreement为0.92，彩球平均Spearman相关为0.97；后验记忆权重与相对距离的相关分别为0.99、0.98、0.99。不同指标不能都写成97%准确率，也不能写成同一组三参数覆盖全部架构条件。（第7、45–49页）</li><li>拟合最小化预测之间的 KL 或 MSE，三参数在每种条件网格80%上拟合、20%留出，用 \(L\)-BFGS-B。去掉采样幂律、复杂度幂指数或损失尺度后拟合更差，支持这些项在当前设置中有用，不证明形式在所有任务都必要。（第29、50页）</li><li>在两策略已可解释输出、$C_\beta,\gamma\Delta L$ 为正且 $\alpha&lt;1$ 的制度内，由 $\eta=0$ 得交叉步数：</li></ul>
-<p>-</p>
+
 <div class="display-math">\[N^*(D)=\left[\frac{C_\beta(D)}{\gamma\Delta L(D)}\right]^{1/(1-\alpha)}\]</div>
 
 <ul><li>适用条件不能省去；这不是无条件有限的时间定理。Figure 6 彩球实验支持多样性增加时交叉时间超线性增长，高 $D$ 的长训练加入退火。结果只支持所测范围的趋势，不能保证任意大多样性最终都遗忘。（第8–9、27页）</li></ul></div>

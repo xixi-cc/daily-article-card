@@ -150,15 +150,15 @@
   </div>
   <h2>模型与方法</h2>
   <div class="reading-card-content"><ul><li>令z位于参数空间M，有限q个神经元对应经验概率测度；对可积的单项式r_i定义矩及损失：</li></ul>
-<p>-</p>
+
 <div class="display-math">\[\rho_i[\mu]=\int r_i(z)\,d\mu(z),\qquad H[\mu]=L(\rho_1[\mu],\ldots,\rho_m[\mu])\]</div>
 
 <ul><li>$\mu$ 为参数测度，$m$ 为损失读取的矩数，$\rho_i$ 是统计量而不是一个新神经元，L把这些统计量映射为损失。有限二阶矩本身不足以保证三阶及更高r_i可积，还需相应高阶矩条件；第12页明确证明限定实参数，原任务的复杂Fourier参数扩展仍是开放方向。（第3–4、12页 Eq.(3)，A.1）</li><li>对非负测度定义相加，以及逐坐标乘法映射下的乘积测度推前：取独立z、w，将z⊙w的测度记作μ*\(\nu\)。单项式对这个乘法保持乘性：</li></ul>
-<p>-</p>
+
 <div class="display-math">\[\rho_r[\mu+\nu]=\rho_r[\mu]+\rho_r[\nu],\qquad\rho_r[\mu*\nu]=\rho_r[\mu]\rho_r[\nu]\]</div>
 
 <ul><li>$r$ 是系数1的单项式，$*$ 不是神经网络的矩阵乘法。有限测度、相关矩可积、M对逐坐标乘法封闭并含乘法单位时，这给出交换半环和到实数代数的同态。非负测度没有加法逆元，不能直接称普通环；两个概率测度相加总质量为2，也不仍属于概率空间。将其重新归一化会改变矩目标。正文把操作定义在更大的测度类上，但任意σ有限测度与任意M不能自动满足以上封闭性。（第5、12–13页 Definition3.2、Theorem3.3）</li><li>这些恒等式可组合特定0/1矩解，却不意味着任意解的相加仍有0/1矩：1+\(1=2\)。Proposition3.4只保证它列出的部分0-set/1-set，不能升级成完整布尔闭包。几何训练则限制在概率测度空间，采用下降流：</li></ul>
-<p>-</p>
+
 <div class="display-math">\[\partial_t\mu=\nabla_z\!\cdot\!\left(\mu\nabla_z\frac{\delta H}{\delta\mu}\right),\qquad\dot\rho_i=-\sum_{j=1}^m G_{ij}(\mu)\,\partial_j L,\quad G_{ij}=\int\nabla r_i\cdot\nabla r_j\,d\mu\]</div>
 
 <ul><li>$G_{ij}$ 是多项式梯度的Gram矩阵，$\partial_jL$ 是对第j矩的损失导数；此处G不是后文的对称群。一般矩方程在第16页LemmaA.17直接给出，也可由Eq.(4)及LemmaA.12经分部积分得到，并非作者Eq.(6)的逐坐标闭合式。需光滑、积分有限及无边界通量等条件；连续性方程中的真实运输速度是 $-\nabla_z(\delta H/\delta\mu)$，不能因论文把正梯度称velocity就反转下降符号。（第4、12、14–16页）</li></ul></div>
@@ -170,11 +170,11 @@
   </div>
   <h2>核心结果与证据</h2>
   <div class="reading-card-content"><ul><li>可保留的代数贡献是：原模加法任务的平方损失读取有限个三次矩，特殊矩解具可组合结构；测度相加和逐坐标乘积让这一关系以积分形式表达。它说明解的表示结构，尚不证明所有最优解都这样表示，或实际训练会找到它们。原稿26页没有新性能图、数值训练或架构benchmark。（第3、5–6、12–13页）</li><li>Theorem4.2进一步声称，在标准Gaussian初始分布、所有多项式次数为奇数且至少3、梯度场O(\(d\))等变时，各矩按正的单变量系数独立下降。第7页以三次矩ρ_kkk从0趋向1解释符号涌现，但下述对称性检查阻止把这个说法当作已建立的训练保证。（第6–7页 Eq.(6)，第14–17页 A.3/A.4）</li><li>Theorem4.3用固定矩下的“最小微分熵”解释最多m维的解族。原文定义及其驻点形式为：</li></ul>
-<p>-</p>
+
 <div class="display-math">\[\mathcal E[u]=-\int u(z)\log u(z)\,dz,\qquad u_\lambda(z)=Z(\lambda)^{-1}\exp\!\left(\sum_{i=1}^m\lambda_i r_i(z)\right)\]</div>
 
 <ul><li>$u$ 是相对于Lebesgue测度的概率密度，$\lambda_i$ 是矩约束乘子，Z是归一化积分。这确为作者在第17–18页写出的驻点，但在存在、可积和适当正则条件下，它对应凹熵的最大化，不能直接认证所声称的极小化。指数族的参数数目也不证明无熵正则的训练轨迹已经进入这个族。（第7页 Theorem4.3，第17–18页 TheoremA.20）</li><li>LemmaA.13的密度二次变分通过有限个r_i投影，因此非零谱的像空间至多m维；这是有限观察量导致的有限秩结论。Theorem4.4另以奇次、对称速度及三阶导数符号条件声称特征值不增。有限秩并未消去测度空间中无限多的零方向，也不自动等于完整Wasserstein运输Hessian或实际参数自由度收缩。（第8、14、18–23页）</li><li>Theorem5.1/A.31引用Tahmasebi与Jegelka（2023）的不变核学习结果，声明过剩风险不超过ε时的样本标度：</li></ul>
-<p>-</p>
+
 <div class="display-math">\[n=\Theta\!\left(\max\!\left\{\frac{\sigma^2\operatorname{vol}(M_d/G)}{\varepsilon^{1+1/[\theta(\kappa+1)]}},\frac{\log(1/\delta)}{\varepsilon^2}\right\}\right)\]</div>
 
 <ul><li>这里$G$ 是紧Lie群，$M_d$ 是紧致无边界数据流形，$d\prime=\dim(M_d/G)$，$s=(1+\kappa)d\prime/2$ 为Sobolev平滑度，$\theta\in(0,1]$ 表示目标函数的正则性，$\sigma^2$ 为标签噪声方差，$\delta$ 为失败概率；$n$ 是训练样本数。前提包括群不变函数类、均匀输入、适当核与最优正则化；有限群还需相应商体积关系才可替换成vol(\(M_{d}\))/|G|。这是原文的条件性声明，不是本卡验证的神经训练最优样本定律。\(\theta\)(\(\kappa\)+1)&gt;1的连续目标分支中，显示的置信项以ε⁻²主导。（第8–9、23–24页）</li></ul></div>

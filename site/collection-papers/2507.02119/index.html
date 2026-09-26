@@ -145,19 +145,19 @@
   </div>
   <h2>模型与方法</h2>
   <div class="reading-card-content"><ul><li>主要Transformer为3个block、宽度768–2048、约10M–80M参数，使用µP、Adam、GeLU、RMSNorm、可学习位置嵌入，FFN宽度D而非常见4D。CIFAR-5M把32×32图像灰度化为1024词元、256灰度级词表，做下一像素预测；Lichess做字符级棋谱下一字符预测，非自然语言大模型。另有7层MLP对8维输入上的幂律Fourier特征目标做回归，宽度384–2048。（第2–3、13页。）</li><li>先用常学习率及5seed均值估计测试损失–算力Pareto前沿，按c=6tp FLOPs近似训练成本，再拟合最优训练长度t*(\(p\))∝\(p\)^\(\gamma\)。之后不同日程沿用这一长度，认为到常数倍程度合理；本文“compute-optimal”主要指训练长度分配，不是已联合优化所有超参数或证明任意日程全局最优。拟合前沿时还删除最小与最大模型的离群点。（第3、14–15页。）</li><li>为避免原文同时用L及装饰L造成混淆，本卡用R表示可约损失，其归一化为：</li></ul>
-<p>-</p>
+
 <div class="display-math">\[\mathcal R(t,p,\omega)=L(t,p,\omega)-L_0,\qquad \ell(x,p,\omega)=\frac{\mathcal R(xt_*(p),p,\omega)}{\mathcal R(t_*(p),p,\omega)},\quad x=\frac{t}{t_*(p)}\]</div>
 
 <ul><li>$L$ 为测试损失，$L_0$ 为拟合不可约损失，$p$ 为参数量，t为处理token数，$\omega$ 为随机seed，$x$ 为相对训练进度，$t_*(p)$ 为设定终点。分母是该seed实际最终损失，而非跨seed期望；需可约损失正且分母非零，$\ell(1)=1$ 是构造恒等式。用到终点信息，因此该归一化本身不能在训练早期提供无终点信息的外推预测。（第3页 Eq.(1)。）</li><li>曲线一致性以跨模型/seed相对变动与固定模型噪声比较：</li></ul>
-<p>-</p>
+
 <div class="display-math">\[\Delta(x)=\frac{\sqrt{\operatorname{Var}_{p,\omega}[\ell(x,p,\omega)]}}{\mathbb E_{p,\omega}[\ell(x,p,\omega)]},\qquad \sigma(x,p)=\frac{\sqrt{\operatorname{Var}_{\omega}[\mathcal R(xt_*(p),p,\omega)]}}{\mathbb E_{\omega}[\mathcal R(xt_*(p),p,\omega)]}\]</div>
 
 <ul><li>$\Delta$ 是梯子上近似对数均匀模型分布与seed一起计算的相对标准差；$\sigma$ 是固定p、可约原损失的跨seed相对标准差。它们对应不同随机变量，supercollapse意为所测区间 $\Delta&lt;\sigma$，不是违反噪声下限。终点 $\Delta(1)=0$ 自动成立，真正证据是远离终点的有限训练区间也降低。（第3–4页 Eqs.(2)–(3)。）</li><li>确定性两幂律模型提供一个可解析入口：</li></ul>
-<p>-</p>
+
 <div class="display-math">\[L(t,p)=L_0+t^{-\mu}+p^{-\nu},\quad \mu t_*^{-\mu}=\nu p^{-\nu},\qquad t_*(p)=r^{-1/\mu}p^{\nu/\mu},\quad \ell(x,p)=\frac{r x^{-\mu}+1}{r+1},\quad r=\frac{\nu}{\mu}\]</div>
 
 <ul><li>$\mu,\nu&gt;0$ 为时间与模型幂指数，常数乘子已吸收入单位；固定c=6tp做内点优化平衡两项，$r=\nu/\mu$。如此p因子严格抵消。训练长度乘固定常数仍可塌缩但改变曲线常数，故塌缩不能单独认证最佳长度的常数因子。更多幂律项通常仅在大p、固定x&gt;0、主导项平衡时渐近塌缩。（第5–6、17–19页 Eqs.(5)–(8)、TheoremF.1。）</li><li>噪声模型以梯度流时间τ=∫ηdt组织冻结二次Hessian的SGD近似：</li></ul>
-<p>-</p>
+
 <div class="display-math">\[\overline L(\tau)=F(\tau)+\frac12\int_0^\tau ds\,\eta(s)\operatorname{Tr}\!\left[H e^{-2H(\tau-s)}\overline\Sigma(s)\right]\ \approx\ F(\tau)+\frac14\eta(\tau)\operatorname{Tr}\overline\Sigma(\tau)\]</div>
 
 <ul><li>$H$ 是二次损失Hessian，F是同初态无噪声平均损失，$\overline\Sigma$ 是梯度噪声协方差的seed期望，η是当前学习率。积分形式来自线性二次SDE；末式额外需要ηΣ慢变、相关稳定模的记忆已衰减及大τ。非线性损失再加小噪声和Hessian慢变近似；不能把最终1/4表达当作一般网络的精确恒等式。使用Adam/µP时，在P慢变、忽略其时间导数且暂取确定/随机轨迹同一P的近似下，改用坐标 $\widetilde w=P^{1/2}w$；积分传播核与二次型中的H同时换成 $\widetilde H=P^{-1/2}HP^{-1/2}$，协方差换成 $\widetilde\Sigma=P^{-1/2}\Sigma P^{-1/2}$。晚时慢变极限才写成 $\eta\operatorname{Tr}\overline{\widetilde\Sigma}/4$；逐层峰值学习率吸收到P，η仅是0–1日程倍率。真实Adam的两条轨迹P可不同，首阶漏项仍未建模。（第6–7、13、19–22页 Eqs.(11)–(14)、(72)–(79)及Limitations。）</li></ul></div>
@@ -169,15 +169,15 @@
   </div>
   <h2>核心结果与证据</h2>
   <div class="reading-card-content"><ul><li>Figure1在CIFAR-5M下一像素Transformer梯子上显示：a的最终算力拟合为L0=3.132、\(b=0.191\)；b归一化曲线随宽度近重合；c的Δ在衰减阶段低于σ，在所示任务区间可覆盖后半程。d比较不同日程，每个日程有自己的共同曲线，并不是所有日程共享一条形状。Figure3常学习率时Δ与σ同量级；Figure2显示减错L0会破坏塌缩。拟合L0是数据分析估计，不是独立测定的真实Bayes熵。（第2–4页 Figures1–3。）</li><li>Figure4给诊断反例：MLP若用跨宽度固定学习率替代µP，归一化曲线显著分离；棋谱Transformer若把数据指数γ由估计1.02改为1.2，前沿仅稍变差但塌缩明显失效。两者支持该比较对这些错配敏感，未校准对所有配置的灵敏度/特异度，更不证明任何不塌缩都是训练不佳。另一个前沿拟合给CIFARγ≈0.96、\(\mathrm{MLP}\approx 1.04\)；任务不同不可混用。（第4、14–15页 Figures4、10。）</li><li>跨日程损失预测将当前轨迹的协方差插入近似，而非只靠初始配置盲预测。恒定学习率作参考、同峰值衰减作目标，作者保留δη·TrΣ′而舍去η·TrδΣ，以共享α=0.21拟合CIFAR实验，\(MLP\alpha=0.26\)。Figure6跨日程、模型与训练长度拟合良好；曲线用总步数1%半衰期EMA平滑，无报告独立预注册测试误差或统一概率预测区间。目标Σ′由固定2M词元测量，因此预测仍需要目标运行的额外信息。（第7、13、23页 Figures6、12。）</li><li>Figure7/14观察到固定日程下预条件噪声trace与可约损失之比大致只随相对进度变化，将它表示为h(\(x\))，组合得：</li></ul>
-<p>-</p>
+
 <div class="display-math">\[\overline{\mathcal R}^{\,\prime}(\tau,p)\approx\frac{\overline{\mathcal R}(\tau,p)}{1-\alpha h(x)\delta\eta(\tau,p)},\qquad \frac{\operatorname{Tr}\overline\Sigma^{\,\prime}}{\overline{\mathcal R}^{\,\prime}}\approx h(x)\]</div>
 
 <ul><li>撇号表示目标日程，$\delta\eta=\eta\prime-\eta$ 为相同梯度流时间下学习率差，α为共享拟合系数，h为日程相关的经验比值。该式需分母远离零、噪声trace的近似标度和小相对波动；跨日程还需在匹配τ时映射相对进度。原文把关系若取为精确则可推出期望曲线塌缩，但此处h关系仍是经验验证，不是由任意交叉熵损失已推导出的定理。（第7–8页 Eqs.(16)–(21)。）</li><li>supercollapse的噪声降低来自同轨迹终点相关性：</li></ul>
-<p>-</p>
+
 <div class="display-math">\[\widetilde\Delta^2(t)\approx\mathbb E_\omega[(\psi(t)-\psi(t_*))^2],\qquad \psi(t)=\frac{\mathcal R(t)-\overline{\mathcal R}(t)}{\overline{\mathcal R}(t)}\]</div>
 
 <ul><li>$\psi$ 为可约损失的相对seed波动，$\widetilde\Delta$ 为固定模型的自归一化曲线相对标准差。小波动展开使原始噪声ψ(\(t\))被差ψ(\(t\))−\(\psi\)(\(t\)*)替代，抵消共享历史。若改除以期望最终损失，则该指标恢复为σ；同seed实际终点是这个控制变量机制的关键，而非模型随机性本身消失。（第8–9页 Eq.(23)。）</li><li>稳定二次、小噪声及距终点梯度流时间δτ很小条件下，进一步得到：</li></ul>
-<p>-</p>
+
 <div class="display-math">\[\widetilde\Delta^2(\tau)=\overline{\mathcal R}(\tau)^{-2}g(\tau)^\top\eta(\tau)\overline\Sigma(\tau)g(\tau)\,\delta\tau+O(\delta\tau^2),\qquad \Delta(\widehat\tau)\propto\sqrt{\eta(\widehat\tau)(1-\widehat\tau)}\]</div>
 
 <ul><li>$g$ 是期望轨迹梯度，$\delta\tau=\tau_*-\tau&gt;0$，$\widehat\tau=\tau/\tau_*$。前式是固定模型的局部首阶展开；末式还用回归中的梯度/协方差与损失标度、跨模型噪声项主导及比例因子适当标度。Figure8给多日程在Δ/√η及1−τhat坐标中的有限曲线对照，并非所有x上严格统一的误差界或η=0处可直接相除的结论。（第9、22–23页 Eq.(24)、AppendixH。）</li><li>AppendixB将棋谱Transformer深度变为9–36，并加3/depth分支倍率，得到较好而有小偏移的塌缩；作者不确定偏移是否有限规模效应。此项没有证明宽度、深度、batch及weight decay一起增长时仍成立，主论文把更现实/更大规模梯子验证明确留作后续。（第9、14页 Figure9。）</li></ul><figure class="evidence-figure">

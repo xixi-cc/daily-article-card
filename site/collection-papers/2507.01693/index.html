@@ -150,19 +150,19 @@
   </div>
   <h2>模型与方法</h2>
   <div class="reading-card-content"><ul><li>原输入 $x\in V^n$ 有n个词元，词表V固定，目标输出 $y\in V^m$ 有m个词元，f是冻结语言模型及指定解码过程。候选 $x^{\prime}$ 必须具有预设长度n。离散目标为：</li></ul>
-<p>-</p>
+
 <div class="display-math">\[x^*=\operatorname*{arg\,min}_{x^{\prime}\in V^n}\Phi(f(x^{\prime}),y)\]</div>
 
 <ul><li>$\Phi$ 是输出匹配损失；原Eq.(8)要求原输入处损失零，Eq.(9)另要求其他输入损失严格正。第二个条件是可辨识性要求，未由搜索算法自动满足。若找到全局最小值且损失仍正，才在前一条件下排除可行原输入；有限搜索失败不具有这样的证书。（第3页 Eqs.(7)–(9)。）</li><li>文本输出条件下，正文用固定目标前缀逐位置衡量真实目标词元距当前最大概率的差：</li></ul>
-<p>-</p>
+
 <div class="display-math">\[\Phi_{\rm text}(x^{\prime};y)=\sum_{i=1}^{m}\left[\max_{a\in V}p(a\mid x^{\prime}y_{&lt;i})-p(y_i\mid x^{\prime}y_{&lt;i})\right]\]</div>
 
 <ul><li>$p(a\mid x^{\prime} y_{&lt;i})$ 是在候选输入及已给目标前缀下的概率，$a\in V$ 为任意词元；$y_{&lt;i}$ 固定，不是让候选模型自由滚动生成的历史。零损失说明每个目标词元为一个概率最大项；在并列最大且实际tie-breaking不同的边界，尚须核验确实生成同一y。更通常的问题是多个输入共享相同文本输出，因此零损失不保证原输入身份。（第3页 Eq.(10)。）</li><li>带logit信息的目标比较观测位置/词元上的输出分数。Eq.(11)印作概率间距离d，随后正文说明实际使用logits以避免Softmax压缩及梯度消失；主稿未将具体距离d完整展开，本卡不擅自指定为L2或KL。只匹配top-k分数也不等于匹配所有词元分布，更不证明输入映射单射。（第3、5–6页。）</li><li>为了获得可微输入，以自由矩阵代替离散one-hot矩阵：</li></ul>
-<p>-</p>
+
 <div class="display-math">\[\widehat H=\operatorname{SoftMax}_{\tau}(Z),\qquad E=W_e\widehat H,\qquad R=W_u g(E)\]</div>
 
 <ul><li>$Z\in\mathbb R^{|V|\times n}$ 是待优化的辅助变量；SoftMax按每个位置的词表维度归一化，$\tau&gt;0$ 为温度；$W_e$ 为冻结词嵌入矩阵，g为冻结网络主体，$W_u$ 为输出投影，R为logit矩阵。\(Z\)=0给均匀分布，在该连续表示中是稠密的，不能因算法名包含“Sparse”就称初始概率one-hot。连续候选可能经过不对应任何真实文本的混合嵌入；最终必须重新离散评估。（第2、4页。）</li><li>优化使用去掉偏差校正的Adam，并在更新后乘衰减系数：</li></ul>
-<p>-</p>
+
 <div class="display-math">\[g_t=\nabla_Z\Phi(R,y),\quad m_t=\beta_1m_{t-1}+(1-\beta_1)g_t,\quad v_t=\beta_2v_{t-1}+(1-\beta_2)g_t^{\odot2},\qquad Z_t=\lambda\left(Z_{t-1}-\gamma\frac{m_t}{\sqrt{v_t}+\epsilon}\right)\]</div>
 
 <ul><li>$m_t,v_t$ 为一、二阶梯度矩，$g_t$ 为本步辅助输入梯度，$\gamma&gt;0$ 为学习率，$\beta_1,\beta_2$ 为动量系数，$0&lt;\lambda\le1$ 为逐步乘法衰减，$\epsilon$ 防止除零，平方及除法逐元素进行。它不是在冻结语言模型上施加权重衰减。每t1步清零优化器状态、较稀疏的t2步也重新初始化Z；每步另以argmax(\(Z\))测试离散候选，近零匹配损失便停。该检查验证观测匹配，不直接知道候选是否真实原输入。（第4、10页 Algorithm1、AppendixB。）</li></ul></div>

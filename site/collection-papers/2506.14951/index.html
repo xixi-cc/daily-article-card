@@ -137,23 +137,23 @@
   </div>
   <h2>模型与方法</h2>
   <div class="reading-card-content"><ul><li>主体理论使用固定数据 $\mathcal D=\{(x^{(k)},y^{(k)})\}_{k=1}^N$、$r$ 个隐藏神经元的单隐藏层网络。$w_j$ 为输入权重，$a_j$ 为标量读出权重，$\sigma$ 为连续激活，后续有限差分展开需要相应光滑性。$x$ 的最后一维固定为1以包含偏置。正文 Eq. (1) 的均方损失为：</li></ul>
-<p>-</p>
+
 <div class="display-math">\[\mathcal L_r(\theta;\mathcal D)=\frac1N\sum_{k=1}^{N}\left[y^{(k)}-\sum_{j=1}^{r}a_j\sigma(w_j\cdot x^{(k)})\right]^2\]</div>
 
 <ul><li>训练动力学为梯度流 $\dot\theta=-\nabla_\theta\mathcal L_r$，并与有限步长 GD、SGD、Adam 比较。这里损失不带 $1/2$；附录的部分总体损失另选带 $1/2$ 的归一化，不能直接混用梯度幅度。（第3–4、27页）</li><li>复制一枚神经元，使输入权重相等、读出权重为 $\gamma a_*$ 与 $(1-\gamma)a_*$，网络输出不变；原临界点被嵌入为等损失临界线。邻近通道与该线渐近平行，但全参数空间中并不一定靠近。对通道中的两神经元，取 $w=(w_i+w_j)/2$、$\epsilon=\lVert w_i-w_j\rVert/2&gt;0$、单位方向 $\Delta=(w_i-w_j)/\lVert w_i-w_j\rVert$，以及 $a=\epsilon(a_i-a_j)$、$c=a_i+a_j$。等价参数化为：</li></ul>
-<p>-</p>
+
 <div class="display-math">\[w_i=w+\epsilon\Delta,\quad w_j=w-\epsilon\Delta,\quad a_i=\frac c2+\frac{a}{2\epsilon},\quad a_j=\frac c2-\frac{a}{2\epsilon}\]</div>
 
 <ul><li>对应的两个输出是均值与中心有限差分之和（第7页 Eq. (3)）：</li></ul>
-<p>-</p>
+
 <div class="display-math">\[\begin{aligned}a_i\sigma(w_i\cdot x)+a_j\sigma(w_j\cdot x)&amp;=\frac c2\left[\sigma((w+\epsilon\Delta)\cdot x)+\sigma((w-\epsilon\Delta)\cdot x)\right]\\&amp;\quad+\frac{a}{2\epsilon}\left[\sigma((w+\epsilon\Delta)\cdot x)-\sigma((w-\epsilon\Delta)\cdot x)\right]\end{aligned}\]</div>
 
 <ul><li>在固定 $w,\Delta,a,c$ 且激活可微时，$\epsilon\to0$ 给出：</li></ul>
-<p>-</p>
+
 <div class="display-math">\[a_i\sigma(w_i\cdot x)+a_j\sigma(w_j\cdot x)\xrightarrow{\epsilon\to0}c\sigma(w\cdot x)+a(\Delta\cdot x)\sigma^{\prime}(w\cdot x)\]</div>
 
 <ul><li>第二项正是 $v\cdot x$ 乘上门控 $\sigma^{\prime}(w\cdot x)$，其中 $v=a\Delta$。softplus 的导数为 sigmoid，因此两个普通神经元在参数发散极限中实现门控线性项；有限参数时只是有限差分近似，不能把它写成已经修改了网络架构。（第7页 Eq. (4)）</li><li>光滑条件下中心差分的奇次误差抵消，函数及损失首个修正为二阶；$\theta^0$ 指重参数化后在 $\epsilon\to0$ 时保持有限的坐标（两神经元部分为 $w,\Delta,a,c$，加其余有限参数），不是原读出权重的有限极限。$\mathcal L_r(\theta^0;\mathcal D)$ 用门控极限函数 $f_0$ 计算，$h$ 为修正系数，则：</li></ul>
-<p>-</p>
+
 <div class="display-math">\[\mathcal L_r(\theta;\mathcal D)=\mathcal L_r(\theta^0;\mathcal D)+\epsilon^2 h(\theta^0;\mathcal D)+O(\epsilon^4)\]</div>
 
 <ul><li>若极限参数是损失极小值且 $h&gt;0$，减小 $\epsilon$ 在这个方向上降低损失。完整稳定性还需检查全部横向方向，不能仅凭该条件宣称一般网络中的通道端点都是稳定极小值。（第8页，第26页 Eqs. (11)–(13)）</li></ul><figure class="evidence-figure">

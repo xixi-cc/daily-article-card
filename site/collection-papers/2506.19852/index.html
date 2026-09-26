@@ -145,15 +145,15 @@
   </div>
   <h2>模型与方法</h2>
   <div class="reading-card-content"><ul><li>视频latent有f帧，每帧s个token，总数n=fs；\(Q\)/\(K\)/V为n×d矩阵。保留原有softmax，将mask中被禁的配对置为负无穷：</li></ul>
-<p>-</p>
+
 <div class="display-math">\[\operatorname{Attn}_M(Q,K,V)=\operatorname{softmax}\!\left(\frac{QK^\top+M}{\sqrt d}\right)V,\qquad M\in\{-\infty,0\}^{n\times n}\]</div>
 
 <ul><li>M的零项代表保留，d是每head维数。原Eq.(2)将M与logit一起除以√\(d\)，因M只取0或负无穷，不改变允许集。FlashAttention可改善内存/常数，却不自行消除密集注意力的二次时间成本。（第4页 Eqs.(1)–(2)）</li><li>HunyuanVideo中的若干head及扩散步的平均行权重随时空距离下降，指数回归的R²超过0.985。作者用下列逐位置相对上界做理论假设：</li></ul>
-<p>-</p>
+
 <div class="display-math">\[p_{js+l}\le C_{\rm rel}e^{-\alpha|j-i_0|-\beta|l-k_0|}\,p_{i_0s+k_0}\]</div>
 
 <ul><li>$p$ 是一个query $(i_0,k_0)$ 的softmax行，j/l为key帧/空间索引，$\alpha,\beta&gt;0$ 是衰减率，$C_{\rm rel}&gt;0$ 是相对幅度。空间距离采用序列索引差，不是任意二维视频欧氏距离；平均曲线拟合也不自动建立每head、每行和每token对的统一上界。（第5页 Eq.(3)，第10页 Figure8b）</li><li>静态图以时间距离的二进制层级组织配对：</li></ul>
-<p>-</p>
+
 <div class="display-math">\[r_{ij}=\lfloor\log_2\max(|i-j|,1)\rfloor,\quad w_{ij}=\frac{s}{2^{r_{ij}}},\quad K_{ij}=\left\lceil\frac{2^{r_{ij}}}{s}\right\rceil\]</div>
 
 <ul><li>$r_{ij}$ 是帧对带号的绝对值，$w_{ij}$ 是保留空间对角带宽，$K_{ij}$ 是远处保留帧对的间隔。逐带减半的密度按对数距离层级衰减，作为真实距离函数大致呈倒数型，不可写成对所有时间距离直接指数衰减。近处用 $|k-l|+1\le w_{ij}$；宽度降至1以下后以 $|i-j|\bmod K_{ij}=0$ 选帧对，并仅保留k=l。另加每token读取首帧的attention sink。（第5–6页 Eq.(4)、Figure5；第16页）</li><li>模型部署以128×128block稀疏核实现，不是逐token理想mask的无开销执行。默认长度推理前12个扩散步仍密集并保留首DiT block；长视频训练保留前两个DiT blocks。原文明示4倍长度推理采用前2步密集，并在HunyuanVideo上做消融；不能据此确认所有2倍设置的warm-up或长视频推理dense-block数量。长视频使用低秩适配（LoRA）：在Q/\(K\)/V及输出投影加入rank128的可训练低秩修正，保留原softmax与大部分预训练参数。（第7–8、18–20页。）</li></ul><figure class="evidence-figure">
@@ -174,11 +174,11 @@
   </div>
   <h2>核心结果与证据</h2>
   <div class="reading-card-content"><ul><li>逐带计数给长帧数、固定每帧分辨率s下的保留配对上界：</li></ul>
-<p>-</p>
+
 <div class="display-math">\[N_{\rm keep}\le4s^2f\log_2f=4sn(\log_2n-\log_2s),\qquad n=fs\]</div>
 
 <ul><li>$N_{\rm keep}$ 是mask中的零项数，中心带与首帧sink计入上界。由每带面积增长与密度缩小相抵，带数是对数级，注意力算术工作量在固定s下为O(\(n\) log \(n\))；随s提高仍有二次分辨率代价。它不是全部生成网络、密集warm-up或完整训练成本都变成同一个渐近式。（第6页 Eqs.(5)–(6)，第16–17页 A.1）</li><li>Table1在单H100默认长度推理中，HunyuanVideo117帧768p耗时1649→876秒，约1.88倍，计算612→339PFLOPs；PSNR27.3、SSIM0.886、LPIPS0.114，均相对原视频而非ground truth。STA使用FA3只需719秒、更快，但其PSNR26.7；SVG为867秒且SSIM0.895略高，故不称所有指标或基线全面领先。Wan2.1-14B69帧为1630→917秒、1.77倍。（第7–9页）</li><li>Table2的HunyuanVideo509帧720p微调用8H100：训练时间93.\(6\to 21\).4小时、4.37倍；推理2895→781秒、3.71倍，后者此设置也使用8H100。VisionReward0.\(133\to 0.134\)，subject/aesthetic/image质量三项并非逐项全优。Mochi667帧推理同样用8H100，992→386秒、2.57倍，训练49.\(2\to 17\).4小时、2.83倍。Wan受成本限制只展示2倍161帧，推理在单H100上5735→2847秒约2.01倍，不能宣称三模型都测试4倍。（第8–9页 Table2）</li><li>训练采样各扩展长度OpenVid-1M中美学/运动排名较高的2000段视频。原模型不微调或仅RIFLEx的4倍输出明显较差；LoRA稀疏调优保持指定代理指标，但VisionReward是评分模型、PSNR是对密集输出的相似度，都不替代人类评审或保证每段内容质量。Wan注意力输出平均MSE为3.9×10⁻³，对SVG4.4×10⁻³、STA1.5×10⁻²；这是具体输出误差实验，不是下一段的逐行理论证明。（第8–10页）</li><li>删去配对后重新归一化的softmax行有精确代数关系：</li></ul>
-<p>-</p>
+
 <div class="display-math">\[\|\widetilde p-p\|_1=2\frac{Z_{\rm out}}{Z},\qquad Z=\sum_{j,l}a_{j,l},\quad Z_{\rm out}=\sum_{(j,l)\notin\mathrm{keep}}a_{j,l}\]</div>
 
 <ul><li>$a_{j,l}$ 为正的未归一化权重，Z为总权重，$Z_{\rm out}$ 是丢弃质量；$\widetilde p$ 是保留集上的重新归一化行。这里是L1误差，通常定义的total variation是它的一半。作者由相对指数上界进一步声称误差以s指数变小，但该更强界的推导存在下述未闭合步骤，不能与此恒等式的证据强度混同。（第17–18页 A.2，第6页 Eq.(7)）</li></ul></div>

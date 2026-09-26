@@ -150,23 +150,23 @@
   </div>
   <h2>模型与方法</h2>
   <div class="reading-card-content"><ul><li>阈值电路由AND、OR、NOT及允许任意输入数的MAJORITY门组成。复杂性设置为：</li></ul>
-<p>-</p>
+
 <div class="display-math">\[\mathrm{TC}^{i}:\ |C_n|=\operatorname{poly}(n),\quad\operatorname{depth}(C_n)=O((\log n)^i),\qquad\mathrm{TC}=\bigcup_{i\ge0}\mathrm{TC}^{i}\subseteq\mathrm P\]</div>
 
 <ul><li>$n$ 是输入比特/token编码长度，$C_n$ 是该长度的电路，size为门数，depth为最长门依赖路径。本文一般部分要求电路族可由对数工作空间机器生成；$i=0$ 对应常数深度，TC为所有固定多对数深度指数的并集。TC⊆P是包含关系；TC严格小于P是Assumption2.3，不能把假设写为定理。附录F转而使用non-uniform族，必须单独保留，不能直接将其结论与一般部分的uniform障碍互换。（第3、21–23页DefinitionD.1及Eq.(1)。）</li><li>状态空间模型附录C.2的例子是线性、可合成的状态更新，不依赖先逐步计算非线性隐状态；递归神经网络示例则对每个新输入依次更新。正文包含的架构限制固定层数、精度和多项式维数，不能据此排除所有未来状态空间架构。固定Transformer的一次前向与同一Transformer反复调用的思维链是不同推理程序；附录E引用重复层对数次数及多项式思维链的既有表达能力结果，不能推出任意模型训练后自动学会该算法。（第4、19–23页。）</li><li>扩散部分将固定位置的掩码token对应可接受解的流形，再用固定计算量离散化答案；不允许用后处理隐藏求解。给定条件输入，正向高斯加噪与得分误差为：</li></ul>
-<p>-</p>
+
 <div class="display-math">\[x_t\mid x_0\sim\mathcal N(\sqrt{1-\sigma_t^2}\,x_0,\sigma_t^2I),\quad f^*(t,x)=\nabla_x\log\rho_t(x),\quad\epsilon_{\rm score}^2=\frac1T\sum_{t=1}^T\mathbb E_{x_t\sim\rho_t}\|f_\theta(t,x_t)-f^*(t,x_t)\|_2^2\]</div>
 
 <ul><li>$x_0$ 是解流形上的样本，$x_t$ 是第t个噪声尺度下的状态，$\rho_t$ 为其条件密度，$\sigma_t$ 是噪声尺度，$I$ 为单位矩阵；$f_\theta$ 是训练的得分近似，$f^*$ 是真实得分，T为逆过程步数。求和中的期望按真实加噪分布取，不是只凭最终样本观感定义的误差。作者使用SMLD逆采样；没有训练该网络或实测本式误差。（第23–24页AppendixF.1–2。）</li><li>附录F.1引用Li与Yan的收敛界，将离散步误差与得分误差分开：</li></ul>
-<p>-</p>
+
 <div class="display-math">\[d_\epsilon(X)=\frac{\log N_\epsilon(X)}{\log(1/\epsilon)},\qquad \operatorname{TV}(\rho_0,\rho_{{\rm SMLD},0})\le c\left[\frac{d_\epsilon(\operatorname{supp}\rho_0)}T(\log T)^3+\epsilon_{\rm score}\sqrt{\log T}\right]\]</div>
 
 <ul><li>$X$ 是分布支持，$N_\epsilon(X)$ 为覆盖X需要的半径ε球数，$d_\epsilon$ 是给定分辨率的内在维数；不能只用最终ε→0的几何维数替换。$c&gt;0$ 为源定理常数，$\rho_{{\rm SMLD},0}$ 为逆采样结果。源第25页把TV定义为积分绝对差而没有常用的1/2因子，本卡保留其记法、不把常数概率结论混成另一规范。该界还要求一阶矩受T的多项式控制并存在相应采样日程；式中的对数及平方根项不能简化成普遍d/\(T\)。（第24–25页TheoremF.1。）</li><li>正式TheoremF.2的常数深度分支要求存在与输入长度n无关的T、得分误差上界和δ&gt;0，对所有n同时成立：</li></ul>
-<p>-</p>
+
 <div class="display-math">\[\mathbb E_{\rho_{0,n}}\|x_0\|_2\le T^{c_M},\quad\epsilon=T^{-c_\epsilon},\quad\epsilon_{{\rm score},n}\le\epsilon_{\rm score},\quad c\left[\frac{d_\epsilon(X_n)}T(\log T)^3+\epsilon_{\rm score}\sqrt{\log T}\right]\le\frac12-\delta\]</div>
 
 <ul><li>$X_n$ 是长度n任务对应解空间，$\rho_{0,n}$ 是其目标分布，$c_M,c_\epsilon,c$ 来自F.1。掩码位置固定、离散化仅常量计算、网络每次前向常数深度/多项式宽度/固定精度也属于设置。作者由这个统一误差余量宣称任务属于non-uniform TC⁰；“无限步也没用”是其非正式解读，不是对任意循环程序的定理。内在维数增长、得分误差过大或网络执行非得分匹配的程序时，不能套用结论。（第25–28页TheoremF.2/F.5。）</li><li>去随机化是给定长度上复制若干采样器、对输出多数表决，并证明有一组固定随机种子能同时处理所有输入；存在性并不提供高效寻找种子的算法。对源第27页Hoeffding与union-bound步骤直接合并，本卡得到：</li></ul>
-<p>-</p>
+
 <div class="display-math">\[\Pr(\exists x\in\Sigma^n:\text{majority fails on }x)\le |\Sigma|^n e^{-2K(n)(p_{\rm err}-1/2)^2},\quad K(n)&gt;\frac{n\log|\Sigma|}{2(p_{\rm err}-1/2)^2}\]</div>
 
 <ul><li>$\Sigma$ 为有限token字母表，$p_{\rm err}&lt;1/2$ 为每次试验的最坏错误概率，\(K\)(\(n\))为独立副本数。此式是编辑性直接推导：因共有|\(\Sigma\)|ⁿ个输入，源打印的K(\(n\))下界少了n因子；补回后可取K=\(\mathrm{O}(n)\)，仍是多项式宽度，没有由此单独否定常数深度分支。种子是non-uniform advice，不能声称已找到或能高效找到。（第27页Proof，PDF原式视觉核对。）</li><li>RL构造用交替AND/OR电路的depth-of-1问题。环境先展示原电路与一条已知全真链，代理第一次选择其中之一，之后每步最多选一个门；最终只有所选门全部为真才获得所选最大深度的终端奖励，中间奖励为零。它是专门构造的确定性有限时域环境；下一状态可编码选门历史，并没有实际控制机器人或在常见游戏中运行算法。（第28–30页AppendixG.1–2。）</li></ul></div>
@@ -178,7 +178,7 @@
   </div>
   <h2>核心定理与证据</h2>
   <div class="reading-card-content"><ul><li>概念结论最可靠的用途是区分计算图宽度与深度。并行执行独立副本、加宽单次前向、增加顺序前向三者解决的表达瓶颈不同。源码正文强调已有模型的冻结推理；附录C.3还承认未能建立对应训练阶段理论。网络更深会更难训练或硬件应提高时钟速度属于讨论，不是本文测得的训练收益或硬件最优配置。（第2–5、19–22页。）</li><li>扩散的正式结论限定non-uniform TC⁰、可统一满足误差阈值的得分网络与输出解空间。源F.5明确指出：不以得分匹配为目的、使用足够差的得分网络时，SMLD形式原则上能实现Turing计算；维数快速增长也使本定理不适用。失去假设并不证明该模型已解决$\mathrm P\setminus\mathrm{TC}$ 任务。故卡片不发布“所有扩散语言/视频模型永远不能推理”，不把少步蒸馏可行当独立计算复杂性证明。（第9、26–28页。）</li><li>扩散推广分支还需进一步论证。F.2允许每次得分前向属于TCᵏ、串联Tₙ=O((log \(n\))ᵏ)步，却仍宣称TCᵏ；简单逐步复合的深度上界是两个因子的乘积，不能直接保住原来的指数k。第27页只写推广同理、没有给额外压缩构造，因此本卡记录作者主张及此证明缺口，不将推广的精确类指数认证为已独立核实。第26页Eq.(2)只要求正确答案概率比每个错误答案高δ；多类时这本身不等于绝对成功率大于1/2，本卡去随机化所用的是F.2证明中的更强余量设置。（第26–27页。）</li><li>G.2的作者结论可写为：</li></ul>
-<p>-</p>
+
 <div class="display-math">\[d_1(C,x)=\max\{\operatorname{depth}(g):g(x)=1\},\qquad \forall\eta\in(0,1),\ \exists E_{\rm DO1}:\ r_H&lt;\eta r^*\]</div>
 
 <ul><li>$g$ 为电路门，$d_1$ 为输出真的门的最大结构深度（全零时源证明另行处理）；$r_H$ 为末步奖励，$r^*$ 为最优末步奖励，$\eta$ 为任意固定正比例。第二个关系是作者在TC≠P及logspace-uniform并行决策规则下对其DO1环境提出的最坏情形障碍，不是普通MDP的普遍实测结果。本卡不认证源内具体证明全部成立：第30页的switchover索引、估计值及比较方向之间有明确不一致。（第28–31页TheoremsG.1–2。）</li><li>具体而言，第30页把k定义为满足链价值≤电路候选最大价值的“最小ℓ”，但随着链长度2^ℓ缩小该条件通常已有ℓ=0；后面的边界讨论却将这一情形输出|\(C\)|。随后用d′=2^{\(m\)−\(k\)}，而环境链长度实际为2^\(k\)，并在quality段称Ek选链后又令V(s)≥V(s′)。这些不是本卡从提取乱码推断：两份PDF的该页均已视觉核对。本卡将G.2标为作者提出、有源内证明细节待厘清的条件结论；可从DO1近似困难构造障碍的思路仍有价值，但不替作者补完整证明或称所有RL都必需串行。（第29–31页。）</li><li>经验依据都是引用材料。Figure6a为Hex不同训练条件下MCTS扩展节点与性能；6b为已有locomotion/manipulation深宽比较，Humanoid中8层、宽256优于4层、宽4096的源观察不能推成等FLOPs/等所有超参数普遍定律。Figure7为四个数学测试集平均分、单链token与多数表决总token的比较，来自Aggarwal与Welleck；没有本文新seed、统一跨任务误差条或新消融。作者引用图支持动机，不等于验证复杂性假设。（第8–10页Figures6–7。）</li><li>Rule110、可模拟计算的碰撞/势场及算术电路给出最坏情形困难的背景。Figure2画的是Rule30，不能由Rule110的通用计算能力直接证明Rule30预测P-complete；视频遮挡后必须重建状态是作者机制解释，不是所有自然视频下一帧都P-complete的归约。MathQA按依赖图求值不证明所有数学题分布没有捷径。论文认可近似重述、平均情形或完整世界状态可减少实用需求，本卡保留这些例外。（第3、6–9、19页。）</li></ul></div>
