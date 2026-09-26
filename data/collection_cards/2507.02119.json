@@ -1,0 +1,274 @@
+{
+  "arxiv_id": "2507.02119",
+  "source_version": "v2",
+  "source_pdf": "https://arxiv.org/pdf/2507.02119v2",
+  "title_en": "Scaling Collapse Reveals Universal Dynamics in Compute-Optimally Trained Neural Networks",
+  "title_zh": "算力最优训练的标度塌缩：终点自归一化与学习率噪声模型",
+  "curation_status": "full_text_verified",
+  "card_standard_version": "2.3",
+  "paper_profile": "theory_numerics",
+  "style_reference": "physicist_daily_arxiv",
+  "provenance": {
+    "program": "Collection",
+    "catalog": "Paper Collection",
+    "catalog_record_id": "2507.02119",
+    "catalog_record_ids": [
+      "2507.02119"
+    ],
+    "catalog_topic": "Machine Learning",
+    "collection_date": "2026-08-30",
+    "sampled_at": "2026-09-26",
+    "selected_by": "collection_serial_goal_continuation",
+    "sampling_seed": "not_applicable_source_complete",
+    "candidate_count": 916
+  },
+  "verified_metadata": {
+    "arxiv_id": "2507.02119",
+    "version": "v2",
+    "title": "Scaling Collapse Reveals Universal Dynamics in Compute-Optimally Trained Neural Networks",
+    "authors": [
+      "Shikai Qiu",
+      "Lechao Xiao",
+      "Andrew Gordon Wilson",
+      "Jeffrey Pennington",
+      "Atish Agarwala"
+    ],
+    "published": "2025-07-02",
+    "updated": "2025-07-07",
+    "categories": [
+      "cs.LG"
+    ],
+    "primary_category": "cs.LG",
+    "license_url": "http://arxiv.org/licenses/nonexclusive-distrib/1.0/",
+    "pdf_pages": 24,
+    "source_pdf_sha256": "414a3e6ea7689eed5ace0f16f6546e973ac74a42a15c01f15f554ef7d14d949e",
+    "publication": "ICML2025; PMLR267:50697–50720",
+    "publisher_url": "https://proceedings.mlr.press/v267/qiu25j.html",
+    "figure_license_authority": "https://proceedings.mlr.press/pmlr-license-agreement.html; publisher version CC BY4.0, distinct from arXiv distribution license"
+  },
+  "sections": [
+    {
+      "title": "作者信息",
+      "paragraphs": [
+        "Shikai Qiu、Andrew Gordon Wilson署名纽约大学；Lechao Xiao、Jeffrey Pennington、Atish Agarwala署名Google DeepMind。首页注明Qiu部分工作在DeepMind实习期间完成，并列Qiu与Agarwala为通讯联系人。第10页给明确贡献：Qiu承担多数实验、主导理论和写作；Xiao首先观察supercollapse并参与理论/实验设计/写作；Wilson指导Qiu并编辑；Pennington参与理论/设计/写作；Agarwala管理项目、证明部分定理并指导理论。不是按作者位置猜测分工。论文发表于ICML2025、PMLR267:50697–50720；本卡全文依据24物理页arXivv2。（第1、10页及官方PMLR记录。）"
+      ]
+    },
+    {
+      "title": "研究问题",
+      "paragraphs": [
+        "模型和训练token数同时增加时，整条训练损失曲线能否在适当归一化后保持共同形状，而不只是最终损失符合幂律？本文在有限规模算力分配梯子上观察collapse；学习率下降时，终点自归一化的曲线差异进一步低于未自归一化的跨seed相对噪声，称supercollapse。它提出标度诊断和噪声机制解释，没有由经验曲线证明任意神经网络都存在同一个严格普适极限。（第1–4、9页。）",
+        "读者桥：每个模型的状态是训练权重，输入是同一任务的数据和按相对进度定义的学习率日程；优化信号是Adam或梯度更新，输出观测是随已处理token数变化的测试损失。比较对象是一组不同宽度/参数量模型及其训练长度，不是单条轨迹内部的神经元压缩。先减去拟合的不可约损失，再用同一次随机运行的最终可约损失归一化，才得到被比较的无量纲曲线。（第2–3、13–14页。）"
+      ]
+    },
+    {
+      "title": "背景",
+      "paragraphs": [
+        "统计物理中的标度塌缩提供“不同规模是否沿相同形状演化”的语言，但本文曲线仍依赖任务、结构、优化器和日程。它没有测得统一临界指数、相变、重整化流或新的热力学普适类。末段将重整化群作为未来理解的类比，附录D列跨科学领域的例子；这些类比不能替代神经训练的有限规模验证。（第9、15页。）",
+        "已有神经scaling law约束最终损失与参数量/训练长度，µP则按宽度调整初始化和逐层学习率以便超参数迁移。本文连接二者：若训练长度只随参数量按不合适的幂律增长，未必整条曲线都一致；而以实际随机终点自归一化会消除共享时间噪声。因此“曲线看起来更一致”与“更准确预测任一模型原始损失”是不同的问题。（第3–6、9页。）"
+      ]
+    },
+    {
+      "title": "模型与方法",
+      "paragraphs": [
+        "主要Transformer为3个block、宽度768–2048、约10M–80M参数，使用µP、Adam、GeLU、RMSNorm、可学习位置嵌入，FFN宽度D而非常见4D。CIFAR-5M把32×32图像灰度化为1024词元、256灰度级词表，做下一像素预测；Lichess做字符级棋谱下一字符预测，非自然语言大模型。另有7层MLP对8维输入上的幂律Fourier特征目标做回归，宽度384–2048。（第2–3、13页。）",
+        "先用常学习率及5seed均值估计测试损失–算力Pareto前沿，按c=6tp FLOPs近似训练成本，再拟合最优训练长度t*(p)∝p^γ。之后不同日程沿用这一长度，认为到常数倍程度合理；本文“compute-optimal”主要指训练长度分配，不是已联合优化所有超参数或证明任意日程全局最优。拟合前沿时还删除最小与最大模型的离群点。（第3、14–15页。）",
+        "为避免原文同时用L及装饰L造成混淆，本卡用R表示可约损失，其归一化为：",
+        "\\[\\mathcal R(t,p,\\omega)=L(t,p,\\omega)-L_0,\\qquad \\ell(x,p,\\omega)=\\frac{\\mathcal R(xt_*(p),p,\\omega)}{\\mathcal R(t_*(p),p,\\omega)},\\quad x=\\frac{t}{t_*(p)}\\]",
+        "$L$ 为测试损失，$L_0$ 为拟合不可约损失，$p$ 为参数量，t为处理token数，$\\omega$ 为随机seed，$x$ 为相对训练进度，$t_*(p)$ 为设定终点。分母是该seed实际最终损失，而非跨seed期望；需可约损失正且分母非零，$\\ell(1)=1$ 是构造恒等式。用到终点信息，因此该归一化本身不能在训练早期提供无终点信息的外推预测。（第3页 Eq.(1)。）",
+        "曲线一致性以跨模型/seed相对变动与固定模型噪声比较：",
+        "\\[\\Delta(x)=\\frac{\\sqrt{\\operatorname{Var}_{p,\\omega}[\\ell(x,p,\\omega)]}}{\\mathbb E_{p,\\omega}[\\ell(x,p,\\omega)]},\\qquad \\sigma(x,p)=\\frac{\\sqrt{\\operatorname{Var}_{\\omega}[\\mathcal R(xt_*(p),p,\\omega)]}}{\\mathbb E_{\\omega}[\\mathcal R(xt_*(p),p,\\omega)]}\\]",
+        "$\\Delta$ 是梯子上近似对数均匀模型分布与seed一起计算的相对标准差；$\\sigma$ 是固定p、可约原损失的跨seed相对标准差。它们对应不同随机变量，supercollapse意为所测区间 $\\Delta<\\sigma$，不是违反噪声下限。终点 $\\Delta(1)=0$ 自动成立，真正证据是远离终点的有限训练区间也降低。（第3–4页 Eqs.(2)–(3)。）",
+        "确定性两幂律模型提供一个可解析入口：",
+        "\\[L(t,p)=L_0+t^{-\\mu}+p^{-\\nu},\\quad \\mu t_*^{-\\mu}=\\nu p^{-\\nu},\\qquad t_*(p)=r^{-1/\\mu}p^{\\nu/\\mu},\\quad \\ell(x,p)=\\frac{r x^{-\\mu}+1}{r+1},\\quad r=\\frac{\\nu}{\\mu}\\]",
+        "$\\mu,\\nu>0$ 为时间与模型幂指数，常数乘子已吸收入单位；固定c=6tp做内点优化平衡两项，$r=\\nu/\\mu$。如此p因子严格抵消。训练长度乘固定常数仍可塌缩但改变曲线常数，故塌缩不能单独认证最佳长度的常数因子。更多幂律项通常仅在大p、固定x>0、主导项平衡时渐近塌缩。（第5–6、17–19页 Eqs.(5)–(8)、TheoremF.1。）",
+        "噪声模型以梯度流时间τ=∫ηdt组织冻结二次Hessian的SGD近似：",
+        "\\[\\overline L(\\tau)=F(\\tau)+\\frac12\\int_0^\\tau ds\\,\\eta(s)\\operatorname{Tr}\\!\\left[H e^{-2H(\\tau-s)}\\overline\\Sigma(s)\\right]\\ \\approx\\ F(\\tau)+\\frac14\\eta(\\tau)\\operatorname{Tr}\\overline\\Sigma(\\tau)\\]",
+        "$H$ 是二次损失Hessian，F是同初态无噪声平均损失，$\\overline\\Sigma$ 是梯度噪声协方差的seed期望，η是当前学习率。积分形式来自线性二次SDE；末式额外需要ηΣ慢变、相关稳定模的记忆已衰减及大τ。非线性损失再加小噪声和Hessian慢变近似；不能把最终1/4表达当作一般网络的精确恒等式。使用Adam/µP时，在P慢变、忽略其时间导数且暂取确定/随机轨迹同一P的近似下，改用坐标 $\\widetilde w=P^{1/2}w$；积分传播核与二次型中的H同时换成 $\\widetilde H=P^{-1/2}HP^{-1/2}$，协方差换成 $\\widetilde\\Sigma=P^{-1/2}\\Sigma P^{-1/2}$。晚时慢变极限才写成 $\\eta\\operatorname{Tr}\\overline{\\widetilde\\Sigma}/4$；逐层峰值学习率吸收到P，η仅是0–1日程倍率。真实Adam的两条轨迹P可不同，首阶漏项仍未建模。（第6–7、13、19–22页 Eqs.(11)–(14)、(72)–(79)及Limitations。）"
+      ]
+    },
+    {
+      "title": "核心结果与证据",
+      "paragraphs": [
+        "Figure1在CIFAR-5M下一像素Transformer梯子上显示：a的最终算力拟合为L0=3.132、b=0.191；b归一化曲线随宽度近重合；c的Δ在衰减阶段低于σ，在所示任务区间可覆盖后半程。d比较不同日程，每个日程有自己的共同曲线，并不是所有日程共享一条形状。Figure3常学习率时Δ与σ同量级；Figure2显示减错L0会破坏塌缩。拟合L0是数据分析估计，不是独立测定的真实Bayes熵。（第2–4页 Figures1–3。）",
+        "Figure4给诊断反例：MLP若用跨宽度固定学习率替代µP，归一化曲线显著分离；棋谱Transformer若把数据指数γ由估计1.02改为1.2，前沿仅稍变差但塌缩明显失效。两者支持该比较对这些错配敏感，未校准对所有配置的灵敏度/特异度，更不证明任何不塌缩都是训练不佳。另一个前沿拟合给CIFARγ≈0.96、MLP≈1.04；任务不同不可混用。（第4、14–15页 Figures4、10。）",
+        "跨日程损失预测将当前轨迹的协方差插入近似，而非只靠初始配置盲预测。恒定学习率作参考、同峰值衰减作目标，作者保留δη·TrΣ′而舍去η·TrδΣ，以共享α=0.21拟合CIFAR实验，MLPα=0.26。Figure6跨日程、模型与训练长度拟合良好；曲线用总步数1%半衰期EMA平滑，无报告独立预注册测试误差或统一概率预测区间。目标Σ′由固定2M词元测量，因此预测仍需要目标运行的额外信息。（第7、13、23页 Figures6、12。）",
+        "Figure7/14观察到固定日程下预条件噪声trace与可约损失之比大致只随相对进度变化，将它表示为h(x)，组合得：",
+        "\\[\\overline{\\mathcal R}^{\\,\\prime}(\\tau,p)\\approx\\frac{\\overline{\\mathcal R}(\\tau,p)}{1-\\alpha h(x)\\delta\\eta(\\tau,p)},\\qquad \\frac{\\operatorname{Tr}\\overline\\Sigma^{\\,\\prime}}{\\overline{\\mathcal R}^{\\,\\prime}}\\approx h(x)\\]",
+        "撇号表示目标日程，$\\delta\\eta=\\eta\\prime-\\eta$ 为相同梯度流时间下学习率差，α为共享拟合系数，h为日程相关的经验比值。该式需分母远离零、噪声trace的近似标度和小相对波动；跨日程还需在匹配τ时映射相对进度。原文把关系若取为精确则可推出期望曲线塌缩，但此处h关系仍是经验验证，不是由任意交叉熵损失已推导出的定理。（第7–8页 Eqs.(16)–(21)。）",
+        "supercollapse的噪声降低来自同轨迹终点相关性：",
+        "\\[\\widetilde\\Delta^2(t)\\approx\\mathbb E_\\omega[(\\psi(t)-\\psi(t_*))^2],\\qquad \\psi(t)=\\frac{\\mathcal R(t)-\\overline{\\mathcal R}(t)}{\\overline{\\mathcal R}(t)}\\]",
+        "$\\psi$ 为可约损失的相对seed波动，$\\widetilde\\Delta$ 为固定模型的自归一化曲线相对标准差。小波动展开使原始噪声ψ(t)被差ψ(t)−ψ(t*)替代，抵消共享历史。若改除以期望最终损失，则该指标恢复为σ；同seed实际终点是这个控制变量机制的关键，而非模型随机性本身消失。（第8–9页 Eq.(23)。）",
+        "稳定二次、小噪声及距终点梯度流时间δτ很小条件下，进一步得到：",
+        "\\[\\widetilde\\Delta^2(\\tau)=\\overline{\\mathcal R}(\\tau)^{-2}g(\\tau)^\\top\\eta(\\tau)\\overline\\Sigma(\\tau)g(\\tau)\\,\\delta\\tau+O(\\delta\\tau^2),\\qquad \\Delta(\\widehat\\tau)\\propto\\sqrt{\\eta(\\widehat\\tau)(1-\\widehat\\tau)}\\]",
+        "$g$ 是期望轨迹梯度，$\\delta\\tau=\\tau_*-\\tau>0$，$\\widehat\\tau=\\tau/\\tau_*$。前式是固定模型的局部首阶展开；末式还用回归中的梯度/协方差与损失标度、跨模型噪声项主导及比例因子适当标度。Figure8给多日程在Δ/√η及1−τhat坐标中的有限曲线对照，并非所有x上严格统一的误差界或η=0处可直接相除的结论。（第9、22–23页 Eq.(24)、AppendixH。）",
+        "AppendixB将棋谱Transformer深度变为9–36，并加3/depth分支倍率，得到较好而有小偏移的塌缩；作者不确定偏移是否有限规模效应。此项没有证明宽度、深度、batch及weight decay一起增长时仍成立，主论文把更现实/更大规模梯子验证明确留作后续。（第9、14页 Figure9。）"
+      ]
+    },
+    {
+      "title": "有效性与局限",
+      "paragraphs": [
+        "自归一化会强制终点重合，并利用未来观测和时间相关性降低方差；需要比较整段训练而不是只看x=1。L0通过同一批前沿拟合，并没有独立噪声下限标定或未知终点外推。L0误差相对可约损失在大规模可变得显著；Figure2显示这种敏感性。主文不同拟合图出现3.132与3.134，属于拟合设置差异，不能把任一个当作精确理论常数。（第3、5页 Figures2、5。）",
+        "TheoremE.1的必要性使用正可约损失、可微内点前沿和包络切线；幂律前沿仅保证终点一阶共同斜率，不足以保证整条曲线完全塌缩。第17页特别指出，学习率有限步降为零时最优点可能在轨迹边界，切线论证不直接适用，而实测恰包含这类日程。两幂律精确抵消是可检查的模型结论，不能以它覆盖未满足内点条件的全部经验日程。（第15–17页 TheoremE.1及Remark。）",
+        "TheoremF.1的多项幂律需要正系数、主导指数平衡和非退化分配依赖；所得O(p⁻ε)用于固定x>0，未建立包括最早x→0阶段的统一界。m≥3时塌缩可来自不同平衡，不唯一锁定算力最优；任意错误γ在单项主导的极限也可能趋于平凡1或x⁻μ曲线。应区分有限尺度有信息的双因素平衡与形式上的渐近塌缩。（第17–19页及Remarks。）",
+        "非线性近似先线性化权重扰动再二阶展开损失，不能直接认证为一般非线性SDE完整的所有同阶修正；附录保留实测随机轨迹协方差，亦不是解析闭合。慢变H/P与稳定模条件在实际finite-step训练、edge of stability及曲率重排中可能失效。Adam的P依赖梯度噪声，确定/随机轨迹P相同的假设不正确，作者承认可漏掉首阶额外项。因此成功拟合支持有效描述，不等于已严格推出真实Adam训练动力学。（第19–22页 AppendixG及Limitations。）",
+        "预条件噪声trace与“可约”交叉熵成比例的原因仍未解释；含不可约噪声的回归类比通常关联总损失。α也不是普适常数：Transformer0.21与MLP0.26不同。Figure13保留较小ηTrδΣ项反而常使拟合更差、α变得日程相关，这条不利结果不能省略。原图约3–10倍的项比值只属所测区间，不是舍项的统一严格误差上限。（第8、23–24页 Figures13–14。）",
+        "实验规模与数据有限，CIFAR与棋谱部分模型重复使用数据多个epoch；作者在所测范围未见明显过拟合，不能推出任意重复次数都无影响。CIFAR Figure1的seed控制初始化及顺序，棋谱/MLP主要只控制初始化，顺序固定；不能把全部σ解释为纯mini-batch噪声或同一种随机源。Section3.2换代码后批量/初始化/warmup亦不同，应按具体图配置复现。（第13–14页。）",
+        "另一个源内代数边界是第8页Eq.(20)→(21)：按同seed终点归一化定义，参考曲线在匹配流时间下通常还需除以映射后的终点值，除非另行保证映射终点为1。原Eq.(21)没有显式保留这个因子；本卡未复制它为归一化恒等式。若该因子和流时间映射都与模型尺寸无关，条件性跨尺寸塌缩仍可成立，但不能跳过终点分母直接认证。"
+      ]
+    },
+    {
+      "title": "复现与资源",
+      "paragraphs": [
+        "官方作者代码https://github.com/shikaiqiu/supercollapse与PMLR软件链接对应；本轮核验了资源身份，没有克隆运行或独立训练。v2 PDF SHA-256为 414a3e6ea7689eed5ace0f16f6546e973ac74a42a15c01f15f554ef7d14d949e，24物理页全部含参考文献和附录核读。重点视觉对照第2–3、6、8–9、17、22、24页，公式可约损失命名在本卡明确改作R，原始系数/约定不改。",
+        "复现需保留按5seed前沿拟合训练长度、各seed自己的最终损失、每日程独立L0拟合和不同随机化规则；若比较日程，要按梯度流时间匹配，并另外测量目标预条件协方差，不能只比较相同步数。µP逐层尺度、batch、RMSNorm、FFN=D、warmup在附录A完整分任务列出。TRC资助声明不等于报告了具体TPU型号、完整总时长或统一算力成本，本卡不补造硬件基准。（第10、13–15页。）",
+        "封面Figure1取自正式PMLR论文，依据PMLR的CC BY4.0出版协议重用，署名Qiu等并链接原出版：https://proceedings.mlr.press/v267/qiu25j.html。源PDF第2页六面板与所读arXivv2相同区域逐像素一致；许可来源与arXiv nonexclusive分发许可分开，未把后者误作重用授权。本轮完成全文及理论条件检查，没有独立复现任何训练、噪声估计或曲线拟合。Evidence status: full-text verified; no independent reproduction performed."
+      ]
+    },
+    {
+      "title": "阅读指南",
+      "paragraphs": [
+        "先读第3页Eq.(1)–(3)：减去什么、分母来自哪个seed、Δ与σ分别统计哪个变量。然后看第2页Figure1与第4页反例，确认日程内共同形状而非跨所有任务统一曲线。理论从第6页两幂律抵消进入，再读第9页终点噪声差；有兴趣才核读第15–19页前沿定理的内点/非退化条件。复现阅读顺序是附录A/C配置与前沿、AppendixG的Adam/P限制、最后Figure13的不利拟合。前置知识为幂律、方差、梯度流时间、线性SDE与Adam预条件。"
+      ]
+    }
+  ],
+  "cover": {
+    "mode": "source_figure",
+    "asset_path": "assets/collection-figures/2507.02119/figure-1-supercollapse.png",
+    "label": "Figure1",
+    "visual_type": "data_plot",
+    "evidence": "Publisher PDF physical p.2 Figure1; arXivv2 region pixel-identical; CC BY4.0 publication agreement",
+    "alt_text": "六面板算力前沿、损失归一化、噪声比较、日程差异及近终点理论标度",
+    "caption": "Qiu等，Figure1（PMLR267:50697–50720，第2个PDF物理页；https://proceedings.mlr.press/v267/qiu25j.html，CC BY4.0）：a为有限算力前沿，b为同seed终点自归一化曲线，c比较Δ与原可约损失噪声σ；d各日程分别给共同形状，e/f是噪声模型的曲线与近终点标度对照。完整保留a–f、宽度/日程图例、log坐标、原始Loss与Normalized Loss区别。归一化强制终点重合，远离终点区间才提供额外证据；图不证明任意大模型或所有日程同一普适曲线。",
+    "selection_rationale": "六面板直接连接有限塌缩观测与噪声解释，保留噪声基准和日程区别以避免只看强制重合的终点。"
+  },
+  "figure_refs": [
+    {
+      "label": "Figure1",
+      "asset_path": "assets/collection-figures/2507.02119/figure-1-supercollapse.png",
+      "section": "核心结果与证据",
+      "role": "finite scaling-collapse observation and conditional noise explanation",
+      "evidence": "Publisher PDF physical p.2 Figure1; arXivv2 region pixel-identical; CC BY4.0 publication agreement",
+      "alt_text": "六面板算力前沿、损失归一化、噪声比较、日程差异及近终点理论标度",
+      "caption": "Qiu等，Figure1（PMLR267:50697–50720，第2个PDF物理页；https://proceedings.mlr.press/v267/qiu25j.html，CC BY4.0）：a为有限算力前沿，b为同seed终点自归一化曲线，c比较Δ与原可约损失噪声σ；d各日程分别给共同形状，e/f是噪声模型的曲线与近终点标度对照。完整保留a–f、宽度/日程图例、log坐标、原始Loss与Normalized Loss区别。归一化强制终点重合，远离终点区间才提供额外证据；图不证明任意大模型或所有日程同一普适曲线。",
+      "interpretation": "Within tested ladders and schedule, same-realization endpoint normalization reduces correlated noise; not a proven universal large-model limit."
+    }
+  ],
+  "equation_refs": [
+    {
+      "label": "Reducible loss and per-realization final normalization",
+      "latex": "\\mathcal R(t,p,\\omega)=L(t,p,\\omega)-L_0,\\qquad \\ell(x,p,\\omega)=\\frac{\\mathcal R(xt_*(p),p,\\omega)}{\\mathcal R(t_*(p),p,\\omega)},\\quad x=\\frac{t}{t_*(p)}",
+      "role": "Reducible loss and per-realization final normalization",
+      "symbols": {
+        "R": "reducible loss L-L0; renamed to avoid source notation collision",
+        "L,L0": "test loss and fitted irreducible offset",
+        "p,t,omega": "parameters, processed tokens and seed",
+        "tstar,x": "set training horizon and relative progress"
+      },
+      "evidence": "PDF p.3 Eq.(1); fitted offset and same-seed final denominator",
+      "interpretation": "Reducible loss and per-realization final normalization",
+      "epistemic_status": "definition using measured future endpoint"
+    },
+    {
+      "label": "Relative collapse deviation versus per-model noise floor",
+      "latex": "\\Delta(x)=\\frac{\\sqrt{\\operatorname{Var}_{p,\\omega}[\\ell(x,p,\\omega)]}}{\\mathbb E_{p,\\omega}[\\ell(x,p,\\omega)]},\\qquad \\sigma(x,p)=\\frac{\\sqrt{\\operatorname{Var}_{\\omega}[\\mathcal R(xt_*(p),p,\\omega)]}}{\\mathbb E_{\\omega}[\\mathcal R(xt_*(p),p,\\omega)]}",
+      "role": "Relative collapse deviation versus per-model noise floor",
+      "symbols": {
+        "Delta": "relative standard deviation across sizes and seeds of self-normalized curves",
+        "sigma": "relative seed variation of unnormalized reducible loss at fixed model",
+        "ell,R": "normalized and reducible losses",
+        "p,omega": "model size ladder and random seed"
+      },
+      "evidence": "PDF pp.3–4 Eqs.(2)–(3); Delta(1)=0 by construction",
+      "interpretation": "Relative collapse deviation versus per-model noise floor",
+      "epistemic_status": "definition comparing different random variables"
+    },
+    {
+      "label": "Balanced two-power-law model and exact collapse",
+      "latex": "L(t,p)=L_0+t^{-\\mu}+p^{-\\nu},\\quad \\mu t_*^{-\\mu}=\\nu p^{-\\nu},\\qquad t_*(p)=r^{-1/\\mu}p^{\\nu/\\mu},\\quad \\ell(x,p)=\\frac{r x^{-\\mu}+1}{r+1},\\quad r=\\frac{\\nu}{\\mu}",
+      "role": "Balanced two-power-law model and exact collapse",
+      "symbols": {
+        "L0": "offset absorbed out of normalized reducible loss",
+        "mu,nu": "positive time and size exponents",
+        "r": "nu/mu",
+        "tstar,p,x": "training horizon, model size and normalized progress",
+        "c": "6tp compute constraint"
+      },
+      "evidence": "PDF pp.5–6 Eqs.(5)–(7); interior constant-compute deterministic model",
+      "interpretation": "Balanced two-power-law model and exact collapse",
+      "epistemic_status": "exact algebra within assumed two-power-law family"
+    },
+    {
+      "label": "Quadratic SGD noise integral and conditional late-time approximation",
+      "latex": "\\overline L(\\tau)=F(\\tau)+\\frac12\\int_0^\\tau ds\\,\\eta(s)\\operatorname{Tr}\\!\\left[H e^{-2H(\\tau-s)}\\overline\\Sigma(s)\\right]\\ \\approx\\ F(\\tau)+\\frac14\\eta(\\tau)\\operatorname{Tr}\\overline\\Sigma(\\tau)",
+      "role": "Quadratic SGD noise integral and conditional late-time approximation",
+      "symbols": {
+        "H": "fixed quadratic SGD Hessian in original coordinates; Adam transform requires Htilde=P^(-1/2) H P^(-1/2) in both kernel and quadratic form",
+        "F": "noiseless mean loss",
+        "Sigmabar": "mean SGD gradient-noise covariance; Adam coordinate transform requires Sigmatilde=P^(-1/2) Sigma P^(-1/2), simultaneously with Htilde",
+        "eta": "instantaneous LR/schedule factor",
+        "tau,s": "gradient-flow time and integration variable",
+        "Lbar": "mean quadratic loss"
+      },
+      "evidence": "PDF pp.6–7 Eqs.(11)–(14); pp.19–22 perturbative/adaptive limitations",
+      "interpretation": "Quadratic SGD noise integral and conditional late-time approximation",
+      "epistemic_status": "quadratic SDE integral; late-time expression conditional"
+    },
+    {
+      "label": "Empirical schedule transfer using covariance-to-reducible-loss ratio",
+      "latex": "\\overline{\\mathcal R}^{\\,\\prime}(\\tau,p)\\approx\\frac{\\overline{\\mathcal R}(\\tau,p)}{1-\\alpha h(x)\\delta\\eta(\\tau,p)},\\qquad \\frac{\\operatorname{Tr}\\overline\\Sigma^{\\,\\prime}}{\\overline{\\mathcal R}^{\\,\\prime}}\\approx h(x)",
+      "role": "Empirical schedule transfer using covariance-to-reducible-loss ratio",
+      "symbols": {
+        "Rbar,Rbarprime": "reference and target reducible mean losses",
+        "alpha": "fitted shared coefficient",
+        "h": "schedule-specific approximate covariance/loss ratio",
+        "deltaeta": "target minus reference LR at matching gradient-flow time",
+        "p,x,tau": "model size, relative compute and flow time",
+        "Sigmabarprime": "target preconditioned covariance"
+      },
+      "evidence": "PDF pp.7–8 Eqs.(16)–(21); empirical h and matching flow time",
+      "interpretation": "Empirical schedule transfer using covariance-to-reducible-loss ratio",
+      "epistemic_status": "empirical approximation, not universal cross-entropy theorem"
+    },
+    {
+      "label": "First-order self-normalization cancels correlated seed noise",
+      "latex": "\\widetilde\\Delta^2(t)\\approx\\mathbb E_\\omega[(\\psi(t)-\\psi(t_*))^2],\\qquad \\psi(t)=\\frac{\\mathcal R(t)-\\overline{\\mathcal R}(t)}{\\overline{\\mathcal R}(t)}",
+      "role": "First-order self-normalization cancels correlated seed noise",
+      "symbols": {
+        "Deltatilde": "per-model relative standard deviation of the self-normalized loss; Deltatilde squared is the relative variance",
+        "psi": "small relative reducible-loss fluctuation",
+        "R,Rbar": "seed-specific and expected reducible losses",
+        "tstar": "same-realization endpoint"
+      },
+      "evidence": "PDF pp.8–9 Eqs.(22)–(23); small relative fluctuations",
+      "interpretation": "First-order self-normalization cancels correlated seed noise",
+      "epistemic_status": "small-fluctuation approximation"
+    },
+    {
+      "label": "Near-endpoint quadratic noise expansion and conditional scaling",
+      "latex": "\\widetilde\\Delta^2(\\tau)=\\overline{\\mathcal R}(\\tau)^{-2}g(\\tau)^\\top\\eta(\\tau)\\overline\\Sigma(\\tau)g(\\tau)\\,\\delta\\tau+O(\\delta\\tau^2),\\qquad \\Delta(\\widehat\\tau)\\propto\\sqrt{\\eta(\\widehat\\tau)(1-\\widehat\\tau)}",
+      "role": "Near-endpoint quadratic noise expansion and conditional scaling",
+      "symbols": {
+        "g": "mean-trajectory gradient",
+        "Sigmabar": "mean gradient noise covariance",
+        "eta": "instantaneous LR",
+        "deltatau": "positive small remaining gradient-flow time",
+        "Rbar": "positive expected reducible loss",
+        "tauhat": "tau/final tau",
+        "Deltatilde,Delta": "per-model and size-averaged collapse deviations"
+      },
+      "evidence": "PDF p.9 Eq.(24); pp.22–23 Eq.(90); additional linear regression scaling assumptions",
+      "interpretation": "Near-endpoint quadratic noise expansion and conditional scaling",
+      "epistemic_status": "local small-noise quadratic expansion; global scaling conditional"
+    }
+  ],
+  "evidence_refs": [
+    "PDF pp.1–4: author affiliation, finite model ladder, normalization, noise definitions and explicit scaling counterexamples",
+    "PDF pp.5–9: two-power-law algebra, measured-covariance schedule model and conditional variance reduction",
+    "PDF pp.10–15: explicit contribution statement, task/codebase/seed details and empirical horizon fitting",
+    "PDF pp.15–24: interior Pareto theorem limitation, asymptotic power-law conditions, adaptive preconditioner gap and adverse two-term fitting result",
+    "Official PMLR paper and CC BY4.0 publication agreement; source Figure1 pixel parity recorded",
+    "Source PDF SHA-256 414a3e6ea7689eed5ace0f16f6546e973ac74a42a15c01f15f554ef7d14d949e",
+    "Evidence status: full-text verified; no independent reproduction performed."
+  ],
+  "source_pdf_sha256": "414a3e6ea7689eed5ace0f16f6546e973ac74a42a15c01f15f554ef7d14d949e"
+}

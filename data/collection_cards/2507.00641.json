@@ -1,0 +1,267 @@
+{
+  "arxiv_id": "2507.00641",
+  "source_version": "v3",
+  "source_pdf": "https://arxiv.org/pdf/2507.00641v3",
+  "title_en": "Hebbian Physics Networks: A Self-Organizing Computational Architecture Based on Local Physical Laws",
+  "title_zh": "Hebbian物理网络：局部残差驱动的输运适应及其理论边界",
+  "curation_status": "full_text_verified",
+  "card_standard_version": "2.3",
+  "paper_profile": "theory_numerics",
+  "style_reference": "physicist_daily_arxiv",
+  "provenance": {
+    "program": "Collection",
+    "catalog": "Paper Collection",
+    "catalog_record_id": "2507.00641",
+    "catalog_record_ids": [
+      "2507.00641"
+    ],
+    "catalog_topic": "Training Dynamics",
+    "collection_date": "2026-08-30",
+    "sampled_at": "2026-09-26",
+    "selected_by": "collection_serial_goal_continuation",
+    "sampling_seed": "not_applicable_source_complete",
+    "candidate_count": 916
+  },
+  "verified_metadata": {
+    "arxiv_id": "2507.00641",
+    "version": "v3",
+    "title": "Hebbian Physics Networks: A Self-Organizing Computational Architecture Based on Local Physical Laws",
+    "authors": [
+      "Gunjan Auti",
+      "Hirofumi Daiguji",
+      "Gouhei Tanaka"
+    ],
+    "published": "2025-07-01",
+    "updated": "2026-03-18",
+    "categories": [
+      "nlin.AO",
+      "cs.LG",
+      "stat.CO",
+      "stat.ME"
+    ],
+    "primary_category": "nlin.AO",
+    "license_url": "http://creativecommons.org/licenses/by/4.0/",
+    "pdf_pages": 16,
+    "source_pdf_sha256": "04ad797d78ad45b7976890366c00e0509cbb7b4ef2279687afaaa4eae9e35a7c",
+    "related_doi": "10.1103/tzgk-jqj4",
+    "comment": "Source is arXiv v3; related DOI is listed by official arXiv metadata, but journal version and separate supplemental benchmark are not independently verified."
+  },
+  "sections": [
+    {
+      "title": "作者信息",
+      "paragraphs": [
+        "Gunjan Auti、Hirofumi Daiguji属于东京大学机械工程系；Gouhei Tanaka属于名古屋工业大学工学研究科及东京大学International Research Center for Neurointelligence。首页为Auti提供带星号的联系邮箱，未由作者次序推断贡献分工。全文依据arXiv:2507.00641v3，2026-03-18修订，16个PDF物理页；官方摘要页另列相关DOI10.1103/tzgk-jqj4，本卡未把该链接当作已经核读的期刊版本。（第1页及官方版本记录。）"
+      ]
+    },
+    {
+      "title": "研究问题",
+      "paragraphs": [
+        "离散输运求解通常给定网格和通量算子，再演化浓度或速度；若让边上的输运权重也随局部不平衡变化，能否以局部适应得到守恒、可耗散且满足边界约束的场？HPN把节点状态与边算子联合演化，给出扩散及顶盖驱动方腔的示范。算法构造、有限数值图与摘要声称的全局梯度/Onsager保证需要分开：后两者在当前公式链中存在未解决步骤。（第1–3、5–8页。）",
+        "读者桥：输入是节点坐标、初态、材料参数和边界约束；节点存浓度或速度，边存可变化的输运系数。局部残差衡量流入与流出或既定方程的违反程度；它调节边权和状态。输出是松弛后的场、残差曲线及权重分布。anti-Hebbian指按“局部不平衡×邻居状态”抑制或增强连接，不是端到端反向传播训练；迭代编号是算法松弛时间，尚不自动等于已校准的物理时间。（第2–5、9、11页。）"
+      ]
+    },
+    {
+      "title": "背景",
+      "paragraphs": [
+        "有限体积、图扩散和人工可压缩松弛已有守恒或局部约束更新；本文把连接适应也放进循环，属于受物理启发的求解与AI for physics框架。Chebyshev距离阈值先固定允许边，适应的是已有边的权重而非完全未知的图拓扑。方腔仍用Green–Gauss离散Navier–Stokes残差；无全局Poisson投影不意味着不预先编码物理约束。后文把连接与规范几何类比，但明确没有建立正式的规范曲率对应。（第1–4、11、14–15页。）"
+      ]
+    },
+    {
+      "title": "模型与方法",
+      "paragraphs": [
+        "设节点数为N，每节点强度状态为 $U_i\\in\\mathbb R^d$，正容量为 $\\Omega_i$；$W_{ij}$ 表示从j到i的算子，邻域 $\\mathcal N(i)$ 由坐标间Chebyshev距离阈值k规定。源信号取 $S_{ij}=U_j$，通量与状态松弛为：",
+        "\\[J_{ij}=W_{ij}S_{ij},\\quad R_i=\\sum_{j\\in\\mathcal N(i)}(J_{ij}-J_{ji}),\\quad\\Delta U_i=\\frac{\\eta_u}{\\Omega_i}R_i\\]",
+        "$R_i$ 是净流入残差，$\\eta_u>0$ 为状态步长，$J_{ij}$ 是有向通量。标量扩散另乘材料扩散系数D，方腔中W为2×2分量算子；不能把这两种实现都当作同一个无约束标量图。CFL限制是条件性的数值步长要求，不是任意随机W都稳定的证明。（第2–5、9、11–13页 Eqs.(2)–(9)、(31)、(39)。）",
+        "边权采用残差抑制、接近平衡的弱促进、线性衰减三项：",
+        "\\[\\Delta W_{ij}=-\\eta_w\\frac{R_i}{\\Omega_i}S_{ij}+\\varepsilon e^{-|R_i/\\Omega_i|}S_{ij}-\\lambda W_{ij}\\]",
+        "$\\eta_w>0$ 为结构适应率，$\\varepsilon\\ge0$ 为促进幅度，$\\lambda>0$ 为衰减率；原文取 $\\varepsilon\\ll\\lambda$。指数项随局部残差变弱而开启，避免无促进时连接单纯衰减为零。这是一条局部更新律；是否恰是全局残差能量的梯度须检查共享通量对两个节点的作用。（第5–7页 Eqs.(10)、(18)。）",
+        "固定U和容量，考虑独立有向标量边、无自环及上面的双向净流。对原文残差能量直接求导得到：",
+        "\\[\\mathcal L=\\frac12\\sum_i\\frac{R_i^2}{\\Omega_i},\\qquad\\frac{\\partial\\mathcal L}{\\partial W_{ij}}=\\left(\\frac{R_i}{\\Omega_i}-\\frac{R_j}{\\Omega_j}\\right)U_j\\]",
+        "$\\mathcal L$ 是加权平方残差，不是已经证明的热力学自由能。最后一式是本卡由通量定义的解析推导；Wij同时以正号进入Ri、负号进入Rj。原Eq.(12)只保留 $R_iU_j/\\Omega_i$，未给出忽略相邻残差项的条件，因此不能把给定局部更新直接认证为全局梯度下降。向量边需相应外积及两个节点项；本式不代替带额外约束的实现梯度。（第3、5页 Eqs.(2)、(4)、(11)–(12)。）"
+      ]
+    },
+    {
+      "title": "核心结果与证据",
+      "paragraphs": [
+        "对闭合图内部的双向净通量，残差总和严格相消。容量固定且使用同一步长时，守恒的是总量：",
+        "\\[\\sum_iR_i=0,\\qquad\\Delta\\!\\left(\\sum_i\\Omega_iU_i\\right)=\\eta_u\\sum_iR_i=0\\]",
+        "$\\sum_i\\Omega_iU_i$ 为容量加权的广延量。源第5页把强度总和 $\\sum_iU_i$ 也称守恒，只有容量相等时才直接成立。带边界驱动或外源应加入其预算；方腔的入流型速度更新另需核查，不能机械继承这一恒等式。（第4–5页 Eq.(7)及Eq.(9)。）",
+        "扩散示例设置 $\\Omega_i=1$、$S_{ij}=c_j$，并明确施加 $W_{ij}=W_{ji}$ 的边对相等约束。初态浓度为零后加入局部扰动，初始权重全1；参数为 $\\eta_w=0.01$、$\\varepsilon_w=10^{-4}$、$\\eta_c^0=0.001$、$\\lambda=0.01$，并用局部CFL类上限缩小浓度步长。此示例的对称性是构成选择，不能称为完全无显式约束的Onsager涌现。（第9页 Eqs.(30)–(35)。）原稿声明边对相等，但对两个方向分别应用Eq.(35)一般不能保持该等式；共享或约束更新成对边权的具体方式未在主稿说明。因此不能仅凭逐边公式完整重建此实现，也不能据这一缺口认定所示有限运行违反了作者约束。",
+        "Figure2a显示浓度团随迭代扩散，b是节点首次超过浓度阈值的y位置与迭代编号，作者以平方根前沿解释。c的残差总和误差在机器精度量级，图注给约10⁻¹¹；d的平均局部绝对残差仍约10⁻⁵，e的残差能量降低后有有限平台。它们支持所示运行中守恒与局部松弛，并非独立收敛阶、时标校准或连续扩散方程误差证明。第11页把平台解释为促进与分辨率维持的平衡附近波动，不能当作有持续外驱的宏观非平衡稳态。f的标注为ΔW_RMS却画出上升后有限平台，与正文关于变化趋小的语言不完全一致，不用该面板证明逐步权重差趋零。（第9–11页 Figure2。）",
+        "准静态小残差下，作者固定残差解出平衡边权，保留促进项后的标量通量为：",
+        "\\[J_{ij}^{*}=\\frac{\\varepsilon}{\\lambda}S_{ij}^{2}-\\frac{\\eta_w}{\\lambda\\Omega_i}S_{ij}^{2}R_i,\\qquad L_{ij}=\\frac{\\eta_w}{\\lambda\\Omega_i}S_{ij}^{2}\\]",
+        "$L_{ij}$ 是本文定义的局部响应系数，不是后文的能量。若 $U_i\\approx U_j$ 且 $\\Omega_i\\approx\\Omega_j$，可得边对系数主阶接近；这使用额外空间平滑与准静态假设，未证明完整算子对称正定。第一项是促进基线，$\\varepsilon\\ll\\lambda$ 使它绝对较小，却不能单独证明它相对 $\\eta_w|R_i|/\\Omega_i$ 更小；固定ε而Ri趋零时反而可能主导，不能无前提删去。（第7页 Eqs.(19)–(23)。）",
+        "方腔采用速度状态及对角的Wx/Wy边算子，以既定Navier–Stokes动量残差和连续性残差驱动适应。压力与速度的混合松弛为：",
+        "\\[p_i^{n+1}=p_i^n+\\eta_pR_{c,i}^n,\\qquad u_i^{n+1}=u_i^n+\\eta_u\\sum_jW_{ij}^nu_j^n\\]",
+        "$p_i$ 为压力，$u_i$ 为二维速度，$R_{c,i}$ 为连续性残差，$\\eta_p$ 为压力步长。速度式只有传入项；原文承认不显式减去传出项，宣称压力修正间接处理。Figure3显示主涡、压力场和先升后降的残差峰，这是所示松弛过程；单凭局部压力迭代不能认证每一步严格无散度或独立动量守恒。Re=100与Ghia基准的量化比较被指向独立补充材料，该曲线不在所读16页内，因此不报告未核验的误差数值。（第11–14页 Eqs.(38)–(42)、Figure3及第16页Ref.24。）"
+      ]
+    },
+    {
+      "title": "有效性与局限",
+      "paragraphs": [
+        "全局梯度遗漏项可用两节点解析检查：容量及两个状态均1，W12=2、W21=1时残差为1和−1；总平方能量对W12的导数为2，原Eq.(12)只给1。这是固定状态的代数核查，没有运行HPN或否定其有限数值输出。局部反Hebb方向在某些特殊场景仍可减小能量，但需要另一条证明，不能由不完整梯度表达得到统一结论。（第5页。）",
+        "状态耗散证明还换了符号：第5页Eq.(9)是正残差松弛，第8页Eq.(25)却代入负残差。固定W、G，按前者在连续极限得到：",
+        "\\[\\frac{d\\mathcal L}{dn}=\\eta_uR^\\top G^{-1}\\frac{\\partial R}{\\partial U}G^{-1}R,\\qquad G=\\operatorname{diag}(\\Omega_i)\\]",
+        "这里 $G=\\operatorname{diag}(\\Omega_i)$，$\\partial R/\\partial U$ 是残差Jacobian。原C2要求正的强单调性；若其对称Jacobian正，则上式为非负而非证明中的非正。正导通对称扩散有负图Laplacian残差，正号更新可以耗散，却不符合原C2的正号；符号约定须统一。闭合有向图的总量守恒给出左零方向 $\\mathbf1^\\top A=0$，其中 $A=\\partial R/\\partial U$，从而A奇异；成对边权相等是扩散具有常数状态右零模的充分条件；一般有向图逐节点总入权与总出权相等也可满足该条件，而非必须边对相等。固定总量扰动空间（不等容量时为 $\\mathbf1^\\top G\\,\\delta U=0$）或固定边界后，仍须另证正确符号的耗散及谱隙。不能把这里的条件性检查升级成所有离散实现都发散。（第5页Eq.(8)、第8页Eq.(25)。）",
+        "结构轨迹不随ηw改变的论证仅在其他系数同比缩放、连续极限及状态绝热等条件下取消一个公共标量。联合状态–权重系统若ηu固定而ηw改变，两种速率比仍变；有限Euler步的轨迹亦不严格重参数化。源Hessian上限针对理想梯度部分，促进/衰减和遗漏梯度项需另外控制。下限依赖ε而ε又按ηw缩放，不能当作普适已证稳定带。（第6页Eqs.(13)–(17)。）",
+        "第8页权重有界比较使用“状态及残差已经有界”来控制梯度和源信号，再得W范数上限C/λ；这不能单靠λ正就证明联合(U,W)的全局有界，更不证明唯一吸引子或正定导通。任意不相等的边对也并非自动无散环流：均匀两节点场的W12≠W21已经产生非零散度。环流还需节点流量平衡条件。（第7–9页关于circulatory transport的解释。）",
+        "主稿没有提供网格数/尺度完整收敛扫描、随机seed重复、硬件耗时及相对于经典求解器的同精度效率比较。扩散初始边权全1，与摘要的笼统随机初始化措辞需按具体算例区分。方腔的分岔/热力学语汇目前是所示残差峰与流结构的解释，没有给出控制参数临界扫描、稳定谱或熵产生测量；规范曲率关系亦被作者留作后续工作。（第9–16页。）"
+      ]
+    },
+    {
+      "title": "复现与资源",
+      "paragraphs": [
+        "官方v3 PDF的SHA-256为 04ad797d78ad45b7976890366c00e0509cbb7b4ef2279687afaaa4eae9e35a7c，16个物理页含参考文献均已核读；公式第5、7、8、13页及Figure2第10页与原版视觉对照。未确认公开作者代码、可运行配置或独立补充文件；Ref.24在PDF仍写“Supplementry Information, URL”，正文指向的两节点对照及Re=100基准尚未在本轮取得。没有把未读补充结果写成已经验证的量化一致性。",
+        "Figure2为作者创建图，官方CC BY4.0允许署名重用，封面与正文保留a–h全图。复现可从扩散的局部更新、固定容量和边对约束开始，但应先核验边对相等约束如何在逐边更新中维持，再明确同步权重、CFL实现与符号，再对齐连续时间和基准解。本轮完成全文与解析检查，没有执行HPN数值实验。Evidence status: full-text verified; no independent reproduction performed."
+      ]
+    },
+    {
+      "title": "阅读指南",
+      "paragraphs": [
+        "先读第3–5页，以一个两节点守恒图核对流入/流出、容量和共享边梯度；然后读第9–11页Figure2，把全局守恒、局部残差与权重变化分开。深入阅读先比Eq.(9)与Eq.(25)的符号，再保留Eq.(21)促进项讨论小残差极限；最后看第11–14页混合方腔实现，分清约束残差与学习输运。前置知识是离散连续性方程、梯度和图Laplacian；第14–15页规范类比可后读，不能用它替代数值或稳定性证明。"
+      ]
+    }
+  ],
+  "cover": {
+    "mode": "source_figure",
+    "asset_path": "assets/collection-figures/2507.00641/figure-2-diffusion.png",
+    "label": "Figure2",
+    "visual_type": "field_map",
+    "evidence": "paper.pdf p.10 Figure2; diffusion settings p.9",
+    "alt_text": "扩散浓度场、阈值前沿、守恒/残差诊断与权重直方图全八面板",
+    "caption": "Auti、Daiguji、Tanaka，Figure2（arXiv:2507.00641v3，PDF第10页，CC BY4.0）：a为浓度空间图及对数色标，b为首次超过阈值的y位置随迭代扩展；c–e区分全局残差总和、局部绝对残差和残差能量，h给边权直方图。所示扩散运行保持全局平衡并扩展浓度前沿，边对相等在此被显式施加；这些图不证明无约束Onsager定理、连续时间误差界或完整权重差收敛。a–h、全部轴/色标/快照编号完整保留。",
+    "selection_rationale": "浓度空间扩展直接呈现联合场–权重松弛，比抽象框架图更能检验示范；保留诊断和全部面板以避免把局部可视化当全局保证。"
+  },
+  "figure_refs": [
+    {
+      "label": "Figure2",
+      "asset_path": "assets/collection-figures/2507.00641/figure-2-diffusion.png",
+      "section": "核心结果与证据",
+      "role": "finite diffusion run and separate global/local diagnostics",
+      "evidence": "paper.pdf p.10 Figure2; p.9 constitutive symmetry and parameters",
+      "alt_text": "扩散浓度场、阈值前沿、守恒/残差诊断与权重直方图全八面板",
+      "caption": "Auti、Daiguji、Tanaka，Figure2（arXiv:2507.00641v3，PDF第10页，CC BY4.0）：a为浓度空间图及对数色标，b为首次超过阈值的y位置随迭代扩展；c–e区分全局残差总和、局部绝对残差和残差能量，h给边权直方图。所示扩散运行保持全局平衡并扩展浓度前沿，边对相等在此被显式施加；这些图不证明无约束Onsager定理、连续时间误差界或完整权重差收敛。a–h、全部轴/色标/快照编号完整保留。",
+      "interpretation": "Finite-run observation with explicit symmetric edge constraint; not proof of a general thermodynamic solver."
+    }
+  ],
+  "equation_refs": [
+    {
+      "label": "Directed net flux and positive residual state update",
+      "latex": "J_{ij}=W_{ij}S_{ij},\\quad R_i=\\sum_{j\\in\\mathcal N(i)}(J_{ij}-J_{ji}),\\quad\\Delta U_i=\\frac{\\eta_u}{\\Omega_i}R_i",
+      "role": "Directed net flux and positive residual state update",
+      "symbols": {
+        "J_ij": "flux from j to i",
+        "W_ij": "directed transport coefficient",
+        "S_ij": "source state U_j",
+        "R_i": "incoming minus outgoing residual",
+        "U_i": "intensive nodal state",
+        "Omega_i": "positive fixed capacity",
+        "eta_u": "state relaxation step",
+        "N(i)": "neighbor set"
+      },
+      "evidence": "PDF pp.3–5 Eqs.(2)–(9)",
+      "interpretation": "Directed net flux and positive residual state update",
+      "epistemic_status": "source algorithm definition"
+    },
+    {
+      "label": "Canonical three-factor edge adaptation",
+      "latex": "\\Delta W_{ij}=-\\eta_w\\frac{R_i}{\\Omega_i}S_{ij}+\\varepsilon e^{-|R_i/\\Omega_i|}S_{ij}-\\lambda W_{ij}",
+      "role": "Canonical three-factor edge adaptation",
+      "symbols": {
+        "R_i,Omega_i,S_ij": "residual, capacity, source signal",
+        "eta_w": "weight adaptation rate",
+        "epsilon": "promotion amplitude",
+        "lambda": "positive decay rate",
+        "W_ij": "directed edge weight"
+      },
+      "evidence": "PDF p.7 Eq.(18)",
+      "interpretation": "Canonical three-factor edge adaptation",
+      "epistemic_status": "source local update"
+    },
+    {
+      "label": "Global residual energy and complete directed-edge derivative",
+      "latex": "\\mathcal L=\\frac12\\sum_i\\frac{R_i^2}{\\Omega_i},\\qquad\\frac{\\partial\\mathcal L}{\\partial W_{ij}}=\\left(\\frac{R_i}{\\Omega_i}-\\frac{R_j}{\\Omega_j}\\right)U_j",
+      "role": "Global residual energy and complete directed-edge derivative",
+      "symbols": {
+        "L": "weighted global residual energy",
+        "R_i,R_j": "both endpoint residuals",
+        "Omega_i,Omega_j": "fixed capacities",
+        "U_j": "fixed source state",
+        "W_ij": "independent scalar directed edge; not constrained shared pair"
+      },
+      "evidence": "PDF pp.3,5 Eqs.(2),(4),(11)–(12); parent analytical derivative includes endpoint j",
+      "interpretation": "Global residual energy and complete directed-edge derivative",
+      "epistemic_status": "analytical derivative from source definitions; not printed Eq.(12)"
+    },
+    {
+      "label": "Capacity-weighted internal conservation",
+      "latex": "\\sum_iR_i=0,\\qquad\\Delta\\!\\left(\\sum_i\\Omega_iU_i\\right)=\\eta_u\\sum_iR_i=0",
+      "role": "Capacity-weighted internal conservation",
+      "symbols": {
+        "R_i": "internal net flux",
+        "Omega_i": "fixed capacity",
+        "U_i": "intensive state",
+        "eta_u": "common nodal relaxation step"
+      },
+      "evidence": "PDF pp.4–5 Eqs.(7),(9); capacity-weighted exact identity",
+      "interpretation": "Capacity-weighted internal conservation",
+      "epistemic_status": "exact internal conservation identity with fixed capacities"
+    },
+    {
+      "label": "Quasistatic scalar flux including promotion",
+      "latex": "J_{ij}^{*}=\\frac{\\varepsilon}{\\lambda}S_{ij}^{2}-\\frac{\\eta_w}{\\lambda\\Omega_i}S_{ij}^{2}R_i,\\qquad L_{ij}=\\frac{\\eta_w}{\\lambda\\Omega_i}S_{ij}^{2}",
+      "role": "Quasistatic scalar flux including promotion",
+      "symbols": {
+        "Jstar": "stationary scalar flux",
+        "L_ij": "source local response coefficient",
+        "S_ij": "source intensive state",
+        "R_i": "fixed small residual",
+        "epsilon,lambda,eta_w,Omega_i": "promotion, decay, adaptation rate, capacity"
+      },
+      "evidence": "PDF p.7 Eqs.(20)–(23); promotion term retained",
+      "interpretation": "Quasistatic scalar flux including promotion",
+      "epistemic_status": "conditional source stationary expression"
+    },
+    {
+      "label": "Fixed-geometry residual-energy derivative with source state sign",
+      "latex": "\\frac{d\\mathcal L}{dn}=\\eta_uR^\\top G^{-1}\\frac{\\partial R}{\\partial U}G^{-1}R,\\qquad G=\\operatorname{diag}(\\Omega_i)",
+      "role": "Fixed-geometry residual-energy derivative with source state sign",
+      "symbols": {
+        "L": "residual energy",
+        "R": "residual vector",
+        "G": "fixed positive capacity metric",
+        "eta_u": "positive relaxation rate",
+        "n": "continuous iteration parameter",
+        "dR/dU": "fixed-weight Jacobian"
+      },
+      "evidence": "PDF pp.5,8 Eqs.(9),(25); parent sign check using actual positive state update",
+      "interpretation": "Fixed-geometry residual-energy derivative with source state sign",
+      "epistemic_status": "analytical sign check, not independent numerical reproduction"
+    },
+    {
+      "label": "Hybrid pressure and incoming velocity relaxation",
+      "latex": "p_i^{n+1}=p_i^n+\\eta_pR_{c,i}^n,\\qquad u_i^{n+1}=u_i^n+\\eta_u\\sum_jW_{ij}^nu_j^n",
+      "role": "Hybrid pressure and incoming velocity relaxation",
+      "symbols": {
+        "p_i": "pressure",
+        "u_i": "two-component velocity",
+        "Rc_i": "continuity residual",
+        "eta_p,eta_u": "pressure and velocity steps",
+        "W_ij": "componentwise transport matrix",
+        "n": "iteration index"
+      },
+      "evidence": "PDF p.13 Eqs.(41)–(42)",
+      "interpretation": "Hybrid pressure and incoming velocity relaxation",
+      "epistemic_status": "source hybrid update, not standalone conservative net flux"
+    }
+  ],
+  "evidence_refs": [
+    "PDF pp.1–5: author affiliations, local graph/state/capacity, net flux and shared-edge gradient definitions",
+    "PDF pp.6–8: trajectory-rate assumptions, promotion-preserving linear response and sign/conditional boundedness audit",
+    "PDF pp.9–11 Figure2: explicit symmetric diffusion, finite conservation/residual diagnostics and plateau",
+    "PDF pp.11–16 Figure3: fixed NS residuals, hybrid pressure/incoming velocity, unacquired separate supplemental benchmark and geometric analogy boundary",
+    "Source PDF SHA-256 04ad797d78ad45b7976890366c00e0509cbb7b4ef2279687afaaa4eae9e35a7c",
+    "Evidence status: full-text verified; no independent reproduction performed."
+  ],
+  "source_pdf_sha256": "04ad797d78ad45b7976890366c00e0509cbb7b4ef2279687afaaa4eae9e35a7c"
+}

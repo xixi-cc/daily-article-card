@@ -1,0 +1,207 @@
+{
+  "arxiv_id": "2507.01693",
+  "source_version": "v2",
+  "source_pdf": "https://arxiv.org/pdf/2507.01693v2",
+  "title_en": "GPT, But Backwards: Exactly Inverting Language Model Outputs",
+  "title_zh": "反向GPT：白盒离散搜索能恢复哪些原始输入？",
+  "curation_status": "full_text_verified",
+  "card_standard_version": "2.3",
+  "paper_profile": "theory_numerics",
+  "style_reference": "physicist_daily_arxiv",
+  "provenance": {
+    "program": "Collection",
+    "catalog": "Paper Collection",
+    "catalog_record_id": "2507.01693",
+    "catalog_record_ids": [
+      "2507.01693"
+    ],
+    "catalog_topic": "Learning Theory",
+    "collection_date": "2026-08-30",
+    "sampled_at": "2026-09-26",
+    "selected_by": "collection_serial_goal_continuation",
+    "sampling_seed": "not_applicable_source_complete",
+    "candidate_count": 916
+  },
+  "verified_metadata": {
+    "arxiv_id": "2507.01693",
+    "version": "v2",
+    "title": "GPT, But Backwards: Exactly Inverting Language Model Outputs",
+    "authors": [
+      "Adrians Skapars",
+      "Edoardo Manino",
+      "Youcheng Sun",
+      "Lucas C. Cordeiro"
+    ],
+    "published": "2025-07-02",
+    "updated": "2025-11-10",
+    "categories": [
+      "cs.LG",
+      "cs.AI"
+    ],
+    "primary_category": "cs.LG",
+    "license_url": "http://arxiv.org/licenses/nonexclusive-distrib/1.0/",
+    "pdf_pages": 15,
+    "source_pdf_sha256": "05eb437c84badc9895771a8b0746bcab5eb93cf3f23086d1fe345a2de65710ed",
+    "comment": "Official abstract title says Exactly Inverting Language Model Outputs; PDF title says Search-Based Language Model Inversion. Official comments mention ICML2025 Workshop on Reliable and Responsible Foundation Models and 7 main pages; physical PDF has 15 pages including references and appendix."
+  },
+  "sections": [
+    {
+      "title": "作者信息",
+      "paragraphs": [
+        "Adrians Skapars、Edoardo Manino来自曼彻斯特大学计算机科学系；Youcheng Sun来自Mohamed bin Zayed University of Artificial Intelligence；Lucas C. Cordeiro同时署名曼彻斯特大学及巴西亚马孙联邦大学。首页明确Skapars为通讯联系人，没有按顺序推断贡献比例。官方摘要页题名含“Exactly Inverting”，实际v2 PDF题名为“Search-Based Language Model Inversion”；本卡记录两者，不把搜索成功率改写为普遍可逆性定理。官方评论列ICML2025 Workshop on Reliable and Responsible Foundation Models；15个PDF物理页包括7页主体、参考文献和附录。（第1页及官方版本元数据。）"
+      ]
+    },
+    {
+      "title": "研究问题",
+      "paragraphs": [
+        "已知一个语言模型的响应，能否找回导致它的原始token序列，而不只是另一句同样产生该响应的话？前者是输入审计，后者仅证明输出可被触发。SODA研究冻结模型的白盒搜索，比较文本输出与附加logit观测对恢复率的影响。它没有逆转整个生成网络的每一层，也没有把服务端仅可调用API的场景变为白盒。（第1–3、5–7页。）",
+        "读者桥：输入是目标响应及可获得的分数信息、预设原输入长度、冻结模型权重。优化对象是一组“每个位置可能是什么词元”的连续变量；通过模型反向传播更新这些变量，随后取每列最大值恢复离散文本。输出是候选原输入与匹配判据，关键观测是全序列精确恢复率。训练反演模型是另一条需训练数据的基线；SODA本身不训练被审计语言模型。（第2–5页。）"
+      ]
+    },
+    {
+      "title": "背景",
+      "paragraphs": [
+        "Transformer的映射通常非线性且非单射，贪心解码进一步把完整概率向量压缩为一个词元。相同响应可以来自不同输入，因此“让模型说出y”与“找回x”不等价。本文以更多输出信息和连续搜索减轻这一病态问题，而非证明观测必然唯一确定输入。Figure1给TinyStories上的真实输入及产生同样响应的其他候选；后文的误报表也是这一可辨识性问题的直接检验。（第2–3、12–13页。）",
+        "与逐位置替换的Greedy Coordinate Gradient（GCG）相比，SODA同时沿连续候选空间的梯度运动；与基于T5训练的反演器相比，它重新对每一个目标进行较昂贵的搜索。这些比较保留白盒/黑盒、预训练和每次搜索成本的区别，不能只用一个成功率判断所有威胁模型或审计任务。（第5、7、10–11页。）"
+      ]
+    },
+    {
+      "title": "模型与方法",
+      "paragraphs": [
+        "原输入 $x\\in V^n$ 有n个词元，词表V固定，目标输出 $y\\in V^m$ 有m个词元，f是冻结语言模型及指定解码过程。候选 $x^{\\prime}$ 必须具有预设长度n。离散目标为：",
+        "\\[x^*=\\operatorname*{arg\\,min}_{x^{\\prime}\\in V^n}\\Phi(f(x^{\\prime}),y)\\]",
+        "$\\Phi$ 是输出匹配损失；原Eq.(8)要求原输入处损失零，Eq.(9)另要求其他输入损失严格正。第二个条件是可辨识性要求，未由搜索算法自动满足。若找到全局最小值且损失仍正，才在前一条件下排除可行原输入；有限搜索失败不具有这样的证书。（第3页 Eqs.(7)–(9)。）",
+        "文本输出条件下，正文用固定目标前缀逐位置衡量真实目标词元距当前最大概率的差：",
+        "\\[\\Phi_{\\rm text}(x^{\\prime};y)=\\sum_{i=1}^{m}\\left[\\max_{a\\in V}p(a\\mid x^{\\prime}y_{<i})-p(y_i\\mid x^{\\prime}y_{<i})\\right]\\]",
+        "$p(a\\mid x^{\\prime} y_{<i})$ 是在候选输入及已给目标前缀下的概率，$a\\in V$ 为任意词元；$y_{<i}$ 固定，不是让候选模型自由滚动生成的历史。零损失说明每个目标词元为一个概率最大项；在并列最大且实际tie-breaking不同的边界，尚须核验确实生成同一y。更通常的问题是多个输入共享相同文本输出，因此零损失不保证原输入身份。（第3页 Eq.(10)。）",
+        "带logit信息的目标比较观测位置/词元上的输出分数。Eq.(11)印作概率间距离d，随后正文说明实际使用logits以避免Softmax压缩及梯度消失；主稿未将具体距离d完整展开，本卡不擅自指定为L2或KL。只匹配top-k分数也不等于匹配所有词元分布，更不证明输入映射单射。（第3、5–6页。）",
+        "为了获得可微输入，以自由矩阵代替离散one-hot矩阵：",
+        "\\[\\widehat H=\\operatorname{SoftMax}_{\\tau}(Z),\\qquad E=W_e\\widehat H,\\qquad R=W_u g(E)\\]",
+        "$Z\\in\\mathbb R^{|V|\\times n}$ 是待优化的辅助变量；SoftMax按每个位置的词表维度归一化，$\\tau>0$ 为温度；$W_e$ 为冻结词嵌入矩阵，g为冻结网络主体，$W_u$ 为输出投影，R为logit矩阵。Z=0给均匀分布，在该连续表示中是稠密的，不能因算法名包含“Sparse”就称初始概率one-hot。连续候选可能经过不对应任何真实文本的混合嵌入；最终必须重新离散评估。（第2、4页。）",
+        "优化使用去掉偏差校正的Adam，并在更新后乘衰减系数：",
+        "\\[g_t=\\nabla_Z\\Phi(R,y),\\quad m_t=\\beta_1m_{t-1}+(1-\\beta_1)g_t,\\quad v_t=\\beta_2v_{t-1}+(1-\\beta_2)g_t^{\\odot2},\\qquad Z_t=\\lambda\\left(Z_{t-1}-\\gamma\\frac{m_t}{\\sqrt{v_t}+\\epsilon}\\right)\\]",
+        "$m_t,v_t$ 为一、二阶梯度矩，$g_t$ 为本步辅助输入梯度，$\\gamma>0$ 为学习率，$\\beta_1,\\beta_2$ 为动量系数，$0<\\lambda\\le1$ 为逐步乘法衰减，$\\epsilon$ 防止除零，平方及除法逐元素进行。它不是在冻结语言模型上施加权重衰减。每t1步清零优化器状态、较稀疏的t2步也重新初始化Z；每步另以argmax(Z)测试离散候选，近零匹配损失便停。该检查验证观测匹配，不直接知道候选是否真实原输入。（第4、10页 Algorithm1、AppendixB。）"
+      ]
+    },
+    {
+      "title": "核心结果与证据",
+      "paragraphs": [
+        "默认TinyStories-33M随机数据按长度1–10分别取1000条、共10000条；Natural Language ID来自模型验证集中的儿童故事，OOD来自Reddit，长度分组和样本量相同。这里ID是分布内，不能将验证文本都说成模型训练时记住的原句。精确匹配要求所有位置词元及顺序正确；部分匹配按位置统计。精确率误差为95% Wilson区间，部分匹配/余弦相似度报告均值标准误，不能统称95%置信区间。（第4–6页。）",
+        "在一位置完整logit观测的默认设置，Table5的随机输入精确恢复率为SODA79.5±0.8%、GCG11.8±0.6%、训练反演器3.9±0.4%；SODA部分恢复83.8±0.3%。只有25词元文本输出时，SODA精确恢复降至3.6±0.4%，GCG1.7±0.3%，反演器0.5±0.1%。这些是固定观测预算下的有限测试，不能把79.5%套用仅观察文本的API。（第7页 Table5。）",
+        "Table3无fluency项时，随机/自然OOD/自然ID精确率分别为79.5±0.8、87.6±0.6、95.7±0.4%；加fluency后为75.3±0.8、88.7±0.6、98.1±0.3%。98.1%是分布内自然文本且带该先验的特定结果。流畅性惩罚同时可能破坏原输入处零损失的理想条件，随机文本性能下降；不能称其普遍改善反演。（第3、6页 Eqs.(12)、Table3。）",
+        "Table1每模型分别调参、按长度报告：TinyStories在长度1–3为100%，长度8/9/10为66.0/34.6/13.6%；Qwen2.5-3B长度8为0.4%，长度9–10为0。GPT2-XL与较小GPT2在此并未形成简单随参数量单调恶化的顺序，但跨家族同时改变词表、训练与模型结构，不能由该表单独识别模型规模或词表的因果贡献。固定迭代数而非等算力，大模型仍耗更多GPU时间。（第5–6页 Table1。）",
+        "Table2只用长度≤3的随机子集及1000搜索步：仅一个输出词元文本时精确率0.7±0.3%，同一位置全部logits时99.9±0.1%；若有100个响应词元，文本16.7±1.3%、top1分数69.0±1.7%。增加响应长度也增加计算，表中若干大k列随长度增加反而降低，有限预算下不保证所有行严格单调。不能将这一短输入的信息实验推广至长度10的主数据。（第6页 Table2。）",
+        "Table4全组件79.5±0.8%，去乘法衰减20.0±0.8%、去reset44.2±1.0%、恢复Adam偏差校正45.5±1.0%；只有连续重参数化23.4±0.8%与直接embedding搜索24.6±0.8%相近。这支持组件组合在此设置有效，未隔离所有交互效应。Figure3给搜索至100000步时的长度分辨曲线；Figure4显示首尾位置较易恢复，但首词元原因作者仍未知。（第6、11–12页。）",
+        "更长的合成隐私样本约15–25词元，Table6所有方法全序列精确率都为0；SODA PII位置恢复仅3.0±0.3%，部分匹配2.6±0.1%。Table10的密码9/1040、证件号15/1374是正确位置词元数，不是完整密码、完整身份记录或受害人数。作者认为仍可能偶尔泄露；这不能支持高成功率的实用长输入窃取。（第7、12–13页。）",
+        "后门示例为特意植入的Pythia1.4B测试模型：作者报告在1000步内找回六个植入输入，观测条件含logits。不能推断一般生产模型具有相同后门或搜索对全部未知触发器有效。对恶意输出指控的审计，找到一个可触发输入只能证明可行，有限搜索未找到不能证明指控虚假；用旧成功率估计“真实输入存在概率”还需先验及适用分布，正文未给这样的通用校准。（第7、12、14页。）"
+      ]
+    },
+    {
+      "title": "有效性与局限",
+      "paragraphs": [
+        "原输入唯一性与统计precision不能互换。Table7是找到并判定成功的候选中错误者比例（false discovery rate），不是按所有真实负样本定义的false positive rate。长度≤3、1000步的文本单输出设置误发现98.2%，文本25词元15.0%，文本50/100词元观测到0%；top1单位置仍78.6%。因此结论中的“0% false positive”只能限定到具体表格观测，不能作为所有文本模式、所有长度的保证；零计数本身也不是总体概率严格为零。（第12–13页 Table7。）",
+        "Table8在真实/假定长度1–5、10000步测试中，错长度的成功判定比例观测为0，同长度分别约100/100/100/98.4/94.7%。这是特定有限数据中的成功率矩阵，没有证明对任意长度或输出碰撞都能认证“假定长度错了”。一般输出非单射，即使完整logit恰匹配，输入唯一性仍需单独假设；Eq.(9)未提供普遍单射定理。（第3、12页。）",
+        "SODA需要白盒权重、可反传的网络及已知输入长度。公开token概率只增加观测，不会自动提供白盒梯度；将源AppendixK的UI示意当作当前各服务都有相同接口也不合适。本卡不核验当今产品接口，且不把该附录解释成无需模型访问即可进行同样搜索。（第4、12、14–15页。）",
+        "有限模型/数据下的平均恢复率没有统一复杂度或全局收敛上界。100000步仍未建立长度>10的随机输入趋势；输出短、输入长、非贪心采样、多输入碰撞均限制身份恢复。本文固定贪心生成，其他解码留作未来工作。自然文本好于随机文本的解释是作者假说，未直接测量互信息；词表与规模也不是受控因果实验。（第2、5、11–12页。）",
+        "GCG使用700×700候选量级前向计算，附录按接近SODA执行时间选预算；SODA用连续反传，不是同一次forward即可公平比较。Table5/6的随机反演基线各有400000条总数据，其中10%留作验证，即360000训练/40000验证；微调30epochs并选最佳验证checkpoint。Table9自然文本训练/测试另依附录H，不统一套用该计数；学习式反演，可能具有不同摊销成本；某些自然文本训练/测试匹配时Table9显著好于随机输入训练基线。不能以Table5的单一随机数据基线否定所有学习式反演。（第5、7、10–12页。）"
+      ]
+    },
+    {
+      "title": "复现与资源",
+      "paragraphs": [
+        "官方v2 PDF SHA-256为 05eb437c84badc9895771a8b0746bcab5eb93cf3f23086d1fe345a2de65710ed。15个物理页及参考文献/全部附录已核读，重点视觉对照第3–4页公式/伪码、第6页四表、第11页长度/位置曲线、第13页误发现与PII分解。首页代码DOI为https://doi.org/10.5281/zenodo.15539879，本轮工具未能打开该链接，故只作为论文给定资源，不声称代码包、版本或运行环境已经取得。",
+        "Table1运行于单RTX A6000 48GB及82.7GB RAM，其他实验于单L4 22.5GB及51GB RAM；作者总计9100GPU小时。默认TinyStories参数为t1/t2=50/1500、学习率0.065、betas0.9/0.995、温度0.05、衰减0.9；各模型独立调参且不同表的迭代预算须另对齐。搜索验证随机数据seed0，主随机数据seed1，不是多训练seed统计。复现首先应明确logit距离与匹配容差，再核验离散输出及实际原输入，区分成功判定与精确恢复。（第5、10–11页。）",
+        "官方许可为arXiv nonexclusive-distrib，未建立源图独立再分发授权，因此封面使用忠实题名摘要，正文不复制论文图或第三方UI截图。全文核读及代数边界检查不等于独立搜索复现。本轮没有执行SODA、训练反演模型或隐私攻击。Evidence status: full-text verified; no independent reproduction performed."
+      ]
+    },
+    {
+      "title": "阅读指南",
+      "paragraphs": [
+        "先从第2页Figure1理解“同响应”与“同输入”，再读第3页Eq.(8)–(11)及第13页Table7；这一步能避免把优化零损失当成身份认证。随后读第4页Algorithm1，区分连续候选与离散early-stop；第6–7页Tables1–6要逐一核对输入长度、响应长度、可观测分数及预算。深入阅读看第10–12页附录参数与训练基线，第13页PII分解给最直接的实用性限制。前置知识只需Softmax、梯度、Adam及条件概率，不必预先掌握攻击术语。"
+      ]
+    }
+  ],
+  "cover": {
+    "mode": "title_abstract",
+    "selection_rationale": "官方为nonexclusive-distrib，未建立原图或第三方UI截图再分发授权；以忠实题名摘要呈现观测条件和长输入限制。",
+    "abstract_text": "SODA通过冻结模型的白盒梯度，在连续词元候选中搜索原始输入。完整logit观测下，短随机输入及分布内自然文本的有限测试恢复率较高；仅文本、长输入和输出碰撞显著限制精确身份恢复。零匹配损失和有限零误发现不构成普遍可逆性或审计证书。"
+  },
+  "figure_refs": [],
+  "equation_refs": [
+    {
+      "label": "Fixed-length discrete inversion objective",
+      "latex": "x^*=\\operatorname*{arg\\,min}_{x^{\\prime}\\in V^n}\\Phi(f(x^{\\prime}),y)",
+      "role": "Fixed-length discrete inversion objective",
+      "symbols": {
+        "xstar": "selected discrete candidate; not necessarily original input",
+        "xprime": "length-n candidate tokens",
+        "V,n": "vocabulary and assumed original length",
+        "Phi": "observation matching loss",
+        "f": "frozen model and decoding map",
+        "y": "target observation"
+      },
+      "evidence": "PDF p.3 Eq.(7); Eq.(8),(9) are separate identifiability requirements",
+      "interpretation": "Fixed-length discrete inversion objective",
+      "epistemic_status": "source algorithm/objective; no universal uniqueness or convergence certificate"
+    },
+    {
+      "label": "Text-output greedy-margin matching objective",
+      "latex": "\\Phi_{\\rm text}(x^{\\prime};y)=\\sum_{i=1}^{m}\\left[\\max_{a\\in V}p(a\\mid x^{\\prime}y_{<i})-p(y_i\\mid x^{\\prime}y_{<i})\\right]",
+      "role": "Text-output greedy-margin matching objective",
+      "symbols": {
+        "p": "conditional next-token probability",
+        "xprime": "candidate input",
+        "y_i,y_lt_i": "target token and fixed target prefix",
+        "m": "response length",
+        "a,V": "candidate token and vocabulary"
+      },
+      "evidence": "PDF p.3 Eq.(10); fixed target prefixes and tie qualification",
+      "interpretation": "Text-output greedy-margin matching objective",
+      "epistemic_status": "source algorithm/objective; no universal uniqueness or convergence certificate"
+    },
+    {
+      "label": "Continuous token relaxation through frozen model",
+      "latex": "\\widehat H=\\operatorname{SoftMax}_{\\tau}(Z),\\qquad E=W_e\\widehat H,\\qquad R=W_u g(E)",
+      "role": "Continuous token relaxation through frozen model",
+      "symbols": {
+        "Hhat": "columnwise relaxed token probabilities",
+        "Z": "free vocabulary-by-length input variables",
+        "tau": "positive Softmax temperature",
+        "E": "continuous mixed embeddings",
+        "We,Wu,g": "frozen embedding, output projection and network",
+        "R": "output logits"
+      },
+      "evidence": "PDF pp.2,4 Algorithm1 line2 and reparametrization paragraph",
+      "interpretation": "Continuous token relaxation through frozen model",
+      "epistemic_status": "source algorithm/objective; no universal uniqueness or convergence certificate"
+    },
+    {
+      "label": "SODA moment update without Adam bias correction",
+      "latex": "g_t=\\nabla_Z\\Phi(R,y),\\quad m_t=\\beta_1m_{t-1}+(1-\\beta_1)g_t,\\quad v_t=\\beta_2v_{t-1}+(1-\\beta_2)g_t^{\\odot2},\\qquad Z_t=\\lambda\\left(Z_{t-1}-\\gamma\\frac{m_t}{\\sqrt{v_t}+\\epsilon}\\right)",
+      "role": "SODA moment update without Adam bias correction",
+      "symbols": {
+        "g_t": "input gradient of observation loss",
+        "m_t,v_t": "first and second moment buffers",
+        "beta1,beta2": "momentum coefficients",
+        "gamma": "learning rate",
+        "lambda": "multiplicative input-variable decay",
+        "epsilon": "denominator stabilizer",
+        "Z_t": "auxiliary input after decay",
+        "R,y": "candidate logits and target observations",
+        "odot2": "elementwise square"
+      },
+      "evidence": "PDF p.4 Algorithm1 lines3–7; elementwise update followed by multiplicative decay",
+      "interpretation": "SODA moment update without Adam bias correction",
+      "epistemic_status": "source algorithm/objective; no universal uniqueness or convergence certificate"
+    }
+  ],
+  "evidence_refs": [
+    "PDF pp.1–3: author affiliations, title discrepancy, white-box versus text/logit observation and identifiability conditions",
+    "PDF pp.4–6 Algorithm1,Tables1–4: relaxed input, no bias correction, budgets, datasets and length-dependent outcomes",
+    "PDF pp.7,11–14 Tables5–11: separate text/logit baselines, long privacy inputs, false discovery rate and finite backdoor demonstrations",
+    "PDF pp.5,10–11: hardware, total GPU hours, model-specific hyperparameters and inversion model training",
+    "Source PDF SHA-256 05eb437c84badc9895771a8b0746bcab5eb93cf3f23086d1fe345a2de65710ed",
+    "Evidence status: full-text verified; no independent reproduction performed."
+  ],
+  "source_pdf_sha256": "05eb437c84badc9895771a8b0746bcab5eb93cf3f23086d1fe345a2de65710ed"
+}

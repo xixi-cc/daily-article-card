@@ -1,0 +1,222 @@
+{
+  "arxiv_id": "2507.01414",
+  "source_version": "v2",
+  "source_pdf": "https://arxiv.org/pdf/2507.01414v2",
+  "title_en": "Decomposing Prediction Mechanisms for In-Context Recall",
+  "title_zh": "上下文召回的预测机制分解：任务启动与连续预测怎样分别学会",
+  "curation_status": "full_text_verified",
+  "card_standard_version": "2.3",
+  "paper_profile": "ai_empirical",
+  "style_reference": "physicist_daily_arxiv",
+  "provenance": {
+    "program": "Collection",
+    "catalog": "Paper Collection",
+    "catalog_record_id": "2507.01414",
+    "catalog_record_ids": [
+      "2507.01414"
+    ],
+    "catalog_topic": "Training Dynamics",
+    "collection_date": "2026-08-30",
+    "sampled_at": "2026-09-26",
+    "selected_by": "collection_serial_goal_continuation",
+    "sampling_seed": "not_applicable_source_complete",
+    "candidate_count": 916
+  },
+  "verified_metadata": {
+    "arxiv_id": "2507.01414",
+    "version": "v2",
+    "title": "Decomposing Prediction Mechanisms for In-Context Recall",
+    "authors": [
+      "Sultan Daniels",
+      "Dylan Davis",
+      "Dhruv Gautam",
+      "Wentinn Liao",
+      "Gireeja Ranade",
+      "Anant Sahai"
+    ],
+    "published": "2025-07-02",
+    "updated": "2026-06-16",
+    "categories": [
+      "cs.LG",
+      "cs.AI"
+    ],
+    "primary_category": "cs.LG",
+    "license_url": "http://creativecommons.org/licenses/by/4.0/",
+    "pdf_pages": 45,
+    "source_pdf_sha256": "490af69217c1516355ad15c2e6b17a0beb814ab9741b41cb91059eddf9f339b6",
+    "comment": "Official v2, 45 physical pages, 47 figures, 2 tables. No independently verified venue or source-code release."
+  },
+  "sections": [
+    {
+      "title": "作者信息",
+      "paragraphs": [
+        "Sultan Daniels、Dylan Davis、Dhruv Gautam、Gireeja Ranade、Anant Sahai属于University of California, Berkeley；Wentinn Liao属于University of Pennsylvania。首页用†/‡区分机构，没有等贡献或通讯分工声明，不能把相同机构符号当等贡献标记。依据arXiv:2507.01414v2，2026-06-16修订，45个PDF物理页，含全部参考文献与附录。（第1页及官方版本信息。）"
+      ]
+    },
+    {
+      "title": "研究问题",
+      "paragraphs": [
+        "在交错的时间序列中，模型要先根据符号标签恢复正确的系统，再预测它的后续状态。若启动任务和继续任务使用相同信息，为什么二者在训练中先后出现，且后续预测对标签错配相对不敏感？本文把离散关联召回与连续动力学预测合在同一个可控任务，用分布外干预及稀疏电路发现，检验“一个任务只有一种机制”的假设。它给出有限模型的机制证据，不建立通用Bayes算法或热力学相变定理。（第1–3、12–20页。）",
+        "读者桥：输入是被随机开/闭符号分段的5维状态序列；标签与具体系统的关联每条prompt重新分配。训练更新Transformer权重，以平方误差预测下一状态；推理时权重固定，变化的是可读取的上下文。恢复段的首个状态只能在尚无新观测时依赖上下文召回；第二个及以后的状态可以利用刚给出的真实状态和旧上下文。这里的token是一个向量或符号，不是自然语言单词；连续误差便于分开任务启动与继续。（第3–8页。）"
+      ]
+    },
+    {
+      "title": "背景",
+      "paragraphs": [
+        "已有线性回归/Markov任务提供可计算预测基线，离散多查询召回则常只复制某个token。本文要求召回后继续应用未知的动态矩阵，增加了“标签选系统”和“观测辨认系统”的竞争。任务识别、任务学习、上下文/权重中学习等既有区分为背景；本篇新增的是同一多token任务内部的机制分工。属于AI机制实证研究，训练曲线的突降不等同于已测自由能奇点。（第2、20–21、27–28页。）"
+      ]
+    },
+    {
+      "title": "模型与方法",
+      "paragraphs": [
+        "每个未知系统是5维无噪声正交动力学：",
+        "\\[x_{i+1}=Ux_i,\\qquad U\\sim\\operatorname{Haar}(O(5)),\\quad x_0\\sim\\mathcal N(0,I_5/5)\\]",
+        "$U$ 为5×5正交矩阵，Haar表示在O(5)上均匀采样，$x_i$ 为第i次状态，$I_5$ 为单位矩阵。训练先固定40000套U/初值，各展开251个观测；每步重新随机交错这些库内片段。库内状态信息可多次出现，因此新prompt不意味着所有系统只看过一次。无噪声及正交性限制了任务族；固定初值尺度保证平均平方范数为1。（第3–4、7页。）",
+        "分段prompt长251：最多系统数N取截断Zipf(1.5,25)，切点数C取Poisson(2N)，系统与标签关联随机重分配；开/闭符号、start、payload标记加5维状态共57维输入。主要模型2.42M参数、12层、隐维128、8个注意力head；输出为5维。AdamW、权重衰减0.01、batch512、学习率约1.58×10⁻⁵，单L40S48GB一跑约5天。符号位置的输出损失屏蔽。（第4–7页。）",
+        "可读旧状态的伪逆预测基线为：",
+        "\\[\\widehat U=[x_1\\ \\cdots\\ x_i][x_0\\ \\cdots\\ x_{i-1}]^{\\dagger},\\qquad\\widehat x_{i+1}=\\widehat Ux_i\\]",
+        "$\\dagger$ 为Moore–Penrose伪逆，$\\widehat U$ 将已观测相邻状态配对拟合成算子。一般位置的六个状态若张成所需空间可确定5维U；精确逆形式另需可逆。它是已知系统归属的理想基线，不说明Transformer真的以该矩阵形式实现，也不直接认证有限精度、带噪或任意初态的最优性。（第3页 Eqs.(3)–(4)。）",
+        "测试用100个留出系统、每系统1000初态，针在草堆式prompt把1–19个系统各10个观测并列，再查询某系统续段。主图续接第一个片段，另有附录位置扫描。50种连续编号系统配置，每配置1000初态；主要误差图先取每配置的初态中位数，再给跨配置25/50/75分位。它们不是50个独立训练seed或误差均值的置信区间。（第7–11、43–45页。）"
+      ]
+    },
+    {
+      "title": "核心结果与证据",
+      "paragraphs": [
+        "连续未交错序列的误差逐渐下降，到6.25×10⁷训练示例附近早停，长context末尾中位平方误差约2×10⁻⁴；晚训练的留出误差反升。对新系统重新启动ICL约2×10⁶示例开始改善；恢复旧系统的首状态在N=1约1.5×10⁷、N=5约2.5×10⁷才明显下降。较后的状态学习更早；首状态晚出现并不保证全段都使用刚学会的标签策略。（第8–11、19页 Figures8–11、22。）",
+        "早停时首状态恢复误差约0.015，对草堆系统数较稳定；第二/第三/第七/第八状态误差随系统数增加而变差。标签本身仍提供系统身份，信息上没有丢失；表现变差因此支持模型未充分把标签供给后续预测，而非任务突然不可识别。（第11–12页 Figure12。）",
+        "第一项分布外干预把查询标签换成草堆内错误系统的标签：首状态误差随训练反而增大，后续曲线接近正常query。第二项把各系统回绕到共同的首续接状态，使观测无法唯一辨别系统：",
+        "\\[x_{i-1}=U^\\top x_i,\\qquad x_{10}^{(j)}=x_{10}\\quad\\text{for every system }j\\]",
+        "$j$ 是系统编号，共享 $x_{10}$ 从相同Gaussian尺度取样，正交性使 $U^\\top$ 可倒推各自历史。Figure16中两个系统的第二状态误差约1，而正常约10⁻²；后续即使两个新观测原则上已可辨认系统，也未立即达到正常误差。这支持观测驱动的次优近似机制。共同首目标也意味着首状态不再需要标签来区分答案；它在此仍好不能单独证明其使用了标签，标签证据主要来自前一错配实验。（第12–15页 Figures13–16。）",
+        "标签依赖并非“首状态有、后续绝无”：未见标签提示新系统，但实际续段来自旧系统时，约3×10⁷示例后的第二/第三状态误差突然上升；反向用旧标签提示真正新序列，后续仍能重启。综合四项控制，作者的H1标签召回和H2观测驱动预测都不足以单独解释全部位置；H2只是Bayesian-style，没有测到完整后验或认证Bayes最优。（第15–17页 Figures17–20。）这里Table1的二值化后平均平方误差口径，不同于主训练曲线对初态取中位数再给跨配置分位数；两者不应混同，主图带也不是跨训练seed置信区间。（第10–11、17页。）",
+        "电路发现优化连续边mask，舍弃原方法KL项，用：",
+        "\\[\\mathcal L^{\\prime}=k\\mathcal L_{\\rm squared\\text{-}error}+\\mathcal L_{{\\rm edge},s}\\]",
+        "$k$ 是平方误差权重，$\\mathcal L_{{\\rm edge},s}$ 是目标稀疏度s的边惩罚；此处s不是系统状态。随后二值化并把裁去边置零。Table1：完整32936边电路在两任务误差0.002/0.004；首状态电路200边为0.01/0.64，第二状态电路40边为0.32/0.02；选出的两电路边重合0%。这是选定优化解的功能分离，不能推所有可实现电路唯一或完整网络没有共享计算。（第17–18、29页。）",
+        "OLMo-2 7B检查点的两示例翻译：X/Y无语义标签下，首token准确率在约50K训练步附近陡升，第二token较早改善；用Spanish/English明确标签，早期差距减小。每点100样本，95%区间用Jeffreys先验Beta(0.5,0.5)。它显示任务启动/继续的行为类比，没有对OLMo做相同电路剪枝或证明两个机制对应toy。主文写English→Spanish，附录实际例子是西班牙输入、英语目标，两者方向不一致，按所示prompt解释不默改。（第18、30–31页 Figures21、25。）",
+        "四规模212K/701K/2.42M/10.7M模型中，较大模型按示例数更早达到召回门槛；按留出预训练误差作横轴，七系统首状态转折约0.065、第二状态约0.1附近。单系统tiny的首状态阈值比其他模型高约0.02；这仍是少量规模的经验对齐。学习率与batch随规模改变，不能从这些曲线独立给出参数数的普适临界指数。（第19–20、31–41页。）"
+      ]
+    },
+    {
+      "title": "有效性与局限",
+      "paragraphs": [
+        "电路结果来自早期的另一跑，其正交矩阵采样不是主要实验的均匀Haar分布；剪枝仅用一个五系统草堆配置，没有完整独立train/test配置划分，作者明确要求进一步验证。0%边重合是被找出的稀疏mask之间的事实，不能升级为唯一机制、所有模型无重合或已识别原完整网络的全部因果结构。（第17页脚注10–11、18、29页。）",
+        "首状态与后续状态的输入信息不同：后一预测已看到续段观测。报告的next-token误差不能当作由首预测自主滚动产生全部后续轨迹的闭环误差；OLMo第二token的具体条件化及实现细节在45页内未完全展开，不能宣称它是在错误首输出下仍自主翻译。准确率的离散跳跃、Gaussian toy连续误差及实际训练相图应分开。（第7–18、30–31页。）",
+        "同步实验消去系统身份的即时观测信息，但也人为相关了各系统的初态，属于受控分布外诊断。其后续失配否定简单的纯标签统一策略，并不唯一排除所有非Bayes替代算法。未见标签的后期负效应也阻止把后续预测无条件写成标签无关。（第14–17页。）",
+        "所谓phase transition依据有限训练检查点和视觉选定误差cutoff：身份/正交系统分别取0.4/0.5；没有热力学极限、控制参数奇异性或多seed临界指数认证。库内记忆可使训练误差低于理想新系统基线，留出误差却反升，不能把该基线当有限已见库分布的绝对信息下界。附录第43页另把模型叫128M，与Table2/主文2.42M不一致，按明确架构表而非该孤立标记引用。（第19、31–33、43–45页。）",
+        "论文未给出能统一预测两机制出现时点的闭合训练方程；平均loss奖励易用机制、减弱另一机制梯度是讨论假说。标签语义替换改善首token也不能排除prompt格式/熟悉度等变化；100翻译样本与一种模型族不足以推全部自然语言多token任务同构。（第18、20–21、30–31页。）"
+      ]
+    },
+    {
+      "title": "复现与资源",
+      "paragraphs": [
+        "官方v2 PDF SHA-256为 490af69217c1516355ad15c2e6b17a0beb814ab9741b41cb91059eddf9f339b6，45个物理页含参考文献与附录已读。第3页动力学/伪逆、第14页同步实验、第17页剪枝表及第18页翻译图与原版视觉核对；源图CC BY4.0，署名及全部科学标记保留。未确认作者发布的代码、训练配置文件或检查点链接；正文引用基础codebase不等于本文全部实现已公开。",
+        "重现实验应首先重新生成Haar库、按库划分测试系统并保留标签随机分配，再分别比较首状态、后续状态与分布外改标签。主要tiny/small/medium正交模型各用单L40S，big用两张；identity模型用单GH20080GB，不能把五天单L40S成本外推到全扫描。剪枝另需按原旧分布与配置重做、补独立测试；本轮没有训练或复现实验。Evidence status: full-text verified; no independent reproduction performed."
+      ]
+    },
+    {
+      "title": "阅读指南",
+      "paragraphs": [
+        "先读第3页Eq.(2)–(4)和第8页Figure6，明确标签、历史状态和刚出现的续段观测分别提供什么；再对照第11–16页正常、错标签、同步及未见标签实验。深入看第17页Table1时先读脚注，分清主跑与剪枝跑；最后看第18页语义标签控制和第30页真实prompt。先验知识为正交矩阵、平方误差与伪逆；第27–28页文献与全尺寸训练图可后读。"
+      ]
+    }
+  ],
+  "cover": {
+    "mode": "source_figure",
+    "asset_path": "assets/collection-figures/2507.01414/figure-15-synchronizing.png",
+    "label": "Figure15",
+    "visual_type": "schematic",
+    "evidence": "paper.pdf p.14 Figure15",
+    "alt_text": "两套历史状态被反向演化到相同续接观测，后续动力学仍有歧义的同步控制",
+    "caption": "Daniels等，Figure15（arXiv:2507.01414v2，PDF第14页，CC BY4.0）：蓝/红历史来自不同正交系统，但回绕到共同的首续接状态x10，箭头标出同步点；后续U1x10依赖选择哪个系统。它把“当前观测辨系统”这一线索消去，便于检验标签是否用于后续预测。共同首目标不再需要标签区分，图本身也不证明唯一Bayes电路。完整括号、系统标签、幂次和分段标记保留。",
+    "selection_rationale": "同步控制直接呈现两个机制需要的信息怎样不同，比仅展示训练下降曲线更能解释可证伪机制；保留全部状态标签与输入/输出序列。"
+  },
+  "figure_refs": [
+    {
+      "label": "Figure15",
+      "asset_path": "assets/collection-figures/2507.01414/figure-15-synchronizing.png",
+      "section": "核心结果与证据",
+      "role": "observation-identifiability OOD control",
+      "evidence": "PDF p.14 Figure15 and Figures16/Section4.1.2",
+      "alt_text": "两套历史状态被反向演化到相同续接观测，后续动力学仍有歧义的同步控制",
+      "caption": "Daniels等，Figure15（arXiv:2507.01414v2，PDF第14页，CC BY4.0）：蓝/红历史来自不同正交系统，但回绕到共同的首续接状态x10，箭头标出同步点；后续U1x10依赖选择哪个系统。它把“当前观测辨系统”这一线索消去，便于检验标签是否用于后续预测。共同首目标不再需要标签区分，图本身也不证明唯一Bayes电路。完整括号、系统标签、幂次和分段标记保留。",
+      "interpretation": "Mechanism discriminating input construction, not proof of a unique implementation."
+    },
+    {
+      "label": "Figure21",
+      "asset_path": "assets/collection-figures/2507.01414/figure-21-translation.png",
+      "section": "核心结果与证据",
+      "role": "semantic versus arbitrary task-label comparison",
+      "evidence": "PDF p.18 Figure21; actual prompts p.30",
+      "alt_text": "语义与无语义标签下首token和第二token翻译准确率随训练步变化",
+      "caption": "Daniels等，Figure21（arXiv:2507.01414v2，PDF第18页，CC BY4.0）：横轴OLMo-2 7B训练步、纵轴token准确率；左为有语义Spanish/English标签，右为无语义X/Y，黑/蓝分别首/第二token。明确标签减小早期启动差距，X/Y下首token约50K步陡升。每点100样本，误差条为Jeffreys先验95%可信区间；行为差异不等于已识别toy的同一电路。两面板、轴和图例完整保留。",
+      "interpretation": "Finite behavioral correspondence; no same-circuit identification in OLMo."
+    }
+  ],
+  "equation_refs": [
+    {
+      "label": "Noiseless orthogonal system family",
+      "latex": "x_{i+1}=Ux_i,\\qquad U\\sim\\operatorname{Haar}(O(5)),\\quad x_0\\sim\\mathcal N(0,I_5/5)",
+      "role": "Noiseless orthogonal system family",
+      "symbols": {
+        "x_i": "five-dimensional state",
+        "U": "unknown5x5 orthogonal dynamics",
+        "O(5),Haar": "orthogonal group and uniform measure",
+        "I5": "identity",
+        "i": "within-system time index"
+      },
+      "evidence": "PDF p.3 Eq.(2), p.4 Haar library",
+      "interpretation": "Noiseless orthogonal system family",
+      "epistemic_status": "source data model"
+    },
+    {
+      "label": "Context pseudoinverse predictor",
+      "latex": "\\widehat U=[x_1\\ \\cdots\\ x_i][x_0\\ \\cdots\\ x_{i-1}]^{\\dagger},\\qquad\\widehat x_{i+1}=\\widehat Ux_i",
+      "role": "Context pseudoinverse predictor",
+      "symbols": {
+        "Uhat": "least-squares fitted dynamics",
+        "Xdagger": "Moore-Penrose pseudoinverse",
+        "xhat": "next-state estimate",
+        "i": "number of observed transition pairs"
+      },
+      "evidence": "PDF p.3 Eqs.(3)–(4), rank/inverse conditions",
+      "interpretation": "Context pseudoinverse predictor",
+      "epistemic_status": "source conditional predictor"
+    },
+    {
+      "label": "Synchronized OOD continuations",
+      "latex": "x_{i-1}=U^\\top x_i,\\qquad x_{10}^{(j)}=x_{10}\\quad\\text{for every system }j",
+      "role": "Synchronized OOD continuations",
+      "symbols": {
+        "U": "orthogonal system matrix",
+        "x_i": "state at indexi",
+        "j": "system index",
+        "x10": "shared state drawn for synchronization"
+      },
+      "evidence": "PDF p.14 Section4.1.2/Figure15, orthogonal inverse",
+      "interpretation": "Synchronized OOD continuations",
+      "epistemic_status": "source OOD construction"
+    },
+    {
+      "label": "Continuous-mask edge pruning objective",
+      "latex": "\\mathcal L^{\\prime}=k\\mathcal L_{\\rm squared\\text{-}error}+\\mathcal L_{{\\rm edge},s}",
+      "role": "Continuous-mask edge pruning objective",
+      "symbols": {
+        "Lprime": "pruning objective",
+        "k": "squared-error scaling coefficient",
+        "L_squared-error": "task prediction error",
+        "L_edge,s": "edge sparsity penalty at targets"
+      },
+      "evidence": "PDF p.17 Section4.2, unnumbered objective; p.29 mask threshold",
+      "interpretation": "Continuous-mask edge pruning objective",
+      "epistemic_status": "source experiment objective"
+    }
+  ],
+  "evidence_refs": [
+    "PDF pp.1–8: verified authors/affiliations, O(5) state model, fixed library, random labels and held-out tests",
+    "PDF pp.9–17 Figures8–20: separate recall/continuation learning, wrong-label/synchronized/unseen-label controls and negative outcomes",
+    "PDF pp.17–18,29 Table1/Figure24: sparse mask objectives, old nonuniform run and single-configuration scope",
+    "PDF pp.18–20,30–45: finite OLMo task-label evidence, source translation direction/model-size inconsistencies, scales and resource differences",
+    "Source PDF SHA-256 490af69217c1516355ad15c2e6b17a0beb814ab9741b41cb91059eddf9f339b6",
+    "Evidence status: full-text verified; no independent reproduction performed."
+  ],
+  "source_pdf_sha256": "490af69217c1516355ad15c2e6b17a0beb814ab9741b41cb91059eddf9f339b6"
+}
