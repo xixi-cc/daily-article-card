@@ -1,0 +1,185 @@
+{
+  "arxiv_id": "2507.04300",
+  "source_version": "v1",
+  "source_pdf": "https://arxiv.org/pdf/2507.04300v1",
+  "title_en": "QF: Quick Feedforward AI Model Training without Gradient Back Propagation",
+  "title_zh": "QF前馈知识编辑：局部最小权重修正及其证据边界",
+  "curation_status": "full_text_verified",
+  "card_standard_version": "2.3",
+  "paper_profile": "ai_empirical",
+  "style_reference": "physicist_daily_arxiv",
+  "provenance": {
+    "program": "Collection",
+    "catalog": "Paper Collection",
+    "catalog_record_id": "2507.04300",
+    "catalog_record_ids": [
+      "2507.04300"
+    ],
+    "catalog_topic": "Machine Learning",
+    "collection_date": "2026-08-30",
+    "sampled_at": "2026-09-26",
+    "selected_by": "collection_serial_goal_continuation",
+    "sampling_seed": "not_applicable_source_complete",
+    "candidate_count": 916
+  },
+  "verified_metadata": {
+    "arxiv_id": "2507.04300",
+    "version": "v1",
+    "title": "QF: Quick Feedforward AI Model Training without Gradient Back Propagation",
+    "authors": [
+      "Feng Qi"
+    ],
+    "published": "2025-07-06",
+    "updated": "2025-07-06",
+    "categories": [
+      "cs.LG",
+      "cs.AI",
+      "q-bio.NC"
+    ],
+    "primary_category": "cs.LG",
+    "license_url": "http://creativecommons.org/licenses/by/4.0/",
+    "pdf_pages": 8,
+    "source_pdf_sha256": "770d7b584a6f128b2148aeeee50b79751238e6dea2fe63919937ceaed2c16c2b"
+  },
+  "sections": [
+    {
+      "title": "作者信息",
+      "paragraphs": [
+        "Feng Qi为唯一作者，首页署名OxInnovate并给联系邮箱；没有额外大学、等贡献或通讯星号声明，不推断作者职务。本卡完整依据arXiv:2507.04300v1（2025-07-06），共8个物理页；最后一页是嵌入图像的批量线性代数附录，文字提取为空但已逐行视觉阅读，不把7个可提取文本页当作全文。官方分类cs.LG、cs.AI、q-bio.NC，许可CC BY4.0。本文没有核实的期刊或会议录发表记录。（第1、8页与官方arXiv记录。）"
+      ]
+    },
+    {
+      "title": "研究问题",
+      "paragraphs": [
+        "能否不反向传播梯度，直接把模型在“带知识指令”情况下的中间激活写入权重，使它下次只见问题也能回答？QF用两次前馈获得有/无指令的激活差，在指定线性层求最小Frobenius范数修正。它是一个局部知识编辑方案，论文的经验支撑主要是Qwen2.5-1.5B-Instruct上的少量创始人/地点问答，尚未证明普遍训练性能、无遗忘或生物神经机制。（第1–7页。）",
+        "读者桥：先给模型事实指令与问题，记录一个目标层的输入激活和旁路输出；再去掉事实指令、用同一答案前缀做前馈，记录相应激活。待修改对象是该层的线性权重，更新信号是两组激活的差，输出是之后不带指令的问答。与微调训练损失不同，本文优化的是权重改动大小、并强制指定激活匹配；“不反向传播”不意味着没有优化问题、线性代数或预先训练的大模型。（第2–4页 Eqs.(1)–(3)、Figures1–3。）"
+      ]
+    },
+    {
+      "title": "背景",
+      "paragraphs": [
+        "论文与知识编辑而非从零训练直接相关：预训练模型已经能理解指令，本文尝试把一次输入上下文产生的回答行为固化到权重。它与ROME等方法都涉及目标层修正，但作者强调这里不用梯度求目标值向量。本文没有在统一编辑数据集、相同计算预算下与这些方法比较，所以不能由“闭式”推出更优编辑性能。（第1、3、7页。）",
+        "“open-book/closed-book neural thinking chain”在本文是带/不带指令的层激活路径，不是已验证的人类理解或可解释推理链。第7页把Transformer低/中/高层类比Wernicke/Broca区域，并称学习更类脑；没有神经生理数据、变量同构或因果实验支持这些对应，本卡将其视作作者类比，不当作物理/神经科学发现。知识必须先在带指令前馈中被模型正确表达，算法不负责纠正错误的指令或错误目标答案。（第3、7页。）"
+      ]
+    },
+    {
+      "title": "模型与方法",
+      "paragraphs": [
+        "设目标线性层权重W将u映射到输出，v代表该匹配式中的其余贡献；无指令时相应量带prime。作者希望在同一位置满足激活约束，并在所有满足该约束的修正中选最小范数：",
+        "\\[Wu+v=W^{\\prime}u^{\\prime}+v^{\\prime},\\qquad \\min_{W^{\\prime}}\\|W^{\\prime}-W\\|_F^2\\]",
+        "$W,W^{\\prime}$ 是更新前后矩阵，$u,u^{\\prime}$ 是记录的有/无指令输入激活，$v,v^{\\prime}$ 为相应旁路项，$\\|\\cdot\\|_F$ 为元素平方和的平方根。单位置可取 $u\\in\\mathbb R^D,v\\in\\mathbb R^N,W\\in\\mathbb R^{N\\times D}$；批量时每个词元占一列。这里维数是本卡对Eq.(1)的相容解释：附录把v写成D×T、W写成N×D，若N不等于D则不相容，不能把它原样抄成维度正确的陈述。（第3页 Eqs.(1)–(2)、第8页附录。）",
+        "在记录激活固定且Gram矩阵可逆时，闭式更新为：",
+        "\\[W^{\\prime}=W-\\left[W(u^{\\prime}-u)+(v^{\\prime}-v)\\right]\\left((u^{\\prime})^\\top u^{\\prime}\\right)^{-1}(u^{\\prime})^\\top\\]",
+        "这就是第3页Eq.(3)；u及v在批量情形表示T列匹配样本，$((u^{\\prime})^\\top u^{\\prime})^{-1}$ 要求无指令输入列线性独立，单列要求 $u^{\\prime}\\ne0$。它对固定局部约束是最小二乘范数的精确解，不是全网络答案正确性的定理。若列相关或T>D，普通逆可能不存在；原文未给正则化、伪逆或不可满足约束处理，不能把这些额外实现当作论文已经提供。（第3、8页。）",
+        "最后一页拉格朗日推导的最终解与Eq.(3)一致，但中间gradient行使用未带prime的u转置、下一行又恢复prime；本卡按最终解和约束的相容读法解释，明示源内下标不一致。局部解把u、v及带prime量看作固定；若修改位置还改变后续或缓存激活，原有约束不自动覆盖整个自回归生成。第3页的无指令update阶段使用instruct答案作为下一词元输入，即用目标答案前缀取得匹配激活，不是仅凭原始问题一次并行求解所有未来词元。（第3、8页。）",
+        "Figure2给具体输入“Qi started Oxinnovate”与“Who started Oxinnovate?”：上方有指令路径记录u/v，下方把修正后的W置入无指令路径；红色标示事实相关信号。Figure3的QF cutoff表示权重求解无需上方层的匹配激活，不代表取得正确目标答案或之后完整推理都可忽略上方网络。Figure4的qfsignificance是词元选择掩码；它不证明被选词元对应可独立定位的真实知识神经元。（第2、4、6页 Figures2–4。）"
+      ]
+    },
+    {
+      "title": "核心结果与证据",
+      "paragraphs": [
+        "Table1列8个连续问答步骤。原模型无事实提示对Oxinnovate创始人回答“Need more information”；加事实后回答Qi；更新W之后去掉事实仍回答Qi。既有问题“Who started Alibaba?”更新前后都回答Jack Ma；换问法“The person behind Oxinnovate?”得到Founded by Qi。再加入位于北京PKU Science Park的新事实、更新为第二组权重后，地点回答北京、创始人仍回答Qi。这支持该示例中的写入、一次改写问法及两条事实连续保留，不能把8步骤当成8个独立数据集、训练seed或编辑成功率百分比。（第5–6页Table1。）",
+        "为什么最小权重变化不能证明无遗忘？从Eq.(3)对另一输入a直接得到局部变化：",
+        "\\[\\Delta W\\,a=-\\left[W(u^{\\prime}-u)+(v^{\\prime}-v)\\right]\\left((u^{\\prime})^\\top u^{\\prime}\\right)^{-1}(u^{\\prime})^\\top a,\\qquad (u^{\\prime})^\\top a=0\\ \\Longrightarrow\\ \\Delta W\\,a=0\\]",
+        "$\\Delta W=W^{\\prime}-W$，a是固定的另一目标层输入。与全部编辑输入正交时该层线性输出不变；一般a有投影时仍会变化。此式为本卡从已核对Eq.(3)直接推出的边界解释，不是作者额外测得的结果；且a自身可因网络/缓存状态变化，不能升级为全网络不变性。最小Frobenius范数仅在满足目标约束的修正之间取最小，未限制所有历史问题的输出或事实记忆。（第3、8页。）",
+        "实验只报告单个1.5B模型和单张RTX4090上的示例；没有大规模事实编辑成功率、语义改写集、邻近/无关事实保留率、长编辑序列、置信区间、wall-clock时间或峰值显存对照。正文“最高四倍存储开销”“更快反馈/节省资源”等说法没有本文相同硬件的测量曲线；不能发布成QF已验证四倍内存节省。闭式解避免了这一步的梯度回传，但构造批量Gram及求逆的成本、病态性和全模型推理成本仍在。（第1、5–7页。）"
+      ]
+    },
+    {
+      "title": "有效性与局限",
+      "paragraphs": [
+        "适用对象是已经能按给定指令产生合理激活/答案的Transformer；它无法凭权重最小范数保证输入知识真实、泛化到陌生问题或训练成新基础模型。中层更适合写入是作者设计建议，没有逐层消融、层选择准则或统计比较支撑。对多模态和cross-attention的延伸属于未来建议。（第3、7页。）",
+        "两条新事实和一个旧事实未遗忘的例子不足以证明“inherently resistant to catastrophic forgetting”。即使固定激活下局部约束精确满足，也可能改变其他输入，重复编辑可能互相干扰；论文未提供通用干扰上界。批量逆的满列秩、附录维度和下标冲突、目标答案前缀及更新后动态激活问题已明确，不能把所有源内代数行当成无条件定理。（第3、5–8页。）",
+        "公开代码可支持他人复现例子，但本卡没有执行、读取全部实现或复现4090结果，不据README承诺推断源码中已经解决Gram奇异或缓存一致性。表格是有限演示，模型更“理解”、更“类脑”、比梯度更有效属于超出当前证据的作者主张。（第6–7页。）"
+      ]
+    },
+    {
+      "title": "复现与资源",
+      "paragraphs": [
+        "论文给官方代码 https://github.com/oxinnovate/QF，已在线核对项目与同名论文；复现入口qf_learn_simple.py，并要求安装仓库自带修改版Transformers。基础模型为Qwen2.5-1.5B-Instruct，可从Hugging Face或ModelScope取得；本文使用单张RTX4090。没有训练新基础模型的资源预算，也没有量化推理/编辑耗时和显存。（第6页及官方代码页。）",
+        "复现时先保存原权重与两种前馈的相同答案前缀、目标层位置及词元掩码；按原Eq.(3)验证局部残差，再用完整无指令生成测新事实/改写/旧事实。满列秩和未编辑输入投影是本卡指出的必要核查点，不是本次执行过的实验。本文公开许可CC BY4.0，因此选图采用作者Figure2并保留两路径全部输入、激活、旁路、权重及输出标记；这是机制示意图，不是定量无遗忘证据。Evidence status: full-text verified; no independent reproduction performed."
+      ]
+    },
+    {
+      "title": "阅读指南",
+      "paragraphs": [
+        "先读第2页Figure2把事实上下文、问题、u/v及待写入W串起来；第3页Eqs.(1)–(3)明确目标约束与最小修正，再视觉读第8页批量附录，检查列秩与符号维数。随后Table1核清只有哪些问答真的被展示，区分一次改写与普遍泛化。第6页是复現脚本与词元掩码，第7页类脑讨论可最后读，不能作为无遗忘证据。前置知识为线性映射、Frobenius范数、Gram矩阵、条件生成与自回归答案前缀。"
+      ]
+    }
+  ],
+  "cover": {
+    "mode": "source_figure",
+    "asset_path": "assets/collection-figures/2507.04300/figure-2-local-edit.png",
+    "label": "Figure2",
+    "visual_type": "schematic",
+    "evidence": "PDF physical p.2 Figure2; CC BY4.0 official arXiv licence",
+    "alt_text": "有指令与无指令两条Transformer层路径及局部权重写入",
+    "caption": "Feng Qi，Figure2（arXiv:2507.04300v1，PDF第2页，https://arxiv.org/abs/2507.04300v1，CC BY4.0）：上为带事实指令的激活记录，下为只带问题、用修改权重的路径；保留指令/问题、u/v及带prime量、旁路求和、W/Wprime和目标答案全部标记。红色标示事实信号，局部匹配说明信息写入目标层的设计；图不证明任意问法、全网络无遗忘或生物神经同构。",
+    "selection_rationale": "直接展示有/无事实输入、匹配激活及权重更新，比泛称训练对照图更清楚地呈现论文局部机制；保留完整两路径而非仅成功答案。"
+  },
+  "figure_refs": [
+    {
+      "label": "Figure2",
+      "asset_path": "assets/collection-figures/2507.04300/figure-2-local-edit.png",
+      "section": "模型与方法",
+      "role": "Local recorded-activation editing mechanism",
+      "evidence": "PDF physical p.2 Figure2; CC BY4.0 official arXiv licence",
+      "alt_text": "有指令与无指令两条Transformer层路径及局部权重写入",
+      "caption": "Feng Qi，Figure2（arXiv:2507.04300v1，PDF第2页，https://arxiv.org/abs/2507.04300v1，CC BY4.0）：上为带事实指令的激活记录，下为只带问题、用修改权重的路径；保留指令/问题、u/v及带prime量、旁路求和、W/Wprime和目标答案全部标记。红色标示事实信号，局部匹配说明信息写入目标层的设计；图不证明任意问法、全网络无遗忘或生物神经同构。",
+      "interpretation": "Author schematic of fixed local matching; not general nonforgetting or biological evidence."
+    }
+  ],
+  "equation_refs": [
+    {
+      "label": "Fixed-activation equality constraint and minimum Frobenius update",
+      "latex": "Wu+v=W^{\\prime}u^{\\prime}+v^{\\prime},\\qquad \\min_{W^{\\prime}}\\|W^{\\prime}-W\\|_F^2",
+      "role": "Fixed-activation equality constraint and minimum Frobenius update",
+      "symbols": {
+        "W,Wprime": "old and edited N by D output matrices",
+        "u,uprime": "instruction/no-instruction D-dimensional activations or D by T columns",
+        "v,vprime": "other N-dimensional output contributions; appendix stated dimensions are inconsistent unless N=D",
+        "Frobenius norm": "root sum of squared weight entries"
+      },
+      "evidence": "PDF p.3 Eqs.(1)–(2), p.8 raster-only appendix; dimension caveat disclosed",
+      "interpretation": "Fixed-activation equality constraint and minimum Frobenius update",
+      "epistemic_status": "constrained local definition"
+    },
+    {
+      "label": "Closed-form minimum-norm local update, requiring invertible Gram",
+      "latex": "W^{\\prime}=W-\\left[W(u^{\\prime}-u)+(v^{\\prime}-v)\\right]\\left((u^{\\prime})^\\top u^{\\prime}\\right)^{-1}(u^{\\prime})^\\top",
+      "role": "Closed-form minimum-norm local update, requiring invertible Gram",
+      "symbols": {
+        "W,Wprime,u,uprime,v,vprime": "same fixed-activation objects as constrained equality",
+        "T,D,N": "matched-token columns, input dimension, output dimension",
+        "Gram inverse": "requires full column rank of uprime; no pseudoinverse invented"
+      },
+      "evidence": "PDF p.3 Eq.(3), p.8 final solution; prime/dimension inconsistencies disclosed",
+      "interpretation": "Closed-form minimum-norm local update, requiring invertible Gram",
+      "epistemic_status": "exact local algebra under fixed activations and invertible Gram"
+    },
+    {
+      "label": "Editorial algebraic effect on another fixed layer input",
+      "latex": "\\Delta W\\,a=-\\left[W(u^{\\prime}-u)+(v^{\\prime}-v)\\right]\\left((u^{\\prime})^\\top u^{\\prime}\\right)^{-1}(u^{\\prime})^\\top a,\\qquad (u^{\\prime})^\\top a=0\\ \\Longrightarrow\\ \\Delta W\\,a=0",
+      "role": "Editorial algebraic effect on another fixed layer input",
+      "symbols": {
+        "DeltaW": "Wprime-W",
+        "a": "another fixed layer input",
+        "uprime transpose a": "overlap with edited activation columns",
+        "W,u,uprime,v,vprime": "same recorded weights and activations",
+        "Gram inverse": "full-column-rank condition retained"
+      },
+      "evidence": "Directly derived by applying PDF p.3 Eq.(3) to a fixed input a; no new empirical claim",
+      "interpretation": "Editorial algebraic effect on another fixed layer input",
+      "epistemic_status": "direct editorial consequence within same fixed local model, not whole-network forgetting proof"
+    }
+  ],
+  "evidence_refs": [
+    "PDF pp.1–4: affiliation, knowledge editing task, conditional activations and local constrained equations",
+    "PDF pp.5–6: eight sequential qualitative examples, exact model and RTX4090/resource entry",
+    "PDF p.7: untested biological/overall-efficiency and layer-selection claims separated from findings",
+    "PDF physical p.8: image-only batched derivation visually read; full-column-rank and source dimension/index caveats retained",
+    "Source PDF SHA-256 770d7b584a6f128b2148aeeee50b79751238e6dea2fe63919937ceaed2c16c2b",
+    "Evidence status: full-text verified; no independent reproduction performed."
+  ],
+  "source_pdf_sha256": "770d7b584a6f128b2148aeeee50b79751238e6dea2fe63919937ceaed2c16c2b"
+}

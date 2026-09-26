@@ -1,0 +1,252 @@
+{
+  "arxiv_id": "2507.12709",
+  "source_version": "v2",
+  "source_pdf": "https://arxiv.org/pdf/2507.12709v2",
+  "title_en": "From SGD to Spectra: A Theory of Neural Network Weight Dynamics",
+  "title_zh": "从SGD到权重谱：随机矩阵模型、有限拟合与系数核查",
+  "curation_status": "full_text_verified",
+  "card_standard_version": "2.3",
+  "paper_profile": "theory_numerics",
+  "style_reference": "physicist_daily_arxiv",
+  "provenance": {
+    "program": "Collection",
+    "catalog": "Paper Collection",
+    "catalog_record_id": "2507.12709",
+    "catalog_record_ids": [
+      "2507.12709"
+    ],
+    "catalog_topic": "Learning Theory",
+    "collection_date": "2026-08-30",
+    "sampled_at": "2026-09-26",
+    "selected_by": "collection_serial_goal_continuation",
+    "sampling_seed": "not_applicable_source_complete",
+    "candidate_count": 916
+  },
+  "verified_metadata": {
+    "arxiv_id": "2507.12709",
+    "version": "v2",
+    "title": "From SGD to Spectra: A Theory of Neural Network Weight Dynamics",
+    "authors": [
+      "Brian Richard Olsen",
+      "Sam Fatehmanesh",
+      "Frank Xiao",
+      "Adarsh Kumarappan",
+      "Anirudh Gajula"
+    ],
+    "published": "2025-07-17",
+    "updated": "2026-02-07",
+    "categories": [
+      "cs.LG"
+    ],
+    "primary_category": "cs.LG",
+    "license_url": "http://creativecommons.org/licenses/by/4.0/",
+    "pdf_pages": 17,
+    "source_pdf_sha256": "b5b1fe8cdae8e5af29cd5eddf456f7d71824787cecd1a30a5060bdcdee43bb80",
+    "publication": "arXivv2; PDF has ICML2025/PMLR267 footer, exact proceedings entry not independently confirmed",
+    "publisher_full_text_used": false
+  },
+  "sections": [
+    {
+      "title": "作者信息",
+      "paragraphs": [
+        "Brian Richard Olsen、Sam Fatehmanesh、Frank Xiao、Adarsh Kumarappan、Anirudh Gajula均署名California Institute of Technology（Pasadena）。Frank Xiao与Adarsh Kumarappan的星号表示等贡献；通讯联系人明确为Brian Richard Olsen、Sam Fatehmanesh。全文依据arXiv:2507.12709v2（2026-02-07），17个物理页，首发2025-07-17，CC BY4.0。PDF首页有ICML2025/PMLR267模板页脚，作者个人页称ICML2025与NeurIPS2025 Mechanistic Interpretability Workshop，但本次未在PMLR核实同名正式条目，OpenReview入口受验证限制；不把页脚或个人页认证为PMLR主会正式发表。（第1页与官方arXiv记录。）"
+      ]
+    },
+    {
+      "title": "研究问题",
+      "paragraphs": [
+        "训练期间权重矩阵的奇异值为什么从近随机初始化分布变成主体与外侧大模式？作者用各向同性矩阵噪声模型、奇异值Itô公式、均场单粒子稳态和小网络图表连接这一过程。本卡保留模型与观测，但不照搬摘要的“严格解释深度学习为何有效”：打印的奇异值漂移系数不通过标量极限，Gamma型分布的远尾也不是幂律。预测图在后期偏离、计数拟合偏低，以及各向异性未实测，都直接影响主结论。（第1–5、8–17页。）",
+        "读者桥：输入是训练数据、小批次及某层权重W；小批次梯度改变W。奇异值σ表示线性层沿特定输入方向的放大倍数，平方λ是WᵀW的特征值。待描述的对象是这些模式的漂移和涨落，不是样本空间粒子。梯度提供方向性学习信号，噪声提供随机更新；可观测量是谱直方图、领先模式轨迹及最大值减中位数的展宽。谱形与泛化可能相关，但本次实验没有给出由谱尾推出测试误差的定理或干预因果证据。（第2–5、16–17页。）"
+      ]
+    },
+    {
+      "title": "背景",
+      "paragraphs": [
+        "初始化的Marchenko–Pastur（MP）律针对大随机矩阵的平方奇异值，Tracy–Widom（TW）描述最大特征值经适当中心化/缩放后的边缘涨落；二者不是把单次谱直方图横轴和尾部直接贴上标准函数就能认证的结果。学习后大奇异值超出初始主体区间提供谱结构改变的有限观测，但不单独说明所有尾部来自有益特征或都为重尾幂律。（第1–4、12–13页。）",
+        "SGD噪声一般依赖参数与方向；本文先把矩阵各元素噪声设为同一强度、独立Brownian增量，再写一般协方差形式。后者没有数值实验。正文借其他网络凸化/均场文献来说明二次谱势的动机，不能据此证明任意非凸网络损失只由奇异值决定，或确定性large-r闭合在所有架构成立。（第2–4、10–15页。）"
+      ]
+    },
+    {
+      "title": "模型与方法",
+      "paragraphs": [
+        "原矩阵模型及谱变量为：",
+        "\\[dW=-\\eta\\nabla_W\\mathcal L\\,dt+\\sqrt{2\\eta D}\\,dB,\\qquad W=U\\operatorname{diag}(\\sigma_k)V^\\top,\\quad\\lambda_k=\\sigma_k^2\\]",
+        "$W\\in\\mathbb R^{m\\times n}$ 是选定线性层权重，$\\mathcal L$ 为损失，η为源有效学习率，D为假定扩散强度，B为各元素独立标准矩阵Brownian运动；U、V列向量是左/右奇异方向。损失梯度、η和噪声尺度组成的是连续近似。源第11页离散式到连续式没有充分明确dt与√dt缩放及小批次极限，中央极限定理本身也不使协方差变成各向同性，因此不称从实际SGD无条件精确导出该SDE。（第2、8、11页。）",
+        "源Theorem3.1和Lemma6.5打印的奇异值方程是：",
+        "\\[d\\sigma_k=\\left[-\\eta u_k^\\top(\\nabla_W\\mathcal L)v_k+\\eta D\\left(\\frac{m-n+1}{2\\sigma_k}+\\sum_{j\\ne k}\\frac{\\sigma_k}{\\sigma_k^2-\\sigma_j^2}\\right)\\right]dt+\\sqrt{2\\eta D}\\,d\\beta_k\\]",
+        "$u_k,v_k$ 为第k模态的单位左右奇异向量，$\\beta_k$ 为投影噪声，j遍历其他正奇异值；分母要求非重合奇异值，1/σ又要求离零边界有适当处理。梯度项是矩阵梯度沿该模式的投影。此式在本卡仅作为作者打印的、系数有问题的主张展示；不是认证过的通用SDE。（第2、8、11页，原PDF视觉核对。）",
+        "对原文明确的元素噪声规范，最简单的编辑性核查是m=n=1、零损失梯度，并在首次触零以前取W>0：",
+        "\\[m=n=1,\\ W>0:\\ \\sigma=W,\\quad\\Delta_W\\sigma=0,\\quad d\\lambda=2W\\sqrt{2\\eta D}\\,dB+2\\eta D\\,dt\\]",
+        "这是由原矩阵SDE和λ=W²直接得到的Itô恒等式，不是训练复现。σ=W为线性函数，Laplacian必须为零；打印式却给ηD/(2σ)的额外漂移，打印的平方谱式再给3ηD而正确标量Itô项为2ηD。因源定理未排除该维数且Lemma同样声称一般正σ，本卡不能将其“exact”作已证结论。零点可能需要局部时，与此停止区间上的反例无关。（第8、11页及源定义的直接计算。）",
+        "稳态部分进一步丢弃显式模式相互作用，将其平均作用替为线性恢复漂移；在给定这个单粒子模型与零概率流条件下：",
+        "\\[d\\lambda=(\\alpha_0-\\beta_1\\lambda)dt+\\sqrt{8\\eta D\\lambda}\\,dB,\\quad a=\\frac{\\alpha_0}{4\\eta D}=\\frac{m-n+3}{4},\\quad q=\\frac{\\beta_1}{4\\eta D},\\quad p_\\lambda(\\lambda)=\\frac{q^a}{\\Gamma(a)}\\lambda^{a-1}e^{-q\\lambda},\\quad p_\\sigma(\\sigma)=\\frac{2q^a}{\\Gamma(a)}\\sigma^{2a-1}e^{-q\\sigma^2}\\]",
+        "$\\alpha_0=\\eta D(m-n+3)$ 是作者从其平方谱方程选的常数，$\\beta_1>0$ 在此是恢复率，$a>0$ 为Gamma形状，$q>0$ 为逆尺度，Γ为Gamma函数。λ>0、ηD>0及零流边界是归一化条件；σ密度包含变量变换Jacobian2σ。此密度解是该简化SDE的条件结果，即使原矩阵谱系数有误也可作为独立有效模型求解，不能由此认证其参数就是实际SGD谱参数。（第3、9、12页Theorem3.2/Proposition6.8。）",
+        "该恢复率与噪声估计之间并不等同：正文称β₁是均场恢复力，第15页Lemma6.19却用同符号表示小批次梯度减全梯度的矩阵/向量，再说用其经验方差拟合。矩阵噪声、噪声方差和1/时间的线性恢复率不是同一量，源没有完整投影/校准映射。Lemma6.18用谱宽平方除批次数给D尺度估计，也不是独立测得协方差的无偏估计。二次谱势cΣ(λ−λ*)²还没有被严格推成本文采用的单模线性λ漂移；均场拟合应保留为假设。（第3、9、15页。）",
+        "一般协方差的部分可写为：",
+        "\\[d\\sigma_k=\\langle\\nabla_W\\sigma_k,-\\eta\\nabla_W\\mathcal L\\rangle dt+\\frac12\\sum_{i,j,p,q}\\frac{\\partial^2\\sigma_k}{\\partial W_{ij}\\partial W_{pq}}[2\\eta\\mathcal C(W,t)]_{ij,pq}\\,dt+\\langle\\nabla_W\\sigma_k,\\mathcal B(W,t)\\,dB\\rangle,\\quad\\mathcal B\\mathcal B^\\top=2\\eta\\mathcal C\\]",
+        "$\\mathcal C$ 是在矩阵元素展平空间上的噪声协方差，$\\mathcal B$ 是其扩散因子；为区别源SVD的Σ，本卡仅将源协方差Σ改名为C、扩散矩阵B改名为带花体B，含义和因子2η保持。内积为矩阵Frobenius内积，Hessian按元素对收缩。Itô公式要在奇异值平滑、协方差合理的区域使用；它展示为什么方向性噪声会改变漂移和波动，没有证明实际协方差造成全部观测偏差。（第14–15页Proposition6.17。）",
+        "Algorithm1起始做SVD，随后每个时间步都读取当前损失梯度，投影到保留k个模式：",
+        "\\[G_t=-\\eta\\nabla_W\\ell(t),\\quad M_t=U_k^\\top G_tV_k,\\qquad\\sigma_i\\leftarrow\\max(\\sigma_i+(M_t)_{ii},\\delta)\\]",
+        "$G_t$ 为当前更新矩阵，$M_t\\in\\mathbb R^{k\\times k}$ 为其投影；δ是防负值阈值，与理论噪声Brownian增量不同。还更新左右向量、对σ差/和加epsilon正则，再正交化和对齐符号。这个算法没有显式独立采样上述SDE噪声，也不是只凭初始谱无未来梯度预测未来训练。只跟踪前k模式且近简并须小心，它不认证全部谱的动力学。（第4、16页。）",
+        "实验均使用SGD。小型nanoGPT式decoder为4层、每层4头、embedding256，Shakespeare文本，batch12×256token，学习率5×10⁻⁴ cosine降到5×10⁻⁵；视觉Transformer为2层、4头、embedding256、FFN扩张2，MNIST用28×28图/7×7patch、CIFAR100用32×32/8×8patch。MLP三个隐藏层、每层1024，偏置零、按fan-in高斯初始化。主设置称MNIST/CIFAR100，但Figure2正文称CIFAR10，不自行统一。没有给具体GPU、总时长、重复seed或统一谱拟合误差表。（第3、16–17页。）"
+      ]
+    },
+    {
+      "title": "核心结果与证据",
+      "paragraphs": [
+        "Figure1三面板为batch0、200、400的奇异值Count直方图。初始化主体与红虚线近，后续主体外出现稀疏大模式；橙色TW示意位于edge2.00附近。三面板横轴范围不同，第三幅延伸到7以上，需按标签看变化，不能仅按柱宽作同归一化比较。图注说TW绿色，但原图图例实际为橙色；本卡保留原图完整图例。横轴为σ，而附录MP公式自变量是归一化λ；缺少源拟合具体变换/缩放，图本身不能认证“MP完全吻合”或TW正式边缘统计检验。（第3–4、12–13页Figure1。）",
+        "Figure2有限曲线展示领先模式初期实线与虚线接近，在约batch300后偏差开始扩大；正文称800批次与top8，实际图横轴截止约600且可见曲线不止8，本卡不从图外延伸或补造具体RMSE。Figure3为σ≥2.5尾区计数和峰识别/拟合，正文承认计数显著低估。没有置信区间、留出预测误差或独立种子分布；“全奇异值准确预测”比现有图和仅topk算法支持的范围更强。（第4、16页Figures2–3。）",
+        "Gamma型有效稳态有明确远尾：λ的大值方向带exp(−qλ)，σ带exp(−qσ²)，在β₁、ηD正的条件下为指数/高斯型截断。前面的幂函数乘子只控制近零等形状，不能把远尾叫power-law或heavy-tailed。若β₁=0去掉截断，一般又不能归一化为这里的平稳概率密度。故原摘要、正文第3页、第12页“由Gamma证明幂律重尾”的解释不被其公式支持；这不否认有限直方图有超出主体的模式。（第3、9、12页。）",
+        "零梯度的纯矩阵Brownian没有恢复力，谱二阶尺度随时间增长，不提供该Gamma稳态；加线性恢复、均场去相互作用是额外模型。原文第8页其实将平方奇异值称Wishart过程，正文的Dyson比喻不能消去乘性√λ扩散和非负边界。第11页的时间替换s=t/(2ηD)也与把噪声幅度化为2√λ不一致；按同一个λ变量须s=2ηDt。此为对源规范的直接时间单位核查，不是独立建立整套正确一般谱SDE。（第8–12页。）",
+        "Figure4只有几个层的repulsive/non-repulsive项随批次数变化；从两组项相似或相关不能证明原始噪声协方差非各向同性。原式还通过动力学残差定义“噪声”，与同一漂移项代数耦合；它不是独立噪声样本的方向协方差估计、没有因果干预或检验。将偏差归因于各向异性是作者假说，Proposition6.17给出可能加入它的方法，实验尚未完成。（第5、12、14–15页。）",
+        "Figure5改变学习率、观察最大奇异值减中位数。五种视觉Transformer权重在约10⁻³至中等学习率时展宽增大，但四个内部投影在最高10⁻¹点回落，不能说全区间单调增加。红虚线斜率是对该有限扫参图的拟合：layer1第二投影约.812，输出头.160；它们不是普遍临界指数，也不单独证明噪声更多就提高泛化。源说回落可能少学特征是解释而非已测特征数。（第17页Figure5。）",
+        "Algorithm1复杂度比较仅对维护谱相对每步全SVD：一次O(min(m²n,mn²))，每步还包括梯度代价G、kmn投影及k²max(m,n)更新/正交化。k远小于维数时，SVD相关工作可降低约min(m,n)/k；没有端到端实测速度、硬件延迟或精度损失界，不能把这写成整网训练同比加速。谱初始化、剪枝和新优化器均为潜在应用，本篇没有相应效果实验。（第5、16页。）"
+      ]
+    },
+    {
+      "title": "有效性与局限",
+      "paragraphs": [
+        "矩阵各向同性噪声、连续时间、非重合正奇异值、有效D和二次谱势/单粒子闭合均为条件，不能用结构验证通过补成数学证明。打印漂移的标量极限失败、时间重标度及恢复率/噪声参数混用必须先解决，才能把该框架用于精确数值推演。附录一般Itô协方差形式有用，但没有建立简并/零谱处的全局强解或任意SGD的严格极限。（第2–3、8–15页。）",
+        "平稳Gamma解属于简化SDE而不具有幂律远尾，平均场的相互作用替换缺少控制误差，其他网络凸化文献不自动证明谱势。MP/TW图比较需明确λ/σ转换、归一化和有限维边缘缩放；正文某些Corollary/Lemma编号指向并不一致，本卡按实际所在页与真实标签引用。没有把未复证Airy/Hilbert-transform等附录引用升格为本卡独立证明。（第3–4、9、12–15页。）",
+        "小模型观测没有统一量化预测误差、种子误差条、跨大模型验证或泛化因果控制。文本/图的batch数量、模态数和CIFAR10/100表述不一致保留；方向性噪声未完成实验，曲线相关不足以证明。卡片已完整读取17页并核查关键图、公式和标量极限，未运行网络训练、拟合或大型随机矩阵实验。（第3–5、14、16–17页。）"
+      ]
+    },
+    {
+      "title": "复现与资源",
+      "paragraphs": [
+        "论文给完整Algorithm1和小模型配置，并引用Karpathy/nanoGPT作为实现基础；没有明确提供本论文独立公开代码仓库、原始谱轨迹、seed、完整拟合程序或GPU账本。本次不把通用nanoGPT仓库称为作者实验已可一键复现。PDF、元数据和Figure1 CC BY4.0来源均已哈希记录；页面只发布公开来源与裁图，不暴露本地PDF。",
+        "核查路线应先按原元素噪声规范测试1×1与向量范数极限，再修正一般谱漂移、边界与时间尺度；分别记录每批真实梯度协方差及σ/λ转换，建立独立留出预测误差，而不是用同一残差拟合噪声再声称证明。均场Gamma参数须区分恢复率、协方差和统计方差，报告尾部分布而非仅峰计数。本卡仅完成源定义下的直接Itô/归一化与远尾检查，没有训练、拟合或系统性能复现。Evidence status: full-text verified; no independent reproduction performed."
+      ]
+    },
+    {
+      "title": "阅读指南",
+      "paragraphs": [
+        "先看第2页矩阵SDE与谱变量，再直接读第8、11页公式，并用1×1极限检验系数。第9页单模Gamma推导帮助区别正确条件解与不成立的幂律解释；第14–15页一般协方差可作为扩展入口。实验需并读第3–5页图与第16–17页算法配置、最高学习率回落。前置知识是SVD、Itô公式、Fokker–Planck零流稳态与随机矩阵有限维规范；不要用摘要的rigorous或power-law词汇代替这些检查。"
+      ]
+    }
+  ],
+  "cover": {
+    "mode": "source_figure",
+    "asset_path": "assets/collection-figures/2507.12709/figure-1-spectral-histograms.png",
+    "label": "Figure1",
+    "visual_type": "distribution",
+    "evidence": "PDF physicalp3 Figure1; officialarXivCCBY4.0",
+    "alt_text": "初始化与200、400批次的三面板奇异值直方图、MP虚线和TW橙色边缘示意",
+    "caption": "Brian Richard Olsen等，Figure1（arXiv:2507.12709v2，PDF第3页，https://arxiv.org/abs/2507.12709v2，CC BY4.0）：batch0/200/400的奇异值横轴与Count纵轴直方图，保留各面板范围及红虚线Marchenko–Pastur、橙色TW图例。后期主体外有稀疏大模式；橙色与原图注称绿色的文字不一致。图显示有限谱形变化，不能单独证明幂律远尾、精确MP/TW规范匹配、公式系数正确或泛化因果。",
+    "selection_rationale": "全文只有谱分布和量化曲线，没有机制场景图；中心观测是从随机主体到主体外大模式，故用完整Figure1分布对比，保留全部轴及图例，避免只截后期尾区暗示幂律。"
+  },
+  "figure_refs": [
+    {
+      "label": "Figure1",
+      "asset_path": "assets/collection-figures/2507.12709/figure-1-spectral-histograms.png",
+      "section": "核心结果与证据",
+      "role": "Finite spectral-shape evolution, with normalization caveat",
+      "evidence": "PDF physicalp3 Figure1; officialarXivCCBY4.0",
+      "alt_text": "初始化与200、400批次的三面板奇异值直方图、MP虚线和TW橙色边缘示意",
+      "caption": "Brian Richard Olsen等，Figure1（arXiv:2507.12709v2，PDF第3页，https://arxiv.org/abs/2507.12709v2，CC BY4.0）：batch0/200/400的奇异值横轴与Count纵轴直方图，保留各面板范围及红虚线Marchenko–Pastur、橙色TW图例。后期主体外有稀疏大模式；橙色与原图注称绿色的文字不一致。图显示有限谱形变化，不能单独证明幂律远尾、精确MP/TW规范匹配、公式系数正确或泛化因果。",
+      "interpretation": "Finite bulk/outlier observation; not powerlaw proof or source coefficient validation."
+    }
+  ],
+  "equation_refs": [
+    {
+      "label": "Assumed isotropic matrix diffusion and spectral variables",
+      "latex": "dW=-\\eta\\nabla_W\\mathcal L\\,dt+\\sqrt{2\\eta D}\\,dB,\\qquad W=U\\operatorname{diag}(\\sigma_k)V^\\top,\\quad\\lambda_k=\\sigma_k^2",
+      "role": "Assumed isotropic matrix diffusion and spectral variables",
+      "symbols": {
+        "W,m,n": "weight matrix and dimensions",
+        "eta,D": "effectivelearningrate/isotropic diffusion",
+        "B": "independent matrixBrownian",
+        "U,V,sigma,lambda": "SVDdirections/singularvalues/squares",
+        "L": "loss"
+      },
+      "evidence": "PDF physicalpp2,8,11 assumed matrixIto model",
+      "interpretation": "Assumed isotropic matrix diffusion and spectral variables",
+      "epistemic_status": "assumed continuous model not exact arbitrarySGD"
+    },
+    {
+      "label": "Printed singular-value SDE with failed scalar-limit coefficient",
+      "latex": "d\\sigma_k=\\left[-\\eta u_k^\\top(\\nabla_W\\mathcal L)v_k+\\eta D\\left(\\frac{m-n+1}{2\\sigma_k}+\\sum_{j\\ne k}\\frac{\\sigma_k}{\\sigma_k^2-\\sigma_j^2}\\right)\\right]dt+\\sqrt{2\\eta D}\\,d\\beta_k",
+      "role": "Printed singular-value SDE with failed scalar-limit coefficient",
+      "symbols": {
+        "uk,vk": "unit singularvectors",
+        "beta_k": "projected Brownian",
+        "j,k": "distinctpositive modes",
+        "eta,D": "original fixed noise convention",
+        "sum": "authorprinted repulsion coefficient not certified"
+      },
+      "evidence": "PDF p2Theorem3.1 andpp8,11Lemma6.5; shown as erroneous sourceclaim",
+      "interpretation": "Printed singular-value SDE with failed scalar-limit coefficient",
+      "epistemic_status": "printed author equation not certified; scalar contradiction"
+    },
+    {
+      "label": "Editorial scalar Itô check before first zero hitting",
+      "latex": "m=n=1,\\ W>0:\\ \\sigma=W,\\quad\\Delta_W\\sigma=0,\\quad d\\lambda=2W\\sqrt{2\\eta D}\\,dB+2\\eta D\\,dt",
+      "role": "Editorial scalar Itô check before first zero hitting",
+      "symbols": {
+        "W,B": "positive scalar stopped beforezero andBrownian",
+        "sigma,lambda": "W andW²",
+        "m,n": "scalarcase1",
+        "DeltaW": "secondderivative, zero forpositive linear W",
+        "eta,D": "source noise strength"
+      },
+      "evidence": "PDF pp8,11 source model; direct editorial Itô calculation, notauthorfinding",
+      "interpretation": "Editorial scalar Itô check before first zero hitting",
+      "epistemic_status": "direct editorial exact Itô identity in stopped scalarcase"
+    },
+    {
+      "label": "Effective CIR/Gamma stationary solution, exponential cutoff",
+      "latex": "d\\lambda=(\\alpha_0-\\beta_1\\lambda)dt+\\sqrt{8\\eta D\\lambda}\\,dB,\\quad a=\\frac{\\alpha_0}{4\\eta D}=\\frac{m-n+3}{4},\\quad q=\\frac{\\beta_1}{4\\eta D},\\quad p_\\lambda(\\lambda)=\\frac{q^a}{\\Gamma(a)}\\lambda^{a-1}e^{-q\\lambda},\\quad p_\\sigma(\\sigma)=\\frac{2q^a}{\\Gamma(a)}\\sigma^{2a-1}e^{-q\\sigma^2}",
+      "role": "Effective CIR/Gamma stationary solution, exponential cutoff",
+      "symbols": {
+        "alpha0,beta1": "sourcechosen immigration constant andpositive restoring rate",
+        "a,q": "Gamma shape andrate, bothpositive",
+        "lambda,sigma": "positive squarevalue andsingularvalue",
+        "Gamma": "Gammafunction",
+        "B": "scalar Brownian"
+      },
+      "evidence": "PDF p3Theorem3.2, p9proof,p12Prop6.8; valid effective density conditional onchosenSDE",
+      "interpretation": "Effective CIR/Gamma stationary solution, exponential cutoff",
+      "epistemic_status": "conditional zero-flux effective model solution, not actualSGD heavy-tail theorem"
+    },
+    {
+      "label": "General anisotropic Itô contraction with renamed covariance",
+      "latex": "d\\sigma_k=\\langle\\nabla_W\\sigma_k,-\\eta\\nabla_W\\mathcal L\\rangle dt+\\frac12\\sum_{i,j,p,q}\\frac{\\partial^2\\sigma_k}{\\partial W_{ij}\\partial W_{pq}}[2\\eta\\mathcal C(W,t)]_{ij,pq}\\,dt+\\langle\\nabla_W\\sigma_k,\\mathcal B(W,t)\\,dB\\rangle,\\quad\\mathcal B\\mathcal B^\\top=2\\eta\\mathcal C",
+      "role": "General anisotropic Itô contraction with renamed covariance",
+      "symbols": {
+        "C,Bcalligraphic": "renamed vectorized-element covariance/diffusion factor toavoid source SVDsymbolconflict",
+        "sigma_k": "smoothpositive distinct singularvalue",
+        "Wij,Wpq": "matrixelementpair",
+        "inner": "Frobeniusinnerproduct",
+        "eta,B": "learningrate/standardBrownian"
+      },
+      "evidence": "PDF pp14–15Proposition6.17; covariance renaming explicitlyrecorded",
+      "interpretation": "General anisotropic Itô contraction with renamed covariance",
+      "epistemic_status": "general local smooth Itô formula; no anisotropic experiment"
+    },
+    {
+      "label": "Per-step gradient-informed projected spectrum update",
+      "latex": "G_t=-\\eta\\nabla_W\\ell(t),\\quad M_t=U_k^\\top G_tV_k,\\qquad\\sigma_i\\leftarrow\\max(\\sigma_i+(M_t)_{ii},\\delta)",
+      "role": "Per-step gradient-informed projected spectrum update",
+      "symbols": {
+        "Gt,Mt": "currentlossgradientupdate andtopkprojection",
+        "Uk,Vk": "retainedsingularbasis",
+        "sigma_i": "trackedmode",
+        "delta": "positiveclamp; notBrownian",
+        "ell(t)": "time-indexedloss"
+      },
+      "evidence": "PDF p16Algorithm1lines5–10; futuregradient required eachstep",
+      "interpretation": "Per-step gradient-informed projected spectrum update",
+      "epistemic_status": "empirical algorithm definition usingcurrent gradient"
+    }
+  ],
+  "evidence_refs": [
+    "PDF pp1–3: authorroles, assumed matrixdiffusion, printedtheorems andmeanfield",
+    "PDF pp3–5: histograms/predictionfit failure/noise correlation limitations",
+    "PDF pp8–12: sourceIto coefficients, scalar countercheck, conditionalGamma law andlight far tail",
+    "PDF pp14–15: generalcovariance noexperiment andambiguous parametercalibration",
+    "PDF pp16–17: perstepgradient algorithm, smallconfigs, noaccuracy uncertainty/hardware, nonmonotonichighlr",
+    "SourcePDFSHA256 b5b1fe8cdae8e5af29cd5eddf456f7d71824787cecd1a30a5060bdcdee43bb80",
+    "Evidence status: full-text verified; no independent reproduction performed."
+  ],
+  "source_pdf_sha256": "b5b1fe8cdae8e5af29cd5eddf456f7d71824787cecd1a30a5060bdcdee43bb80"
+}

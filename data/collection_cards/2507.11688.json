@@ -1,0 +1,283 @@
+{
+  "arxiv_id": "2507.11688",
+  "source_version": "v4",
+  "source_pdf": "https://arxiv.org/pdf/2507.11688v4",
+  "title_en": "Composing Linear Layers from Irreducibles",
+  "title_zh": "旋量组合线性层：Clifford几何参数化、近似性能及证明边界",
+  "curation_status": "full_text_verified",
+  "card_standard_version": "2.3",
+  "paper_profile": "ai_empirical",
+  "style_reference": "physicist_daily_arxiv",
+  "provenance": {
+    "program": "Collection",
+    "catalog": "Paper Collection",
+    "catalog_record_id": "2507.11688",
+    "catalog_record_ids": [
+      "2507.11688"
+    ],
+    "catalog_topic": "Representation Learning",
+    "collection_date": "2026-08-30",
+    "sampled_at": "2026-09-26",
+    "selected_by": "collection_serial_goal_continuation",
+    "sampling_seed": "not_applicable_source_complete",
+    "candidate_count": 916
+  },
+  "verified_metadata": {
+    "arxiv_id": "2507.11688",
+    "version": "v4",
+    "title": "Composing Linear Layers from Irreducibles",
+    "authors": [
+      "Travis Pence",
+      "Daisuke Yamada",
+      "Vikas Singh"
+    ],
+    "published": "2025-07-15",
+    "updated": "2026-06-09",
+    "categories": [
+      "cs.LG"
+    ],
+    "primary_category": "cs.LG",
+    "license_url": "http://creativecommons.org/licenses/by/4.0/",
+    "pdf_pages": 35,
+    "source_pdf_sha256": "a99d414232746689b168daa903ea4046fc535e9c0e55bc237d1b4275f5670ef1",
+    "publication": "NeurIPS2025, Advances in Neural Information Processing Systems38, Main Conference Track",
+    "publisher_url": "https://papers.nips.cc/paper_files/paper/2025/hash/b95cb2d3f647dae571203bab285077e7-Abstract-Conference.html",
+    "publisher_metadata_verified": true,
+    "publisher_full_text_used": false
+  },
+  "sections": [
+    {
+      "title": "作者信息",
+      "paragraphs": [
+        "Travis Pence、Daisuke Yamada、Vikas Singh均署名威斯康星大学麦迪逊分校，首页列三人联系邮箱，没有等贡献或单独通讯作者星号，不推断具体分工。本卡全文依据arXiv:2507.11688v4（2026-06-09），共35个物理页；原始提交为2025-07-15。官方NeurIPS页面核实收录于2025年卷38主会，但本次使用的是此后更新的arXiv v4，不把它等同出版社最终PDF。许可CC BY4.0。（第1页及官方arXiv/NeurIPS记录。）"
+      ]
+    },
+    {
+      "title": "研究问题",
+      "paragraphs": [
+        "能否把语言模型中参数很多的线性投影，改成少量几何原语的组合？本文用Clifford代数的双向量与旋量构造受约束的变换，再拟合少量预训练注意力块的query/key/value投影。约数千旋量系数可取得接近低秩或Block-Hadamard替代层的有限任务性能，但不是把任意稠密矩阵无损变成对数平方个参数，当前实现也没有更快的实际运行。（第2–10、22–35页。）",
+        "读者桥：输入是原语言模型某注意力层的隐藏向量；原稠密矩阵给出目标投影。待训练的是双向量系数，算法将它们变成作用于多向量坐标的旋量，并用原投影输出的平方误差学习近似替代。最后插回模型测log perplexity和问答正确率。这里的旋转是表示空间线性代数，不是电子自旋或真实物理动力学；标题中的irreducibles指简单双向量几何原语，没有证明这些原语就是模型中的因果功能模块。（第3–9、28–31页。）"
+      ]
+    },
+    {
+      "title": "背景",
+      "paragraphs": [
+        "普通输入维数d的稠密投影有约d²个自由参数；低秩近似减少秩，Block-Hadamard用固定Hadamard变换加可训练分块。本文选择另一结构族：将2^n个输入坐标解释为n个生成元的多向量系数，仅训练双向量的n(n−1)/2个系数，让它们在整个Clifford代数上诱导变换。参数少源于约束可选变换族，不能仅由“2^n维作用”推断能表达全部2^n×2^n矩阵。（第2–6、10、24–28页。）",
+        "第3页引述的一般线性映射可以写成多项任意多向量左右乘积之和；这不等于有限几个旋量就能表示任意映射。原文已明确单个同旋量夹乘只给旋转保结构变换、不能捕获任意线性层。实际用子块、不同左右旋量、固定置换、归一化和非线性增加拟合能力；每项表达能力与代价都应单独看，不能用一般多向量表示引理替有限参数网络作无损性证明。（第3页Lemma1、第6、29–30页。）"
+      ]
+    },
+    {
+      "title": "模型与方法",
+      "paragraphs": [
+        "本文只用欧氏Cl(n,0)，记Cl(n)。向量的几何乘积是内积加反对称外积：",
+        "\\[uv=u\\cdot v+u\\wedge v,\\quad e_i^2=1,\\quad e_ie_j=-e_je_i\\ (i\\ne j),\\quad\\dim\\operatorname{Cl}(n)=2^n\\]",
+        "u、v为生成空间中的向量，$e_i$ 为正交生成元；$\\cdot$ 是内积、$\\wedge$ 为外积。多向量含标量、向量、双向量直到n阶的全部分量，故有2^n个系数；它与n维向量不同。reversion符号dagger反转乘法次序，是实Clifford反演，不是复Hilbert空间共轭转置。双向量是若干有向平面系数的线性组合，简单双向量只对应一个平面。（第2–5页。）",
+        "双向量指数生成旋量，旋量r满足单位反演范数；对任意简单分量，指数可用三角函数闭式。一般双向量精确分成不超过floor(n/2)个两两对易、正交的简单分量时：",
+        "\\[b=\\sum_{j=1}^k b_j,\\quad k\\le\\lfloor n/2\\rfloor,\\quad[b_i,b_j]=0,\\qquad r=e^b=\\prod_{j=1}^k\\left(\\cos\\|b_j\\|+\\frac{\\sin\\|b_j\\|}{\\|b_j\\|}b_j\\right)\\]",
+        "b是总双向量、$b_j$ 为简单分量，$[b_i,b_j]=b_ib_j-b_jb_i$，k为非零平面数；r是总旋量。每个括号来自原Eq.(5)，零范数取连续极限而非做零除。只有分解准确且分量对易时，闭式积严格等于原指数；有限容差迭代得到近似分量，不能把整个数值算法误写为无误差精确解。几何原语的范数决定参数化角度，向量夹乘出现两倍生成量，不能把同一个B的矩阵指数直接说成exp(B)而忽略2。（第4–6、22–26页。）",
+        "推广模块允许不同左右旋量，并将输入坐标的多个子集映到多个输出子集：",
+        "\\[\\psi_{r,s}(x)=rxs^\\dagger,\\qquad\\psi(x)=\\sigma\\!\\left(\\{\\psi_{r_{ij},s_{ij}}(x_{I_i})\\}_{i\\le c_1,j\\le c_2}\\right)\\]",
+        "$r,s\\in\\operatorname{Spin}(n)$，x是对应2^n坐标的多向量，dagger仍为reversion；$I_i,O_j$ 为各含2^n坐标的输入/输出子集，$c_1,c_2$ 为子集数，σ为原文pooling汇集算子。所有子集的并集要覆盖完整输入/输出。Figure4取c1=3、c2=2，形成6条块间映射；图中的“Six rotors”按上下文是6条双旋量模块路径，而不是完整参数计数只需6个独立系数。不同左右旋量不自动保阶，第24页明说附录同旋量的正交/分块证明未覆盖这个推广。（第6页 Eqs.(6)–(7)、Figure4，第24页。）",
+        "每条双旋量映射使用两组双向量系数，直接参数计数为：",
+        "\\[N_{\\mathrm{bivector}}\\le2c_1c_2\\binom n2=O\\!\\left(c_1c_2\\log^2 d\\right),\\quad2^n\\le d=\\min(d_{\\mathrm{in}},d_{\\mathrm{out}})\\]",
+        "N是双向量系数数，n为Clifford生成元数，d是较小输入/输出维数。原Theorems1/4写O(log²d)时隐含把c1、c2视作常量；任意维数且子块尺寸固定时，要覆盖坐标可使模块数增长，故本卡保留c1c2。增加width、depth又乘相应因子；这里数的是旋量系数，不能认证PReLU等其他可训练对象或整个语言模型的总参数都同样缩小。可训练族的自由维数依然有限，不是任意稠密线性变换的参数化。（第6、24、29–32页。）",
+        "Alg.2在右缩并表示下做幂迭代，取优势平面；Alg.1逐次减去该简单分量，再处理残余：",
+        "\\[v\\leftarrow\\frac{b\\mathbin{\\lrcorner}(b\\mathbin{\\lrcorner}v)}{\\|b\\mathbin{\\lrcorner}(b\\mathbin{\\lrcorner}v)\\|_2},\\quad B^2=-B^\\top B,\\quad b_s=(b\\mathbin{\\lrcorner}v)\\wedge v\\]",
+        "v为迭代向量、B是b对应的反对称矩阵，$\\lrcorner$ 为原文右缩并、$b\\lrcorner v=Bv$；$b_s$ 是近似提取的简单分量。归一化分母要求非零，随机初向量需有优势子空间分量；优势奇异值在平面内成对，负平方映射可使符号交替，收敛检测使用新旧v的和。近退化不同平面时不保证唯一方向或统一光滑导数。原算法只近似投影，误差可留在残余中；正文把若干步骤称可微，不构成退化点的全局稳定性证明。（第5–6、22–24页 Alg.1–2、Theorems2–3。）",
+        "为控制计算图，前期迭代不记录梯度、只给最后一次前向启用追踪，warm-start沿用上一步奇异方向。该做法缩小图大小，但文中没有完整隐式微分解或相对精确分解导数的误差界；不能由引用DEQ断言一次追踪等于完全固定点导数。小扰动下非退化谱隙帮助热启动，Figure6测的是特定随机旋转拟合、epsilon=.001、50次运行的迭代数均值与1标准差，不是语言模型准确率的50seed置信区间。（第6、22–24、31–32页。）",
+        "预训练LLM实验通过从当前模型抽取隐藏向量及原投影输出来拟合替代层：",
+        "\\[\\min_\\theta\\sum_{i=1}^N\\|H_\\theta(x_i)-Wx_i\\|_2^2\\]",
+        "$W\\in\\mathbb R^{d_{out}\\times d_{in}}$ 是原稠密投影，$x_i$ 是抽取的token隐藏状态，$H_\\theta$ 为替代模块，θ包含几何系数，N是样本数。是拟合投影的MSE，不是从零训练LLM交叉熵或直接最小化问答错误。替换多个层时按I<J<K顺序训练，前面替代先放入模型、重新抽后面层的校准输入；每次也重新训练同注意力块的输出投影Wo。因此下游结果不是只替换Q/K/V且全模型其他权重全冻结。未给清晰校准/测试完全独立的样本计数，不能补造无泄漏结论。（第7、28–29页。）",
+        "实际Rotor网络每个map之后有固定置换、归一化及非线性，Table6最终用PReLU；因此整个替代网络不能无条件视作单个严格线性层。Table6 Rotor学习率.05、batch64，LR/BH学习率.01、batch256，均无L2衰减、使用cosine annealing。附录给chunk2048、width1或2、depth1或3，但第31页计算说明又称最高depth2/width3，本卡保留源内配置表述不一致，不任选一套当全部实验协议。（第29–31页Table6。）"
+      ]
+    },
+    {
+      "title": "核心结果与证据",
+      "paragraphs": [
+        "参数账目很小，但只计所替代投影。Table7的LLaMa-3.2 1B原Q/K/V总数6,291,456；Rotor列≤3,056（Q≤896、K/V各≤1080），LR4为36,864，BH1为49,152。原Q alone4,194,304对≤896的约4700倍比值是投影参数减少，不是整个1B模型减少4700倍；输出Wo重训练且其稠密参数保留。Qwen三投影原3,145,728对≤2,704。都是所列架构的系数上界，没有认证峰值显存、全部权重文件或推理速度同倍改善。（第8、10、32页Tables4/7。）",
+        "Table1单注意力块替换时，Wikitext2的LLaMa log-PPL原2.575，Rotor2.629、BH2.636、LR4 2.658；Qwen原2.287，Rotor2.307、BH2.323、LR4 2.342。接近的是替代基线，仍逊于原稠密模型。Arc Challenge单块：LLaMa原58.37%、Rotor55.31%、BH54.83%；Qwen原66.09%、Rotor61.34%、BH60.11%、LR4 57.48%。第9页正文该句选择LR4的57.48作比较，未同时列出更高的BH60.11，本卡按视觉核对表格列值，不据文字制造更大的胜幅。数值为log-PPL，不能把2.629直接称未取对数的perplexity。（第7页Table1、第9页，PDF视觉核对。）",
+        "更多替换有明确失败情形：Table1 Qwen三块Arc准确率Rotor47.28%，低于LR4 60.77%和BH60.68%；HellaSwag Rotor6.868%，低于LR1 13.93%、BH13.06%，原模型55.00%。两块HellaSwag Rotor40.60%，也不及BH42.73%。所以不能发布“所有指标最佳／无损”。Table1单块对所有所测层取平均，两/三块对五个随机层组合取平均；这是层选择平均，不是五个独立训练seed或误差条。源Checklist明确准确率未报告误差条。（第7、17页。）",
+        "层位置也影响比较：Table2为LLaMa-3.2 1B层1–15及后部两层组合。第9页把12/13层的59.66%例子说成Qwen，但Table2标题明确LLaMa；本卡不搬成Qwen结果。附录另有Qwen27层、LLaMa3B27层和Fox31层，不能用主文“up to1.5B”抹去附录的3B试验。Fox两块Arc Rotor30.22%不及BH31.42%，而HellaSwag32.87%较基线好；代表性优劣都保留。（第8–9、33–35页Tables2、8–11。）",
+        "FMNIST端到端MLP提供另一种可行性：除最终分类头外替换两隐藏层，10轮dense89.67%、Rotor88.36%，早期dense更快。第31页dense隐藏512，Rotor用Cl(15)、width3/depth1，验证选择学习率分别.002和.005，并非参数量相同或每个超参数完全相同；没有大语言模型全层替换或从零端到端训练结果。Figure5只在Qwen第13层扫width/depth，PPL逐渐接近原9.845，不能当全部层、全部任务调参后都恢复。（第9、31页Table3、Figure5。）",
+        "旋量的数学性质也有精确范围。同旋量夹乘在各阶分量上的矩阵为：",
+        "\\[rvr^\\dagger=e^{2B}v,\\quad M=\\operatorname{diag}\\left(\\bigwedge^0 R,\\ldots,\\bigwedge^n R\\right),\\quad R=e^{2B}\\in SO(n)\\]",
+        "v为n维向量，B为b的反对称矩阵，R是向量旋转，$\\bigwedge^k R$ 为k阶外幂作用；M在2^n多向量坐标上分块，保阶、正交。系数2来自夹乘，dagger为reversion。此结论是已限定同旋量作用，并不自动适用于不同左右旋量、pooling、PReLU及置换后的完整替代网络；附录原文亦区分这两种情况。（第24–26页Definition3、Theorem5、Properties1–2。）",
+        "附录Property3反向证明把整个多向量变换的det=+1用于推断g为偶versor；本卡直接检查一个边界反例：",
+        "\\[\\operatorname{Cl}(2,0):\\ g=e_1,\\quad N_g=\\operatorname{diag}(1,1,-1,-1),\\quad\\det N_g=1,\\quad\\det(N_g|_{\\operatorname{Cl}^1})=-1\\]",
+        "取基序 $(1,e_1,e_2,e_1e_2)$，单位奇versor $g=e_1$ 的夹乘保阶且全空间正交、总行列式+1，但向量块为diag(1,−1)、行列式−1，不能属于Spin(2)夹乘像。故原文未限制n的交集刻画不能由所给全空间行列式条件成立；至少需要更强的取向/偶性条件。本例为本卡使用源定义的直接代数核查，不是作者发现、也不是训练复现；不据此否定Properties1–2的正向性质或有限实验性能。（第27–28页Property3，PDF视觉核对。）"
+      ]
+    },
+    {
+      "title": "有效性与局限",
+      "paragraphs": [
+        "旋量参数化减少自由度，不保证任意矩阵、能力或因果模块完全被保留。有限width/depth与分块覆盖是实际表达边界；一般多向量线性表示引理、同旋量Spin性质、双旋量推广及非线性网络不能相互替换。源内Property3逆向刻画、近似投影被称精确分解及可微/退化边界已说明，不用概述的“closed-form”认证完整算法或全部证明。（第3–6、22–30页。）",
+        "当前wall-clock更慢。正文报告随width×depth大致增加；FLOPs虽给LLaMa1B 35.8M×wd对dense206.1M、3B82.4M×wd对515.3M，但稠密实现/顺序运算使实际时间未改善。附录“优化实现最多2×slowdown”是并行假设下估计，不是已部署测量。正向同旋量矩阵的非零项上界为组合数，减少也非任意n维下的指数级运行优势；芯片上由少量系数合成、降低带宽是未来系统工作，没有本次实测内存带宽收益。（第9–10、22、26、31页。）",
+        "只替换少数注意力块且保留输出投影，未完成LLM全模型转换；参数数目、超参数、校准条件不全相同，没有所有任务/层的性能保证、准确率置信区间或解释性因果测试。多替换退化和Fox负例已给，FMNIST学习率/宽度不同不能说严格等容量公平。数据MSE拟合接近不意味着模型安全、推理或知识能力保持。（第7–10、17、29–35页。）",
+        "资源文字仍需审慎：1500+1500+1000+500约4500 GPU小时与“8张GPU连续3周”不是同一个可直接相乘得等值的精确账本；可能有利用率或并行安排，本卡不补造。width/depth设置和第9页Qwen/表格归属冲突同样保留；没有读取作者全部代码来认证哪一处为实现事实。本卡完成35页PDF文字与关键原图/代数核查，没有训练、基线拟合或系统性能复现。（第9、29–31页。）"
+      ]
+    },
+    {
+      "title": "复现与资源",
+      "paragraphs": [
+        "官方代码 https://github.com/vsingh-group/ComposingLinearLayers 已核对同名论文README及训练入口。代码路线包括作者修改版torch_ga_fix的submission分支与fast-hadamard-transform；主实验run/run_llama.sh、run_qwen.sh、run_fox.sh，合成投影收敛run.test_projection_convergence。论文附录给8张A100 PCIe、每卡40GB；四模型相关试验约1500、1500、1000、500 GPU小时，总约4500，作者称约3周运行。版本、校准集与超参数应锁定，不在本卡声称已执行或已通过复现。（第9、29–32页与官方代码页。）",
+        "复现应先在小Cl(n)检查简单指数、零范数极限、同旋量夹乘与exp(2B)一致，再测Alg.2容差/谱隙、近退化及计算梯度；随后对实际注意力输入拟合，按递增层顺序抽新的校准数据并重训Wo，分别记录projection参数、全部模型内存、FLOPs与wall-clock。这是核查路线，Property3反例仅是已执行的小型代数检查，不替代训练。选图为CC BY4.0的Figure4，保留全部输入/子块/双旋量模块/pooling/输出标签及作者署名。Evidence status: full-text verified; no independent reproduction performed."
+      ]
+    },
+    {
+      "title": "阅读指南",
+      "paragraphs": [
+        "先用第2页区分n维生成空间与2^n维多向量，第3页区分任意左右多向量与同旋量夹乘；再看第5页简单指数、第6页Figure4的子块汇集和c1c2计数。读实验必须同时看Table1的原模型及三块负例、Table7投影参数，以及第29–31页Wo重训、非线性和实际耗时。附录B的正向外幂矩阵帮助理解保阶，Property3反向证明宜与本卡给的Cl(2)例子分开检查。前置知识为矩阵、旋转/Lie生成元、反对称外积、幂迭代与监督MSE，不需将几何原语当成已定位的语言认知模块。"
+      ]
+    }
+  ],
+  "cover": {
+    "mode": "source_figure",
+    "asset_path": "assets/collection-figures/2507.11688/figure-4-rotor-modules.png",
+    "label": "Figure4",
+    "visual_type": "schematic",
+    "evidence": "PDF physicalp.6 Figure4, official arXiv CC BY4.0",
+    "alt_text": "三个输入多向量子块经六条双旋量映射与汇集合成两个输出子块",
+    "caption": "Travis Pence、Daisuke Yamada、Vikas Singh，Figure4（arXiv:2507.11688v4，PDF第6页，https://arxiv.org/abs/2507.11688v4，CC BY4.0）：输入分成3个多向量子块，6条双旋量模块路径映向2个输出子块，经pooling合并为完整输出；保留x、xIi、yOj、最终y、Cl(n)、子集索引、Six rotors和pooling标签。此图展示块间组合机制，不能证明任意稠密矩阵无损、整个网络严格线性或实际计算更快。",
+    "selection_rationale": "完整显示低参数几何模块如何覆盖不同输入输出维数，科学对象与c1c2计数直接相连，避免用胜率表代替机制；已对照源PDF全部箭头标签。"
+  },
+  "figure_refs": [
+    {
+      "label": "Figure4",
+      "asset_path": "assets/collection-figures/2507.11688/figure-4-rotor-modules.png",
+      "section": "模型与方法",
+      "role": "Subspace coverage and paired-rotor aggregation architecture",
+      "evidence": "PDF physicalp.6 Figure4, official arXiv CC BY4.0",
+      "alt_text": "三个输入多向量子块经六条双旋量映射与汇集合成两个输出子块",
+      "caption": "Travis Pence、Daisuke Yamada、Vikas Singh，Figure4（arXiv:2507.11688v4，PDF第6页，https://arxiv.org/abs/2507.11688v4，CC BY4.0）：输入分成3个多向量子块，6条双旋量模块路径映向2个输出子块，经pooling合并为完整输出；保留x、xIi、yOj、最终y、Cl(n)、子集索引、Six rotors和pooling标签。此图展示块间组合机制，不能证明任意稠密矩阵无损、整个网络严格线性或实际计算更快。",
+      "interpretation": "Finite structured module family; not universal exact dense-layer replacement or timing evidence."
+    }
+  ],
+  "equation_refs": [
+    {
+      "label": "Euclidean geometric product and multivector dimension",
+      "latex": "uv=u\\cdot v+u\\wedge v,\\quad e_i^2=1,\\quad e_ie_j=-e_je_i\\ (i\\ne j),\\quad\\dim\\operatorname{Cl}(n)=2^n",
+      "role": "Euclidean geometric product and multivector dimension",
+      "symbols": {
+        "u,v,ei": "vectors and Euclidean orthogonal generators",
+        "dot,wedge": "inner/antisymmetric exterior products",
+        "n,Cl(n)": "generator number and2^n-dimensional full algebra"
+      },
+      "evidence": "PDF p.2 Euclidean generators, grades and canonical dimension",
+      "interpretation": "Euclidean geometric product and multivector dimension",
+      "epistemic_status": "definitions"
+    },
+    {
+      "label": "Exact exponential for a commuting simple-bivector decomposition",
+      "latex": "b=\\sum_{j=1}^k b_j,\\quad k\\le\\lfloor n/2\\rfloor,\\quad[b_i,b_j]=0,\\qquad r=e^b=\\prod_{j=1}^k\\left(\\cos\\|b_j\\|+\\frac{\\sin\\|b_j\\|}{\\|b_j\\|}b_j\\right)",
+      "role": "Exact exponential for a commuting simple-bivector decomposition",
+      "symbols": {
+        "b,bj": "total and exact mutually commuting simple bivectors",
+        "k": "at mostfloor(n/2)nonzero planes",
+        "r": "rotor exponential",
+        "norm": "Euclidean simple-bivector norm; sinc continuous atzero",
+        "commutator": "bi bj-bj bi"
+      },
+      "evidence": "PDF pp.4–6 Eq5 and invariant decomposition; exact identity conditional on exact commuting components",
+      "interpretation": "Exact exponential for a commuting simple-bivector decomposition",
+      "epistemic_status": "exact identity conditional on exact decomposition; finite algorithm approximate"
+    },
+    {
+      "label": "Generalized two-rotor subspace gadget",
+      "latex": "\\psi_{r,s}(x)=rxs^\\dagger,\\qquad\\psi(x)=\\sigma\\!\\left(\\{\\psi_{r_{ij},s_{ij}}(x_{I_i})\\}_{i\\le c_1,j\\le c_2}\\right)",
+      "role": "Generalized two-rotor subspace gadget",
+      "symbols": {
+        "x,r,s": "multivector and left/right unit even rotors",
+        "dagger": "Clifford reversion",
+        "Ii,Oj": "2^n-sized input/output coordinate subsets",
+        "c1,c2": "subspace counts",
+        "sigma": "source pooling, not automatically linear in arbitrary design"
+      },
+      "evidence": "PDF p.6 Eqs6–7 Figure4 and coverage requirement",
+      "interpretation": "Generalized two-rotor subspace gadget",
+      "epistemic_status": "defined restricted geometric gadget"
+    },
+    {
+      "label": "Conditional bivector coefficient count retaining module number",
+      "latex": "N_{\\mathrm{bivector}}\\le2c_1c_2\\binom n2=O\\!\\left(c_1c_2\\log^2 d\\right),\\quad2^n\\le d=\\min(d_{\\mathrm{in}},d_{\\mathrm{out}})",
+      "role": "Conditional bivector coefficient count retaining module number",
+      "symbols": {
+        "N": "bivector coefficient count, not whole-model total",
+        "c1,c2": "possibly dimension-dependent covered subspaces",
+        "n,d": "log2 multivector size and minimum input/output dimensions",
+        "din,dout": "input/output widths",
+        "binomial": "n(n-1)/2coefficients per bivector"
+      },
+      "evidence": "PDF pp.6,24 Theorems1/4; algebraic count with fixed-module assumption explicitly restored",
+      "interpretation": "Conditional bivector coefficient count retaining module number",
+      "epistemic_status": "exact coefficient count, asymptotic depends on module counts"
+    },
+    {
+      "label": "Approximate simple-plane power iteration",
+      "latex": "v\\leftarrow\\frac{b\\mathbin{\\lrcorner}(b\\mathbin{\\lrcorner}v)}{\\|b\\mathbin{\\lrcorner}(b\\mathbin{\\lrcorner}v)\\|_2},\\quad B^2=-B^\\top B,\\quad b_s=(b\\mathbin{\\lrcorner}v)\\wedge v",
+      "role": "Approximate simple-plane power iteration",
+      "symbols": {
+        "b,B": "bivector and corresponding skew matrix",
+        "v": "normalized iterate with nonzero leading-plane component",
+        "right contraction": "source conventionb⌟v=Bv",
+        "bs": "approximately extracted simple plane",
+        "norm": "nonzero vector norm for normalization"
+      },
+      "evidence": "PDF p.5 Alg2 andpp.22–23 Theorem2 right contraction/sign/correctness assumptions",
+      "interpretation": "Approximate simple-plane power iteration",
+      "epistemic_status": "approximate numerical iteration, nondegenerate/nonzero conditions"
+    },
+    {
+      "label": "Layer output approximation objective",
+      "latex": "\\min_\\theta\\sum_{i=1}^N\\|H_\\theta(x_i)-Wx_i\\|_2^2",
+      "role": "Layer output approximation objective",
+      "symbols": {
+        "Htheta,theta": "approximate module including practical nonlinearities and its parameters",
+        "xi,W": "calibration hidden inputs and target dense projection",
+        "N": "token-position sample count",
+        "norm": "Euclidean projection-output error"
+      },
+      "evidence": "PDF pp.28–29 AppendixC actual sequential calibration/retraining protocol",
+      "interpretation": "Layer output approximation objective",
+      "epistemic_status": "empirical fitting definition"
+    },
+    {
+      "label": "Same-rotor exterior-power matrix action with factor2",
+      "latex": "rvr^\\dagger=e^{2B}v,\\quad M=\\operatorname{diag}\\left(\\bigwedge^0 R,\\ldots,\\bigwedge^n R\\right),\\quad R=e^{2B}\\in SO(n)",
+      "role": "Same-rotor exterior-power matrix action with factor2",
+      "symbols": {
+        "r,b,B": "same rotor exp(b) and skewgenerator",
+        "v,R": "grade1 vector andexp(2B)rotation",
+        "M,wedgek": "grade-block exterior-power representation",
+        "dagger": "reversion, not transpose",
+        "n": "generator count"
+      },
+      "evidence": "PDF pp.25–26 Theorem5 explicitR=exp(2B), same-rotor restrictionp.24",
+      "interpretation": "Same-rotor exterior-power matrix action with factor2",
+      "epistemic_status": "same-rotor positive structural property"
+    },
+    {
+      "label": "Editorial Cl2 counterexample to unqualified Property3 inverse",
+      "latex": "\\operatorname{Cl}(2,0):\\ g=e_1,\\quad N_g=\\operatorname{diag}(1,1,-1,-1),\\quad\\det N_g=1,\\quad\\det(N_g|_{\\operatorname{Cl}^1})=-1",
+      "role": "Editorial Cl2 counterexample to unqualified Property3 inverse",
+      "symbols": {
+        "g,e1": "unit oddversor inEuclideanCl2",
+        "Ng": "full sandwich matrix inbasis1,e1,e2,e1e2",
+        "Cl1": "vector block, whose determinant is-1",
+        "det": "full determinant+1does not impose vector orientation"
+      },
+      "evidence": "PDF pp.27–28 Property3; direct exactCl2 basis algebra recorded locally, not author finding",
+      "interpretation": "Editorial Cl2 counterexample to unqualified Property3 inverse",
+      "epistemic_status": "editorial algebraic counterexample to source inverse claim, no empirical reproduction"
+    }
+  ],
+  "evidence_refs": [
+    "PDF pp.1–6: affiliations, EuclideanClifford primitives, restrictedrotors, approximatealgorithm andmodule-dependent parameter count",
+    "PDF pp.7–10: originalvsapproximate downstreammetrics, three-layernegativeitems,FMNIST andslower runtime",
+    "PDF pp.15–21: authorschecklist admits noaccuracy errorbars, notindependent certification",
+    "PDF pp.22–28: correct same-rotor forwardproperties, finite numerical assumptions andProperty3inverse counterexample",
+    "PDF pp.29–35: sequential calibration, denseWo retraining,nonlinear practical gadget, resources/config conflicts andextra benchmarks",
+    "Source PDF SHA-256 a99d414232746689b168daa903ea4046fc535e9c0e55bc237d1b4275f5670ef1",
+    "Evidence status: full-text verified; no independent reproduction performed."
+  ],
+  "source_pdf_sha256": "a99d414232746689b168daa903ea4046fc535e9c0e55bc237d1b4275f5670ef1"
+}
