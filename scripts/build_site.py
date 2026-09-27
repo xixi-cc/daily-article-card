@@ -2582,6 +2582,25 @@ input[type=search]:focus-visible,
   box-shadow: 0 0 0 4px rgba(215, 92, 47, 0.12);
 }
 
+/* Preserve the full title and abstract in the two long-title Daily covers. */
+@media (max-width: 600px) {
+  .feed-card-link[href^="papers/2609.21312/"] .note-cover,
+  .feed-card-link[href^="papers/2609.21680/"] .note-cover {
+    aspect-ratio: auto;
+    min-height: 260px;
+  }
+  .feed-card-link[href^="papers/2609.21312/"] .note-cover-title-shell,
+  .feed-card-link[href^="papers/2609.21680/"] .note-cover-title-shell {
+    min-height: 0;
+  }
+  .feed-card-link[href^="papers/2609.21312/"] .note-cover-title,
+  .feed-card-link[href^="papers/2609.21312/"] .note-cover-abstract,
+  .feed-card-link[href^="papers/2609.21680/"] .note-cover-title,
+  .feed-card-link[href^="papers/2609.21680/"] .note-cover-abstract {
+    flex-shrink: 0;
+  }
+}
+
 @media (max-width: 960px) {
   .detail-hero-grid,
   .detail-shell {
