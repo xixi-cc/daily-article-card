@@ -43,9 +43,11 @@ INPUT_MD = PROJECT_ROOT / "papers.md"
 CURATED_CARDS_DIR = PROJECT_ROOT / "data" / "curated_cards"
 COLLECTION_CARDS_DIR = PROJECT_ROOT / "data" / "collection_cards"
 COLLECTION_FIGURES_DIR = PROJECT_ROOT / "data" / "collection_figures"
+CARD_FIGURES_DIR = PROJECT_ROOT / "data" / "card_figures"
 SITE_DIR = PROJECT_ROOT / "site"
 ASSETS_DIR = SITE_DIR / "assets"
 COLLECTION_FIGURES_SITE_DIR = ASSETS_DIR / "collection-figures"
+CARD_FIGURES_SITE_DIR = ASSETS_DIR / "card-figures"
 MATHJAX_SITE_DIR = ASSETS_DIR / "vendor" / "mathjax"
 MATHJAX_SOURCE_DIR = PROJECT_ROOT / "node_modules" / "mathjax" / "es5"
 PAPERS_DIR = SITE_DIR / "papers"
@@ -4438,6 +4440,10 @@ def main() -> int:
     shutil.rmtree(COLLECTION_FIGURES_SITE_DIR, ignore_errors=True)
     if COLLECTION_FIGURES_DIR.exists():
         shutil.copytree(COLLECTION_FIGURES_DIR, COLLECTION_FIGURES_SITE_DIR)
+
+    shutil.rmtree(CARD_FIGURES_SITE_DIR, ignore_errors=True)
+    if CARD_FIGURES_DIR.exists():
+        shutil.copytree(CARD_FIGURES_DIR, CARD_FIGURES_SITE_DIR)
 
     # 优化图片：转 WebP + 生成缩略图
     thumb_map = optimize_paper_images()

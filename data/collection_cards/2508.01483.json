@@ -1,0 +1,177 @@
+{
+  "arxiv_id": "2508.01483",
+  "source_version": "v1",
+  "source_pdf": "https://arxiv.org/pdf/2508.01483v1",
+  "title_en": "Training Dynamics of the Cooldown Stage in Warmup-Stable-Decay Learning Rate Scheduler",
+  "title_zh": "WSD 学习率冷却阶段的训练动力学：日程、优化器状态与证据边界",
+  "curation_status": "full_text_verified",
+  "card_standard_version": "2.3",
+  "paper_profile": "ai_empirical",
+  "style_reference": "physicist_daily_arxiv",
+  "provenance": {
+    "program": "Collection",
+    "catalog": "Paper Collection",
+    "catalog_record_id": "2508.01483",
+    "catalog_record_ids": [
+      "2508.01483"
+    ],
+    "catalog_topic": "Training Dynamics",
+    "collection_date": "2026-08-30",
+    "sampled_at": "2026-09-26",
+    "selected_by": "collection_serial_goal_continuation",
+    "sampling_seed": "not_applicable_source_complete",
+    "candidate_count": 916
+  },
+  "verified_metadata": {
+    "arxiv_id": "2508.01483",
+    "version": "v1",
+    "title": "Training Dynamics of the Cooldown Stage in Warmup-Stable-Decay Learning Rate Scheduler",
+    "authors": [
+      "Aleksandr Dremov",
+      "Alexander Hägele",
+      "Atli Kosson",
+      "Martin Jaggi"
+    ],
+    "affiliations": [
+      "EPFL, Switzerland"
+    ],
+    "published": "2025-08-02T00:00:00Z",
+    "categories": [
+      "cs.LG"
+    ],
+    "primary_category": "cs.LG",
+    "license_url": "http://creativecommons.org/licenses/by/4.0/",
+    "pdf_pages": 29,
+    "source_pdf_sha256": "45bec047c884bf84c5fdcd1fc0b0ae718fcf966ee49b9f802d994ccdbbad3357",
+    "publication": "PDF header states Published in Transactions on Machine Learning Research (08/2025); linked OpenReview entry not independently accessible in this audit",
+    "published_precision": "day; UTC midnight is serialization only, not a claimed submission time"
+  },
+  "sections": [
+    {
+      "title": "作者信息",
+      "paragraphs": [
+        "Aleksandr Dremov、Alexander Hägele、Atli Kosson 与 Martin Jaggi，PDF 首页署名 EPFL。官方 arXiv:2508.01483v1 于 2025-08-02 提交，29 个物理页；PDF 页眉注明 TMLR 2025 年 8 月发表，本卡未把无法打开的 OpenReview 页当作第二份独立发表证明。收藏收录日是 2026-08-30，与论文首发日不同。官方 arXiv 许可为 CC BY 4.0（PDF p1；官方元数据）。"
+      ]
+    },
+    {
+      "title": "研究问题",
+      "paragraphs": [
+        "Warmup–Stable–Decay（WSD）先升学习率、再恒定、最后用约 20% 训练步数冷却至零。最终验证 perplexity 的急降究竟如何依赖冷却曲线、AdamW 状态和批大小？论文固定大多数实验的冷却前 checkpoint，只在冷却阶段改变设置，主实验为 210M 参数 decoder-only Transformer、SlimPajama 子集，预冷却 26,400 步约 2.7B token（PDF pp2–4, App. A p18）。"
+      ]
+    },
+    {
+      "title": "模型与方法",
+      "paragraphs": [
+        "作者对每种冷却形状从同一 checkpoint 出发，用相同数据部分的 \\(N=9\\) 种排列训练到 33,000 步约 3.4B token；参考模型则用较长的 59,400 步约 6B token、sqrt 冷却和相同数据的重复排列。记 \\(m_i\\) 为第 \\(i\\) 个训练终点、\\(\\bar m=E_i[m_i]\\) 为**权重平均**、\\(m^*\\) 为较长参考训练的权重平均、\\(L\\) 为验证损失。相对参考损失的平均差被恒等地拆为 \\(L(\\bar m)-L(m^*)\\) 与 \\(E_i[L(m_i)]-L(\\bar m)\\)（PDF pp4–5, Eq. 1）。",
+        "后项是非线性损失上的 Jensen 型差，作者称其为“variance contribution”，不是标准的模型间损失方差，也没有对任意非凸 \\(L\\) 保证非负；前项也不是对未知全局最优的偏差。用两模型 \\(m=\\pm1\\)、\\(L(m)=-m^2\\) 可直接得到后项 \\(-1\\)，说明分解是代数恒等式而非普适非负偏差—方差定理。本研究实际散点中的这两项为正，不能把这个示例反例误述为论文图值错误（PDF p5 Eq. 1, Fig. 6；本卡直接代数核对）。",
+        "补充材料还尝试权重空间距离、预测分布 KL 和逐训练批次的回顾性 perplexity 变化。权重空间图大体保留形状排序，直接损失方差图的权衡不如主图清楚；逐点偏差的 shift 只按冷却批次算，deviation 则按全程批次算，作者明确说这种 shift 选取缺乏坚实理论理由（PDF pp6–7, App. C pp18–21, App. E pp23–25）。"
+      ]
+    },
+    {
+      "title": "核心结果与证据",
+      "paragraphs": [
+        "Figure 6 中，降低线性冷却的起始学习率使实验点沿“更小 Jensen 差、更大参考差”移动；0.7 倍起点的线性曲线与 sqrt 曲线接近低总差。square 与 mirror cosine 在该主实验中更高变动；这只说明当前 210M 模型和数据下测试过的形状。作者在 60M 模型和 FineWeb-Edu 子集重绘了相近图形（App. D pp22–23），但这不是不同规模、架构和预算上的全域最优性证明。",
+        "当目标改成平均多个**不同数据部分**训练的终点时，Figure 9 中高变动形状平均后改善较多，但同等合计 FLOPs/数据量的一条较长训练仍优于所有平均模型。因此“单模型最佳冷却”和“模型平均时较合适的冷却”在该设置下并不相同；不能只摘取 Figure 6 宣称 sqrt 总是最优（PDF p8 Fig. 9）。",
+        "保持总 token 数、改变冷却批大小时，若同时按 token 半衰期调整 AdamW 的 \\(\\beta_1,\\beta_2\\)，大批次表现变差；若保留原 beta，曲线反而改善。Figure 10 的每点是 5 种数据排列的最小—最大误差条，较大批次的学习率还经选择，故不能把差异单独归因于批大小。Figure 11 固定 sqrt 曲线时调整 beta 可带来与选曲线相近的 perplexity 差；较高 \\(\\beta_2\\) 在所测区域更好，但 \\(\\beta_2\\approx0.999995\\) 的极值不等于通用推荐（PDF pp8–10, App. H p26）。"
+      ]
+    },
+    {
+      "title": "有效性与局限",
+      "paragraphs": [
+        "作者用冷却前到最终模型的位移作“全局优化方向”，用当前点后续 10 个 AdamW 步作第二轴，在二维切片上看到开始时近似“河谷”、结束时更像盆地（PDF pp10–11 Fig. 12，App. J p29 Fig. 30）。第一轴借用了**最终**模型位置，因此图是事后诊断，不是训练当下可用的预言方向；二维切片也不能证明整个高维损失地形具有唯一河谷或随机步正交运动就是方差的因果来源。",
+        "正文明确只以验证损失和优化地形为主，未完成对下游行为的解释；补充材料的线性 probe perplexity 随冷却改善，但作者说未得出有用的机制结论（PDF p12，App. I pp27–28）。该研究没有对超大模型、其他优化器和所有语料给出外推保证，也没有把较好 perplexity 等同于已测到的下游能力提升。"
+      ]
+    },
+    {
+      "title": "阅读指南",
+      "paragraphs": [
+        "先看 PDF pp3–5 的共同起点、数据排列设计与 Eq. 1/Fig. 6；读 p8 Fig. 9 才能区分单模型和平均模型目标，随后核查 pp9–10 Figs. 10–11 的 beta/批次联动与 p11 Fig. 12 的事后坐标。App. A、D、H 分别给模型配置、60M/跨数据复画和较大批次学习率选择。"
+      ]
+    },
+    {
+      "title": "复现与资源",
+      "paragraphs": [
+        "本文卡片核对了29/29 页文字、原版关键图及 Eq. 1 的代数边界；未复跑训练、计算置信区间或独立验证 OpenReview 页面。[arXiv v1](https://arxiv.org/abs/2508.01483v1)；[PDF](https://arxiv.org/pdf/2508.01483v1)。"
+      ]
+    }
+  ],
+  "cover": {
+    "mode": "source_figure",
+    "asset_path": "assets/collection-figures/2508.01483/figure-6-bias-variance.png",
+    "label": "Figure 6",
+    "visual_type": "comparison",
+    "evidence": "arXiv v1 PDF physical p5, Figure 6; CC BY 4.0",
+    "alt_text": "两幅冷却日程偏差与 Jensen 型差散点图，完整保留两轴、日程标注和最低总差虚线",
+    "caption": "Aleksandr Dremov 等，Figure 6（arXiv:2508.01483v1，PDF 物理第 5 页，https://arxiv.org/abs/2508.01483v1，CC BY 4.0）：左图是降低起始学习率的线性冷却，右图同时比较其他形状；横轴为相对较长训练参考模型的损失差，纵轴是样本顺序变动下“各模型平均损失−平均权重模型损失”的 Jensen 型差。图中 0.7 线性与 sqrt 接近低总差；这是该 210M 模型、数据和参考模型下的有限实验，不是所有损失函数下的非负方差定理。",
+    "selection_rationale": "Figure 6 直接呈现论文中心的日程权衡，保留两面板、坐标、标注及最低总差虚线，比概念性 Figure 1 更可检验。"
+  },
+  "figure_refs": [
+    {
+      "asset_path": "assets/collection-figures/2508.01483/figure-6-bias-variance.png",
+      "label": "Figure 6",
+      "visual_type": "comparison",
+      "evidence": "arXiv v1 PDF physical p5, Figure 6; CC BY 4.0",
+      "alt_text": "两幅冷却日程偏差与 Jensen 型差散点图，完整保留两轴、日程标注和最低总差虚线",
+      "caption": "Aleksandr Dremov 等，Figure 6（arXiv:2508.01483v1，PDF 物理第 5 页，https://arxiv.org/abs/2508.01483v1，CC BY 4.0）：左图是降低起始学习率的线性冷却，右图同时比较其他形状；横轴为相对较长训练参考模型的损失差，纵轴是样本顺序变动下“各模型平均损失−平均权重模型损失”的 Jensen 型差。图中 0.7 线性与 sqrt 接近低总差；这是该 210M 模型、数据和参考模型下的有限实验，不是所有损失函数下的非负方差定理。",
+      "section": "核心结果与证据",
+      "role": "Finite-sweep bias/Jensen-gap comparison",
+      "interpretation": "Empirical trade-off in a specified 210M setting; not a nonnegative variance theorem."
+    }
+  ],
+  "equation_refs": [
+    {
+      "label": "Source bias/Jensen-gap decomposition",
+      "latex": "E_i[L(m_i)]-L(m^*)=\\underbrace{L(\\bar m)-L(m^*)}_{B}+\\underbrace{E_i[L(m_i)]-L(\\bar m)}_{V}",
+      "role": "分开参考模型差与多次训练终点在非线性验证损失上的差",
+      "symbols": {
+        "m_i": "相同数据不同排列得到的模型",
+        "mstar": "较长训练参考模型的权重平均",
+        "mbar": "实验模型的权重平均",
+        "L": "验证损失"
+      },
+      "evidence": "PDF physical p5 Eq. (1), Figure 6",
+      "source_locator": "PDF physical p5 Eq. (1), Figure 6",
+      "interpretation": "对任意损失是精确代数恒等式；V 一般是可正可负的 Jensen 型差，不是总非负统计方差，m* 也不是全局最优。",
+      "epistemic_status": "exact algebraic identity with empirical interpretation"
+    },
+    {
+      "label": "Data-point shift and deviation",
+      "latex": "\\mathrm{shift}=|C|^{-1}\\sum_{i\\in C}[c(b_i)-p(b_i)],\\quad \\mathrm{deviation}=N^{-1}\\sum_{i=1}^{N}([c(b_i)-p(b_i)]-\\mathrm{shift})^2",
+      "role": "刻画冷却批次的平均 perplexity 差（改善时为负）及全训练批次的非均匀性",
+      "symbols": {
+        "C": "冷却阶段批次下标集合",
+        "p": "冷却前模型 perplexity",
+        "c": "冷却后模型 perplexity",
+        "N": "全部训练批次数"
+      },
+      "evidence": "PDF physical pp6–7 Eq. (2), Fig. 8",
+      "source_locator": "PDF physical pp6–7 Eq. (2), Fig. 8",
+      "interpretation": "shift 与 deviation 的求和范围不同；作者承认只用 C 计算 shift 是经验选择，不能当作定理。",
+      "epistemic_status": "source-defined empirical diagnostics"
+    },
+    {
+      "label": "AdamW half-life parameter change",
+      "latex": "\\widehat\\beta_1=0.9^{p},\\qquad \\widehat\\beta_2=0.95^{p}",
+      "role": "单独改变冷却阶段动量及二阶矩记忆长度",
+      "symbols": {
+        "p": "半衰期扫描指数；不同于模型参数数量",
+        "beta1": "一阶动量衰减",
+        "beta2": "二阶矩衰减"
+      },
+      "evidence": "PDF physical pp9–10, Figure 11",
+      "source_locator": "PDF physical pp9–10, Figure 11",
+      "interpretation": "有限扫描的效果与选曲线相近；极高 beta2 不是未测设置的普适推荐。",
+      "epistemic_status": "experiment parameterization"
+    }
+  ],
+  "evidence_refs": [
+    "arXiv:2508.01483v1 PDF physical pp1–5, Eq. (1), Figs. 1–6: metadata, WSD setup, nine data permutations and source-defined bias/Jensen gap.",
+    "PDF physical pp6–8, Figs. 8–9: recency diagnostics and averaging versus one longer run.",
+    "PDF physical pp9–11, Figs. 10–12: coupled batch/AdamW sweeps and retrospective two-dimensional loss slice.",
+    "PDF physical p12 and appendices A, C, D, H, I, J pp18–29: architecture, alternate plots, 60M/FineWeb-Edu checks, selected learning rates, probe limit, landscape slices.",
+    "Independent algebraic check: for nonconvex L(w)=-w² and w=±1, source Eq. (1) V=-1; this is a scope counterexample to nonnegative variance, not a contradiction of the empirical plot.",
+    "Source PDF SHA-256 45bec047c884bf84c5fdcd1fc0b0ae718fcf966ee49b9f802d994ccdbbad3357; full text reviewed; no independent training reproduction.",
+    "independent_reproduction=false; no independent reproduction of the full paper; scope of spot checks is stated in the card."
+  ],
+  "independent_reproduction": false
+}

@@ -1,0 +1,221 @@
+{
+  "arxiv_id": "2608.31166",
+  "source_version": "v1",
+  "source_pdf": "https://arxiv.org/pdf/2608.31166v1",
+  "source_url": "https://arxiv.org/abs/2608.31166v1",
+  "title_en": "Constant Individual Regret in General Games",
+  "title_zh": "一般博弈中与时长无关的个体遗憾界",
+  "curation_status": "full_text_verified",
+  "card_standard_version": "2.3",
+  "paper_profile": "theory",
+  "style_reference": "physicist_daily_arxiv",
+  "selection_record": {
+    "selected_by": "codex_direct_arxiv",
+    "report_date": "2026-09-01",
+    "listing_date": "2026-09-01",
+    "grade": "S",
+    "score": "34/40",
+    "score_breakdown": [
+      5,
+      5,
+      0,
+      5,
+      4,
+      5,
+      5,
+      5
+    ],
+    "rubric_version": "codex-direct-40-point-v1",
+    "selection_rationale": "在所有玩家使用同一 ECHO-OFTRL、各自可见完整收益向量时，证明每人的遗憾上界与轮数无关；滤波恒等式、正部提升与主要常数经定向独立核验。"
+  },
+  "provenance": {
+    "program": "Daily",
+    "discovery_source": "official arXiv computer-science catchup 2026-09-01 New item1325; primary cs.LG",
+    "listing_date": "2026-09-01",
+    "listing_section": "new",
+    "primary_category": "cs.LG",
+    "source_pdf_sha256": "42d29273850a684b4e39b1535f745988c877d61daf604c9f3e1f31ecfebf71d4",
+    "complete_listing_screened": false,
+    "review_scope": "historical exact v1; all 37 physical pages TEXT, 27 original pages VIS; targeted theorem/algorithm checks; no complete independent proof certification",
+    "GPT_message_reconstruction": false
+  },
+  "verified_metadata": {
+    "arxiv_id": "2608.31166",
+    "version": "v1",
+    "current_version_at_retrieval": "v1",
+    "title": "Constant Individual Regret in General Games",
+    "abstract": "Uncoupled no-regret dynamics provide a decentralized route to equilibrium, but prior guarantees for individual regret retain a polylogarithmic dependence on the horizon. We remove this dependence for every finite N-player normal-form game under full-information feedback. We introduce ECHO-OFTRL: optimistic follow-the-regularized-leader (OFTRL) equipped with an EMA cascade for high-order optimism (ECHO), where EMA denotes exponential moving average. The algorithm is deterministic and fully uncoupled. If m_max denotes the largest action-set size, then, simultaneously for every horizon T>=1, it guarantees that each of the N players in the game incurs regret upper bounded by O(poly(N, log m_max)). Our algorithm leverages a new form of optimism inspired by modern filter design.",
+    "authors": [
+      "Mingyang Liu",
+      "Gabriele Farina",
+      "Asuman Ozdaglar"
+    ],
+    "affiliations": [
+      "LIDS, EECS, Massachusetts Institute of Technology"
+    ],
+    "affiliation_physical_pages": [
+      1
+    ],
+    "corresponding_author": null,
+    "published": "2026-08-31T00:00:00Z",
+    "primary_category": "cs.LG",
+    "categories": [
+      "cs.LG",
+      "cs.GT"
+    ],
+    "published_precision": "day; UTC midnight is serialization only, not a claimed submission time"
+  },
+  "sections": [
+    {
+      "title": "作者信息",
+      "paragraphs": [
+        "Mingyang Liu、Gabriele Farina 与 Asuman Ozdaglar；v1 首页列出 MIT 的 LIDS 与 EECS。论文于 2026-08-31 提交，列入 2026-09-01 的计算机科学 New 清单（item 1325）。"
+      ]
+    },
+    {
+      "title": "研究问题",
+      "paragraphs": [
+        "多玩家一般和博弈里，若每位玩家只依赖自身收益反馈而独立更新，能否让**每一个人**的外部遗憾都不再随博弈轮数 \\(T\\) 增长？过去的显式非耦合动力学可做到 \\(O(\\log T)\\) 一类界；仅控制遗憾总和时，某人的负遗憾还能掩盖另一人的正遗憾。本文证明一个有严格反馈与共同参数前提的常数界。"
+      ]
+    },
+    {
+      "title": "背景",
+      "paragraphs": [
+        "这里是有限正规形博弈，\\(N\\ge2\\)，每人至少两个动作，收益归一到 \\([0,1]\\)。每轮所有玩家同步选混合策略，玩家 \\(i\\) 在行动后观察自己针对全部动作的收益向量 \\(u_i^{(t)}\\)，无须知道其他玩家的收益函数。输出是各自策略序列与遗憾界；平均联合混合策略的粗相关均衡误差随之按 \\(1/T\\) 下降。此前的 lifted OFTRL 和谨慎乐观算法给出随 \\(\\log T\\) 增长的个体界；隐式 clairvoyant MWU 已有常数遗憾结论，因此“首个任何意义上的常数遗憾”并不准确。"
+      ]
+    },
+    {
+      "title": "模型与方法",
+      "paragraphs": [
+        "先把即时收益中心化为 \\(g_i^{(t)}=u_i^{(t)}-\\langle u_i^{(t)},x_i^{(t)}\\rangle\\mathbf1\\)，使它对当前策略的内积为零。再把策略升维到 \\((\\lambda,\\lambda x)\\)；令比较者可选 \\(\\lambda=0\\) 或 \\(1\\)，其最优累计收益恰好是 \\([\\mathrm{Reg}_i(T)]_+\\)。这样分析不再允许负遗憾抵消别人的损失。",
+        "预测器输入过去的 \\(g_i\\)，状态是 \\(N\\) 级指数滑动平均（EMA）及累计中心化收益，输出 \\(\\widehat g_i=(I-\\delta^N)g_i\\)。取 \\(\\rho=1-1/N\\)、\\(\\delta=(I-L)/(I-\\rho L)\\)，其中 \\(L\\) 是一轮延迟算子。滤波把原始 \\(N\\) 阶差分对高频的 \\(2^N\\) 放大，压到 \\((2/(1+\\rho))^N\\le e\\)。升维的平方根熵正则器产生有效 Hedge 学习率 \\(\\eta\\sqrt\\lambda\\)；Algorithm 1 每轮须使用**更新前**的 EMA 状态形成预测，观察收益后才更新。EMA 级联本身每人需 \\(O(Nm_i)\\) 状态与算术；求升维响应 \\(Q_i\\) 还需标量根定位。"
+      ]
+    },
+    {
+      "title": "核心定理与证据",
+      "paragraphs": [
+        "第 9 页 Theorem 3.3 规定共同 \\(\\eta=2^{-94}/(N^{20}\\Xi_{\\max})\\)，\\(\\Xi_m=10^4[1+(\\log m)^2+2\\log m+2]\\)。在所有玩家都按算法运行时，对**每个** \\(T\\ge1\\) 同时有 \\(\\sum_i[\\mathrm{Reg}_i(T)]_+\\le 2^{112}N^{21}(1+\\log(m_{\\max}+1))^4\\)。由每项非负可得每人同一上界；这不是单个玩家面对任意对手的对抗性保证。",
+        "证明的承重点是附录 A 的乐观 FTRL 不等式：预测误差给正项，策略移动的 Bregman 散度给负项。第 17–21 页 Proposition A.6 用几何响应界、滤波矩估计和正规形收益的多线性结构，控制加权的 \\(\\delta^N g\\) 误差；第 21 页选择极小的 \\(\\eta\\) 将移动项吸收。独立计算核对了有限序列 EMA 等价式、正部遗憾恒等式及关键吸收常数，但没有独立形式化认证所有辅助引理。"
+      ]
+    },
+    {
+      "title": "有效性与局限",
+      "paragraphs": [
+        "结论限于完整自身收益向量反馈、全体玩家共同执行、已知 \\(N\\) 与最大动作数所确定的共同学习率；“非耦合”不表示不知道这些维度。没有给出 bandit 反馈、任意对手或有限精度数值实现的同等保证。",
+        "定理常数非常松：仅 \\(N=2,m_{\\max}=2\\) 的示例，所给学习率约 \\(9.89\\times10^{-40}\\)，遗憾总上界约 \\(2.11\\times10^{41}\\)。这是独立代入定理的量级，不是模拟测量；论文没有展示基准实验，不能据此声称实用轮数下表现优越。"
+      ]
+    },
+    {
+      "title": "复现与资源",
+      "paragraphs": [
+        "官方 v1 PDF 共 37 个物理页，SHA-256：42d29273850a684b4e39b1535f745988c877d61daf604c9f3e1f31ecfebf71d4。arXiv 同版 TeX 源包含主文、附录与参考文献，没有游戏仿真代码、数据或图像。逐页文字与 27 个关键原页已核读；独立脚本仅复核滤波代数、提升恒等式和部分定理常数，未复现整篇证明。"
+      ]
+    },
+    {
+      "title": "阅读指南",
+      "paragraphs": [
+        "先读第 4–5 页遗憾定义与 Eq. (3.1)，确认“正部”为什么必要；再读第 7–8 页滤波定义和 Algorithm 1 的时间索引。随后核对第 9 页定理的全体执行、共同学习率和 \\(T\\) 量词；想审证明时按第 17–21 页的乐观 FTRL—加权变差—负移动吸收顺序，再追第 23–37 页几何、滤波和多线性引理。"
+      ]
+    }
+  ],
+  "equation_refs": [
+    {
+      "id": "E01",
+      "label": "Eq. (3.1)",
+      "latex": "\\max_{(\\widehat\\lambda,\\widehat\\lambda\\widehat x)\\in\\widetilde\\Delta_i}\\sum_{t=1}^T\\langle g_i^{(t)},\\widehat\\lambda\\widehat x-\\lambda_i^{(t)}x_i^{(t)}\\rangle=[\\mathrm{Reg}_i(T)]_+",
+      "role": "positive_part_lift",
+      "symbols": {
+        "g_i": "中心化收益向量",
+        "lambda": "升维缩放变量"
+      },
+      "interpretation": "比较者可选零缩放，故负遗憾不会抵消正遗憾。",
+      "source_locator": {
+        "source": "2608.31166v1",
+        "physical_pages": [
+          5
+        ],
+        "label": "Eq. (3.1)"
+      },
+      "evidence": "v1 p5"
+    },
+    {
+      "id": "E02",
+      "label": "Eqs. (3.2)–(3.4)",
+      "latex": "\\rho=1-1/N,\\quad\\delta=(I-L)(I-\\rho L)^{-1},\\quad\\widehat g=(I-\\delta^N)g,\\quad e=\\delta^N g",
+      "role": "stable_high_order_predictor",
+      "symbols": {
+        "L": "一轮延迟算子",
+        "N": "玩家数，也是 EMA 级联阶数"
+      },
+      "interpretation": "预测误差是经过 EMA 预处理的 N 阶差分。",
+      "source_locator": {
+        "source": "2608.31166v1",
+        "physical_pages": [
+          3,
+          7,
+          8
+        ],
+        "label": "Eqs. (3.2)–(3.4), Algorithm 1"
+      },
+      "evidence": "v1 pp3,7–8"
+    },
+    {
+      "id": "E03",
+      "label": "Theorem 3.3",
+      "latex": "\\eta=\\frac{2^{-94}}{N^{20}\\Xi_{\\max}},\\qquad\\sum_{i=1}^N[\\mathrm{Reg}_i(T)]_+\\le 2^{112}N^{21}(1+\\log(m_{\\max}+1))^4\\quad(\\forall T\\ge1)",
+      "role": "horizon_independent_individual_regret",
+      "symbols": {
+        "Xi_max": "各玩家 Xi_{m_i} 的最大值",
+        "m_max": "最大动作数"
+      },
+      "interpretation": "全体自博弈下所有 T 的正部遗憾总界；每个人的上界由此推出。",
+      "source_locator": {
+        "source": "2608.31166v1",
+        "physical_pages": [
+          9,
+          21
+        ],
+        "label": "Theorem 3.3 and proof"
+      },
+      "evidence": "v1 pp9,21"
+    },
+    {
+      "id": "E04",
+      "label": "Eq. (A.21)",
+      "latex": "\\sum_{i=1}^N\\sum_{t=1}^T(\\lambda_i^{(t)})^{3/2}\\lVert(\\delta^Ng_i)^{(t)}\\rVert_\\infty^2\\le2^{204}N^{16}(1+\\mathcal P_T^{\\Xi})",
+      "role": "filtered_error_movement_control",
+      "symbols": {
+        "P_T^Xi": "按 Xi_i 加权的升维 Bregman 移动量"
+      },
+      "interpretation": "正预测误差受常数与可被 OFTRL 负移动项吸收的量控制。",
+      "source_locator": {
+        "source": "2608.31166v1",
+        "physical_pages": [
+          17,
+          18,
+          19,
+          20,
+          21
+        ],
+        "label": "Proposition A.6, Eq. (A.21)"
+      },
+      "evidence": "v1 pp17–21"
+    }
+  ],
+  "figure_refs": [],
+  "cover": {
+    "mode": "title_abstract",
+    "selection_rationale": "v1 无科学图；第3页 Table 1 是已有工作比较，不宜截作结果图。",
+    "abstract_text": "全体玩家在完整自身收益向量反馈下使用 ECHO-OFTRL 时，每人的外部遗憾上界与轮数无关。核心是稳定的高阶 EMA 预测与正部遗憾提升；定理常数极大，未展示实用性能。"
+  },
+  "evidence_refs": [
+    "v1 pp4–5 regret and Eq(3.1) positive-part lift",
+    "v1 pp3,7–8 Eqs(3.2)–(3.6), Algorithm 1 and original time-index visual",
+    "v1 pp9,21 Theorem 3.3 and constant-absorption proof",
+    "v1 pp17–21 optimistic-FTRL Eq(A.19), weighted variation Eq(A.21)",
+    "v1 pp23–37 geometry, filter and multilinear appendices; targeted independent arithmetic only",
+    "Official cs New item1325 and exact-v1 abstract/PDF/source archive",
+    "independent_reproduction=false; no independent reproduction of the full paper; scope of spot checks is stated in the card."
+  ],
+  "independent_reproduction": false
+}
