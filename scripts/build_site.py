@@ -4330,6 +4330,22 @@ def optimize_paper_images() -> Dict[str, str]:
     if not IMAGE_DIR.exists():
         return {}
 
+    # A detail figure can point to the original PNG/JPG. Keep that exact file
+    # after producing WebP derivatives so a clean CI build does not break the
+    # source-linked figure reference validated later in the workflow.
+    referenced_originals = set()
+    for card_dir in (CURATED_CARDS_DIR, COLLECTION_CARDS_DIR):
+        for card_path in card_dir.glob("*.json"):
+            card = json.loads(card_path.read_text(encoding="utf-8"))
+            referenced_originals.update(
+                ref.get("asset_path")
+                for ref in card.get("figure_refs", [])
+                if isinstance(ref, dict) and ref.get("asset_path")
+            )
+            cover = card.get("cover", {})
+            if isinstance(cover, dict) and cover.get("asset_path"):
+                referenced_originals.add(cover["asset_path"])
+
     THUMB_DIR.mkdir(parents=True, exist_ok=True)
 
     thumb_map: Dict[str, str] = {}
@@ -4379,7 +4395,12 @@ def optimize_paper_images() -> Dict[str, str]:
             thumb_img.save(thumb_path, "WEBP", quality=WEBP_QUALITY)
 
             # 只有全尺寸和缩略图都成功后，才删除旧格式原图
-            if src_path.suffix.lower() != ".webp" and src_path.exists():
+            original_rel = f"assets/paper-images/{src_path.name}"
+            if (
+                src_path.suffix.lower() != ".webp"
+                and original_rel not in referenced_originals
+                and src_path.exists()
+            ):
                 src_path.unlink()
 
             thumb_map[webp_rel] = thumb_rel
