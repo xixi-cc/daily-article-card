@@ -1,0 +1,239 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Algorithmic threshold for high-dimensional projection pursuit I: general theory - 每日论文卡</title>
+    <meta name="description" content="在 $M/N\to\alpha\in(0,\infty)$ 的高维高斯空模型中，研究者可根据全部数据选择球面或 Ising 方向，使一维投影的经验分布偏离普通高斯。本文回答更窄也更可证明的问题：对输入具有维度无关 Lipschitz 稳定性的算法，哪些投影律既可达到又无法被该算法类越过？答案是同一个一维随机控制可达集；匹配算法为布朗桥揭露上的增量近似消息传递（IAMP）。" />
+    <link rel="canonical" href="https://xixi-cc.github.io/daily-article-card/papers/2608.29416/" />
+    <script type="application/ld+json">{"@context": "https://schema.org", "@type": "Article", "headline": "Algorithmic threshold for high-dimensional projection pursuit I: general theory", "description": "在 $M/N\\to\\alpha\\in(0,\\infty)$ 的高维高斯空模型中，研究者可根据全部数据选择球面或 Ising 方向，使一维投影的经验分布偏离普通高斯。本文回答更窄也更可证明的问题：对输入具有维度无关 Lipschitz 稳定性的算法，哪些投影律既可达到又无法被该算法类越过？答案是同一个一维随机控制可达集；匹配算法为布朗桥揭露上的增量近似消息传递（IAMP）。", "url": "https://xixi-cc.github.io/daily-article-card/papers/2608.29416/", "mainEntityOfPage": "https://xixi-cc.github.io/daily-article-card/papers/2608.29416/", "inLanguage": "zh-CN", "author": {"@type": "Person", "name": "Xineng Cao", "alternateName": ["Xixi Cao", "曹溪能"], "url": "https://xixi-cc.github.io/"}, "isBasedOn": "https://arxiv.org/abs/2608.29416", "datePublished": "2026-09-01", "dateModified": "2026-09-01"}</script>
+    <script>
+      (function() {
+        try {
+          var themePreference = window.localStorage.getItem('color-theme') || 'system';
+          var systemUsesDarkTheme = window.matchMedia('(prefers-color-scheme: dark)').matches;
+          var resolvedTheme = themePreference === 'system'
+            ? (systemUsesDarkTheme ? 'dark' : 'light')
+            : themePreference;
+          document.documentElement.dataset.theme = resolvedTheme;
+          document.documentElement.dataset.themePreference = themePreference;
+          document.documentElement.style.colorScheme = resolvedTheme;
+        } catch (error) {
+          document.documentElement.dataset.theme = 'light';
+          document.documentElement.dataset.themePreference = 'system';
+        }
+      })();
+    </script>
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='18' fill='%23111827'/%3E%3Ctext x='50%25' y='55%25' text-anchor='middle' dominant-baseline='middle' font-size='30' font-family='Arial, sans-serif' fill='white'%3EV%3C/text%3E%3C/svg%3E" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700;800&family=Noto+Sans+SC:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <script>document.documentElement.classList.add('math-pending');</script>
+    <script>
+      window.MathJax = {
+        tex: {
+          inlineMath: [['$', '$'], ['\\(', '\\)']],
+          displayMath: [['$$', '$$'], ['\\[', '\\]']],
+          processEscapes: true
+        },
+        options: {
+          skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+        },
+        chtml: {
+          scale: 1,
+          displayAlign: 'center'
+        },
+        startup: {
+          ready: function() {
+            MathJax.startup.defaultReady();
+            MathJax.startup.promise.then(function() {
+              document.documentElement.classList.remove('math-pending');
+              document.documentElement.dataset.mathReady = 'true';
+            });
+          }
+        }
+      };
+    </script>
+    <script defer src="../../assets/vendor/mathjax/tex-chtml.js"></script>
+    <link rel="stylesheet" href="../../assets/style.css" />
+  </head>
+  <body class="detail-page" data-paper-id="2608.29416" data-paper-program="daily">
+    <div class="page-noise"></div>
+    <div class="page-blur page-blur-a"></div>
+    <div class="page-blur page-blur-b"></div>
+
+    <header class="header detail-page-header">
+      <div class="container">
+        <div class="detail-page-topbar">
+          <a class="back-link" href="../../physics_AI.html">返回列表</a>
+          <div class="detail-topbar-actions">
+            <span class="detail-site-name">每日论文卡</span>
+            <button id="detail-favorite" class="detail-favorite-button" type="button" aria-pressed="false">☆ 收藏</button>
+            <button class="theme-toggle" type="button" data-theme-toggle aria-label="当前主题：设备，点击切换主题" title="当前主题：设备">
+  <span class="theme-toggle-icons" aria-hidden="true">
+    <svg class="theme-toggle-icon theme-toggle-icon-light" viewBox="0 0 24 24" fill="none">
+      <circle cx="12" cy="12" r="3.5" stroke="currentColor" stroke-width="1.8"/>
+      <path d="M12 2.5v2M12 19.5v2M2.5 12h2M19.5 12h2M5.3 5.3l1.4 1.4M17.3 17.3l1.4 1.4M18.7 5.3l-1.4 1.4M6.7 17.3l-1.4 1.4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+    </svg>
+    <svg class="theme-toggle-icon theme-toggle-icon-dark" viewBox="0 0 24 24" fill="none">
+      <path d="M20 15.2A8.1 8.1 0 0 1 8.8 4a8.2 8.2 0 1 0 11.2 11.2z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>
+    </svg>
+    <svg class="theme-toggle-icon theme-toggle-icon-system" viewBox="0 0 24 24" fill="none">
+      <rect x="3" y="4" width="18" height="13" rx="2.5" stroke="currentColor" stroke-width="1.8"/>
+      <path d="M8 21h8M12 17v4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+    </svg>
+  </span>
+  <span class="theme-toggle-label" data-theme-toggle-label>设备</span>
+</button>
+          </div>
+        </div>
+
+        <div class="detail-hero-grid">
+          <div class="detail-hero-cover"><article class="note-cover note-cover-title-abstract" style="--cover-from: #ef6c3f; --cover-to: #f6b13d; --cover-spot: #ffd59c; --cover-ink: #fff8ef; --cover-muted: rgba(255, 248, 239, 0.82); --cover-chip: rgba(255, 248, 239, 0.16); --cover-stroke: rgba(255, 248, 239, 0.26)">
+  <div class="note-cover-mesh"></div>
+  <div class="note-cover-title-shell">
+    <span class="note-cover-kicker">TITLE · ABSTRACT</span>
+    <h1 class="note-cover-title">Algorithmic threshold for high-dimensional projection pursuit I: general theory</h1>
+    <p class="note-cover-title-zh">高维投影追寻的算法阈值 I：一般理论</p>
+    <p class="note-cover-abstract">For high-dimensional Gaussian data, the paper characterizes which one-dimensional projection laws can be attained by dimension-free Lipschitz algorithms on spherical or Ising domains. A one-dimensional stochastic control problem gives matching algorithmic thresholds, with hardness from a branching overlap-gap argument and attainability through Brownian-bridge incremental AMP.</p>
+  </div>
+</article></div>
+          <div class="detail-hero-copy">
+            <p class="eyebrow">论文详情</p>
+            <h1 class="detail-page-title">Algorithmic threshold for high-dimensional projection pursuit I: general theory</h1>
+            <p class="detail-page-title-zh">高维投影追寻的算法阈值 I：一般理论</p>
+            <div class="detail-meta">2026-09-01 · <a href="https://arxiv.org/abs/2608.29416" target="_blank" rel="noopener noreferrer">原文</a></div>
+            <p class="detail-summary">在 $M/N\to\alpha\in(0,\infty)$ 的高维高斯空模型中，研究者可根据全部数据选择球面或 Ising 方向，使一维投影的经验分布偏离普通高斯。本文回答更窄也更可证明的问题：对输入具有维度无关 Lipschitz 稳定性的算法，哪些投影律既可达到又无法被该算法类越过？答案是同一个一维随机控制可达集；匹配算法为布朗桥揭露上的增量近似消息传递（IAMP）。</p>
+            <div class="detail-micro-meta">
+              <span class="meta-pill">AI for Science</span>
+              <span class="meta-pill">理论</span>
+              <span class="meta-pill">#随机过程</span><span class="meta-pill">#无序系统与神经网络</span><span class="meta-pill">#数学物理</span>
+              <span class="meta-pill">11 分钟读完</span>
+              <span class="meta-pill">8 张阅读卡</span>
+              <span class="meta-pill">Brice Huang（Stanford Statistics）、Mark Sellke（Harvar…</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <main class="container detail-layout">
+      <div class="detail-shell">
+        <article id="detail-body" class="reading-flow"><section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 01</span>
+    <span class="reading-step-note">作者信息</span>
+  </div>
+  <h2>作者信息</h2>
+  <div class="reading-card-content"><ul><li>Brice Huang（Stanford Statistics）、Mark Sellke（Harvard Statistics）、Nike Sun（MIT Mathematics）；机构按 \(v_{1}\) PDF \(p\). 1。未见明确通讯作者标注。</li><li>arXiv:2608.29416v1；2026-09-01 math.PR 官方 new；读取时 \(current=v_{1}\)。独立筛选 35/40、S；PDF 295 物理页。</li></ul></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 02</span>
+    <span class="reading-step-note">摘要</span>
+  </div>
+  <h2>摘要</h2>
+  <div class="reading-card-content"><p>在 $M/N\to\alpha\in(0,\infty)$ 的高维高斯空模型中，研究者可根据全部数据选择球面或 Ising 方向，使一维投影的经验分布偏离普通高斯。本文回答更窄也更可证明的问题：对输入具有维度无关 Lipschitz 稳定性的算法，哪些投影律既可达到又无法被该算法类越过？答案是同一个一维随机控制可达集；匹配算法为布朗桥揭露上的增量近似消息传递（IAMP）。</p></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 03</span>
+    <span class="reading-step-note">背景</span>
+  </div>
+  <h2>背景</h2>
+  <div class="reading-card-content"><p>普通随机方向下，独立高斯样本的每个投影仍是高斯；数据依赖的搜索则可挑出罕见方向。投影追寻的真正计算问题，是允许分布集合与可由稳定算法找到的子集合是否一致。\(p\). 2 把经验测度而非单一优化值作为基本对象，因此一个控制可达集可同时处理许多有界连续 perceptron 激活。</p>
+<p>Montanari–Zhou 2024 \(v_{1}\) 给出球面两阶段 AMP 内界和该算法类的控制刻画；Huang–Sellke 2023 \(v_{2}\) 用 branching overlap-gap 控制多物种球面自旋玻璃。本文把随机控制与该障碍技术组合，用于整个投影经验测度及 Ising 情形；不是一般多项式时间下界。此归属据当前文 pp. 8–10 及上述外引定向页，未对外引作全篇证明复核。</p></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 04</span>
+    <span class="reading-step-note">模型与方法</span>
+  </div>
+  <h2>模型与方法</h2>
+  <div class="reading-card-content"><p>输入是 $M\times N$ 独立标准高斯矩阵 $G$；算法输出 $x$ 靠近 $\sqrt N$ 球面或 $\{\pm1\}^N$。输出不是分类准确率，而是整组投影 $\langle g^a,x\rangle/\sqrt N$ 的经验律（\(v_{1}\) \(p\). 2, Eq. 1.1）。算法作为 $(G,g_{\rm aux})\mapsto x$ 对整块高斯输入全局 $L$-Lipschitz，$L$ 与 $N$ 无关，且 $\mathbb E\\|x\\|^2=N$（\(p\). 11, Def. 1.8）；可以使用独立高斯种子。</p>
+<p>控制侧用单调绝对连续 $p$ 安排高斯信息的揭露，漂移 $b$ 与扩散 $\sigma\ge0$ 决定一维过程 $X$。球面预算把漂移成本 $\mathbb E b_t^2$ 与扩散偏离成本 $\mathbb E[((tp(t))&#x27;/p(t))(\sigma_t-1)^2]$ 相加，要求总和不超过 $1/\alpha$（\(p\). 5, Eq. 1.11）；Ising 将右端换成 $(\mathbb Ew_t)^2/\alpha$，并要求坐标鞅 $X^{\rm Is}(1)\in\{\pm1\}$ 且 $\mathbb Ew_t^2=1$（同页 Eq. 1.10、Def. 1.3）。这些末态律的 $W_2$ 闭包是阈值集合。</p>
+<p>硬度侧以 $G(t)=tG+G^\circ(t)$ 逐渐揭露矩阵，在布朗桥条件下跟踪输出的 Doob 鞅；Sec. 2、4 与 Appendix A/B 把离散局部漂移/方差变成受预算限制的 SDE。可达侧 Sec. 5 用增量 AMP 对平滑 Markov 控制进行模拟，Sec. 6–7 使两个近似控制类相等并升级为高概率 confinement。$t$ 是算法信息揭露参数，不是实验中的物理时间。</p></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 05</span>
+    <span class="reading-step-note">核心结果与证据</span>
+  </div>
+  <h2>核心结果与证据</h2>
+  <div class="reading-card-content"><ul><li>\(p\). 12 Th. 1.13：球面/Ising 控制终点律在 $W_2$ 闭包内时，任意固定精度存在足够大的定维 Lipschitz 算法，以 $1-e^{-cN}$ 达到；反向对任意固定 $L$，算法输出若靠近指定几何域，就以相同指数级概率限制在该集合的 $W_q$ 邻域，$1\le q&lt;2$。凹信息日程 $p$ 足够覆盖终点律。</li><li>pp. 4,13 Th. 1.16：绝对值对称化投影律具有类似精确刻画，此时 $p\equiv1,b\equiv0$ 的控制足够。两种几何的关键差异在 Ising 坐标末点约束，不可把球面答案照搬。</li><li>\(p\). 12 Cor. 1.14：对固定 $\phi\in C_b(\mathbb R;\mathbb R)$，perceptron 可达到的算法优化值由可达测度集合上的 $\int\phi\,d\mu$ 上确界给出。这不推出不连续的硬满足性阈值或所有算法的 ground-state 值。</li><li>pp. 28,89,129,177–190：预算约束 Th. 2.19、可达 IAMP Th. 5.1、控制类等价 Th. 6.1 与概率 confinement 的串接是主命题证据链。Appendix B 的证明分块需固定数目且各块占比有正下界，不能抹去条件。</li></ul></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 06</span>
+    <span class="reading-step-note">有效性与局限</span>
+  </div>
+  <h2>有效性与局限</h2>
+  <div class="reading-card-content"><p>结论只针对独立标准高斯数据、$M/N\to\alpha\in(0,\infty)$、一维投影、固定误差及维度无关 Lipschitz 算法类。可达算法的 $O(N^2)$ 算术成本以前提性的固定维 Lipschitz Markov 控制函数 oracle 为条件（\(p\). 13）；求最优控制的成本未计。反向是 $W_q$（$q&lt;2$）而非 $W_2$；\(p\). 177 给出单原子质量逃逸的障碍。没有真实数据/网络训练实验，也没有证明非稳定多项式算法同样受限。</p>
+<p>独立审阅发现 \(p\). 61 Eq. 4.41 少一个 $U$、\(p\). 145 Lem. 6.20 的负分支排印不合值域；Appendix B pp. 242–245 的严格凸性断言有线段反例，pp. 280、284 的球面二阶与同时概率推理需要补写。审阅单元保留可检验的局部修补路线；这些并非已找到 Th. 1.13 的满足全部前提反例，也不应冒称 295 页逐行证明认证。</p></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 07</span>
+    <span class="reading-step-note">复现与资源</span>
+  </div>
+  <h2>复现与资源</h2>
+  <div class="reading-card-content"><p>这是理论论文，没有报告数值实验或 benchmark；源 PDF 内未核得可运行代码/数据发布。阅读与核式应从官方 \(v_{1}\) PDF 入手。本文可达侧的复杂度声明假设能查询合适控制函数；本文没有提供求解全部控制优化的通用实现。证据状态：全文逐页阅读及重点原生目视，未独立运行作者算法，未独立重证全部数学或外引原证明。</p></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 08</span>
+    <span class="reading-step-note">阅读指南</span>
+  </div>
+  <h2>阅读指南</h2>
+  <div class="reading-card-content"><p>先读 \(p\). 2 Eq. (1.1)、pp. 4–6 控制定义和 \(p\). 11 Def. 1.8，分清经验测度、算法稳定性与几何域；随后读 \(p\). 12 Th. 1.13、\(p\). 13 Th. 1.16 和 Cor. 1.14 的量词。想看机制，走 pp. 9–10 布朗桥思路、\(p\). 28 预算、\(p\). 89 IAMP；深究严谨性再进 Sec. 4/6/7 与 Appendix B pp. 228–290。没有科学数据图；\(p\). 134 彩表是控制类证明路线索引。</p></div>
+</section></article>
+        <aside id="detail-toc" class="detail-toc hidden" aria-label="内容目录">
+          <p class="detail-toc-title">阅读目录</p>
+          <nav id="detail-toc-nav" class="detail-toc-nav"></nav>
+        </aside>
+      </div>
+      <nav class="paper-nav"><a class="paper-nav-link paper-nav-prev" href="../../papers/2608.29957/"><span class="paper-nav-label">← 上一篇</span><span class="paper-nav-title">Equilibrium fluctuations of the weakly asymmetric inclusion process</span></a>
+      <a class="paper-nav-link paper-nav-next" href="../../papers/2608.29461/"><span class="paper-nav-label">下一篇 →</span><span class="paper-nav-title">A Causal Model for Locating and Unlocking Sandbagging in Model Organisms</span></a></nav>
+      <section id="comments" class="comments-panel" aria-labelledby="comments-title">
+        <div class="comments-heading">
+          <div>
+            <p class="eyebrow">Discussion</p>
+            <h2 id="comments-title">评论与讨论</h2>
+          </div>
+          <a href="https://github.com/xixi-cc/xixi-research-comments/discussions" target="_blank" rel="noopener noreferrer">在 GitHub 查看</a>
+        </div>
+        <p class="comments-note">评论公开保存在 GitHub Discussions；阅读无需登录，发表评论需要 GitHub 账号。</p>
+        <script src="https://giscus.app/client.js"
+                data-repo="xixi-cc/xixi-research-comments"
+                data-repo-id="R_kgDOUIl8MQ"
+                data-category="Announcements"
+                data-category-id="DIC_kwDOUIl8Mc4DEftB"
+                data-mapping="specific"
+                data-term="daily:2608.29416"
+                data-strict="1"
+                data-reactions-enabled="1"
+                data-emit-metadata="0"
+                data-input-position="top"
+                data-theme="preferred_color_scheme"
+                data-lang="zh-CN"
+                data-loading="lazy"
+                crossorigin="anonymous"
+                async></script>
+        <noscript><p>请启用 JavaScript，或直接前往 GitHub Discussions 参与讨论。</p></noscript>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <div class="container">
+        <p>内容来自 <a href="https://arxiv.org" target="_blank" rel="noopener noreferrer">arXiv.org</a>；原创解读采用 CC BY-NC 4.0。<a href="../../rights.html">许可与引用</a></p>
+      </div>
+    </footer>
+
+    <script src="../../assets/theme.js"></script>
+    <script src="../../assets/media.js"></script>
+    <script src="../../assets/paper.js"></script>
+    <!-- Cloudflare Web Analytics -->
+<script type="module" src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon='{"token":"73522e5dee9b42b0be84b4847e4dd502"}'></script>
+<!-- End Cloudflare Web Analytics -->
+  </body>
+</html>
