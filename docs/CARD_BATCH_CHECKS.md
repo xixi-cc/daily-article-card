@@ -71,7 +71,7 @@ python3 scripts/card_batch.py delivery --manifest /absolute/batch.json \
   --out /absolute/new-delivery-receipt.json
 ```
 
-The checker uses the repository's v2.3 validator and fails on incomplete
+The checker uses the repository's canonical validator and fails on incomplete
 metadata, wrong identity/version, invalid Daily/Collection provenance, missing
 sections, missing reproduction boundary, malformed math and missing persistent
 figures. It also requires nonempty `paragraphs` or `bullets` for every section:
@@ -80,6 +80,9 @@ exact arXiv `vN` source version and UTC serialization accepted by the canonical
 metadata validator; Collection can use a stable journal version identifier and
 retain a valid day-precision ISO date.
 The checker does not invent a timestamp or repair a heading automatically.
+It also runs the repository's standard synchronization check, so a version
+mismatch is caught before the Pages workflow. Run the site build and full
+validator sequentially: validation reads assets while the build writes them.
 It is stricter about the standard's background section than the historical
 validator; old published cards can therefore reveal pre-existing omissions.
 

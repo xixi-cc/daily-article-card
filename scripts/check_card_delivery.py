@@ -10,6 +10,8 @@ from datetime import datetime
 import json
 from pathlib import Path
 import re
+import subprocess
+import sys
 import tempfile
 
 import validate_paper_cards as standard
@@ -173,6 +175,12 @@ def main():
     keys = [(e['program'], e['id']) for e in entries]
     if not keys or len(keys) != len(set(keys)):
         parser.error('manifest must contain nonempty, unique program/id pairs')
+    sync_check = args.repo.resolve() / 'scripts' / 'check_card_standard_sync.py'
+    if sync_check.is_file():
+        sync_run = subprocess.run([sys.executable, str(sync_check)], capture_output=True, text=True)
+        preflight_errors = [sync_run.stderr.strip() or sync_run.stdout.strip()] if sync_run.returncode else []
+    else:
+        preflight_errors = ['missing standard synchronization checker: ' + str(sync_check)]
     rows = []
     for entry in entries:
         try:
@@ -182,11 +190,12 @@ def main():
     result = dict(schema_version=1, manifest_sha256=digest(args.manifest),
                   validator_sha256=digest(Path(standard.__file__)),
                   checker_sha256=digest(Path(__file__)), cards=rows,
-                  passed=all(r['mechanical_pass'] for r in rows),
+                  standard_sync_errors=preflight_errors,
+                  passed=not preflight_errors and all(r['mechanical_pass'] for r in rows),
                   boundary='Mechanical delivery gate only; no card changes, installation, scientific certification or publication.')
     args.out.parent.mkdir(parents=True, exist_ok=True)
     args.out.write_text(json.dumps(result, ensure_ascii=False, indent=2)+'\n')
-    print(json.dumps(dict(passed=result['passed'], cards=len(rows), failures=[dict(id=r['id'], errors=r['errors']) for r in rows if r['errors']]), ensure_ascii=False))
+    print(json.dumps(dict(passed=result['passed'], cards=len(rows), standard_sync_errors=preflight_errors, failures=[dict(id=r['id'], errors=r['errors']) for r in rows if r['errors']]), ensure_ascii=False))
     return 0 if result['passed'] else 1
 
 
