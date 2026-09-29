@@ -1,0 +1,202 @@
+{
+  "arxiv_id": "2405.04669",
+  "source_version": "NeurIPS 2024 proceedings PDF",
+  "source_pdf": "https://proceedings.neurips.cc/paper_files/paper/2024/file/a4b95476f673e6e538f80862f622ba2f-Paper-Conference.pdf",
+  "source_url": "https://proceedings.neurips.cc/paper_files/paper/2024/hash/a4b95476f673e6e538f80862f622ba2f-Abstract-Conference.html",
+  "title_en": "Towards a Theoretical Understanding of the 'Reversal Curse' via Training Dynamics",
+  "title_zh": "从训练动力学理解“反转诅咒”",
+  "curation_status": "full_text_verified",
+  "card_standard_version": "2.4",
+  "paper_profile": "theory_numerics",
+  "style_reference": "physicist_daily_arxiv",
+  "provenance": {
+    "program": "Collection",
+    "catalog": "Paper Collection",
+    "catalog_record_id": "2405.04669",
+    "catalog_record_ids": [
+      "2405.04669"
+    ],
+    "catalog_topic": "Training Dynamics",
+    "collection_date": "2026-08-30",
+    "sampled_at": "2026-09-30",
+    "selected_by": "explicit_user_dispatch",
+    "sampling_seed": "not_applicable_explicit_unit",
+    "cohort": "outside_original_collection_queue",
+    "catalog_source": "https://metacircleai.github.io/ziming-paper-collection/collection.html"
+  },
+  "verified_metadata": {
+    "arxiv_id": "2405.04669",
+    "arxiv_latest_version": "v2",
+    "arxiv_submitted": "2024-05-07",
+    "arxiv_updated": "2024-10-28",
+    "title": "Towards a Theoretical Understanding of the 'Reversal Curse' via Training Dynamics",
+    "authors": [
+      "Hanlin Zhu",
+      "Baihe Huang",
+      "Shaolun Zhang",
+      "Michael Jordan",
+      "Jiantao Jiao",
+      "Yuandong Tian",
+      "Stuart Russell"
+    ],
+    "affiliations": {
+      "UC Berkeley": [
+        "Hanlin Zhu",
+        "Baihe Huang",
+        "Shaolun Zhang",
+        "Michael Jordan",
+        "Jiantao Jiao",
+        "Stuart Russell"
+      ],
+      "Meta AI": [
+        "Yuandong Tian"
+      ]
+    },
+    "equal_contribution": [
+      "Hanlin Zhu",
+      "Baihe Huang"
+    ],
+    "categories": [
+      "cs.LG",
+      "cs.CL"
+    ],
+    "venue": "Advances in Neural Information Processing Systems 37 (NeurIPS 2024), Main Conference Track",
+    "doi": "10.52202/079017-2872",
+    "paper_url": "https://arxiv.org/abs/2405.04669",
+    "proceedings_url": "https://proceedings.neurips.cc/paper_files/paper/2024/hash/a4b95476f673e6e538f80862f622ba2f-Abstract-Conference.html",
+    "code_url": "https://github.com/marlo-z/reversal_curse_analysis",
+    "version": "NeurIPS 2024 proceedings PDF",
+    "published": "2024-05-07",
+    "published_basis": "arXiv v1 first public submission; NeurIPS proceedings publication is 2024 at year precision",
+    "proceedings_year": "2024"
+  },
+  "sections": [
+    {
+      "title": "作者信息",
+      "paragraphs": [
+        "Hanlin Zhu 与 Baihe Huang 共同一作；Shaolun Zhang、Michael Jordan、Jiantao Jiao、Stuart Russell 均署 UC Berkeley，Yuandong Tian 署 Meta AI。依据 NeurIPS 2024 正式论文第 1 页的作者栏；论文未在该页标出通讯作者。正式出版信息为 NeurIPS 37，DOI 10.52202/079017-2872；arXiv:2405.04669 的当前版本为 v2。",
+        "Collection 来源是 Paper Collection 中编号 2405.04669 的记录（目录日期 2026-08-30，主题 Training Dynamics）。目录仍写 preprint；本卡按已核实的 NeurIPS 版本记录出版状态，不带 Daily 日期、分数或等级。"
+      ]
+    },
+    {
+      "title": "研究问题",
+      "paragraphs": [
+        "若训练集中有 \\(A\\to B\\) 而没有反向序列，为什么自回归模型未必能回答 \\(B\\leftarrow A\\)，即使训练集中另有许多成对的正反例？作者研究的不是模型参数能否表示逆关系，而是交叉熵训练的梯度是否会把一个方向的知识写入反方向。形式化对象先是固定嵌入的双线性 next-token 模型，再是特定单层注意力模型；多层 GPT-2 类网络仅作合成实验检验。（PDF pp. 1–2、4–9）"
+      ]
+    },
+    {
+      "title": "背景",
+      "paragraphs": [
+        "“反转诅咒”由前人经验研究提出；本文在受控数据中让一部分实体对双向出现，另一部分只出现一个方向，以排除“完全未见过逆关系词”的简单解释。因果语言模型逐位置预测下一个 token，常用目标是正确下一个 token 的交叉熵；它并不显式约束两种语义等价句子的参数更新相同。（PDF pp. 2–4）",
+        "面向物理读者，可把有效 logit 矩阵看作有方向的转移评分：行对应当前实体，列对应候选下一个实体。这个类比只描述矩阵索引和训练更新，不是详细平衡、可逆马尔可夫过程或热力学能量。论文属于 AI 训练动力学理论加合成数值检验。（PDF pp. 4–7）"
+      ]
+    },
+    {
+      "title": "模型与方法",
+      "paragraphs": [
+        "输入是一段实体 token 加关系 token，例如 \\((A_i,\\to)\\)，输出是下一个实体 \\(B_i\\)。模型的状态是参数或重参数化后的有效矩阵；训练信号是正确下一 token 的对数概率。双线性模型固定近正交随机嵌入，令 \\(x,y\\in\\mathbb R^d\\) 为两个 token 的向量，\\(\\Theta\\in\\mathbb R^{d\\times d}\\) 为可训练矩阵；它通过 \\(x^\\top\\Theta y\\) 给有向候选打分。（PDF p. 4，§3）",
+        "其负对数似然 \\(L(\\Theta)\\) 平均覆盖 \\(2n-1\\) 个训练方向：第 1 对只训 \\(x_1\\to y_1\\)，其余 \\(n-1\\) 对双向都训；反向测试量是 \\(L^{\\mathrm{rev}}(\\Theta)=-\\log p_\\Theta(x_1\\mid y_1)\\)。作者分析梯度流 \\(\\dot\\Theta=-\\nabla L\\)，随机高维嵌入与小初始化或有界预训练概率条件不可省略。（PDF p. 4；正式条件见 p. 14 Theorem 5）",
+        "单层模型把注意力评分和输出评分重参数化为 \\(Z\\) 与 \\(Y\\)。输入三 token 序列 \\((x_1,x_2,x_3)\\) 时，\\(x_2\\) 是关系/查询 token，\\(x_1\\) 是唯一上下文；查询不看自身，注意力权重恒为 1。于是下一 token 分布只由 \\(Y\\) 的第 \\(x_1\\) 行决定，关系 token 在这个特例中不改变输出。这里分析的是直接对 \\(Y,Z\\) 的更新，并要求 one-hot 实体、零初始化等，不能等同于任意原始 Transformer 参数的 SGD。（PDF pp. 5–7，Eq. (1)–(3), Proposition 4.2；p. 23）",
+        "实验另用 GPT-2 类多层 Transformer 与随机双射生成的合成实体对。默认词表 800、24 层、每层 12 个头、绝对位置编码；140 对训练实体双向可见，60 对验证实体仅单向可见，故训练序列 340 条、验证反向序列 60 条。AdamW、batch 64、3000 epochs、学习率 0.01；曲线对 10 个种子取均值，误差棒为标准差。（PDF pp. 8–9 Figure 1、§5；p. 28 Tables 2–3）"
+      ]
+    },
+    {
+      "title": "核心定理与证据",
+      "paragraphs": [
+        "双线性模型的 Theorem 1/5 给出 \\(L^{\\mathrm{rev}}(\\Theta_t)/L^{\\mathrm{rev}}(\\Theta_0)\\ge [L(\\Theta_t)/L(\\Theta_0)]^\\epsilon\\)，在论文规定的高维、小初始化条件下以至少 \\(1-\\delta\\) 的概率对所有 \\(t\\ge0\\) 成立。这里 \\(0<\\epsilon,\\delta<1\\)；小 \\(\\epsilon\\) 意味着训练损失下降时反向损失可仍接近初值。Theorem 2/6 进一步在训练损失首次降至 \\(c\\) 时给反向损失下界 \\(C\\)，但维度门槛随样本量、词表和精度参数急剧增大。这是受控梯度流结果，不是现实 LLM 的普遍下界。（PDF p. 4 Theorems 1–2；pp. 14–15 Theorems 5–6）",
+        "单层模型的关键可验证更新是 \\(\\dot Y=\\eta_Y x_1(x_3-\\alpha)^\\top\\)，其中 \\(x_1,x_3\\) 是 one-hot 实体、\\(\\alpha\\) 是 softmax 预测向量、\\(\\eta_Y\\) 是更新步长；一次样本只改变以 \\(x_1\\) 为索引的行。不同实体 token 在构造中互不重叠，因此只见 \\(A_i\\to B_i\\) 时，未见反向输入对应的 \\(B_i\\) 行仍是初始化的零行。这是方向不对称的训练机制，不依赖“语义本应对称”的口头类比。（PDF p. 6 Eq. (3)；p. 7 Lemma 2；p. 23 Eq. (10) 与证明）",
+        "Theorem 3 在 \\(M\\gg100\\)、给定 \\(\\eta_Y\\) 区间及足够训练步数的条件下，使训练序列正确下一 token 的概率趋于 1，而未见反向测试序列的概率等于均匀基线 \\(1/M\\)（主文写上界 \\(\\le1/M\\)，附录证明在零初始化下给等号）。结论限于这套三 token、单层、互异实体的构造。（PDF p. 7 Theorem 3；p. 24 证明）",
+        "Figure 1 的 24 层合成实验显示训练集平均负对数概率下降，而未见反向验证集没有优于随机猜测，10 个种子的误差棒为标准差。Figure 2 是进一步的 logit 探针：训练对及验证对的已见方向有高对角线，验证对未见方向的热图几乎为零。热图支持有向评分不对称；它既不是对真实语言事实的测试，也不是对每个网络层的因果定位。（PDF pp. 8–9 Figures 1–2；p. 28）",
+        "扩展到链式关系时，Theorem 4/7 在 \\(A_i,B_i,C_i\\) 皆为互异 token 的构造中，已学 \\(A_i\\to B_i\\) 和 \\(B_i\\to C_i\\) 仍不能直接给出未训的 \\(A_i\\rightsquigarrow C_i\\)；由于同一 \\(A_i\\) 行偏向 \\(B_i\\)，目标 \\(C_i\\) 的概率至多 \\(1/M\\)。附录的 24 层合成实验与此一致，但相关 token 的变体又可学到间接关系，说明“必须 COT”不是对所有数据表示的绝对命题。（PDF pp. 7–8 Theorem 4；pp. 24–25 Theorem 7；pp. 27–29 Figures 3–4；pp. 32、35 Figure 18）"
+      ]
+    },
+    {
+      "title": "有效性与局限",
+      "paragraphs": [
+        "单层定理使用互不重叠的单 token 实体、两 token 输入、查询不看自身、重参数化矩阵直接优化及零/近零初始化；反向测试实体行没有被任何训练样本更新。对自然语料中的重复实体、共享子词、长上下文、可学习表示和多层参数耦合，没有相同的严格结论。（PDF pp. 5–7、23–25；p. 10 §6）",
+        "双线性定理依赖随机近正交嵌入、高维度与规定的初始概率；Theorem 5 的充分条件含很大的多项式维度界。实验可以在小得多的嵌入维度复现趋势，但不能因此把理论维度条件自动放宽。（PDF pp. 4、14–15；pp. 29、31–32 Figures 10–11）",
+        "Appendix E.2.3 的七 token in-context 设定把正向事实放在同一提示中，Figure 12 显示反向可被识别；Appendix E.4 的共享结构实体使间接链也可能被直接学会。这些是机制的反例边界：数据组织和表示改变后，负向结论未必持续。（PDF pp. 31–33 Figure 12；pp. 32、35 Figure 18）",
+        "Figure 2 的多层 logit 热图是作者用单实体输入作探针得到的相关现象；它不证明真实 GPT-2 内存在与单层定理同一矩阵动力学。论文没有自然语言大模型的跨语料定量外推，也没有独立复现于本卡。（PDF p. 9 Figure 2、§5；p. 10 §6）"
+      ]
+    },
+    {
+      "title": "复现与资源",
+      "paragraphs": [
+        "论文提供公开实验代码：https://github.com/marlo-z/reversal_curse_analysis ，README 有 conda/Python 3.10 环境和 reversal、logit、chain、ICL 脚本；合成数据由随机双射生成。论文的 Table 2 给 AdamW 超参数，Table 3 列架构变化；每个种子报告在 NVIDIA A100 上约 0.5–1.5 小时。代码可用性已核实，但本卡未执行训练、检查依赖锁定或核对图与仓库输出。（PDF pp. 9、28–29、38；作者仓库 README）",
+        "本卡证据来自 NeurIPS 2024 官方 41 页 PDF，SHA-256 bf27a12705cc3a99f8cd19242bf52d0778f2044991b4bbfdaac46c453d018fa9；Figure 2 裁切图为本地待集成资产，来源与归属详见证据清单。Evidence status: full-text verified; no independent reproduction performed."
+      ]
+    },
+    {
+      "title": "阅读指南",
+      "paragraphs": [
+        "快读：先看 p. 4 的训练/反向数据拆分与双线性 logit，再看 p. 7 的 Lemma 2、Theorem 3 和 pp. 8–9 的 Figures 1–2；注意已见/未见方向以及训练/验证的不同。深读：补 p. 5 Eq. (1)、p. 6 Eq. (3)，再按 pp. 23–24 的逐行更新证明核对为何反向行不变；双线性严谨条件在 pp. 14–15。最后读 pp. 31–35 的 ICL 与相关 token 反例，确定结论边界。"
+      ]
+    }
+  ],
+  "equation_refs": [
+    {
+      "label": "Bilinear next-token logit, §3",
+      "latex": "l_{\\Theta}(y\\mid x)=x^{\\top}\\Theta y",
+      "role": "definition of the directional score in the bilinear model",
+      "symbols": {
+        "x": "fixed d-dimensional embedding of input token",
+        "y": "fixed d-dimensional embedding of candidate next token",
+        "Theta": "trainable d-by-d matrix",
+        "l_Theta": "unnormalized next-token logit"
+      },
+      "evidence": "NeurIPS proceedings PDF physical p. 4, §3, Bilinear model",
+      "interpretation": "The two directions use distinct matrix orientations unless Theta is constrained symmetric."
+    },
+    {
+      "label": "One-layer output-row update, Eq. (3) specialized at T=2",
+      "latex": "\\dot Y=\\eta_Y x_1(x_3-\\alpha)^{\\top}",
+      "role": "mechanism: only the row indexed by the contextual entity token is updated",
+      "symbols": {
+        "Y": "effective M-by-M output-score matrix optimized in the reparameterized analysis",
+        "eta_Y": "learning rate for Y",
+        "x_1": "one-hot contextual entity token",
+        "x_3": "one-hot correct next token",
+        "alpha": "M-dimensional softmax prediction vector",
+        "M": "vocabulary size"
+      },
+      "evidence": "NeurIPS proceedings PDF physical p. 6 Eq. (3); p. 23 Eq. (10) and proof",
+      "interpretation": "The zero row for an unseen reverse-query entity stays zero under the distinct-token data construction."
+    },
+    {
+      "label": "Reversal theorem, Theorem 3",
+      "latex": "p_{\\theta(t)}(x_3\\mid x_1,x_2)\\ge 1-(M-1)(M\\eta_Yt/N)^{-c}\\to1\\quad(D_{\\rm train}),\\qquad p_{\\theta(t)}(x_3\\mid x_1,x_2)=1/M\\quad(D_{\\rm test})",
+      "role": "main controlled separation between seen-direction training and unseen-direction test probabilities",
+      "symbols": {
+        "p_theta(t)": "next-token probability at SGD step t",
+        "x_1": "contextual entity token",
+        "x_2": "relation/query token",
+        "x_3": "target next entity token",
+        "M": "vocabulary size",
+        "N": "number of training sequences",
+        "eta_Y": "learning rate for effective matrix Y",
+        "c": "positive constant in theorem bound",
+        "D_train": "training sequence set",
+        "D_test": "unseen reverse-direction test set"
+      },
+      "evidence": "NeurIPS proceedings PDF physical p. 7 Theorem 3; p. 24 proof (test equality under zero initialization)",
+      "interpretation": "Under the theorem assumptions, the trained direction approaches certainty while the held-out reverse direction remains uniform."
+    }
+  ],
+  "figure_refs": [],
+  "cover": {
+    "mode": "title_abstract",
+    "selection_rationale": "Figure 2 的四面板热图有助于理解合成实验的方向不对称，但已核对的 arXiv 条目仅显示平台非独占分发许可，NeurIPS 论文页与 PDF 未给出可确认的网站图像再利用许可；不复制图片，改用题名与忠于摘要的文字封面。图仍可按原文第 9 页阅读。",
+    "abstract_text": "该文在特定双线性模型和受限单层 Transformer 中分析训练动力学，解释为何正向实体关系的学习不必改善逆向查询；多层 Transformer 的合成实验也显示方向不对称。理论结论依赖模型参数化、数据与优化假设，不能直接推广为所有自然语言模型的普遍定理。"
+  },
+  "evidence_refs": [
+    "NeurIPS proceedings PDF physical p. 1: authors, affiliations, abstract, code URL",
+    "NeurIPS proceedings PDF physical pp. 4–6: datasets, bilinear model, transformer reparameterization and Eq. (1)–(3)",
+    "NeurIPS proceedings PDF physical p. 7: Lemma 2 and Theorem 3 with explicit assumptions; pp. 23–24 proofs",
+    "NeurIPS proceedings PDF physical pp. 8–9: default synthetic experiment, Figures 1–2, 340 training and 60 validation sequences",
+    "NeurIPS proceedings PDF physical pp. 14–15: formal bilinear Theorems 5–6 and dimensional conditions",
+    "NeurIPS proceedings PDF physical pp. 24–25: COT dataset and Theorem 7 proof; pp. 27–29 Figures 3–4",
+    "NeurIPS proceedings PDF physical pp. 28–29: Tables 2–3, optimizer, compute and configurations; pp. 31–35 ICL and related-token boundaries",
+    "Evidence status: full-text verified; no independent reproduction performed."
+  ],
+  "independent_reproduction": false
+}
