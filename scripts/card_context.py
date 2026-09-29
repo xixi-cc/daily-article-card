@@ -45,7 +45,7 @@ def compact_row(row):
     return {k: row[k] for k in ('key', 'cohort', 'next_action', 'delivery_gate') if k in row}
 
 
-def brief(manifest_path, out, limit=5, runtime_path=None, receipts_dir=None):
+def brief(manifest_path, out, limit=5, runtime_path=None, receipts_dir=None, decisions_dir=None):
     if not 0 <= limit <= 10:
         raise ValueError('Brief preview must contain 0..10 items.')
     manifest = read(manifest_path)
@@ -74,6 +74,19 @@ def brief(manifest_path, out, limit=5, runtime_path=None, receipts_dir=None):
             if digest(record[field]['path']) != record[field]['sha256']:
                 raise ValueError('Changed packet/result in receipt: ' + str(path))
         reported[record['key']] = dict(key=record['key'], outcome=record['outcome'], receipt=str(path.resolve()))
+    accepted = {}
+    for path in sorted(Path(decisions_dir).glob('*.json')) if decisions_dir else []:
+        decision = read(path)
+        key = decision.get('key')
+        receipt_ref = decision.get('receipt', {})
+        if (key not in keys or not decision.get('scientific_acceptance')
+                or key not in reported or receipt_ref.get('path') != reported[key]['receipt']
+                or digest(receipt_ref['path']) != receipt_ref.get('sha256')):
+            raise ValueError('Decision is not bound to an accepted current receipt: ' + str(path))
+        if key in accepted:
+            raise ValueError('Duplicate accepted decision: ' + key)
+        accepted[key] = dict(key=key, decision=decision['decision'], path=str(path.resolve()))
+    awaiting = {k: v for k, v in reported.items() if k not in accepted}
     # Full lists and hashes stay on disk. This view is deliberately not a queue mutation.
     order = {'accepted_staged_not_installed': 0, 'started_metadata_only': 1,
              'stopped_unstarted': 2, 'outside_original_collection_queue': 3}
@@ -89,11 +102,16 @@ def brief(manifest_path, out, limit=5, runtime_path=None, receipts_dir=None):
                  production={k: {f: v[f] for f in ('path', 'head', 'remote_head', 'public_branch') if f in v}
                              for k, v in manifest['production'].items()},
                  active_units=active, runtime_state_known=runtime is not None,
-                 preview=[compact_row(x) for x in ordered if x['key'] not in reported
+                 preview=[compact_row(x) for x in ordered if x.get('run_state') not in
+                          {'published', 'accepted_not_selected', 'accepted_source_exception'}
+                          and x['key'] not in reported and x['key'] not in accepted
                           and x['key'] not in {a['key'] for a in active}][:limit],
-                 reported_not_accepted=dict(count=len(reported),
-                                            outcomes=dict(Counter(x['outcome'] for x in reported.values())),
-                                            preview=list(reported.values())[:limit]),
+                 reported_not_accepted=dict(count=len(awaiting),
+                                            outcomes=dict(Counter(x['outcome'] for x in awaiting.values())),
+                                            preview=list(awaiting.values())[:limit]),
+                 accepted_decisions=dict(count=len(accepted),
+                                         outcomes=dict(Counter(x['decision'] for x in accepted.values())),
+                                         preview=list(accepted.values())[:limit]),
                  missing_report_dates=manifest.get('report_dates_still_missing', []),
                  rules=dict(worker_context='fresh; fork_context=false', papers_per_worker=1,
                             max_concurrent_paper_workers=2, parent_role='single integrator/publisher',
@@ -117,8 +135,10 @@ def brief(manifest_path, out, limit=5, runtime_path=None, receipts_dir=None):
               for k, v in state['production'].items()]
     lines += ['', '## Routing preview (not a claim queue)']
     lines += [f"- {x['key']}: {x['cohort']}; {x['next_action']}" for x in state['preview']]
-    lines += ['', f'## Reported, awaiting parent decision: {len(reported)}']
-    lines += [f"- {x['key']}: {x['outcome']}; receipt={x['receipt']}" for x in list(reported.values())[:limit]]
+    lines += ['', f'## Reported, awaiting parent decision: {len(awaiting)}']
+    lines += [f"- {x['key']}: {x['outcome']}; receipt={x['receipt']}" for x in list(awaiting.values())[:limit]]
+    lines += ['', f'## Accepted parent decisions: {len(accepted)}']
+    lines += [f"- {x['key']}: {x['decision']}; decision={x['path']}" for x in list(accepted.values())[:limit]]
     lines += ['', '## Runtime', json.dumps(active, ensure_ascii=False) if runtime else
               'No runtime registry supplied. Verify process/agent identity before assuming an item is free.',
               '', 'Each Goal continuation must produce an artifact, receipt or state decision. Await active work instead of unchanged polling.',
@@ -271,6 +291,7 @@ def main():
     p.add_argument('--limit', type=int, default=5)
     p.add_argument('--runtime', type=Path)
     p.add_argument('--receipts', type=Path)
+    p.add_argument('--decisions', type=Path)
     p = commands.add_parser('packet')
     p.add_argument('--manifest', type=Path, required=True)
     p.add_argument('--key', required=True)
@@ -284,7 +305,7 @@ def main():
     args = parser.parse_args()
     try:
         if args.command == 'brief':
-            result = brief(args.manifest, args.out, args.limit, args.runtime, args.receipts)
+            result = brief(args.manifest, args.out, args.limit, args.runtime, args.receipts, args.decisions)
         elif args.command == 'packet':
             result = packet(args.manifest, args.key, args.out, args.role, args.intake)
         else:

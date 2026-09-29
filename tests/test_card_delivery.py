@@ -59,6 +59,22 @@ class DeliveryTests(unittest.TestCase):
         r = self.check_modified(lambda c: c.update(evidence_refs=['p1','p2','p3']))
         self.assertIn('missing explicit independent-reproduction boundary', r['errors'])
 
+    def test_collection_can_use_exact_journal_version(self):
+        card = json.loads((ROOT/'data/collection_cards/2101.08176.json').read_text())
+        card['source_version'] = 'JMLR-24-109-2023'
+        card['verified_metadata']['version'] = 'JMLR-24-109-2023'
+        with tempfile.TemporaryDirectory() as tmp:
+            p = Path(tmp)/'card.json'
+            p.write_text(json.dumps(card, ensure_ascii=False))
+            r = check_card(ROOT, dict(id='2101.08176', program='Collection', card=str(p)))
+        self.assertEqual(r['errors'], [])
+
+    def test_content_field_without_rendered_paragraphs_is_rejected(self):
+        def change(card):
+            card['sections'][1]['content'] = card['sections'][1].pop('paragraphs')[0]
+        r = self.check_modified(change)
+        self.assertIn('unrenderable section body: 研究问题', r['errors'])
+
 
 if __name__ == '__main__':
     unittest.main()

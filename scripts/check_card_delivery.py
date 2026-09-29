@@ -74,6 +74,13 @@ def check_card(repo, entry):
         errors.append('curation_status is not full_text_verified')
     sections = card.get('sections', [])
     headings = [s.get('title') for s in sections if isinstance(s, dict)]
+    for section in sections:
+        if not isinstance(section, dict):
+            errors.append('section is not an object')
+            continue
+        entries = section.get('bullets') or section.get('paragraphs')
+        if not isinstance(entries, list) or not any(isinstance(x, str) and x.strip() for x in entries):
+            errors.append('unrenderable section body: ' + str(section.get('title', '?')))
     missing = (standard.REQUIRED_CORE | {'背景'}) - set(headings)
     if missing:
         errors.append('missing sections: ' + ', '.join(sorted(missing)))
@@ -102,8 +109,11 @@ def check_card(repo, entry):
             errors.append('verified_metadata missing ' + field)
     if metadata.get('version') != card.get('source_version'):
         errors.append('source version conflicts with verified metadata')
-    if not re.fullmatch(r'v\d+', str(card.get('source_version', ''))):
-        errors.append('missing exact source version')
+    version = str(card.get('source_version', '')).strip()
+    if program == 'Daily' and not re.fullmatch(r'v\d+', version):
+        errors.append('Daily requires an exact arXiv source version')
+    elif program == 'Collection' and not version:
+        errors.append('Collection requires an identified source version')
     try:
         date = str(metadata.get('published', ''))
         parsed = datetime.fromisoformat(date.replace('Z', '+00:00'))

@@ -49,6 +49,11 @@ async function measure(frame, selector, detail) {
     return {
       textLength:root.innerText.length,
       headings: [...root.querySelectorAll('h2')].map(x => x.innerText),
+      emptySections: detail ? [...root.querySelectorAll('#detail-body .reading-card-section')]
+        .filter(section => {
+          const first = section.querySelector('.reading-card-content ul li');
+          return !first || first.textContent.trim() === '暂无内容';
+        }).map(section => section.querySelector('h2')?.textContent.trim() || '?') : [],
       mathCount:root.querySelectorAll('mjx-container').length,
       mathErrors:[...root.querySelectorAll('mjx-merror,[data-mjx-error]')].map(x => x.textContent),
       rawMath:raw,
@@ -174,7 +179,7 @@ async function main() {
         else if (surface === 'feed') await page.locator(selector).screenshot({path:result.screenshot});
         else await page.screenshot({path:result.screenshot,fullPage:true});
         result.screenshot_sha256 = hash(result.screenshot);
-        result.passed = !m.mathErrors.length && !m.rawMath.length && !m.brokenImages.length && !m.overflow && !m.clippedText.length && !m.wideEquations.some(x=>!x.scrollable);
+        result.passed = !m.mathErrors.length && !m.rawMath.length && !m.brokenImages.length && !m.overflow && !m.clippedText.length && !m.emptySections.length && !m.wideEquations.some(x=>!x.scrollable);
       } catch (e) { result.error = e.message; }
       finally {
         result.pageErrors = pageErrors; result.missingLocalResources = localErrors;

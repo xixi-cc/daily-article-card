@@ -74,8 +74,11 @@ python3 scripts/card_batch.py delivery --manifest /absolute/batch.json \
 The checker uses the repository's v2.3 validator and fails on incomplete
 metadata, wrong identity/version, invalid Daily/Collection provenance, missing
 sections, missing reproduction boundary, malformed math and missing persistent
-figures. Daily requires an exact UTC serialization accepted by the canonical
-metadata validator; Collection can retain a valid day-precision ISO date.
+figures. It also requires nonempty `paragraphs` or `bullets` for every section:
+the site renderer does not read a standalone `content` field. Daily requires an
+exact arXiv `vN` source version and UTC serialization accepted by the canonical
+metadata validator; Collection can use a stable journal version identifier and
+retain a valid day-precision ISO date.
 The checker does not invent a timestamp or repair a heading automatically.
 It is stricter about the standard's background section than the historical
 validator; old published cards can therefore reveal pre-existing omissions.
@@ -101,7 +104,8 @@ document and modal iframe. Use `physics_AI.html` / `collection.html` with a
 source-title query, exact detail href, `.paper-modal` and `.paper-modal-frame`.
 Never use an index redirect with a query, guess `#paper-modal`, or accept an
 empty/404 detail. Await MathJax/fonts and scroll/decode lazy images. Reject math
-errors, raw delimiters, missing images, overflow and clipped cover text.
+errors, raw delimiters, missing images, overflow, clipped cover text and detail
+sections that still render as `暂无内容`.
 Chinese `mjx-utext` fallback is not a math error.
 
 The receipt is checkpointed after each surface, including failures. Reusing the

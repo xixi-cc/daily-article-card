@@ -34,9 +34,10 @@ files and shows only counts plus a bounded preview. Reported items are excluded
 from the unreported preview and remain **awaiting parent decision**, never
 automatically accepted. Keep one current receipt per paper in that directory;
 archive prior revisions separately. This view verifies packet/result hashes,
-not the scientific evidence again. After a real acceptance decision, the sole
-parent writer updates the new run's mutable authority, preserving historical
-campaign snapshots. Generate the next checkpoint from that new authority.
+not the scientific evidence again. Pass `--decisions /absolute/parent-decisions`
+to show parent-accepted outcomes separately; each decision must bind the
+current receipt by path and hash. Keep the run manifest immutable while active
+packets cite it, and write the acceptance in a new per-paper decision file.
 
 ## Worker: one paper, fresh history
 

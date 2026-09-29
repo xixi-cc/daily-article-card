@@ -603,7 +603,7 @@
 
     const preview = document.createElement('div');
     preview.className = 'feed-card-preview';
-    preview.textContent = item.cover_summary || item.preview_text || '摘要还在生成中';
+    preview.textContent = item.cover_summary || (item.program === 'Collection' ? item.hook_text : item.preview_text) || '摘要还在生成中';
 
     const footer = document.createElement('div');
     footer.className = 'feed-card-footer';

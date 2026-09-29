@@ -149,6 +149,26 @@ class ContextTests(unittest.TestCase):
         self.assertEqual(state['reported_not_accepted']['count'],1)
         self.assertFalse(state['dispatch_authorized'])
 
+    def test_parent_decision_moves_receipt_out_of_awaiting(self):
+        job=self.job();self.submit(job,self.result(job))
+        decisions=self.root/'decisions';decisions.mkdir()
+        source=self.root/'result.receipt.json'
+        (decisions/'accepted.json').write_text(json.dumps(dict(
+            key='Daily:2609.12594', scientific_acceptance=True,
+            decision='accepted_not_selected', receipt=reference(source))))
+        brief(self.manifest,self.root/'brief',receipts_dir=self.root,decisions_dir=decisions)
+        state=json.loads((self.root/'brief/controller.json').read_text())
+        self.assertEqual(state['reported_not_accepted']['count'],0)
+        self.assertEqual(state['accepted_decisions']['count'],1)
+        self.assertEqual(state['preview'],[])
+
+    def test_published_row_is_not_previewed_again(self):
+        self.data['rows'][0]['run_state'] = 'published'
+        self.save_manifest()
+        brief(self.manifest, self.root/'brief')
+        state=json.loads((self.root/'brief/controller.json').read_text())
+        self.assertEqual(state['preview'], [])
+
     def test_stale_reported_result_rejected(self):
         job=self.job();self.submit(job,self.result(job))
         (job/'work/result.json').write_text('{}')
