@@ -106,7 +106,10 @@ Never use an index redirect with a query, guess `#paper-modal`, or accept an
 empty/404 detail. Await MathJax/fonts and scroll/decode lazy images. Reject math
 errors, raw delimiters, missing images, overflow, clipped cover text and detail
 sections that still render as `暂无内容`.
-Chinese `mjx-utext` fallback is not a math error.
+If a lazy image's `decode()` rejects after its request changes, accept only the
+final image with `complete=true` and positive `naturalWidth`; the rendered-image
+check still rejects broken resources. Chinese `mjx-utext` fallback is not a math
+error.
 
 The receipt is checkpointed after each surface, including failures. Reusing the
 same output directory skips only passing surfaces whose complete site, card,

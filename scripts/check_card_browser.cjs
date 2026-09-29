@@ -35,7 +35,15 @@ async function settle(frame, scope = 'body') {
   await frame.evaluate(async () => { await MathJax.startup.promise; await document.fonts.ready; });
   for (const image of await frame.locator(scope + ' img').all()) {
     await image.scrollIntoViewIfNeeded();
-    await image.evaluate(im => Promise.race([im.decode(), new Promise((_, reject) => setTimeout(() => reject(new Error('image decode timeout')), 10000))]));
+    try {
+      await image.evaluate(im => Promise.race([im.decode(), new Promise((_, reject) => setTimeout(() => reject(new Error('image decode timeout')), 10000))]));
+    } catch (error) {
+      const state = await image.evaluate(im => ({src:im.currentSrc, complete:im.complete, width:im.naturalWidth}));
+      // A lazy image can finish loading after decode() attached to an older
+      // request rejects; the final rendered image is what the gate checks.
+      if (state.complete && state.width > 0) continue;
+      throw new Error(`Image decode failed: ${JSON.stringify(state)}: ${error.message}`);
+    }
   }
 }
 async function measure(frame, selector, detail) {
