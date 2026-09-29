@@ -94,7 +94,8 @@ def version_at_least(card: dict[str, object], target: tuple[int, int]) -> bool:
 def validate_v2_card(card: dict[str, object], arxiv_id: str, program: str = "Daily") -> list[str]:
     errors: list[str] = []
     profile = str(card.get("paper_profile", ""))
-    if profile not in V2_PAPER_PROFILES:
+    survey_allowed = profile == "survey" and program == "Collection" and version_at_least(card, (2, 4))
+    if profile not in V2_PAPER_PROFILES and not survey_allowed:
         errors.append(f"{arxiv_id}: invalid or missing paper_profile")
 
     if card.get("style_reference") != "physicist_daily_arxiv":

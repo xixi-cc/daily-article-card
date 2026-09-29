@@ -1,7 +1,7 @@
 # Paper Card Standard
 
-Version: 2.3
-Effective date: 2026-08-26
+Version: 2.4
+Effective date: 2026-09-30
 Status: canonical
 
 This document is the authoritative editorial and evidence standard for physics+AI paper cards. Automation prompts and validators implement parts of this contract, but passing a structural validator alone does not establish scientific quality.
@@ -151,7 +151,7 @@ A final card must contain:
 - `curation_status: full_text_verified`;
 - verified metadata sufficient for deterministic offline rendering;
 - `card_standard_version: 2.3` or later for newly generated cards; historical cards retain their recorded version until they are substantively revised;
-- `paper_profile` chosen from `theory`, `theory_numerics`, `theory_experiment`, `numerical`, `experiment`, or `ai_empirical`;
+- `paper_profile` chosen from `theory`, `theory_numerics`, `theory_experiment`, `numerical`, `experiment`, or `ai_empirical`; version 2.4 additionally permits `survey` for Collection review articles;
 - `style_reference: physicist_daily_arxiv`;
 - a Codex-direct `selection_record` for Daily cards;
 - provenance appropriate to Daily or Collection;
@@ -161,6 +161,8 @@ A final card must contain:
 - all required sections;
 - at least three page-addressable evidence references;
 - an explicit independent-reproduction boundary.
+
+For a `survey` card, distinguish the review's synthesis from results of the cited studies. Attribute quoted performance and theorems to those studies, and state which underlying works were independently checked. A survey has no Daily S selection by virtue of its breadth.
 
 Daily cards use `data/curated_cards/<arxiv-id>.json` as the source of truth. Generated Markdown and HTML must match the JSON exactly.
 

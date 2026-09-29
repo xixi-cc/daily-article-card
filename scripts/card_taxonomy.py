@@ -14,6 +14,7 @@ PROFILE_LABELS = {
     "numerical": "数值计算",
     "experiment": "实验",
     "ai_empirical": "AI 实证",
+    "survey": "综述",
 }
 
 CATEGORY_TAGS = {

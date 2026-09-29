@@ -1,9 +1,26 @@
 import unittest
 
 from scripts.card_taxonomy import classify_card
+from scripts.validate_paper_cards import validate_v2_card
 
 
 class CardTaxonomyTests(unittest.TestCase):
+    def test_survey_is_labeled_as_review(self) -> None:
+        card = {
+            "paper_profile": "survey",
+            "title_en": "Artificial Intelligence for Science in Quantum, Atomistic, and Continuum Systems",
+            "verified_metadata": {"categories": ["cs.LG"], "primary_category": "cs.LG"},
+        }
+        self.assertEqual(classify_card(card)["research_type"], "综述")
+
+    def test_survey_requires_collection_and_v24(self) -> None:
+        card = {"paper_profile": "survey", "card_standard_version": "2.4"}
+        profile_error = "test: invalid or missing paper_profile"
+        self.assertNotIn(profile_error, validate_v2_card(card, "test", "Collection"))
+        self.assertIn(profile_error, validate_v2_card(card, "test", "Daily"))
+        card["card_standard_version"] = "2.3"
+        self.assertIn(profile_error, validate_v2_card(card, "test", "Collection"))
+
     def test_robotics_category_and_tags(self) -> None:
         card = {
             "paper_profile": "ai_empirical",
