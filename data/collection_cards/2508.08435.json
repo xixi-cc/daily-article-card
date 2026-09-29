@@ -1,0 +1,217 @@
+{
+  "arxiv_id": "2508.08435",
+  "source_version": "v5",
+  "source_pdf": "https://arxiv.org/pdf/2508.08435v5",
+  "title_en": "Fast weight programming and linear transformers: from machine learning to neurobiology",
+  "title_zh": "快速权重编程与线性 Transformer：从机器学习到神经生物学",
+  "curation_status": "full_text_verified",
+  "card_standard_version": "2.4",
+  "paper_profile": "survey",
+  "style_reference": "physicist_daily_arxiv",
+  "provenance": {
+    "program": "Collection",
+    "catalog": "Ziming Liu Paper Collection via paper-collection public catalog",
+    "catalog_record_id": "2508.08435",
+    "catalog_topic": "Learning Theory",
+    "collection_date": "2026-08-30",
+    "sampled_at": "2026-08-30",
+    "selected_by": "2026-08-30 catalog import; independent Collection card review authorized 2026-09-30",
+    "sampling_seed": "not applicable: direct catalog import",
+    "selection_basis": "existing Collection catalog record 2508.08435"
+  },
+  "verified_metadata": {
+    "arxiv_id": "2508.08435",
+    "version": "v5",
+    "title": "Fast weight programming and linear transformers: from machine learning to neurobiology",
+    "authors": [
+      "Kazuki Irie",
+      "Samuel J. Gershman"
+    ],
+    "affiliations": [
+      "Kazuki Irie: Department of Psychology and Center for Brain Science, Harvard University, Cambridge, MA, USA",
+      "Samuel J. Gershman: Department of Psychology and Center for Brain Science; Kempner Institute for the Study of Natural and Artificial Intelligence, Harvard University, Cambridge, MA, USA"
+    ],
+    "corresponding_emails_from_paper": [
+      "kirie@fas.harvard.edu",
+      "gershman@fas.harvard.edu"
+    ],
+    "categories": [
+      "cs.LG",
+      "cs.AI",
+      "q-bio.NC"
+    ],
+    "primary_category": "cs.LG",
+    "submitted": "2025-08-11T19:50:03Z",
+    "version_date": "2026-03-18T02:06:05Z",
+    "journal_masthead": "Published in Transactions on Machine Learning Research (12/2025)",
+    "doi": "10.48550/arXiv.2508.08435",
+    "doi_scope": "arXiv-issued DOI; no separate TMLR DOI verified",
+    "openreview_url": "https://openreview.net/forum?id=TDG8EkNmQR",
+    "abstract": "Recent advances in artificial neural networks for machine learning, and language modeling in particular, have established a family of recurrent neural network (RNN) architectures that, unlike conventional RNNs with vector-form hidden states, use two-dimensional (2D) matrix-form hidden states. Such 2D-state RNNs, known as Fast Weight Programmers (FWPs), can be interpreted as a neural network whose synaptic weights (called fast weights) dynamically change over time as a function of input observations, and serve as short-term memory storage; corresponding synaptic weight modifications are controlled or programmed by another network (the programmer) whose parameters are trained (e.g., by gradient descent). In this Primer, we review the technical foundations of FWPs, their computational characteristics, and their connections to transformers and state space models. We also discuss connections between FWPs and models of synaptic plasticity in the brain, suggesting a convergence of natural and artificial intelligence.",
+    "published": "2025-08-11",
+    "published_precision": "arXiv first-submission day; TMLR masthead states 12/2025; exact journal publication day not established",
+    "venue": "Transactions on Machine Learning Research (12/2025)"
+  },
+  "sections": [
+    {
+      "title": "作者信息",
+      "bullets": [
+        "Kazuki Irie 与 Samuel J. Gershman；两人均署哈佛大学心理学系及脑科学中心，Gershman 另署 Kempner Institute。论文脚注说明 Irie 主笔机器学习部分、Gershman 主笔神经科学部分。依据为 TMLR 论文首页；本卡核对 arXiv:2508.08435v5，2026-03-18 修订，37 个物理 PDF 页。",
+        "这是一篇 TMLR Primer/综述，不报告一项新训练实验。arXiv 记录的主题为 cs.LG、cs.AI、q-bio.NC；论文首页标注 TMLR 12/2025。开放评审页：https://openreview.net/forum?id=TDG8EkNmQR；arXiv DOI：https://doi.org/10.48550/arXiv.2508.08435。"
+      ]
+    },
+    {
+      "title": "研究问题",
+      "bullets": [
+        "普通循环网络把过去压缩进随时间变化的向量；因果 Transformer 保留随序列长度增长的键和值。能否让网络把输入直接写入一个随时间变化的权重矩阵，再用它读取当前输入？论文用“快速权重编程”（FWP）统一这类二维状态模型，并厘清它与线性注意力的精确关系（PDF pp. 2–3, 6–10）。",
+        "第二个问题是：这种计算形式能否为突触短时可塑性提供模型？作者给出从计算变量到神经元活动和受体机制的候选映射，同时明确其神经实现仍属推测（PDF pp. 19–21）。"
+      ]
+    },
+    {
+      "title": "背景",
+      "bullets": [
+        "本文跨机器学习与计算神经科学：输入 \\(x_t\\) 先由训练后固定的慢网络投影为查询 \\(q_t\\)、键 \\(k_t\\) 和值 \\(v_t\\)；快网络的状态是矩阵 \\(W_t\\)，它随每个输入变化，输出为 \\(y_t\\)。这不是把训练时梯度更新简单搬到推理时；更新规则本身由慢网络产生的量驱动（PDF pp. 7–8, Eqs. 7, 13–14）。",
+        "Figure 1 比较三种记忆载体：普通 RNN 的向量 \\(s_t\\)、FWP 的固定形状矩阵 \\(W_t\\)、Transformer 随时间增长的 \\(K_t,V_t\\)。矩阵维度固定并不保证精确检索；这也是后文线性复杂度与检索能力取舍的起点（PDF p. 3, Fig. 1; pp. 9–10, 18）。"
+      ]
+    },
+    {
+      "title": "模型与方法",
+      "bullets": [
+        "以文中的加性 FWP 为最小模型。第 \\(t\\) 步输入 \\(x_t\\) 被训练后固定的慢网络投影成查询 \\(q_t\\)、键 \\(k_t\\) 和值 \\(v_t\\)；\\(W_0=0\\)，\\(\\phi\\) 是键/查询特征映射（PDF p. 7, Eqs. 7, 13–14）：",
+        "\\[q_t=W^Qx_t,\\quad k_t=W^Kx_t,\\quad v_t=W^Vx_t;\\qquad W_t=W_{t-1}+v_t\\otimes\\phi(k_t),\\quad y_t=W_t\\phi(q_t).\\]",
+        "投影矩阵 \\(W^Q,W^K,W^V\\) 是慢权重；外积 \\(v_t\\otimes\\phi(k_t)\\) 把一组关联写入快速状态 \\(W_t\\)，后者立刻参与输出。这是模型定义，并非生物突触更新的实测定律。",
+        "只对移除 softmax 的注意力，矩阵乘法结合律给出（PDF p. 9, Eqs. 15–18）：",
+        "\\[W_t=V_tK_t^\\top=\\sum_{\\tau=1}^{t}v_\\tau\\otimes k_\\tau,\\qquad y_t=W_tq_t.\\]",
+        "这里 \\(K_t,V_t\\) 按列保存至第 \\(t\\) 步的键和值；\\(\\tau\\) 是历史步索引。这与加性 FWP 在 \\(\\phi=\\mathrm{id}\\) 时逐步等价。若用正值特征映射构造归一化线性注意力，则还要跟踪 \\(z_t=z_{t-1}+\\phi(k_t)\\)，输出为 \\(y_t=W_t\\phi(q_t)/(z_t^\\top\\phi(q_t))\\)。普通 softmax 注意力不在这些等价式内（PDF pp. 9–10, Eqs. 19–22）。",
+        "综述再比较不同的在线更新。DeltaNet 先读旧关联 \\(W_{t-1}\\phi(k_t)\\)，再按残差写入（PDF p. 11, Eq. 24）：",
+        "\\[W_t=W_{t-1}+\\psi(\\beta_t)\\bigl(v_t-W_{t-1}\\phi(k_t)\\bigr)\\otimes\\phi(k_t).\\]",
+        "\\(\\beta_t\\) 由慢网络生成，\\(\\psi\\) 控制步长。Table 1 把 RetNet、Mamba2、GLA、Gated DeltaNet 等放在更新规则与局部目标同一坐标系中；它们的基准表现属于所引原始研究，本文未重新测量（PDF pp. 11–12, Table 1, Eqs. 23–24; pp. 35–37, App. A）。"
+      ]
+    },
+    {
+      "title": "核心结果与证据",
+      "bullets": [
+        "数学恒等式：删去 softmax 后，显式键值缓存 \\(V_t,K_t\\) 可重排为固定形状状态 \\(W_t\\)；引入归一化线性核时还需 \\(z_t\\)。这是给定投影和核函数下的代数等价，不能推广成标准 softmax Transformer 与 FWP 等价，也不保证相同精确检索能力（PDF pp. 9–10, Eqs. 15–22）。",
+        "更新规则改变可执行的状态变换：加性模型只累积外积；DeltaNet 用当前键的预测误差修正已有映射。论文将状态写成 \\(W_t=B_tW_{t-1}A_t+C_t\\)，并指出 DeltaNet 的 \\(A_t=I-\\psi(\\beta_t)\\phi(k_t)\\otimes\\phi(k_t)\\) 可非对角；某些状态跟踪能力的差异来自所引理论和实验工作，未在本综述独立验证（PDF pp. 11, 17, Eqs. 24, 31–32）。",
+        "效率与检索取舍：作者总结线性时间 FWP 具有固定维度状态、却在精确检索任务上落后于 softmax 注意力；Table 2 的比较明确注明转载自 Irie et al. (2025b)。表中的“上下文无界”“表达力高”依赖所用更新规则、数值精度与任务，不能视为任意长度完美记忆或通用优势（PDF pp. 17–18, Table 2）。",
+        "神经科学部分提出一个候选变量对应：令 \\(q=k\\)，快矩阵 \\(W\\) 映射突触前活动到突触后发放；作者假设 \\(W\\) 与 AMPA 受体相关强度对应，\\(v=Uq\\) 的 \\(U\\) 与 NMDA 相关钙反应对应。文中用既有可塑性文献支持动机，但没有给出直接测量这套 FWP 回路的实验；这是一种机制假设（PDF pp. 19–21, Eq. 33）。"
+      ]
+    },
+    {
+      "title": "有效性与局限",
+      "bullets": [
+        "“FWP 等价于 Transformer”的范围严格受核函数约束：普通 softmax 的非线性归一化不能由固定矩阵 \\(W_t\\) 的简单外积递推精确实现。有限状态会压缩过往键值；论文明确报告精确检索的弱项，并提出混合架构作为工程选择（PDF pp. 9–10, 18）。",
+        "作者引用的性能、形式语言能力、局部学习及脑可塑性结果来自不同原始研究。本文是 Primer，不提供统一数据集、同协议基准、效应量或独立复现实验；本卡只核对综述如何陈述这些证据，未逐篇验证被引原始研究（PDF pp. 12, 16–18, 19–21）。",
+        "神经实现一节明确称为 speculative：线性钙迹模型忽略电压依赖等非线性，脑内随机性与可塑性时间窗尚未纳入，AMPA/NMDA 变量对应不能当作已建立的神经机制（PDF pp. 19–21, Secs. 4.1–4.2）。"
+      ]
+    },
+    {
+      "title": "复现与资源",
+      "bullets": [
+        "全文：https://arxiv.org/abs/2508.08435v5；精确版本 PDF：https://arxiv.org/pdf/2508.08435v5。本文为综述，没有本文专属训练数据、检查点、硬件配置或可复现的新实验协议。论文 p. 12 指向第三方 FWP 实现库：https://github.com/fla-org/flash-linear-attention；使用它只能复现特定实现，不能证明本文神经假说。",
+        "本地核对：官方 PDF 37 页，SHA-256 228fd0074ef0094e908014967d8efd4466089b60dfb5b2aa4dda566095b42317；Figure 1 取自该版本 PDF p. 3，arXiv 页面声明 CC BY 4.0，署名 Kazuki Irie 与 Samuel J. Gershman；仅裁去页边和图注，保留面板与标签。Evidence status: full-text verified; no independent reproduction performed; cited studies not independently checked."
+      ]
+    },
+    {
+      "title": "阅读指南",
+      "bullets": [
+        "快速路径：先看 PDF p. 3 Figure 1 分清三种状态，再看 p. 7 Eqs. 13–14 的写入/读出，最后看 pp. 9–10 Eqs. 15–22 的代数等价及 p. 18 的检索边界。这里的“权重”是序列内变化的状态，慢网络投影参数仍在序列间训练。",
+        "深入路径：比较 p. 11 Table 1 与 p. 17 Eq. 31–32，理解更新规则如何限制状态转移；读 pp. 19–21 时把 Eq. 33 的生物变量映射当作待检验假说。若只想理解核心机制，参考文献和 Appendix A 的逐项梯度推导可后读。"
+      ]
+    }
+  ],
+  "cover": {
+    "mode": "source_figure",
+    "asset_path": "assets/collection-figures/2508.08435/figure-1-fwp-comparison.webp",
+    "label": "Figure 1",
+    "visual_type": "schematic",
+    "evidence": "arXiv:2508.08435v5, physical PDF p. 3, Figure 1",
+    "alt_text": "Figure 1 三面板比较普通 RNN 的向量状态、FWP 的可更新矩阵状态与 Transformer 随序列增长的键值缓存。",
+    "caption": "Figure 1（a–c）：蓝色为固定慢权重，黄色为跨步保留的状态，绿色为当前步变量。b 的矩阵状态与 c 的键值缓存展示两种不同的记忆组织；图本身不证明普通 softmax 注意力与 FWP 等价。Kazuki Irie 与 Samuel J. Gershman，arXiv:2508.08435v5，p. 3，CC BY 4.0；仅裁页边。",
+    "selection_rationale": "Figure 1 是全文唯一直接并列展示三种状态及信息流的机制图；优先于性能总结表和没有直接结构对应的神经示意。原图面板、标注和颜色均保留。",
+    "attribution": "Irie and Gershman, arXiv:2508.08435v5, Figure 1, CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/); page margins cropped"
+  },
+  "figure_refs": [
+    {
+      "label": "Figure 1",
+      "asset_path": "assets/collection-figures/2508.08435/figure-1-fwp-comparison.webp",
+      "section": "背景",
+      "role": "contrast vector, matrix and growing key-value sequence states",
+      "evidence": "arXiv:2508.08435v5, physical PDF p. 3, Figure 1",
+      "alt_text": "a 普通 RNN 的向量状态；b FWP 的快权重矩阵与更新规则；c Transformer 的增长键值缓存。",
+      "caption": "a、b、c 分别显示向量状态、固定形状的动态权重矩阵、随时间增长的键值缓存。颜色区分当前变量、动态状态与训练后固定参数；这是架构比较，不能由图推出精确检索质量。图源：Kazuki Irie、Samuel J. Gershman，arXiv:2508.08435v5，PDF p. 3，CC BY 4.0；裁去页边与印刷图注。 许可：https://creativecommons.org/licenses/by/4.0/。",
+      "interpretation": "The state geometry and update path, rather than shared vocabulary, define the comparison."
+    }
+  ],
+  "equation_refs": [
+    {
+      "label": "Eqs. (7), (13)–(14)",
+      "latex": "q_t=W^Qx_t,\\ k_t=W^Kx_t,\\ v_t=W^Vx_t;\\quad W_t=W_{t-1}+v_t\\otimes\\phi(k_t);\\quad y_t=W_t\\phi(q_t)",
+      "role": "definition of additive fast-weight programming",
+      "symbols": {
+        "x_t": "input vector at step t, dimension d_in",
+        "q_t,k_t": "query and key vectors, dimension d_key",
+        "v_t,y_t": "value and output vectors, dimension d_out",
+        "W^Q,W^K,W^V": "trained projection matrices fixed during sequence processing",
+        "W_t": "fast matrix state, shape d_out by d_key, initially zero",
+        "phi": "feature or activation map applied to keys and queries",
+        "otimes": "outer product of column vectors"
+      },
+      "evidence": "arXiv:2508.08435v5, physical PDF p. 7, Eqs. (7), (13)–(14)",
+      "interpretation": "Model definition: slow projections program a matrix associative memory used immediately for output."
+    },
+    {
+      "label": "Eqs. (15)–(18)",
+      "latex": "W_t=V_tK_t^\\top=\\sum_{\\tau=1}^{t}v_\\tau\\otimes k_\\tau=W_{t-1}+v_t\\otimes k_t,\\quad y_t=W_tq_t",
+      "role": "exact rearrangement of unnormalized attention",
+      "symbols": {
+        "K_t,V_t": "matrices concatenating keys and values from steps 1 through t",
+        "W_t": "fixed-shape key-value product",
+        "q_t,k_t,v_t": "current query, key and value",
+        "tau": "past sequence index"
+      },
+      "evidence": "arXiv:2508.08435v5, physical PDF p. 9, Eqs. (15)–(18)",
+      "interpretation": "Exact identity after removal of softmax and with identity feature map; it does not cover ordinary softmax attention."
+    },
+    {
+      "label": "Eqs. (21)–(22)",
+      "latex": "z_t=z_{t-1}+\\phi(k_t),\\quad y_t=\\frac{W_t\\phi(q_t)}{z_t^\\top\\phi(q_t)}",
+      "role": "normalizer needed for a normalized linear-attention kernel",
+      "symbols": {
+        "z_t": "accumulated transformed keys, initially zero",
+        "phi": "feature map with positive codomain in Eq. (19)",
+        "W_t": "accumulated value-key outer-product state",
+        "q_t,k_t": "current query and key"
+      },
+      "evidence": "arXiv:2508.08435v5, physical PDF pp. 9–10, Eqs. (19)–(22)",
+      "interpretation": "Model consequence for the stated positive feature kernel; denominator must be defined and nonzero."
+    },
+    {
+      "label": "Eq. (24)",
+      "latex": "W_t=W_{t-1}+\\psi(\\beta_t)\\bigl(v_t-W_{t-1}\\phi(k_t)\\bigr)\\otimes\\phi(k_t)",
+      "role": "DeltaNet residual correction to an existing association",
+      "symbols": {
+        "W_t": "fast matrix state",
+        "v_t": "target value from slow net",
+        "k_t": "key from slow net",
+        "phi": "key feature map",
+        "beta_t": "slow-net generated scalar",
+        "psi(beta_t)": "effective update step size"
+      },
+      "evidence": "arXiv:2508.08435v5, physical PDF p. 11, Eqs. (23)–(24); p. 35, Eqs. (37)–(40)",
+      "interpretation": "Model rule and local squared-error gradient step under the Appendix A setup; paper reviews the underlying earlier work."
+    }
+  ],
+  "evidence_refs": [
+    "arXiv:2508.08435v5, physical PDF p. 1: title, authors, affiliations, author roles, TMLR masthead and abstract.",
+    "arXiv:2508.08435v5, physical PDF pp. 3, 7–8: Figure 1 and Eqs. (7), (13)–(14), architecture and update definition.",
+    "arXiv:2508.08435v5, physical PDF pp. 9–10: Eqs. (15)–(22), exact unnormalized/linear-kernel algebra and softmax boundary.",
+    "arXiv:2508.08435v5, physical PDF pp. 11–13, 35–37: Table 1, Eq. (24), Box 1 and Appendix A, update families and practical training caveat.",
+    "arXiv:2508.08435v5, physical PDF pp. 16–18: Eq. (31)–(32), expressivity discussion and Table 2, reproduced from Irie et al. (2025b).",
+    "arXiv:2508.08435v5, physical PDF pp. 19–21: Eq. (33), proposed AMPA/NMDA map and explicit speculative/omitted-mechanism boundary.",
+    "Evidence status: full-text verified against 37-page exact-version PDF, SHA-256 228fd0074ef0094e908014967d8efd4466089b60dfb5b2aa4dda566095b42317; cited original studies not independently checked; no independent reproduction performed."
+  ],
+  "source_url": "https://arxiv.org/abs/2508.08435v5",
+  "source_pdf_url": "https://arxiv.org/pdf/2508.08435v5",
+  "independent_reproduction": false
+}
