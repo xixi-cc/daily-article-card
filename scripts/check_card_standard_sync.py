@@ -8,7 +8,7 @@ from pathlib import Path
 
 
 ROOT = Path(__file__).resolve().parents[1]
-CURRENT_VERSION = "2.3"
+CURRENT_VERSION = "2.4"
 
 
 def require(path: Path, fragments: tuple[str, ...]) -> list[str]:
@@ -39,11 +39,15 @@ def main() -> int:
     ))
     errors.extend(require(
         ROOT / "docs" / "PAPER_CARD_STANDARD_INTEGRATION.md",
-        (f"Current required version: {CURRENT_VERSION}", "arxiv-daily", "scripts/validate_paper_cards.py", "scripts/build_site.py"),
+        (f"Current canonical version: {CURRENT_VERSION}", "arxiv-daily", "scripts/validate_paper_cards.py", "scripts/build_site.py", "survey"),
     ))
     errors.extend(require(
         ROOT / "scripts" / "validate_paper_cards.py",
-        ('version_at_least(card, (2, 3))', "v2.3 requires a structured cover decision", "v2.2 forbids legacy $$ display delimiters"),
+        ('version_at_least(card, (2, 3))', 'profile == "survey" and program == "Collection" and version_at_least(card, (2, 4))', "v2.3 requires a structured cover decision", "v2.2 forbids legacy $$ display delimiters"),
+    ))
+    errors.extend(require(
+        ROOT / "scripts" / "card_taxonomy.py",
+        ('"survey": "综述"',),
     ))
     errors.extend(require(
         ROOT / "scripts" / "build_site.py",

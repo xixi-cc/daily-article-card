@@ -1,18 +1,18 @@
 # Paper Card Standard Integration
 
-Current required version: 2.3
+Current canonical version: 2.4; minimum for ordinary new cards: 2.3
 
 `docs/PAPER_CARD_STANDARD.md` is the single source of truth for every new physics+AI paper card. This file records the active consumers so that a standard revision is not considered complete until each one is synchronized.
 
 ## Active consumers
 
-| Consumer | Responsibility | v2.3 requirement |
+| Consumer | Responsibility | Current requirement |
 | --- | --- | --- |
 | Codex `arxiv-daily` automation | Discover, screen, write, validate, and publish Daily cards | Read all three canonical documents before mutation; create only v2.3-or-later cards |
 | `docs/CODEX_DAILY_SCREENING_AND_PUBLICATION.md` | Daily eligibility and publication contract | Require physicist-facing prose, structured equations and figures, and the v2.3 cover ladder |
 | `data/curated_cards/*.json` | Daily card sources | New cards include `card_standard_version`, `equation_refs`, `figure_refs`, and `cover` |
-| `data/collection_cards/*.json` | Collection card sources | New or substantively revised cards follow the same card standard but retain Collection provenance |
-| `scripts/validate_paper_cards.py` | Structural and evidence gate | Reject malformed v2.3 covers, unresolved figure assets, and raw or unbalanced TeX |
+| `data/collection_cards/*.json` | Collection card sources | New or substantively revised cards retain Collection provenance; a survey uses v2.4 and must distinguish its synthesis from cited original results |
+| `scripts/validate_paper_cards.py` | Structural and evidence gate | Reject malformed v2.3 covers, unresolved figure assets, and raw or unbalanced TeX; permit `survey` only for Collection v2.4 or later |
 | `scripts/build_site.py` and `scripts/math_typography.py` | Feed, detail page, and standalone cover renderer | Derive all three surfaces from the same structured `cover` record, normalize unmistakable inline notation, and package local MathJax |
 | `.github/workflows/deploy.yml` | GitHub Pages build gate | Run the synchronization check and card validator before deployment |
 | GitHub `origin` | Canonical public source and Pages trigger | Every completed website update must be pushed without force and local `HEAD` must equal the target branch SHA |
