@@ -19,3 +19,16 @@ An update is not complete until all of the following hold:
 
 If credentials, the push, CI, Pages, or Sites deployment are ambiguous, stop
 and report the exact boundary. Do not claim publication or synchronization.
+
+## Independent Paper Card batches
+
+For a multi-paper campaign or long Goal, read `docs/CARD_CONTEXT.md` and use
+`python3 scripts/card_batch.py context` for compact controller checkpoints and
+single-paper handoffs. Delegate independent paper units to fresh subagents
+with `fork_context=false`; keep one paper per agent by default and preserve
+the campaign's authorized concurrency (currently two). Do not reuse a paper
+agent for unrelated papers. Keep detailed evidence and logs in that unit's
+files; return a short outcome and artifact pointers. The parent is the sole
+ledger writer and integrator, with risk-routed scientific review and the full
+existing publication gates. Context packaging does not authorize resuming
+stopped work, publishing, lowering review standards or changing Goal status.
