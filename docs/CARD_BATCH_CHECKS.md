@@ -101,7 +101,7 @@ are blocked, so local math and font packaging must work.
 
 For each card, at 390 and 1440 px, inspect detail, standalone cover, actual feed
 document and modal iframe. Use `physics_AI.html` / `collection.html` with a
-source-title query, exact detail href, `.paper-modal` and `.paper-modal-frame`.
+paper-ID query, exact detail href, `.paper-modal` and `.paper-modal-frame`.
 Never use an index redirect with a query, guess `#paper-modal`, or accept an
 empty/404 detail. Await MathJax/fonts and scroll/decode lazy images. Reject math
 errors, raw delimiters, missing images, overflow, clipped cover text and detail

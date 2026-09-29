@@ -139,8 +139,9 @@ async function main() {
         let url = origin + (surface === 'detail' ? detailPath : `${daily?'covers':'collection-covers'}/${entry.id}/`);
         if (surface === 'feed' || surface === 'modal') {
           // Use actual feed document, not index.html meta redirect (drops query).
-          // Title is searchable across historical feed schemas; ID is not assumed searchable.
-          url = origin + (daily?'physics_AI.html':'collection.html') + '?q=' + encodeURIComponent(card.title_en);
+          // Search by stable paper ID: historical titles may contain TeX escapes
+          // after feed generation, so a literal source-title query can miss them.
+          url = origin + (daily?'physics_AI.html':'collection.html') + '?q=' + encodeURIComponent(entry.id);
         }
         const response = await page.goto(url,{waitUntil:'load'});
         if (response.status() !== 200) throw new Error('HTTP ' + response.status());
