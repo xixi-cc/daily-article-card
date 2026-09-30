@@ -1,0 +1,257 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>The Information Dynamics of Generative Diffusion - physics+AI Collection 论文卡</title>
+    <meta name="description" content="Dejan Stančević 与 Luca Ambrogioni；二人均署名荷兰 Radboud University 的 Donders Institute for Brain, Cognition and Behaviour，且均列为通讯作者。本文核对的是 2026 年 2 月 10 日发表的《Entropy》28(2):195，DOI 10.3390/e28020195，实体 PDF 共 26 页；arXiv 2508.19897v4 为后发修订，不作为本卡公式与页码依据（PDF 第 1 页）。 这是兼有综述性组织与原创分析的理论文章：引言明确把既有条件熵和对称破缺结果归于前人，将局部轨道分析及路径熵方差的特化标志列为第 6、7 节的新贡献；不能把整套扩散信息论归为本文首创（PDF 第 2–3 页）。" />
+    <link rel="canonical" href="https://xixi-cc.github.io/daily-article-card/collection-papers/2508.19897/" />
+    <script type="application/ld+json">{"@context": "https://schema.org", "@type": "Article", "headline": "The Information Dynamics of Generative Diffusion", "description": "Dejan Stančević 与 Luca Ambrogioni；二人均署名荷兰 Radboud University 的 Donders Institute for Brain, Cognition and Behaviour，且均列为通讯作者。本文核对的是 2026 年 2 月 10 日发表的《Entropy》28(2):195，DOI 10.3390/e28020195，实体 PDF 共 26 页；arXiv 2508.19897v4 为后发修订，不作为本卡公式与页码依据（PDF 第 1 页）。 这是兼有综述性组织与原创分析的理论文章：引言明确把既有条件熵和对称破缺结果归于前人，将局部轨道分析及路径熵方差的特化标志列为第 6、7 节的新贡献；不能把整套扩散信息论归为本文首创（PDF 第 2–3 页）。", "url": "https://xixi-cc.github.io/daily-article-card/collection-papers/2508.19897/", "mainEntityOfPage": "https://xixi-cc.github.io/daily-article-card/collection-papers/2508.19897/", "inLanguage": "zh-CN", "author": {"@type": "Person", "name": "Xineng Cao", "alternateName": ["Xixi Cao", "曹溪能"], "url": "https://xixi-cc.github.io/"}, "isBasedOn": "https://doi.org/10.3390/e28020195"}</script>
+    <script>
+      (function() {
+        try {
+          var themePreference = window.localStorage.getItem('color-theme') || 'system';
+          var systemUsesDarkTheme = window.matchMedia('(prefers-color-scheme: dark)').matches;
+          var resolvedTheme = themePreference === 'system'
+            ? (systemUsesDarkTheme ? 'dark' : 'light')
+            : themePreference;
+          document.documentElement.dataset.theme = resolvedTheme;
+          document.documentElement.dataset.themePreference = themePreference;
+          document.documentElement.style.colorScheme = resolvedTheme;
+        } catch (error) {
+          document.documentElement.dataset.theme = 'light';
+          document.documentElement.dataset.themePreference = 'system';
+        }
+      })();
+    </script>
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='18' fill='%23111827'/%3E%3Ctext x='50%25' y='55%25' text-anchor='middle' dominant-baseline='middle' font-size='30' font-family='Arial, sans-serif' fill='white'%3EV%3C/text%3E%3C/svg%3E" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700;800&family=Noto+Sans+SC:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <script>document.documentElement.classList.add('math-pending');</script>
+    <script>
+      window.MathJax = {
+        tex: {
+          inlineMath: [['$', '$'], ['\\(', '\\)']],
+          displayMath: [['$$', '$$'], ['\\[', '\\]']],
+          processEscapes: true
+        },
+        options: {
+          skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+        },
+        chtml: {
+          scale: 1,
+          displayAlign: 'center'
+        },
+        startup: {
+          ready: function() {
+            MathJax.startup.defaultReady();
+            MathJax.startup.promise.then(function() {
+              document.documentElement.classList.remove('math-pending');
+              document.documentElement.dataset.mathReady = 'true';
+            });
+          }
+        }
+      };
+    </script>
+    <script defer src="../../assets/vendor/mathjax/tex-chtml.js"></script>
+    <link rel="stylesheet" href="../../assets/style.css" />
+  </head>
+  <body class="detail-page" data-paper-id="2508.19897" data-paper-program="collection">
+    <div class="page-noise"></div>
+    <div class="page-blur page-blur-a"></div>
+    <div class="page-blur page-blur-b"></div>
+
+    <header class="header detail-page-header">
+      <div class="container">
+        <div class="detail-page-topbar">
+          <a class="back-link" href="../../collection.html">返回列表</a>
+          <div class="detail-topbar-actions">
+            <span class="detail-site-name">physics+AI Collection 论文卡</span>
+            <button id="detail-favorite" class="detail-favorite-button" type="button" aria-pressed="false">☆ 收藏</button>
+            <button class="theme-toggle" type="button" data-theme-toggle aria-label="当前主题：设备，点击切换主题" title="当前主题：设备">
+  <span class="theme-toggle-icons" aria-hidden="true">
+    <svg class="theme-toggle-icon theme-toggle-icon-light" viewBox="0 0 24 24" fill="none">
+      <circle cx="12" cy="12" r="3.5" stroke="currentColor" stroke-width="1.8"/>
+      <path d="M12 2.5v2M12 19.5v2M2.5 12h2M19.5 12h2M5.3 5.3l1.4 1.4M17.3 17.3l1.4 1.4M18.7 5.3l-1.4 1.4M6.7 17.3l-1.4 1.4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+    </svg>
+    <svg class="theme-toggle-icon theme-toggle-icon-dark" viewBox="0 0 24 24" fill="none">
+      <path d="M20 15.2A8.1 8.1 0 0 1 8.8 4a8.2 8.2 0 1 0 11.2 11.2z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>
+    </svg>
+    <svg class="theme-toggle-icon theme-toggle-icon-system" viewBox="0 0 24 24" fill="none">
+      <rect x="3" y="4" width="18" height="13" rx="2.5" stroke="currentColor" stroke-width="1.8"/>
+      <path d="M8 21h8M12 17v4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+    </svg>
+  </span>
+  <span class="theme-toggle-label" data-theme-toggle-label>设备</span>
+</button>
+          </div>
+        </div>
+
+        <div class="detail-hero-grid">
+          <div class="detail-hero-cover"><figure class="paper-figure-card paper-figure-card-detail">
+  <img class="paper-figure-image" src="../../assets/collection-figures/2508.19897/figure-1.png" alt="稳定 score 零点的分支与条件熵率峰在同一噪声时间轴上并列展示。" loading="lazy" onclick="window.openPaperFigureImage && window.openPaperFigureImage(this)" />
+  <figcaption class="paper-figure-caption">图 1：score 零点分支（黑虚线）与条件熵率（红线）的同轴示例；正式论文第 12 页。 来源：Dejan Stančević、Luca Ambrogioni；https://doi.org/10.3390/e28020195; CC BY 4.0</figcaption>
+</figure></div>
+          <div class="detail-hero-copy">
+            <p class="eyebrow">Collection 全文卡</p>
+            <h1 class="detail-page-title">The Information Dynamics of Generative Diffusion</h1>
+            <p class="detail-page-title-zh">生成扩散的信息动力学</p>
+            <div class="detail-meta">Paper Collection · Generative Models · <a href="https://doi.org/10.3390/e28020195" target="_blank" rel="noopener noreferrer">原文</a></div>
+            <p class="detail-summary">Dejan Stančević 与 Luca Ambrogioni；二人均署名荷兰 Radboud University 的 Donders Institute for Brain, Cognition and Behaviour，且均列为通讯作者。本文核对的是 2026 年 2 月 10 日发表的《Entropy》28(2):195，DOI 10.3390/\(e_{28020195}\)，实体 PDF 共 26 页；arXiv 2508.19897v4 为后发修订，不作为本卡公式与页码依据（PDF 第 1 页）。 这是兼有综述性组织与原创分析的理论文章：引言明确把既有条件熵和对称破缺结果归于前人，将局部轨道分析及路径熵方差的特化标志列为第 6、7 节的新贡献；不能把整套扩散信息论归为本文首创（PDF 第 2–3 页）。</p>
+            <div class="detail-micro-meta">
+              <span class="meta-pill">AI 基础理论</span>
+              <span class="meta-pill">理论与数值</span>
+              <span class="meta-pill">#Generative Models</span><span class="meta-pill">#机器学习</span><span class="meta-pill">#人工智能</span>
+              <span class="meta-pill">15 分钟读完</span>
+              <span class="meta-pill">8 张阅读卡</span>
+              <span class="meta-pill">Dejan Stančević 与 Luca Ambrogioni；二人均署名荷兰 Radboud U…</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <main class="container detail-layout">
+      <div class="detail-shell">
+        <article id="detail-body" class="reading-flow"><section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 01</span>
+    <span class="reading-step-note">作者信息</span>
+  </div>
+  <h2>作者信息</h2>
+  <div class="reading-card-content"><ul><li>Dejan Stančević 与 Luca Ambrogioni；二人均署名荷兰 Radboud University 的 Donders Institute for Brain, Cognition and Behaviour，且均列为通讯作者。本文核对的是 2026 年 2 月 10 日发表的《Entropy》28(2):195，DOI 10.3390/\(e_{28020195}\)，实体 PDF 共 26 页；arXiv 2508.19897v4 为后发修订，不作为本卡公式与页码依据（PDF 第 1 页）。</li><li>这是兼有综述性组织与原创分析的理论文章：引言明确把既有条件熵和对称破缺结果归于前人，将局部轨道分析及路径熵方差的特化标志列为第 6、7 节的新贡献；不能把整套扩散信息论归为本文首创（PDF 第 2–3 页）。</li></ul></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 02</span>
+    <span class="reading-step-note">研究问题</span>
+  </div>
+  <h2>研究问题</h2>
+  <div class="reading-card-content"><ul><li>从噪声生成一个样本时，模型在哪个噪声尺度才被迫在多个可能结果之间作选择？论文用对干净样本的条件不确定性、score 场的曲率和路径之间的差异，尝试给出同一过程的三个读法（PDF 第 1–3 页）。</li><li>读者桥梁：输入是数据分布中的干净样本 $Y$；正向过程把它变为带噪状态 $X_t$。生成时从高噪声向低噪声反行；可训练对象是近似 $\nabla_x\log p_t(x)$ 的 score 网络，监督信号是噪声预测/去噪误差，输出是一条样本轨道。本文的等式主要讨论可得精确 score 的理想系统，图和附录则用解析混合分布检验该机制；它们不是对训练好的图像扩散器的实测结论（PDF 第 5–6、18–24 页）。</li></ul></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 03</span>
+    <span class="reading-step-note">背景</span>
+  </div>
+  <h2>背景</h2>
+  <div class="reading-card-content"><ul><li>正向高斯加噪使不同数据模式逐渐重叠；反向生成的 score 是当前带噪密度的对数梯度，指定平均去噪方向。多个干净样本与同一个带噪状态兼容时，后验仍宽，随机增量可以影响最终选择。论文把这一直觉与既有的条件熵工作及模式分岔工作相连（PDF 第 2、5、7–9 页）。</li><li>“时间”是所选的加噪参数，既非实验物理时间，也不是网络训练步数。论文先以 EDM/VE 型加噪推导信息率，再为尖锐的分支时间使用 VP/OU 参数化；两者的方差峰尺度不能混用（PDF 第 5、18、24 页）。</li></ul></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 04</span>
+    <span class="reading-step-note">模型与方法</span>
+  </div>
+  <h2>模型与方法</h2>
+  <div class="reading-card-content"><ul><li>理想化正向核为 $p(x_t\mid y)=\mathcal N(x_t;y,\sigma_t^2 I)$；$y$ 是干净样本、$x_t$ 是带噪状态、$\sigma_t$ 是各向同性噪声标准差、$I$ 是单位矩阵。由后验均值 $\mu(x_t)=\mathbb E[Y\mid X_t=x_t]$ 得到 score $\nabla_x\log p_t(x_t)=[\mu(x_t)-x_t]/\sigma_t^2$。因此 score 同时反映当前状态与所有兼容干净样本的加权平均，而非某一个已知目标（PDF 第 5、7 页，式 (7)、(22)）。</li><li>以 $H(Y\mid X_t)$ 度量给定当前状态后对最终样本的剩余不确定性。对纯扩散热方程、可微密度和可用的分部积分边界条件，式 (19) 把正向时间导数写成条件核和边缘 score 的平方范数之差；$D$ 为环境维数、$\nu(t)$ 为扩散幅度：</li></ul>
+
+<div class="display-math">\[\frac{d}{dt}H(Y\mid X_t)=\frac{\nu(t)^2}{2}\left(\frac{D}{\sigma_t^2}-\mathbb E_{X_t}\|\nabla_x\log p_t(X_t)\|^2\right).\]</div>
+
+<ul><li>它随正向加噪非负；反向生成读作消除不确定性的速率。不能把数值大小脱离 $\nu(t)$、$\sigma_t$ 或时间参数直接比较（PDF 第 6–7 页，式 (17)–(19)）。</li><li>第 5 节用离散数据点的高斯混合追踪 score 的稳定零点及其分支；两点近对称例子经近似映射到 Curie–Weiss 自洽方程。第 6 节再区分局部固定点与典型轨道附近的整体平均曲率。第 7 节把每条路径当前状态的后验熵定义为 $h_t(x_t)=H(Y\mid X_t=x_t)$，研究 $V_h(t)=\operatorname{Var}_{X_t}[h_t(X_t)]$；这里的方差跨路径取样，不是单条轨道的时间方差（PDF 第 10–12、13–17 页，式 (39)–(46)、(47)–(66)）。</li></ul></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 05</span>
+    <span class="reading-step-note">核心结果与证据</span>
+  </div>
+  <h2>核心结果与证据</h2>
+  <div class="reading-card-content"><ul><li>对上述纯高斯加噪，令 $\operatorname{div}(t)=\mathbb E[\Delta_x\log p_t(X_t)]$，$\operatorname{div}_1(t)=-D/\sigma_t^2$ 为单个高斯核基线，定义 $\Delta\operatorname{div}=\operatorname{div}-\operatorname{div}_1$。论文得到精确关系</li></ul>
+
+<div class="display-math">\[\frac{d}{dt}H(Y\mid X_t)=\frac{\nu(t)^2}{2}\,\Delta\operatorname{div}(t).\]</div>
+
+<ul><li>这里的“散度”是 score 的空间散度的总体期望；它减去与数据无关的核基线后，才与信息率相连。它本身不是一次随机采样轨道的 Lyapunov 指数，也不能单凭总体期望证明每个路径都分岔（PDF 第 14–15 页，式 (52)–(56)）。</li><li>图 1 在同一噪声时间轴上叠加稳定 score 零点分支（黑虚线）与条件熵率（红实线）；红线在分支附近的中间尺度升高，低噪声及高噪声端较小。图示支持这一特定混合例子的关联，峰和分支并非由图证明处处严格重合。零点的曲率条件是局部的，作者也承认高维轨道可能主要位于零点周围的典型壳上（PDF 第 12–15 页，图 1、式 (45)–(46)、第 6.1 节）。</li><li>在 OU/VP 前向过程 $X_t=e^{-t}Y+\sqrt{1-e^{-2t}}\,\varepsilon$ 下，若固定数量的类别中心相距 $\Theta(\sqrt d)$、类内协方差为 $O(1)$，附录把类别后验熵方差写成有效信噪比 $\eta_d(t)=d/(e^{2t}-1)$ 的函数。令 $t_S=\tfrac12\log d$、$u=t/t_S$，则固定 $u&lt;1$ 和 $u&gt;1$ 时方差趋零；若该函数在有限信噪比有峰，其位置满足 $u_*\to1$。这是渐近的玩具混合模型结论，并非一般扩散网络的普适临界点证明（PDF 第 18–19、20–23 页，式 (70)–(73)、(\(A_{8}\))–(\(A_{15}\))）。</li><li>图 \(A_{1}\) 的左列 EDM 随标度 $d=256,2048,16384$ 增大而在原时间 $t$ 上展宽，右列 VP 的峰移动但原时间宽度约保持 $O(1)$；附录给出 EDM 的 $\eta_d=d/t^2$，故令 $t_S=\sqrt d$、$u=t/t_S$ 后曲线是 $F(u^{-2})$，没有 VP 那种收缩到 $u=1$ 的极限。图 4 另以一维双高斯、均值随 $\sqrt d$ 拉开来演示 VP 的重标度峰；其横轴 $u=t/t_S(d)$，不能把图例 $d$ 误读为该模拟的真实环境维数（PDF 第 19、23–24 页，图 4、图 \(A_{1}\)、式 (\(A_{24}\))–(\(A_{27}\))）。</li></ul><figure class="evidence-figure">
+  <button class="evidence-figure-image-button" type="button" aria-label="放大查看 Figure 1" onclick="window.openPaperFigureImage && window.openPaperFigureImage(this.querySelector('img'))">
+    <img class="paper-figure-image evidence-figure-image" src="../../assets/collection-figures/2508.19897/figure-1.png" alt="横轴 log10 t；黑虚线从两个固定点分支合并，红线条件熵率在中间时间升高；背景是过程密度对数。" loading="lazy" />
+  </button>
+  <figcaption>
+    <strong>Figure 1</strong> · 图 1：横轴为正向噪声时间的 $\log_{10}t$，黑虚线示例中的稳定 score 零点分支，红线是条件熵率（右轴），背景为过程密度对数。中间尺度的信息率峰与分支区邻近；图只展示该构造例子，不证明所有数据分布的峰严格落在分支点。来源：Stančević 与 Ambrogioni，Entropy 28(2):195 (2026)，图 1，CC BY 4.0。
+    <span class="evidence-figure-reading">物理解读：A toy example aligns high conditional entropy rate with a fixed-point branching regime, with only approximate visual coincidence.</span>
+    <span class="evidence-figure-source">来源：journal PDF physical \(p\).12, Figure 1</span>
+  </figcaption>
+</figure>
+<figure class="evidence-figure">
+  <button class="evidence-figure-image-button" type="button" aria-label="放大查看 Figure A1" onclick="window.openPaperFigureImage && window.openPaperFigureImage(this.querySelector('img'))">
+    <img class="paper-figure-image evidence-figure-image" src="../../assets/collection-figures/2508.19897/figure-a1.png" alt="左图 EDM 和右图 VP 的路径条件熵方差随时间变化；d 为 256、2048、16384，EDM 峰变宽而 VP 峰保持近似固定宽度。" loading="lazy" />
+  </button>
+  <figcaption>
+    <strong>Figure A1</strong> · 图 \(A_{1}\)：横轴为各自的正向时间 $t$，纵轴为跨路径条件熵方差；蓝、橙、绿对应 $d=256,2048,16384$。左列 EDM 随 $d$ 展宽，右列 VP 的峰移动但原时间宽度约保持不变。比较限于等权双组分高斯混合和指定噪声过程，不能推广到任意训练模型。来源：Stančević 与 Ambrogioni，Entropy 28(2):195 (2026)，图 \(A_{1}\)，CC BY 4.0。
+    <span class="evidence-figure-reading">物理解读：The noise parameterization changes the asymptotic width of the toy-mixture variance peak.</span>
+    <span class="evidence-figure-source">来源：journal PDF physical \(p\).24, Figure \(A_{1}\)</span>
+  </figcaption>
+</figure></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 06</span>
+    <span class="reading-step-note">有效性与局限</span>
+  </div>
+  <h2>有效性与局限</h2>
+  <div class="reading-card-content"><ul><li>式 (19)、(56) 以精确 score、纯各向同性高斯加噪及适当光滑/边界条件为前提；真实训练网络的近似误差或非可积向量场会改变等式。固定点分支与轨道选择的图像依赖例子及局部线性化，整体期望散度只给平均量；没有训练模型基准、图像生成质量或采样速度增益的实证检验（PDF 第 6、12–16、20 页）。</li><li>高维峰的解析定位要求有限类别、$\Theta(\sqrt d)$ 类间距离、$O(1)$ 类内涨落及 VP/OU 时间参数；EDM 中不出现相同的峰局域化。作者明确把路径熵涨落是否带来实用优势列为开放问题（PDF 第 17–18、20–24 页）。</li><li>源文另有不宜沿用的等式：PDF 第 6 页式 (15) 的 $C_t=\mathbb E\operatorname{Var}(Z\mid X_t)$ 与式 (16) 写成的 $\mathbb E\operatorname{Var}(Y\mid X_t)$ 之间应有 $1/\sigma_t^2$ 因子（$Y=X_t-\sigma_t Z$）；第 9 页式 (34) 的符号/系数也与式 (12)–(15)、(33) 不一致。本卡不据此推断训练损失可直接给出信息率；待正式勘误或独立证明前，将该连接视为未解决的源文边界。</li></ul></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 07</span>
+    <span class="reading-step-note">复现与资源</span>
+  </div>
+  <h2>复现与资源</h2>
+  <div class="reading-card-content"><ul><li>论文数据可用性声明为“Data are contained within the article”；PDF 未提供可核验的代码仓库、模型权重、训练集或复现实验命令。图 1、4、\(A_{1}\) 为所述理论混合例子/示意证据，公开的公式及参数可用于独立实现，但本卡未运行独立复现（PDF 第 12、19–20、24 页）。</li><li>正式论文与 CC BY 许可见 https://doi.org/10.3390/e28020195；arXiv 条目 https://arxiv.org/abs/2508.19897 可追溯预印本版本，页码和公式以本卡核对的正式版为准。</li></ul></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 08</span>
+    <span class="reading-step-note">阅读指南</span>
+  </div>
+  <h2>阅读指南</h2>
+  <div class="reading-card-content"><ul><li>速读：先看第 5 页的高斯加噪与 score 定义，再看第 7、15 页式 (19)、(56)，配合第 12 页图 1；最后直接读第 18–19 页的 VP 信噪比和第 24 页图 \(A_{1}\)。这样可辨认“平均信息率”和“跨路径差异”是两个不同量。</li><li>深读：沿第 7–9 页的条件熵推导、第 10–12 页的零点分岔、第 13–16 页的局部/总体曲率，再读第 20–24 页附录 A 的 SNR 渐近。第 3–4 页二十问是类比而非连续扩散的证明；读式 (15)–(16)、(34) 时应保留上述代数疑点。</li></ul></div>
+</section></article>
+        <aside id="detail-toc" class="detail-toc hidden" aria-label="内容目录">
+          <p class="detail-toc-title">阅读目录</p>
+          <nav id="detail-toc-nav" class="detail-toc-nav"></nav>
+        </aside>
+      </div>
+      <nav class="paper-nav"><a class="paper-nav-link paper-nav-prev" href="../../collection-papers/2602.14011/"><span class="paper-nav-label">← 上一篇</span><span class="paper-nav-title">KoopGen: Koopman Generator Networks for Representing and Predicting Dynamical Systems with Continuous Spectra</span></a>
+      <a class="paper-nav-link paper-nav-next" href="../../collection-papers/2602.05435/"><span class="paper-nav-label">下一篇 →</span><span class="paper-nav-title">Stable Velocity: A Variance Perspective on Flow Matching</span></a></nav>
+      <section id="comments" class="comments-panel" aria-labelledby="comments-title">
+        <div class="comments-heading">
+          <div>
+            <p class="eyebrow">Discussion</p>
+            <h2 id="comments-title">评论与讨论</h2>
+          </div>
+          <a href="https://github.com/xixi-cc/xixi-research-comments/discussions" target="_blank" rel="noopener noreferrer">在 GitHub 查看</a>
+        </div>
+        <p class="comments-note">评论公开保存在 GitHub Discussions；阅读无需登录，发表评论需要 GitHub 账号。</p>
+        <script src="https://giscus.app/client.js"
+                data-repo="xixi-cc/xixi-research-comments"
+                data-repo-id="R_kgDOUIl8MQ"
+                data-category="Announcements"
+                data-category-id="DIC_kwDOUIl8Mc4DEftB"
+                data-mapping="specific"
+                data-term="collection:2508.19897"
+                data-strict="1"
+                data-reactions-enabled="1"
+                data-emit-metadata="0"
+                data-input-position="top"
+                data-theme="preferred_color_scheme"
+                data-lang="zh-CN"
+                data-loading="lazy"
+                crossorigin="anonymous"
+                async></script>
+        <noscript><p>请启用 JavaScript，或直接前往 GitHub Discussions 参与讨论。</p></noscript>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <div class="container">
+        <p>内容来自 <a href="https://arxiv.org" target="_blank" rel="noopener noreferrer">arXiv.org</a>；原创解读采用 CC BY-NC 4.0。<a href="../../rights.html">许可与引用</a></p>
+      </div>
+    </footer>
+
+    <script src="../../assets/theme.js"></script>
+    <script src="../../assets/media.js"></script>
+    <script src="../../assets/paper.js"></script>
+    <!-- Cloudflare Web Analytics -->
+<script type="module" src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon='{"token":"73522e5dee9b42b0be84b4847e4dd502"}'></script>
+<!-- End Cloudflare Web Analytics -->
+  </body>
+</html>
