@@ -60,6 +60,25 @@ def math_errors(text):
     return errors
 
 
+def cover_attribution_errors(cover, authors):
+    if not isinstance(cover, dict) or not cover.get('attribution'):
+        return []
+    caption = str(cover.get('caption', ''))
+    attribution = str(cover['attribution'])
+    errors = []
+    # The builder appends the author line and attribution to the cover caption.
+    if re.search(r'来源\s*[:：]|\bsource\s*:', caption, re.I):
+        errors.append('cover caption repeats automatically appended source attribution')
+    for marker in (r'arxiv:\s*\d{4}\.\d{4,5}(?:v\d+)?', r'CC\s+BY(?:\s+\d(?:\.\d)?)?'):
+        if any(m.group(0).lower() in attribution.lower() for m in re.finditer(marker, caption, re.I)):
+            errors.append('cover caption repeats automatically appended source attribution')
+    surnames = [str(author).split()[-1] for author in authors if str(author).strip()] if isinstance(authors, list) else []
+    if surnames and sum(bool(re.search(r'(?<!\w)' + re.escape(name) + r'(?!\w)', attribution, re.I))
+                        for name in surnames) >= min(2, len(surnames)):
+        errors.append('cover attribution repeats automatically appended author names')
+    return sorted(set(errors))
+
+
 def check_card(repo, entry):
     errors, hashes = [], {}
     path = Path(entry['card']).resolve()
@@ -134,6 +153,7 @@ def check_card(repo, entry):
 
     assets = {str(x.get('asset_path', '')) for x in card.get('figure_refs', []) if isinstance(x, dict)}
     cover = card.get('cover', {})
+    errors.extend(cover_attribution_errors(cover, metadata.get('authors') or []))
     if isinstance(cover, dict) and cover.get('asset_path'):
         assets.add(cover['asset_path'])
     assets.discard('')

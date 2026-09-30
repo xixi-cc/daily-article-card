@@ -11,7 +11,7 @@ from unittest.mock import patch
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / 'scripts'))
-from check_card_delivery import asset_source, check_card, main, math_errors
+from check_card_delivery import asset_source, check_card, cover_attribution_errors, main, math_errors
 
 
 class DeliveryTests(unittest.TestCase):
@@ -91,6 +91,18 @@ class DeliveryTests(unittest.TestCase):
             card['sections'][1]['content'] = card['sections'][1].pop('paragraphs')[0]
         r = self.check_modified(change)
         self.assertIn('unrenderable section body: 研究问题', r['errors'])
+
+    def test_cover_source_is_not_repeated_by_builder(self):
+        authors = ['Eric J. Michaud', 'Liv Gorton', 'Tom McGrath']
+        cover = {'caption': '合成示例。来源：arXiv:2509.02565v2，CC BY 4.0。',
+                 'attribution': 'Michaud, Gorton and McGrath; arXiv:2509.02565v2; CC BY 4.0'}
+        self.assertIn('cover caption repeats automatically appended source attribution',
+                      cover_attribution_errors(cover, authors))
+        self.assertIn('cover attribution repeats automatically appended author names',
+                      cover_attribution_errors(cover, authors))
+        cover = {'caption': '合成示例。',
+                 'attribution': 'arXiv:2509.02565v2; CC BY 4.0; https://arxiv.org/abs/2509.02565v2'}
+        self.assertEqual(cover_attribution_errors(cover, authors), [])
 
 
 if __name__ == '__main__':
