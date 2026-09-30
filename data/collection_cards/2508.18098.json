@@ -1,0 +1,176 @@
+{
+  "arxiv_id": "2508.18098",
+  "source_kind": "arxiv",
+  "source_id": "2508.18098",
+  "source_url": "https://arxiv.org/abs/2508.18098v1",
+  "source_pdf": "https://arxiv.org/pdf/2508.18098v1",
+  "source_version": "v1",
+  "title_en": "Detecting and Characterizing Planning in Language Models",
+  "title_zh": "检测并刻画语言模型中的规划行为",
+  "card_standard_version": "2.4",
+  "curation_status": "full_text_verified",
+  "paper_profile": "ai_empirical",
+  "style_reference": "physicist_daily_arxiv",
+  "independent_reproduction": false,
+  "verified_metadata": {
+    "arxiv_id": "2508.18098",
+    "version": "v1",
+    "title": "Detecting and Characterizing Planning in Language Models",
+    "authors": [
+      "Jatin Nainani",
+      "Sankaran Vaidyanathan",
+      "Connor Watts",
+      "Andre N. Assis",
+      "Alice Rigg"
+    ],
+    "affiliations": {
+      "Jatin Nainani": "University of Massachusetts Amherst",
+      "Sankaran Vaidyanathan": "University of Massachusetts Amherst",
+      "Connor Watts": "Queen Mary University of London",
+      "Andre N. Assis": "Independent",
+      "Alice Rigg": "Independent"
+    },
+    "equal_contribution": [
+      "Andre N. Assis",
+      "Alice Rigg"
+    ],
+    "corresponding_author": null,
+    "published": "2025-08-25T14:59:46Z",
+    "published_precision": "arXiv v1 submission timestamp; not workshop publication date",
+    "categories": [
+      "cs.CL",
+      "cs.LG"
+    ],
+    "primary_category": "cs.CL",
+    "doi": "10.48550/arXiv.2508.18098",
+    "venue": "arXiv v1 preprint; PDF header says under review",
+    "publication_boundary": "Author CV lists a NeurIPS 2025 Mechanistic Interpretability workshop paper and an OpenReview PDF exists; the exact workshop version and publication date were not used as source authority for this card.",
+    "arxiv_url": "https://arxiv.org/abs/2508.18098v1",
+    "arxiv_pdf_url": "https://arxiv.org/pdf/2508.18098v1",
+    "code_url": "https://github.com/ambitious-mechinterp/plan_trace"
+  },
+  "provenance": {
+    "program": "Collection",
+    "catalog": "Ziming Liu Paper Collection",
+    "catalog_record_id": "2508.18098",
+    "collection_date": "2026-08-30",
+    "sampled_at": "2026-09-30T00:41:28Z",
+    "selected_by": "authorized_resumed_collection_queue",
+    "sampling_seed": "not_applicable_authorized_catalog_item",
+    "rationale": "The supplied Collection catalog record contains this paper ID and title. Collection provenance does not confer a Daily date, grade or score.",
+    "catalog_topic": "AI Agents",
+    "catalog_source": "paper-collection/public/papers.json record 2508.18098; curation source Ziming Liu Paper Collection; read-only"
+  },
+  "cover": {
+    "mode": "title_abstract",
+    "selection_rationale": "中心图 1 是横向三阶段流程，缩到 feed-card 宽度时特征、目标 token 和干预结果标签不可读；图 2–4 同样依赖较小的代码与符号标签。封面用题名和忠实摘要，图 1 保留在详情页全宽展示并注明来源。",
+    "abstract_text": "论文用稀疏自编码器特征的未来 token 编码和早期因果干预，区分语言模型在某次生成中是提前约束后续 token，还是到临近目标时才选词。Gemma-2-2B 在所测诗歌提示中未显示符合判据的规划；在筛选后的 MBPP 代码任务中则可出现规划、即兴或无法判定。结论依赖所选模型、表征和离线干预判据。"
+  },
+  "sections": [
+    {
+      "title": "作者信息",
+      "bullets": [
+        "Jatin Nainani、Sankaran Vaidyanathan（马萨诸塞大学阿默斯特分校）；Connor Watts（伦敦玛丽女王大学）；Andre N. Assis、Alice Rigg（独立研究者，论文脚注标为共同贡献）。单位和共同贡献据 arXiv v1 PDF 物理第 1 页；正文按 2025-08-25 提交的 v1 审读。",
+        "arXiv 记录列出 cs.CL、cs.LG 与 arXiv DOI；v1 PDF 页眉写明预印本审稿中。作者简历另列 NeurIPS 2025 Mechanistic Interpretability workshop，但卡片所有方法与数字均只对应 arXiv v1，不把不同版本合并。"
+      ]
+    },
+    {
+      "title": "研究问题",
+      "bullets": [
+        "自回归模型每次只输出一个 token；它在预测当前 token 时是否已经保有一个以后才会输出的目标 token，并让这个目标改变中间生成？论文把这种可干预的前瞻机制称为规划，把直到目标临近才起作用的特征称为即兴生成。这里研究的是可观测的内部判据，不能据此推断人类式意图。",
+        "输入是诗歌续写提示或 MBPP 编程题及测试；模型的状态是各层残差流中的稀疏自编码器（SAE）特征；输出是逐 token 续写。作者先找影响当前预测的特征电路，再问其中哪些特征指向未来目标，以及抑制它是否改变中间 token 和目标 token（PDF 物理第 2–4 页，图 1、定义 1–3）。"
+      ]
+    },
+    {
+      "title": "背景",
+      "bullets": [
+        "固定步长的未来 token 探针只能问预先指定距离上的可读信息；单个韵脚案例又难以比较任务。本文用可变距离的未来 token 编码与早期因果干预组合，区分“提前表示目标”和“目标确实约束了当前及中间选择”（PDF 物理第 2–3、13 页）。",
+        "本文是纯 AI 机制分析。残差流和 SAE 特征是计算表征，负向 steering 是模型内部干预；它们不是物理状态量或自然动力学。"
+      ]
+    },
+    {
+      "title": "读者桥",
+      "bullets": [
+        "SAE 把一层神经网络激活编码成较稀疏的特征，再用解码方向把特征写回激活。本文在 Gemma-2-2B 的每层 MLP 输出上使用 GemmaScope TopK SAE；特征由层、特征索引和 token 位置三元组定位。所谓 logit lens，是把特征的解码方向投影到输出词表，查看它提高哪些 token 的分数；可读出目标不等于该特征具有因果作用（PDF 物理第 3、13、20 页）。",
+        "当前 token 由已经给出的提示与此前输出预测；未来 token 是同一次原始生成中较后的一个 token。作者在较早位置削弱候选特征，再继续生成：若当前/中间输出与未来目标一起发生指定变化，才给出规划标签。由于候选未来 token 来自已经完成的输出，这是一种离线机制检测，不能直接作运行时预警（PDF 物理第 3–5、9 页）。"
+      ]
+    },
+    {
+      "title": "模型与方法",
+      "bullets": [
+        "定义 1（物理第 3 页）：未来目标 \\(y_m\\) 若位于特征 \\(f\\) 的解码方向 \\(W_l[f]\\) 经输出矩阵投影后的前 \\(K\\) 个 token，就满足未来 token 编码（FTE）。这只是候选条件；案例中报告目标进入前 10 名，不能把词表投影解释为模型显式存储唯一目标。",
+        "定义 2–3（物理第 3 页）：在较早的层/位置，对残差流实施负向干预，再重新生成。关键干预写作：",
+        "\\[r_{l,t}\\leftarrow r_{l,t}-\\alpha W_l[f],\\qquad \\alpha>0.\\]",
+        "这里 \\(r_{l,t}\\) 是第 \\(l\\) 层、位置 \\(t\\) 的残差流，\\(W_l[f]\\) 是特征解码方向，\\(\\alpha\\) 为干预强度。只有下一 token 改变、至少一个中间 token 改变且目标 \\(y_m\\) 从生成结果消失，才满足前驱影响（PI）；FTE 与 PI 同时成立才按本文操作定义标为规划。作者明确说定义并不穷尽一切规划机制。",
+        "为控制计算量，先按对当前 token 概率的间接影响建立稀疏电路，采用约 60% 的恢复阈值；再做 FTE 筛选、同目标特征聚类与簇级 steering、最早作用位置搜索，最后检查只在目标临近时有效的即兴特征（物理第 4–5、20 页）。实验使用 Gemma-2-2B Base/Instruct、MLP 输出的 26 个 TopK SAE，每层 16,384 特征；计算环境为 4 张 A40，作者报告总计约 250 GPU 小时（物理第 20 页）。"
+      ]
+    },
+    {
+      "title": "核心结果与证据",
+      "bullets": [
+        "诗歌任务中，Gemma-2-2B Instruct 生成合韵句子，但作者未在前六个中间预测找到同时满足 FTE 与 PI 的电路；“habit” 相关特征只在末端才有因果作用。论文因此提出该次生成更像即兴，而不是断言 Gemma 在所有诗歌或所有表征下都绝不规划。先前 Claude 3.5 Haiku 的规划结论来自 Lindsey 等人的另一项研究（物理第 3、5 页，§3.1）。",
+        "MBPP 主文从 Instruct 确定性生成且通过测试的任务中取前 60 个，检测流程对其中 24 个给出规划或即兴标签；其余不应自动计为即兴。排序元组和四面体数案例中，较早特征的词表投影指向后面的“1”或“2”，抑制后中间代码与目标一起改变，且生成不再通过相应测试（物理第 5–7 页，图 2、§3.2）。图 4 所示数字排序案例在附录物理第 14–16 页。",
+        "在这 24 个按 Instruct 行为分类的 MBPP 任务里，Instruct 通过规划类 13/13 与即兴类 11/11；Base 分别通过 7/13（表中四舍五入为 54%）与 11/11。分组依据是 Instruct 的机制标签，并非先在 Base 独立分组的随机对照；样本小且经 Instruct 正确性筛选，不能推断总体任务成功率或调优的因果增益（物理第 7 页，表 1）。",
+        "图 3 的两个案例更具体：Base 在四面体数任务上有竞争的正确与错误目标，抑制错误方向可恢复正确式；数字排序任务上 Base 选择了错误目标，而抑制 Instruct 的正确排序方向会产生类似的失败轨迹。这支持“基础模型已有某些规划样态、调优可能改善目标选择”的解释，但没有把调优作用机制独立地完整分离（物理第 8 页，图 3、§3.3）。"
+      ]
+    },
+    {
+      "title": "有效性与局限",
+      "bullets": [
+        "判据依赖所选 SAE 能表达目标、logit lens 前 \\(K\\) 名能识别它、早期特征在下一 token 电路中，以及负向 steering 没有把模型推离正常分布。目标已在提示中、投影有重叠、或干预后出现退化文本时，作者归为“can’t say”，不纳入定量表（物理第 3–4、7、16–19 页）。未检测到符合判据的特征不能证明模型没有任何规划。",
+        "SAE 在 Base 上训练后也用于 Instruct，且只覆盖 MLP 输出；多义特征与架构/尺度限制可能改变检测率。研究主要是一个 2B 模型、筛过的 MBPP 任务和一个韵脚提示；没有线上检测或跨模型普遍性验证（物理第 9 页，§4.1–4.2）。",
+        "样本记录存在内部不一致：主文 §3.2 说取前 60 个通过测试的任务，附录 E.1 说过滤后 120 个且全部用于分析。卡片的 24/60 仅按主文与表 1 陈述；120 的具体关系未由 v1 说明，安装前宜向作者或后续版本核查（物理第 5、7、19 页）。"
+      ]
+    },
+    {
+      "title": "复现与资源",
+      "bullets": [
+        "作者在 PDF 首页提供代码仓库 https://github.com/ambitious-mechinterp/plan_trace；仓库 README 给出依赖、命令行入口和逐 token 输出。附录 F 给出 4×A40、约 250 GPU 小时、积分梯度 10 步及电路恢复阈值 0.60；附录 E 说明 MBPP、Gemma-2-2B 与 GemmaScope SAE，但前述 60/120 冲突需要复核。未核查代码与论文所有实验的一致性。",
+        "本文卡片依据 arXiv v1 原 PDF 的 20 个物理页、页码文本与图示核验；没有重新训练、执行 steering 或独立复现实验。"
+      ]
+    },
+    {
+      "title": "阅读指南",
+      "bullets": [
+        "速读：第 2 页图 1 看流程；第 3 页定义 1–3 看 FTE 与 PI 的必要条件；第 5 页诗歌反例、第 6 页图 2 与第 7 页表 1 看不同层次的证据；最后读第 9 页局限和第 19–20 页样本/算力说明。",
+        "深读：先明确 SAE 特征、残差流与词表投影，再按第 4–5 页的电路筛选、聚类 steering 和最早作用搜索核查检测逻辑；用图 3 与附录 B/C 检查成功案例和“can’t say”反例。不要把未来 token 可解码性单独当成规划，也不要从通过率表推出总体模型优劣。"
+      ]
+    }
+  ],
+  "equation_refs": [
+    {
+      "label": "Definition 2 (unnumbered intervention)",
+      "latex": "r_{l,t}\\leftarrow r_{l,t}-\\alpha W_l[f],\\quad\\alpha>0",
+      "role": "negative steering that tests precursor influence",
+      "symbols": {
+        "r_{l,t}": "residual stream at layer l and token position t",
+        "W_l[f]": "decoder direction of SAE feature f at layer l",
+        "\\alpha": "positive steering strength",
+        "l,t,f": "layer, token position and SAE feature indices"
+      },
+      "evidence": "arXiv:2508.18098v1 PDF physical p. 3, Definition 2; operational steps pp. 4–5",
+      "interpretation": "Direct notation for the paper's stated intervention, not a learned update law. A positive PI label additionally requires all three generation changes in Definition 2."
+    }
+  ],
+  "figure_refs": [
+    {
+      "label": "Figure 1",
+      "asset_path": "assets/collection-figures/2508.18098/figure1.png",
+      "section": "模型与方法",
+      "role": "author-created schematic of circuit discovery, FTE and PI",
+      "evidence": "arXiv:2508.18098v1 PDF physical p. 2, Figure 1",
+      "alt_text": "SAE 特征电路、未来 token 投影和负向 steering 的三步流程；只有目标与中间 token 同时改变才标为规划。",
+      "caption": "图 1：从影响当前 token 的特征电路到未来 token 编码，再到负向 steering 测前驱影响；它展示判据，不展示检测率。Nainani 等，arXiv:2508.18098v1，物理第 2 页，CC BY 4.0；由论文页裁切，图内内容未修改。",
+      "interpretation": "Representation is a candidate condition; early causal influence is the additional test.",
+      "source_url": "https://arxiv.org/abs/2508.18098v1",
+      "reuse_rights": "CC BY 4.0, linked from the exact arXiv v1 record; author-created Figure 1; page prose cropped, figure content unchanged; attribution and source link retained"
+    }
+  ],
+  "evidence_refs": [
+    "Method: arXiv:2508.18098v1 PDF physical pp. 3–5, Definitions 1–3, Figure 1 on p. 2; FTE, PI and staged circuit search.",
+    "Results: physical pp. 5–8, §3.1–3.3, Figures 2–3 and Table 1; poem case, MBPP cases and 13/11 subset comparison.",
+    "Limits: physical pp. 3–4 and 9, assumptions, ambiguous labels, SAE/model/benchmark scope; Appendix C pp. 16–19.",
+    "Resources/sample boundary: physical pp. 19–20, Appendices E–F; main-text 60 versus appendix 120 discrepancy retained.",
+    "Full-text verified against exact arXiv v1 20-page PDF; no independent reproduction performed."
+  ]
+}

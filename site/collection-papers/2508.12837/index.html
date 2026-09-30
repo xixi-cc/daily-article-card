@@ -1,0 +1,242 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Learning In-context n-grams with Transformers: Sub-n-grams Are Near-Stationary Points - physics+AI Collection 论文卡</title>
+    <meta name="description" content="Aditya Varre 与 Gizem Yüce（共同第一作者）、Nicolas Flammarion，均署名 EPFL Theory of Machine Learning Lab；前两位为通讯作者。本文采用 2025 年 10 月 6 日发布的 ICML 2025/PMLR 267 正式版，文献标识为 pmlr-v267-varre25a，页码 60924–60963。arXiv:2508.12837v2 是另一个版本记录，本卡的公式与物理页码均据正式版 PDF。" />
+    <link rel="canonical" href="https://xixi-cc.github.io/daily-article-card/collection-papers/2508.12837/" />
+    <script type="application/ld+json">{"@context": "https://schema.org", "@type": "Article", "headline": "Learning In-context n-grams with Transformers: Sub-n-grams Are Near-Stationary Points", "description": "Aditya Varre 与 Gizem Yüce（共同第一作者）、Nicolas Flammarion，均署名 EPFL Theory of Machine Learning Lab；前两位为通讯作者。本文采用 2025 年 10 月 6 日发布的 ICML 2025/PMLR 267 正式版，文献标识为 pmlr-v267-varre25a，页码 60924–60963。arXiv:2508.12837v2 是另一个版本记录，本卡的公式与物理页码均据正式版 PDF。", "url": "https://xixi-cc.github.io/daily-article-card/collection-papers/2508.12837/", "mainEntityOfPage": "https://xixi-cc.github.io/daily-article-card/collection-papers/2508.12837/", "inLanguage": "zh-CN", "author": {"@type": "Person", "name": "Xineng Cao", "alternateName": ["Xixi Cao", "曹溪能"], "url": "https://xixi-cc.github.io/"}, "isBasedOn": "https://proceedings.mlr.press/v267/varre25a.html"}</script>
+    <script>
+      (function() {
+        try {
+          var themePreference = window.localStorage.getItem('color-theme') || 'system';
+          var systemUsesDarkTheme = window.matchMedia('(prefers-color-scheme: dark)').matches;
+          var resolvedTheme = themePreference === 'system'
+            ? (systemUsesDarkTheme ? 'dark' : 'light')
+            : themePreference;
+          document.documentElement.dataset.theme = resolvedTheme;
+          document.documentElement.dataset.themePreference = themePreference;
+          document.documentElement.style.colorScheme = resolvedTheme;
+        } catch (error) {
+          document.documentElement.dataset.theme = 'light';
+          document.documentElement.dataset.themePreference = 'system';
+        }
+      })();
+    </script>
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='18' fill='%23111827'/%3E%3Ctext x='50%25' y='55%25' text-anchor='middle' dominant-baseline='middle' font-size='30' font-family='Arial, sans-serif' fill='white'%3EV%3C/text%3E%3C/svg%3E" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700;800&family=Noto+Sans+SC:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <script>document.documentElement.classList.add('math-pending');</script>
+    <script>
+      window.MathJax = {
+        tex: {
+          inlineMath: [['$', '$'], ['\\(', '\\)']],
+          displayMath: [['$$', '$$'], ['\\[', '\\]']],
+          processEscapes: true
+        },
+        options: {
+          skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+        },
+        chtml: {
+          scale: 1,
+          displayAlign: 'center'
+        },
+        startup: {
+          ready: function() {
+            MathJax.startup.defaultReady();
+            MathJax.startup.promise.then(function() {
+              document.documentElement.classList.remove('math-pending');
+              document.documentElement.dataset.mathReady = 'true';
+            });
+          }
+        }
+      };
+    </script>
+    <script defer src="../../assets/vendor/mathjax/tex-chtml.js"></script>
+    <link rel="stylesheet" href="../../assets/style.css" />
+  </head>
+  <body class="detail-page" data-paper-id="2508.12837" data-paper-program="collection">
+    <div class="page-noise"></div>
+    <div class="page-blur page-blur-a"></div>
+    <div class="page-blur page-blur-b"></div>
+
+    <header class="header detail-page-header">
+      <div class="container">
+        <div class="detail-page-topbar">
+          <a class="back-link" href="../../collection.html">返回列表</a>
+          <div class="detail-topbar-actions">
+            <span class="detail-site-name">physics+AI Collection 论文卡</span>
+            <button id="detail-favorite" class="detail-favorite-button" type="button" aria-pressed="false">☆ 收藏</button>
+            <button class="theme-toggle" type="button" data-theme-toggle aria-label="当前主题：设备，点击切换主题" title="当前主题：设备">
+  <span class="theme-toggle-icons" aria-hidden="true">
+    <svg class="theme-toggle-icon theme-toggle-icon-light" viewBox="0 0 24 24" fill="none">
+      <circle cx="12" cy="12" r="3.5" stroke="currentColor" stroke-width="1.8"/>
+      <path d="M12 2.5v2M12 19.5v2M2.5 12h2M19.5 12h2M5.3 5.3l1.4 1.4M17.3 17.3l1.4 1.4M18.7 5.3l-1.4 1.4M6.7 17.3l-1.4 1.4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+    </svg>
+    <svg class="theme-toggle-icon theme-toggle-icon-dark" viewBox="0 0 24 24" fill="none">
+      <path d="M20 15.2A8.1 8.1 0 0 1 8.8 4a8.2 8.2 0 1 0 11.2 11.2z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>
+    </svg>
+    <svg class="theme-toggle-icon theme-toggle-icon-system" viewBox="0 0 24 24" fill="none">
+      <rect x="3" y="4" width="18" height="13" rx="2.5" stroke="currentColor" stroke-width="1.8"/>
+      <path d="M8 21h8M12 17v4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+    </svg>
+  </span>
+  <span class="theme-toggle-label" data-theme-toggle-label>设备</span>
+</button>
+          </div>
+        </div>
+
+        <div class="detail-hero-grid">
+          <div class="detail-hero-cover"><figure class="paper-figure-card paper-figure-card-detail">
+  <img class="paper-figure-image" src="../../assets/collection-figures/2508.12837/figure-1-training-loss.png" alt="测试损失随训练步呈多级台阶，与不同阶 n 元语法估计量损失的虚线相邻。" loading="lazy" onclick="window.openPaperFigureImage && window.openPaperFigureImage(this)" />
+  <figcaption class="paper-figure-caption">四元语法的训练损失台阶与低阶估计量水平相近；这是数值观察，非定理证明。Varre et al., ICML 2025, PMLR 267, Figure 1, CC BY 4.0。</figcaption>
+</figure></div>
+          <div class="detail-hero-copy">
+            <p class="eyebrow">Collection 全文卡</p>
+            <h1 class="detail-page-title">Learning In-context n-grams with Transformers: Sub-n-grams Are Near-Stationary Points</h1>
+            <p class="detail-page-title-zh">Transformer 的上下文 \(n\) 元语法学习：低阶 \(n\) 元语法是近驻点</p>
+            <div class="detail-meta">Paper Collection · Training Dynamics · <a href="https://proceedings.mlr.press/v267/varre25a.html" target="_blank" rel="noopener noreferrer">原文</a></div>
+            <p class="detail-summary">Aditya Varre 与 Gizem Yüce（共同第一作者）、Nicolas Flammarion，均署名 EPFL Theory of Machine Learning Lab；前两位为通讯作者。本文采用 2025 年 10 月 6 日发布的 ICML 2025/PMLR 267 正式版，文献标识为 pmlr-\(v_{267}\)-varre25a，页码 60924–60963。arXiv:2508.12837v2 是另一个版本记录，本卡的公式与物理页码均据正式版 PDF。</p>
+            <div class="detail-micro-meta">
+              <span class="meta-pill">AI 基础理论</span>
+              <span class="meta-pill">理论与数值</span>
+              <span class="meta-pill">#Training Dynamics</span><span class="meta-pill">#Transformer</span>
+              <span class="meta-pill">15 分钟读完</span>
+              <span class="meta-pill">8 张阅读卡</span>
+              <span class="meta-pill">Aditya Varre 与 Gizem Yüce（共同第一作者）、Nicolas Flammario…</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <main class="container detail-layout">
+      <div class="detail-shell">
+        <article id="detail-body" class="reading-flow"><section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 01</span>
+    <span class="reading-step-note">作者信息</span>
+  </div>
+  <h2>作者信息</h2>
+  <div class="reading-card-content"><ul><li>Aditya Varre 与 Gizem Yüce（共同第一作者）、Nicolas Flammarion，均署名 EPFL Theory of Machine Learning Lab；前两位为通讯作者。本文采用 2025 年 10 月 6 日发布的 ICML 2025/PMLR 267 正式版，文献标识为 pmlr-\(v_{267}\)-varre25a，页码 60924–60963。arXiv:2508.12837v2 是另一个版本记录，本卡的公式与物理页码均据正式版 PDF。</li></ul></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 02</span>
+    <span class="reading-step-note">研究问题</span>
+  </div>
+  <h2>研究问题</h2>
+  <div class="reading-card-content"><ul><li>训练 Transformer 在上下文中预测下一个 token 时，测试损失有时长时间停在台阶上，然后才学会使用更长的历史。本文问：对由 \(n\) 元语法产生的序列，较低阶的 \(k\) 元语法解为何能成为损失地形中的慢梯度区域？这里的“台阶”是优化轨迹现象，“驻点”是模型参数处的总体损失梯度性质；两者不能直接画等号。</li><li>论文给出一个一般的交叉熵驻点充分条件，再为受限制的两层 attention-only Transformer 构造表达 \(k\) 元语法计数估计量的参数，并在序列长度与参数尺度趋于无穷时证明总体损失梯度消失。有限规模训练曲线和注意力图提供对应的数值例子，但没有证明优化必经这些构造点。</li></ul></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 03</span>
+    <span class="reading-step-note">背景</span>
+  </div>
+  <h2>背景</h2>
+  <div class="reading-card-content"><ul><li>将上下文学习限制在有限字母表的齐次马尔可夫链，使“模型用了多长历史”可以由计数规则精确定义。Edelman 等先观察到均匀预测、unigram、bigram 等阶段；本文进一步询问这些中间规则在总体目标函数中的梯度结构。工作属于纯 AI 的学习动力学理论及数值例子，不把训练损失视为热力学自由能，也不把台阶称作严格相变。</li></ul></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 04</span>
+    <span class="reading-step-note">模型与方法</span>
+  </div>
+  <h2>模型与方法</h2>
+  <div class="reading-card-content"><ul><li>一次任务先从先验 \(\mathcal P\) 抽取一套转移概率 \(p_\tau\)，再由它生成长度为 \(T\) 的 token 序列 \(x^T\)。字母表大小为 \(S\)。真过程假设 \(n-1\) 阶马尔可夫性与时间齐次性；模型接收当前序列，输出下一个 token 的概率向量，跨任务和序列的目标是总体交叉熵。所谓 in-context，是模型参数在该序列内不更新，而利用这条序列中的重复历史估计当前任务的转移概率。（正式版 PDF 物理页 3，§2.1–2.2）</li><li>\(k\) 元语法估计量先找出与末尾的 \(k-1\) 个 token 相同的历史，再对这些历史后面的 token 计数并归一化：</li></ul>
+<div class="display-math">\[\widehat p_k(x_{T+1}=a\mid x^T)=\frac{\sum_{l=k}^{T}\mathbf 1\{x_{l-k+1}^{l-1}=x_{T-k+2}^{T}\}\mathbf 1\{x_l=a\}}{\sum_{l=k}^{T}\mathbf 1\{x_{l-k+1}^{l-1}=x_{T-k+2}^{T}\}}.\]</div>
+<p>其中 \(a\) 是候选下一 token，\(l\) 是上下文中的计数位置，\(\mathbf 1\) 为指示函数。\(k=1\) 时历史为空，得到全序列的经验频率；增加 \(k\) 会保留更多条件信息，但每种历史可用的样本减少。（物理页 3，Definition 2.1）</p>
+<ul><li>理论模型有两层分离式 attention。第一层的各个头按相对位置读取先前 token，并与跳连结果拼接；第二层比较位置之间的历史、平均匹配历史后面的 token。嵌入正交，第一层注意力仅由位置决定，第二层 value 固定，无第二层残差与 MLP。这些选择使模型的输出直接成为概率向量。对 \(k&lt;n\) 的构造，停用读取更早位置的头；当尺度 \(c\to\infty\)，softmax 选择相同的 \(k-1\) 历史，得到上述计数规则。（物理页 4–7，§2.3、§4.1，Eq. 8，Appendix B.1）</li><li>关键充分条件针对 score，即参数改变时对数预测概率的导数。如果 score 只依赖任务分布及序列后缀，且模型预测等于真分布在该后缀上的条件概率，则对较早历史求平均后，总体交叉熵梯度为零。这里 score 是统计量/导数，不能把它理解为注意力图本身；论文再利用稀疏注意力和 softmax 导数的界，把该条件应用于特定参数构造。（物理页 5、7–8，Proposition 3.2、Theorem 4.1；物理页 15–20，Appendix B）</li></ul></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 05</span>
+    <span class="reading-step-note">核心定理与证据</span>
+  </div>
+  <h2>核心定理与证据</h2>
+  <div class="reading-card-content"><ul><li>Proposition 3.2 是充分条件：若 score 只看给定后缀，而模型输出又等于该后缀的真实条件分布，总体梯度消失。它适用于比本文 Transformer 更一般的下一个 token 预测模型，但并不声称每个台阶都满足这些条件。（物理页 5，Proposition 3.2；物理页 20–21，Appendix \(C\)）</li><li>Figure 2 与 Eq. 8 展示构造机制：第一层把历史 token 放入不同块，第二层只对匹配历史的位置给权重，随后平均位置上的 token。停用较远历史的头即可从 trigram 规则退到 bigram 规则；在 \(c\to\infty\) 极限，Lemma B.1–B.2 给出这种计数表示。（物理页 6–7，Figure 2、Eq. 8；物理页 14–15，Appendix B.1）</li><li>Theorem 4.1 将该构造处的梯度控制为两类误差：有限序列的 \(k\) 元语法估计误差，以及有限参数尺度下注意力未完全硬选择的误差。论文在 \(T,c\to\infty\) 且取 \(c=\Theta(T)\) 的渐近条件下得到梯度趋零，因此称为近驻点；这是总体损失的一阶陈述，未给出有限训练过程的驻留时间或跨台阶跃迁定理。（物理页 7，Theorem 4.1；物理页 15–20，Appendix B.2；物理页 36–37，Lemma \(H\).6）</li><li>Figure 1 的四元语法训练测试损失（纵轴）随训练步数（横轴）呈分段下降，虚线是各阶计数估计量的交叉熵水平；曲线停留位置与较低阶水平接近。这是训练数值例子，不是梯度定理的证明。更细的 trigram 例子中，Figure 3 的两个第一层头先近似均匀，随后都指向前一个 token，后期其中一个再指向前两个位置；这与从较低阶到较高阶历史的解释一致。（物理页 2，Figure 1；物理页 8–9，§5、Figure 3）</li><li>Figure 3 的具体设置为 \(n=3\)、\(S=5\)、\(T=32\)、Dirichlet 参数 \(\alpha=0.5\) 的合成序列；两层简化模型、第一层两个头、one-hot 嵌入，Adam 学习率 0.01、batch 128、无 weight decay，测试集 \(2^{16}\) 条序列。附录的更一般 attention-only 模型与五个随机种子支持类似的头部次序，但不证明所有初始化都会按此路径训练。（物理页 8–9，§5；物理页 37–40，Appendix I、Figures 5–8）</li></ul><figure class="evidence-figure">
+  <button class="evidence-figure-image-button" type="button" aria-label="放大查看 Figure 1" onclick="window.openPaperFigureImage && window.openPaperFigureImage(this.querySelector('img'))">
+    <img class="paper-figure-image evidence-figure-image" src="../../assets/collection-figures/2508.12837/figure-1-training-loss.png" alt="四元语法任务的测试损失随 0 至 800 个训练步分段下降，水平虚线标出 unigram 至 4-gram 估计量损失。" loading="lazy" />
+  </button>
+  <figcaption>
+    <strong>Figure 1</strong> · 四元语法训练例子：横轴训练步，纵轴测试损失，实线的台阶与不同阶计数估计量的水平虚线接近。这说明特定数值轨迹存在阶段性；曲线本身不测量总体梯度，也不能证明一般架构必然按该次序训练。图源：Varre、Yüce、Flammarion，ICML 2025，PMLR 267，Figure 1，CC BY 4.0；仅裁去周围正文。
+    <span class="evidence-figure-reading">物理解读：An empirical alignment of plateaus with simpler estimators, distinct from the asymptotic stationarity theorem.</span>
+    <span class="evidence-figure-source">来源：PMLR PDF physical \(p\). 2, Figure 1</span>
+  </figcaption>
+</figure></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 06</span>
+    <span class="reading-step-note">有效性与局限</span>
+  </div>
+  <h2>有效性与局限</h2>
+  <div class="reading-card-content"><ul><li>定理使用总体交叉熵、特定的分离式两层架构、正交嵌入、固定 value 和明确构造的参数；结论在 \(T,c\to\infty\) 下成立。有限上下文、有限训练集、weight decay、一般大型语言模型及 SGD 的逃逸时间均未由主定理控制。Appendix F 讨论更一般架构所需的额外归一化或 MLP，不能据此把简化模型的定理直接推广为一般 Transformer 定理。（物理页 4、7–9、28–30）</li><li>计数估计依赖相同历史出现；有限长度下历史未出现时分母可能为零，本文的渐近论证没有给出本卡可引用的通用有限长度平滑规则。Lemma \(H\).6 的极限论证使用高阶马尔可夫链的遍历性；对不满足这些条件的序列分布不能照搬。（物理页 3，Definition 2.1；物理页 34–37，Appendix \(H\)）</li><li>正式版物理页 3 对交叉熵 \(\ell\) 的显示定义漏写负号；物理页 20 的证明明确使用负号，并据此得到 Lemma 3.1 的梯度方向。本卡沿用作者在证明中实际使用的交叉熵符号约定，但不把页 3 的显示式原样当成无歧义公式。原文讨论“台阶后因曲率或噪声逃逸”是解释而非已证明的动力学机制。（物理页 3、8、20）</li></ul></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 07</span>
+    <span class="reading-step-note">复现与资源</span>
+  </div>
+  <h2>复现与资源</h2>
+  <div class="reading-card-content"><ul><li>正式版 PDF：https://raw.githubusercontent.com/mlresearch/v267/main/assets/varre25a/varre25a.pdf；PMLR 条目：https://proceedings.mlr.press/v267/varre25a.html；作者代码：https://github.com/tml-epfl/sub-n-grams-are-stationary。代码库公开，README 说明其实现改编自 Nichani 等（2024）；本文的主训练设置和附录设置分别见物理页 8–9 与 37。合成数据由马尔可夫转移矩阵生成，未发现需要单独下载的实验数据集。</li><li>本卡依据正式版 40 个物理 PDF 页和页分隔文本核对公式、图题、条件与参数。PDF SHA-256：7a459826c94e7d1352103b1fd22aea75a1d4f1032b1ab64a8ee1c7b76bd21262。Evidence status: full-text verified; no independent reproduction performed.</li></ul></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 08</span>
+    <span class="reading-step-note">阅读指南</span>
+  </div>
+  <h2>阅读指南</h2>
+  <div class="reading-card-content"><ul><li>先看物理页 2 的 Figure 1：实线是训练过程，虚线是较低阶估计量的水平；再读物理页 3 的 Definition 2.1，明确“低阶”丢掉了哪些历史信息。接着用物理页 6 的 Figure 2 理解两层注意力如何做匹配与计数，最后读物理页 5 的 Proposition 3.2 和物理页 7 的 Theorem 4.1，分清精确充分条件与渐近构造。想核查证明，可按 Appendix B、\(C\)、\(H\) 的顺序读；暂时可以跳过一般架构的 Appendix F。</li></ul></div>
+</section></article>
+        <aside id="detail-toc" class="detail-toc hidden" aria-label="内容目录">
+          <p class="detail-toc-title">阅读目录</p>
+          <nav id="detail-toc-nav" class="detail-toc-nav"></nav>
+        </aside>
+      </div>
+      <nav class="paper-nav"><a class="paper-nav-link paper-nav-prev" href="../../collection-papers/2510.07077/"><span class="paper-nav-label">← 上一篇</span><span class="paper-nav-title">Vision-Language-Action Models for Robotics: A Review Towards Real-World Applications</span></a>
+      <a class="paper-nav-link paper-nav-next" href="../../collection-papers/2510.01631/"><span class="paper-nav-label">下一篇 →</span><span class="paper-nav-title">Demystifying Synthetic Data in LLM Pre-training: A Systematic Study of Scaling Laws, Benefits, and Pitfalls</span></a></nav>
+      <section id="comments" class="comments-panel" aria-labelledby="comments-title">
+        <div class="comments-heading">
+          <div>
+            <p class="eyebrow">Discussion</p>
+            <h2 id="comments-title">评论与讨论</h2>
+          </div>
+          <a href="https://github.com/xixi-cc/xixi-research-comments/discussions" target="_blank" rel="noopener noreferrer">在 GitHub 查看</a>
+        </div>
+        <p class="comments-note">评论公开保存在 GitHub Discussions；阅读无需登录，发表评论需要 GitHub 账号。</p>
+        <script src="https://giscus.app/client.js"
+                data-repo="xixi-cc/xixi-research-comments"
+                data-repo-id="R_kgDOUIl8MQ"
+                data-category="Announcements"
+                data-category-id="DIC_kwDOUIl8Mc4DEftB"
+                data-mapping="specific"
+                data-term="collection:2508.12837"
+                data-strict="1"
+                data-reactions-enabled="1"
+                data-emit-metadata="0"
+                data-input-position="top"
+                data-theme="preferred_color_scheme"
+                data-lang="zh-CN"
+                data-loading="lazy"
+                crossorigin="anonymous"
+                async></script>
+        <noscript><p>请启用 JavaScript，或直接前往 GitHub Discussions 参与讨论。</p></noscript>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <div class="container">
+        <p>内容来自 <a href="https://arxiv.org" target="_blank" rel="noopener noreferrer">arXiv.org</a>；原创解读采用 CC BY-NC 4.0。<a href="../../rights.html">许可与引用</a></p>
+      </div>
+    </footer>
+
+    <script src="../../assets/theme.js"></script>
+    <script src="../../assets/media.js"></script>
+    <script src="../../assets/paper.js"></script>
+    <!-- Cloudflare Web Analytics -->
+<script type="module" src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon='{"token":"73522e5dee9b42b0be84b4847e4dd502"}'></script>
+<!-- End Cloudflare Web Analytics -->
+  </body>
+</html>
