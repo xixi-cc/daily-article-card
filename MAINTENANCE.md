@@ -98,3 +98,9 @@ uv run --with playwright python scripts/check_rendered_math.py \
 
 The browser check uses bundled assets without a server, covers lazy-loaded Daily
 cards and search rerenders, and fails on raw TeX, MathJax errors, or page overflow.
+
+## 卡片工作流与成本记录
+
+独立论文短交接使用 [CARD_CONTEXT](docs/CARD_CONTEXT.md)；共享状态增量记录、
+停领范围和阶段计时使用 [CARD_WORKFLOW](docs/CARD_WORKFLOW.md)。统一入口为
+`python3 scripts/card_batch.py`。本轮优化不恢复已停止的未启动论文。

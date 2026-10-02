@@ -32,3 +32,9 @@ files; return a short outcome and artifact pointers. The parent is the sole
 ledger writer and integrator, with risk-routed scientific review and the full
 existing publication gates. Context packaging does not authorize resuming
 stopped work, publishing, lowering review standards or changing Goal status.
+
+For controller-owned incremental logistics and measured stage usage, read
+`docs/CARD_WORKFLOW.md` and use `card_batch.py workflow`. Keep scope authority
+immutable, record interval usage deltas (unknown values remain null), and emit
+summaries at batch boundaries. This tool never resumes unstarted work or
+replaces the context handoff, scientific acceptance or publication gates.

@@ -152,3 +152,11 @@ Official background: [Subagents](https://learn.chatgpt.com/docs/agent-configurat
 describes keeping intermediate work outside the main chat and returning
 summaries. The exact `fork_context=false` field is verified against this
 session's callable spawn tool; other runtimes must use their supported schema.
+
+## Incremental state and measured usage
+
+Use [CARD_WORKFLOW](CARD_WORKFLOW.md) for controller-owned append-only events,
+closed intake, bounded WIP and real stage timing/usage receipts. Retain this
+context flow for one-paper handoffs; the event journal replaces repeated full
+overlays, not source evidence or scientific review. Generate summaries at batch
+boundaries and retain explicit unknown usage fields.
