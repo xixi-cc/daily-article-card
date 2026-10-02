@@ -1,0 +1,403 @@
+{
+  "arxiv_id": "2602.04774",
+  "source_version": "v2",
+  "source_pdf": "https://arxiv.org/pdf/2602.04774v2",
+  "title_en": "Theory of Optimal Learning Rate Schedules and Scaling Laws for a Random Feature Model",
+  "title_zh": "随机特征模型的最优学习率调度与缩放律理论",
+  "curation_status": "full_text_verified",
+  "card_standard_version": "2.4",
+  "paper_profile": "theory_numerics",
+  "style_reference": "physicist_daily_arxiv",
+  "provenance": {
+    "program": "Collection",
+    "catalog": "Paper Collection",
+    "catalog_record_id": "2602.04774",
+    "catalog_topic": "Training Dynamics",
+    "collection_date": "2026-08-30",
+    "sampled_at": "2026-10-03",
+    "selected_by": "authorized_remaining_collection_fulltext_batch",
+    "sampling_seed": "not_applicable_explicit_single_paper_assignment"
+  },
+  "verified_metadata": {
+    "arxiv_id": "2602.04774",
+    "version": "v2",
+    "title": "Theory of Optimal Learning Rate Schedules and Scaling Laws for a Random Feature Model",
+    "authors": [
+      "Blake Bordelon",
+      "Francesco Mori"
+    ],
+    "affiliations": {
+      "Blake Bordelon": [
+        "Center for Mathematical Sciences and Applications, Harvard University",
+        "Oden Institute for Computational Engineering and Sciences & Dept. of Neuroscience, UT Austin"
+      ],
+      "Francesco Mori": [
+        "Center for Mathematical Sciences and Applications, Harvard University"
+      ]
+    },
+    "equal_contribution": true,
+    "published": "2026-02-04T17:11:36Z",
+    "updated": "2026-05-08T16:24:57Z",
+    "categories": [
+      "cond-mat.dis-nn",
+      "cs.LG",
+      "stat.ML"
+    ],
+    "primary_category": "cond-mat.dis-nn",
+    "abstract": "Setting the learning rate (LR) for a deep learning model is a critical part of successful training. Choosing LRs is often done empirically with trial and error. In this work, we explore a solvable model of optimal LR schedules for a powerlaw random feature model trained with stochastic gradient descent (SGD). We consider the optimal schedule $\\eta_T^\\star(t)$ where $t$ is the current iterate and $T$ is the training horizon. This schedule is computed both as a numerical optimization problem and also analytically using optimal control theory. Our analysis reveals two regimes which we term the easy phase and hard phase. In the easy phase the optimal schedule is a polynomial decay $\\eta_T^\\star(t) \\simeq T^{-\\xi} (1-t/T)^{\\delta}$ where $\\xi$ and $\\delta$ depend on the properties of the features and task. In the hard phase, the optimal schedule resembles warmup-stable-decay with constant initial LR and annealing performed over a vanishing fraction of training steps. We investigate joint optimization of LR and batch size and find batch ramps can improve the wall-clock time in the easy phase. Beyond SGD, we derive optimal schedules for momentum parameter $\\beta(t)$ and show that it improves the loss-scaling exponent in the hard phase. We compare our optimal schedule to various benchmarks including (1) optimal constant learning rates $\\eta_T(t) \\sim T^{-\\xi}$ (2) optimal power laws $\\eta_T(t) \\sim T^{-\\xi} t^{-\\chi}$, finding that our schedule achieves better rates than either of these. Our theory suggests that LR transfer across training horizon depends on the structure of the model and task. For ResNet image classification on CIFAR-5M, the learning curves exhibit hard-phase behavior where optimal base LRs are constant under sufficient annealing. GPT-2 style transformers trained in language modeling exhibit easy-phase behavior where optimal LRs shift even under annealing.",
+    "publication_status": "preprint",
+    "doi": "10.48550/arXiv.2602.04774",
+    "metadata_source": "https://arxiv.org/abs/2602.04774v2",
+    "affiliations_evidence": "PDF physical p.1"
+  },
+  "reader_bridge": {
+    "target_reader": "AI-literate physicist",
+    "chain": "input → fixed eigenfeatures → online SGD of linear readout → terminal expected test MSE → analytic approximate control and author finite-model/network evidence",
+    "concepts": [
+      "fixed random features",
+      "minibatch SGD noise",
+      "known terminal horizon and full schedule",
+      "momentum correlations versus Adam"
+    ],
+    "visible_section": "背景"
+  },
+  "sections": [
+    {
+      "title": "作者信息",
+      "paragraphs": [
+        "Blake Bordelon、Francesco Mori，两位作者同等贡献（PDF 星号注明 equal contribution）。两人隶属 Harvard University 的 Center for Mathematical Sciences and Applications；Bordelon 另列 UT Austin 的 Oden Institute for Computational Engineering and Sciences 与 Department of Neuroscience。单位均按 PDF 第 1 页核实。",
+        "本文审阅 arXiv:2602.04774v2，首次提交 2026-02-04，v2 修订 2026-05-08，共 23 个物理页（含附录与参考文献）。这是长期 Collection 卡，公开原文为 [版本摘要页](https://arxiv.org/abs/2602.04774v2) 和 [精确版本 PDF](https://arxiv.org/pdf/2602.04774v2)。"
+      ]
+    },
+    {
+      "title": "研究问题",
+      "paragraphs": [
+        "训练更久时，能否直接沿用短训练的学习率？把学习率逐渐降到零，为什么有时可让最优基础学习率不再随训练预算变化，有时仍须重新调小？论文在一个可解的随机特征线性模型中，把整个调度当作控制轨迹，最小化给定终点的测试误差；关键在于剩余训练能否消除早先引入的随机梯度噪声。",
+        "[论文范围] 输入先变成固定特征，只有线性读出权重被训练。作者解析求解连续时间近似下的学习率与 batch 调度，并用离散模型的数值最优控制对照；动量和真实深度网络部分提供作者数值或实验结果。模型的 easy/hard 是谱指数与稳定约束的两种渐近区间，并非对所有 AI 任务难度的分类。（PDF 第 3–9 页）"
+      ]
+    },
+    {
+      "title": "背景",
+      "paragraphs": [
+        "[概念定位：physics of AI] 大学习率使慢谱模更快学习，也会放大随机梯度造成的方差；减小学习率抑制噪声，却减少剩余的偏差消除能力。论文把这两个需求置于同一个终点损失泛函，推导为何有时应该全程缓慢退火，有时应该接近终点才集中退火。谱模的衰减与噪声注入是实际数学对象；这里不把损失当作热力学能量，也不把两种调度区间当作已证实的物理相变。",
+        "读者桥接①：随机特征是输入的一组固定坐标，类似在固定基底中拟合函数；保留哪些谱模决定可表示的目标部分。若特征也随训练改变，本文固定谱的闭合就失去依据。②：随机梯度下降（SGD）用每步新抽取的一小批样本估计下降方向；batch 是这一批的样本数，增大它可降低方向噪声。③：训练时域是预先确定的更新步数，调度不是单个学习率，而是每一步该走多大的整条函数；其输出可观测量是终点的期望测试均方误差。④：动量平均先前和当前下降方向，需要额外跟踪误差与速度的相关量；它不同于语言模型实验使用的 Adam 自适应优化器。（PDF 第 3–7、22 页）",
+        "[相关工作边界] 随机特征缩放规律、teacher–student 最优控制与增大 batch 的实践都有先例。本文的价值在于求完整终点调度及其约束切换，而不是首次提出控制理论、谱模型或 batch ramp。（PDF 第 2–3 页）"
+      ]
+    },
+    {
+      "title": "模型与方法",
+      "paragraphs": [
+        "[定义与假设] 输入 \\(x\\) 来自分布 \\(p(x)\\)，固定特征向量 \\(\\psi(x)\\) 有 \\(M\\) 个分量（可无限）；教师权重 \\(w^*\\) 产生目标，独立标准正态变量 \\(z\\) 加上标签噪声幅度 \\(\\sigma_0>0\\)。学生仅保留协方差最大的前 \\(N\\) 个特征 \\(\\widetilde\\psi\\)，训练其权重 \\(w\\)。\\(\\lambda_k\\) 是第 \\(k\\) 个协方差本征值；\\(b\\) 控制特征谱衰减，\\(a\\) 控制目标在各模上的能量衰减。（PDF 第 3–4 页）",
+        "\\[y(x)=w^*\\!\\cdot\\!\\psi(x)+\\sigma_0 z,\\quad \\widehat y(x)=w\\!\\cdot\\!\\widetilde\\psi(x),\\quad \\langle\\psi_i\\psi_j\\rangle=\\delta_{ij}\\lambda_i,\\quad \\lambda_k\\sim k^{-b},\\quad \\lambda_k(w_k^*)^2\\sim k^{-a},\\quad a,b>1.\\]",
+        "[精确模型结果] 每步用独立新样本及标签噪声，按平方损失执行 SGD；学习率为 \\(\\eta_t\\)，batch 为 \\(m_t\\)。定义 \\(c_{t,k}\\) 为第 \\(k\\) 个权重误差对训练历史 \\(\\mathcal D_{t-1}\\) 的平方平均，\\(L_t\\) 再平均独立测试输入与标签噪声。保留模误差之外，丢弃的教师谱尾与标签噪声形成有效底噪 \\(\\sigma^2\\)。（PDF 第 3 页 Eq. (4)）",
+        "\\[c_{t,k}=\\mathbb E_{\\mathcal D_{t-1}}(w_{t,k}-w_k^*)^2,\\quad L_t=\\sum_{k=1}^N\\lambda_k c_{t,k}+\\sigma^2,\\quad \\sigma^2=\\sigma_0^2+\\sum_{k=N+1}^{M}\\lambda_k(w_k^*)^2.\\]",
+        "在零均值高斯特征下，Wick 四阶矩使这些平均量形成闭合递推。其线性阻尼项消除偏差，二次学习率项注入噪声，模之间通过总误差相耦合。这是数值最优控制实际使用的离散动力学。正文提到四阶矩条件推广；附录 E.1 对非高斯情形给的是相应上下界，因此这里的精确等式仅指高斯模型。（PDF 第 3、21 页）",
+        "\\[c_{t+1,k}=\\left(1-2\\eta_t\\lambda_k+\\eta_t^2\\frac{m_t+1}{m_t}\\lambda_k^2\\right)c_{t,k}+\\frac{\\eta_t^2}{m_t}\\lambda_k\\sum_{\\ell=1}^N\\lambda_\\ell c_{t,\\ell}+\\frac{\\eta_t^2}{m_t}\\sigma^2\\lambda_k.\\]",
+        "[控制问题与近似层] 给定训练终点 \\(T\\)，最小化 \\(L_T\\)；数值部分用 CasADi 自动微分与 IPOPT 的 single-shooting 优化整条控制。解析部分另假设零初始化、足够大谱区间、晚时主导模满足 \\(\\eta_t\\lambda_k\\ll1\\)，并让标签噪声在大时域下保持非零量级。它丢弃小模动力学中的高阶项，把步数求和近似成积分，再以 \\(L_t\\approx\\sigma^2\\) 闭合噪声积分；不可把解析解当成原始离散系统的逐步精确解或数值求解器的全局最优认证。（PDF 第 4、13–14、23 页）",
+        "引入剩余积分学习率 \\(\\chi(t)\\) 与总量 \\(\\chi_0\\)；归一化谱 \\(\\lambda_k=k^{-b}\\) 下的 \\(f_s\\) 是指数过滤的谱和，第二式中的 \\(s\\) 是谱权重参数，积分中的 \\(s\\) 则只是时间哑变量。",
+        "\\[\\chi(t)=\\int_t^T\\eta(s)\\,ds,\\quad \\chi_0=\\chi(0),\\quad f_s(\\chi)=\\sum_{k=1}^N k^{-s}e^{-k^{-b}\\chi}.\\]",
+        "终点误差分成初始误差残留与随机更新累积。第二项里的 \\(f_{2b}(2\\chi(t))\\) 明确记录一次噪声注入还会被后续训练消除多少；\\(m(t)\\) 是连续松弛后的 batch，固定 batch 时为 \\(m\\)。",
+        "\\[L_T-\\sigma^2\\approx f_a(2\\chi_0)+\\sigma^2\\int_0^T\\frac{\\eta(t)^2}{m(t)}\\,f_{2b}(2\\chi(t))\\,dt.\\]",
+        "固定 batch 的变分被积函数是 \\(\\dot\\chi^2 A(\\chi)\\)，不显含时间。令 \\(F\\) 为 \\(\\sqrt A\\) 的积分，Noether 第一积分给出以下轨迹；\\(c\\) 是正的变分常量，不能解释为训练的物理能量。终点条件为 \\(\\chi(T)=0\\)，初值 \\(\\chi_0\\) 自由，由总偏差与方差的平衡确定。（PDF 第 14–15 页 Eqs. (26)–(37)）",
+        "\\[A(\\chi)=\\frac{\\sigma^2}{m}f_{2b}(2\\chi),\\quad \\dot\\chi^{\\,2}A(\\chi)=c>0,\\quad F(\\chi)=\\int_0^\\chi\\sqrt{A(u)}\\,du,\\quad \\frac{F(\\chi(t))}{F(\\chi_0)}=1-\\frac{t}{T}.\\]"
+      ]
+    },
+    {
+      "title": "核心结果与证据",
+      "paragraphs": [
+        "[解析渐近：easy] 当 \\(a>b\\)，目标在慢特征上的能量衰减足够快，最优总积分步长 \\(\\chi_0\\sim T^{b/a}\\)，初始学习率随训练时域增大而下降。谱和大参数渐近导出多项式退火；比例常数还依赖 batch、底噪和谱归一化。这里给出 Eq. (39) 的系数，保留 Eq. (37) 定义的 \\(\\chi_0\\)，而不把它误写成只依赖 \\(a,b\\)。（PDF 第 5、15 页）",
+        "\\[\\chi_0\\sim T^{b/a},\\qquad \\eta_T^*(t)\\approx\\frac{2b\\chi_0}{T}\\left(1-\\frac{t}{T}\\right)^{2b-1},\\qquad a>b.\\]",
+        "[解析渐近：hard] 当 \\(a<b\\)，无约束解的初始学习率会随时域发散，故必须显式保留学习率上界 \\(\\eta_{\\max}\\)，其量级为最大本征值 \\(\\lambda_1\\) 的倒数。慢模偏差成为瓶颈：先长时间在上界训练，至切换时刻 \\(t_s\\) 后集中消除噪声方差。退火所占比例趋于零，但其绝对步数仍增长。论文称其为 warmup–stable–decay（WSD），实际解析轨迹只有平台与衰减、没有 warmup。（PDF 第 5–6、15–16 页）",
+        "\\[\\eta_T^*(t)\\sim\\begin{cases}\\eta_{\\max},&t<t_s,\\\\ \\eta_{\\max}\\left(\\frac{1-t/T}{1-t_s/T}\\right)^{2b-1},&t>t_s,\\end{cases}\\qquad 1-\\frac{t_s}{T}\\sim T^{-(b-a)/(2b-1)},\\quad a<b.\\]",
+        "[作者模型数值与机制图] Figure 2 上排 \\(a=3.5,b=5\\) 为 hard，下排 \\(a=3.5,b=2\\) 为 easy；均为 \\(N=500,\\sigma=0.5,m=5\\)。左列横轴是相对步数 \\(t/T\\)，下排纵轴已乘 \\(T^{1-b/a}\\)；中列为超额测试误差随步数，右列为终点超额误差随时域。平台或缩放坍缩与拟合斜率支持两种策略。Figure 5 则分解 bias 与 variance：hard 区间先压偏差、终段压方差，easy 区间两者联合权衡。它解释误差任务分工；并不意味着 easy 图中每个方差分量都单调下降。（PDF 第 5、16 页）",
+        "[解析渐近：缩放] 令 \\(\\zeta\\) 表示超额误差随时域衰减的正指数，数值越大，渐近下降越快。对同一底噪和固定 batch，最优调度与每个时域各自调优的常数学习率比较为：",
+        "\\[L_T-\\sigma^2\\sim T^{-\\zeta},\\qquad \\zeta_{\\mathrm{schedule}}=\\frac{a-1}{\\max(a,b)},\\qquad \\zeta_{\\mathrm{constant}}=\\frac{a-1}{a+b-1}.\\]",
+        "Figure 2 的 hard 理论值分别为 \\(1/2\\) 与 \\(1/3\\)，图例有限区间拟合约为 \\(0.52\\) 与 \\(0.36\\)；easy 理论值分别为 \\(5/7\\) 与 \\(5/9\\)，最优调度拟合约 \\(0.69\\)、常数基线约 \\(0.56\\)。拟合与理论值有有限时域差异。easy 速率与作者引用的源—容量条件下 minimax 指数相同；hard 仍未达到该信息论速率。这里的最优性限定于本文在线、末次迭代及控制类别。（PDF 第 5–7 页、Table 1）",
+        "[解析渐近：形状稳健性] 依训练时域设计的终点退火不能与单纯按当前步数作幂律衰减混为一谈。附录 C 比较 \\(T^{-\\nu}t^{-\\delta}\\) 家族与 \\(T^{-\\xi}g(t/T)\\) 家族；后者在终点 \\(g(z)\\) 消失快于 \\((1-z)^{b-1}\\)、且 \\(\\xi=\\max(0,1-b/a)\\) 时可达到相同最优指数，但不必有相同前因子。\\(\\delta,\\nu,\\xi\\) 是调度指数，\\(z=t/T\\)。这说明最佳指数不要求唯一曲线；端点噪声项必须核查。（PDF 第 7、18–20 页）",
+        "[解析渐近与作者模型数值：batch] 总样本预算 \\(B_{\\mathrm{tot}}=\\int_0^T m(t)dt\\) 固定时，联合优化有一族等损失控制；若再最小化理想化串行步数，取学习率上界，并让 batch 随终点接近而增大：",
+        "\\[m_T^*(t)=\\frac{B_{\\mathrm{tot}}}{2bT}\\left(1-\\frac{t}{T}\\right)^{1/(2b)-1},\\qquad \\eta(t)=\\eta_{\\max},\\qquad T\\sim\\begin{cases}B_{\\mathrm{tot}}^{b/a},&a>b,\\\\ B_{\\mathrm{tot}},&a<b.\\end{cases}\\]",
+        "在 easy 区间，这将损失相对于更新步数的指数从 \\((a-1)/a\\) 提高到 \\((a-1)/b\\)，而样本预算指数仍为 \\((a-1)/a\\)。hard 区间的两个指数均为 \\((a-1)/b\\)。Figure 8 的确定性损失递推示例报告相同预算下约 33 倍更少更新步数；它不是测得的 GPU 实时时长加速。（PDF 第 7、21–22 页）",
+        "[模型定义与作者数值：momentum] 动量变量 \\(v_t\\) 对 minibatch 下降方向 \\(g_t\\) 作平均；本文 \\(\\beta_t\\) 是新方向的权重，旧速度保留系数为 \\(1-\\beta_t\\)。需同时跟踪误差方差 \\(C\\)、误差—速度相关 \\(R\\) 与速度方差 \\(V\\)，而不是只看权重误差：",
+        "\\[w_{t+1}=w_t+\\eta_t v_t,\\quad v_t=(1-\\beta_t)v_{t-1}+\\beta_t g_t,\\quad C_{k,t}=\\langle(w_{k,t}-w_k^*)^2\\rangle,\\quad R_{k,t}=\\langle v_{k,t}(w_k^*-w_{k,t})\\rangle,\\quad V_{k,t}=\\langle v_{k,t}^2\\rangle.\\]",
+        "Figure 3 中作者联合数值优化学习率与动量：easy 示例 \\((a,b)=(2.3,1.5)\\) 的损失指数与最优 SGD 相同；hard 示例 \\((a,b)=(1.3,2.8)\\) 及指数扫描显示拟合斜率超过最优 SGD。作者在第 9 页明确说 hard 的改善指数尚未解析确定，因此不能把数值趋势改写成一个已证明的动量新指数。（PDF 第 7–9、22–23 页）",
+        "[作者网络实验：现象一致性] Figure 4 上排是 ResNet 图像分类在 CIFAR-5M 上的 SGD：多项式退火后，扫描得到的最佳基础学习率大致不随训练步数改变。下排是 C4 上、125M 非嵌入参数的 GPT 风格模型，使用 Adam：即使余弦退火，最佳基础学习率仍随 token 预算增长向较小值移动。这里 loss 为交叉熵，越低越好；比较固定学习率与退火并分别扫描基础学习率。两者分别与 hard/easy 现象相容；本文未验证 Transformer 的特征为固定高斯谱，亦未从这些实验直接测得承重的 \\(a,b\\)。（PDF 第 8–9、23 页）"
+      ]
+    },
+    {
+      "title": "有效性与局限",
+      "paragraphs": [
+        "[源文限制] 高斯固定特征、线性读出、独立在线样本、平方损失是闭合的基础；解析缩放还依赖幂律谱、零初始化、非零标签底噪及晚时小本征值主导。标签噪声趋零、有限谱截止、数据反复使用、显著特征学习或更换损失与优化器，都需要另行分析。正文中的真实网络交叉熵和 Adam 结果只提供现象对照，不能认证这些模型满足随机特征理论。（PDF 第 3、9、13 页）",
+        "[近似自洽性与审阅边界] 端点附近 \\(\\chi\\) 小，谱核不能统一用大参数幂律替代；附录 C.3.1 检查最优轨迹的端点方差为次阶。缩放公式亦需要足够多慢谱模仍存在，不能直接宣称在固定有限 \\(N\\) 后无限训练仍保持同一幂律。上述渐近推导并非有显式余项控制的所有有限时域保证；本次全文核对没有进行证明认证。（PDF 第 13–15、19–20 页）",
+        "[实施限制与审阅判断] \\(\\eta_{\\max}\\) 是渐近控制中的稳定约束，精确离散噪声递推仍需核查；不能把 \\(2/\\lambda_1\\) 当成对任意 batch 与谱必然安全的 SGD 步长。batch ramp 是连续松弛形式，须满足最少一个样本，并处理整数 batch、终点边界、显存与吞吐约束；理论用串行更新数代表 wall-clock，不保证真实系统端到端快多少。（PDF 第 5 页脚注、第 21–22 页；最后两项为由模型范围作出的实施判断）",
+        "[未解决项] 动量的 hard-phase 解析指数尚未给出；有限模型控制用局部非线性优化器求得，源码描述未构成全局优化证书。网络图未提供能把真实模型映射到正确谱统计的完整检验，作者将其列为未来工作；不据此宣称普适 Transformer 学习率定律。（PDF 第 9、23 页）"
+      ]
+    },
+    {
+      "title": "复现与资源",
+      "paragraphs": [
+        "[资源核实] [原文与精确 PDF](https://arxiv.org/abs/2602.04774v2)、[匹配 v2 TeX 与原始图包](https://arxiv.org/src/2602.04774v2) 可获得。附录 F 说明 CasADi 自动微分、IPOPT、limited-memory Hessian 与 MUMPS，并称实现位于 supplementary material；本次官方源包只包含 TeX、参考文献、样式和图文件，未取得可运行实验代码或公开的本文专属代码链接，不将补充材料声称改成已核验仓库。",
+        "[作者报告的实验设置] 语言模型基于 OLMo 的模型及训练脚本，宽度 768、12 个 attention heads、12 个 blocks；GPT-2 tokenizer 词表约 50k，weight decay 0.1。每个语言模型实验使用 3 张 Nvidia A100，作者报告约 1–10 小时；ResNet 使用一张 A100，每次约 10–15 分钟。这是作者运行情况，本次未复跑。复现还需固定谱归一化、\\(a,b,N,\\sigma,m\\)、初始化、训练时域、学习率稳定约束、控制求解容差、momentum 时序以及网络数据划分与扫描预算。（PDF 第 23 页）",
+        "[证据边界] full-text verified; no independent reproduction performed。本卡逐页阅读全文、核对承重公式与原图；未独立重跑随机特征最优控制、ResNet 或 GPT 风格模型实验，未认证论文证明。原图按 [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/) 标明作者、论文及裁切说明。"
+      ]
+    },
+    {
+      "title": "阅读指南",
+      "paragraphs": [
+        "最低前置知识是线性回归、协方差本征分解、随机梯度与变分法。先看第 5 页 Figure 2，辨认平台与缩放后的多项式曲线；再看第 16 页 Figure 5 的偏差—方差分解。接着从第 3 页 Eq. (5) 到第 14 页 Eq. (25)，分清精确离散闭合与晚时近似泛函。",
+        "深读走第 14–16 页 Eqs. (26)–(47)，检查自由初值、学习率上界与退火比例；随后看第 19–20 页端点方差。batch 和 momentum 可第二遍读第 21–23 页；数值求解细节与计算量不是理解核心机制的先决条件。最后回到第 9 页局限，再读网络 Figure 4，避免把现象一致性读成真实模型假设的验证。"
+      ]
+    }
+  ],
+  "equation_refs": [
+    {
+      "label": "Teacher, student and spectra; Eqs. (1),(2),(6)",
+      "latex": "y(x)=w^*\\!\\cdot\\!\\psi(x)+\\sigma_0 z,\\quad \\widehat y(x)=w\\!\\cdot\\!\\widetilde\\psi(x),\\quad \\langle\\psi_i\\psi_j\\rangle=\\delta_{ij}\\lambda_i,\\quad \\lambda_k\\sim k^{-b},\\quad \\lambda_k(w_k^*)^2\\sim k^{-a},\\quad a,b>1.",
+      "role": "define task and retained feature modes",
+      "symbols": {
+        "x": "input in R^D, drawn from p(x)",
+        "ψ": "fixed M-dimensional feature map; M may be infinite",
+        "w*": "fixed teacher coefficients",
+        "w": "N trainable student coefficients",
+        "ψtilde": "top N components of ψ, G=[I_N,0]",
+        "σ0": "label-noise amplitude, nonzero",
+        "z": "independent standard normal label noise",
+        "i,j,k": "feature eigenmode indices",
+        "λk": "feature covariance eigenvalues",
+        "δij": "Kronecker delta",
+        "a": "teacher energy spectrum decay exponent",
+        "b": "covariance spectrum decay exponent",
+        "〈〉": "input-distribution average"
+      },
+      "evidence": "PDF physical pp.3–4, Eqs.(1),(2),(6); p.13 A1–A3",
+      "interpretation": "b sets feature timescales, while a sets how much target remains in slow modes; neither is a measured universal network exponent.",
+      "evidence_level": "model definition and assumptions"
+    },
+    {
+      "label": "Expected loss and effective noise; Eq. (4)",
+      "latex": "c_{t,k}=\\mathbb E_{\\mathcal D_{t-1}}(w_{t,k}-w_k^*)^2,\\quad L_t=\\sum_{k=1}^N\\lambda_k c_{t,k}+\\sigma^2,\\quad \\sigma^2=\\sigma_0^2+\\sum_{k=N+1}^{M}\\lambda_k(w_k^*)^2.",
+      "role": "separate learned-mode excess risk from label/projection floor",
+      "symbols": {
+        "t": "SGD iterate",
+        "k": "retained feature mode",
+        "D_t−1": "independent minibatch and label-noise history preceding t",
+        "c_t,k": "expected squared coefficient error",
+        "L_t": "test mean squared prediction error averaged over test input, label noise and training history",
+        "N,M": "student retained feature count and teacher feature count",
+        "λk": "mode covariance eigenvalue",
+        "w_t,k,w*_k": "student and teacher coefficients",
+        "σ²": "effective irreducible noise for this N",
+        "σ0²": "label-noise variance"
+      },
+      "evidence": "PDF physical p.3 Eq.(4); p.21 E.1",
+      "interpretation": "Projection loss is part of σ²; changing model size changes the floor, unlike changing the learning schedule at fixed N.",
+      "evidence_level": "exact Gaussian-model expected-loss identity"
+    },
+    {
+      "label": "Closed mode-error dynamics; Eq. (5)",
+      "latex": "c_{t+1,k}=\\left(1-2\\eta_t\\lambda_k+\\eta_t^2\\frac{m_t+1}{m_t}\\lambda_k^2\\right)c_{t,k}+\\frac{\\eta_t^2}{m_t}\\lambda_k\\sum_{\\ell=1}^N\\lambda_\\ell c_{t,\\ell}+\\frac{\\eta_t^2}{m_t}\\sigma^2\\lambda_k.",
+      "role": "retain exact finite-mode stochastic-noise dynamics used by numerical control",
+      "symbols": {
+        "c_t,k": "expected squared error in mode k",
+        "ηt": "nonnegative learning rate at step t",
+        "m_t": "minibatch size at step t",
+        "λk,λℓ": "feature covariance eigenvalues",
+        "N": "retained feature count",
+        "σ²": "effective label plus projection noise variance",
+        "t,k,ℓ": "step and feature indices"
+      },
+      "evidence": "PDF physical p.3 Theorem 1 Eq.(5); p.21 Eq.(93)",
+      "interpretation": "A larger step damps bias linearly but injects variance quadratically; all modes couple through total excess risk.",
+      "evidence_level": "exact Gaussian online linear-model recurrence"
+    },
+    {
+      "label": "Remaining integrated LR and spectral kernel; Eqs. (20),(22)",
+      "latex": "\\chi(t)=\\int_t^T\\eta(s)\\,ds,\\quad \\chi_0=\\chi(0),\\quad f_s(\\chi)=\\sum_{k=1}^N k^{-s}e^{-k^{-b}\\chi}.",
+      "role": "track how subsequent learning filters earlier noise",
+      "symbols": {
+        "χ(t)": "remaining integrated LR from t to fixed horizon T",
+        "χ0": "total integrated LR",
+        "η": "learning-rate function in continuous training time",
+        "s": "integration variable in χ; spectral index in f_s is separately a real parameter",
+        "T": "specified training horizon",
+        "k,N": "mode index and retained count",
+        "b": "covariance power-law exponent",
+        "f_s": "finite spectral kernel for normalized λk=k^−b"
+      },
+      "evidence": "PDF physical p.13 Eqs.(20),(22)",
+      "interpretation": "An early noise perturbation is damped by the future steps left, so end-of-training noise cannot be treated like early noise.",
+      "evidence_level": "definition within normalized power-law model"
+    },
+    {
+      "label": "Noise-dominated terminal loss; Eq. (25)",
+      "latex": "L_T-\\sigma^2\\approx f_a(2\\chi_0)+\\sigma^2\\int_0^T\\frac{\\eta(t)^2}{m(t)}\\,f_{2b}(2\\chi(t))\\,dt.",
+      "role": "connect exact mode dynamics to approximate control objective",
+      "symbols": {
+        "L_T": "terminal expected test MSE",
+        "σ²": "nonzero effective noise floor",
+        "f_a": "teacher bias spectral kernel",
+        "f_2b": "noise filtering spectral kernel",
+        "χ,χ0": "remaining and total integrated LR",
+        "η(t)": "learning rate",
+        "m(t)": "batch size",
+        "a,b": "target-energy and feature-covariance exponents",
+        "T,t": "horizon and continuous training time"
+      },
+      "evidence": "PDF physical p.14 Eq.(25), following p.13 A1–A6 and Eqs.(17)–(23)",
+      "interpretation": "The first term suppresses initial bias via total LR, the second penalizes noise injection according to how much damping time remains.",
+      "evidence_level": "late-time small-eigenvalue noise-dominated closure, not exact discrete dynamics"
+    },
+    {
+      "label": "Optimal-control first integral; Eqs. (26)–(32)",
+      "latex": "A(\\chi)=\\frac{\\sigma^2}{m}f_{2b}(2\\chi),\\quad \\dot\\chi^{\\,2}A(\\chi)=c>0,\\quad F(\\chi)=\\int_0^\\chi\\sqrt{A(u)}\\,du,\\quad \\frac{F(\\chi(t))}{F(\\chi_0)}=1-\\frac{t}{T}.",
+      "role": "show why the schedule shape is derived rather than selected by heuristic",
+      "symbols": {
+        "A": "variance weight for fixed batch m",
+        "σ²": "effective noise variance",
+        "m": "constant batch size",
+        "χ,χ0": "remaining and total integrated LR",
+        "dotχ": "dχ/dt=−η(t)",
+        "c": "positive variational first-integral constant, not physical energy",
+        "F": "integrated square root of A",
+        "u": "dummy integrated-LR variable",
+        "t,T": "continuous training time and horizon",
+        "f_2b": "finite spectral kernel"
+      },
+      "evidence": "PDF physical p.14 Eqs.(26)–(32)",
+      "interpretation": "Time-translation invariance of the approximate variational integrand fixes trajectory shape; optimizing free χ0 fixes its amplitude.",
+      "evidence_level": "exact variational identity inside approximate functional; unconstrained arc"
+    },
+    {
+      "label": "Easy-phase optimum; Eqs. (37),(39)",
+      "latex": "\\chi_0\\sim T^{b/a},\\qquad \\eta_T^*(t)\\approx\\frac{2b\\chi_0}{T}\\left(1-\\frac{t}{T}\\right)^{2b-1},\\qquad a>b.",
+      "role": "state easy shape and horizon dependence",
+      "symbols": {
+        "χ0": "optimized total integrated LR; prefactor depends on m,σ²,a,b",
+        "η_T*": "asymptotic optimal learning rate for known horizon T",
+        "a,b": "target-energy and covariance exponents",
+        "t,T": "continuous training time and prescribed horizon"
+      },
+      "evidence": "PDF physical p.15 Eqs.(37),(39); p.5 Eq.(10)",
+      "interpretation": "Its base amplitude decreases as T^(b/a−1); simply reusing the old base LR when training longer is generally suboptimal.",
+      "evidence_level": "continuous-time large-spectrum asymptotic optimum away from terminal edge"
+    },
+    {
+      "label": "Hard-phase capped optimum; Eqs. (11),(46)",
+      "latex": "\\eta_T^*(t)\\sim\\begin{cases}\\eta_{\\max},&t<t_s,\\\\ \\eta_{\\max}\\left(\\frac{1-t/T}{1-t_s/T}\\right)^{2b-1},&t>t_s,\\end{cases}\\qquad 1-\\frac{t_s}{T}\\sim T^{-(b-a)/(2b-1)},\\quad a<b.",
+      "role": "retain cap, annealing arc and shrinking annealing fraction",
+      "symbols": {
+        "η_T*": "asymptotic horizon-dependent optimal learning rate",
+        "ηmax": "horizon-independent LR stability cap of order λ1^−1; not a universal safe exact step size",
+        "t_s": "switching time from capped plateau to annealing",
+        "T,t": "prescribed horizon and continuous time",
+        "a,b": "teacher energy and feature covariance exponents"
+      },
+      "evidence": "PDF physical p.5 Eq.(11); pp.15–16 Eqs.(40),(45)–(47)",
+      "interpretation": "The unconstrained step would grow with T, so the cap forces long bias reduction followed by a short variance-reduction interval.",
+      "evidence_level": "capped analytical asymptotic control"
+    },
+    {
+      "label": "Fixed-batch scaling comparison; Eqs. (8),(12)",
+      "latex": "L_T-\\sigma^2\\sim T^{-\\zeta},\\qquad \\zeta_{\\mathrm{schedule}}=\\frac{a-1}{\\max(a,b)},\\qquad \\zeta_{\\mathrm{constant}}=\\frac{a-1}{a+b-1}.",
+      "role": "compare like-for-like asymptotic excess-risk exponents",
+      "symbols": {
+        "L_T−σ²": "terminal excess test MSE at fixed N/noise floor and batch size",
+        "ζ": "positive loss-decay exponent, larger is faster decay",
+        "a,b": "teacher energy and covariance exponents",
+        "T": "training horizon",
+        "schedule": "terminal-horizon-dependent optimal schedule",
+        "constant": "LR constant during each run but optimized separately for each horizon"
+      },
+      "evidence": "PDF physical pp.4–6 Eqs.(8),(12), Table 1; p.18 Eq.(53)",
+      "interpretation": "Scheduling improves the exponent within the model; this does not assign a universal exponent to neural networks.",
+      "evidence_level": "analytical asymptotic comparison"
+    },
+    {
+      "label": "Minimum-step batch ramp; Eq. (14)",
+      "latex": "m_T^*(t)=\\frac{B_{\\mathrm{tot}}}{2bT}\\left(1-\\frac{t}{T}\\right)^{1/(2b)-1},\\qquad \\eta(t)=\\eta_{\\max},\\qquad T\\sim\\begin{cases}B_{\\mathrm{tot}}^{b/a},&a>b,\\\\ B_{\\mathrm{tot}},&a<b.\\end{cases}",
+      "role": "separate sample budget from idealized step count",
+      "symbols": {
+        "m_T*": "asymptotic batch-size ramp in continuous relaxation",
+        "B_tot": "total sample budget ∫_0^T m(t)dt",
+        "η": "learning rate held at cap",
+        "ηmax": "stability cap",
+        "a,b": "task-energy and covariance exponents",
+        "t,T": "time/step proxy and horizon"
+      },
+      "evidence": "PDF physical p.7 Eq.(14); p.21 Eqs.(84)–(89)",
+      "interpretation": "Increasing batch size spends the same data budget with fewer serial updates in the easy phase; GPU throughput is not contained in this calculation.",
+      "evidence_level": "asymptotic relaxed batch/LR optimization under budget and cap"
+    },
+    {
+      "label": "Momentum convention and sufficient correlations; Eq. (15)",
+      "latex": "w_{t+1}=w_t+\\eta_t v_t,\\quad v_t=(1-\\beta_t)v_{t-1}+\\beta_t g_t,\\quad C_{k,t}=\\langle(w_{k,t}-w_k^*)^2\\rangle,\\quad R_{k,t}=\\langle v_{k,t}(w_k^*-w_{k,t})\\rangle,\\quad V_{k,t}=\\langle v_{k,t}^2\\rangle.",
+      "role": "define momentum fresh-gradient convention and additional state variables",
+      "symbols": {
+        "w_t,w*": "student coefficients and teacher coefficients",
+        "v_t": "filtered descent-direction velocity",
+        "ηt": "learning rate",
+        "βt": "weight on current minibatch descent direction; retention coefficient is 1−βt",
+        "g_t": "m_t^−1 sum ψtilde(x_μ,t)[y(x_μ,t)−ŷ(x_μ,t)]",
+        "C,R,V": "coefficient-error, error/velocity cross-correlation and velocity variance",
+        "k,t": "mode and time indices",
+        "〈〉": "expectation over independent minibatch history"
+      },
+      "evidence": "PDF physical p.7 displayed momentum updates and Eq.(15); pp.22–23 Eqs.(94)–(97)",
+      "interpretation": "Momentum expands the sufficient state beyond coefficient errors; its hard-phase exponent improvement is numerical in this paper.",
+      "evidence_level": "model update/state definitions; author numerical control results separately"
+    }
+  ],
+  "figure_refs": [
+    {
+      "label": "Figure 2",
+      "asset_path": "assets/collection-figures/2602.04774/figure-2.png",
+      "section": "核心结果与证据",
+      "role": "decisive schedule-shape and scaling comparison",
+      "evidence": "PDF physical p.5 Figure 2, arXiv:2602.04774v2",
+      "alt_text": "六面板比较 hard 与 easy 区间的最优学习率、误差动力学和终点缩放，保留完整坐标、图例及基线。",
+      "caption": "上排 hard、下排 easy；左列为相对训练时间上的调度，中列和右列分别为随步数、随终点预算的超额测试误差。模型参数见正文；最优调度比常数与幂律基线下降更快。有限时域拟合不等于精确渐近指数。原图：Blake Bordelon、Francesco Mori，arXiv:2602.04774v2，CC BY 4.0；仅裁去周围正文和印刷图注。原图页：https://arxiv.org/pdf/2602.04774v2#page=5。",
+      "interpretation": "在本文模型与渐近条件内，学习率上界是否激活，将长平台后的集中退火与基础幅度随训练预算减小的多项式退火区分开。"
+    },
+    {
+      "label": "Figure 5",
+      "asset_path": "assets/collection-figures/2602.04774/figure-5.png",
+      "section": "核心结果与证据",
+      "role": "bias/variance mechanism",
+      "evidence": "PDF physical p.16 Figure 5, arXiv:2602.04774v2",
+      "alt_text": "easy 和 hard 模型中随训练步数变化的总超额误差、偏差和方差分量。",
+      "caption": "横轴为步数，纵轴为总超额误差及 bias、variance 分量；参数为 \\(T=3162,N=1000,\\sigma=0.5,m=5,a=3.5\\)，左图 \\(b=2\\)、右图 \\(b=5\\)。hard 先持续压低偏差，末段退火集中降低方差；easy 需同时权衡两者，不表示每个分量全程单调下降。原图：Blake Bordelon、Francesco Mori，arXiv:2602.04774v2，CC BY 4.0；仅裁去周围正文和印刷图注。原图页：https://arxiv.org/pdf/2602.04774v2#page=16。",
+      "interpretation": "偏差消除与方差压低的时间分工解释了末段退火，无需假定普适的“河谷”损失景观。"
+    },
+    {
+      "label": "Figure 4",
+      "asset_path": "assets/collection-figures/2602.04774/figure-4.png",
+      "section": "核心结果与证据",
+      "role": "empirical comparison and transfer boundary",
+      "evidence": "PDF physical p.9 Figure 4; experimental setup pp.8,23, arXiv:2602.04774v2",
+      "alt_text": "ResNet 和 GPT 风格语言模型在固定学习率与退火下的 loss 及最优基础学习率扫描。",
+      "caption": "上排 ResNet/CIFAR-5M、SGD，预算按更新步数；下排 GPT 风格/C4、Adam，预算按 tokens。退火改善 loss，但基础学习率是否随预算转移因设置而异。交叉熵越低越好；作者实验只支持现象一致性，不确认真实网络具有固定高斯谱。原图：Blake Bordelon、Francesco Mori，arXiv:2602.04774v2，CC BY 4.0；仅裁去周围正文和印刷图注。原图页：https://arxiv.org/pdf/2602.04774v2#page=9。",
+      "interpretation": "两种架构、任务与优化器组合表现出不同的基础学习率迁移；图中现象不构成对随机特征假设的定理认证。"
+    }
+  ],
+  "cover": {
+    "mode": "source_figure",
+    "asset_path": "assets/collection-figures/2602.04774/figure-2.png",
+    "label": "Figure 2",
+    "visual_type": "comparison",
+    "evidence": "PDF physical p.5 Figure 2; exact arXiv:2602.04774v2",
+    "alt_text": "六面板比较 hard 与 easy 区间的最优学习率、误差动力学和终点缩放，保留完整坐标、图例及基线。",
+    "caption": "平台后集中退火与缩放后的多项式衰减：两种谱区间对应不同的终点调度。模型数值对照支持解析预测，不证明真实网络满足相同假设。",
+    "attribution": "arXiv:2602.04774v2, Figure 2, CC BY 4.0；仅裁去周围正文与印刷图注；https://arxiv.org/pdf/2602.04774v2#page=5",
+    "selection_rationale": "全文 Figure 1–9 均为曲线或数值比较，没有更直接的系统构型或机制示意图。Figure 2 同时展示约束激活后的调度形态、时间动力学和缩放改善，是本文核心控制结论的最紧凑视觉证据；Figure 5 更侧重偏差方差解释，Figure 4 是有限网络现象，因此封面选择完整六面板 Figure 2。",
+    "license": "CC BY 4.0",
+    "source_url": "https://arxiv.org/pdf/2602.04774v2#page=5"
+  },
+  "independent_reproduction": false,
+  "evidence_refs": [
+    "arXiv:2602.04774v2, PDF physical pp.3–4, Eqs.(1)–(8): model, exact Gaussian recurrence and power-law spectra.",
+    "arXiv:2602.04774v2, PDF physical pp.5–7, Eqs.(9)–(15), Figure 2, Table 1: asymptotic schedule and loss rates, batch budgets.",
+    "arXiv:2602.04774v2, PDF physical pp.13–16, A1–A6, Eqs.(16)–(48), Figure 5: approximation assumptions, closure, variational solution and hard switching fraction.",
+    "arXiv:2602.04774v2, PDF physical pp.18–21, Eqs.(51)–(93): comparator schedules, terminal-edge control, batch constraints and Gaussian derivation.",
+    "arXiv:2602.04774v2, PDF physical pp.8–9,22–23, Figures 3–4 and Eqs.(94)–(97): author momentum/network evidence, explicit limitations and resources.",
+    "Evidence status: full-text verified; no independent reproduction performed; not proof certification."
+  ]
+}
