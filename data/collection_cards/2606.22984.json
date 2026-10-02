@@ -1,0 +1,224 @@
+{
+  "title_zh": "把自旋几何写进 Transformer 的可扩展玻璃态采样器",
+  "paper_profile": "theory_numerics",
+  "sections": [
+    {
+      "title": "作者信息",
+      "paragraphs": [
+        "Lu Zhong、Wenli Duan、Jing Liu、Pan Zhang、Ying Tang。Zhong 与 Duan 共同一作；按 PDF p.1 单位编号，前两人属电子科技大学基础与前沿研究院，Liu 署北京邮电大学物理科学与技术学院和中科院理论物理所，Zhang 署理论物理所及杭州高等研究院，Tang 署电子科技大学列出的四个研究单位。p.1 标 Liu、Zhang、Tang 通讯；p.16 另指材料请求联系 Tang，保留区别。审阅 v2（2026-06-23 修订，首投 06-22），32 物理页含补充材料。"
+      ]
+    },
+    {
+      "title": "研究问题",
+      "paragraphs": [
+        "能否把玻尔兹曼分布直接表示成可求概率、可独立抽样的神经网络，同时避免自旋玻璃中的训练不稳定和采样成本？FlashVAN 将物理邻接边界、位置表示、GPU 高效注意力和低温训练策略结合，报告自由能、基态能和重叠分布的改进。较快生成并不自动等于精确平衡采样，需分别检查分布、能量与运行成本。（PDF 物理 pp.1–10）"
+      ]
+    },
+    {
+      "title": "背景",
+      "paragraphs": [
+        "这是 AI for physics。给定哈密顿量和温度，训练目标是概率分布而非标签分类；每个固定无序耦合实例本身就是一个优化问题。传统 Monte Carlo 可能受能垒与混合时间限制，神经自回归采样则把难点转移到学习整个分布。本文不是用大型语言模型预测相图，也没有证明神经网络普遍优于经典采样器。（PDF 物理 pp.1–2,10）"
+      ]
+    },
+    {
+      "title": "读者桥接",
+      "paragraphs": [
+        "输入是已生成的自旋与格点位置；网络中可训练对象是条件概率 \\(q_\\theta(\\sigma_i\\mid\\sigma_{<i})\\)。自回归指按固定顺序逐个生成，不是一次同时生成所有自旋；可并行的是多个样本以及部分张量运算。位置嵌入把格点编号编码成向量，避免二值自旋本身携带的信息过少。KV 缓存保存已生成位置的注意力键和值，减少重复运算，不改变物理温度或采样次序。（PDF 物理 pp.4–5,11–14）"
+      ]
+    },
+    {
+      "title": "模型与方法",
+      "paragraphs": [
+        "\\(\\sigma_i=\\pm1\\)，\\(\\beta=1/T\\)，\\(E(\\sigma)\\) 为目标能量，\\(Z\\) 为配分函数。核心关系为",
+        "\\[p(\\sigma)=Z^{-1}e^{-\\beta E(\\sigma)},\\quad q_\\theta(\\sigma)=\\prod_{i=1}^Nq_\\theta(\\sigma_i\\mid\\sigma_{<i}),\\]",
+        "\\[F_q=\\mathbb E_{q_\\theta}[E(\\sigma)+\\beta^{-1}\\log q_\\theta(\\sigma)],\\quad D_{\\mathrm{KL}}(q_\\theta\\Vert p)=\\beta(F_q-F)\\ge0.\\]",
+        "这些是 p.2 Eq.(1)、p.5 Eq.(4)/(5) 和 p.11 Eq.(11) 的精确概率/变分关系；\\(F=-\\beta^{-1}\\log Z\\)。通过最小化 \\(F_q\\) 逼近目标，自由能上界并不保证优化已找到全局最优，也不使有限样本估计天然无误差。",
+        "局域格点的条件概率只需过去与尚未生成区域之间的有序 Markov 边界，不能混成仅依赖原图最近邻。二维开放边界扫描的所需窗口尺度为 \\(O(L)\\)，三维为 \\(O(L^2)\\)；稀疏注意力据此限制连接。该局域缩减不直接适用于全连接 SK，也不能不看边界条件就复制固定窗口。（PDF 物理 pp.4,11–12,20）网络将自旋与位置向量拼接而非简单相加，并采用 FlashAttention-2、KV 缓存和 Muon 优化。三维 EA 低温还需要局部 Monte Carlo 修正样本及自蒸馏似然项，故不能说所有结果都完全不用 Markov 链。（PDF 物理 pp.9,15,22–25）"
+      ]
+    },
+    {
+      "title": "核心结果与证据",
+      "paragraphs": [
+        "SK 在 \\(N=30\\) 可用枚举校验，作者报告自由能相对误差约 \\(10^{-6}\\) 至 \\(10^{-4}\\)；\\(N=256\\) 等更大系统的低方差不能替代精确误差。二维 EA 的 \\(L=8\\) 至 60 基态能与精确求解参考比较，残差能密度约 \\(10^{-5}\\) 至 \\(10^{-3}\\)，周期边界的大尺寸更难。（PDF 物理 pp.7–8）",
+        "更严格的分布诊断是两个独立样本的重叠 \\(q=N^{-1}\\sum_i\\sigma_i^{(1)}\\sigma_i^{(2)}\\)（p.7 Eq.(9)），它测试是否遗漏不同低能谷，而非只测平均能量。三维 EA 的 \\(L=10\\) 在 \\(T=1.92,0.77,0.29,0.10\\) 与 parallel tempering 参考对照。补充 Fig.6 移除局部 MC 或自蒸馏后出现偏差，说明所展示分布质量依赖训练策略，不可仅归功于 Transformer 结构。（PDF 物理 pp.9,22–25）",
+        "规模上三维基态能测试达到 \\(L=16\\)，即 4096 自旋；这不意味着 4096 自旋的全温度重叠分布已全面验证。运行环境为单张 H100 80GB；SK \\(N=256\\) 训练约 19.85 分钟，二维 EA \\(L=60\\) 约 4.83 小时。36 倍一类加速针对具体 naive Transformer-VAN 实现与计时口径，不是相对所有经典算法的普遍速度比。自回归 KV 缓存把所述朴素全注意力采样成本由 \\(O(N^3d)\\) 降到 \\(O(N^2d)\\)，FlashAttention 本身主要改善 I/O 与常数因子。（PDF 物理 pp.5,13,24–28）"
+      ]
+    },
+    {
+      "title": "有效性与局限",
+      "paragraphs": [
+        "平衡分布拟合、基态搜索、无序平均外推是不同验收目标。有限无序样本与代表性重叠图支持所测实例，不能认证任意玻璃态的正确谷权重。稀疏结构保证保留所需条件信息，不保证有限网络表达与训练完全精确。低温改进采用 MC 修正分布和额外似然项，不应直接将全部更新当成原始变分梯度的无偏估计。更大尺寸分布对照在 Discussion 仍列为后续工作。（PDF 物理 pp.9–10,11,15）",
+        "原文部分运行标签/描述存在口径差异，补充 Table 2 的默认步数与给定退火分段需具体任务核对；本卡只列明确定义的单项时间，不拼成统一预算。学习率退火对固定温度自由能有帮助，却可能使快速降温基态搜索变差，见补充 Fig.9，不能把同一优化日程当作全任务最优。（PDF 物理 pp.26–29）"
+      ]
+    },
+    {
+      "title": "复现与资源",
+      "paragraphs": [
+        "论文列 Python 3.11、PyTorch 2.8.0、FlashAttention v2，注意力 FP16，其余若干部件 FP32；详细各尺寸配置见补充 Tables 2–5。p.15 说明代码计划在接收后公开，本审阅版本未给可核实公开仓库链接；不据“会公开”写成已开源。数据可得性声明指向论文内结果，不等于完整训练日志已提供。本卡全文与公式核验，未独立训练或复现实验。"
+      ]
+    },
+    {
+      "title": "阅读指南",
+      "paragraphs": [
+        "先 Fig.1 建立哈密顿量→条件概率→变分自由能的链条，再 Eq.(4)/(5) 理解目标；读 p.11 有序 Markov 边界而不是从注意力热图猜物理作用；以补充 Fig.6 检查低温机制依赖，最后用 Tables 3–5 和 Fig.9 估算可复现实验。先掌握 KL 散度和自回归因式分解，Muon 实现细节可后读。"
+      ]
+    }
+  ],
+  "arxiv_id": "2606.22984",
+  "source_kind": "arxiv",
+  "source_id": "2606.22984",
+  "source_version": "v2",
+  "source_url": "https://arxiv.org/abs/2606.22984v2",
+  "pdf_url": "https://arxiv.org/pdf/2606.22984v2",
+  "title_en": "Scalable Physics-Inspired Transformers for Spin Glasses",
+  "curation_status": "full_text_verified",
+  "card_standard_version": "2.4",
+  "style_reference": "physicist_daily_arxiv",
+  "independent_reproduction": false,
+  "verified_metadata": {
+    "arxiv_id": "2606.22984",
+    "version": "v2",
+    "title": "Scalable Physics-Inspired Transformers for Spin Glasses",
+    "authors": [
+      "Lu Zhong",
+      "Wenli Duan",
+      "Jing Liu",
+      "Pan Zhang",
+      "Ying Tang"
+    ],
+    "affiliations": [
+      "Institute of Fundamental and Frontier Sciences, University of Electronic Science and Technology of China, Chengdu, China",
+      "School of Physical Science and Technology, Beijing University of Posts and Telecommunications, Beijing, China",
+      "Institute of Theoretical Physics, Chinese Academy of Sciences, Beijing, China",
+      "School of Fundamental Physics and Mathematical Sciences, Hangzhou Institute for Advanced Study, UCAS, Hangzhou, China",
+      "School of Physics, University of Electronic Science and Technology of China, Chengdu, China",
+      "Key Laboratory of Quantum Physics and Photonic Quantum Information, Ministry of Education, University of Electronic Science and Technology of China, Chengdu, China",
+      "Non-classical Information Science Basic Discipline Research Center of Sichuan Province, University of Electronic Science and Technology of China, Chengdu, China"
+    ],
+    "categories": [
+      "cond-mat.dis-nn",
+      "cond-mat.stat-mech",
+      "cs.LG"
+    ],
+    "primary_category": "cond-mat.dis-nn",
+    "published": "2026-06-22",
+    "updated": "2026-06-23",
+    "abstract": "Efficient sampling of the Boltzmann distribution in frustrated spin glasses is central to statistical mechanics and combinatorial optimization. Despite advances in machine-learning-based approaches, two issues persist: limited understanding of why variational models fail to benefit from increased scale, unlike the monotonic scaling law of large language models; and high computational cost on large systems that negates advantages over classical sampling methods. Here, we develop a physics-inspired transformer with interpretable sparse attention and spin-tailored positional embeddings to address these challenges. By further leveraging FlashAttention for parallel ancestral sampling, it achieves up to two orders of magnitude speedup over vanilla variational autoregressive networks, enabling neural-network simulations of spin-glass systems to unprecedented sizes on a single GPU. It can resolve full probability distributions, free energies, and overlap statistics across temperatures, for Sherrington-Kirkpatrick and 2D or 3D Edwards-Anderson models, where existing machine-learning methods encounter limitations at certain temperatures. This framework thus establishes a scalable paradigm for frustrated spin-glass systems.",
+    "license": "http://creativecommons.org/licenses/by/4.0/",
+    "corresponding_authors": [
+      "Jing Liu",
+      "Pan Zhang",
+      "Ying Tang"
+    ],
+    "equal_contribution": [
+      "Lu Zhong",
+      "Wenli Duan"
+    ],
+    "materials_correspondence": "Ying Tang"
+  },
+  "equation_refs": [
+    {
+      "label": "Eqs. (1), (4), and (11)",
+      "latex": "p(\\sigma)=Z^{-1}e^{-\\beta E(\\sigma)},\\quad q_\\theta(\\sigma)=\\prod_{i=1}^Nq_\\theta(\\sigma_i\\mid\\sigma_{<i})",
+      "role": "exact Boltzmann definition and autoregressive factorization",
+      "symbols": {
+        "sigma": "full spin configuration, sigma_i = +/-1",
+        "sigma_<i": "already generated spins in the chosen order",
+        "N": "number of spins",
+        "beta": "inverse temperature 1/T",
+        "E": "Hamiltonian energy",
+        "Z": "partition function",
+        "theta": "trainable network parameters",
+        "p": "target distribution",
+        "q_theta": "normalized autoregressive model distribution"
+      },
+      "evidence": "PDF physical p.2 Eq.(1), p.5 Eq.(4), p.11 Eq.(11)",
+      "interpretation": "Exact factorization enables evaluable sample probabilities; it does not certify a trained model as equilibrium-exact."
+    },
+    {
+      "label": "Eq. (5) and variational free energy",
+      "latex": "F_q=\\mathbb E_{q_\\theta}[E(\\sigma)+\\beta^{-1}\\log q_\\theta(\\sigma)],\\quad D_{\\mathrm{KL}}(q_\\theta\\Vert p)=\\beta(F_q-F)\\ge0,\\quad F=-\\beta^{-1}\\log Z",
+      "role": "exact variational identity",
+      "symbols": {
+        "F_q": "model variational free energy",
+        "F": "target equilibrium free energy",
+        "D_KL": "Kullback-Leibler divergence",
+        "E_q": "expectation under the model distribution",
+        "beta": "inverse temperature",
+        "E": "energy of a configuration",
+        "q_theta": "model probability",
+        "p": "Boltzmann target",
+        "Z": "partition function"
+      },
+      "evidence": "PDF physical pp.2,5 Eq.(5); p.11",
+      "interpretation": "The free-energy upper bound does not guarantee global optimization or error-free finite-sample estimation."
+    },
+    {
+      "label": "Eq. (9)",
+      "latex": "q=N^{-1}\\sum_i\\sigma_i^{(1)}\\sigma_i^{(2)}",
+      "role": "overlap observable definition",
+      "symbols": {
+        "q": "overlap of two independent configurations, distinct from q_theta",
+        "N": "spin count",
+        "sigma_i^(1) / sigma_i^(2)": "spin i in two independent samples",
+        "i": "spin index"
+      },
+      "evidence": "PDF physical p.7 Eq.(9); pp.22–25 Supplementary Fig.6",
+      "interpretation": "The overlap distribution tests low-energy valley weights beyond mean energy."
+    }
+  ],
+  "evidence_refs": [
+    "PDF physical pp.2,5 Eqs.(1),(4),(5); pp.11–12 Eq.(11): target, factorization, variational identity and ordered Markov boundary.",
+    "PDF physical pp.7–10 Eq.(9): energy benchmarks, overlap tests and limitation boundaries.",
+    "PDF physical pp.22–25 Supplementary Fig.6: low-temperature LMC/self-distillation ablations and 12 panels.",
+    "PDF physical pp.15–16: code-release plan, resources and correspondence; pp.24,27–29 Tables2–5 and Supplementary Fig.9: runtime, precision and task-specific schedules.",
+    "PDF physical p.1: numbered affiliations and author-role markers.",
+    "Full-text verified by parent; no independent reproduction performed."
+  ],
+  "provenance": {
+    "program": "Collection",
+    "catalog": "User-authorized Collection intake (not an existing catalog)",
+    "catalog_record_id": "2606.22984",
+    "catalog_topic": "AI for Physics / Spin Glasses",
+    "collection_date": "2026-10-02",
+    "sampled_at": "2026-10-02T15:11:42.612083+00:00",
+    "selected_by": "dot parent: user-authorized choice of three unmade papers",
+    "sampling_seed": "not_applicable_parent_choice",
+    "intake_kind": "user_authorized_external_intake",
+    "intake_batch": "dot-collection-three-20261002",
+    "selection_rationale": "用户授权 dot 自主选择三篇未制作论文；精确版本名单由父任务冻结，registry 与现有卡片查重未命中。"
+  },
+  "figure_refs": [
+    {
+      "label": "Main-text Figure 1",
+      "asset_path": "assets/collection-figures/2606.22984/main-fig1.png",
+      "section": "模型与方法",
+      "role": "physics and sampling architecture overview",
+      "evidence": "PDF physical p.3 main-text Fig.1; exact author source FigureFlashVAN/Fig1-FlashVAN.pdf",
+      "alt_text": "主文图1完整 a–e panels，自旋系统、概率训练、网络、目标与速度对照。",
+      "caption": "作者原图1从自旋系统、概率拟合到网络架构及计时对照，展示位置/稀疏注意力和硬件实现如何组合。架构示意不是精确采样证明，速度倍数受基线和规模限定。 来源：Zhong 等，PDF 物理 p.3，arXiv:2606.22984v2; CC BY 4.0; https://arxiv.org/abs/2606.22984v2; rasterization/crop of surrounding whitespace only; scientific panels unchanged.",
+      "interpretation": "The architecture and timing schematic does not prove exact equilibrium sampling."
+    },
+    {
+      "label": "Supplementary Figure 6",
+      "asset_path": "assets/collection-figures/2606.22984/supp-fig6.png",
+      "section": "核心结果与证据",
+      "role": "12-panel low-temperature overlap ablation",
+      "evidence": "PDF physical p.25 Supplementary Fig.6; exact author source Figure/Fig1C.pdf",
+      "alt_text": "补充图6完整四行三列，四个温度与三种 LMC/自蒸馏设置。",
+      "caption": "三维 EA \\(L=10\\) 的重叠分布消融；行对应四个温度，列依次保留局部 MC 与自蒸馏、只保留局部 MC、两者均移除。参考直方图和模型曲线的差别说明低温谷权重对训练策略敏感，不证明更大尺寸或所有无序实例均已平衡。保留坐标和全 panel。 来源：Zhong 等，PDF 物理 p.25，arXiv:2606.22984v2; CC BY 4.0; https://arxiv.org/abs/2606.22984v2; rasterization/crop of surrounding whitespace only; scientific panels unchanged.",
+      "interpretation": "Distribution agreement depends on the stated training strategy and tested sizes/instances."
+    }
+  ],
+  "cover": {
+    "mode": "source_figure",
+    "selection_rationale": "Parent approved main-text Fig.1, all a–e panels: the physical target, probability model and sparse-attention/position mechanism are visible in one author-created overview. Supplementary Fig.6 remains the decisive low-temperature ablation.",
+    "asset_path": "assets/collection-figures/2606.22984/main-fig1.png",
+    "label": "Main-text Figure 1",
+    "visual_type": "schematic",
+    "evidence": "PDF physical p.3 main-text Fig.1; matching author source FigureFlashVAN/Fig1-FlashVAN.pdf",
+    "alt_text": "主文图1完整 a–e panels，自旋系统、概率训练、网络、目标与速度对照。",
+    "caption": "作者原图1从自旋系统、概率拟合到网络架构及计时对照，展示位置/稀疏注意力和硬件实现如何组合。架构示意不是精确采样证明，速度倍数受基线和规模限定。",
+    "attribution": "arXiv:2606.22984v2; CC BY 4.0; https://arxiv.org/abs/2606.22984v2; rasterization/crop of surrounding whitespace only; scientific panels unchanged."
+  }
+}
