@@ -61,7 +61,10 @@ def replay(path):
     events, previous = [], None
     if not path.exists():
         return events
-    for line in path.read_text().splitlines():
+    text = path.read_text()
+    if text and not text.endswith('\n'):
+        raise ValueError('incomplete journal tail; preserve and recover before appending')
+    for line in text.splitlines():
         event = json.loads(line)
         checksum = event.pop('sha256')
         if (event['seq'] != len(events) + 1 or event['previous'] != previous or

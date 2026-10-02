@@ -87,7 +87,7 @@ class WorkflowTests(unittest.TestCase):
     def test_corruption_and_truncated_write_fail_closed(self):
         path = self.state/'events.jsonl'
         original = path.read_text()
-        for bad in [original.replace('registered', 'published', 1), original + '{']:
+        for bad in [original.replace('registered', 'published', 1), original + '{', original.rstrip('\n')]:
             path.write_text(bad)
             with self.assertRaises(ValueError):
                 w.report(self.state)
