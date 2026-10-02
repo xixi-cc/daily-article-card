@@ -150,13 +150,16 @@ def brief(manifest_path, out, limit=5, runtime_path=None, receipts_dir=None, dec
                 full_manifest_bytes=Path(manifest_path).stat().st_size, dispatched=False)
 
 
-def packet(manifest_path, key, out, role, intake=None):
+def packet(manifest_path, key, out, role, intake=None, registry_path=None):
     manifest = read(manifest_path)
     protect_output(out, manifest)
     matches = [r for r in manifest['rows'] if r['key'] == key]
     if len(matches) != 1:
         raise ValueError('Select exactly one known program:paper ID.')
     row = matches[0]
+    if registry_path and role == 'worker' and not row.get('staged_card'):
+        import card_registry
+        card_registry.guard_claim(registry_path, key, repo=manifest['production']['cards']['path'])
     repo = Path(manifest['production']['cards']['path'])
     docs = ['AGENTS.md', 'docs/PAPER_CARD_STANDARD.md', 'docs/PAPER_CARD_STANDARD_INTEGRATION.md']
     if row['program'] == 'Daily':
@@ -303,6 +306,7 @@ def main():
     p.add_argument('--out', type=Path, required=True)
     p.add_argument('--role', choices=['worker','reviewer','delivery_audit'], default='worker')
     p.add_argument('--intake', type=Path)
+    p.add_argument('--registry', type=Path)
     p = commands.add_parser('receipt')
     p.add_argument('--packet', type=Path, required=True)
     p.add_argument('--result', type=Path, required=True)
@@ -312,7 +316,9 @@ def main():
         if args.command == 'brief':
             result = brief(args.manifest, args.out, args.limit, args.runtime, args.receipts, args.decisions)
         elif args.command == 'packet':
-            result = packet(args.manifest, args.key, args.out, args.role, args.intake)
+            import card_registry
+            root = args.registry or (card_registry.default_registry() if args.role == 'worker' else None)
+            result = packet(args.manifest, args.key, args.out, args.role, args.intake, root)
         else:
             result = receipt(args.packet, args.result, args.out)
         print(json.dumps(result, ensure_ascii=False))

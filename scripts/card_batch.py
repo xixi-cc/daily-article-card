@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """One local entry point for reconciliation, delivery and browser acceptance.
 
-Usage: python3 scripts/card_batch.py {reconcile|delivery|browser|context|workflow} [tool options]
+Usage: python3 scripts/card_batch.py {reconcile|delivery|browser|context|workflow|registry} [tool options]
 Each command is read-only with respect to cards. There is no install/publish action.
 """
 from pathlib import Path
@@ -15,6 +15,7 @@ def main():
         'reconcile': [sys.executable, str(scripts/'reconcile_card_resume.py')],
         'delivery': [sys.executable, str(scripts/'check_card_delivery.py')],
         'browser': ['node', str(scripts/'check_card_browser.cjs')],
+        'registry': [sys.executable, str(scripts/'card_registry.py')],
         'workflow': [sys.executable, str(scripts/'card_workflow.py')],
         'context': [sys.executable, str(scripts/'card_context.py')],
     }

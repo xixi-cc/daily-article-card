@@ -38,3 +38,13 @@ For controller-owned incremental logistics and measured stage usage, read
 immutable, record interval usage deltas (unknown values remain null), and emit
 summaries at batch boundaries. This tool never resumes unstarted work or
 replaces the context handoff, scientific acceptance or publication gates.
+
+Before any claim, download or new card, read `docs/CARD_REGISTRY.md` and query
+`card_batch.py registry` by work ID/version (then verified DOI/title aliases).
+The private cross-campaign registry is workspace `local-state/paper-card-registry/`.
+Preserve separate Daily/Collection outcomes. Every parent-accepted no-card
+conclusion must be registered with reason, source version, evidence and reopening
+condition; workflow terminal transitions do this automatically, and separate
+parent decisions use `registry accept`. Export the current list at each batch
+boundary. Never restart a stopped/blocked/reviewed item merely because it appears
+in another queue. Reuse existing evidence and check actual active ownership.

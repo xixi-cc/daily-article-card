@@ -143,3 +143,11 @@ Before claiming savings, compare measured small batches with comparable paper
 complexity and review requirements: stage times, known/unknown token counts,
 context sizes, rework and acceptance outcomes. Synthetic tests verify accounting
 and recovery; they cannot establish an actual percentage saving.
+
+## Cross-campaign repetition guard
+
+New CLI journals bind the private registry automatically; see
+[CARD_REGISTRY](CARD_REGISTRY.md). Claims check previous dispositions and existing
+cards; terminal outcomes are recorded immediately. After a batch, export the
+current no-card list once. Repair a partial registry write with `sync-registry`,
+without repeating the scientific work. Legacy unbound journals stay immutable.

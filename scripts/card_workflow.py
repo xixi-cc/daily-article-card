@@ -14,9 +14,11 @@ import fcntl
 import hashlib
 import json
 import os
+import sqlite3
 from pathlib import Path
 
 from reconcile_card_resume import digest
+import card_registry as registry
 
 STAGES = ['registered', 'claimed', 'pdf_frozen', 'fulltext_read', 'evidence_verified',
           'draft', 'reviewed', 'sealed', 'published']
@@ -141,14 +143,15 @@ def initialize(directory, roster):
         if started and not evidence:
             raise ValueError('started items need an existing checkpoint/evidence reference')
         normalized.append(dict(key=row['key'], already_started=started, stage=stage,
-                               source_version=row.get('source_version'), artifacts=evidence))
+                               source_version=row.get('source_version'), title=row.get('title', ''), artifacts=evidence))
     if sum(r['stage'] in ACTIVE for r in normalized) > policy['max_active']:
         raise ValueError('import exceeds active worker limit; reconcile ownership first')
     with locked(directory) as path:
         if path.exists():
             raise ValueError('journal already exists; never reinitialize historical state')
         return append(path, [], 'init', dict(rows=normalized, policy=policy,
-                                            intake='closed', authority=refs(roster['authority'])))
+                                            intake='closed', registry=str(Path(roster['registry']).resolve()) if roster.get('registry') else None,
+                                            authority=refs(roster['authority'])))
 
 
 def record(directory, kind, data):
@@ -156,6 +159,8 @@ def record(directory, kind, data):
         events = replay(path)
         rows = state(events)
         verify_refs(events[0]['data']['authority'])
+        if events[0]['data'].get('registry'):
+            sync_registry(directory)
         allowed = ({'key', 'stage', 'note', 'artifacts'} if kind == 'transition' else
                    {'key', 'stage', 'measurement_id', 'started_at', 'ended_at', 'usage', 'artifacts'})
         if set(data) - allowed:
@@ -168,6 +173,8 @@ def record(directory, kind, data):
             raise ValueError('unstarted paper is stopped by scope')
         if kind == 'transition':
             target, current = data['stage'], row['stage']
+            if target == 'claimed' and events[0]['data'].get('registry'):
+                registry.guard_claim(events[0]['data']['registry'], key, row['source_version'], Path(__file__).resolve().parents[1])
             if current in TERMINAL or current == 'published':
                 raise ValueError('terminal paper cannot be reopened')
             if target not in TERMINAL and (current not in STAGES or target not in STAGES or
@@ -212,7 +219,37 @@ def record(directory, kind, data):
                         elapsed_seconds=end-start)
         else:
             raise ValueError('unsupported event kind')
-        return append(path, events, kind, data)
+        event = append(path, events, kind, data)
+        if events[0]['data'].get('registry'):
+            # Journal is authoritative; sync-registry idempotently repairs a failed second write.
+            try:
+                sync_registry(directory)
+            except (ValueError, OSError, sqlite3.Error) as exc:
+                raise ValueError('journal event saved; registry sync failed; run sync-registry before continuing: '+str(exc)) from exc
+        return event
+
+
+def sync_registry(directory):
+    events = replay(Path(directory)/'events.jsonl')
+    rows = state(events)
+    root = events[0]['data'].get('registry')
+    if not root:
+        raise ValueError('legacy journal has no registry binding; import decisions with registry record/accept')
+    records = []
+    statuses = {'not_selected':'not_selected', 'source_exception':'source_exception',
+                'unable_to_finish':'incomplete', 'claimed':'in_progress',
+                'draft':'staged_unpublished', 'sealed':'staged_unpublished', 'published':'has_card'}
+    for event in events[1:]:
+        data = event['data']
+        if event['kind'] != 'transition' or data['stage'] not in statuses:
+            continue
+        program, aid = data['key'].split(':',1)
+        row = rows[data['key']]
+        records.append(dict(event_id='workflow:'+event['sha256'], paper_id=aid, program=program,
+                            status=statuses[data['stage']], reason=data['note'],
+                            title=row.get('title',''), source_version=row.get('source_version'),
+                            evidence=data['artifacts'], journal=str((Path(directory)/'events.jsonl').resolve())))
+    return dict(registry=root, added=registry.record_many(root, records))
 
 
 def union_seconds(intervals):
@@ -279,9 +316,10 @@ def batch(directory):
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('command', choices=['init', 'transition', 'measurement', 'report', 'batch', 'audit'])
+    parser.add_argument('command', choices=['init', 'transition', 'measurement', 'report', 'batch', 'audit', 'sync-registry'])
     parser.add_argument('--state', type=Path, required=True)
     parser.add_argument('--input', type=Path)
+    parser.add_argument('--registry', type=Path, help='Private disposition registry for a new journal')
     parser.add_argument('--out', type=Path)
     parser.add_argument('--key', help='Filter report measurements to one program:paper')
     args = parser.parse_args()
@@ -290,14 +328,17 @@ def main():
             raise ValueError('output exists; choose a new snapshot path before mutation')
         if args.key and args.command != 'report':
             raise ValueError('--key is supported only by report')
-        if args.command in {'report', 'batch', 'audit'}:
+        if args.command in {'report', 'batch', 'audit', 'sync-registry'}:
             result = (report(args.state, args.key) if args.command == 'report' else
-                      batch(args.state) if args.command == 'batch' else audit(args.state))
+                      batch(args.state) if args.command == 'batch' else
+                      audit(args.state) if args.command == 'audit' else sync_registry(args.state))
         else:
             if not args.input:
                 parser.error('--input is required')
             data = json.loads(args.input.read_text())
             if args.command == 'init':
+                data['registry'] = str(args.registry or data.get('registry') or registry.default_registry())
+                registry.current(data['registry'])  # missing registry fails closed before creation
                 result = initialize(args.state, data)
             else:
                 result = record(args.state, args.command, data)
@@ -305,9 +346,9 @@ def main():
             args.out.parent.mkdir(parents=True, exist_ok=True)
             with args.out.open('x') as stream:
                 stream.write(json.dumps(result, ensure_ascii=False, indent=2) + '\n')
-        print(json.dumps(result if args.command in {'report', 'batch', 'audit'} else
+        print(json.dumps(result if args.command in {'report', 'batch', 'audit', 'sync-registry'} else
                          dict(seq=result['seq'], sha256=result['sha256']), ensure_ascii=False))
-    except (ValueError, KeyError, TypeError, OSError) as exc:
+    except (ValueError, KeyError, TypeError, OSError, sqlite3.Error) as exc:
         parser.exit(1, str(exc) + '\n')
 
 

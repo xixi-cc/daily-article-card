@@ -41,7 +41,7 @@ Screen in two stages:
 1. Inspect authoritative metadata and abstracts for the complete batch. Record inclusion/exclusion reasons; do not select by keyword alone.
 2. Retrieve and inspect the full text of every plausible S candidate before assigning the final S grade. A title or abstract can nominate a candidate but cannot establish an S-grade technical claim.
 
-Deduplicate by versionless arXiv ID. Check corrections, withdrawals, and version changes before publication.
+Deduplicate by versionless arXiv ID. Before any claim, full-text download or new card, query the private cross-campaign registry described in `docs/CARD_REGISTRY.md`; reuse existing cards, dispositions and source evidence. Check corrections, withdrawals, and version changes before publication. Record every parent-accepted no-card outcome with reason, exact reviewed version (or unknown), evidence and reopening condition; distinguish abstract exclusions, completed full-text non-selection, source exceptions and unstarted scope stops. Export the current no-card list at each batch boundary. Registry lookup never authorizes reopening stopped work or infers a Daily grade from Collection membership.
 
 ## 3. Research taste and 40-point rubric
 

@@ -160,3 +160,9 @@ closed intake, bounded WIP and real stage timing/usage receipts. Retain this
 context flow for one-paper handoffs; the event journal replaces repeated full
 overlays, not source evidence or scientific review. Generate summaries at batch
 boundaries and retain explicit unknown usage fields.
+
+Before a new worker packet, consult [CARD_REGISTRY](CARD_REGISTRY.md); the CLI
+checks prior dispositions. After parent acceptance, use `registry accept` to
+record every no-card outcome with the exact reason, reviewed version and
+evidence. A worker receipt alone is never a final disposition. Export the
+current list at each batch boundary.

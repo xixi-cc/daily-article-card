@@ -15,6 +15,7 @@ Current canonical version: 2.4; minimum for ordinary new cards: 2.3
 | `scripts/validate_paper_cards.py` | Structural and evidence gate | Reject malformed v2.3 covers, unresolved figure assets, and raw or unbalanced TeX; permit `survey` only for Collection v2.4 or later |
 | `scripts/build_site.py` and `scripts/math_typography.py` | Feed, detail page, and standalone cover renderer | Derive all three surfaces from the same structured `cover` record, normalize unmistakable inline notation, and package local MathJax |
 | `.github/workflows/deploy.yml` | GitHub Pages build gate | Run the synchronization check and card validator before deployment |
+| `scripts/card_registry.py` and `docs/CARD_REGISTRY.md` | Cross-campaign disposition memory | Check identity/version before claims; record parent-accepted no-card outcomes with evidence; separate Daily/Collection and unstarted scope |
 | GitHub `origin` | Canonical public source and Pages trigger | Every completed website update must be pushed without force and local `HEAD` must equal the target branch SHA |
 | OpenAI Sites project | Owner-only hosted copy | Publish the same generated site after a validated repository change |
 

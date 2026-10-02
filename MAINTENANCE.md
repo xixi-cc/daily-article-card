@@ -104,3 +104,6 @@ cards and search rerenders, and fails on raw TeX, MathJax errors, or page overfl
 独立论文短交接使用 [CARD_CONTEXT](docs/CARD_CONTEXT.md)；共享状态增量记录、
 停领范围和阶段计时使用 [CARD_WORKFLOW](docs/CARD_WORKFLOW.md)。统一入口为
 `python3 scripts/card_batch.py`。本轮优化不恢复已停止的未启动论文。
+
+跨批次未制卡结论与查重规则见 [CARD_REGISTRY](docs/CARD_REGISTRY.md)。
+主线程在领取前查询，在每次最终结论后登记，在批次结束时导出清单。
