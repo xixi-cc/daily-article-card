@@ -48,3 +48,7 @@ condition; workflow terminal transitions do this automatically, and separate
 parent decisions use `registry accept`. Export the current list at each batch
 boundary. Never restart a stopped/blocked/reviewed item merely because it appears
 in another queue. Reuse existing evidence and check actual active ownership.
+
+Current no-card views ignore Daily not-selected/below-S outcomes without a card
+(user decision 2026-10-02). Keep their disposition history for duplicate checks;
+do not requeue them. Other statuses and Collection provenance remain separate.

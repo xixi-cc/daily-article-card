@@ -97,7 +97,12 @@ python3 scripts/card_batch.py registry export
 
 Outputs: `no-card-current.json` and `no-card-current.md`. Counts are per program
 and distinguish scientific non-selection, source issues, unresolved dispositions,
-publication blockers and unstarted scope. They are not all scientific rejections.
+publication blockers and unstarted scope. They are not all scientific rejections. Per the user decision of 2026-10-02,
+Daily `not_selected` outcomes without a card are ignored in this current view
+and its counts; their immutable history remains available to lookup/claim guards.
+The snapshot reports the ignored count separately. Collection non-selection,
+source exceptions, withheld states and publication blockers are separate records
+and are not hidden by this Daily S-threshold view rule.
 The database records immediately; the human list is refreshed at batch boundaries.
 Refresh current card inventory after every release to supersede stale no-card
 records and retain exact title/version/source-card hashes.

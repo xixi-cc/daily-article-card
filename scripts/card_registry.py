@@ -210,18 +210,23 @@ def accept_decision(root, decision_path):
 def export(root):
     root = Path(root)
     rows = sorted(current(root), key=lambda r:(r['program'],r['paper_id']), reverse=True)
-    no_cards = [r for r in rows if r['status'] in NO_CARD]
+    all_no_cards = [r for r in rows if r['status'] in NO_CARD]
+    ignored = [r for r in all_no_cards if r['program'] == 'Daily' and r['status'] == 'not_selected']
+    no_cards = [r for r in all_no_cards if not (r['program'] == 'Daily' and r['status'] == 'not_selected')]
     result = dict(schema_version=1, generated_at_utc=datetime.now(timezone.utc).isoformat(),
                   counts=dict(Counter(r['status'] for r in no_cards)), no_card_records=len(no_cards),
+                  ignored_daily_below_s=len(ignored), historical_no_card_records=len(all_no_cards),
+                  counts_by_program=dict(Counter(r['program'] for r in no_cards)),
                   unique_no_card_works=len({r['paper_id'] for r in no_cards}),
                   has_card_records=sum(r['status']=='has_card' for r in rows), rows=no_cards,
-                  boundary='Per-program dispositions; no-card includes staged/blocked/stopped, not only scientific rejection. No new paper processing authorized.')
+                  boundary='Daily not-selected/no-card outcomes are ignored in this view but retained for deduplication. Per-program dispositions; no-card includes staged/blocked/stopped, not only scientific rejection. No new paper processing authorized.')
     labels={'not_selected':'已审阅但未入选','source_exception':'来源或承重证据异常','incomplete':'已开始但未完成',
             'stopped_unstarted':'尚未启动／停领','staged_unpublished':'已有草稿／尚未发布',
             'publication_blocked':'已审阅但发布条件缺失','in_progress':'已有进行中工作','needs_review':'状态需人工核对'}
     lines=['# 未制作／未发布卡片清单','', '本清单按 Daily / Collection 分开记录；不是论文质量黑名单。',
            '同一论文其他项目已有卡片时优先复用；未知版本保留未知。领取、下载或制卡前先查询 registry。',
            '',f"记录数：{len(no_cards)}；去重论文：{result['unique_no_card_works']}；已有卡片项目记录：{result['has_card_records']}。",'']
+    lines += [f"已忽略 {len(ignored)} 条未达到 S 门槛且未制卡的 Daily 记录；历史结论仍用于查重，不列入当前清单。", '']
     for status in labels:
         group=[r for r in no_cards if r['status']==status]
         if not group:continue

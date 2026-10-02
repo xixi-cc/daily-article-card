@@ -74,10 +74,14 @@ class RegistryTests(unittest.TestCase):
         (cards/'2609.99991.json').write_text('{}')
         self.assertEqual(r.lookup(self.registry,'2609.99991','Daily',repo=repo)['action'],'reuse_existing_card')
 
-    def test_export_separates_stopped_from_negative(self):
-        r.record_many(self.registry,[self.row(),self.row(paper_id='2609.99992',status='stopped_unstarted')])
+    def test_export_ignores_below_s_but_keeps_dedup_and_collection(self):
+        r.record_many(self.registry,[self.row(),self.row(paper_id='2609.99992',status='stopped_unstarted'),self.row(paper_id='2609.99993',program='Collection')])
         summary=r.export(self.registry)
         self.assertEqual(summary['counts'],{'not_selected':1,'stopped_unstarted':1})
+        self.assertEqual(summary['ignored_daily_below_s'],1)
+        self.assertEqual(summary['no_card_records'],2)
+        self.assertEqual(r.lookup(self.registry,'2609.99991','Daily')['action'],'skip_previous_disposition')
+        self.assertNotIn('2609.99991',json.dumps(json.loads((self.registry/'no-card-current.json').read_text())['rows']))
         self.assertTrue((self.registry/'no-card-current.md').exists())
 
     def test_parent_decision_required(self):
