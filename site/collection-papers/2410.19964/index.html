@@ -3,10 +3,10 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Understanding Adam Requires Better Rotation Dependent Assumptions - physics+AI Collection 论文卡</title>
-    <meta name="description" content="Tianyue H. Zhang、Lucas Maes、Alan Milligan、Alexia Jolicoeur-Martineau、Ioannis Mitliagkas、Damien Scieur、Simon Lacoste-Julien 与 Charles Guille-Escuret。NeurIPS 2025 论文，研究 Adam 对参数坐标基旋转的经验与理论敏感性，arXiv:2410.19964v3。" />
+    <title>Understanding Adam Requires Better Rotation Dependent Assumptions - 论文卡</title>
+    <meta name="description" content="SGD 在正交旋转参数空间后具有等变性，而 Adam 的逐坐标二阶矩使更新依赖所选基。若两个参数化表示同一函数，随机旋转会怎样改变 Transformer/ViT 的训练效率？" />
     <link rel="canonical" href="https://xixi-cc.github.io/daily-article-card/collection-papers/2410.19964/" />
-    <script type="application/ld+json">{"@context": "https://schema.org", "@type": "Article", "headline": "Understanding Adam Requires Better Rotation Dependent Assumptions", "description": "Tianyue H. Zhang、Lucas Maes、Alan Milligan、Alexia Jolicoeur-Martineau、Ioannis Mitliagkas、Damien Scieur、Simon Lacoste-Julien 与 Charles Guille-Escuret。NeurIPS 2025 论文，研究 Adam 对参数坐标基旋转的经验与理论敏感性，arXiv:2410.19964v3。", "url": "https://xixi-cc.github.io/daily-article-card/collection-papers/2410.19964/", "mainEntityOfPage": "https://xixi-cc.github.io/daily-article-card/collection-papers/2410.19964/", "inLanguage": "zh-CN", "author": {"@type": "Person", "name": "Xineng Cao", "alternateName": ["Xixi Cao", "曹溪能"], "url": "https://xixi-cc.github.io/"}, "isBasedOn": "https://arxiv.org/abs/2410.19964"}</script>
+    <script type="application/ld+json">{"@context": "https://schema.org", "@type": "Article", "headline": "Understanding Adam Requires Better Rotation Dependent Assumptions", "description": "SGD 在正交旋转参数空间后具有等变性，而 Adam 的逐坐标二阶矩使更新依赖所选基。若两个参数化表示同一函数，随机旋转会怎样改变 Transformer/ViT 的训练效率？", "url": "https://xixi-cc.github.io/daily-article-card/collection-papers/2410.19964/", "mainEntityOfPage": "https://xixi-cc.github.io/daily-article-card/collection-papers/2410.19964/", "inLanguage": "zh-CN", "author": {"@type": "Person", "name": "Xineng Cao", "alternateName": ["Xixi Cao", "曹溪能"], "url": "https://xixi-cc.github.io/"}, "isBasedOn": "https://arxiv.org/abs/2410.19964"}</script>
     <script>
       (function() {
         try {
@@ -30,6 +30,18 @@
     <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700;800&family=Noto+Sans+SC:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
     <script>document.documentElement.classList.add('math-pending');</script>
     <script>
+      window.fitInlineMath = function(root) {
+        (root || document).querySelectorAll('mjx-container:not([display="true"])').forEach(function(el) {
+          el.classList.remove('inline-math-overflow');
+          const content = el.closest('.reading-card-content, .detail-summary, .feed-card-body');
+          if(content && el.getBoundingClientRect().width > content.clientWidth) {
+            el.classList.add('inline-math-overflow');
+            el.tabIndex = 0;
+            el.setAttribute('aria-label', '长公式，可横向滑动阅读');
+          }
+        });
+      };
+      window.addEventListener('resize', function() { window.fitInlineMath(); });
       window.MathJax = {
         tex: {
           inlineMath: [['$', '$'], ['\\(', '\\)']],
@@ -49,6 +61,7 @@
             MathJax.startup.promise.then(function() {
               document.documentElement.classList.remove('math-pending');
               document.documentElement.dataset.mathReady = 'true';
+              window.requestAnimationFrame(function() { window.fitInlineMath(); });
             });
           }
         }
@@ -65,9 +78,9 @@
     <header class="header detail-page-header">
       <div class="container">
         <div class="detail-page-topbar">
-          <a class="back-link" href="../../collection.html">返回列表</a>
+          <a class="back-link" href="../../index.html">返回列表</a>
           <div class="detail-topbar-actions">
-            <span class="detail-site-name">physics+AI Collection 论文卡</span>
+            <span class="detail-site-name">论文卡</span>
             <button id="detail-favorite" class="detail-favorite-button" type="button" aria-pressed="false">☆ 收藏</button>
             <button class="theme-toggle" type="button" data-theme-toggle aria-label="当前主题：设备，点击切换主题" title="当前主题：设备">
   <span class="theme-toggle-icons" aria-hidden="true">
@@ -91,22 +104,15 @@
         <div class="detail-hero-grid">
           <div class="detail-hero-cover"><figure class="paper-figure-card paper-figure-card-detail">
   <img class="paper-figure-image" src="../../assets/collection-figures/2410.19964/figure-1-adam-rotations.webp" alt="GPT-2 与 ViT 在无旋转、output-wise、input-wise、layer-wise 和 global rotation 下的训练损失曲线。" loading="lazy" onclick="window.openPaperFigureImage && window.openPaperFigureImage(this)" />
-  <figcaption class="paper-figure-caption">Adam 的训练效率随参数空间旋转范围增大而恶化。</figcaption>
+  <figcaption class="paper-figure-caption">Adam 的训练效率随参数空间旋转范围增大而恶化。 <a href="https://arxiv.org/abs/2410.19964" target="_blank" rel="noopener noreferrer">原文图源 ↗</a></figcaption>
 </figure></div>
           <div class="detail-hero-copy">
-            <p class="eyebrow">Collection 全文卡</p>
+            <p class="eyebrow">论文详情</p>
             <h1 class="detail-page-title">Understanding Adam Requires Better Rotation Dependent Assumptions</h1>
             <p class="detail-page-title-zh">理解 Adam 需要更好的旋转依赖假设</p>
-            <div class="detail-meta">Paper Collection · Optimization · <a href="https://arxiv.org/abs/2410.19964" target="_blank" rel="noopener noreferrer">原文</a></div>
-            <p class="detail-summary">Tianyue \(H\). Zhang、Lucas Maes、Alan Milligan、Alexia Jolicoeur-Martineau、Ioannis Mitliagkas、Damien Scieur、Simon Lacoste-Julien 与 Charles Guille-Escuret。NeurIPS 2025 论文，研究 Adam 对参数坐标基旋转的经验与理论敏感性，arXiv:2410.19964v3。</p>
-            <div class="detail-micro-meta">
-              <span class="meta-pill">AI 基础理论</span>
-              <span class="meta-pill">理论与实验</span>
-              <span class="meta-pill">#Optimization</span><span class="meta-pill">#机器学习</span><span class="meta-pill">#人工智能</span>
-              <span class="meta-pill">7 分钟读完</span>
-              <span class="meta-pill">7 张阅读卡</span>
-              <span class="meta-pill">Tianyue H. Zhang、Lucas Maes、Alan Milligan、Alexia Jo…</span>
-            </div>
+            <div class="detail-meta">Tianyue H. Zhang、Lucas Maes、Alan Milligan、Alexia Jolicoeur-Martineau、Ioannis Mitliagkas、Damien Scieur、Simon Lacoste-Julien、Charles Guille-Escuret · 预印本 · arXiv:2410.19964 · <a href="https://arxiv.org/abs/2410.19964" target="_blank" rel="noopener noreferrer">论文原文 ↗</a></div>
+            <p class="detail-summary">SGD 在正交旋转参数空间后具有等变性，而 Adam 的逐坐标二阶矩使更新依赖所选基。若两个参数化表示同一函数，随机旋转会怎样改变 Transformer/ViT 的训练效率？</p>
+
           </div>
         </div>
       </div>
@@ -115,34 +121,14 @@
     <main class="container detail-layout">
       <div class="detail-shell">
         <article id="detail-body" class="reading-flow"><section class="reading-card reading-card-section">
-  <div class="reading-card-topline">
-    <span class="reading-step">Card 01</span>
-    <span class="reading-step-note">作者信息</span>
-  </div>
-  <h2>作者信息</h2>
-  <div class="reading-card-content"><ul><li>Tianyue \(H\). Zhang、Lucas Maes、Alan Milligan、Alexia Jolicoeur-Martineau、Ioannis Mitliagkas、Damien Scieur、Simon Lacoste-Julien 与 Charles Guille-Escuret。NeurIPS 2025 论文，研究 Adam 对参数坐标基旋转的经验与理论敏感性，arXiv:2410.19964v3。</li></ul></div>
-</section>
-<section class="reading-card reading-card-section">
-  <div class="reading-card-topline">
-    <span class="reading-step">Card 02</span>
-    <span class="reading-step-note">研究问题</span>
-  </div>
   <h2>研究问题</h2>
   <div class="reading-card-content"><ul><li>SGD 在正交旋转参数空间后具有等变性，而 Adam 的逐坐标二阶矩使更新依赖所选基。若两个参数化表示同一函数，随机旋转会怎样改变 Transformer/ViT 的训练效率？</li><li>现有 Adam 理论常采用 rotation-invariant 假设，或使用坐标相关的梯度界、稀疏性等量。作者检验这些量是否真的随不同旋转类型解释性能排序，并寻找更合适的旋转依赖指标。</li></ul></div>
 </section>
 <section class="reading-card reading-card-section">
-  <div class="reading-card-topline">
-    <span class="reading-step">Card 03</span>
-    <span class="reading-step-note">模型与方法</span>
-  </div>
   <h2>模型与方法</h2>
   <div class="reading-card-content"><ul><li>训练仍在原函数参数空间进行：每步取得梯度后乘正交矩阵 R，送入 Adam 得到旋转坐标中的更新，再乘 R 的转置映回原坐标。这样前向函数不变，只改变优化器看到的坐标基。</li><li>旋转按 scope 分为 output-wise、input-wise、layer-wise 和 global；另由权重或梯度的 SVD 构造结构化旋转。实验覆盖 GPT-2 与 ViT，并比较训练 loss、二阶矩分布和多种文献假设。</li><li>作者提出更新正交性作为候选指标：Adam 的层更新是否近似于某个正交变换乘标量。该量用于解释哪些坐标基保留或增强 Adam 的有效预条件。</li></ul></div>
 </section>
 <section class="reading-card reading-card-section">
-  <div class="reading-card-topline">
-    <span class="reading-step">Card 04</span>
-    <span class="reading-step-note">核心结果与证据</span>
-  </div>
   <h2>核心结果与证据</h2>
   <div class="reading-card-content"><ul><li>Figure 1 显示随机 global rotation 使 GPT-2 训练约慢 16%，ViT 约慢 96%；output-wise 基本保留性能，input-wise、layer-wise 到 global 的破坏逐渐增大，直接证明 Adam 的实际训练依赖参数基。</li><li>SVD-based rotation 不仅不破坏，反而能改善 GPT-2 训练，并且额外计算开销较低。随机旋转使 Adam 的二阶矩更集中，削弱坐标间自适应差异，但单凭集中度仍不足以解释所有旋转。</li><li>作者逐项检查经验 \(L\)-infinity 梯度界、坐标稀疏性等假设，发现它们与性能排序不一致；更新正交性与观察更吻合，因此被提出为未来理论的候选核心量，而不是已完成的收敛定理。</li></ul><figure class="evidence-figure">
   <button class="evidence-figure-image-button" type="button" aria-label="放大查看 Figure 1" onclick="window.openPaperFigureImage && window.openPaperFigureImage(this.querySelector('img'))">
@@ -156,26 +142,14 @@
 </figure></div>
 </section>
 <section class="reading-card reading-card-section">
-  <div class="reading-card-topline">
-    <span class="reading-step">Card 05</span>
-    <span class="reading-step-note">有效性与局限</span>
-  </div>
   <h2>有效性与局限</h2>
   <div class="reading-card-content"><ul><li>旋转实验精确隔离坐标依赖，但 global 正交矩阵在大模型上需用结构化实现，实际操作与理想稠密 Haar rotation 可能不同。训练减速百分比依赖模型、数据、预算与调参，不能直接外推到所有 Transformer。</li><li>SVD rotation 的收益可能混合尺度、对齐和实现因素；若对每种旋转重新独立调学习率、\(\beta\)、weight decay，性能排序可能变化。论文主要比较固定配方下的优化器行为。</li><li>更新正交性目前是经验上更有希望的 indicator，尚未给出充分必要条件或通用 Adam 优势证明。还需覆盖更多架构、优化器变体和训练后期。本卡未独立复现。</li></ul></div>
 </section>
 <section class="reading-card reading-card-section">
-  <div class="reading-card-topline">
-    <span class="reading-step">Card 06</span>
-    <span class="reading-step-note">复现与资源</span>
-  </div>
   <h2>复现与资源</h2>
   <div class="reading-card-content"><ul><li>原文：https://arxiv.org/abs/2410.19964。官方 \(v_{3}\) PDF SHA-256：4d710b97f336aeaf0d587e08fddfabb8efc75d82d6d0846ed50e2421a099f572。</li><li>复现应首先在小二次问题核对 SGD 等变而 Adam 不等变，再在同一 GPT-2/ViT 初始化上成对比较各 scope；保存 R、映回更新、训练曲线、二阶矩和 update-orthogonality，并报告重新调参与固定调参两套结果。Evidence status: full-text verified; no independent reproduction performed.</li></ul></div>
 </section>
 <section class="reading-card reading-card-section">
-  <div class="reading-card-topline">
-    <span class="reading-step">Card 07</span>
-    <span class="reading-step-note">阅读指南</span>
-  </div>
   <h2>阅读指南</h2>
   <div class="reading-card-content"><ul><li>先看 Figures 2–4 理解“函数不变、优化坐标改变”的实验设计，再用 Figure 1 读性能层级；Figure 5 的 SVD 改善说明并非所有旋转都坏。Section 4 是对理论假设的否证性检查，结论是需要新假设而非已经给出完整理论。</li></ul></div>
 </section></article>

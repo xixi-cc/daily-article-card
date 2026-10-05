@@ -3,10 +3,10 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Transformers from an Optimization Perspective - physics+AI Collection 论文卡</title>
-    <meta name="description" content="作者：Yongyi Yang、Zengfeng Huang、David Wipf。arXiv:2205.13891v2，发表于 NeurIPS 2022。论文尝试把带 self-attention、线性变换和 ReLU 的 Transformer 层解释为某个能量函数的展开优化迭代。" />
+    <title>Transformers from an Optimization Perspective - 论文卡</title>
+    <meta name="description" content="MLP/CNN 常可由 proximal/gradient steps 展开得到，但 Transformer 的 token 耦合、softmax attention、不同子层与非对称权重使一一对应困难。作者问：能否构造能量 E(Y)，使近似 Transformer forward update 保证下降，从而把深度理解为优化迭代次数？" />
     <link rel="canonical" href="https://xixi-cc.github.io/daily-article-card/collection-papers/2205.13891/" />
-    <script type="application/ld+json">{"@context": "https://schema.org", "@type": "Article", "headline": "Transformers from an Optimization Perspective", "description": "作者：Yongyi Yang、Zengfeng Huang、David Wipf。arXiv:2205.13891v2，发表于 NeurIPS 2022。论文尝试把带 self-attention、线性变换和 ReLU 的 Transformer 层解释为某个能量函数的展开优化迭代。", "url": "https://xixi-cc.github.io/daily-article-card/collection-papers/2205.13891/", "mainEntityOfPage": "https://xixi-cc.github.io/daily-article-card/collection-papers/2205.13891/", "inLanguage": "zh-CN", "author": {"@type": "Person", "name": "Xineng Cao", "alternateName": ["Xixi Cao", "曹溪能"], "url": "https://xixi-cc.github.io/"}, "isBasedOn": "https://arxiv.org/abs/2205.13891"}</script>
+    <script type="application/ld+json">{"@context": "https://schema.org", "@type": "Article", "headline": "Transformers from an Optimization Perspective", "description": "MLP/CNN 常可由 proximal/gradient steps 展开得到，但 Transformer 的 token 耦合、softmax attention、不同子层与非对称权重使一一对应困难。作者问：能否构造能量 E(Y)，使近似 Transformer forward update 保证下降，从而把深度理解为优化迭代次数？", "url": "https://xixi-cc.github.io/daily-article-card/collection-papers/2205.13891/", "mainEntityOfPage": "https://xixi-cc.github.io/daily-article-card/collection-papers/2205.13891/", "inLanguage": "zh-CN", "author": {"@type": "Person", "name": "Xineng Cao", "alternateName": ["Xixi Cao", "曹溪能"], "url": "https://xixi-cc.github.io/"}, "isBasedOn": "https://arxiv.org/abs/2205.13891"}</script>
     <script>
       (function() {
         try {
@@ -30,6 +30,18 @@
     <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700;800&family=Noto+Sans+SC:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
     <script>document.documentElement.classList.add('math-pending');</script>
     <script>
+      window.fitInlineMath = function(root) {
+        (root || document).querySelectorAll('mjx-container:not([display="true"])').forEach(function(el) {
+          el.classList.remove('inline-math-overflow');
+          const content = el.closest('.reading-card-content, .detail-summary, .feed-card-body');
+          if(content && el.getBoundingClientRect().width > content.clientWidth) {
+            el.classList.add('inline-math-overflow');
+            el.tabIndex = 0;
+            el.setAttribute('aria-label', '长公式，可横向滑动阅读');
+          }
+        });
+      };
+      window.addEventListener('resize', function() { window.fitInlineMath(); });
       window.MathJax = {
         tex: {
           inlineMath: [['$', '$'], ['\\(', '\\)']],
@@ -49,6 +61,7 @@
             MathJax.startup.promise.then(function() {
               document.documentElement.classList.remove('math-pending');
               document.documentElement.dataset.mathReady = 'true';
+              window.requestAnimationFrame(function() { window.fitInlineMath(); });
             });
           }
         }
@@ -65,9 +78,9 @@
     <header class="header detail-page-header">
       <div class="container">
         <div class="detail-page-topbar">
-          <a class="back-link" href="../../collection.html">返回列表</a>
+          <a class="back-link" href="../../index.html">返回列表</a>
           <div class="detail-topbar-actions">
-            <span class="detail-site-name">physics+AI Collection 论文卡</span>
+            <span class="detail-site-name">论文卡</span>
             <button id="detail-favorite" class="detail-favorite-button" type="button" aria-pressed="false">☆ 收藏</button>
             <button class="theme-toggle" type="button" data-theme-toggle aria-label="当前主题：设备，点击切换主题" title="当前主题：设备">
   <span class="theme-toggle-icons" aria-hidden="true">
@@ -91,22 +104,15 @@
         <div class="detail-hero-grid">
           <div class="detail-hero-cover"><figure class="paper-figure-card paper-figure-card-detail">
   <img class="paper-figure-image" src="../../assets/collection-figures/2205.13891/figure-1-exception-region.webp" alt="二维状态空间中不同常数 C 对应的有限例外集合 S(C)。" loading="lazy" onclick="window.openPaperFigureImage && window.openPaperFigureImage(this)" />
-  <figcaption class="paper-figure-caption">构造的 Transformer-like update 在有限例外区域外保证能量下降。</figcaption>
+  <figcaption class="paper-figure-caption">构造的 Transformer-like update 在有限例外区域外保证能量下降。 <a href="https://arxiv.org/abs/2205.13891" target="_blank" rel="noopener noreferrer">原文图源 ↗</a></figcaption>
 </figure></div>
           <div class="detail-hero-copy">
-            <p class="eyebrow">Collection 全文卡</p>
+            <p class="eyebrow">论文详情</p>
             <h1 class="detail-page-title">Transformers from an Optimization Perspective</h1>
             <p class="detail-page-title-zh">优化视角下的 Transformer</p>
-            <div class="detail-meta">Paper Collection · Transformer Theory · <a href="https://arxiv.org/abs/2205.13891" target="_blank" rel="noopener noreferrer">原文</a></div>
-            <p class="detail-summary">作者：Yongyi Yang、Zengfeng Huang、David Wipf。arXiv:2205.13891v2，发表于 NeurIPS 2022。论文尝试把带 self-attention、线性变换和 ReLU 的 Transformer 层解释为某个能量函数的展开优化迭代。</p>
-            <div class="detail-micro-meta">
-              <span class="meta-pill">AI 基础理论</span>
-              <span class="meta-pill">理论与数值</span>
-              <span class="meta-pill">#Transformer Theory</span><span class="meta-pill">#机器学习</span><span class="meta-pill">#Transformer</span>
-              <span class="meta-pill">7 分钟读完</span>
-              <span class="meta-pill">7 张阅读卡</span>
-              <span class="meta-pill">作者：Yongyi Yang、Zengfeng Huang、David Wipf。arXiv:2205…</span>
-            </div>
+            <div class="detail-meta">Yongyi Yang、Zengfeng Huang、David Wipf · 预印本 · arXiv:2205.13891 · <a href="https://arxiv.org/abs/2205.13891" target="_blank" rel="noopener noreferrer">论文原文 ↗</a></div>
+            <p class="detail-summary">MLP/CNN 常可由 proximal/gradient steps 展开得到，但 Transformer 的 token 耦合、softmax attention、不同子层与非对称权重使一一对应困难。作者问：能否构造能量 E(\(Y\))，使近似 Transformer forward update 保证下降，从而把深度理解为优化迭代次数？</p>
+
           </div>
         </div>
       </div>
@@ -115,34 +121,14 @@
     <main class="container detail-layout">
       <div class="detail-shell">
         <article id="detail-body" class="reading-flow"><section class="reading-card reading-card-section">
-  <div class="reading-card-topline">
-    <span class="reading-step">Card 01</span>
-    <span class="reading-step-note">作者信息</span>
-  </div>
-  <h2>作者信息</h2>
-  <div class="reading-card-content"><ul><li>作者：Yongyi Yang、Zengfeng Huang、David Wipf。arXiv:2205.13891v2，发表于 NeurIPS 2022。论文尝试把带 self-attention、线性变换和 ReLU 的 Transformer 层解释为某个能量函数的展开优化迭代。</li></ul></div>
-</section>
-<section class="reading-card reading-card-section">
-  <div class="reading-card-topline">
-    <span class="reading-step">Card 02</span>
-    <span class="reading-step-note">研究问题</span>
-  </div>
   <h2>研究问题</h2>
   <div class="reading-card-content"><ul><li>MLP/CNN 常可由 proximal/gradient steps 展开得到，但 Transformer 的 token 耦合、softmax attention、不同子层与非对称权重使一一对应困难。作者问：能否构造能量 E(\(Y\))，使近似 Transformer forward update 保证下降，从而把深度理解为优化迭代次数？</li><li>目标是建立“接近 Transformer”的条件性解释，不声称原始任意训练后 Transformer 的每一层都严格最小化同一个全局能量。</li></ul></div>
 </section>
 <section class="reading-card reading-card-section">
-  <div class="reading-card-topline">
-    <span class="reading-step">Card 03</span>
-    <span class="reading-step-note">模型与方法</span>
-  </div>
   <h2>模型与方法</h2>
   <div class="reading-card-content"><ul><li>作者先为 self-attention 构造 pairwise 能量，利用 majorization 得到 row-wise softmax 更新；再把 feed-forward 线性项作为另一能量的梯度步，并用 alternating inexact minimization（AIM）组合异质子层。</li><li>加入非光滑 penalty 后，proximal step 产生 ReLU。聚合更新形如 \(Y^{t+1}=ReLU\)[softmax_β(\(Y^{t}\) \(W_{a}^{s}\) \(Y^{tT}\)) \(Y^{t}\) \(W_{f}^{s}\)]（排版约定下矩阵次序相应），在有限例外区域外下降。</li><li>证明依赖对称化的 \(W_{a}^{s}\)、\(W_{f}^{s}\)、步长和有界区域；residual connection 可由更小步长的更新导出。作者还从不同 pairwise potential \(\rho\) 推导替代 softmax 的可解释 attention normalization。</li></ul></div>
 </section>
 <section class="reading-card reading-card-section">
-  <div class="reading-card-topline">
-    <span class="reading-step">Card 04</span>
-    <span class="reading-step-note">核心定理与证据</span>
-  </div>
   <h2>核心定理与证据</h2>
   <div class="reading-card-content"><ul><li>Corollary 4.5 说明 attention-like step 与线性 step 的 AIM 组合在状态不处于有限半径例外集合时降低 E。Theorem 5.1 把 ReLU proximal 纳入后得到更接近 Transformer 的完整下降更新。</li><li>例外区域随步长减小而缩小，同时更新出现 residual 形式；这提供优化解释与架构元素间的联系，但不是标准训练 Transformer 的收敛定理。Figure 1 只几何展示例外集合大小，Figure 2 数值展示构造能量随迭代下降。</li><li>替换 \(\rho\) 会改变 attention 权重函数，说明 softmax 对应特定能量选择。该设计启示是理论推论，论文没有在大规模 NLP 任务上证明替代 normalization 优于标准 softmax。</li></ul><figure class="evidence-figure">
   <button class="evidence-figure-image-button" type="button" aria-label="放大查看 Figure 1" onclick="window.openPaperFigureImage && window.openPaperFigureImage(this.querySelector('img'))">
@@ -156,26 +142,14 @@
 </figure></div>
 </section>
 <section class="reading-card reading-card-section">
-  <div class="reading-card-topline">
-    <span class="reading-step">Card 05</span>
-    <span class="reading-step-note">有效性与局限</span>
-  </div>
   <h2>有效性与局限</h2>
   <div class="reading-card-content"><ul><li>与标准 Transformer 的主要差距是对称权重、矩阵排列、步长限制和有限例外区域；作者明确把未完全解决的非对称权重列为 Challenge 4。扩大表示维数可模拟某些非对称映射，但会改变模型。</li><li>分析偏重单头/简化层，没有覆盖 LayerNorm、多头 attention、位置编码、dropout 和实际残差/FFN 的全部细节。能量下降描述 forward dynamics，不等于反向训练目标下降、泛化改善或语言建模语义解释。</li></ul></div>
 </section>
 <section class="reading-card reading-card-section">
-  <div class="reading-card-topline">
-    <span class="reading-step">Card 06</span>
-    <span class="reading-step-note">复现与资源</span>
-  </div>
   <h2>复现与资源</h2>
   <div class="reading-card-content"><ul><li>原文：https://arxiv.org/abs/2205.13891。官方 PDF SHA-256：6ec12561f093b7bcbca0901b0d9b04fd382e114644fc526138d04017a5459ef1。</li><li>复现应固定 \(E_{1}\)/\(E_{2}\)/\(\phi\)、\(\beta\)、对称权重、步长、初始化与例外集合边界；逐步核对 update 与 Transformer 层的矩阵维度并绘制 E(\(Y^{t}\))。若实验替代 \(\rho\)，应同时比较任务性能与能量下降。Evidence status: full-text verified; no independent reproduction performed.</li></ul></div>
 </section>
 <section class="reading-card reading-card-section">
-  <div class="reading-card-topline">
-    <span class="reading-step">Card 07</span>
-    <span class="reading-step-note">阅读指南</span>
-  </div>
   <h2>阅读指南</h2>
   <div class="reading-card-content"><ul><li>先读 §2.2 的四个障碍；再看 self-attention energy/majorization 和 AIM；随后逐式检查 (15)–(20) 如何组合 attention、linear 和 ReLU；最后回到 Figure 1、例外区域与非对称权重限制，避免把“相近更新”读成标准 Transformer 的严格等价。</li></ul></div>
 </section></article>

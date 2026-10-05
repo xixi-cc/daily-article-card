@@ -3,10 +3,10 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Dimensionless machine learning: Imposing exact units equivariance - physics+AI Collection 论文卡</title>
-    <meta name="description" content="Soledad Villar（约翰斯·霍普金斯大学应用数学与统计系、数学数据科学研究所）；Weichi Yao（纽约大学技术、运营与统计系）；David W. Hogg（纽约大学物理系宇宙学与粒子物理中心、马克斯·普朗克天文学研究所、Flatiron Institute）；Ben Blum-Smith（约翰斯·霍普金斯大学应用数学与统计系）；Bianca Dumitrascu（剑桥大学计算机科学与技术系）。上述单位与作者邮箱见 JMLR 正式版物理第 1 页；通讯作者未在文中单独指定。本文按 JMLR 24(109):1–32 (2023) 正式 PDF 审读，其字节哈希见本地证据清单；arXiv:2204.00887v2 仅作同一作品的公开入口，未把两版文本视为逐字相同。" />
+    <title>Dimensionless machine learning: Imposing exact units equivariance - 论文卡</title>
+    <meta name="description" content="若把质量从千克改记为克，物理预测必须随单位表示一起确定地缩放，不能由训练数据碰巧学会这一规则。本文问：给定每个输入和输出的已知量纲，能否把这种被动的单位变换对称性直接施加给回归器，同时保留旋转等几何对称性？作者的方法把原始有量纲输入变为无量纲不变量，只让学习器处理这些不变量，再给输出乘上由输入构造的正确量纲因子。此处“精确”指模型结构的单位等变性；预测精度仍需经验检验。（物理页 1–3、6–8）" />
     <link rel="canonical" href="https://xixi-cc.github.io/daily-article-card/collection-papers/2204.00887/" />
-    <script type="application/ld+json">{"@context": "https://schema.org", "@type": "Article", "headline": "Dimensionless machine learning: Imposing exact units equivariance", "description": "Soledad Villar（约翰斯·霍普金斯大学应用数学与统计系、数学数据科学研究所）；Weichi Yao（纽约大学技术、运营与统计系）；David W. Hogg（纽约大学物理系宇宙学与粒子物理中心、马克斯·普朗克天文学研究所、Flatiron Institute）；Ben Blum-Smith（约翰斯·霍普金斯大学应用数学与统计系）；Bianca Dumitrascu（剑桥大学计算机科学与技术系）。上述单位与作者邮箱见 JMLR 正式版物理第 1 页；通讯作者未在文中单独指定。本文按 JMLR 24(109):1–32 (2023) 正式 PDF 审读，其字节哈希见本地证据清单；arXiv:2204.00887v2 仅作同一作品的公开入口，未把两版文本视为逐字相同。", "url": "https://xixi-cc.github.io/daily-article-card/collection-papers/2204.00887/", "mainEntityOfPage": "https://xixi-cc.github.io/daily-article-card/collection-papers/2204.00887/", "inLanguage": "zh-CN", "author": {"@type": "Person", "name": "Xineng Cao", "alternateName": ["Xixi Cao", "曹溪能"], "url": "https://xixi-cc.github.io/"}, "isBasedOn": "https://www.jmlr.org/papers/volume24/22-0680/22-0680.pdf"}</script>
+    <script type="application/ld+json">{"@context": "https://schema.org", "@type": "Article", "headline": "Dimensionless machine learning: Imposing exact units equivariance", "description": "若把质量从千克改记为克，物理预测必须随单位表示一起确定地缩放，不能由训练数据碰巧学会这一规则。本文问：给定每个输入和输出的已知量纲，能否把这种被动的单位变换对称性直接施加给回归器，同时保留旋转等几何对称性？作者的方法把原始有量纲输入变为无量纲不变量，只让学习器处理这些不变量，再给输出乘上由输入构造的正确量纲因子。此处“精确”指模型结构的单位等变性；预测精度仍需经验检验。（物理页 1–3、6–8）", "url": "https://xixi-cc.github.io/daily-article-card/collection-papers/2204.00887/", "mainEntityOfPage": "https://xixi-cc.github.io/daily-article-card/collection-papers/2204.00887/", "inLanguage": "zh-CN", "author": {"@type": "Person", "name": "Xineng Cao", "alternateName": ["Xixi Cao", "曹溪能"], "url": "https://xixi-cc.github.io/"}, "isBasedOn": "https://www.jmlr.org/papers/volume24/22-0680/22-0680.pdf"}</script>
     <script>
       (function() {
         try {
@@ -30,6 +30,18 @@
     <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700;800&family=Noto+Sans+SC:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
     <script>document.documentElement.classList.add('math-pending');</script>
     <script>
+      window.fitInlineMath = function(root) {
+        (root || document).querySelectorAll('mjx-container:not([display="true"])').forEach(function(el) {
+          el.classList.remove('inline-math-overflow');
+          const content = el.closest('.reading-card-content, .detail-summary, .feed-card-body');
+          if(content && el.getBoundingClientRect().width > content.clientWidth) {
+            el.classList.add('inline-math-overflow');
+            el.tabIndex = 0;
+            el.setAttribute('aria-label', '长公式，可横向滑动阅读');
+          }
+        });
+      };
+      window.addEventListener('resize', function() { window.fitInlineMath(); });
       window.MathJax = {
         tex: {
           inlineMath: [['$', '$'], ['\\(', '\\)']],
@@ -49,6 +61,7 @@
             MathJax.startup.promise.then(function() {
               document.documentElement.classList.remove('math-pending');
               document.documentElement.dataset.mathReady = 'true';
+              window.requestAnimationFrame(function() { window.fitInlineMath(); });
             });
           }
         }
@@ -65,9 +78,9 @@
     <header class="header detail-page-header">
       <div class="container">
         <div class="detail-page-topbar">
-          <a class="back-link" href="../../collection.html">返回列表</a>
+          <a class="back-link" href="../../index.html">返回列表</a>
           <div class="detail-topbar-actions">
-            <span class="detail-site-name">physics+AI Collection 论文卡</span>
+            <span class="detail-site-name">论文卡</span>
             <button id="detail-favorite" class="detail-favorite-button" type="button" aria-pressed="false">☆ 收藏</button>
             <button class="theme-toggle" type="button" data-theme-toggle aria-label="当前主题：设备，点击切换主题" title="当前主题：设备">
   <span class="theme-toggle-icons" aria-hidden="true">
@@ -91,22 +104,15 @@
         <div class="detail-hero-grid">
           <div class="detail-hero-cover"><figure class="paper-figure-card paper-figure-card-detail">
   <img class="paper-figure-image" src="../../assets/collection-figures/2204.00887/figure-1-method.png" alt="有量纲输入经无量纲特征映射、学习器和解码器得到有量纲输出的流程图。" loading="lazy" onclick="window.openPaperFigureImage && window.openPaperFigureImage(this)" />
-  <figcaption class="paper-figure-caption">原文图 1：单位等变回归的特征器、学习器与解码器流程。Villar 等，JMLR 24(109), 2023，CC-BY 4.0。</figcaption>
+  <figcaption class="paper-figure-caption">原文图 1：单位等变回归的特征器、学习器与解码器流程。Villar 等，JMLR 24(109), 2023，CC-BY 4.0。 <a href="https://www.jmlr.org/papers/volume24/22-0680/22-0680.pdf" target="_blank" rel="noopener noreferrer">原文图源 ↗</a></figcaption>
 </figure></div>
           <div class="detail-hero-copy">
-            <p class="eyebrow">Collection 全文卡</p>
+            <p class="eyebrow">论文详情</p>
             <h1 class="detail-page-title">Dimensionless machine learning: Imposing exact units equivariance</h1>
             <p class="detail-page-title-zh">无量纲机器学习：施加精确的单位变换等变性</p>
-            <div class="detail-meta">Paper Collection · AI for Science · <a href="https://www.jmlr.org/papers/volume24/22-0680/22-0680.pdf" target="_blank" rel="noopener noreferrer">原文</a></div>
-            <p class="detail-summary">Soledad Villar（约翰斯·霍普金斯大学应用数学与统计系、数学数据科学研究所）；Weichi Yao（纽约大学技术、运营与统计系）；David W. Hogg（纽约大学物理系宇宙学与粒子物理中心、马克斯·普朗克天文学研究所、Flatiron Institute）；Ben Blum-Smith（约翰斯·霍普金斯大学应用数学与统计系）；Bianca Dumitrascu（剑桥大学计算机科学与技术系）。上述单位与作者邮箱见 JMLR 正式版物理第 1 页；通讯作者未在文中单独指定。本文按 JMLR 24(109):1–32 (2023) 正式 PDF 审读，其字节哈希见本地证据清单；arXiv:2204.00887v2 仅作同一作品的公开入口，未把两版文本视为逐字相同。</p>
-            <div class="detail-micro-meta">
-              <span class="meta-pill">AI 基础理论</span>
-              <span class="meta-pill">理论与数值</span>
-              <span class="meta-pill">#AI for Science</span>
-              <span class="meta-pill">12 分钟读完</span>
-              <span class="meta-pill">8 张阅读卡</span>
-              <span class="meta-pill">Soledad Villar（约翰斯·霍普金斯大学应用数学与统计系、数学数据科学研究所）；Weichi…</span>
-            </div>
+            <div class="detail-meta">Soledad Villar、Weichi Yao、David W. Hogg、Ben Blum-Smith、Bianca Dumitrascu · 预印本 · arXiv:2204.00887 · <a href="https://www.jmlr.org/papers/volume24/22-0680/22-0680.pdf" target="_blank" rel="noopener noreferrer">论文原文 ↗</a></div>
+            <p class="detail-summary">若把质量从千克改记为克，物理预测必须随单位表示一起确定地缩放，不能由训练数据碰巧学会这一规则。本文问：给定每个输入和输出的已知量纲，能否把这种被动的单位变换对称性直接施加给回归器，同时保留旋转等几何对称性？作者的方法把原始有量纲输入变为无量纲不变量，只让学习器处理这些不变量，再给输出乘上由输入构造的正确量纲因子。此处“精确”指模型结构的单位等变性；预测精度仍需经验检验。（物理页 1–3、6–8）</p>
+
           </div>
         </div>
       </div>
@@ -115,34 +121,14 @@
     <main class="container detail-layout">
       <div class="detail-shell">
         <article id="detail-body" class="reading-flow"><section class="reading-card reading-card-section">
-  <div class="reading-card-topline">
-    <span class="reading-step">Card 01</span>
-    <span class="reading-step-note">作者信息</span>
-  </div>
-  <h2>作者信息</h2>
-  <div class="reading-card-content"><ul><li>Soledad Villar（约翰斯·霍普金斯大学应用数学与统计系、数学数据科学研究所）；Weichi Yao（纽约大学技术、运营与统计系）；David W. Hogg（纽约大学物理系宇宙学与粒子物理中心、马克斯·普朗克天文学研究所、Flatiron Institute）；Ben Blum-Smith（约翰斯·霍普金斯大学应用数学与统计系）；Bianca Dumitrascu（剑桥大学计算机科学与技术系）。上述单位与作者邮箱见 JMLR 正式版物理第 1 页；通讯作者未在文中单独指定。本文按 JMLR 24(109):1–32 (2023) 正式 PDF 审读，其字节哈希见本地证据清单；arXiv:2204.00887v2 仅作同一作品的公开入口，未把两版文本视为逐字相同。</li></ul></div>
-</section>
-<section class="reading-card reading-card-section">
-  <div class="reading-card-topline">
-    <span class="reading-step">Card 02</span>
-    <span class="reading-step-note">研究问题</span>
-  </div>
   <h2>研究问题</h2>
   <div class="reading-card-content"><ul><li>若把质量从千克改记为克，物理预测必须随单位表示一起确定地缩放，不能由训练数据碰巧学会这一规则。本文问：给定每个输入和输出的已知量纲，能否把这种被动的单位变换对称性直接施加给回归器，同时保留旋转等几何对称性？作者的方法把原始有量纲输入变为无量纲不变量，只让学习器处理这些不变量，再给输出乘上由输入构造的正确量纲因子。此处“精确”指模型结构的单位等变性；预测精度仍需经验检验。（物理页 1–3、6–8）</li></ul></div>
 </section>
 <section class="reading-card reading-card-section">
-  <div class="reading-card-topline">
-    <span class="reading-step">Card 03</span>
-    <span class="reading-step-note">背景</span>
-  </div>
   <h2>背景</h2>
   <div class="reading-card-content"><ul><li>这是一篇“AI for physics”兼具理论方法与简化数值示范的论文。经典 Buckingham \(\Pi\) 定理把量纲一致的关系写成无量纲组合的函数。普通多层感知机若直接混合质量、长度等数值，非线性层没有理由维持单位缩放规则。作者把量纲指数视为正实缩放群在数值上的作用；改变单位是一种表示变换，并不改变物理系统。核心前提是输入与输出的量纲、单位换算和相关物理常数已知且自洽。（物理页 2–6）</li></ul></div>
 </section>
 <section class="reading-card reading-card-section">
-  <div class="reading-card-topline">
-    <span class="reading-step">Card 04</span>
-    <span class="reading-step-note">模型与方法</span>
-  </div>
   <h2>模型与方法</h2>
   <div class="reading-card-content"><ul><li>先把每个输入 $x_i$ 的量纲写成基单位指数向量 $u_i\in\mathbb Z^k$；$g=(g_1,\ldots,g_k)\in(\mathbb R_{&gt;0})^k$ 表示 $k$ 个基单位的改记倍率。文中定义的数值作用为 $g\cdot x_i=(\prod_j g_j^{-u_{ij}})x_i$，因此单位等变函数满足 $f(g\cdot x)=g\cdot f(x)$（式 1、7，物理页 5–6）。特征器寻找整数指数 $\alpha_{ji}$，使 $\xi_j=\prod_i x_i^{\alpha_{ji}}$ 且 $\sum_i\alpha_{ji}u_i=0$；这使每个 $\xi_j$ 在上述群作用下不变（式 8，物理页 7）。作者用 Smith 标准形生成整数核的基；无量纲独立组合数等于输入变量数减去量纲向量秩（式 9）。随后学习无量纲映射 $h$，并用输入的单项式把预测缩放回输出量纲；图 1 概括 $x\to\phi(x)\to h(\phi(x))\to\hat y$。若所需输出量纲不能由输入量纲的整数幂构造，文中解码器便不能按给出的整数算法得到；必要的常数须先纳入输入。（物理页 6–8）</li></ul><figure class="evidence-figure">
   <button class="evidence-figure-image-button" type="button" aria-label="放大查看 Figure 1" onclick="window.openPaperFigureImage && window.openPaperFigureImage(this.querySelector('img'))">
@@ -156,34 +142,18 @@
 </figure></div>
 </section>
 <section class="reading-card reading-card-section">
-  <div class="reading-card-topline">
-    <span class="reading-step">Card 05</span>
-    <span class="reading-step-note">核心结果与证据</span>
-  </div>
   <h2>核心结果与证据</h2>
   <div class="reading-card-content"><ul><li>首先，弹簧单摆的哈密顿量符号回归使用 9 个标量输入及有界有理单项式。按论文的特殊度数与逆幂限制，最高度 2 时有 286 个无量纲候选，对应 187,500 个不限制量纲的候选；$L_2$ 回归使用 8,192 个训练样本，LASSO 使用 128 个。作者报告无量纲特征在留出数据上达到机器精度并恢复正确表达式；与“286 个无量纲项再加 500 个随机有量纲项”的有限对照相比，后者测试均方误差约高一个数量级且未恢复正确系数。这不是对全部 187,500 项完整基线的同资源比较。（物理页 11–12）</li><li>其次，弹簧双摆模拟器以 30,000 条训练轨迹、每组 500 条测试轨迹比较有量纲与无量纲标量输入的哈密顿神经网络；两者均使用 32 个输入标量和相同模型参数量及训练超参。表 1 报告 60 个时间点的状态相对误差几何均值与 10 次试验标准差：同分布测试为基线 $0.0055\pm0.0030$、无量纲 $0.0061\pm0.0024$，基线略优；质量相关输入同倍率放大的测试 2 为 $0.3669\pm0.0050$ 对 $0.0089\pm0.0034$；更宽参数范围的测试 3 为 $0.1885\pm0.0031$ 对 $0.0435\pm0.0047$。图 3 给出测试 1 与 2 的相空间轨迹实例。这里是特定分布移动下的数值优势，不能升格为任意分布外泛化保证；论文还指出式 15 的状态误差本身并非无量纲。（物理页 12–15）</li><li>最后，Rietkerk 干旱植被模型的有限差分、Euler 积分数据中，无量纲线性回归使用 25 个特征，原参数基线使用 33 个；在排除植被死亡轨迹后，图 4 所示测试集均方误差从 $26.3\,\mathrm{g}^2\mathrm{m}^{-4}$ 降至 $12.6\,\mathrm{g}^2\mathrm{m}^{-4}$，Pearson 相关从 $0.94$ 升至 $0.97$。这项比较同时改变了特征数量与构造方式，不能单独分离“精确等变性”的因果贡献。（物理页 16–18）</li></ul></div>
 </section>
 <section class="reading-card reading-card-section">
-  <div class="reading-card-topline">
-    <span class="reading-step">Card 06</span>
-    <span class="reading-step-note">有效性与局限</span>
-  </div>
   <h2>有效性与局限</h2>
   <div class="reading-card-content"><ul><li>结构上的单位等变性要求单位体系相干、所有输入与标签的量纲已知，并将相关量纲常数显式列入输入；零值附近的负幂特征还可能奇异，实验中因而限制某些内积的负幂（物理页 4–8、11）。黑体辐射反例尤其清楚：仅以波长 $\lambda$、温度 $T$、光速 $c$ 与玻尔兹曼常数 $k_B$ 为输入，量纲分析只允许 $B_\lambda=Cck_BT/\lambda^4$，它只对应长波经典极限；缺少有量纲的 Planck 常数 $h$ 时，方法不能得到完整谱式，也不会自动发现 $h$（式 17–19，物理页 19）。</li><li>理论边界同样重要：常见紧群平均投影的非负风险差结果不能直接用于非紧的正实缩放群。附录在复数域和旋转不变测度下证明相关投影命题；对于实数数据，代数 Reynolds 投影与数据分布下的正交投影一般不一致，因而没有文中声称的普遍实数风险改进定理。文中讨论任意分布外改进时保留猜想措辞。（物理页 9–10、27–32）</li></ul></div>
 </section>
 <section class="reading-card reading-card-section">
-  <div class="reading-card-topline">
-    <span class="reading-step">Card 07</span>
-    <span class="reading-step-note">复现与资源</span>
-  </div>
   <h2>复现与资源</h2>
   <div class="reading-card-content"><ul><li>论文脚注给出单摆符号回归 Colab（https://dwh.gg/springy）、双摆代码分支（https://github.com/weichiyao/ScalarEMLP/tree/dimensionless）和 Rietkerk Colab（https://dwh.gg/Rietkerk）；本次仅确认公开链接可达，未运行代码或重建数据。双摆的训练集、测试集规模与参数范围见物理页 12–13；生态模拟的时间步 $0.005\,\mathrm d$、$200\,\mathrm m\times200\,\mathrm m$ 空间、$2\,\mathrm m$ 网格间距，以及训练 1,000、测试 100 个初始配置见物理页 16–17。文中未给出独立下载的数据集或权重链接。</li></ul></div>
 </section>
 <section class="reading-card reading-card-section">
-  <div class="reading-card-topline">
-    <span class="reading-step">Card 08</span>
-    <span class="reading-step-note">阅读指南</span>
-  </div>
   <h2>阅读指南</h2>
   <div class="reading-card-content"><ul><li>快速阅读：先看物理页 5–8 的式 1、7、8 和图 1，明白“单位变换—无量纲特征—重建输出”的路径；再对照页 15 表 1，注意同分布测试并未优于基线。深入阅读：页 11–18 核对训练分布、特征构造和图 3/图 4 的比较；页 19 的黑体例子说明缺失常数时的结构性失败；页 27–32 附录辨别复数理论与实数实验的证明范围。最能说明机制的图是图 1，最能说明性能及其边界的是表 1 与图 3。</li></ul></div>
 </section></article>

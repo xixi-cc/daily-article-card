@@ -3,10 +3,10 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Towards Precise Scaling Laws for Video Diffusion Transformers - physics+AI Collection 论文卡</title>
-    <meta name="description" content="作者：Yuanyang Yin、Yaqi Zhao、Mingwu Zheng、Ke Lin 等 14 人；arXiv:2411.17470v2。全文 17 页，拟合模型规模约 0.017B–0.26B，并外推/验证到 0.72B 与 1.07B。" />
+    <title>Towards Precise Scaling Laws for Video Diffusion Transformers - 论文卡</title>
+    <meta name="description" content="传统 compute-optimal scaling law 多把 optimizer hyperparameters 当作固定 nuisance variables；视频 DiT 却对 learning rate 与 batch size 非常敏感。论文问：在给定训练 tokens \(T\)、参数量 \(N\) 与 compute \(C\) 时，能否同时预测最优 \(B,\eta,N\) 和非最优模型的 loss？" />
     <link rel="canonical" href="https://xixi-cc.github.io/daily-article-card/collection-papers/2411.17470/" />
-    <script type="application/ld+json">{"@context": "https://schema.org", "@type": "Article", "headline": "Towards Precise Scaling Laws for Video Diffusion Transformers", "description": "作者：Yuanyang Yin、Yaqi Zhao、Mingwu Zheng、Ke Lin 等 14 人；arXiv:2411.17470v2。全文 17 页，拟合模型规模约 0.017B–0.26B，并外推/验证到 0.72B 与 1.07B。", "url": "https://xixi-cc.github.io/daily-article-card/collection-papers/2411.17470/", "mainEntityOfPage": "https://xixi-cc.github.io/daily-article-card/collection-papers/2411.17470/", "inLanguage": "zh-CN", "author": {"@type": "Person", "name": "Xineng Cao", "alternateName": ["Xixi Cao", "曹溪能"], "url": "https://xixi-cc.github.io/"}, "isBasedOn": "https://arxiv.org/abs/2411.17470"}</script>
+    <script type="application/ld+json">{"@context": "https://schema.org", "@type": "Article", "headline": "Towards Precise Scaling Laws for Video Diffusion Transformers", "description": "传统 compute-optimal scaling law 多把 optimizer hyperparameters 当作固定 nuisance variables；视频 DiT 却对 learning rate 与 batch size 非常敏感。论文问：在给定训练 tokens \\(T\\)、参数量 \\(N\\) 与 compute \\(C\\) 时，能否同时预测最优 \\(B,\\eta,N\\) 和非最优模型的 loss？", "url": "https://xixi-cc.github.io/daily-article-card/collection-papers/2411.17470/", "mainEntityOfPage": "https://xixi-cc.github.io/daily-article-card/collection-papers/2411.17470/", "inLanguage": "zh-CN", "author": {"@type": "Person", "name": "Xineng Cao", "alternateName": ["Xixi Cao", "曹溪能"], "url": "https://xixi-cc.github.io/"}, "isBasedOn": "https://arxiv.org/abs/2411.17470"}</script>
     <script>
       (function() {
         try {
@@ -30,6 +30,18 @@
     <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700;800&family=Noto+Sans+SC:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
     <script>document.documentElement.classList.add('math-pending');</script>
     <script>
+      window.fitInlineMath = function(root) {
+        (root || document).querySelectorAll('mjx-container:not([display="true"])').forEach(function(el) {
+          el.classList.remove('inline-math-overflow');
+          const content = el.closest('.reading-card-content, .detail-summary, .feed-card-body');
+          if(content && el.getBoundingClientRect().width > content.clientWidth) {
+            el.classList.add('inline-math-overflow');
+            el.tabIndex = 0;
+            el.setAttribute('aria-label', '长公式，可横向滑动阅读');
+          }
+        });
+      };
+      window.addEventListener('resize', function() { window.fitInlineMath(); });
       window.MathJax = {
         tex: {
           inlineMath: [['$', '$'], ['\\(', '\\)']],
@@ -49,6 +61,7 @@
             MathJax.startup.promise.then(function() {
               document.documentElement.classList.remove('math-pending');
               document.documentElement.dataset.mathReady = 'true';
+              window.requestAnimationFrame(function() { window.fitInlineMath(); });
             });
           }
         }
@@ -65,9 +78,9 @@
     <header class="header detail-page-header">
       <div class="container">
         <div class="detail-page-topbar">
-          <a class="back-link" href="../../collection.html">返回列表</a>
+          <a class="back-link" href="../../index.html">返回列表</a>
           <div class="detail-topbar-actions">
-            <span class="detail-site-name">physics+AI Collection 论文卡</span>
+            <span class="detail-site-name">论文卡</span>
             <button id="detail-favorite" class="detail-favorite-button" type="button" aria-pressed="false">☆ 收藏</button>
             <button class="theme-toggle" type="button" data-theme-toggle aria-label="当前主题：设备，点击切换主题" title="当前主题：设备">
   <span class="theme-toggle-icons" aria-hidden="true">
@@ -91,22 +104,15 @@
         <div class="detail-hero-grid">
           <div class="detail-hero-cover"><figure class="paper-figure-card paper-figure-card-detail">
   <img class="paper-figure-image" src="../../assets/collection-figures/2411.17470/figure-1-video-scaling.webp" alt="四个视频 DiT 参数规模的 validation loss 对 training tokens 曲线，灰色为固定次优超参数，红色为最优点。" loading="lazy" onclick="window.openPaperFigureImage && window.openPaperFigureImage(this)" />
-  <figcaption class="paper-figure-caption">不先优化 batch size 与 learning rate，视频 DiT 的 scaling curve 会被系统性抬高。</figcaption>
+  <figcaption class="paper-figure-caption">不先优化 batch size 与 learning rate，视频 DiT 的 scaling curve 会被系统性抬高。 <a href="https://arxiv.org/abs/2411.17470" target="_blank" rel="noopener noreferrer">原文图源 ↗</a></figcaption>
 </figure></div>
           <div class="detail-hero-copy">
-            <p class="eyebrow">Collection 全文卡</p>
+            <p class="eyebrow">论文详情</p>
             <h1 class="detail-page-title">Towards Precise Scaling Laws for Video Diffusion Transformers</h1>
             <p class="detail-page-title-zh">迈向视频扩散 Transformer 的精确缩放律</p>
-            <div class="detail-meta">Paper Collection · Video Generation · <a href="https://arxiv.org/abs/2411.17470" target="_blank" rel="noopener noreferrer">原文</a></div>
-            <p class="detail-summary">作者：Yuanyang Yin、Yaqi Zhao、Mingwu Zheng、Ke Lin 等 14 人；arXiv:2411.17470v2。全文 17 页，拟合模型规模约 0.017B–0.26B，并外推/验证到 0.72B 与 1.07B。</p>
-            <div class="detail-micro-meta">
-              <span class="meta-pill">AI 基础理论</span>
-              <span class="meta-pill">AI 实证</span>
-              <span class="meta-pill">#Video Generation</span><span class="meta-pill">#计算机视觉</span><span class="meta-pill">#人工智能</span>
-              <span class="meta-pill">8 分钟读完</span>
-              <span class="meta-pill">8 张阅读卡</span>
-              <span class="meta-pill">作者：Yuanyang Yin、Yaqi Zhao、Mingwu Zheng、Ke Lin 等 14…</span>
-            </div>
+            <div class="detail-meta">Yuanyang Yin、Yaqi Zhao、Mingwu Zheng、Ke Lin、Jiarong Ou、Rui Chen、Victor Shea-Jay Huang、Jiahao Wang、Xin Tao、Pengfei Wan、Di Zhang、Baoqun Yin、Wentao Zhang、Kun Gai · 预印本 · arXiv:2411.17470 · <a href="https://arxiv.org/abs/2411.17470" target="_blank" rel="noopener noreferrer">论文原文 ↗</a></div>
+            <p class="detail-summary">传统 compute-optimal scaling law 多把 optimizer hyperparameters 当作固定 nuisance variables；视频 DiT 却对 learning rate 与 batch size 非常敏感。论文问：在给定训练 tokens \(T\)、参数量 \(N\) 与 compute \(C\) 时，能否同时预测最优 \(B,\eta,N\) 和非最优模型的 loss？</p>
+
           </div>
         </div>
       </div>
@@ -115,42 +121,18 @@
     <main class="container detail-layout">
       <div class="detail-shell">
         <article id="detail-body" class="reading-flow"><section class="reading-card reading-card-section">
-  <div class="reading-card-topline">
-    <span class="reading-step">Card 01</span>
-    <span class="reading-step-note">作者信息</span>
-  </div>
-  <h2>作者信息</h2>
-  <div class="reading-card-content"><ul><li>作者：Yuanyang Yin、Yaqi Zhao、Mingwu Zheng、Ke Lin 等 14 人；arXiv:2411.17470v2。全文 17 页，拟合模型规模约 0.017B–0.26B，并外推/验证到 0.72B 与 1.07B。</li></ul></div>
-</section>
-<section class="reading-card reading-card-section">
-  <div class="reading-card-topline">
-    <span class="reading-step">Card 02</span>
-    <span class="reading-step-note">研究问题</span>
-  </div>
   <h2>研究问题</h2>
   <div class="reading-card-content"><ul><li>传统 compute-optimal scaling law 多把 optimizer hyperparameters 当作固定 nuisance variables；视频 DiT 却对 learning rate 与 batch size 非常敏感。论文问：在给定训练 tokens \(T\)、参数量 \(N\) 与 compute \(C\) 时，能否同时预测最优 \(B,\eta,N\) 和非最优模型的 loss？</li></ul></div>
 </section>
 <section class="reading-card reading-card-section">
-  <div class="reading-card-topline">
-    <span class="reading-step">Card 03</span>
-    <span class="reading-step-note">背景</span>
-  </div>
   <h2>背景</h2>
   <div class="reading-card-content"><ul><li>若不同规模模型都用固定 batch size/learning rate，测得的 validation-loss envelope 会混入 optimization error，从而错误偏向更大模型。Figure 1 的灰点是次优超参数，红点是每个规模的最优点；同一 (\(N\)) 下两者差距随训练继续显著扩大。</li></ul></div>
 </section>
 <section class="reading-card reading-card-section">
-  <div class="reading-card-topline">
-    <span class="reading-step">Card 04</span>
-    <span class="reading-step-note">模型与方法</span>
-  </div>
   <h2>模型与方法</h2>
   <div class="reading-card-content"><ul><li>作者先在四个小模型与不同 token budgets 上网格搜索 \(B,\eta\)，拟合 \(B_{\rm opt}=\alpha_B T^{\beta_B}N^{\gamma_B}\) 和对应的 learning-rate power law；再将优化后的 loss 拟合为 \(L(T,N)\)，并以 FLOPs constraint 求 compute-optimal \(N\)。</li><li>为处理实际 inference 约束，论文进一步拟合任意 \(N,T\) 的 generalized loss surface，而不只给最优 envelope。训练采用 constant learning rate；理论动机来自 mini-batch SGD 的 curvature–gradient-noise trade-off。</li></ul></div>
 </section>
 <section class="reading-card reading-card-section">
-  <div class="reading-card-topline">
-    <span class="reading-step">Card 05</span>
-    <span class="reading-step-note">核心结果与证据</span>
-  </div>
   <h2>核心结果与证据</h2>
   <div class="reading-card-content"><ul><li>Figure 1 是关键诊断：0.02B、0.06B、0.13B、0.26B 四组曲线中，固定次优超参数的灰点系统性高于最佳红点，说明不优化 \(B,\eta\) 会污染 scaling fit。</li><li>在 \(10^{10}\) TFlops budget 下，作者用约 0.64B 模型而非 conventional law 给出的更大模型，报告相近生成性能并减少 40.1% inference cost；另一表述是约节省 39.9% parameters。0.72B/1.07B validation experiments 用于检查外推。</li><li>generalized law 对非最优模型也给出 loss prediction，适合部署时显式交换训练预算和推理尺寸；但它仍是同一模型族、数据与训练 recipe 内的经验标度。</li></ul><figure class="evidence-figure">
   <button class="evidence-figure-image-button" type="button" aria-label="放大查看 Figure 1" onclick="window.openPaperFigureImage && window.openPaperFigureImage(this.querySelector('img'))">
@@ -164,26 +146,14 @@
 </figure></div>
 </section>
 <section class="reading-card reading-card-section">
-  <div class="reading-card-topline">
-    <span class="reading-step">Card 06</span>
-    <span class="reading-step-note">有效性与局限</span>
-  </div>
   <h2>有效性与局限</h2>
   <div class="reading-card-content"><ul><li>论文使用 constant learning rate，作者明确指出加入 decay schedule 可能改变缩放关系。规模跨度与一次 1.07B 外推有限，不能直接外推到十亿级以上不同架构、不同 VAE/tokenizer、数据质量或更长视频。</li><li>40.1% 是作者定义的 inference-cost proxy 下、给定 compute budget 的模型尺寸差异，不等于端到端延迟/显存必然同比下降。validation loss 与感知质量、人类偏好、运动物理一致性之间也非一一对应。</li></ul></div>
 </section>
 <section class="reading-card reading-card-section">
-  <div class="reading-card-topline">
-    <span class="reading-step">Card 07</span>
-    <span class="reading-step-note">复现与资源</span>
-  </div>
   <h2>复现与资源</h2>
   <div class="reading-card-content"><ul><li>原文：https://arxiv.org/abs/2411.17470。全文 17 页，PDF SHA-256：b412e87304d7ab17a9aa4cec816fbf2d8ac4c220fc728c73590282a7c2f8a1fd。</li><li>复现需固定 video tokenizer/VAE、DiT family、token definition、FLOPs accounting、constant-LR schedule、batch/LR grid、near-optimal tolerance、fit weighting、0.72B/1.07B validation runs 与 generation evaluator。</li><li>Evidence status: full-text verified; no independent reproduction performed.</li></ul></div>
 </section>
 <section class="reading-card reading-card-section">
-  <div class="reading-card-topline">
-    <span class="reading-step">Card 08</span>
-    <span class="reading-step-note">阅读指南</span>
-  </div>
   <h2>阅读指南</h2>
   <div class="reading-card-content"><ul><li>先看 Figure 1，确认 optimization confound；再读 Eqs. (10)–(14) 的 \(B_{\rm opt},\eta_{\rm opt},N_{\rm opt}\) 拟合。随后检查 0.72B/1.07B validation 和 40.1% cost claim，最后读 limitations，尤其是 constant learning rate 与 model-family boundary。</li></ul></div>
 </section></article>
@@ -192,7 +162,7 @@
           <nav id="detail-toc-nav" class="detail-toc-nav"></nav>
         </aside>
       </div>
-      <nav class="paper-nav"><a class="paper-nav-link paper-nav-prev" href="../../collection-papers/2411.18704/"><span class="paper-nav-label">← 上一篇</span><span class="paper-nav-title">Exponential Moving Average of Weights in Deep Learning: Dynamics and Benefits</span></a>
+      <nav class="paper-nav"><a class="paper-nav-link paper-nav-prev" href="../../collection-papers/2411.18579/"><span class="paper-nav-label">← 上一篇</span><span class="paper-nav-title">Surveying the space of descriptions of a composite system with machine learning</span></a>
       <a class="paper-nav-link paper-nav-next" href="../../collection-papers/2411.16416/"><span class="paper-nav-label">下一篇 →</span><span class="paper-nav-title">A Multi-agent Framework for Physical Laws Discovery</span></a></nav>
       <section id="comments" class="comments-panel" aria-labelledby="comments-title">
         <div class="comments-heading">

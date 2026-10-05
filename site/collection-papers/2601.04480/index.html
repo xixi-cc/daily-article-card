@@ -3,10 +3,10 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>When Models Manipulate Manifolds: The Geometry of a Counting Task - physics+AI Collection 论文卡</title>
-    <meta name="description" content="模型只接收token编号，没有每行的视觉边界，也没有直接附带的字符计数，却能在固定宽度文本中预测何时换行。本文以Claude 3.5 Haiku为对象，追踪从token长度、当前行字符数、前文行宽，到“下一token能否装下”的一条实际计算链。 它的价值不只是画出漂亮的表示曲线，而是把稀疏特征、注意力权重、低维几何、消融与干预连在一起，解释一个训练分布中自然存在的行为。" />
+    <title>When Models Manipulate Manifolds: The Geometry of a Counting Task - 论文卡</title>
+    <meta name="description" content="模型只接收token编号，没有每行的视觉边界，也没有直接附带的字符计数，却能在固定宽度文本中预测何时换行。本文以Claude 3.5 Haiku为对象，追踪从token长度、当前行字符数、前文行宽，到“下一token能否装下”的一条实际计算链。" />
     <link rel="canonical" href="https://xixi-cc.github.io/daily-article-card/collection-papers/2601.04480/" />
-    <script type="application/ld+json">{"@context": "https://schema.org", "@type": "Article", "headline": "When Models Manipulate Manifolds: The Geometry of a Counting Task", "description": "模型只接收token编号，没有每行的视觉边界，也没有直接附带的字符计数，却能在固定宽度文本中预测何时换行。本文以Claude 3.5 Haiku为对象，追踪从token长度、当前行字符数、前文行宽，到“下一token能否装下”的一条实际计算链。 它的价值不只是画出漂亮的表示曲线，而是把稀疏特征、注意力权重、低维几何、消融与干预连在一起，解释一个训练分布中自然存在的行为。", "url": "https://xixi-cc.github.io/daily-article-card/collection-papers/2601.04480/", "mainEntityOfPage": "https://xixi-cc.github.io/daily-article-card/collection-papers/2601.04480/", "inLanguage": "zh-CN", "author": {"@type": "Person", "name": "Xineng Cao", "alternateName": ["Xixi Cao", "曹溪能"], "url": "https://xixi-cc.github.io/"}, "isBasedOn": "https://arxiv.org/abs/2601.04480v1"}</script>
+    <script type="application/ld+json">{"@context": "https://schema.org", "@type": "Article", "headline": "When Models Manipulate Manifolds: The Geometry of a Counting Task", "description": "模型只接收token编号，没有每行的视觉边界，也没有直接附带的字符计数，却能在固定宽度文本中预测何时换行。本文以Claude 3.5 Haiku为对象，追踪从token长度、当前行字符数、前文行宽，到“下一token能否装下”的一条实际计算链。", "url": "https://xixi-cc.github.io/daily-article-card/collection-papers/2601.04480/", "mainEntityOfPage": "https://xixi-cc.github.io/daily-article-card/collection-papers/2601.04480/", "inLanguage": "zh-CN", "author": {"@type": "Person", "name": "Xineng Cao", "alternateName": ["Xixi Cao", "曹溪能"], "url": "https://xixi-cc.github.io/"}, "isBasedOn": "https://arxiv.org/abs/2601.04480v1"}</script>
     <script>
       (function() {
         try {
@@ -30,6 +30,18 @@
     <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700;800&family=Noto+Sans+SC:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
     <script>document.documentElement.classList.add('math-pending');</script>
     <script>
+      window.fitInlineMath = function(root) {
+        (root || document).querySelectorAll('mjx-container:not([display="true"])').forEach(function(el) {
+          el.classList.remove('inline-math-overflow');
+          const content = el.closest('.reading-card-content, .detail-summary, .feed-card-body');
+          if(content && el.getBoundingClientRect().width > content.clientWidth) {
+            el.classList.add('inline-math-overflow');
+            el.tabIndex = 0;
+            el.setAttribute('aria-label', '长公式，可横向滑动阅读');
+          }
+        });
+      };
+      window.addEventListener('resize', function() { window.fitInlineMath(); });
       window.MathJax = {
         tex: {
           inlineMath: [['$', '$'], ['\\(', '\\)']],
@@ -49,6 +61,7 @@
             MathJax.startup.promise.then(function() {
               document.documentElement.classList.remove('math-pending');
               document.documentElement.dataset.mathReady = 'true';
+              window.requestAnimationFrame(function() { window.fitInlineMath(); });
             });
           }
         }
@@ -65,9 +78,9 @@
     <header class="header detail-page-header">
       <div class="container">
         <div class="detail-page-topbar">
-          <a class="back-link" href="../../collection.html">返回列表</a>
+          <a class="back-link" href="../../index.html">返回列表</a>
           <div class="detail-topbar-actions">
-            <span class="detail-site-name">physics+AI Collection 论文卡</span>
+            <span class="detail-site-name">论文卡</span>
             <button id="detail-favorite" class="detail-favorite-button" type="button" aria-pressed="false">☆ 收藏</button>
             <button class="theme-toggle" type="button" data-theme-toggle aria-label="当前主题：设备，点击切换主题" title="当前主题：设备">
   <span class="theme-toggle-icons" aria-hidden="true">
@@ -91,22 +104,15 @@
         <div class="detail-hero-grid">
           <div class="detail-hero-cover"><figure class="paper-figure-card paper-figure-card-detail">
   <img class="paper-figure-image" src="../../assets/collection-figures/2601.04480/fig15.png" alt="三组热图从左到右为identity、边界头QK、随机头QK；横轴为上一行长度，纵轴为当前行长度，颜色表示余弦相似度。" loading="lazy" onclick="window.openPaperFigureImage && window.openPaperFigureImage(this)" />
-  <figcaption class="paper-figure-caption">字符计数与前一行宽度探针的三组相似度对照：identity、边界头QK、随机头QK。 来源：Wes Gurnee、Emmanuel Ameisen、Isaac Kauvar、Julius Tarng、Adam Pearce、Chris Olah、Joshua Batson；arXiv:2601.04480v1；PDF \(p\).12 Figure15；CC BY4.0；仅裁掉周围正文/空白，完整三面板与原图注，未重绘。</figcaption>
+  <figcaption class="paper-figure-caption">字符计数与前一行宽度探针的三组相似度对照：identity、边界头QK、随机头QK。 来源：Wes Gurnee、Emmanuel Ameisen、Isaac Kauvar、Julius Tarng、Adam Pearce、Chris Olah、Joshua Batson；arXiv:2601.04480v1；PDF \(p\).12 Figure15；CC BY4.0；仅裁掉周围正文/空白，完整三面板与原图注，未重绘。 <a href="https://arxiv.org/abs/2601.04480v1" target="_blank" rel="noopener noreferrer">原文图源 ↗</a></figcaption>
 </figure></div>
           <div class="detail-hero-copy">
-            <p class="eyebrow">Collection 全文卡</p>
+            <p class="eyebrow">论文详情</p>
             <h1 class="detail-page-title">When Models Manipulate Manifolds: The Geometry of a Counting Task</h1>
             <p class="detail-page-title-zh">语言模型怎样决定换行：把字符数放到弯曲流形上计算</p>
-            <div class="detail-meta">Paper Collection · Physics of AI · <a href="https://arxiv.org/abs/2601.04480v1" target="_blank" rel="noopener noreferrer">原文</a></div>
-            <p class="detail-summary">模型只接收token编号，没有每行的视觉边界，也没有直接附带的字符计数，却能在固定宽度文本中预测何时换行。本文以Claude 3.5 Haiku为对象，追踪从token长度、当前行字符数、前文行宽，到“下一token能否装下”的一条实际计算链。 它的价值不只是画出漂亮的表示曲线，而是把稀疏特征、注意力权重、低维几何、消融与干预连在一起，解释一个训练分布中自然存在的行为。</p>
-            <div class="detail-micro-meta">
-              <span class="meta-pill">生物与神经</span>
-              <span class="meta-pill">AI 实证</span>
-              <span class="meta-pill">#Physics of AI</span><span class="meta-pill">#Transformer</span><span class="meta-pill">#生物与分子系统</span>
-              <span class="meta-pill">16 分钟读完</span>
-              <span class="meta-pill">8 张阅读卡</span>
-              <span class="meta-pill">Wes Gurnee、Emmanuel Ameisen、Isaac Kauvar、Julius Tar…</span>
-            </div>
+            <div class="detail-meta">Wes Gurnee、Emmanuel Ameisen、Isaac Kauvar、Julius Tarng、Adam Pearce、Chris Olah、Joshua Batson · 预印本 · arXiv:2601.04480 · <a href="https://arxiv.org/abs/2601.04480v1" target="_blank" rel="noopener noreferrer">论文原文 ↗</a></div>
+            <p class="detail-summary">模型只接收token编号，没有每行的视觉边界，也没有直接附带的字符计数，却能在固定宽度文本中预测何时换行。本文以Claude 3.5 Haiku为对象，追踪从token长度、当前行字符数、前文行宽，到“下一token能否装下”的一条实际计算链。</p>
+
           </div>
         </div>
       </div>
@@ -115,34 +121,14 @@
     <main class="container detail-layout">
       <div class="detail-shell">
         <article id="detail-body" class="reading-flow"><section class="reading-card reading-card-section">
-  <div class="reading-card-topline">
-    <span class="reading-step">Card 01</span>
-    <span class="reading-step-note">作者信息</span>
-  </div>
-  <h2>作者信息</h2>
-  <div class="reading-card-content"><ul><li>Wes Gurnee、Emmanuel Ameisen、Isaac Kauvar、Julius Tarng、Adam Pearce、Chris Olah、Joshua Batson，均来自Anthropic；Gurnee、Ameisen、Batson标注共同贡献，Batson为通讯作者。原研究于2025-10-21发表于Transformer Circuits，arXiv2601.04480v1是2026-01-08发布的46页档案版，不应把它写成2026年才首次出现的新实验。</li></ul></div>
-</section>
-<section class="reading-card reading-card-section">
-  <div class="reading-card-topline">
-    <span class="reading-step">Card 02</span>
-    <span class="reading-step-note">摘要</span>
-  </div>
   <h2>摘要</h2>
   <div class="reading-card-content"><ul><li>模型只接收token编号，没有每行的视觉边界，也没有直接附带的字符计数，却能在固定宽度文本中预测何时换行。本文以Claude 3.5 Haiku为对象，追踪从token长度、当前行字符数、前文行宽，到“下一token能否装下”的一条实际计算链。</li><li>它的价值不只是画出漂亮的表示曲线，而是把稀疏特征、注意力权重、低维几何、消融与干预连在一起，解释一个训练分布中自然存在的行为。</li></ul></div>
 </section>
 <section class="reading-card reading-card-section">
-  <div class="reading-card-topline">
-    <span class="reading-step">Card 03</span>
-    <span class="reading-step-note">背景</span>
-  </div>
   <h2>背景</h2>
   <div class="reading-card-content"><ul><li>“一个概念对应一根方向”对某些标量变量太简单。若要表示1到150个字符，把150个值各放在正交方向上很费维度；若只沿一根射线靠幅度变化，又可能遇到分辨率、动态范围和噪声的困难。模型中的折中是一条嵌在少量维度里的弯曲曲线：变量只有一维，但表示它的线性子空间不是一维。</li><li>稀疏字典给出局部视角：若干特征分别在相邻字符区间激活，类似对曲线的局部坐标。几何视角则把它们组织成同一条连续的计数曲线。两种视角有重构误差，不能当作完全等价的数学同构。</li><li>这里“位置细胞”“边界细胞”“视觉错觉”是帮助理解的功能类比，不证明语言模型使用与生物脑相同的细胞机制，也不表示模型在主观上真的看到了文字。</li></ul></div>
 </section>
 <section class="reading-card reading-card-section">
-  <div class="reading-card-topline">
-    <span class="reading-step">Card 04</span>
-    <span class="reading-step-note">模型与方法</span>
-  </div>
   <h2>模型与方法</h2>
   <div class="reading-card-content"><ul><li>作者把散文先去掉换行，再按\(k=15,20,\ldots,150\)的上限、在不超限的词边界重新换行，研究模型能否从前文推断隐含约束。附录性能测试使用200段散文及\(k=20,40,\ldots,140\)；模型通常到第三行已能较好适应。主体稀疏特征来自在Haiku上训练的1000万特征Weakly Causal Crosscoder字典。</li><li>定义\(c\)为当前token结束时本行已用字符数，\(w\)为模型估计的行宽，\(r=w-c\)为剩余字符数，\(\ell\)为拟输出token的字符长度。在理想化计数判据下，\(\ell&gt;r\)意味着需要先换行；这只是解释变量关系，不是声明模型逐项执行了精确整数算法。空格、零宽修饰token和多token词是需要单独处理的边界。</li><li>作者按字符数\(c\)分组取早期residual stream均值\(\mu_c\)，再对这些均值做PCA。150个均值的前6个主成分解释95%的方差；这不等于6维解释了全部逐样本激活的95%。另外，线性回归对字符数的\(R^2=0.985\)并不推出真实表示是一条直线。</li><li>干预采用</li></ul>
 <div class="display-math">\[\begin{aligned}a_{\mathrm{patch}}&amp;=a_{\mathrm{orig}}-\mu_{\mathrm{orig}}\\&amp;\quad+\mu_{\mathrm{target}}\end{aligned}\]</div>
@@ -150,10 +136,6 @@
 <ul><li>数学记号\(a\)表示激活向量，\(\mu\)表示相应条件均值，PCA只是分析坐标；QK分析对应attention的query–key匹配，OV分析对应value到输出的线性写入。不能把读出探针本身直接当成网络实际激活。</li></ul></div>
 </section>
 <section class="reading-card reading-card-section">
-  <div class="reading-card-topline">
-    <span class="reading-step">Card 05</span>
-    <span class="reading-step-note">核心结果与证据</span>
-  </div>
   <h2>核心结果与证据</h2>
   <div class="reading-card-content"><ul><li>计数曲线。十个相关稀疏特征通常有两三个同时活跃，重构出一条低维弯曲曲线；特征区间随数值增大而变宽。均值、探针与字典decoder的相似度都有“主峰—负相关—次峰”的振铃结构。作者用低秩近似与受约束粒子toy model解释：要同时保持近邻相似与远处可分，有限维嵌入可能产生这种起伏。它是特定几何目标的解释，不是全部神经网络的全局最优性定理。</li><li>边界匹配。前一行宽度与当前计数的表示并非简单相减；某些attention头把两组表示变换到带偏移的对齐关系。当\(c\)接近\(w\)而尚差少量字符时，对前一个换行符的匹配变强。多个边界头有不同偏移和感受区间，合起来更细致地估计\(r\)。<a href="https://arxiv.org/pdf/2601.04480v1#page=12" target="_blank" rel="noopener noreferrer">Fig15，PDF \(p_{12}\)</a></li><li>多头协作。单个边界头的输出随\(r\)变化接近一条低维轨迹，几个头的总输出形成更有曲率的二维表示。这个\(r\)子空间的消融主要影响换行预测；在具体示例中改写\(r\)的表示会按预期改变换行与原词的相对概率。<a href="https://arxiv.org/pdf/2601.04480v1#page=14" target="_blank" rel="noopener noreferrer">Fig19，PDF \(p_{14}\)</a></li><li>最后决策。在较晚层，剩余字符数与下一token长度占据近正交子空间，组合后的均值几何使“装得下/装不下”更容易线性区分。由三维均值几何得到的分类器在真实数据上AUC为0.91。作者使用真实下一个非换行token作为长度标签，这依赖“模型预计的token接近真实token”的近似；未解释所有多token词或多候选词情况。</li><li>计数如何生成。早期多个头把前一换行符当作注意力锚点，在不同token位置范围内估计字符数，再根据token长短修正。第0层输出主要像若干射线的和，第1层在已有表示上增加曲率、提高精度。五个关键第0层头的计数读出R²约0.93，前两层十一个头约0.97；这说明协作有用，不是证明任何可能架构都必须使用同样数量的头。<a href="https://arxiv.org/pdf/2601.04480v1#page=18" target="_blank" rel="noopener noreferrer">Fig24，PDF \(p_{18}\)</a></li><li>本文的重要证据分成三层。第一，观察几何与相关特征；第二，消融与patch：删除计数或剩余字符子空间，比同维随机消融更影响换行位置的loss，定向改变均值表示也能改变具体输出；第三，依据机制构造新的输入干预，而不是只解释已有图。</li><li>字符对@@在git diff里常用作分隔符。一些计数头因此也把它当成潜在的计数起点。当在普通文本的指定位置插入@@而维持比较所需的长度条件时，相关头会转移注意力，换行预测被扰动。作者比较180种双字符插入，绝大多数只是中度影响；少数代码/分隔符相关字符对造成更大变化，注意力“分心”与换行概率下降相关。显式长度比较中也出现类似效应，并测试了选项顺序。</li><li>这比仅凭PCA图宣称“模型在数数”更强，但证据仍是特定模型、任务、文本与干预设计内的机制支持。均值patch可能同时改动相关变量，作者也承认子空间可能与其他特征叠加；随机消融和token类型对照缓解这一问题，却不是自动排除所有混杂。</li><li>没有独立重跑Haiku、训练字典或调用模型接口；本卡核验的是公开档案版、关键静态图及附录说明。</li></ul><figure class="evidence-figure">
   <button class="evidence-figure-image-button" type="button" aria-label="放大查看 Figure 15" onclick="window.openPaperFigureImage && window.openPaperFigureImage(this.querySelector('img'))">
@@ -187,26 +169,14 @@
 </figure></div>
 </section>
 <section class="reading-card reading-card-section">
-  <div class="reading-card-topline">
-    <span class="reading-step">Card 06</span>
-    <span class="reading-step-note">有效性与局限</span>
-  </div>
   <h2>有效性与局限</h2>
   <div class="reading-card-content"><ul><li>不要把一维变量、六维PCA子空间和六个独立物理自由度混为一谈；也不要把“均值方差解释率”写成完整模型信息压缩率。跨字典大小的特征相似性只在此案例中被观察，仍存在与行宽有关的feature splitting，不能提升为普适的唯一特征分解。</li><li>“twist”是对线性变换后几何对齐的描述，不要求QK矩阵真是保持距离的正交旋转。对称循环核的傅里叶构造说明某类低秩嵌入可线性实现位移；它需要相应核与谱子空间条件，不代表任意弯曲流形都有这种线性平移结构。受吸引/排斥toy model也会落入局部极小，并没有证明训练模型必然优化同一能量。</li><li>原文p18将\(i\)定义为剩余字符数、\(j\)定义为下一token长度，却把“break”条件写成\(i-j\ge0\)。按前后文及附录I的定义，需要换行的是\(j&gt;i\)；本卡保留变量定义并使用正确语义，不照抄这个方向相反的不等式。</li><li>作者尚未确定模型如何从多条历史行聚合出全局行宽，例如取最大值还是加权平均。对变宽文本、计数不确定性、多种候选词、多token词、特殊LaTeX/Markdown结构也没有完整机制解释。分析早期计数时，因为attention贡献约为MLP的4倍而主要聚焦attention，并不意味着MLP贡献严格为零。</li><li>主研究对象是闭源Haiku，公开Gemma/Qwen归因图是另一些探索入口，不等于本文已在这些模型上复现完整机制。作者把本工作视为深入案例与方法启发，而非可自动发现任意语义流形的通用算法。以上限制不抹去干预证据的价值，但决定了可以外推多远。</li></ul></div>
 </section>
 <section class="reading-card reading-card-section">
-  <div class="reading-card-topline">
-    <span class="reading-step">Card 07</span>
-    <span class="reading-step-note">复现与资源</span>
-  </div>
   <h2>复现与资源</h2>
   <div class="reading-card-content"><ul><li>档案PDF：<a href="https://arxiv.org/pdf/2601.04480v1" target="_blank" rel="noopener noreferrer">https://arxiv.org/pdf/2601.04480v1</a>；版本页：<a href="https://arxiv.org/abs/2601.04480v1" target="_blank" rel="noopener noreferrer">https://arxiv.org/abs/2601.04480v1</a>。原发布页：<a href="https://transformer-circuits.pub/2025/linebreaks/index.html" target="_blank" rel="noopener noreferrer">https://transformer-circuits.pub/2025/linebreaks/index.html</a>，包含交互展示；本卡依据完整PDF核验，不声称已执行交互模拟或Colab。</li><li>图15(\(p_{12}\))展示identity、边界头QK、随机头QK的三组相似度，是边界匹配的原始证据；图19(\(p_{14}\))展示剩余字符子空间消融与具体patch；图24(\(p_{18}\))展示两层多头输出的协作。采用原图，保留所有科学面板、轴标与图例，注明裁切仅去除周围正文/空白，不重绘数据；来源为CC BY4.0论文。图6的表示曲线另可在<a href="https://arxiv.org/pdf/2601.04480v1#page=7" target="_blank" rel="noopener noreferrer">PDF p7对照</a>。</li><li>实验描述、特征家族、toy model和更多头的分析分别位于附录C–\(N\)；公开扩展图入口在原文p26。若开展独立复现，应先确认目标模型权重、字典和所需激活的可获得性，不能把一个可访问网页等同于完整可运行实验环境。</li></ul></div>
 </section>
 <section class="reading-card reading-card-section">
-  <div class="reading-card-topline">
-    <span class="reading-step">Card 08</span>
-    <span class="reading-step-note">阅读指南</span>
-  </div>
   <h2>阅读指南</h2>
   <div class="reading-card-content"><ul><li>先看Fig6、7、8，建立“几何相关性→因果干预”的证据链；再看Fig15与19，理解计数怎样转成剩余空间；最后看Fig24及Appendix \(K\)，理解这些表示是如何由不同注意力头逐步构造的。若关心数学结构，再读Appendix G的循环矩阵与傅里叶联系，并保留其理想化条件。</li><li>对AI理论研究更可迁移的方法是：先从模型稳定完成的自然任务出发，用特征定位可能变量，再寻找低维几何，最后通过可控输入和内部干预验证解释。漂亮的流形只是起点，能否预测新的干预结果才是关键。</li><li>物理上的启发是“有效变量如何被编码并参与计算”，而不是把每条弯曲曲线都解释成相变、吸引子或重整化群。本文展示了一个具体成功案例：离散特征帮助发现机制，连续几何帮助简化机制，两者结合减少解释成本。</li></ul></div>
 </section></article>
@@ -215,8 +185,8 @@
           <nav id="detail-toc-nav" class="detail-toc-nav"></nav>
         </aside>
       </div>
-      <nav class="paper-nav"><a class="paper-nav-link paper-nav-prev" href="../../collection-papers/doi-10.1103-yfb3-fgf2/"><span class="paper-nav-label">← 上一篇</span><span class="paper-nav-title">Enhancing Gravitational-Wave Detection: A Machine Learning Pipeline Combination Approach with Robust Uncertainty Quantification</span></a>
-      <a class="paper-nav-link paper-nav-next" href="../../collection-papers/2601.03220/"><span class="paper-nav-label">下一篇 →</span><span class="paper-nav-title">From Entropy to Epiplexity: Rethinking Information for Computationally Bounded Intelligence</span></a></nav>
+      <nav class="paper-nav"><a class="paper-nav-link paper-nav-prev" href="../../collection-papers/2510.25553/"><span class="paper-nav-label">← 上一篇</span><span class="paper-nav-title">Renormalization group for deep neural networks: Universality of learning and scaling laws</span></a>
+      <a class="paper-nav-link paper-nav-next" href="../../collection-papers/2510.19093/"><span class="paper-nav-label">下一篇 →</span><span class="paper-nav-title">Weight Decay may matter more than muP for Learning Rate Transfer in Practice</span></a></nav>
       <section id="comments" class="comments-panel" aria-labelledby="comments-title">
         <div class="comments-heading">
           <div>

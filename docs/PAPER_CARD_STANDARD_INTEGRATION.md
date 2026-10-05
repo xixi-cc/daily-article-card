@@ -34,3 +34,11 @@ npm run build
 Historical cards retain their recorded version until they are substantively revised. Historical automation outputs, receipts, and release archives are append-only evidence and must not be rewritten merely to change the current standard. The separate Paper Collection catalog is an intake source, not a Paper Card renderer; only cards promoted into this repository's Collection data flow are governed here.
 
 GitHub synchronization is a permanent publication invariant, not a one-time migration step. A Sites deployment does not complete an update unless the same validated source has also been committed and pushed to GitHub `origin` and the remote branch SHA has been verified.
+
+## Unified reader presentation (2026-10-05)
+
+`docs/READER_PRESENTATION.md` documents the user-authorized presentation amendment,
+`card_presentation.py`, unified catalog JS and reviewed cover overrides. The
+scientific Daily/Collection source separation remains intact; the display-only
+union never supplies screening authority. Validate overrides in the build and
+inspect every newly added cover against its source.

@@ -3,10 +3,10 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>The Mean-Field Dynamics of Transformers - physics+AI Collection 论文卡</title>
-    <meta name="description" content="作者：Philippe Rigollet；arXiv:2512.01868v4。全文 21 页。文章建立 pure self-attention 的 interacting-particle/mean-field 框架，综合 Wasserstein gradient flows、Kuramoto synchronization、mean-shift clustering 与近期聚类定理；它主要解释 attention dynamics，不是完整训练 Transformer 的端到端理论。" />
+    <title>The Mean-Field Dynamics of Transformers - 论文卡</title>
+    <meta name="description" content="深层 attention 常出现 token similarity 增大、rank/representation collapse，但有限层实验也保留多个语义 clusters。论文问：softmax attention 的连续深度极限为何产生聚类；多 cluster 为什么能长时间 metastable 后才合并；normalization 和 context length \(n\) 如何改变 contraction rate 与 collapse threshold？" />
     <link rel="canonical" href="https://xixi-cc.github.io/daily-article-card/collection-papers/2512.01868/" />
-    <script type="application/ld+json">{"@context": "https://schema.org", "@type": "Article", "headline": "The Mean-Field Dynamics of Transformers", "description": "作者：Philippe Rigollet；arXiv:2512.01868v4。全文 21 页。文章建立 pure self-attention 的 interacting-particle/mean-field 框架，综合 Wasserstein gradient flows、Kuramoto synchronization、mean-shift clustering 与近期聚类定理；它主要解释 attention dynamics，不是完整训练 Transformer 的端到端理论。", "url": "https://xixi-cc.github.io/daily-article-card/collection-papers/2512.01868/", "mainEntityOfPage": "https://xixi-cc.github.io/daily-article-card/collection-papers/2512.01868/", "inLanguage": "zh-CN", "author": {"@type": "Person", "name": "Xineng Cao", "alternateName": ["Xixi Cao", "曹溪能"], "url": "https://xixi-cc.github.io/"}, "isBasedOn": "https://arxiv.org/abs/2512.01868"}</script>
+    <script type="application/ld+json">{"@context": "https://schema.org", "@type": "Article", "headline": "The Mean-Field Dynamics of Transformers", "description": "深层 attention 常出现 token similarity 增大、rank/representation collapse，但有限层实验也保留多个语义 clusters。论文问：softmax attention 的连续深度极限为何产生聚类；多 cluster 为什么能长时间 metastable 后才合并；normalization 和 context length \\(n\\) 如何改变 contraction rate 与 collapse threshold？", "url": "https://xixi-cc.github.io/daily-article-card/collection-papers/2512.01868/", "mainEntityOfPage": "https://xixi-cc.github.io/daily-article-card/collection-papers/2512.01868/", "inLanguage": "zh-CN", "author": {"@type": "Person", "name": "Xineng Cao", "alternateName": ["Xixi Cao", "曹溪能"], "url": "https://xixi-cc.github.io/"}, "isBasedOn": "https://arxiv.org/abs/2512.01868"}</script>
     <script>
       (function() {
         try {
@@ -30,6 +30,18 @@
     <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700;800&family=Noto+Sans+SC:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
     <script>document.documentElement.classList.add('math-pending');</script>
     <script>
+      window.fitInlineMath = function(root) {
+        (root || document).querySelectorAll('mjx-container:not([display="true"])').forEach(function(el) {
+          el.classList.remove('inline-math-overflow');
+          const content = el.closest('.reading-card-content, .detail-summary, .feed-card-body');
+          if(content && el.getBoundingClientRect().width > content.clientWidth) {
+            el.classList.add('inline-math-overflow');
+            el.tabIndex = 0;
+            el.setAttribute('aria-label', '长公式，可横向滑动阅读');
+          }
+        });
+      };
+      window.addEventListener('resize', function() { window.fitInlineMath(); });
       window.MathJax = {
         tex: {
           inlineMath: [['$', '$'], ['\\(', '\\)']],
@@ -49,6 +61,7 @@
             MathJax.startup.promise.then(function() {
               document.documentElement.classList.remove('math-pending');
               document.documentElement.dataset.mathReady = 'true';
+              window.requestAnimationFrame(function() { window.fitInlineMath(); });
             });
           }
         }
@@ -65,9 +78,9 @@
     <header class="header detail-page-header">
       <div class="container">
         <div class="detail-page-topbar">
-          <a class="back-link" href="../../collection.html">返回列表</a>
+          <a class="back-link" href="../../index.html">返回列表</a>
           <div class="detail-topbar-actions">
-            <span class="detail-site-name">physics+AI Collection 论文卡</span>
+            <span class="detail-site-name">论文卡</span>
             <button id="detail-favorite" class="detail-favorite-button" type="button" aria-pressed="false">☆ 收藏</button>
             <button class="theme-toggle" type="button" data-theme-toggle aria-label="当前主题：设备，点击切换主题" title="当前主题：设备">
   <span class="theme-toggle-icons" aria-hidden="true">
@@ -91,22 +104,15 @@
         <div class="detail-hero-grid">
           <div class="detail-hero-cover"><figure class="paper-figure-card paper-figure-card-detail">
   <img class="paper-figure-image" src="../../assets/collection-figures/2512.01868/figure-3-clustering-transition.webp" alt="不同维数下随机球面 tokens 的聚类概率随深度和 inverse temperature 的相图。" loading="lazy" onclick="window.openPaperFigureImage && window.openPaperFigureImage(this)" />
-  <figcaption class="paper-figure-caption">高维时聚类边界变尖并逼近等角模型预测，揭示 context、temperature 与 representation collapse 的相变结构。</figcaption>
+  <figcaption class="paper-figure-caption">高维时聚类边界变尖并逼近等角模型预测，揭示 context、temperature 与 representation collapse 的相变结构。 <a href="https://arxiv.org/abs/2512.01868" target="_blank" rel="noopener noreferrer">原文图源 ↗</a></figcaption>
 </figure></div>
           <div class="detail-hero-copy">
-            <p class="eyebrow">Collection 全文卡</p>
+            <p class="eyebrow">论文详情</p>
             <h1 class="detail-page-title">The Mean-Field Dynamics of Transformers</h1>
             <p class="detail-page-title-zh">Transformer 的均场动力学</p>
-            <div class="detail-meta">Paper Collection · Transformer Theory · <a href="https://arxiv.org/abs/2512.01868" target="_blank" rel="noopener noreferrer">原文</a></div>
-            <p class="detail-summary">作者：Philippe Rigollet；arXiv:2512.01868v4。全文 21 页。文章建立 pure self-attention 的 interacting-particle/mean-field 框架，综合 Wasserstein gradient flows、Kuramoto synchronization、mean-shift clustering 与近期聚类定理；它主要解释 attention dynamics，不是完整训练 Transformer 的端到端理论。</p>
-            <div class="detail-micro-meta">
-              <span class="meta-pill">AI for Science</span>
-              <span class="meta-pill">理论与数值</span>
-              <span class="meta-pill">#Transformer Theory</span><span class="meta-pill">#机器学习</span><span class="meta-pill">#数学物理</span>
-              <span class="meta-pill">11 分钟读完</span>
-              <span class="meta-pill">8 张阅读卡</span>
-              <span class="meta-pill">作者：Philippe Rigollet；arXiv:2512.01868v4。全文 21 页。文章建…</span>
-            </div>
+            <div class="detail-meta">Philippe Rigollet · 预印本 · arXiv:2512.01868 · <a href="https://arxiv.org/abs/2512.01868" target="_blank" rel="noopener noreferrer">论文原文 ↗</a></div>
+            <p class="detail-summary">深层 attention 常出现 token similarity 增大、rank/representation collapse，但有限层实验也保留多个语义 clusters。论文问：softmax attention 的连续深度极限为何产生聚类；多 cluster 为什么能长时间 metastable 后才合并；normalization 和 context length \(n\) 如何改变 contraction rate 与 collapse threshold？</p>
+
           </div>
         </div>
       </div>
@@ -115,42 +121,18 @@
     <main class="container detail-layout">
       <div class="detail-shell">
         <article id="detail-body" class="reading-flow"><section class="reading-card reading-card-section">
-  <div class="reading-card-topline">
-    <span class="reading-step">Card 01</span>
-    <span class="reading-step-note">作者信息</span>
-  </div>
-  <h2>作者信息</h2>
-  <div class="reading-card-content"><ul><li>作者：Philippe Rigollet；arXiv:2512.01868v4。全文 21 页。文章建立 pure self-attention 的 interacting-particle/mean-field 框架，综合 Wasserstein gradient flows、Kuramoto synchronization、mean-shift clustering 与近期聚类定理；它主要解释 attention dynamics，不是完整训练 Transformer 的端到端理论。</li></ul></div>
-</section>
-<section class="reading-card reading-card-section">
-  <div class="reading-card-topline">
-    <span class="reading-step">Card 02</span>
-    <span class="reading-step-note">研究问题</span>
-  </div>
   <h2>研究问题</h2>
   <div class="reading-card-content"><ul><li>深层 attention 常出现 token similarity 增大、rank/representation collapse，但有限层实验也保留多个语义 clusters。论文问：softmax attention 的连续深度极限为何产生聚类；多 cluster 为什么能长时间 metastable 后才合并；normalization 和 context length \(n\) 如何改变 contraction rate 与 collapse threshold？</li></ul></div>
 </section>
 <section class="reading-card reading-card-section">
-  <div class="reading-card-topline">
-    <span class="reading-step">Card 03</span>
-    <span class="reading-step-note">背景</span>
-  </div>
   <h2>背景</h2>
   <div class="reading-card-content"><ul><li>把每个 token \(x_i\in\mathbb S^{d-1}\) 看作球面粒子，attention weight 是 \(e^{\beta\langle x_i,x_j\rangle}\) 的归一化相互作用。Post-LN 被理想化为切空间投影，得到 Self-Attention（SA）flow；去掉归一化得到 USA。粒子数 \(n\to\infty\) 时经验测度满足 continuity equation。</li><li>ALBERT 的层间 pairwise-inner-product histogram 向 1 聚集，提供真实模型中的现象锚点；理论则研究理想化 attention-only flow 的长期极限。</li></ul></div>
 </section>
 <section class="reading-card reading-card-section">
-  <div class="reading-card-topline">
-    <span class="reading-step">Card 04</span>
-    <span class="reading-step-note">模型与方法</span>
-  </div>
   <h2>模型与方法</h2>
   <div class="reading-card-content"><ul><li>SA velocity 将 weighted mean token 投影到 \(x_i\) 的切空间，保持单位球；对应一个 interaction energy 的 Wasserstein gradient ascent。\(d=2,\beta=0\) 退化到 Kuramoto synchronization，有限 \(\beta\) 与 mean-shift mode seeking 建立联系。</li><li>作者回顾 finite-particle 与 mean-field global clustering theorem，再分析 well-separated groups 的 metastability：组内先快速塌缩，cluster centers 在 \(T_2\) 前缓慢移动，且 \(\log T_2\sim\beta\)。equiangular ansatz 将多体流降成单一 cosine similarity \(\rho(t)\)，可得精确指数速率和 long-context threshold。</li></ul></div>
 </section>
 <section class="reading-card reading-card-section">
-  <div class="reading-card-topline">
-    <span class="reading-step">Card 05</span>
-    <span class="reading-step-note">核心结果与证据</span>
-  </div>
   <h2>核心结果与证据</h2>
   <div class="reading-card-content"><ul><li>Figure 3 在 \(n=32\) 上给出 \((t,\beta)\) 聚类概率相图：从 \(d=8\) 到 128、1024，红蓝边界变尖并逼近 equiangular prediction。它说明高维 concentration 使随机 tokens 近乎等角，从而让一维降维具有预测力。</li><li>全局定理表明对 \(d\ge3\) 的一般初态，SA/USA 几乎必然最终集中到单 cluster；局部 hemisphere 条件下以显式指数速率收敛。低温大 \(\beta\) 下并不立即 collapse，而是能量 staircase：多 cluster plateaus 持续指数长时间后逐次合并。</li><li>normalization 改变速率而不简单消除聚类：equiangular model 中 USA rate \(\lambda_\beta=2e^\beta\) 随 \(\beta\) 爆增，SA rate 保持受控。long context 中若 \(\beta\) 固定，softmax 趋向 uniform mixing 并加速 collapse；临界 scaling \(\beta_n=\Theta(\log n)\) 才能维持 content-adaptive sparsity。</li></ul><figure class="evidence-figure">
   <button class="evidence-figure-image-button" type="button" aria-label="放大查看 Figure 3" onclick="window.openPaperFigureImage && window.openPaperFigureImage(this.querySelector('img'))">
@@ -164,26 +146,14 @@
 </figure></div>
 </section>
 <section class="reading-card reading-card-section">
-  <div class="reading-card-topline">
-    <span class="reading-step">Card 06</span>
-    <span class="reading-step-note">有效性与局限</span>
-  </div>
   <h2>有效性与局限</h2>
   <div class="reading-card-content"><ul><li>模型省略 MLP、residual mixing、multi-head、learned \(Q\)/\(K\)/V、causal masks、positional encoding、训练和 finite-depth effects；因此 theorem 证明的是理想化 attention flow，不是任意实际 Transformer 必然 collapse。ALBERT histogram 是相关现象，不是对具体 ODE 的参数识别。</li><li>\(d=2\) 的部分 theorem 需要单独 Kuramoto 结果；noisy/an\-isotropic dynamics 与 uniform-in-time mean-field convergence 仍开放。多 cluster 在有限深网络中可能是有用表示，而 asymptotic single-cluster 结论不直接决定有限层性能。</li></ul></div>
 </section>
 <section class="reading-card reading-card-section">
-  <div class="reading-card-topline">
-    <span class="reading-step">Card 07</span>
-    <span class="reading-step-note">复现与资源</span>
-  </div>
   <h2>复现与资源</h2>
   <div class="reading-card-content"><ul><li>原文：https://arxiv.org/abs/2512.01868。全文 21 页，PDF SHA-256：8597f94eb8fb1b4655d255934276bb1f0bf1ca78053c78eed921c6975bb56df0。</li><li>复现 Figure 3 需固定 SA/USA convention、\(n=32\)、\(d=8,128,1024\)、\(\beta,t\) grid、random sphere initialization、ODE tolerance、cluster criterion \(\langle x_i,x_j\rangle\ge0.999\) 与 seed count。还应保存 energy staircase 和 \(\rho(t)\)，比较不同 normalization。</li><li>Evidence status: full-text verified; no independent reproduction performed.</li></ul></div>
 </section>
 <section class="reading-card reading-card-section">
-  <div class="reading-card-topline">
-    <span class="reading-step">Card 08</span>
-    <span class="reading-step-note">阅读指南</span>
-  </div>
   <h2>阅读指南</h2>
   <div class="reading-card-content"><ul><li>先读 Sections 3–4，把 attention 写成球面粒子 flow，并看 ALBERT histogram；再读 global/local clustering theorems。随后看 Figure 2 的 metastable staircase 与 Figure 3 相图，最后读 normalization 和 \(\beta_n\sim\log n\) 的 long-context transition，并对照模型省略项。</li></ul></div>
 </section></article>

@@ -3,10 +3,10 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Laplacian Multi-scale Flow Matching for Generative Modeling - physics+AI Collection 论文卡</title>
-    <meta name="description" content="作者：Zelin Zhao、Petr Molodyk、Haotian Xue、Yongxin Chen；arXiv:2602.19461v1。全文 21 页。论文提出 LapFlow，在 CelebA-HQ 256–1024 与 ImageNet-256 上比较 single-scale 和 cascaded multi-scale flow models。" />
+    <title>Laplacian Multi-scale Flow Matching for Generative Modeling - 论文卡</title>
+    <meta name="description" content="高分辨率 flow matching 在完整 latent grid 上从头到尾更新所有频率，attention cost 随 token 数快速增长；cascaded pyramids 又需要每尺度独立模型和 re-noising bridge。论文问：能否在一个共享模型里并行表示多尺度 Laplacian residuals，但沿 flow time 维持 coarse-to-fine 因果依赖？" />
     <link rel="canonical" href="https://xixi-cc.github.io/daily-article-card/collection-papers/2602.19461/" />
-    <script type="application/ld+json">{"@context": "https://schema.org", "@type": "Article", "headline": "Laplacian Multi-scale Flow Matching for Generative Modeling", "description": "作者：Zelin Zhao、Petr Molodyk、Haotian Xue、Yongxin Chen；arXiv:2602.19461v1。全文 21 页。论文提出 LapFlow，在 CelebA-HQ 256–1024 与 ImageNet-256 上比较 single-scale 和 cascaded multi-scale flow models。", "url": "https://xixi-cc.github.io/daily-article-card/collection-papers/2602.19461/", "mainEntityOfPage": "https://xixi-cc.github.io/daily-article-card/collection-papers/2602.19461/", "inLanguage": "zh-CN", "author": {"@type": "Person", "name": "Xineng Cao", "alternateName": ["Xixi Cao", "曹溪能"], "url": "https://xixi-cc.github.io/"}, "isBasedOn": "https://arxiv.org/abs/2602.19461"}</script>
+    <script type="application/ld+json">{"@context": "https://schema.org", "@type": "Article", "headline": "Laplacian Multi-scale Flow Matching for Generative Modeling", "description": "高分辨率 flow matching 在完整 latent grid 上从头到尾更新所有频率，attention cost 随 token 数快速增长；cascaded pyramids 又需要每尺度独立模型和 re-noising bridge。论文问：能否在一个共享模型里并行表示多尺度 Laplacian residuals，但沿 flow time 维持 coarse-to-fine 因果依赖？", "url": "https://xixi-cc.github.io/daily-article-card/collection-papers/2602.19461/", "mainEntityOfPage": "https://xixi-cc.github.io/daily-article-card/collection-papers/2602.19461/", "inLanguage": "zh-CN", "author": {"@type": "Person", "name": "Xineng Cao", "alternateName": ["Xixi Cao", "曹溪能"], "url": "https://xixi-cc.github.io/"}, "isBasedOn": "https://arxiv.org/abs/2602.19461"}</script>
     <script>
       (function() {
         try {
@@ -30,6 +30,18 @@
     <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700;800&family=Noto+Sans+SC:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
     <script>document.documentElement.classList.add('math-pending');</script>
     <script>
+      window.fitInlineMath = function(root) {
+        (root || document).querySelectorAll('mjx-container:not([display="true"])').forEach(function(el) {
+          el.classList.remove('inline-math-overflow');
+          const content = el.closest('.reading-card-content, .detail-summary, .feed-card-body');
+          if(content && el.getBoundingClientRect().width > content.clientWidth) {
+            el.classList.add('inline-math-overflow');
+            el.tabIndex = 0;
+            el.setAttribute('aria-label', '长公式，可横向滑动阅读');
+          }
+        });
+      };
+      window.addEventListener('resize', function() { window.fitInlineMath(); });
       window.MathJax = {
         tex: {
           inlineMath: [['$', '$'], ['\\(', '\\)']],
@@ -49,6 +61,7 @@
             MathJax.startup.promise.then(function() {
               document.documentElement.classList.remove('math-pending');
               document.documentElement.dataset.mathReady = 'true';
+              window.requestAnimationFrame(function() { window.fitInlineMath(); });
             });
           }
         }
@@ -65,9 +78,9 @@
     <header class="header detail-page-header">
       <div class="container">
         <div class="detail-page-topbar">
-          <a class="back-link" href="../../collection.html">返回列表</a>
+          <a class="back-link" href="../../index.html">返回列表</a>
           <div class="detail-topbar-actions">
-            <span class="detail-site-name">physics+AI Collection 论文卡</span>
+            <span class="detail-site-name">论文卡</span>
             <button id="detail-favorite" class="detail-favorite-button" type="button" aria-pressed="false">☆ 收藏</button>
             <button class="theme-toggle" type="button" data-theme-toggle aria-label="当前主题：设备，点击切换主题" title="当前主题：设备">
   <span class="theme-toggle-icons" aria-hidden="true">
@@ -91,22 +104,15 @@
         <div class="detail-hero-grid">
           <div class="detail-hero-cover"><figure class="paper-figure-card paper-figure-card-detail">
   <img class="paper-figure-image" src="../../assets/collection-figures/2602.19461/figure-1-multiscale-generation.webp" alt="三尺度 Laplacian pyramid 从粗到细分段去噪并层级重建图像的流程。" loading="lazy" onclick="window.openPaperFigureImage && window.openPaperFigureImage(this)" />
-  <figcaption class="paper-figure-caption">LapFlow 把 flow time 分配给不同频带：先确定全局低频结构，再因果地加入中高频 residual。</figcaption>
+  <figcaption class="paper-figure-caption">LapFlow 把 flow time 分配给不同频带：先确定全局低频结构，再因果地加入中高频 residual。 <a href="https://arxiv.org/abs/2602.19461" target="_blank" rel="noopener noreferrer">原文图源 ↗</a></figcaption>
 </figure></div>
           <div class="detail-hero-copy">
-            <p class="eyebrow">Collection 全文卡</p>
+            <p class="eyebrow">论文详情</p>
             <h1 class="detail-page-title">Laplacian Multi-scale Flow Matching for Generative Modeling</h1>
             <p class="detail-page-title-zh">用于生成建模的拉普拉斯多尺度流匹配</p>
-            <div class="detail-meta">Paper Collection · Flow Matching · <a href="https://arxiv.org/abs/2602.19461" target="_blank" rel="noopener noreferrer">原文</a></div>
-            <p class="detail-summary">作者：Zelin Zhao、Petr Molodyk、Haotian Xue、Yongxin Chen；arXiv:2602.19461v1。全文 21 页。论文提出 LapFlow，在 CelebA-HQ 256–1024 与 ImageNet-256 上比较 single-scale 和 cascaded multi-scale flow models。</p>
-            <div class="detail-micro-meta">
-              <span class="meta-pill">AI 方法与系统</span>
-              <span class="meta-pill">AI 实证</span>
-              <span class="meta-pill">#Flow Matching</span><span class="meta-pill">#计算机视觉</span><span class="meta-pill">#机器学习</span>
-              <span class="meta-pill">9 分钟读完</span>
-              <span class="meta-pill">8 张阅读卡</span>
-              <span class="meta-pill">作者：Zelin Zhao、Petr Molodyk、Haotian Xue、Yongxin Chen…</span>
-            </div>
+            <div class="detail-meta">Zelin Zhao、Petr Molodyk、Haotian Xue、Yongxin Chen · 预印本 · arXiv:2602.19461 · <a href="https://arxiv.org/abs/2602.19461" target="_blank" rel="noopener noreferrer">论文原文 ↗</a></div>
+            <p class="detail-summary">高分辨率 flow matching 在完整 latent grid 上从头到尾更新所有频率，attention cost 随 token 数快速增长；cascaded pyramids 又需要每尺度独立模型和 re-noising bridge。论文问：能否在一个共享模型里并行表示多尺度 Laplacian residuals，但沿 flow time 维持 coarse-to-fine 因果依赖？</p>
+
           </div>
         </div>
       </div>
@@ -115,42 +121,18 @@
     <main class="container detail-layout">
       <div class="detail-shell">
         <article id="detail-body" class="reading-flow"><section class="reading-card reading-card-section">
-  <div class="reading-card-topline">
-    <span class="reading-step">Card 01</span>
-    <span class="reading-step-note">作者信息</span>
-  </div>
-  <h2>作者信息</h2>
-  <div class="reading-card-content"><ul><li>作者：Zelin Zhao、Petr Molodyk、Haotian Xue、Yongxin Chen；arXiv:2602.19461v1。全文 21 页。论文提出 LapFlow，在 CelebA-HQ 256–1024 与 ImageNet-256 上比较 single-scale 和 cascaded multi-scale flow models。</li></ul></div>
-</section>
-<section class="reading-card reading-card-section">
-  <div class="reading-card-topline">
-    <span class="reading-step">Card 02</span>
-    <span class="reading-step-note">研究问题</span>
-  </div>
   <h2>研究问题</h2>
   <div class="reading-card-content"><ul><li>高分辨率 flow matching 在完整 latent grid 上从头到尾更新所有频率，attention cost 随 token 数快速增长；cascaded pyramids 又需要每尺度独立模型和 re-noising bridge。论文问：能否在一个共享模型里并行表示多尺度 Laplacian residuals，但沿 flow time 维持 coarse-to-fine 因果依赖？</li></ul></div>
 </section>
 <section class="reading-card reading-card-section">
-  <div class="reading-card-topline">
-    <span class="reading-step">Card 03</span>
-    <span class="reading-step-note">背景</span>
-  </div>
   <h2>背景</h2>
   <div class="reading-card-content"><ul><li>Laplacian pyramid 将图像写成最粗 low-pass component 与逐层 band-pass residuals；重建是上采样粗尺度再加 residual。自然图像的 global geometry 主要在低频，纹理和边缘在高频，因此 flow time 可按尺度贡献分段。</li><li>Figure 1 从 \(t=0\) 到 1 展示三尺度 schedule：先只去噪最粗层，到 \(T_2\) 后加入中尺度，到 \(T_1\) 后加入最细 residual，最后层级重建。图直接表达了模型的 causal information flow。</li></ul></div>
 </section>
 <section class="reading-card reading-card-section">
-  <div class="reading-card-topline">
-    <span class="reading-step">Card 04</span>
-    <span class="reading-step-note">模型与方法</span>
-  </div>
   <h2>模型与方法</h2>
   <div class="reading-card-content"><ul><li>LapFlow 用 multi-scale Mixture-of-Transformers：各尺度有独立 \(Q\)/\(K\)/V projections 与 scale expert，global attention weights 共享；causal mask 只允许 fine scale 读取已稳定的 coarse states。多个 residual fields 由同一 \(V_\theta\) 并行预测。</li><li>training/sampling 将 \([0,1]\) 分成 scale-specific segments，并对各尺度使用 modified noise schedule；较细尺度在其 activation time 前保持 noise。与 cascades 不同，尺度间不做显式 re-noising 或独立 bridge model。</li></ul></div>
 </section>
 <section class="reading-card reading-card-section">
-  <div class="reading-card-topline">
-    <span class="reading-step">Card 05</span>
-    <span class="reading-step-note">核心结果与证据</span>
-  </div>
   <h2>核心结果与证据</h2>
   <div class="reading-card-content"><ul><li>Figure 1 的核心是 time–scale light cone：粗尺度先形成全局结构，之后的细尺度只能在已完成 coarse image 条件下补 residual；这避免高频路径反向扰动尚未稳定的低频 geometry。</li><li>CelebA-HQ 256 上 LapFlow FID 为 3.53，而文中 LFM baseline 为 5.26；模型扩展到 1024。附录 scale ablation 显示 256 分辨率用 2/3/4 scales 的 FID 分别为 3.53/3.59/5.12，说明更多尺度并非单调更好。</li><li>在 1024 的三尺度 temporal split 中，平衡的 \(T_1=0.67,T_2=0.33\) 最佳；过晚加入 fine scale 留下不足优化时间，过早加入则破坏 global consistency。ImageNet-256 结果也在较低 GFLOPs 下优于多项 single/multi-scale baselines，但依赖 matched implementation。</li></ul><figure class="evidence-figure">
   <button class="evidence-figure-image-button" type="button" aria-label="放大查看 Figure 1" onclick="window.openPaperFigureImage && window.openPaperFigureImage(this.querySelector('img'))">
@@ -164,26 +146,14 @@
 </figure></div>
 </section>
 <section class="reading-card reading-card-section">
-  <div class="reading-card-topline">
-    <span class="reading-step">Card 06</span>
-    <span class="reading-step-note">有效性与局限</span>
-  </div>
   <h2>有效性与局限</h2>
   <div class="reading-card-content"><ul><li>Laplacian decomposition 是手工频带先验，边界、aliasing 与 VAE latent statistics 可能使 residuals 不正交；coarse-to-fine 对纹理主导或非图像数据未必最优。MoT、causal mask、noise schedule 和 training allocation 同时变化，归因需要依赖消融。</li><li>主要数据是 CelebA-HQ 与 ImageNet，FID 不能覆盖语义 fidelity、diversity 或 memorization。GFLOPs 与 measured inference time 受 kernel/hardware 影响；1024 结果样本/训练预算有限，尚无独立 reproduction。</li></ul></div>
 </section>
 <section class="reading-card reading-card-section">
-  <div class="reading-card-topline">
-    <span class="reading-step">Card 07</span>
-    <span class="reading-step-note">复现与资源</span>
-  </div>
   <h2>复现与资源</h2>
   <div class="reading-card-content"><ul><li>原文：https://arxiv.org/abs/2602.19461；代码链接见论文：https://github.com/sjtuytc/gen。全文 21 页，PDF SHA-256：2238514b8ac4722fbc832e9a91a401e06db2bc143ce48c18916c7519eea18332。</li><li>复现需固定 VAE、Laplacian filters/downsampling、scale count、MoT experts、shared attention、causal mask、\(T_i\)、noise schedule、CFG、ODE steps、GFLOPs convention、FID-50K implementation、resolution-specific training budget 与 seeds。</li><li>Evidence status: full-text verified; no independent reproduction performed.</li></ul></div>
 </section>
 <section class="reading-card reading-card-section">
-  <div class="reading-card-topline">
-    <span class="reading-step">Card 08</span>
-    <span class="reading-step-note">阅读指南</span>
-  </div>
   <h2>阅读指南</h2>
   <div class="reading-card-content"><ul><li>先看 Figure 1 的时间—尺度顺序，再看 Figure 2 的 MoT 与 causal mask；随后读 Eqs. (8)–(10) 的 multi-scale path。最后对照 Tables 1–3 和附录 scale/split ablations，注意 2 scales 优于更多 scales 的负结果。</li></ul></div>
 </section></article>

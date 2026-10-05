@@ -3,10 +3,10 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Does SGD Seek Flatness or Sharpness? An Exactly Solvable Model - physics+AI Collection 论文卡</title>
-    <meta name="description" content="这篇工作最值得保留的区分是：梯度涨落和损失曲率不是同一个量。在拟合后的MSE模型中，Hessian迹对所有输出方向的参数敏感度求和；随机梯度平方则额外受到各输出方向残差噪声协方差的加权。只有噪声足够各向同性时，两者才成比例。因此，若训练偏向低梯度涨落的解，它可以选择较尖锐的参数配置，而非必然选择最平坦配置。[p5–9] “精确可解”的对象必须说清：作者解析求解的是最小涨落假设下、最优拟合流形上的参数选择问题，未精确求出任意有限学习率SGD的完整随机轨迹。核心Hessian迹公式有明确解释力，但本版另有一般涨落不等式写反、最大特征值公式错误及“当且仅当各向同性”的范围问题。本卡保留可核验的迹结果，不把这些有问题的推论混成一个无条件定理。" />
+    <title>Does SGD Seek Flatness or Sharpness? An Exactly Solvable Model - 论文卡</title>
+    <meta name="description" content="这篇工作最值得保留的区分是：梯度涨落和损失曲率不是同一个量。在拟合后的MSE模型中，Hessian迹对所有输出方向的参数敏感度求和；随机梯度平方则额外受到各输出方向残差噪声协方差的加权。只有噪声足够各向同性时，两者才成比例。因此，若训练偏向低梯度涨落的解，它可以选择较尖锐的参数配置，而非必然选择最平坦配置。[p5–9]" />
     <link rel="canonical" href="https://xixi-cc.github.io/daily-article-card/collection-papers/2602.05065/" />
-    <script type="application/ld+json">{"@context": "https://schema.org", "@type": "Article", "headline": "Does SGD Seek Flatness or Sharpness? An Exactly Solvable Model", "description": "这篇工作最值得保留的区分是：梯度涨落和损失曲率不是同一个量。在拟合后的MSE模型中，Hessian迹对所有输出方向的参数敏感度求和；随机梯度平方则额外受到各输出方向残差噪声协方差的加权。只有噪声足够各向同性时，两者才成比例。因此，若训练偏向低梯度涨落的解，它可以选择较尖锐的参数配置，而非必然选择最平坦配置。[p5–9] “精确可解”的对象必须说清：作者解析求解的是最小涨落假设下、最优拟合流形上的参数选择问题，未精确求出任意有限学习率SGD的完整随机轨迹。核心Hessian迹公式有明确解释力，但本版另有一般涨落不等式写反、最大特征值公式错误及“当且仅当各向同性”的范围问题。本卡保留可核验的迹结果，不把这些有问题的推论混成一个无条件定理。", "url": "https://xixi-cc.github.io/daily-article-card/collection-papers/2602.05065/", "mainEntityOfPage": "https://xixi-cc.github.io/daily-article-card/collection-papers/2602.05065/", "inLanguage": "zh-CN", "author": {"@type": "Person", "name": "Xineng Cao", "alternateName": ["Xixi Cao", "曹溪能"], "url": "https://xixi-cc.github.io/"}, "isBasedOn": "https://arxiv.org/abs/2602.05065v1"}</script>
+    <script type="application/ld+json">{"@context": "https://schema.org", "@type": "Article", "headline": "Does SGD Seek Flatness or Sharpness? An Exactly Solvable Model", "description": "这篇工作最值得保留的区分是：梯度涨落和损失曲率不是同一个量。在拟合后的MSE模型中，Hessian迹对所有输出方向的参数敏感度求和；随机梯度平方则额外受到各输出方向残差噪声协方差的加权。只有噪声足够各向同性时，两者才成比例。因此，若训练偏向低梯度涨落的解，它可以选择较尖锐的参数配置，而非必然选择最平坦配置。[p5–9]", "url": "https://xixi-cc.github.io/daily-article-card/collection-papers/2602.05065/", "mainEntityOfPage": "https://xixi-cc.github.io/daily-article-card/collection-papers/2602.05065/", "inLanguage": "zh-CN", "author": {"@type": "Person", "name": "Xineng Cao", "alternateName": ["Xixi Cao", "曹溪能"], "url": "https://xixi-cc.github.io/"}, "isBasedOn": "https://arxiv.org/abs/2602.05065v1"}</script>
     <script>
       (function() {
         try {
@@ -30,6 +30,18 @@
     <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700;800&family=Noto+Sans+SC:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
     <script>document.documentElement.classList.add('math-pending');</script>
     <script>
+      window.fitInlineMath = function(root) {
+        (root || document).querySelectorAll('mjx-container:not([display="true"])').forEach(function(el) {
+          el.classList.remove('inline-math-overflow');
+          const content = el.closest('.reading-card-content, .detail-summary, .feed-card-body');
+          if(content && el.getBoundingClientRect().width > content.clientWidth) {
+            el.classList.add('inline-math-overflow');
+            el.tabIndex = 0;
+            el.setAttribute('aria-label', '长公式，可横向滑动阅读');
+          }
+        });
+      };
+      window.addEventListener('resize', function() { window.fitInlineMath(); });
       window.MathJax = {
         tex: {
           inlineMath: [['$', '$'], ['\\(', '\\)']],
@@ -49,6 +61,7 @@
             MathJax.startup.promise.then(function() {
               document.documentElement.classList.remove('math-pending');
               document.documentElement.dataset.mathReady = 'true';
+              window.requestAnimationFrame(function() { window.fitInlineMath(); });
             });
           }
         }
@@ -65,9 +78,9 @@
     <header class="header detail-page-header">
       <div class="container">
         <div class="detail-page-topbar">
-          <a class="back-link" href="../../collection.html">返回列表</a>
+          <a class="back-link" href="../../index.html">返回列表</a>
           <div class="detail-topbar-actions">
-            <span class="detail-site-name">physics+AI Collection 论文卡</span>
+            <span class="detail-site-name">论文卡</span>
             <button id="detail-favorite" class="detail-favorite-button" type="button" aria-pressed="false">☆ 收藏</button>
             <button class="theme-toggle" type="button" data-theme-toggle aria-label="当前主题：设备，点击切换主题" title="当前主题：设备">
   <span class="theme-toggle-icons" aria-hidden="true">
@@ -91,22 +104,15 @@
         <div class="detail-hero-grid">
           <div class="detail-hero-cover"><figure class="paper-figure-card paper-figure-card-detail">
   <img class="paper-figure-image" src="../../assets/collection-figures/2602.05065/fig2.png" alt="左：深线性网络；中：ReLU教师—学生；右：MNIST。红/蓝分别为各向同性/非各向同性标签噪声，保留原英文图注、坐标、图例及三面板。" loading="lazy" onclick="window.openPaperFigureImage && window.openPaperFigureImage(this)" />
-  <figcaption class="paper-figure-caption">左：深线性网络；中：ReLU教师—学生；右：MNIST。红/蓝分别为各向同性/非各向同性标签噪声，保留原英文图注、坐标、图例及三面板。 来源：Yizhou Xu、Pierfrancesco Beneventano、Isaac Chuang、Liu Ziyin；Xu等，arXiv:2602.05065v1，Figure2 PDF \(p_{5}\)，CC BY4.0；保留三面板与英文图注，仅裁图外正文/空白，未重绘或增强。</figcaption>
+  <figcaption class="paper-figure-caption">左：深线性网络；中：ReLU教师—学生；右：MNIST。红/蓝分别为各向同性/非各向同性标签噪声，保留原英文图注、坐标、图例及三面板。 来源：Yizhou Xu、Pierfrancesco Beneventano、Isaac Chuang、Liu Ziyin；Xu等，arXiv:2602.05065v1，Figure2 PDF \(p_{5}\)，CC BY4.0；保留三面板与英文图注，仅裁图外正文/空白，未重绘或增强。 <a href="https://arxiv.org/abs/2602.05065v1" target="_blank" rel="noopener noreferrer">原文图源 ↗</a></figcaption>
 </figure></div>
           <div class="detail-hero-copy">
-            <p class="eyebrow">Collection 全文卡</p>
+            <p class="eyebrow">论文详情</p>
             <h1 class="detail-page-title">Does SGD Seek Flatness or Sharpness? An Exactly Solvable Model</h1>
             <p class="detail-page-title-zh">SGD 偏爱平坦，还是偏爱低梯度涨落？</p>
-            <div class="detail-meta">Paper Collection · Physics of AI · <a href="https://arxiv.org/abs/2602.05065v1" target="_blank" rel="noopener noreferrer">原文</a></div>
-            <p class="detail-summary">这篇工作最值得保留的区分是：梯度涨落和损失曲率不是同一个量。在拟合后的MSE模型中，Hessian迹对所有输出方向的参数敏感度求和；随机梯度平方则额外受到各输出方向残差噪声协方差的加权。只有噪声足够各向同性时，两者才成比例。因此，若训练偏向低梯度涨落的解，它可以选择较尖锐的参数配置，而非必然选择最平坦配置。[\(p_{5}\)–9] “精确可解”的对象必须说清：作者解析求解的是最小涨落假设下、最优拟合流形上的参数选择问题，未精确求出任意有限学习率SGD的完整随机轨迹。核心Hessian迹公式有明确解释力，但本版另有一般涨落不等式写反、最大特征值公式错误及“当且仅当各向同性”的范围问题。本卡保留可核验的迹结果，不把这些有问题的推论混成一个无条件定理。</p>
-            <div class="detail-micro-meta">
-              <span class="meta-pill">AI for Science</span>
-              <span class="meta-pill">理论与数值</span>
-              <span class="meta-pill">#Physics of AI</span><span class="meta-pill">#Transformer</span>
-              <span class="meta-pill">21 分钟读完</span>
-              <span class="meta-pill">8 张阅读卡</span>
-              <span class="meta-pill">Yizhou Xu来自EPFL，Pierfrancesco Beneventano和Isaac Chu…</span>
-            </div>
+            <div class="detail-meta">Yizhou Xu、Pierfrancesco Beneventano、Isaac Chuang、Liu Ziyin · 预印本 · arXiv:2602.05065 · <a href="https://arxiv.org/abs/2602.05065v1" target="_blank" rel="noopener noreferrer">论文原文 ↗</a></div>
+            <p class="detail-summary">这篇工作最值得保留的区分是：梯度涨落和损失曲率不是同一个量。在拟合后的MSE模型中，Hessian迹对所有输出方向的参数敏感度求和；随机梯度平方则额外受到各输出方向残差噪声协方差的加权。只有噪声足够各向同性时，两者才成比例。因此，若训练偏向低梯度涨落的解，它可以选择较尖锐的参数配置，而非必然选择最平坦配置。[\(p_{5}\)–9]</p>
+
           </div>
         </div>
       </div>
@@ -115,34 +121,14 @@
     <main class="container detail-layout">
       <div class="detail-shell">
         <article id="detail-body" class="reading-flow"><section class="reading-card reading-card-section">
-  <div class="reading-card-topline">
-    <span class="reading-step">Card 01</span>
-    <span class="reading-step-note">作者信息</span>
-  </div>
-  <h2>作者信息</h2>
-  <div class="reading-card-content"><ul><li>Yizhou Xu来自EPFL，Pierfrancesco Beneventano和Isaac Chuang来自MIT，Liu Ziyin来自MIT与NTT Research。论文研究优化中的一个具体问题：如果许多参数实现同样的预测函数，却拥有不同的Hessian曲率，SGD究竟依据什么在它们之间选择？作者用深线性矩阵分解构造一个可以解析计算的案例，再在小型非线性网络上做对照实验。[\(p_{1}\)–3]</li></ul></div>
-</section>
-<section class="reading-card reading-card-section">
-  <div class="reading-card-topline">
-    <span class="reading-step">Card 02</span>
-    <span class="reading-step-note">摘要</span>
-  </div>
   <h2>摘要</h2>
   <div class="reading-card-content"><ul><li>这篇工作最值得保留的区分是：梯度涨落和损失曲率不是同一个量。在拟合后的MSE模型中，Hessian迹对所有输出方向的参数敏感度求和；随机梯度平方则额外受到各输出方向残差噪声协方差的加权。只有噪声足够各向同性时，两者才成比例。因此，若训练偏向低梯度涨落的解，它可以选择较尖锐的参数配置，而非必然选择最平坦配置。[\(p_{5}\)–9]</li><li>“精确可解”的对象必须说清：作者解析求解的是最小涨落假设下、最优拟合流形上的参数选择问题，未精确求出任意有限学习率SGD的完整随机轨迹。核心Hessian迹公式有明确解释力，但本版另有一般涨落不等式写反、最大特征值公式错误及“当且仅当各向同性”的范围问题。本卡保留可核验的迹结果，不把这些有问题的推论混成一个无条件定理。</li></ul></div>
 </section>
 <section class="reading-card reading-card-section">
-  <div class="reading-card-topline">
-    <span class="reading-step">Card 03</span>
-    <span class="reading-step-note">背景</span>
-  </div>
   <h2>背景</h2>
   <div class="reading-card-content"><ul><li>若一个任务的最优解本来就需要非零曲率，从极小权重初始化出发，训练中Hessian增长可能只是接近这个任务所需曲率。反过来，从非常尖锐的初始化出发，下降也不自动证明存在平坦性偏好。作者因此把问题放到同一最优函数的不同参数实现之间比较。[\(p_{2}\)–3]</li><li>深线性网络具有矩阵缩放对称性：相邻层用\(W_iA\)与\(A^{-1}W_{i-1}\)替换，端到端函数不变，而参数空间中的Hessian可以改变。于是同一预测器对应一条甚至多维的等损失集合，能够区分任务要求的最小曲率\(T_{\min}\)和选择规则产生的额外曲率\(\Delta=T-T_{\min}\)。这里的尖锐度依赖参数化，不能直接当作与坐标无关的泛化能力指标。[\(p_{3}\)–5]</li></ul></div>
 </section>
 <section class="reading-card reading-card-section">
-  <div class="reading-card-topline">
-    <span class="reading-step">Card 04</span>
-    <span class="reading-step-note">模型与方法</span>
-  </div>
   <h2>模型与方法</h2>
   <div class="reading-card-content"><ul><li>模型为\(D\)层线性网络\(f_\theta(x)=W_D\cdots W_1x\)，使用单样本损失\(\ell=\tfrac12\lVert y-f_\theta(x)\rVert^2\)，标签由线性教师生成：\(y=Vx+\varepsilon\)。记输入协方差\(\Sigma_x\)、标签噪声协方差\(\Sigma_\varepsilon\)；把噪声与输入独立、均值为零，并假定网络宽度足够实现教师映射。涉及逆矩阵的解析式需要相应协方差非退化；不能只用\(\mathbb E[\varepsilon]=0\)替代噪声与输入不相关的条件。[\(p_{4}\)、\(p_{9}\)]</li><li>令\(J(x)=\partial f_\theta(x)/\partial\theta\)为“输出×参数”的Jacobian。在正确拟合教师且残差均值为零的条件下，可写</li></ul>
 
@@ -151,10 +137,6 @@
 <ul><li>\(T\)是本文主要尖锐度，\(S_1\)是单样本梯度二阶矩。在最优点平均梯度为零，独立抽样的\(B\)大小minibatch具有\(S_B=S_1/B\)；因此固定batch大小不会改变这个约束优化问题的最小值位置。各向同性\(\Sigma_\varepsilon=cI\)时\(S_1=cT\)；各向异性时，降低\(S_1\)可以通过改变不同输出方向的敏感度来实现，不必降低\(T\)。</li><li>作者采用小步长修正目标\(F_\eta(\theta)=L(\theta)+(\eta/4)S_B(\theta)\)。在全局极小点序列确实存在并具有收敛极限等条件下，\(\eta\to0^+\)时会在\(L\)的全局极小集合\(M\)中选择\(S_B\)最小的点。它是本研究的有效描述前提，而不是对所有SGD采样方式、步长与非线性网络的精确等价。[\(p_{5}\)–6；附录A.2]</li></ul></div>
 </section>
 <section class="reading-card reading-card-section">
-  <div class="reading-card-topline">
-    <span class="reading-step">Card 05</span>
-    <span class="reading-step-note">核心结果与证据</span>
-  </div>
   <h2>核心结果与证据</h2>
   <div class="reading-card-content"><ul><li>第一，Hessian迹可以直接分层计算。设\(A_k=W_D\cdots W_{k+1}\)，\(B_k=W_{k-1}\cdots W_1\)，空乘积取单位阵。由于网络对任一单层权重是线性的，</li></ul>
 
@@ -200,10 +182,6 @@
 </figure></div>
 </section>
 <section class="reading-card reading-card-section">
-  <div class="reading-card-topline">
-    <span class="reading-step">Card 06</span>
-    <span class="reading-step-note">有效性与局限</span>
-  </div>
   <h2>有效性与局限</h2>
   <div class="reading-card-content"><ul><li>首先，必须区分三件事：最小涨落约束的解析解、小学习率有效目标与有限步长SGD的长期行为。本文没有证明一般随机训练必定到达有效目标的全局最优，也没有证明有限训练时间或高阶步长项不改变选择。附录A.2形式引理使用coercive条件，但深矩阵分解因缩放对称性不是coercive；因此需要单独保证相关极小序列有界或在对称性商空间中处理，不能直接照搬该条件得到全局收敛。[\(p_{4}\)–6、\(p_{10}\)、\(p_{15}\)–16]</li><li>其次，\(p_{9}\) Theorem 2 Eq28把\(T\)与\(S\)的方向写反了。由\(S_1=\operatorname{Tr}[\Sigma_\varepsilon\mathbb E(JJ^{\mathsf T})]\)，正确关系是</li></ul>
 <div class="display-math">\[\begin{aligned}\lambda_{\min}(\Sigma_\varepsilon)T&amp;\le S_1\\&amp;\le\lambda_{\max}(\Sigma_\varepsilon)T\end{aligned}\]</div>
@@ -211,18 +189,10 @@
 <ul><li>第三，“最平坦当且仅当\(\Sigma_\varepsilon=I\)”字面上过强。任何\(cI\)、\(c&gt;0\)都给相同最优分解；若教师输出秩不足，各向异性也可能恰好不改变最优迹。例如\(\Sigma_x=I_3\)、\(V=\operatorname{diag}(1,0,0)\)、\(\Sigma_\varepsilon=\operatorname{diag}(1,\tfrac12,\tfrac32)\)，噪声trace已为3且并非各向同性，但噪声在教师活跃方向的值等于平均值，两式仍给\(T_*=T_{\min}\)。原文Corollary 2未加满输出秩条件，其证明只核查了\(\Sigma_\varepsilon=I\)的充分性。[\(p_{7}\)、\(p_{21}\)–22]</li><li>第四，附录Theorem 3的最大特征值公式不能当作已核验结果。其证明把各层谱范数上界的和当成可共同达到的最大特征值；不同层可能要求不同的最大化输入方向，矩阵可交换只保证共同特征基，不保证共同最大特征向量。公式还多带了一个输入协方差逆因子。一个可手算反例是\(D=3\)的标量教师\(V=1\)、\(\Sigma_\varepsilon=1\)、\(\Sigma_x=4\)，最优权重\(W_1=W_2=W_3=1\)，此时\(H=4\mathbf1\mathbf1^{\mathsf T}\)，最大特征值为12，而原Eq71给9。这个反例针对最大特征值推论，不否定同例中正确给12的Hessian迹公式。[\(p_{19}\)–20；反例为本卡复核]</li><li>第五，输出残差零均值且与输入独立时，Hessian中残差加权二阶导项的期望才可消去；不能仅因“训练良好”就认定真实网络残差很小、均匀且独立。分类实验给one-hot标签加噪声再softmax会同时改变有效软标签分布，因而不能无条件解释为只改变噪声协方差而保持平均任务完全相同。[\(p_{9}\)、\(p_{25}\)]</li><li>最后，Hessian迹与最大特征值衡量的是不同量；在半正定Hessian、固定参数维数下可用迹作界，但它不是直接的泛化证书，更不能由曲率升高推出模型质量变差。原文也承认其小步长理论未解决稳定性边缘EoS及大步长行为。本卡未独立运行训练复现，也不把受控Transformer实验等同于自然语言中“停用词/内容词”噪声机制已得到因果验证。[\(p_{4}\)、\(p_{7}\)、\(p_{10}\)]</li></ul></div>
 </section>
 <section class="reading-card reading-card-section">
-  <div class="reading-card-topline">
-    <span class="reading-step">Card 07</span>
-    <span class="reading-step-note">复现与资源</span>
-  </div>
   <h2>复现与资源</h2>
   <div class="reading-card-content"><ul><li>版本化全文：<a href="https://arxiv.org/pdf/2602.05065v1" target="_blank" rel="noopener noreferrer">https://arxiv.org/pdf/2602.05065v1</a> 元数据与版本：<a href="https://arxiv.org/abs/2602.05065v1" target="_blank" rel="noopener noreferrer">https://arxiv.org/abs/2602.05065v1</a> 正文Theorem 1与附录A.3适合核对主要迹公式；附录\(B\)给出线性、MLP、RNN、Transformer的实验设置。未核实本篇可直接运行的官方代码发布，不把公式检查写成独立训练复现。 原图对照：<a href="https://arxiv.org/pdf/2602.05065v1#page=5" target="_blank" rel="noopener noreferrer">Figure 2（\(p_{5}\)：不同噪声下三类模型的Hessian迹）</a>、<a href="https://arxiv.org/pdf/2602.05065v1#page=6" target="_blank" rel="noopener noreferrer">Figure 3（\(p_{6}\)：相对迹与噪声条件数）</a>、<a href="https://arxiv.org/pdf/2602.05065v1#page=8" target="_blank" rel="noopener noreferrer">Figure 4（\(p_{8}\)：SGD切换对照）</a>。图源为Xu、Beneventano、Chuang、Liu Ziyin本论文，许可CC BY 4.0：<a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener noreferrer">https://creativecommons.org/licenses/by/4.0/</a> 。保留原图全部面板、坐标、图例与英文图注，仅裁去图外正文，不重绘或增强。Figure 2与3作经验趋势阅读，Figure 4作受控干预证据，不把这些图当作对错误最大特征值公式的补证。</li></ul></div>
 </section>
 <section class="reading-card reading-card-section">
-  <div class="reading-card-topline">
-    <span class="reading-step">Card 08</span>
-    <span class="reading-step-note">阅读指南</span>
-  </div>
   <h2>阅读指南</h2>
   <div class="reading-card-content"><ul><li>先看p9的两个对象：未加权的敏感度总和\(T\)，以及被残差协方差加权的\(S_1\)。用\(\Sigma_\varepsilon=cI\)检查比例关系，再看各向异性怎样改变最小值的位置。接着用两层网络的缩放对称性理解“函数不变、参数曲率改变”，最后读Theorem 1和Figure 4，把解析选择规则与实际训练实验分开。</li><li>对物理与AI交叉研究，这篇值得借用的问题是：噪声通过哪一个可测的张量耦合到慢方向，并在退化解集合上选择状态？这比把所有隐式偏置归结为“更平坦”更具体。但回答必须绑定噪声模型、参数化、有效近似和时间尺度，不能把最小涨落直接当作所有神经网络优化的普遍热力学定律。</li></ul></div>
 </section></article>
@@ -231,8 +201,8 @@
           <nav id="detail-toc-nav" class="detail-toc-nav"></nav>
         </aside>
       </div>
-      <nav class="paper-nav"><a class="paper-nav-link paper-nav-prev" href="../../collection-papers/2602.04774/"><span class="paper-nav-label">← 上一篇</span><span class="paper-nav-title">Theory of Optimal Learning Rate Schedules and Scaling Laws for a Random Feature Model</span></a>
-      <a class="paper-nav-link paper-nav-next" href="../../collection-papers/2602.02385/"><span class="paper-nav-label">下一篇 →</span><span class="paper-nav-title">Transformers learn factored representations</span></a></nav>
+      <nav class="paper-nav"><a class="paper-nav-link paper-nav-prev" href="../../collection-papers/2602.05435/"><span class="paper-nav-label">← 上一篇</span><span class="paper-nav-title">Stable Velocity: A Variance Perspective on Flow Matching</span></a>
+      <a class="paper-nav-link paper-nav-next" href="../../collection-papers/2602.04774/"><span class="paper-nav-label">下一篇 →</span><span class="paper-nav-title">Theory of Optimal Learning Rate Schedules and Scaling Laws for a Random Feature Model</span></a></nav>
       <section id="comments" class="comments-panel" aria-labelledby="comments-title">
         <div class="comments-heading">
           <div>

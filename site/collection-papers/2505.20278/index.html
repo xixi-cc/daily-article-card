@@ -3,10 +3,10 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Characterizing Pattern Matching and Its Limits on Compositional Task Structures - physics+AI Collection 论文卡</title>
-    <meta name="description" content="Hoyeon Chang、Jinho Park、Hanseul Cho、Sohee Yang、Miyoung Ko、Hyeonbin Hwang、Seungpil Won、Dohaeng Lee、Youbin Ahn 与 Minjoon Seo 合作完成，单位为 KAIST AI、UCL 与 LG AI Research。PDF 首页为 arXiv:2505.20278v3 [cs.LG]（2026-03-02），并标注 ICLR 2026。论文尝试把常被笼统称作 LLM“pattern matching”的行为变成一个由训练数据可检验、能预测成功和失败边界的定义。" />
+    <title>Characterizing Pattern Matching and Its Limits on Compositional Task Structures - 论文卡</title>
+    <meta name="description" content="组合泛化实验常同时允许代数不变性、重复模板、记忆或真正的结构推理，因此模型成功时很难知道是否只是模式匹配。作者将模式匹配限定为 functional-equivalence-based generalization：若两个输入子片段在共享上下文中反复给出相同输出，模型可在其他见过的上下文中用一个替换另一个。问题是这种证据到底覆盖哪些 test instances、需要多少 contexts 才可靠，以及当一个变量通过多条路径影响输出时，模型能否形成统一的中间状态表征。" />
     <link rel="canonical" href="https://xixi-cc.github.io/daily-article-card/collection-papers/2505.20278/" />
-    <script type="application/ld+json">{"@context": "https://schema.org", "@type": "Article", "headline": "Characterizing Pattern Matching and Its Limits on Compositional Task Structures", "description": "Hoyeon Chang、Jinho Park、Hanseul Cho、Sohee Yang、Miyoung Ko、Hyeonbin Hwang、Seungpil Won、Dohaeng Lee、Youbin Ahn 与 Minjoon Seo 合作完成，单位为 KAIST AI、UCL 与 LG AI Research。PDF 首页为 arXiv:2505.20278v3 [cs.LG]（2026-03-02），并标注 ICLR 2026。论文尝试把常被笼统称作 LLM“pattern matching”的行为变成一个由训练数据可检验、能预测成功和失败边界的定义。", "url": "https://xixi-cc.github.io/daily-article-card/collection-papers/2505.20278/", "mainEntityOfPage": "https://xixi-cc.github.io/daily-article-card/collection-papers/2505.20278/", "inLanguage": "zh-CN", "author": {"@type": "Person", "name": "Xineng Cao", "alternateName": ["Xixi Cao", "曹溪能"], "url": "https://xixi-cc.github.io/"}, "isBasedOn": "https://arxiv.org/abs/2505.20278"}</script>
+    <script type="application/ld+json">{"@context": "https://schema.org", "@type": "Article", "headline": "Characterizing Pattern Matching and Its Limits on Compositional Task Structures", "description": "组合泛化实验常同时允许代数不变性、重复模板、记忆或真正的结构推理，因此模型成功时很难知道是否只是模式匹配。作者将模式匹配限定为 functional-equivalence-based generalization：若两个输入子片段在共享上下文中反复给出相同输出，模型可在其他见过的上下文中用一个替换另一个。问题是这种证据到底覆盖哪些 test instances、需要多少 contexts 才可靠，以及当一个变量通过多条路径影响输出时，模型能否形成统一的中间状态表征。", "url": "https://xixi-cc.github.io/daily-article-card/collection-papers/2505.20278/", "mainEntityOfPage": "https://xixi-cc.github.io/daily-article-card/collection-papers/2505.20278/", "inLanguage": "zh-CN", "author": {"@type": "Person", "name": "Xineng Cao", "alternateName": ["Xixi Cao", "曹溪能"], "url": "https://xixi-cc.github.io/"}, "isBasedOn": "https://arxiv.org/abs/2505.20278"}</script>
     <script>
       (function() {
         try {
@@ -30,6 +30,18 @@
     <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700;800&family=Noto+Sans+SC:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
     <script>document.documentElement.classList.add('math-pending');</script>
     <script>
+      window.fitInlineMath = function(root) {
+        (root || document).querySelectorAll('mjx-container:not([display="true"])').forEach(function(el) {
+          el.classList.remove('inline-math-overflow');
+          const content = el.closest('.reading-card-content, .detail-summary, .feed-card-body');
+          if(content && el.getBoundingClientRect().width > content.clientWidth) {
+            el.classList.add('inline-math-overflow');
+            el.tabIndex = 0;
+            el.setAttribute('aria-label', '长公式，可横向滑动阅读');
+          }
+        });
+      };
+      window.addEventListener('resize', function() { window.fitInlineMath(); });
       window.MathJax = {
         tex: {
           inlineMath: [['$', '$'], ['\\(', '\\)']],
@@ -49,6 +61,7 @@
             MathJax.startup.promise.then(function() {
               document.documentElement.classList.remove('math-pending');
               document.documentElement.dataset.mathReady = 'true';
+              window.requestAnimationFrame(function() { window.fitInlineMath(); });
             });
           }
         }
@@ -65,9 +78,9 @@
     <header class="header detail-page-header">
       <div class="container">
         <div class="detail-page-topbar">
-          <a class="back-link" href="../../collection.html">返回列表</a>
+          <a class="back-link" href="../../index.html">返回列表</a>
           <div class="detail-topbar-actions">
-            <span class="detail-site-name">physics+AI Collection 论文卡</span>
+            <span class="detail-site-name">论文卡</span>
             <button id="detail-favorite" class="detail-favorite-button" type="button" aria-pressed="false">☆ 收藏</button>
             <button class="theme-toggle" type="button" data-theme-toggle aria-label="当前主题：设备，点击切换主题" title="当前主题：设备">
   <span class="theme-toggle-icons" aria-hidden="true">
@@ -91,22 +104,15 @@
         <div class="detail-hero-grid">
           <div class="detail-hero-cover"><figure class="paper-figure-card paper-figure-card-detail">
   <img class="paper-figure-image" src="../../assets/collection-figures/2505.20278/figure-5-data-scaling.webp" alt="2-HOP 与 Mamba/GPT-2 多模型上，达到完美域内泛化所需训练集规模的对数随 token set size 的对数近似线性增长。" loading="lazy" onclick="window.openPaperFigureImage && window.openPaperFigureImage(this)" />
-  <figcaption class="paper-figure-caption">Figure 5：受控组合任务中所需数据量 \(N_{\mathrm{req}}\) 与 token set size 的幂律关系，在 68M 至 1.5B GPT-2 和一组 Mamba 实验中均呈高线性拟合度。</figcaption>
+  <figcaption class="paper-figure-caption">Figure 5：受控组合任务中所需数据量 \(N_{\mathrm{req}}\) 与 token set size 的幂律关系，在 68M 至 1.5B GPT-2 和一组 Mamba 实验中均呈高线性拟合度。 <a href="https://arxiv.org/abs/2505.20278" target="_blank" rel="noopener noreferrer">原文图源 ↗</a></figcaption>
 </figure></div>
           <div class="detail-hero-copy">
-            <p class="eyebrow">Collection 全文卡</p>
+            <p class="eyebrow">论文详情</p>
             <h1 class="detail-page-title">Characterizing Pattern Matching and Its Limits on Compositional Task Structures</h1>
             <p class="detail-page-title-zh">刻画模式匹配及其在组合任务结构中的边界</p>
-            <div class="detail-meta">Paper Collection · Compositional Generalization and Mechanistic Interpretability · <a href="https://arxiv.org/abs/2505.20278" target="_blank" rel="noopener noreferrer">原文</a></div>
-            <p class="detail-summary">Hoyeon Chang、Jinho Park、Hanseul Cho、Sohee Yang、Miyoung Ko、Hyeonbin Hwang、Seungpil Won、Dohaeng Lee、Youbin Ahn 与 Minjoon Seo 合作完成，单位为 KAIST AI、UCL 与 LG AI Research。PDF 首页为 arXiv:2505.20278v3 [cs.LG]（2026-03-02），并标注 ICLR 2026。论文尝试把常被笼统称作 LLM“pattern matching”的行为变成一个由训练数据可检验、能预测成功和失败边界的定义。</p>
-            <div class="detail-micro-meta">
-              <span class="meta-pill">AI 基础理论</span>
-              <span class="meta-pill">理论与数值</span>
-              <span class="meta-pill">#Compositional Generalization and Mechanistic Interpretability</span><span class="meta-pill">#机器学习</span><span class="meta-pill">#语言模型</span>
-              <span class="meta-pill">10 分钟读完</span>
-              <span class="meta-pill">8 张阅读卡</span>
-              <span class="meta-pill">Hoyeon Chang、Jinho Park、Hanseul Cho、Sohee Yang、Miyo…</span>
-            </div>
+            <div class="detail-meta">Hoyeon Chang、Jinho Park、Hanseul Cho、Sohee Yang、Miyoung Ko、Hyeonbin Hwang、Seungpil Won、Dohaeng Lee、Youbin Ahn、Minjoon Seo · 预印本 · arXiv:2505.20278 · <a href="https://arxiv.org/abs/2505.20278" target="_blank" rel="noopener noreferrer">论文原文 ↗</a></div>
+            <p class="detail-summary">组合泛化实验常同时允许代数不变性、重复模板、记忆或真正的结构推理，因此模型成功时很难知道是否只是模式匹配。作者将模式匹配限定为 functional-equivalence-based generalization：若两个输入子片段在共享上下文中反复给出相同输出，模型可在其他见过的上下文中用一个替换另一个。问题是这种证据到底覆盖哪些 test instances、需要多少 contexts 才可靠，以及当一个变量通过多条路径影响输出时，模型能否形成统一的中间状态表征。</p>
+
           </div>
         </div>
       </div>
@@ -115,42 +121,18 @@
     <main class="container detail-layout">
       <div class="detail-shell">
         <article id="detail-body" class="reading-flow"><section class="reading-card reading-card-section">
-  <div class="reading-card-topline">
-    <span class="reading-step">Card 01</span>
-    <span class="reading-step-note">作者信息</span>
-  </div>
-  <h2>作者信息</h2>
-  <div class="reading-card-content"><ul><li>Hoyeon Chang、Jinho Park、Hanseul Cho、Sohee Yang、Miyoung Ko、Hyeonbin Hwang、Seungpil Won、Dohaeng Lee、Youbin Ahn 与 Minjoon Seo 合作完成，单位为 KAIST AI、UCL 与 LG AI Research。PDF 首页为 arXiv:2505.20278v3 [cs.LG]（2026-03-02），并标注 ICLR 2026。论文尝试把常被笼统称作 LLM“pattern matching”的行为变成一个由训练数据可检验、能预测成功和失败边界的定义。</li></ul></div>
-</section>
-<section class="reading-card reading-card-section">
-  <div class="reading-card-topline">
-    <span class="reading-step">Card 02</span>
-    <span class="reading-step-note">研究问题</span>
-  </div>
   <h2>研究问题</h2>
   <div class="reading-card-content"><ul><li>组合泛化实验常同时允许代数不变性、重复模板、记忆或真正的结构推理，因此模型成功时很难知道是否只是模式匹配。作者将模式匹配限定为 functional-equivalence-based generalization：若两个输入子片段在共享上下文中反复给出相同输出，模型可在其他见过的上下文中用一个替换另一个。问题是这种证据到底覆盖哪些 test instances、需要多少 contexts 才可靠，以及当一个变量通过多条路径影响输出时，模型能否形成统一的中间状态表征。</li></ul></div>
 </section>
 <section class="reading-card reading-card-section">
-  <div class="reading-card-topline">
-    <span class="reading-step">Card 03</span>
-    <span class="reading-step-note">背景</span>
-  </div>
   <h2>背景</h2>
   <div class="reading-card-content"><ul><li>在两跳任务 \(t\)=\(f_{2}\)(\(f_{1}\)(\(x_{1}\),\(x_{2}\)),\(x_{3}\)) 中，若两个 (\(x_{1}\),\(x_{2}\)) 都映射到同一中间 b，并和同一 \(x_{3}\) 配对给相同 \(t\)，它们构成功能等价的观察证据。论文把输入视为 substitution graph 节点，只在 functionally equivalent fragment 替换时连边；训练点和可达点组成 coverage。这个框架故意是 data-centered、model-agnostic：它不声称模型真的显式执行 \(f_{1}\)，而是规定只依靠这种替换证据时，coverage 外没有可期待的可靠预测。</li></ul></div>
 </section>
 <section class="reading-card reading-card-section">
-  <div class="reading-card-topline">
-    <span class="reading-step">Card 04</span>
-    <span class="reading-step-note">模型与方法</span>
-  </div>
   <h2>模型与方法</h2>
   <div class="reading-card-content"><ul><li>作者构造 2-HOP、PARALLEL-2-HOP、3-HOP 与 NON-TREE 等合成任务，刻意移除其他泛化捷径。训练 decoder-only GPT-2 的不同规模以及 Mamba；按一个实例中支持相关功能等价的 context 数 \(k\) 分组，比较 ID accuracy 与 coverage。为分析内部表征，使用 Intra-Inter Cosine Gap（IICG）：同一 intermediate state 的表征聚类相对不同 state 的差异，并结合 causal tracing/indirect effect。对两跳结构推导 perfect ID generalization 所需数据 \(N_{\mathrm{req}}\) 对 token set size 的紧界/指数，再在多模型和 token-size 网格拟合。最后添加 chain-of-thought (CoT) 中间监督，测试是否减少数据需求或消除 path ambiguity。</li></ul></div>
 </section>
 <section class="reading-card reading-card-section">
-  <div class="reading-card-topline">
-    <span class="reading-step">Card 05</span>
-    <span class="reading-step-note">核心结果与证据</span>
-  </div>
   <h2>核心结果与证据</h2>
   <div class="reading-card-content"><ul><li>Figure 3 显示覆盖和准确率随 \(k\)/context evidence 增加而提高，而 \(k=0\) 的 coverage 外 test accuracy 长时间仍近似 chance（约 1/50）。Figure 4 的 IICG/PCA 表明成功模型在特定层/位置将同一 b 的输入表征聚类。作者推导并测得 \(N_{\mathrm{req}}\) 随 |\(X\)| 的幂律；Figure 5（第 5--6 页）左侧给各任务斜率，右侧显示 GPT-2 68M、96M、1.5B 与配置的 Mamba 在 2-HOP 中仍有相近的 log-log 线性关系（文中所有拟合 \(R^{2}\)&gt;0.99）。NON-TREE 中一个变量有多条路径时，Figure 6 发现中间状态按 context 分裂、ID success 的陡峭转变消失，扩大模型也未解决。Figure 7 显示 CoT 能降低 \(N_{\mathrm{req}}\)，却仍无法统一 path-ambiguous 表征。</li></ul><figure class="evidence-figure">
   <button class="evidence-figure-image-button" type="button" aria-label="放大查看 Figure 5" onclick="window.openPaperFigureImage && window.openPaperFigureImage(this.querySelector('img'))">
@@ -164,26 +146,14 @@
 </figure></div>
 </section>
 <section class="reading-card reading-card-section">
-  <div class="reading-card-topline">
-    <span class="reading-step">Card 06</span>
-    <span class="reading-step-note">有效性与局限</span>
-  </div>
   <h2>有效性与局限</h2>
   <div class="reading-card-content"><ul><li>价值在于把“模式匹配”从贬义标签变成带 coverage 边界、\(k\) 预测和 sample-complexity 断言的可反驳机制，并用内部表征/因果 tracing 交叉检查。边界同样严格：functional equivalence 来自合成任务的已知生成函数及共享 context 观察；自然语言中的语义等价、长程依赖和数据偏差未被该定义穷尽。\(N_{\mathrm{req}}\) 指数取决于 perfect ID success 的阈值、token 采样、训练 epochs 与任务树形结构；大模型数从 68M 到 1.5B 的稳定斜率不证明无限尺度无新机制。NON-TREE 失败说明这套 pattern-matching 机制的限制，但不排除不同训练、表示、外部工具或更强推理方法取得别的泛化。</li></ul></div>
 </section>
 <section class="reading-card reading-card-section">
-  <div class="reading-card-topline">
-    <span class="reading-step">Card 07</span>
-    <span class="reading-step-note">复现与资源</span>
-  </div>
   <h2>复现与资源</h2>
   <div class="reading-card-content"><ul><li>最小复核可实现 2-HOP 的随机 token 函数表，枚举 substitution graph 和每个 test instance 的 \(k\)/coverage，再训练小 decoder-only 模型并按 \(k\)-cutoff 汇总 accuracy；\(k=0\) 应与 chance 基线分开报告。估计 \(N_{\mathrm{req}}\) 时要预先固定“training accuracy 后何时/何阈值算 perfect ID generalization”、token-set 网格、seeds、模型和训练预算，再在 log coordinates 拟合而非只报单点。机制分析还需导出指定位置/层 representation，计算 IICG，并按相同 b、不同 b、或 (b,\(x_{2}\)) 分组；CoT 实验要分开输入/输出监督格式。本卡只核验 55 页 PDF、完整 MinerU Markdown 和既有渲染页，未训练模型、复算边界或运行 causal tracing。</li></ul></div>
 </section>
 <section class="reading-card reading-card-section">
-  <div class="reading-card-topline">
-    <span class="reading-step">Card 08</span>
-    <span class="reading-step-note">阅读指南</span>
-  </div>
   <h2>阅读指南</h2>
   <div class="reading-card-content"><ul><li>先读 Figure 1 和 Definitions 3.1--3.2，确认 paper 的 pattern matching 仅指覆盖内的功能等价替换。再看 Figure 3：它既给为何 context 数重要，也给 coverage 外不可预测的负结果。随后以 Figure 4 的 IICG/PCA 区分行为成功与中间状态聚类证据。Figure 5 是数据标度主张，应连同 \(N_{\mathrm{req}}\) 的 operational definition 与任务树读；不要把斜率当自然语言的普适 scaling law。最后对照 Figure 6--7：NON-TREE 的 path ambiguity 是该机制明确的结构障碍，而 CoT 的改善是数据效率而不是消除该障碍。</li></ul></div>
 </section></article>

@@ -3,10 +3,10 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>GPAS: Accelerating Convergence of LLM Pretraining via Gradient-Preserving Activation Scaling - physics+AI Collection 论文卡</title>
-    <meta name="description" content="Tianhao Chen、Xin Xu（等贡献）；Zijing Liu、Pengxiang Li、Xinyuan Song、Ajay Kumar Jaiswal、Fan Zhang、Jishan Hu、Yang Wang、Hao Chen、Shizhe Diao、Shiwei Liu、Yu Li、Lu Yin、Can Yang。Lu Yin与Can Yang标通讯。机构依首页编号：Chen/Xu/Fan Zhang/Jishan Hu/Yang Wang/Hao Chen/Can Yang为HKUST；Liu与Yu Li为International Digital Economy Academy；Li为Dalian University of Technology；Song为Emory；Jaiswal为UT Austin；Diao为NVIDIA；Shiwei Liu为Oxford；Yin为Surrey。arXiv:2506.22049v2，2025-07-03更新，19物理页，首页为under review预印本。（第1页）" />
+    <title>GPAS: Accelerating Convergence of LLM Pretraining via Gradient-Preserving Activation Scaling - 论文卡</title>
+    <meta name="description" content="Pre-LN Transformer每层将注意力或前馈模块的输出加到未归一化的残差状态上；随深度增加的激活尺度可能让新模块的相对作用变小。若直接缩小激活，反传又会逐层乘缩放因子。能否让前向尺度和计算图中的反向传递分别控制，从而提高训练效率，而不只事后裁掉较深层？GPAS以每层一个可学习标量和stop-gradient实现这种分离。（第1–3页）" />
     <link rel="canonical" href="https://xixi-cc.github.io/daily-article-card/collection-papers/2506.22049/" />
-    <script type="application/ld+json">{"@context": "https://schema.org", "@type": "Article", "headline": "GPAS: Accelerating Convergence of LLM Pretraining via Gradient-Preserving Activation Scaling", "description": "Tianhao Chen、Xin Xu（等贡献）；Zijing Liu、Pengxiang Li、Xinyuan Song、Ajay Kumar Jaiswal、Fan Zhang、Jishan Hu、Yang Wang、Hao Chen、Shizhe Diao、Shiwei Liu、Yu Li、Lu Yin、Can Yang。Lu Yin与Can Yang标通讯。机构依首页编号：Chen/Xu/Fan Zhang/Jishan Hu/Yang Wang/Hao Chen/Can Yang为HKUST；Liu与Yu Li为International Digital Economy Academy；Li为Dalian University of Technology；Song为Emory；Jaiswal为UT Austin；Diao为NVIDIA；Shiwei Liu为Oxford；Yin为Surrey。arXiv:2506.22049v2，2025-07-03更新，19物理页，首页为under review预印本。（第1页）", "url": "https://xixi-cc.github.io/daily-article-card/collection-papers/2506.22049/", "mainEntityOfPage": "https://xixi-cc.github.io/daily-article-card/collection-papers/2506.22049/", "inLanguage": "zh-CN", "author": {"@type": "Person", "name": "Xineng Cao", "alternateName": ["Xixi Cao", "曹溪能"], "url": "https://xixi-cc.github.io/"}, "isBasedOn": "https://arxiv.org/abs/2506.22049"}</script>
+    <script type="application/ld+json">{"@context": "https://schema.org", "@type": "Article", "headline": "GPAS: Accelerating Convergence of LLM Pretraining via Gradient-Preserving Activation Scaling", "description": "Pre-LN Transformer每层将注意力或前馈模块的输出加到未归一化的残差状态上；随深度增加的激活尺度可能让新模块的相对作用变小。若直接缩小激活，反传又会逐层乘缩放因子。能否让前向尺度和计算图中的反向传递分别控制，从而提高训练效率，而不只事后裁掉较深层？GPAS以每层一个可学习标量和stop-gradient实现这种分离。（第1–3页）", "url": "https://xixi-cc.github.io/daily-article-card/collection-papers/2506.22049/", "mainEntityOfPage": "https://xixi-cc.github.io/daily-article-card/collection-papers/2506.22049/", "inLanguage": "zh-CN", "author": {"@type": "Person", "name": "Xineng Cao", "alternateName": ["Xixi Cao", "曹溪能"], "url": "https://xixi-cc.github.io/"}, "isBasedOn": "https://arxiv.org/abs/2506.22049"}</script>
     <script>
       (function() {
         try {
@@ -30,6 +30,18 @@
     <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700;800&family=Noto+Sans+SC:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
     <script>document.documentElement.classList.add('math-pending');</script>
     <script>
+      window.fitInlineMath = function(root) {
+        (root || document).querySelectorAll('mjx-container:not([display="true"])').forEach(function(el) {
+          el.classList.remove('inline-math-overflow');
+          const content = el.closest('.reading-card-content, .detail-summary, .feed-card-body');
+          if(content && el.getBoundingClientRect().width > content.clientWidth) {
+            el.classList.add('inline-math-overflow');
+            el.tabIndex = 0;
+            el.setAttribute('aria-label', '长公式，可横向滑动阅读');
+          }
+        });
+      };
+      window.addEventListener('resize', function() { window.fitInlineMath(); });
       window.MathJax = {
         tex: {
           inlineMath: [['$', '$'], ['\\(', '\\)']],
@@ -49,6 +61,7 @@
             MathJax.startup.promise.then(function() {
               document.documentElement.classList.remove('math-pending');
               document.documentElement.dataset.mathReady = 'true';
+              window.requestAnimationFrame(function() { window.fitInlineMath(); });
             });
           }
         }
@@ -65,9 +78,9 @@
     <header class="header detail-page-header">
       <div class="container">
         <div class="detail-page-topbar">
-          <a class="back-link" href="../../collection.html">返回列表</a>
+          <a class="back-link" href="../../index.html">返回列表</a>
           <div class="detail-topbar-actions">
-            <span class="detail-site-name">physics+AI Collection 论文卡</span>
+            <span class="detail-site-name">论文卡</span>
             <button id="detail-favorite" class="detail-favorite-button" type="button" aria-pressed="false">☆ 收藏</button>
             <button class="theme-toggle" type="button" data-theme-toggle aria-label="当前主题：设备，点击切换主题" title="当前主题：设备">
   <span class="theme-toggle-icons" aria-hidden="true">
@@ -91,22 +104,15 @@
         <div class="detail-hero-grid">
           <div class="detail-hero-cover"><figure class="paper-figure-card paper-figure-card-detail">
   <img class="paper-figure-image" src="../../assets/collection-figures/2506.22049/figure-1-gpas-graph.png" alt="Pre-LN、Pre+GPAS、GPAS前向及反向四面板计算图，红色梯度通路绕过stop-gradient分支。" loading="lazy" onclick="window.openPaperFigureImage && window.openPaperFigureImage(this)" />
-  <figcaption class="paper-figure-caption">Chen等，Figure1（arXiv:2506.22049v2，PDF第2页，CC BY4.0）：a/b对比归一化先于模块的残差子层及其GPAS插入位置；c前向从残差激活减去缩放的stop-gradient分支；d红线显示自动微分的反向通路绕过该分支，虚线门可学习或冻结。局部规则不证明整网梯度不消失，四面板、全部箭头及标签完整保留。</figcaption>
+  <figcaption class="paper-figure-caption">Chen等，Figure1（arXiv:2506.22049v2，PDF第2页，CC BY4.0）：a/b对比归一化先于模块的残差子层及其GPAS插入位置；c前向从残差激活减去缩放的stop-gradient分支；d红线显示自动微分的反向通路绕过该分支，虚线门可学习或冻结。局部规则不证明整网梯度不消失，四面板、全部箭头及标签完整保留。 <a href="https://arxiv.org/abs/2506.22049" target="_blank" rel="noopener noreferrer">原文图源 ↗</a></figcaption>
 </figure></div>
           <div class="detail-hero-copy">
-            <p class="eyebrow">Collection 全文卡</p>
+            <p class="eyebrow">论文详情</p>
             <h1 class="detail-page-title">GPAS: Accelerating Convergence of LLM Pretraining via Gradient-Preserving Activation Scaling</h1>
             <p class="detail-page-title-zh">GPAS：分开前向激活缩放与反向梯度传递的预训练方法</p>
-            <div class="detail-meta">Paper Collection · LLM Training · <a href="https://arxiv.org/abs/2506.22049" target="_blank" rel="noopener noreferrer">原文</a></div>
-            <p class="detail-summary">Tianhao Chen、Xin Xu（等贡献）；Zijing Liu、Pengxiang Li、Xinyuan Song、Ajay Kumar Jaiswal、Fan Zhang、Jishan Hu、Yang Wang、Hao Chen、Shizhe Diao、Shiwei Liu、Yu Li、Lu Yin、Can Yang。Lu Yin与Can Yang标通讯。机构依首页编号：Chen/Xu/Fan Zhang/Jishan Hu/Yang Wang/Hao Chen/Can Yang为HKUST；Liu与Yu Li为International Digital Economy Academy；Li为Dalian University of Technology；Song为Emory；Jaiswal为UT Austin；Diao为NVIDIA；Shiwei Liu为Oxford；Yin为Surrey。arXiv:2506.22049v2，2025-07-03更新，19物理页，首页为under review预印本。（第1页）</p>
-            <div class="detail-micro-meta">
-              <span class="meta-pill">AI 基础理论</span>
-              <span class="meta-pill">AI 实证</span>
-              <span class="meta-pill">#LLM Training</span><span class="meta-pill">#机器学习</span><span class="meta-pill">#人工智能</span>
-              <span class="meta-pill">20 分钟读完</span>
-              <span class="meta-pill">8 张阅读卡</span>
-              <span class="meta-pill">Tianhao Chen、Xin Xu（等贡献）；Zijing Liu、Pengxiang Li、Xi…</span>
-            </div>
+            <div class="detail-meta">Tianhao Chen、Xin Xu、Zijing Liu、Pengxiang Li、Xinyuan Song、Ajay Kumar Jaiswal、Fan Zhang、Jishan Hu、Yang Wang、Hao Chen、Shizhe Diao、Shiwei Liu、Yu Li、Lu Yin、Can Yang · 预印本 · arXiv:2506.22049 · <a href="https://arxiv.org/abs/2506.22049" target="_blank" rel="noopener noreferrer">论文原文 ↗</a></div>
+            <p class="detail-summary">Pre-LN Transformer每层将注意力或前馈模块的输出加到未归一化的残差状态上；随深度增加的激活尺度可能让新模块的相对作用变小。若直接缩小激活，反传又会逐层乘缩放因子。能否让前向尺度和计算图中的反向传递分别控制，从而提高训练效率，而不只事后裁掉较深层？GPAS以每层一个可学习标量和stop-gradient实现这种分离。（第1–3页）</p>
+
           </div>
         </div>
       </div>
@@ -115,34 +121,14 @@
     <main class="container detail-layout">
       <div class="detail-shell">
         <article id="detail-body" class="reading-flow"><section class="reading-card reading-card-section">
-  <div class="reading-card-topline">
-    <span class="reading-step">Card 01</span>
-    <span class="reading-step-note">作者信息</span>
-  </div>
-  <h2>作者信息</h2>
-  <div class="reading-card-content"><ul><li>Tianhao Chen、Xin Xu（等贡献）；Zijing Liu、Pengxiang Li、Xinyuan Song、Ajay Kumar Jaiswal、Fan Zhang、Jishan Hu、Yang Wang、Hao Chen、Shizhe Diao、Shiwei Liu、Yu Li、Lu Yin、Can Yang。Lu Yin与Can Yang标通讯。机构依首页编号：Chen/Xu/Fan Zhang/Jishan Hu/Yang Wang/Hao Chen/Can Yang为HKUST；Liu与Yu Li为International Digital Economy Academy；Li为Dalian University of Technology；Song为Emory；Jaiswal为UT Austin；Diao为NVIDIA；Shiwei Liu为Oxford；Yin为Surrey。arXiv:2506.22049v2，2025-07-03更新，19物理页，首页为under review预印本。（第1页）</li></ul></div>
-</section>
-<section class="reading-card reading-card-section">
-  <div class="reading-card-topline">
-    <span class="reading-step">Card 02</span>
-    <span class="reading-step-note">研究问题</span>
-  </div>
   <h2>研究问题</h2>
   <div class="reading-card-content"><ul><li>Pre-LN Transformer每层将注意力或前馈模块的输出加到未归一化的残差状态上；随深度增加的激活尺度可能让新模块的相对作用变小。若直接缩小激活，反传又会逐层乘缩放因子。能否让前向尺度和计算图中的反向传递分别控制，从而提高训练效率，而不只事后裁掉较深层？GPAS以每层一个可学习标量和stop-gradient实现这种分离。（第1–3页）</li><li>读者桥：输入是文本token序列；残差状态x在每个注意力/FFN子层更新，LayerNorm或RMSNorm控制模块看到的尺度。训练以预测下一token的交叉熵驱动所有权重及门值α，输出概率经困惑度和下游准确率评估。stop-gradient前向返回同一数值，但自动微分把此分支的导数设为0；它改变训练算法，不是能量守恒或物理时间反演。（第3–5页）</li></ul></div>
 </section>
 <section class="reading-card reading-card-section">
-  <div class="reading-card-topline">
-    <span class="reading-step">Card 03</span>
-    <span class="reading-step-note">背景</span>
-  </div>
   <h2>背景</h2>
   <div class="reading-card-content"><ul><li>Pre-LN有稳定的残差梯度通路，却可能使深层更新相对于累积状态不足。Post-LN、DeepNorm、Sandwich-LN、Mix-LN与按深度缩放归一化输出分别改变归一化位置、残差比例或初始化。本文保留LLaMA式注意力/SwiGLU模块，比较这些方案加入GPAS前后的表现，是AI训练算法及数值机制研究；“激活方差指数增长”指受测模型与其理想化分析，不是所有Pre-LN网络的无条件定律。（第2–4页）</li></ul></div>
 </section>
 <section class="reading-card reading-card-section">
-  <div class="reading-card-topline">
-    <span class="reading-step">Card 04</span>
-    <span class="reading-step-note">模型与方法</span>
-  </div>
   <h2>模型与方法</h2>
   <div class="reading-card-content"><ul><li>在Pre-LN的一个注意力或FFN子层之后，先做残差相加，再减去stop-gradient缩放分支：</li></ul>
 
@@ -172,34 +158,18 @@
 </figure></div>
 </section>
 <section class="reading-card reading-card-section">
-  <div class="reading-card-topline">
-    <span class="reading-step">Card 05</span>
-    <span class="reading-step-note">核心结果与证据</span>
-  </div>
   <h2>核心结果与证据</h2>
   <div class="reading-card-content"><ul><li>Table2在71M/130M/250M/350M/1B模型、同规模的C4训练计划下，各GPAS变体相对对应基线困惑度下降。Pre-LN350M为21.\(35\to 20.35\)，1B为16.\(92\to 16.25\)；LNS1B为15.\(65\to 14.88\)，优于Pre+GPAS该设置。DeepNorm1B基线1404.22到18.10主要是避免原设置发散，不能以约1386的绝对差宣称正常基线同量级收益。困惑度为exp交叉熵，下降量不是百分点。（第5页 Table2）</li><li>Table3对1B参数模型在Commonsense170K上SFT后的七任务平均准确率：Pre41.83%→44.32%（+2.49个百分点），LNS44.65%→45.83%（+1.18点）。并非每任务都改善：例如Sandwich的MMLU23.\(27\to 23.14\)，WinoG51.\(07\to 50.36\)；LNS的BoolQ62.\(08\to 61.59\)。DeepNorm提升9.71点同样包含基线预训练失败因素。门在SFT冻结，4epochs、LISA、学习率3×10⁻⁴。（第5–6页）</li><li>\(v_{2}\) AppendixA新增7B的Pre/Pre+GPAS对照：计划150K步、60Btoken，因预算只跑40K步、16Btoken；困惑度15.\(27\to 13.82\)。学习率3×10⁻⁴、10Kwarmup、batch2048，门梯度裁剪0.01、其他参数1.0。第11页仍写实验仅限1B，已未同步此新增附录；不能只读主文漏掉7B，也不能把部分训练说成完成60B计划或覆盖全部架构。（第15页 Figure8）</li><li>1B机制图显示最高激活方差约下降50%，跨层更紧凑；梯度范数典型从0.05–0.1扩大到0.05–0.5。早层门常为负，实际放大早层激活；权重范数多数层增大，尤其早层。移除一层后的七任务平均准确率下降（百分点）测“层重要性”，支持较深层对这些任务更有用，不是每个参数的信息容量定理或保证可安全剪枝。（第6–9页 Figures3–7）</li><li>负结果是门约10K步的突变产生梯度尖峰，Pre+GPAS训练及验证损失暂时超过Pre基线，在10K–30K步适应后恢复。1B Sandwich+GPAS若不将门梯度裁剪到0.01会崩溃；其余主实验未裁剪门。故前向/反向分离并不等于自动消除全部尖峰或稳定性调参。（第7–8页）</li><li>350M消融：有/无sg的困惑度20.35/21.34，基线21.35；使用已训练门作为固定门反而22.46。位置以后子层最优20.35，放在LN后21.33，几乎无改进。Identity/Tanh在350M优于SiLU（20.08/20.09对20.35），但Identity1B为16.49，差于SiLU16.25。它们支持当前设计的经验选择，不能证明固定门全部无效或SiLU在每尺度最优。（第10–11页 Tables4–5）</li></ul></div>
 </section>
 <section class="reading-card reading-card-section">
-  <div class="reading-card-topline">
-    <span class="reading-step">Card 06</span>
-    <span class="reading-step-note">有效性与局限</span>
-  </div>
   <h2>有效性与局限</h2>
   <div class="reading-card-content"><ul><li>局部stop-gradient规则消掉显式β因子，这个代数结论可核对；但Theorem1把实际Jacobian范数的一个上界估计UP作为研究量。一个上界估计不为0，不代表真实梯度范数有正下界。Gaussian独立、门有界且跨层缓变是额外理想化前提，其在训练中的满足情况未由该分析建立；10K步的时间尖峰是另一个训练观测，不能据此单独检验跨层缓变假设。（第9、15–18页）</li><li>附录证明有不能沿用为稳定性保证的步骤：固定门下前向方差缩放应乘β²，第16页Eq.(16)却只乘β；logβ还要求β&gt;0。第17页Eq.(27)给逆尺度上界，却在Eq.(28)写成UP下界；Eq.(30)给逆尺度下界，Eq.(31)反写上界。在其正系数乘积形式下，这些推断方向需要重新证明。第15页Eq.(13)另外含1/√ℓ归一化缩放，与所称一般Pre-LN起点不同。保留作者数值结果，不认证Eq.(10)及后续“必不消失/增长慢于L”的强解释。（第15–18页）</li><li>LayerNorm理想无ε、正标量情形才能严格消去共同尺度；实际RMSNorm含稳定ε，零或负尺度也不能按同一恒等性处理。正文“信息完整保留”需非零缩放等条件，门参数没有显式禁止β=0；它更接近可学习的训练预条件/替代梯度操作，而非保证信息不丢的任意可逆变换。（第3–4页）</li><li>每尺度相同训练计划不等于穷尽学习率与归一化调参，也没有报告跨seed均值/置信区间。主实验以4H800运行，列粗略训练时长而非逐方法的等质量wall-clock节省；“加速收敛”主要是同token/step下曲线，不可换成已测固定倍数算力节省。尚未测试百亿规模全部变体、已有权重直接加GPAS或全部部署硬件。（第5、11、15页）</li></ul></div>
 </section>
 <section class="reading-card reading-card-section">
-  <div class="reading-card-topline">
-    <span class="reading-step">Card 07</span>
-    <span class="reading-step-note">复现与资源</span>
-  </div>
   <h2>复现与资源</h2>
   <div class="reading-card-content"><ul><li>作者仓库 https://github.com/dandingsky/GPAS 在首页和摘要给出；本轮没有验证仓库当前执行结果。主实验用Adam、\(C_{4}\)/\(T_{5}\) tokenizer、RMSNorm、LLaMA注意力、SwiGLU与Scaled Embed。Table1：71M至1B各10K/20K/40K/60K/100K步，batch512，训练1/2/4/6/10Btoken，统一10M验证token；350M/1B学习率5×10⁻⁴，其余10⁻³，warmup1K至10K。门的冻结、学习率与裁剪例外应作为复现配置保留。（第4–5、8、15页）</li><li>官方CC BY4.0支持署名复用作者Figure1，完整保留四面板及红色反传线，图示计算图而非实测稳定性。附录D分别给C4与Commonsense170K许可，不能用论文许可替代数据许可。官方v2 PDF SHA-256：a048fe8fdd6ce29b5669d12d481a03ce4abff0a2aabfa22c0e5f2220ec914e6f；19个物理页含参考文献/附录已核读，第3、15–17页公式与原页视觉对照。本轮没有训练模型、测wall-clock或独立数值复现。Evidence status: full-text verified; no independent reproduction performed.</li></ul></div>
 </section>
 <section class="reading-card reading-card-section">
-  <div class="reading-card-topline">
-    <span class="reading-step">Card 08</span>
-    <span class="reading-step-note">阅读指南</span>
-  </div>
   <h2>阅读指南</h2>
   <div class="reading-card-content"><ul><li>先看第2页Figure1和第3页Eq.(2)，把前向值、stop-gradient局部导数和门的学习分开；再用第5–6页表区分对应基线、发散例外和百分点。随后读第7–8页尖峰及第10–11页消融，最后看第15页7B部分训练与第16–17页证明缺口。最低前置为残差连接、自动微分与困惑度；不要从局部反传规则直接跳到整体收敛保证。</li></ul></div>
 </section></article>

@@ -3,10 +3,10 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Identifying and Evaluating Inactive Heads in Pretrained LLMs - physics+AI Collection 论文卡</title>
-    <meta name="description" content="Pedro Sandoval-Segura 等七位作者系统比较 12 种 inactive-head score，并用消融验证预训练 LLM 中的计算冗余，arXiv:2504.03889v4。" />
+    <title>Identifying and Evaluating Inactive Heads in Pretrained LLMs - 论文卡</title>
+    <meta name="description" content="高 attention weight 不等于有大输出：某个头可能关注 sink，却因 value/output 很小而几乎不影响模型。怎样定义和验证“不活跃”？" />
     <link rel="canonical" href="https://xixi-cc.github.io/daily-article-card/collection-papers/2504.03889/" />
-    <script type="application/ld+json">{"@context": "https://schema.org", "@type": "Article", "headline": "Identifying and Evaluating Inactive Heads in Pretrained LLMs", "description": "Pedro Sandoval-Segura 等七位作者系统比较 12 种 inactive-head score，并用消融验证预训练 LLM 中的计算冗余，arXiv:2504.03889v4。", "url": "https://xixi-cc.github.io/daily-article-card/collection-papers/2504.03889/", "mainEntityOfPage": "https://xixi-cc.github.io/daily-article-card/collection-papers/2504.03889/", "inLanguage": "zh-CN", "author": {"@type": "Person", "name": "Xineng Cao", "alternateName": ["Xixi Cao", "曹溪能"], "url": "https://xixi-cc.github.io/"}, "isBasedOn": "https://arxiv.org/abs/2504.03889"}</script>
+    <script type="application/ld+json">{"@context": "https://schema.org", "@type": "Article", "headline": "Identifying and Evaluating Inactive Heads in Pretrained LLMs", "description": "高 attention weight 不等于有大输出：某个头可能关注 sink，却因 value/output 很小而几乎不影响模型。怎样定义和验证“不活跃”？", "url": "https://xixi-cc.github.io/daily-article-card/collection-papers/2504.03889/", "mainEntityOfPage": "https://xixi-cc.github.io/daily-article-card/collection-papers/2504.03889/", "inLanguage": "zh-CN", "author": {"@type": "Person", "name": "Xineng Cao", "alternateName": ["Xixi Cao", "曹溪能"], "url": "https://xixi-cc.github.io/"}, "isBasedOn": "https://arxiv.org/abs/2504.03889"}</script>
     <script>
       (function() {
         try {
@@ -30,6 +30,18 @@
     <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700;800&family=Noto+Sans+SC:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
     <script>document.documentElement.classList.add('math-pending');</script>
     <script>
+      window.fitInlineMath = function(root) {
+        (root || document).querySelectorAll('mjx-container:not([display="true"])').forEach(function(el) {
+          el.classList.remove('inline-math-overflow');
+          const content = el.closest('.reading-card-content, .detail-summary, .feed-card-body');
+          if(content && el.getBoundingClientRect().width > content.clientWidth) {
+            el.classList.add('inline-math-overflow');
+            el.tabIndex = 0;
+            el.setAttribute('aria-label', '长公式，可横向滑动阅读');
+          }
+        });
+      };
+      window.addEventListener('resize', function() { window.fitInlineMath(); });
       window.MathJax = {
         tex: {
           inlineMath: [['$', '$'], ['\\(', '\\)']],
@@ -49,6 +61,7 @@
             MathJax.startup.promise.then(function() {
               document.documentElement.classList.remove('math-pending');
               document.documentElement.dataset.mathReady = 'true';
+              window.requestAnimationFrame(function() { window.fitInlineMath(); });
             });
           }
         }
@@ -65,9 +78,9 @@
     <header class="header detail-page-header">
       <div class="container">
         <div class="detail-page-topbar">
-          <a class="back-link" href="../../collection.html">返回列表</a>
+          <a class="back-link" href="../../index.html">返回列表</a>
           <div class="detail-topbar-actions">
-            <span class="detail-site-name">physics+AI Collection 论文卡</span>
+            <span class="detail-site-name">论文卡</span>
             <button id="detail-favorite" class="detail-favorite-button" type="button" aria-pressed="false">☆ 收藏</button>
             <button class="theme-toggle" type="button" data-theme-toggle aria-label="当前主题：设备，点击切换主题" title="当前主题：设备">
   <span class="theme-toggle-icons" aria-hidden="true">
@@ -91,22 +104,15 @@
         <div class="detail-hero-grid">
           <div class="detail-hero-cover"><figure class="paper-figure-card paper-figure-card-detail">
   <img class="paper-figure-image" src="../../assets/collection-figures/2504.03889/figure-1-inactive-head-scores.webp" alt="基于注意力权重、value vector 和 head output 的六类指标及其标准化版本。" loading="lazy" onclick="window.openPaperFigureImage && window.openPaperFigureImage(this)" />
-  <figcaption class="paper-figure-caption">只看 attention sink 会漏掉 value 或输出幅度很小的不活跃头。</figcaption>
+  <figcaption class="paper-figure-caption">只看 attention sink 会漏掉 value 或输出幅度很小的不活跃头。 <a href="https://arxiv.org/abs/2504.03889" target="_blank" rel="noopener noreferrer">原文图源 ↗</a></figcaption>
 </figure></div>
           <div class="detail-hero-copy">
-            <p class="eyebrow">Collection 全文卡</p>
+            <p class="eyebrow">论文详情</p>
             <h1 class="detail-page-title">Identifying and Evaluating Inactive Heads in Pretrained LLMs</h1>
             <p class="detail-page-title-zh">识别并评价预训练 LLM 中的不活跃注意力头</p>
-            <div class="detail-meta">Paper Collection · Learning Theory · <a href="https://arxiv.org/abs/2504.03889" target="_blank" rel="noopener noreferrer">原文</a></div>
-            <p class="detail-summary">Pedro Sandoval-Segura 等七位作者系统比较 12 种 inactive-head score，并用消融验证预训练 LLM 中的计算冗余，arXiv:2504.03889v4。</p>
-            <div class="detail-micro-meta">
-              <span class="meta-pill">AI 基础理论</span>
-              <span class="meta-pill">AI 实证</span>
-              <span class="meta-pill">#Learning Theory</span><span class="meta-pill">#机器学习</span><span class="meta-pill">#语言模型</span>
-              <span class="meta-pill">6 分钟读完</span>
-              <span class="meta-pill">7 张阅读卡</span>
-              <span class="meta-pill">Pedro Sandoval-Segura 等七位作者系统比较 12 种 inactive-head…</span>
-            </div>
+            <div class="detail-meta">Pedro Sandoval-Segura、Xijun Wang、Ashwinee Panda、Micah Goldblum、Ronen Basri、Tom Goldstein、David Jacobs · 预印本 · arXiv:2504.03889 · <a href="https://arxiv.org/abs/2504.03889" target="_blank" rel="noopener noreferrer">论文原文 ↗</a></div>
+            <p class="detail-summary">高 attention weight 不等于有大输出：某个头可能关注 sink，却因 value/output 很小而几乎不影响模型。怎样定义和验证“不活跃”？</p>
+
           </div>
         </div>
       </div>
@@ -115,26 +121,10 @@
     <main class="container detail-layout">
       <div class="detail-shell">
         <article id="detail-body" class="reading-flow"><section class="reading-card reading-card-section">
-  <div class="reading-card-topline">
-    <span class="reading-step">Card 01</span>
-    <span class="reading-step-note">作者信息</span>
-  </div>
-  <h2>作者信息</h2>
-  <div class="reading-card-content"><ul><li>Pedro Sandoval-Segura 等七位作者系统比较 12 种 inactive-head score，并用消融验证预训练 LLM 中的计算冗余，arXiv:2504.03889v4。</li></ul></div>
-</section>
-<section class="reading-card reading-card-section">
-  <div class="reading-card-topline">
-    <span class="reading-step">Card 02</span>
-    <span class="reading-step-note">研究问题</span>
-  </div>
   <h2>研究问题</h2>
   <div class="reading-card-content"><ul><li>高 attention weight 不等于有大输出：某个头可能关注 sink，却因 value/output 很小而几乎不影响模型。怎样定义和验证“不活跃”？</li><li>作者比较权重、entropy、value norm 与 head-output norm 等指标，要求 threshold 选出的头在特定 context 中可被消融而不显著损失能力。</li></ul></div>
 </section>
 <section class="reading-card reading-card-section">
-  <div class="reading-card-topline">
-    <span class="reading-step">Card 03</span>
-    <span class="reading-step-note">模型与方法</span>
-  </div>
   <h2>模型与方法</h2>
   <div class="reading-card-content"><ul><li>在三个模型家族上计算六类原始及标准化评分，共 12 项；按分布阈值选候选 inactive heads，并比较集合重叠与尺度变化。</li><li>对选中 heads 做 context-specific/批量 ablation，以 MMLU 等任务测性能；比较 pretraining/fine-tuning 和模型规模间 score distributions。</li></ul><figure class="evidence-figure">
   <button class="evidence-figure-image-button" type="button" aria-label="放大查看 Figure 1" onclick="window.openPaperFigureImage && window.openPaperFigureImage(this.querySelector('img'))">
@@ -148,34 +138,18 @@
 </figure></div>
 </section>
 <section class="reading-card reading-card-section">
-  <div class="reading-card-topline">
-    <span class="reading-step">Card 04</span>
-    <span class="reading-step-note">核心结果与证据</span>
-  </div>
   <h2>核心结果与证据</h2>
   <div class="reading-card-content"><ul><li>平均超过 12% heads 在所测 context 可消融且 MMLU 下降保持 1% 内；head output norm 指标跨模型最稳定地找到这类头。</li><li>仅使用 first-token attention sink 会平均漏掉超过 7% inactive heads。Figure 1 说明权重指标忽略 value 与输出，因而功能判定不完整。</li><li>不活跃是数据/上下文/任务相关状态，不一定是全局可永久剪枝；MMLU 保持也不证明生成、安全或稀有能力不受影响。</li></ul></div>
 </section>
 <section class="reading-card reading-card-section">
-  <div class="reading-card-topline">
-    <span class="reading-step">Card 05</span>
-    <span class="reading-step-note">有效性与局限</span>
-  </div>
   <h2>有效性与局限</h2>
   <div class="reading-card-content"><ul><li>阈值与干预粒度决定比例，head 之间有补偿和协同；单头消融无害不表示同时删除集合仍无害。</li><li>三个模型家族和有限任务不足以支持普适剪枝，fine-tuning 行为“变化小”也可能被聚合分布掩盖。</li><li>论文给出的图形、相关性或有限规模干预只支持其明示范围；跨数据、架构、模型规模与训练制度时需要重新验证。本卡未独立复现，不能把受控实验直接提升为普适机制。</li><li>对结论做强审计时，应设置能产生相似表面指标的替代机制、匹配参数量与计算预算、报告失败案例和置信区间，并检查阈值、归一化、样本选择及评价器是否预先偏向作者假说。</li><li>若论文声称发现机制，还应要求前向预测新的干预结果，而不只事后解释已有曲线；至少应在未用于选择假说的数据、不同随机种子和合理替代基线上保持。</li><li>此外应明确负结果的含义：未观察到效应可能来自统计功效、测量误差或实现差异，不能自动当作理论反证；观察到效应也需排除共同原因。</li></ul></div>
 </section>
 <section class="reading-card reading-card-section">
-  <div class="reading-card-topline">
-    <span class="reading-step">Card 06</span>
-    <span class="reading-step-note">复现与资源</span>
-  </div>
   <h2>复现与资源</h2>
   <div class="reading-card-content"><ul><li>原文：https://arxiv.org/abs/2504.03889。官方 \(v_{4}\) PDF 共 28 页，SHA-256：164c6cc4dd0c2564f64f1c133323a60eabb2af62987ac5f14a100ce2b67d3969。</li><li>复现需固定模型 revision、attention implementation、prompt/data、12 score 定义与阈值、ablation 方式、MMLU harness 和 seeds；报告单头与联合删除。</li><li>建议保存所有随机种子、逐样本指标、完整训练/干预轨迹、代码与模型版本，并区分静态拟合、因果干预和独立复现。Evidence status: full-text verified; no independent reproduction performed.</li></ul></div>
 </section>
 <section class="reading-card reading-card-section">
-  <div class="reading-card-topline">
-    <span class="reading-step">Card 07</span>
-    <span class="reading-step-note">阅读指南</span>
-  </div>
   <h2>阅读指南</h2>
   <div class="reading-card-content"><ul><li>先看 Figure 1 区分权重/value/output，再检查 inactive 的因果操作定义；把 context-specific redundancy 与部署级 pruning 分开。</li><li>先核对 Figure 1 中被测对象、坐标和控制条件，再追到正文定义、评价指标、消融和限制；理论、数值、解释与外推四类陈述应分别标记。</li></ul></div>
 </section></article>
@@ -185,7 +159,7 @@
         </aside>
       </div>
       <nav class="paper-nav"><a class="paper-nav-link paper-nav-prev" href="../../collection-papers/2504.03933/"><span class="paper-nav-label">← 上一篇</span><span class="paper-nav-title">Language Models Are Implicitly Continuous</span></a>
-      <a class="paper-nav-link paper-nav-next" href="../../collection-papers/2504.02918/"><span class="paper-nav-label">下一篇 →</span><span class="paper-nav-title">Evaluating Newtonian Mechanics in Video Generative Models with Real Physical Systems</span></a></nav>
+      <a class="paper-nav-link paper-nav-next" href="../../collection-papers/2504.03503/"><span class="paper-nav-label">下一篇 →</span><span class="paper-nav-title">Operator Learning: A Statistical Perspective</span></a></nav>
       <section id="comments" class="comments-panel" aria-labelledby="comments-title">
         <div class="comments-heading">
           <div>

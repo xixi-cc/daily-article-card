@@ -3,10 +3,10 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Fast weight programming and linear transformers: from machine learning to neurobiology - physics+AI Collection 论文卡</title>
-    <meta name="description" content="Kazuki Irie 与 Samuel J. Gershman；两人均署哈佛大学心理学系及脑科学中心，Gershman 另署 Kempner Institute。论文脚注说明 Irie 主笔机器学习部分、Gershman 主笔神经科学部分。依据为 TMLR 论文首页；本卡核对 arXiv:2508.08435v5，2026-03-18 修订，37 个物理 PDF 页。 这是一篇 TMLR Primer/综述，不报告一项新训练实验。arXiv 记录的主题为 cs.LG、cs.AI、q-bio.NC；论文首页标注 TMLR 12/2025。开放评审页：https://openreview.net/forum?id=TDG8EkNmQR；arXiv DOI：https://doi.org/10.48550/arXiv.2508.08435。" />
+    <title>Fast weight programming and linear transformers: from machine learning to neurobiology - 论文卡</title>
+    <meta name="description" content="普通循环网络把过去压缩进随时间变化的向量；因果 Transformer 保留随序列长度增长的键和值。能否让网络把输入直接写入一个随时间变化的权重矩阵，再用它读取当前输入？论文用“快速权重编程”（FWP）统一这类二维状态模型，并厘清它与线性注意力的精确关系。" />
     <link rel="canonical" href="https://xixi-cc.github.io/daily-article-card/collection-papers/2508.08435/" />
-    <script type="application/ld+json">{"@context": "https://schema.org", "@type": "Article", "headline": "Fast weight programming and linear transformers: from machine learning to neurobiology", "description": "Kazuki Irie 与 Samuel J. Gershman；两人均署哈佛大学心理学系及脑科学中心，Gershman 另署 Kempner Institute。论文脚注说明 Irie 主笔机器学习部分、Gershman 主笔神经科学部分。依据为 TMLR 论文首页；本卡核对 arXiv:2508.08435v5，2026-03-18 修订，37 个物理 PDF 页。 这是一篇 TMLR Primer/综述，不报告一项新训练实验。arXiv 记录的主题为 cs.LG、cs.AI、q-bio.NC；论文首页标注 TMLR 12/2025。开放评审页：https://openreview.net/forum?id=TDG8EkNmQR；arXiv DOI：https://doi.org/10.48550/arXiv.2508.08435。", "url": "https://xixi-cc.github.io/daily-article-card/collection-papers/2508.08435/", "mainEntityOfPage": "https://xixi-cc.github.io/daily-article-card/collection-papers/2508.08435/", "inLanguage": "zh-CN", "author": {"@type": "Person", "name": "Xineng Cao", "alternateName": ["Xixi Cao", "曹溪能"], "url": "https://xixi-cc.github.io/"}, "isBasedOn": "https://arxiv.org/abs/2508.08435v5"}</script>
+    <script type="application/ld+json">{"@context": "https://schema.org", "@type": "Article", "headline": "Fast weight programming and linear transformers: from machine learning to neurobiology", "description": "普通循环网络把过去压缩进随时间变化的向量；因果 Transformer 保留随序列长度增长的键和值。能否让网络把输入直接写入一个随时间变化的权重矩阵，再用它读取当前输入？论文用“快速权重编程”（FWP）统一这类二维状态模型，并厘清它与线性注意力的精确关系。", "url": "https://xixi-cc.github.io/daily-article-card/collection-papers/2508.08435/", "mainEntityOfPage": "https://xixi-cc.github.io/daily-article-card/collection-papers/2508.08435/", "inLanguage": "zh-CN", "author": {"@type": "Person", "name": "Xineng Cao", "alternateName": ["Xixi Cao", "曹溪能"], "url": "https://xixi-cc.github.io/"}, "isBasedOn": "https://arxiv.org/abs/2508.08435v5"}</script>
     <script>
       (function() {
         try {
@@ -30,6 +30,18 @@
     <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700;800&family=Noto+Sans+SC:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
     <script>document.documentElement.classList.add('math-pending');</script>
     <script>
+      window.fitInlineMath = function(root) {
+        (root || document).querySelectorAll('mjx-container:not([display="true"])').forEach(function(el) {
+          el.classList.remove('inline-math-overflow');
+          const content = el.closest('.reading-card-content, .detail-summary, .feed-card-body');
+          if(content && el.getBoundingClientRect().width > content.clientWidth) {
+            el.classList.add('inline-math-overflow');
+            el.tabIndex = 0;
+            el.setAttribute('aria-label', '长公式，可横向滑动阅读');
+          }
+        });
+      };
+      window.addEventListener('resize', function() { window.fitInlineMath(); });
       window.MathJax = {
         tex: {
           inlineMath: [['$', '$'], ['\\(', '\\)']],
@@ -49,6 +61,7 @@
             MathJax.startup.promise.then(function() {
               document.documentElement.classList.remove('math-pending');
               document.documentElement.dataset.mathReady = 'true';
+              window.requestAnimationFrame(function() { window.fitInlineMath(); });
             });
           }
         }
@@ -65,9 +78,9 @@
     <header class="header detail-page-header">
       <div class="container">
         <div class="detail-page-topbar">
-          <a class="back-link" href="../../collection.html">返回列表</a>
+          <a class="back-link" href="../../index.html">返回列表</a>
           <div class="detail-topbar-actions">
-            <span class="detail-site-name">physics+AI Collection 论文卡</span>
+            <span class="detail-site-name">论文卡</span>
             <button id="detail-favorite" class="detail-favorite-button" type="button" aria-pressed="false">☆ 收藏</button>
             <button class="theme-toggle" type="button" data-theme-toggle aria-label="当前主题：设备，点击切换主题" title="当前主题：设备">
   <span class="theme-toggle-icons" aria-hidden="true">
@@ -91,22 +104,15 @@
         <div class="detail-hero-grid">
           <div class="detail-hero-cover"><figure class="paper-figure-card paper-figure-card-detail">
   <img class="paper-figure-image" src="../../assets/collection-figures/2508.08435/figure-1-fwp-comparison.webp" alt="Figure 1 三面板比较普通 RNN 的向量状态、FWP 的可更新矩阵状态与 Transformer 随序列增长的键值缓存。" loading="lazy" onclick="window.openPaperFigureImage && window.openPaperFigureImage(this)" />
-  <figcaption class="paper-figure-caption">Figure 1（a–c）：蓝色为固定慢权重，黄色为跨步保留的状态，绿色为当前步变量。b 的矩阵状态与 c 的键值缓存展示两种不同的记忆组织；图本身不证明普通 softmax 注意力与 FWP 等价。Kazuki Irie 与 Samuel \(J\). Gershman，arXiv:2508.08435v5，\(p\). 3，CC BY 4.0；仅裁页边。 来源：Kazuki Irie、Samuel \(J\). Gershman；Irie and Gershman, arXiv:2508.08435v5, Figure 1, CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/); page margins cropped</figcaption>
+  <figcaption class="paper-figure-caption">Figure 1（a–c）：蓝色为固定慢权重，黄色为跨步保留的状态，绿色为当前步变量。b 的矩阵状态与 c 的键值缓存展示两种不同的记忆组织；图本身不证明普通 softmax 注意力与 FWP 等价。Kazuki Irie 与 Samuel \(J\). Gershman，arXiv:2508.08435v5，\(p\). 3，CC BY 4.0；仅裁页边。 来源：Kazuki Irie、Samuel \(J\). Gershman；Irie and Gershman, arXiv:2508.08435v5, Figure 1, CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/); page margins cropped <a href="https://arxiv.org/abs/2508.08435v5" target="_blank" rel="noopener noreferrer">原文图源 ↗</a></figcaption>
 </figure></div>
           <div class="detail-hero-copy">
-            <p class="eyebrow">Collection 全文卡</p>
+            <p class="eyebrow">论文详情</p>
             <h1 class="detail-page-title">Fast weight programming and linear transformers: from machine learning to neurobiology</h1>
             <p class="detail-page-title-zh">快速权重编程与线性 Transformer：从机器学习到神经生物学</p>
-            <div class="detail-meta">Paper Collection · Learning Theory · <a href="https://arxiv.org/abs/2508.08435v5" target="_blank" rel="noopener noreferrer">原文</a></div>
-            <p class="detail-summary">Kazuki Irie 与 Samuel \(J\). Gershman；两人均署哈佛大学心理学系及脑科学中心，Gershman 另署 Kempner Institute。论文脚注说明 Irie 主笔机器学习部分、Gershman 主笔神经科学部分。依据为 TMLR 论文首页；本卡核对 arXiv:2508.08435v5，2026-03-18 修订，37 个物理 PDF 页。 这是一篇 TMLR Primer/综述，不报告一项新训练实验。arXiv 记录的主题为 cs.LG、cs.AI、\(q\)-bio.NC；论文首页标注 TMLR 12/2025。开放评审页：https://openreview.net/forum?id=TDG8EkNmQR；arXiv DOI：https://doi.org/10.48550/arXiv.2508.08435。</p>
-            <div class="detail-micro-meta">
-              <span class="meta-pill">生物与神经</span>
-              <span class="meta-pill">综述</span>
-              <span class="meta-pill">#Learning Theory</span><span class="meta-pill">#机器学习</span><span class="meta-pill">#人工智能</span>
-              <span class="meta-pill">15 分钟读完</span>
-              <span class="meta-pill">8 张阅读卡</span>
-              <span class="meta-pill">Kazuki Irie 与 Samuel J. Gershman；两人均署哈佛大学心理学系及脑科学中心…</span>
-            </div>
+            <div class="detail-meta">Kazuki Irie、Samuel J. Gershman · Transactions on Machine Learning Research (12/2025) · <a href="https://arxiv.org/abs/2508.08435v5" target="_blank" rel="noopener noreferrer">论文原文 ↗</a></div>
+            <p class="detail-summary">普通循环网络把过去压缩进随时间变化的向量；因果 Transformer 保留随序列长度增长的键和值。能否让网络把输入直接写入一个随时间变化的权重矩阵，再用它读取当前输入？论文用“快速权重编程”（FWP）统一这类二维状态模型，并厘清它与线性注意力的精确关系。</p>
+
           </div>
         </div>
       </div>
@@ -115,26 +121,10 @@
     <main class="container detail-layout">
       <div class="detail-shell">
         <article id="detail-body" class="reading-flow"><section class="reading-card reading-card-section">
-  <div class="reading-card-topline">
-    <span class="reading-step">Card 01</span>
-    <span class="reading-step-note">作者信息</span>
-  </div>
-  <h2>作者信息</h2>
-  <div class="reading-card-content"><ul><li>Kazuki Irie 与 Samuel \(J\). Gershman；两人均署哈佛大学心理学系及脑科学中心，Gershman 另署 Kempner Institute。论文脚注说明 Irie 主笔机器学习部分、Gershman 主笔神经科学部分。依据为 TMLR 论文首页；本卡核对 arXiv:2508.08435v5，2026-03-18 修订，37 个物理 PDF 页。</li><li>这是一篇 TMLR Primer/综述，不报告一项新训练实验。arXiv 记录的主题为 cs.LG、cs.AI、\(q\)-bio.NC；论文首页标注 TMLR 12/2025。开放评审页：https://openreview.net/forum?id=TDG8EkNmQR；arXiv DOI：https://doi.org/10.48550/arXiv.2508.08435。</li></ul></div>
-</section>
-<section class="reading-card reading-card-section">
-  <div class="reading-card-topline">
-    <span class="reading-step">Card 02</span>
-    <span class="reading-step-note">研究问题</span>
-  </div>
   <h2>研究问题</h2>
   <div class="reading-card-content"><ul><li>普通循环网络把过去压缩进随时间变化的向量；因果 Transformer 保留随序列长度增长的键和值。能否让网络把输入直接写入一个随时间变化的权重矩阵，再用它读取当前输入？论文用“快速权重编程”（FWP）统一这类二维状态模型，并厘清它与线性注意力的精确关系（PDF pp. 2–3, 6–10）。</li><li>第二个问题是：这种计算形式能否为突触短时可塑性提供模型？作者给出从计算变量到神经元活动和受体机制的候选映射，同时明确其神经实现仍属推测（PDF pp. 19–21）。</li></ul></div>
 </section>
 <section class="reading-card reading-card-section">
-  <div class="reading-card-topline">
-    <span class="reading-step">Card 03</span>
-    <span class="reading-step-note">背景</span>
-  </div>
   <h2>背景</h2>
   <div class="reading-card-content"><ul><li>本文跨机器学习与计算神经科学：输入 \(x_t\) 先由训练后固定的慢网络投影为查询 \(q_t\)、键 \(k_t\) 和值 \(v_t\)；快网络的状态是矩阵 \(W_t\)，它随每个输入变化，输出为 \(y_t\)。这不是把训练时梯度更新简单搬到推理时；更新规则本身由慢网络产生的量驱动（PDF pp. 7–8, Eqs. 7, 13–14）。</li><li>Figure 1 比较三种记忆载体：普通 RNN 的向量 \(s_t\)、FWP 的固定形状矩阵 \(W_t\)、Transformer 随时间增长的 \(K_t,V_t\)。矩阵维度固定并不保证精确检索；这也是后文线性复杂度与检索能力取舍的起点（PDF \(p\). 3, Fig. 1; pp. 9–10, 18）。</li></ul><figure class="evidence-figure">
   <button class="evidence-figure-image-button" type="button" aria-label="放大查看 Figure 1" onclick="window.openPaperFigureImage && window.openPaperFigureImage(this.querySelector('img'))">
@@ -148,10 +138,6 @@
 </figure></div>
 </section>
 <section class="reading-card reading-card-section">
-  <div class="reading-card-topline">
-    <span class="reading-step">Card 04</span>
-    <span class="reading-step-note">模型与方法</span>
-  </div>
   <h2>模型与方法</h2>
   <div class="reading-card-content"><ul><li>以文中的加性 FWP 为最小模型。第 \(t\) 步输入 \(x_t\) 被训练后固定的慢网络投影成查询 \(q_t\)、键 \(k_t\) 和值 \(v_t\)；\(W_0=0\)，\(\phi\) 是键/查询特征映射（PDF \(p\). 7, Eqs. 7, 13–14）：</li></ul>
 
@@ -168,34 +154,18 @@
 <ul><li>\(\beta_t\) 由慢网络生成，\(\psi\) 控制步长。Table 1 把 RetNet、Mamba2、GLA、Gated DeltaNet 等放在更新规则与局部目标同一坐标系中；它们的基准表现属于所引原始研究，本文未重新测量（PDF pp. 11–12, Table 1, Eqs. 23–24; pp. 35–37, App. A）。</li></ul></div>
 </section>
 <section class="reading-card reading-card-section">
-  <div class="reading-card-topline">
-    <span class="reading-step">Card 05</span>
-    <span class="reading-step-note">核心结果与证据</span>
-  </div>
   <h2>核心结果与证据</h2>
   <div class="reading-card-content"><ul><li>数学恒等式：删去 softmax 后，显式键值缓存 \(V_t,K_t\) 可重排为固定形状状态 \(W_t\)；引入归一化线性核时还需 \(z_t\)。这是给定投影和核函数下的代数等价，不能推广成标准 softmax Transformer 与 FWP 等价，也不保证相同精确检索能力（PDF pp. 9–10, Eqs. 15–22）。</li><li>更新规则改变可执行的状态变换：加性模型只累积外积；DeltaNet 用当前键的预测误差修正已有映射。论文将状态写成 \(W_t=B_tW_{t-1}A_t+C_t\)，并指出 DeltaNet 的 \(A_t=I-\psi(\beta_t)\phi(k_t)\otimes\phi(k_t)\) 可非对角；某些状态跟踪能力的差异来自所引理论和实验工作，未在本综述独立验证（PDF pp. 11, 17, Eqs. 24, 31–32）。</li><li>效率与检索取舍：作者总结线性时间 FWP 具有固定维度状态、却在精确检索任务上落后于 softmax 注意力；Table 2 的比较明确注明转载自 Irie et al. (2025b)。表中的“上下文无界”“表达力高”依赖所用更新规则、数值精度与任务，不能视为任意长度完美记忆或通用优势（PDF pp. 17–18, Table 2）。</li><li>神经科学部分提出一个候选变量对应：令 \(q=k\)，快矩阵 \(W\) 映射突触前活动到突触后发放；作者假设 \(W\) 与 AMPA 受体相关强度对应，\(v=Uq\) 的 \(U\) 与 NMDA 相关钙反应对应。文中用既有可塑性文献支持动机，但没有给出直接测量这套 FWP 回路的实验；这是一种机制假设（PDF pp. 19–21, Eq. 33）。</li></ul></div>
 </section>
 <section class="reading-card reading-card-section">
-  <div class="reading-card-topline">
-    <span class="reading-step">Card 06</span>
-    <span class="reading-step-note">有效性与局限</span>
-  </div>
   <h2>有效性与局限</h2>
   <div class="reading-card-content"><ul><li>“FWP 等价于 Transformer”的范围严格受核函数约束：普通 softmax 的非线性归一化不能由固定矩阵 \(W_t\) 的简单外积递推精确实现。有限状态会压缩过往键值；论文明确报告精确检索的弱项，并提出混合架构作为工程选择（PDF pp. 9–10, 18）。</li><li>作者引用的性能、形式语言能力、局部学习及脑可塑性结果来自不同原始研究。本文是 Primer，不提供统一数据集、同协议基准、效应量或独立复现实验；本卡只核对综述如何陈述这些证据，未逐篇验证被引原始研究（PDF pp. 12, 16–18, 19–21）。</li><li>神经实现一节明确称为 speculative：线性钙迹模型忽略电压依赖等非线性，脑内随机性与可塑性时间窗尚未纳入，AMPA/NMDA 变量对应不能当作已建立的神经机制（PDF pp. 19–21, Secs. 4.1–4.2）。</li></ul></div>
 </section>
 <section class="reading-card reading-card-section">
-  <div class="reading-card-topline">
-    <span class="reading-step">Card 07</span>
-    <span class="reading-step-note">复现与资源</span>
-  </div>
   <h2>复现与资源</h2>
   <div class="reading-card-content"><ul><li>全文：https://arxiv.org/abs/2508.08435v5；精确版本 PDF：https://arxiv.org/pdf/2508.08435v5。本文为综述，没有本文专属训练数据、检查点、硬件配置或可复现的新实验协议。论文 \(p\). 12 指向第三方 FWP 实现库：https://github.com/fla-org/flash-linear-attention；使用它只能复现特定实现，不能证明本文神经假说。</li><li>本地核对：官方 PDF 37 页，SHA-256 228fd0074ef0094e908014967d8efd4466089b60dfb5b2aa4dda566095b42317；Figure 1 取自该版本 PDF \(p\). 3，arXiv 页面声明 CC BY 4.0，署名 Kazuki Irie 与 Samuel \(J\). Gershman；仅裁去页边和图注，保留面板与标签。Evidence status: full-text verified; no independent reproduction performed; cited studies not independently checked.</li></ul></div>
 </section>
 <section class="reading-card reading-card-section">
-  <div class="reading-card-topline">
-    <span class="reading-step">Card 08</span>
-    <span class="reading-step-note">阅读指南</span>
-  </div>
   <h2>阅读指南</h2>
   <div class="reading-card-content"><ul><li>快速路径：先看 PDF \(p\). 3 Figure 1 分清三种状态，再看 \(p\). 7 Eqs. 13–14 的写入/读出，最后看 pp. 9–10 Eqs. 15–22 的代数等价及 \(p\). 18 的检索边界。这里的“权重”是序列内变化的状态，慢网络投影参数仍在序列间训练。</li><li>深入路径：比较 \(p\). 11 Table 1 与 \(p\). 17 Eq. 31–32，理解更新规则如何限制状态转移；读 pp. 19–21 时把 Eq. 33 的生物变量映射当作待检验假说。若只想理解核心机制，参考文献和 Appendix A 的逐项梯度推导可后读。</li></ul></div>
 </section></article>

@@ -29,6 +29,18 @@
     <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700;800&family=Noto+Sans+SC:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
     <script>document.documentElement.classList.add('math-pending');</script>
     <script>
+      window.fitInlineMath = function(root) {
+        (root || document).querySelectorAll('mjx-container:not([display="true"])').forEach(function(el) {
+          el.classList.remove('inline-math-overflow');
+          const content = el.closest('.reading-card-content, .detail-summary, .feed-card-body');
+          if(content && el.getBoundingClientRect().width > content.clientWidth) {
+            el.classList.add('inline-math-overflow');
+            el.tabIndex = 0;
+            el.setAttribute('aria-label', '长公式，可横向滑动阅读');
+          }
+        });
+      };
+      window.addEventListener('resize', function() { window.fitInlineMath(); });
       window.MathJax = {
         tex: {
           inlineMath: [['$', '$'], ['\\(', '\\)']],
@@ -48,6 +60,7 @@
             MathJax.startup.promise.then(function() {
               document.documentElement.classList.remove('math-pending');
               document.documentElement.dataset.mathReady = 'true';
+              window.requestAnimationFrame(function() { window.fitInlineMath(); });
             });
           }
         }
@@ -60,19 +73,22 @@
     <div class="page-noise"></div>
     <main class="cover-preview-page">
       <div class="cover-preview-shell">
-        <article class="note-cover note-cover-title-abstract note-cover-standalone" style="--cover-from: #d84f61; --cover-to: #f29c6b; --cover-spot: #ffd6c4; --cover-ink: #fff7f4; --cover-muted: rgba(255, 247, 244, 0.82); --cover-chip: rgba(255, 247, 244, 0.16); --cover-stroke: rgba(255, 247, 244, 0.24)">
-  <div class="note-cover-mesh"></div>
-  <div class="note-cover-title-shell">
-    <span class="note-cover-kicker">TITLE · ABSTRACT</span>
-    <h1 class="note-cover-title">GPT, But Backwards: Exactly Inverting Language Model Outputs</h1>
-    <p class="note-cover-title-zh">反向GPT：白盒离散搜索能恢复哪些原始输入？</p>
-    <p class="note-cover-abstract">SODA通过冻结模型的白盒梯度，在连续词元候选中搜索原始输入。完整logit观测下，短随机输入及分布内自然文本的有限测试恢复率较高；仅文本、长输入和输出碰撞显著限制精确身份恢复。零匹配损失和有限零误发现不构成普遍可逆性或审计证书。</p>
+        <article class="source-cover source-cover-standalone">
+  <a class="source-cover-image-link" href="../../assets/reader-covers/structured/2507.01693.webp" aria-label="查看原图">
+    <img class="source-cover-image" src="../../assets/reader-covers/structured/2507.01693.webp" alt="从 LLM 输出反推原始输入的任务，与搜索、训练和其他逆向方法的概念比较。" />
+  </a>
+  <div class="source-cover-copy">
+    <span class="source-cover-label">Figure 1</span>
+    <h1>GPT, But Backwards: Exactly Inverting Language Model Outputs</h1>
+    <p>反向GPT：白盒离散搜索能恢复哪些原始输入？</p>
+    <p class="source-cover-caption">从 LLM 输出反推原始输入的任务，与搜索、训练和其他逆向方法的概念比较。原作者原图／原文摘录，Figure 1，物理 PDF 第 2 页；仅作本地封面评审。</p>
+    <p><a href="https://arxiv.org/abs/2507.01693" target="_blank" rel="noopener noreferrer">论文原文</a></p>
   </div>
 </article>
         <div class="cover-preview-toolbar">
           <a class="back-link" href="../../collection-papers/2507.01693/index.html">返回详情</a>
           <div class="detail-topbar-actions">
-            <span class="detail-site-name">每日论文卡</span>
+            <span class="detail-site-name">论文卡</span>
             <button class="theme-toggle" type="button" data-theme-toggle aria-label="当前主题：设备，点击切换主题" title="当前主题：设备">
   <span class="theme-toggle-icons" aria-hidden="true">
     <svg class="theme-toggle-icon theme-toggle-icon-light" viewBox="0 0 24 24" fill="none">

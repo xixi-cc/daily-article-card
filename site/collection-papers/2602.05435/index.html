@@ -3,10 +3,10 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Stable Velocity: A Variance Perspective on Flow Matching - physics+AI Collection 论文卡</title>
-    <meta name="description" content="作者：Donglin Yang、Yongxing Zhang、Xin Yu、Liang Hou、Xin Tao、Pengfei Wan、Xiaojuan Qi、Renjie Liao；arXiv:2602.05435v2。全文 37 页。论文统一分析 CFM training-target variance，并在 ImageNet-256、SD3.5、Flux、Qwen-Image 与 Wan2.2 上验证训练和采样方案。" />
+    <title>Stable Velocity: A Variance Perspective on Flow Matching - 论文卡</title>
+    <meta name="description" content="CFM 用单个 conditional velocity \(v_t(x_t\mid x_0)\) 作为 marginal velocity \(v_t(x_t)\) 的 Monte Carlo target；均值正确并不意味着方差小。论文问：方差沿 flow time 如何分区；怎样在不改变 global minimizer 的前提下降方差；低方差区能否支持更强语义监督和解析采样捷径？" />
     <link rel="canonical" href="https://xixi-cc.github.io/daily-article-card/collection-papers/2602.05435/" />
-    <script type="application/ld+json">{"@context": "https://schema.org", "@type": "Article", "headline": "Stable Velocity: A Variance Perspective on Flow Matching", "description": "作者：Donglin Yang、Yongxing Zhang、Xin Yu、Liang Hou、Xin Tao、Pengfei Wan、Xiaojuan Qi、Renjie Liao；arXiv:2602.05435v2。全文 37 页。论文统一分析 CFM training-target variance，并在 ImageNet-256、SD3.5、Flux、Qwen-Image 与 Wan2.2 上验证训练和采样方案。", "url": "https://xixi-cc.github.io/daily-article-card/collection-papers/2602.05435/", "mainEntityOfPage": "https://xixi-cc.github.io/daily-article-card/collection-papers/2602.05435/", "inLanguage": "zh-CN", "author": {"@type": "Person", "name": "Xineng Cao", "alternateName": ["Xixi Cao", "曹溪能"], "url": "https://xixi-cc.github.io/"}, "isBasedOn": "https://arxiv.org/abs/2602.05435"}</script>
+    <script type="application/ld+json">{"@context": "https://schema.org", "@type": "Article", "headline": "Stable Velocity: A Variance Perspective on Flow Matching", "description": "CFM 用单个 conditional velocity \\(v_t(x_t\\mid x_0)\\) 作为 marginal velocity \\(v_t(x_t)\\) 的 Monte Carlo target；均值正确并不意味着方差小。论文问：方差沿 flow time 如何分区；怎样在不改变 global minimizer 的前提下降方差；低方差区能否支持更强语义监督和解析采样捷径？", "url": "https://xixi-cc.github.io/daily-article-card/collection-papers/2602.05435/", "mainEntityOfPage": "https://xixi-cc.github.io/daily-article-card/collection-papers/2602.05435/", "inLanguage": "zh-CN", "author": {"@type": "Person", "name": "Xineng Cao", "alternateName": ["Xixi Cao", "曹溪能"], "url": "https://xixi-cc.github.io/"}, "isBasedOn": "https://arxiv.org/abs/2602.05435"}</script>
     <script>
       (function() {
         try {
@@ -30,6 +30,18 @@
     <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700;800&family=Noto+Sans+SC:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
     <script>document.documentElement.classList.add('math-pending');</script>
     <script>
+      window.fitInlineMath = function(root) {
+        (root || document).querySelectorAll('mjx-container:not([display="true"])').forEach(function(el) {
+          el.classList.remove('inline-math-overflow');
+          const content = el.closest('.reading-card-content, .detail-summary, .feed-card-body');
+          if(content && el.getBoundingClientRect().width > content.clientWidth) {
+            el.classList.add('inline-math-overflow');
+            el.tabIndex = 0;
+            el.setAttribute('aria-label', '长公式，可横向滑动阅读');
+          }
+        });
+      };
+      window.addEventListener('resize', function() { window.fitInlineMath(); });
       window.MathJax = {
         tex: {
           inlineMath: [['$', '$'], ['\\(', '\\)']],
@@ -49,6 +61,7 @@
             MathJax.startup.promise.then(function() {
               document.documentElement.classList.remove('math-pending');
               document.documentElement.dataset.mathReady = 'true';
+              window.requestAnimationFrame(function() { window.fitInlineMath(); });
             });
           }
         }
@@ -65,9 +78,9 @@
     <header class="header detail-page-header">
       <div class="container">
         <div class="detail-page-topbar">
-          <a class="back-link" href="../../collection.html">返回列表</a>
+          <a class="back-link" href="../../index.html">返回列表</a>
           <div class="detail-topbar-actions">
-            <span class="detail-site-name">physics+AI Collection 论文卡</span>
+            <span class="detail-site-name">论文卡</span>
             <button id="detail-favorite" class="detail-favorite-button" type="button" aria-pressed="false">☆ 收藏</button>
             <button class="theme-toggle" type="button" data-theme-toggle aria-label="当前主题：设备，点击切换主题" title="当前主题：设备">
   <span class="theme-toggle-icons" aria-hidden="true">
@@ -91,22 +104,15 @@
         <div class="detail-hero-grid">
           <div class="detail-hero-cover"><figure class="paper-figure-card paper-figure-card-detail">
   <img class="paper-figure-image" src="../../assets/collection-figures/2602.05435/figure-2-cfm-variance.webp" alt="低方差与高方差流匹配区间中 posterior concentration 和 conditional velocities 的示意。" loading="lazy" onclick="window.openPaperFigureImage && window.openPaperFigureImage(this)" />
-  <figcaption class="paper-figure-caption">靠近数据时 posterior 尖锐、conditional velocity 稳定；靠近噪声时多 references 产生冲突速度。</figcaption>
+  <figcaption class="paper-figure-caption">靠近数据时 posterior 尖锐、conditional velocity 稳定；靠近噪声时多 references 产生冲突速度。 <a href="https://arxiv.org/abs/2602.05435" target="_blank" rel="noopener noreferrer">原文图源 ↗</a></figcaption>
 </figure></div>
           <div class="detail-hero-copy">
-            <p class="eyebrow">Collection 全文卡</p>
+            <p class="eyebrow">论文详情</p>
             <h1 class="detail-page-title">Stable Velocity: A Variance Perspective on Flow Matching</h1>
             <p class="detail-page-title-zh">稳定速度：流匹配的方差视角</p>
-            <div class="detail-meta">Paper Collection · Flow Matching · <a href="https://arxiv.org/abs/2602.05435" target="_blank" rel="noopener noreferrer">原文</a></div>
-            <p class="detail-summary">作者：Donglin Yang、Yongxing Zhang、Xin Yu、Liang Hou、Xin Tao、Pengfei Wan、Xiaojuan Qi、Renjie Liao；arXiv:2602.05435v2。全文 37 页。论文统一分析 CFM training-target variance，并在 ImageNet-256、SD3.5、Flux、Qwen-Image 与 Wan2.2 上验证训练和采样方案。</p>
-            <div class="detail-micro-meta">
-              <span class="meta-pill">AI 基础理论</span>
-              <span class="meta-pill">理论与数值</span>
-              <span class="meta-pill">#Flow Matching</span><span class="meta-pill">#计算机视觉</span><span class="meta-pill">#生成模型</span>
-              <span class="meta-pill">11 分钟读完</span>
-              <span class="meta-pill">8 张阅读卡</span>
-              <span class="meta-pill">作者：Donglin Yang、Yongxing Zhang、Xin Yu、Liang Hou、Xin…</span>
-            </div>
+            <div class="detail-meta">Donglin Yang、Yongxing Zhang、Xin Yu、Liang Hou、Xin Tao、Pengfei Wan、Xiaojuan Qi、Renjie Liao · 预印本 · arXiv:2602.05435 · <a href="https://arxiv.org/abs/2602.05435" target="_blank" rel="noopener noreferrer">论文原文 ↗</a></div>
+            <p class="detail-summary">CFM 用单个 conditional velocity \(v_t(x_t\mid x_0)\) 作为 marginal velocity \(v_t(x_t)\) 的 Monte Carlo target；均值正确并不意味着方差小。论文问：方差沿 flow time 如何分区；怎样在不改变 global minimizer 的前提下降方差；低方差区能否支持更强语义监督和解析采样捷径？</p>
+
           </div>
         </div>
       </div>
@@ -115,42 +121,18 @@
     <main class="container detail-layout">
       <div class="detail-shell">
         <article id="detail-body" class="reading-flow"><section class="reading-card reading-card-section">
-  <div class="reading-card-topline">
-    <span class="reading-step">Card 01</span>
-    <span class="reading-step-note">作者信息</span>
-  </div>
-  <h2>作者信息</h2>
-  <div class="reading-card-content"><ul><li>作者：Donglin Yang、Yongxing Zhang、Xin Yu、Liang Hou、Xin Tao、Pengfei Wan、Xiaojuan Qi、Renjie Liao；arXiv:2602.05435v2。全文 37 页。论文统一分析 CFM training-target variance，并在 ImageNet-256、SD3.5、Flux、Qwen-Image 与 Wan2.2 上验证训练和采样方案。</li></ul></div>
-</section>
-<section class="reading-card reading-card-section">
-  <div class="reading-card-topline">
-    <span class="reading-step">Card 02</span>
-    <span class="reading-step-note">研究问题</span>
-  </div>
   <h2>研究问题</h2>
   <div class="reading-card-content"><ul><li>CFM 用单个 conditional velocity \(v_t(x_t\mid x_0)\) 作为 marginal velocity \(v_t(x_t)\) 的 Monte Carlo target；均值正确并不意味着方差小。论文问：方差沿 flow time 如何分区；怎样在不改变 global minimizer 的前提下降方差；低方差区能否支持更强语义监督和解析采样捷径？</li></ul></div>
 </section>
 <section class="reading-card reading-card-section">
-  <div class="reading-card-topline">
-    <span class="reading-step">Card 03</span>
-    <span class="reading-step-note">背景</span>
-  </div>
   <h2>背景</h2>
   <div class="reading-card-content"><ul><li>给定 \(x_t\) 时，CFM target 的随机性来自 posterior \(p_t(x_0\mid x_t)\)。靠近 data endpoint 时 posterior 通常尖锐，单个 reference 已几乎确定 velocity；靠近 pure-noise endpoint 时 posterior 多峰，不同 reference 给出相互冲突的 conditional velocities。</li><li>Figure 2 把这一点画成两幅局部速度场：左侧 \(t\le\xi\) 时蓝色 conditional arrow 与黑色 marginal arrow 重合；右侧 \(t&gt;\xi\) 时多条 colored arrows 分散。图直接替代了对 posterior mixing 的冗长描述。</li></ul></div>
 </section>
 <section class="reading-card reading-card-section">
-  <div class="reading-card-topline">
-    <span class="reading-step">Card 04</span>
-    <span class="reading-step-note">模型与方法</span>
-  </div>
   <h2>模型与方法</h2>
   <div class="reading-card-content"><ul><li>StableVM 从 data distribution 取 \(n\) 个 references，构造 mixture conditional path，并以 posterior weights 对 conditional velocities 做 self-normalized aggregation。Theorem 3.1 证明 target 无偏且与 CFM 有同一最优 velocity；Theorem 3.2 在 affine conditional field 下给出严格方差下降。</li><li>VA-REPA 只在低方差区激活 representation alignment，并按有效样本归一化；conditional generation 用 class-specific FIFO memory bank 缓解同类 references 稀疏。StableVS 则利用低方差区由单一 data mode 主导，把 ODE/SDE 更新化为闭式近似，无需 finetuning。</li></ul></div>
 </section>
 <section class="reading-card reading-card-section">
-  <div class="reading-card-topline">
-    <span class="reading-step">Card 05</span>
-    <span class="reading-step-note">核心结果与证据</span>
-  </div>
   <h2>核心结果与证据</h2>
   <div class="reading-card-content"><ul><li>Figure 2 的物理含义是一个 time-dependent conditioning transition：低方差区仍携带关于 \(x_0\) 的语义信息，alignment 是 well posed；高方差区接近噪声，试图从 \(x_t\) 恢复唯一语义会把 irreducible posterior ambiguity 当成监督。</li><li>Figure 3 的 ImageNet-256 消融中，100k iterations 的 SiT-XL baseline FID 为 18.58；全时段 REPA 为 17.88；仅低方差 \([0,0.7]\) 对齐最好，而仅高方差区为 38.89，直接支持 regime-aware weighting。StableVM 的 large-\(n\) variance 主项约缩小为 \(\mathcal V_{CFM}/(n-1)\)。</li><li>StableVS 在 SD3.5、Flux、Qwen-Image 与 Wan2.2 的低方差区实现超过 \(2\times\) step reduction，并在相同 seed 下维持或改善 aggregate quality；它只替换 \([0,\xi]\) 内的 solver，高方差区仍沿用 base method。</li></ul><figure class="evidence-figure">
   <button class="evidence-figure-image-button" type="button" aria-label="放大查看 Figure 2" onclick="window.openPaperFigureImage && window.openPaperFigureImage(this.querySelector('img'))">
@@ -164,26 +146,14 @@
 </figure></div>
 </section>
 <section class="reading-card reading-card-section">
-  <div class="reading-card-topline">
-    <span class="reading-step">Card 06</span>
-    <span class="reading-step-note">有效性与局限</span>
-  </div>
   <h2>有效性与局限</h2>
   <div class="reading-card-content"><ul><li>方差定理的严格不等式依赖 affine conditional velocity、连续性和 reference sampling assumptions；有限 \(n\) 的 self-normalized estimator 与 memory bank 会带来相关性和额外计算/显存。split \(\xi\) 随维度、VAE、path 和数据分布变化，并非普适常数。</li><li>采样加速集中在作者定义的低方差区，“超过 2×”不是完整 end-to-end latency 必然减半。大型 pretrained-model 结果主要是 benchmark 与精选视觉比较，不能排除 rare prompt、motion consistency 或 long-tail mode 的损失。</li></ul></div>
 </section>
 <section class="reading-card reading-card-section">
-  <div class="reading-card-topline">
-    <span class="reading-step">Card 07</span>
-    <span class="reading-step-note">复现与资源</span>
-  </div>
   <h2>复现与资源</h2>
   <div class="reading-card-content"><ul><li>原文：https://arxiv.org/abs/2602.05435；代码：https://github.com/linYDTHU/StableVelocity。全文 37 页，PDF SHA-256：4d40e1a56ebff4f55e9ebe8e9402de470d064469c58a39528b0697a46e502bf7。</li><li>复现需固定 interpolant convention、time direction、reference count \(n\)、memory-bank capacity、split \(\xi\)、VA-REPA weighting、CFG、base solver/steps、VAE、FID/GenEval/T2V-CompBench revisions、seeds 与 end-to-end latency。</li><li>Evidence status: full-text verified; no independent reproduction performed.</li></ul></div>
 </section>
 <section class="reading-card reading-card-section">
-  <div class="reading-card-topline">
-    <span class="reading-step">Card 08</span>
-    <span class="reading-step-note">阅读指南</span>
-  </div>
   <h2>阅读指南</h2>
   <div class="reading-card-content"><ul><li>先看 Figures 1–2，建立 variance curve 与 posterior picture；再读 Theorems 3.1–3.2，区分 unbiasedness 和 variance reduction。随后看 Figure 3 的 alignment failure，再读 StableVS 闭式更新与 Tables 4–6，最后核对附录的 estimator assumptions。</li></ul></div>
 </section></article>
@@ -193,7 +163,7 @@
         </aside>
       </div>
       <nav class="paper-nav"><a class="paper-nav-link paper-nav-prev" href="../../collection-papers/2508.19897/"><span class="paper-nav-label">← 上一篇</span><span class="paper-nav-title">The Information Dynamics of Generative Diffusion</span></a>
-      <a class="paper-nav-link paper-nav-next" href="../../collection-papers/2602.04774/"><span class="paper-nav-label">下一篇 →</span><span class="paper-nav-title">Theory of Optimal Learning Rate Schedules and Scaling Laws for a Random Feature Model</span></a></nav>
+      <a class="paper-nav-link paper-nav-next" href="../../collection-papers/2602.05065/"><span class="paper-nav-label">下一篇 →</span><span class="paper-nav-title">Does SGD Seek Flatness or Sharpness? An Exactly Solvable Model</span></a></nav>
       <section id="comments" class="comments-panel" aria-labelledby="comments-title">
         <div class="comments-heading">
           <div>

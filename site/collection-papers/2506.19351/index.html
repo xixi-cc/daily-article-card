@@ -3,10 +3,10 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>In-Context Occam&#x27;s Razor: How Transformers Prefer Simpler Hypotheses on the Fly - physics+AI Collection 论文卡</title>
-    <meta name="description" content="Puneesh Deora、Tina Behnia、Christos Thrampoulidis 来自 University of British Columbia；Bhavya Vasudeva 来自 University of Southern California。本卡核对 arXiv:2506.19351v1（2025-06-24），28个物理PDF页，按已核验的预印本版本介绍，不把匿名评审致谢当作会议录用证据。（第1、15页）" />
+    <title>In-Context Occam&#x27;s Razor: How Transformers Prefer Simpler Hypotheses on the Fly - 论文卡</title>
+    <meta name="description" content="在上下文学习中，复杂模型类可以完全解释简单任务的数据，训练好的 Transformer 会默认采用最有表达力的模型，还是选择足够解释当前提示的简单假设？作者把这个问题放进明确嵌套的任务族：低阶/高阶 Markov 链，以及低维/全维线性回归，再比较网络输出与各候选统计策略。（第1–3页）" />
     <link rel="canonical" href="https://xixi-cc.github.io/daily-article-card/collection-papers/2506.19351/" />
-    <script type="application/ld+json">{"@context": "https://schema.org", "@type": "Article", "headline": "In-Context Occam's Razor: How Transformers Prefer Simpler Hypotheses on the Fly", "description": "Puneesh Deora、Tina Behnia、Christos Thrampoulidis 来自 University of British Columbia；Bhavya Vasudeva 来自 University of Southern California。本卡核对 arXiv:2506.19351v1（2025-06-24），28个物理PDF页，按已核验的预印本版本介绍，不把匿名评审致谢当作会议录用证据。（第1、15页）", "url": "https://xixi-cc.github.io/daily-article-card/collection-papers/2506.19351/", "mainEntityOfPage": "https://xixi-cc.github.io/daily-article-card/collection-papers/2506.19351/", "inLanguage": "zh-CN", "author": {"@type": "Person", "name": "Xineng Cao", "alternateName": ["Xixi Cao", "曹溪能"], "url": "https://xixi-cc.github.io/"}, "isBasedOn": "https://arxiv.org/abs/2506.19351"}</script>
+    <script type="application/ld+json">{"@context": "https://schema.org", "@type": "Article", "headline": "In-Context Occam's Razor: How Transformers Prefer Simpler Hypotheses on the Fly", "description": "在上下文学习中，复杂模型类可以完全解释简单任务的数据，训练好的 Transformer 会默认采用最有表达力的模型，还是选择足够解释当前提示的简单假设？作者把这个问题放进明确嵌套的任务族：低阶/高阶 Markov 链，以及低维/全维线性回归，再比较网络输出与各候选统计策略。（第1–3页）", "url": "https://xixi-cc.github.io/daily-article-card/collection-papers/2506.19351/", "mainEntityOfPage": "https://xixi-cc.github.io/daily-article-card/collection-papers/2506.19351/", "inLanguage": "zh-CN", "author": {"@type": "Person", "name": "Xineng Cao", "alternateName": ["Xixi Cao", "曹溪能"], "url": "https://xixi-cc.github.io/"}, "isBasedOn": "https://arxiv.org/abs/2506.19351"}</script>
     <script>
       (function() {
         try {
@@ -30,6 +30,18 @@
     <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700;800&family=Noto+Sans+SC:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
     <script>document.documentElement.classList.add('math-pending');</script>
     <script>
+      window.fitInlineMath = function(root) {
+        (root || document).querySelectorAll('mjx-container:not([display="true"])').forEach(function(el) {
+          el.classList.remove('inline-math-overflow');
+          const content = el.closest('.reading-card-content, .detail-summary, .feed-card-body');
+          if(content && el.getBoundingClientRect().width > content.clientWidth) {
+            el.classList.add('inline-math-overflow');
+            el.tabIndex = 0;
+            el.setAttribute('aria-label', '长公式，可横向滑动阅读');
+          }
+        });
+      };
+      window.addEventListener('resize', function() { window.fitInlineMath(); });
       window.MathJax = {
         tex: {
           inlineMath: [['$', '$'], ['\\(', '\\)']],
@@ -49,6 +61,7 @@
             MathJax.startup.promise.then(function() {
               document.documentElement.classList.remove('math-pending');
               document.documentElement.dataset.mathReady = 'true';
+              window.requestAnimationFrame(function() { window.fitInlineMath(); });
             });
           }
         }
@@ -65,9 +78,9 @@
     <header class="header detail-page-header">
       <div class="container">
         <div class="detail-page-topbar">
-          <a class="back-link" href="../../collection.html">返回列表</a>
+          <a class="back-link" href="../../index.html">返回列表</a>
           <div class="detail-topbar-actions">
-            <span class="detail-site-name">physics+AI Collection 论文卡</span>
+            <span class="detail-site-name">论文卡</span>
             <button id="detail-favorite" class="detail-favorite-button" type="button" aria-pressed="false">☆ 收藏</button>
             <button class="theme-toggle" type="button" data-theme-toggle aria-label="当前主题：设备，点击切换主题" title="当前主题：设备">
   <span class="theme-toggle-icons" aria-hidden="true">
@@ -91,22 +104,15 @@
         <div class="detail-hero-grid">
           <div class="detail-hero-cover"><figure class="paper-figure-card paper-figure-card-detail">
   <img class="paper-figure-image" src="../../assets/collection-figures/2506.19351/figure-1-hierarchical-task-selection.png" alt="简单任务包含于复杂任务的训练分布、上下文类别选择、Boolean提示与LLM预测的完整三面板图。" loading="lazy" onclick="window.openPaperFigureImage && window.openPaperFigureImage(this)" />
-  <figcaption class="paper-figure-caption">Deora、Vasudeva、Behnia、Thrampoulidis，Figure1（arXiv:2506.19351v1，PDF第2页，CC BY4.0）：左图展示简单任务包含于复杂任务，中央为上下文假设选择；右图横轴为示例数、纵轴为准确率，对比模糊示例与只有复杂函数能解释的Boolean示例，指定GPT-4测试中选择随证据改变。它是有限行为证据，不证明内部Bayes电路或普遍简单性定律。三个原面板及标注完整保留。</figcaption>
+  <figcaption class="paper-figure-caption">Deora、Vasudeva、Behnia、Thrampoulidis，Figure1（arXiv:2506.19351v1，PDF第2页，CC BY4.0）：左图展示简单任务包含于复杂任务，中央为上下文假设选择；右图横轴为示例数、纵轴为准确率，对比模糊示例与只有复杂函数能解释的Boolean示例，指定GPT-4测试中选择随证据改变。它是有限行为证据，不证明内部Bayes电路或普遍简单性定律。三个原面板及标注完整保留。 <a href="https://arxiv.org/abs/2506.19351" target="_blank" rel="noopener noreferrer">原文图源 ↗</a></figcaption>
 </figure></div>
           <div class="detail-hero-copy">
-            <p class="eyebrow">Collection 全文卡</p>
+            <p class="eyebrow">论文详情</p>
             <h1 class="detail-page-title">In-Context Occam&#x27;s Razor: How Transformers Prefer Simpler Hypotheses on the Fly</h1>
             <p class="detail-page-title-zh">上下文中的奥卡姆剃刀：Transformer 如何即时偏好简单假设</p>
-            <div class="detail-meta">Paper Collection · In-Context Learning · <a href="https://arxiv.org/abs/2506.19351" target="_blank" rel="noopener noreferrer">原文</a></div>
-            <p class="detail-summary">Puneesh Deora、Tina Behnia、Christos Thrampoulidis 来自 University of British Columbia；Bhavya Vasudeva 来自 University of Southern California。本卡核对 arXiv:2506.19351v1（2025-06-24），28个物理PDF页，按已核验的预印本版本介绍，不把匿名评审致谢当作会议录用证据。（第1、15页）</p>
-            <div class="detail-micro-meta">
-              <span class="meta-pill">AI 基础理论</span>
-              <span class="meta-pill">理论与数值</span>
-              <span class="meta-pill">#In-Context Learning</span><span class="meta-pill">#机器学习</span><span class="meta-pill">#人工智能</span>
-              <span class="meta-pill">17 分钟读完</span>
-              <span class="meta-pill">8 张阅读卡</span>
-              <span class="meta-pill">Puneesh Deora、Tina Behnia、Christos Thrampoulidis 来自…</span>
-            </div>
+            <div class="detail-meta">Puneesh Deora、Bhavya Vasudeva、Tina Behnia、Christos Thrampoulidis · 预印本 · arXiv:2506.19351 · <a href="https://arxiv.org/abs/2506.19351" target="_blank" rel="noopener noreferrer">论文原文 ↗</a></div>
+            <p class="detail-summary">在上下文学习中，复杂模型类可以完全解释简单任务的数据，训练好的 Transformer 会默认采用最有表达力的模型，还是选择足够解释当前提示的简单假设？作者把这个问题放进明确嵌套的任务族：低阶/高阶 Markov 链，以及低维/全维线性回归，再比较网络输出与各候选统计策略。（第1–3页）</p>
+
           </div>
         </div>
       </div>
@@ -115,34 +121,14 @@
     <main class="container detail-layout">
       <div class="detail-shell">
         <article id="detail-body" class="reading-flow"><section class="reading-card reading-card-section">
-  <div class="reading-card-topline">
-    <span class="reading-step">Card 01</span>
-    <span class="reading-step-note">作者信息</span>
-  </div>
-  <h2>作者信息</h2>
-  <div class="reading-card-content"><ul><li>Puneesh Deora、Tina Behnia、Christos Thrampoulidis 来自 University of British Columbia；Bhavya Vasudeva 来自 University of Southern California。本卡核对 arXiv:2506.19351v1（2025-06-24），28个物理PDF页，按已核验的预印本版本介绍，不把匿名评审致谢当作会议录用证据。（第1、15页）</li></ul></div>
-</section>
-<section class="reading-card reading-card-section">
-  <div class="reading-card-topline">
-    <span class="reading-step">Card 02</span>
-    <span class="reading-step-note">研究问题</span>
-  </div>
   <h2>研究问题</h2>
   <div class="reading-card-content"><ul><li>在上下文学习中，复杂模型类可以完全解释简单任务的数据，训练好的 Transformer 会默认采用最有表达力的模型，还是选择足够解释当前提示的简单假设？作者把这个问题放进明确嵌套的任务族：低阶/高阶 Markov 链，以及低维/全维线性回归，再比较网络输出与各候选统计策略。（第1–3页）</li><li>读者桥：模型训练时学习一套跨任务推断程序；推断时权重固定，输入提示中的样本决定当前任务的类别和参数。隐变量 $s$ 表示任务复杂度，类别后验权重是由上下文数据改变的状态。可观测量是下一符号预测分布与各阶统计的KL，或回归预测与不同维度最小二乘解的均方差。这里的复杂度是给定任务族自由度，不是代码长度、计算量或网络参数量的通用定义。</li></ul></div>
 </section>
 <section class="reading-card reading-card-section">
-  <div class="reading-card-topline">
-    <span class="reading-step">Card 03</span>
-    <span class="reading-step-note">背景</span>
-  </div>
   <h2>背景</h2>
   <div class="reading-card-content"><ul><li>已有上下文学习工作解释固定复杂度下的频数或最小二乘策略；这里的缺口是面对严格嵌套的候选任务族，模型是否会随有限提示选择复杂度，而不是始终使用最复杂的统计量。本文结合Bayes总体最优解释、受控训练和有限LLM行为测试，属于AI理论与机制研究；行为吻合不等于已找到内部Bayes电路。（第3–5页。）</li></ul></div>
 </section>
 <section class="reading-card reading-card-section">
-  <div class="reading-card-topline">
-    <span class="reading-step">Card 04</span>
-    <span class="reading-step-note">模型与方法</span>
-  </div>
   <h2>模型与方法</h2>
   <div class="reading-card-content"><ul><li>每个训练序列先从阶数集合 $\mathrm{ord}=\{1,k\}$ 等概率采样 $s$，再独立采样 $V^s$ 个 Dirichlet(1) 转移行，生成符号序列 $X$。高阶链允许依赖更长历史，低阶链是其中的特殊情形。下一token交叉熵的总体Bayes最优输出是类别后验加权的条件预测：</li></ul>
 
@@ -172,10 +158,6 @@
 </figure></div>
 </section>
 <section class="reading-card reading-card-section">
-  <div class="reading-card-topline">
-    <span class="reading-step">Card 05</span>
-    <span class="reading-step-note">核心结果与证据</span>
-  </div>
   <h2>核心结果与证据</h2>
   <div class="reading-card-content"><ul><li>Figure2/3的GPT-2型模型在混合阶数训练后，对未见转移矩阵生成的低阶序列更接近bigram统计，对高阶序列更接近相应trigram/tetragram统计。词表V=3；1/3阶主实验6层6头、嵌入192、上下文300；1/2阶实验2层20头、嵌入320、上下文200。它是不同训练数据量下输出策略的行为证据，不是对隐层实现完整Bayes计算的直接因果识别。（第3、7、26页）</li><li>Figure4在d=10/20、上下文39的回归测试中，当简单/复杂解都能解释样本，混合训练模型更接近对应简单解；12层8头、嵌入256。回归用了逐步增加任务维度的课程，去掉课程最终仍趋近简单解但明显更慢。第18页Figure12另写训练T=40，与主设置39不同，复现应按各图明确的设置区分，而不是合并成一个实验。（第9、18–19、26页）</li><li>只用复杂任务训练的消融不表现同样的简单偏好：高阶链模型继续依赖高阶统计，全维回归模型继续接近全维解。Figure8的1/3阶混合模型面对未训练4阶任务采用4-gram而非正确的5-gram；面对未训练2阶任务也未强力锁定3-gram。附录报告后者两候选KL相对差0.1073（context300；KL方向为经验n-gram统计||模型），明显小于已训练1阶的1.618和3阶的1.074。因此本文不支持对任意新复杂度自动选择最优类。（第12–13、19–21页）</li><li>类别不平衡、模型容量和结构均会影响结果。低阶训练比例0.1–0.9的扫描中，低阶占比过大使高阶学习更困难，batch32增至64能部分缓解；6层6头但嵌入30能学低阶却未学好高阶。LSTM也可出现较弱的偏好，但需要更多容量；本文比较的是具体模型预算与训练设置，不能据此证明架构层面的唯一性。（第13–14、20–22页）</li><li>PCFG实验将简单语法约束为复杂语法的子集，训练最大递归深度10、测试为深度0的短串连接；极短提示下性能下降。GPT-4的Boolean测试在d=5/6/7、50个提示中比较复制首位与三位多数：模糊示例后倾向复制，只有复杂函数解释的示例后更倾向多数。它是指定提示和任务的有限行为测试，不是所有商用模型的普遍简单性定律。（第10–12、20–21页）</li><li>附录D给出手工两层attention-only参数构造，第一层意图在i≥2位置复制前一token，第二层V个head对每种前符号计算：</li></ul>
 
@@ -184,26 +166,14 @@
 <ul><li>这是非零计数条件下的经验条件分布；精确选择用注意力分数 $c\to\infty$。有限c有泄漏，未出现的历史须另给平滑/边界处理。该lemma只覆盖计算后验所需的统计量，并未独立构造全部边际似然、类别后验和训练收敛。（第26–28页） 统计从 $i=2$ 计数，而第1位置在因果mask中只能读取自身，不能复制不存在的前驱。原证明未明确排除首token的第二层统计贡献或规定BOS边界，因此无限分数及非零分母不单独保证排印构造对任意序列严格实现此式。（第27–28页。）</li></ul></div>
 </section>
 <section class="reading-card reading-card-section">
-  <div class="reading-card-topline">
-    <span class="reading-step">Card 06</span>
-    <span class="reading-step-note">有效性与局限</span>
-  </div>
   <h2>有效性与局限</h2>
   <div class="reading-card-content"><ul><li>论文的可靠结论是这些嵌套任务、训练混合和有限容量下观察到的类别选择行为，Bayesian Occam解释依赖先验、模型类和接近总体最优的假设。它不等于Transformer天生偏好任意意义上的最简单模型；类别缺失、过度不平衡、上下文过短与容量不足均给出边界。（第12–15页）</li><li>回归附录B.3的推导有需要保留的数学限制：当 $T&gt;d/2$ 时，简单模型的无噪声标签分布落在T维空间中的低维子空间，其支撑上的密度与全维密度不能未经共同测度或噪声正则化就直接相除。第25页还把满维最小范数解与受限解的范数差写为正；实际上受限可行解也是满维约束的可行解，最小范数性质给出相反的不等式。因此本卡不把该段边际似然比和高概率推导当作已独立验证的普适定理；这不抹去前述实验行为，也不否定条件后验均值的结构式。（第23–25页）</li><li>固定标准高斯输入、轴对齐低维子空间、无噪声、均匀Dirichlet和有限嵌套类别使分析可解；多维复杂度、一般稀疏结构、噪声及大规模自然语言任务未由本文统一覆盖。GPT-4行为测试没有内部电路或训练动力学证据，模型名称也不提供可长期固定的精确checkpoint。（第11–15页）</li></ul></div>
 </section>
 <section class="reading-card reading-card-section">
-  <div class="reading-card-topline">
-    <span class="reading-step">Card 07</span>
-    <span class="reading-step-note">复现与资源</span>
-  </div>
   <h2>复现与资源</h2>
   <div class="reading-card-content"><ul><li>作者在第26页给出 https://github.com/puneesh00/ICL-Bayes-Occam.git 。合成Transformer实验使用AdamW、主要学习率10⁻⁴、batch32；PCFG为4层4头嵌入128、上下文50。Markov上下文长度扫描为每250个转移矩阵各15条序列，95% bootstrap区间；回归评估2000个独立任务上下文、100次bootstrap，不能把多条同矩阵序列当作完全独立矩阵。（第26页）</li><li>复查时应固定词表、任务先验、课程、提示长度、KL方向和未出现历史的平滑规则；区分训练步数、看过的序列数与真实耗时。大batch缓解类别失衡不自动证明相同token预算或墙钟下效率更高。本文未在本轮重训模型或重新调用GPT-4，未独立复现任何数值实验。</li><li>官方v1 PDF SHA-256：8c92e590ba749a947c22b13705a751b832495f21ae0d9ac03a6ec829872f945c；28个物理页已核对正文、参考文献、附录及上述限制。Figure1依CC BY4.0署名引用，完整保留任务包含关系、推断示意和LLM评估面板。Evidence status: full-text verified; no independent reproduction performed.</li></ul></div>
 </section>
 <section class="reading-card reading-card-section">
-  <div class="reading-card-topline">
-    <span class="reading-step">Card 08</span>
-    <span class="reading-step-note">阅读指南</span>
-  </div>
   <h2>阅读指南</h2>
   <div class="reading-card-content"><ul><li>先看第2页Figure1与第9页Figure4的“两种解都插值、预测却不同”，再读第7–8页类别后验和BIC惩罚。第12–14页的复杂任务单独训练、未见阶数、类别失衡和容量消融决定外推边界。回归读者随后检查第23–25页奇异支撑与范数符号；电路读者最后读第26–28页，区分统计量可表示与整个Bayes算法可学习。</li></ul></div>
 </section></article>

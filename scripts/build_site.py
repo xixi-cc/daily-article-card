@@ -12,11 +12,13 @@
 from __future__ import annotations
 
 import json
+import hashlib
 import math
 import os
 import re
 import shutil
 import sys
+import subprocess
 from html import escape
 from pathlib import Path
 from typing import Dict, List
@@ -30,6 +32,11 @@ try:
     from scripts.card_taxonomy import classify_card
 except ModuleNotFoundError:  # Direct execution: python3 scripts/build_site.py
     from card_taxonomy import classify_card
+
+try:
+    from scripts.card_presentation import presentation_fields, merge_reader_lists
+except ModuleNotFoundError:
+    from card_presentation import presentation_fields, merge_reader_lists
 
 try:
     from PIL import Image
@@ -58,7 +65,7 @@ IMAGE_DIR = ASSETS_DIR / "paper-images"
 PAPER_IMAGES_MANIFEST = ASSETS_DIR / "paper-images.json"
 DAILY_BOOTSTRAP = PROJECT_ROOT / "automation_outputs" / "arxiv_daily_cards" / "bootstrap-2026-08-11-to-2026-08-14.json"
 SITE_TOPIC_LABEL = "physics+AI"
-DAILY_SITE_TITLE = "每日论文卡"
+DAILY_SITE_TITLE = "论文卡"
 SITE_DOCUMENT_NAME = "physics_AI.html"
 COLLECTION_DOCUMENT_NAME = "collection.html"
 MATHJAX_VERSION = "3.2.2"
@@ -694,11 +701,14 @@ def render_note_cover(record: Dict[str, object], standalone: bool = False) -> st
 def render_paper_figure(record: Dict[str, object], image_src: str, context: str) -> str:
     caption = render_math_text(record.get("cover_caption") or record["hook_text"])
     title = escape(str(record.get("cover_alt_text") or record["title"]))
+    revision = record.get("reader_cover_revision") or {}
+    source_link = escape(str(revision.get("source_pdf") or revision.get("source_pdf_url") or record.get("link", "")), quote=True)
+    attribution = f' <a href="{source_link}" target="_blank" rel="noopener noreferrer">原文图源 ↗</a>' if source_link else ""
 
     return f"""
 <figure class="paper-figure-card paper-figure-card-{context}">
   <img class="paper-figure-image" src="{escape(image_src, quote=True)}" alt="{title}" loading="lazy" onclick="window.openPaperFigureImage && window.openPaperFigureImage(this)" />
-  <figcaption class="paper-figure-caption">{caption}</figcaption>
+  <figcaption class="paper-figure-caption">{caption}{attribution}</figcaption>
 </figure>
 """.strip()
 
@@ -758,13 +768,12 @@ def render_detail_sections(record: Dict[str, object]) -> str:
             if isinstance(figure, dict) and figure.get("section") == section["title"]
         ]
         figures_html = "\n".join(section_figures)
+        if section["title"] == "作者信息" and record.get("authors"):
+            # The full provenance remains in JSON; this section is for readers.
+            continue
         parts.append(
             f"""
 <section class="reading-card reading-card-section">
-  <div class="reading-card-topline">
-    <span class="reading-step">Card {index:02d}</span>
-    <span class="reading-step-note">{escape(section["title"])}</span>
-  </div>
   <h2>{escape(section["title"])}</h2>
   <div class="reading-card-content">{section["html"]}{figures_html}</div>
 </section>
@@ -895,6 +904,7 @@ def attach_daily_metadata(records: List[Dict[str, object]]) -> None:
         record["feed_date"] = record.get("date", "")
         record["figure_refs"] = card.get("figure_refs", [])
         record["cover"] = card.get("cover", {})
+        record.update(presentation_fields(card, record))
         cover = record["cover"]
         if isinstance(cover, dict):
             record["cover_mode"] = str(cover.get("mode", ""))
@@ -972,6 +982,7 @@ def build_collection_records(paper_image_manifest: Dict[str, Dict[str, object]])
             }
         )
         record.update(classify_card(card))
+        record.update(presentation_fields(card, record))
         cover = record["cover"]
         if isinstance(cover, dict):
             record["cover_mode"] = str(cover.get("mode", ""))
@@ -987,19 +998,54 @@ def build_collection_records(paper_image_manifest: Dict[str, Dict[str, object]])
     return records
 
 
+def complete_cover_thumbnail(asset_path: str) -> str:
+    """Smaller feed image, preserving the complete source and every panel."""
+    if not asset_path:
+        return ""
+    source = SITE_DIR / asset_path
+    if not source.is_file():
+        return asset_path
+    digest = hashlib.sha256(source.read_bytes()).hexdigest()[:24]
+    target = ASSETS_DIR / "cover-thumbs" / f"{digest}.webp"
+    if target.exists():
+        return target.relative_to(SITE_DIR).as_posix()
+    target.parent.mkdir(parents=True, exist_ok=True)
+    try:
+        if HAS_PIL:
+            with Image.open(source) as image:
+                image = image.convert("RGB")
+                if image.width > 600:
+                    image = image.resize((600, max(1, round(image.height * 600 / image.width))), Image.LANCZOS)
+                image.save(target, "WEBP", quality=82)
+        elif shutil.which("convert"):
+            subprocess.run(["convert", str(source), "-thumbnail", "600x>", "-quality", "82", str(target)], check=True, capture_output=True)
+        else:
+            return asset_path
+    except (OSError, subprocess.SubprocessError) as error:
+        print(f"Cover thumbnail unavailable for {asset_path}: {error}", file=sys.stderr)
+        return asset_path
+    return target.relative_to(SITE_DIR).as_posix()
+
+
 def build_list_data(records: List[Dict[str, object]], thumb_map: Dict[str, str] | None = None) -> List[Dict[str, object]]:
     thumb_map = thumb_map or {}
     output: List[Dict[str, object]] = []
     for record in records:
         item = {
             "date": record["date"],
+            "collection_date": record.get("collection_date", ""),
+            "published": record.get("published", ""),
+            "grade": record.get("grade", ""),
+            "card_id": record.get("card_id", ""),
+            "work_id": record.get("work_id", ""),
+            "authors": record.get("authors", ""),
             "title": normalize_inline_math_notation(str(record["title"])),
             "title_zh": normalize_inline_math_notation(str(record["title_zh"])),
             "link": record["link"],
             "arxiv_id": record["arxiv_id"],
             "detail_path": record["detail_path"],
             "cover_path": record["cover_path"],
-            "paper_image_path": thumb_map.get(str(record["paper_image_path"]), record["paper_image_path"]),
+            "paper_image_path": complete_cover_thumbnail(str(record["paper_image_path"])),
             "paper_image_full_path": record["paper_image_path"],
             "preview_text": normalize_inline_math_notation(str(record["preview_text"])),
             "research_unit": normalize_inline_math_notation(str(record["research_unit"])),
@@ -1008,6 +1054,7 @@ def build_list_data(records: List[Dict[str, object]], thumb_map: Dict[str, str] 
             "reading_minutes": record["reading_minutes"],
             "section_count": record["section_count"],
             "cover_theme": record["cover_theme"],
+            "reader_cover_revision": record.get("reader_cover_revision", {}),
             "cover_mode": record.get("cover_mode", ""),
             "cover_summary": normalize_inline_math_notation(str(record.get("cover_summary", record.get("hook_text", "")))),
             "cover_alt_text": record.get("cover_alt_text", ""),
@@ -1026,12 +1073,50 @@ def build_list_data(records: List[Dict[str, object]], thumb_map: Dict[str, str] 
 
 
 def render_detail_meta(record: Dict[str, object]) -> str:
-    if record.get("program") == "Collection":
-        parts = ["Paper Collection", escape(str(record.get("topic", "全文精读")))]
-    else:
-        parts = [escape(str(record["date"]))]
-    parts.append(f'<a href="{escape(str(record["link"]), quote=True)}" target="_blank" rel="noopener noreferrer">原文</a>')
+    parts = [escape(str(record.get("authors") or "作者信息待核验")),
+             escape(str(record.get("journal") or "预印本"))]
+    if record.get("journal_number"):
+        parts.append(escape(str(record["journal_number"])))
+    parts.append(f'<a href="{escape(str(record["link"]), quote=True)}" target="_blank" rel="noopener noreferrer">论文原文 ↗</a>')
     return " · ".join(parts)
+
+
+def apply_reader_cover_overrides(records: List[Dict[str, object]]) -> None:
+    """Apply reviewed display revisions without rewriting frozen card evidence."""
+    overrides: Dict[str, object] = {}
+    for name in ("cover_overrides_legacy.json", "cover_overrides_structured.json"):
+        path = PROJECT_ROOT / "data" / name
+        if path.exists():
+            content = load_json(path)
+            content = content.get("overrides", content)
+            for key, value in content.items():
+                if key in ("Daily", "Collection") and isinstance(value, dict):
+                    overrides.update({f"{key}:{identifier}": entry for identifier, entry in value.items()})
+                elif isinstance(value, dict) and value.get("mode"):
+                    overrides[key] = value
+    for record in records:
+        identifier = str(record["card_id"])
+        revision = overrides.get(f'{record["program"]}:{identifier}') or overrides.get(identifier)
+        if not isinstance(revision, dict) or not revision.get("asset_path"):
+            continue
+        path = str(revision["asset_path"])
+        if not path.startswith("assets/reader-covers/") or ".." in Path(path).parts:
+            raise ValueError(f"Invalid reader cover path: {identifier}")
+        if not (SITE_DIR / path).is_file():
+            raise ValueError(f"Reader cover asset missing: {identifier}: {path}")
+        if revision.get("asset_sha256") and hashlib.sha256((SITE_DIR / path).read_bytes()).hexdigest() != revision["asset_sha256"]:
+            raise ValueError(f"Reader cover hash mismatch: {identifier}: {path}")
+        if revision.get("mode") not in ("source_figure", "source_excerpt"):
+            raise ValueError(f"Invalid reader cover mode: {identifier}")
+        for field in ("evidence", "alt_text", "caption"):
+            if not revision.get(field):
+                raise ValueError(f"Reader cover lacks {field}: {identifier}")
+        caption = re.sub(r"[，；]?作为本地(?:审查|审阅|复核)封面[。]?", "", str(revision["caption"]))
+        record.update({"paper_image_path": path, "cover_mode": revision["mode"],
+                       "cover_label": revision.get("label", "题目与摘要"),
+                       "cover_alt_text": revision["alt_text"],
+                       "cover_caption": caption,
+                       "reader_cover_revision": revision})
 
 
 def generate_head(
@@ -1057,6 +1142,18 @@ def generate_head(
         math_head = f"""
     <script>document.documentElement.classList.add('math-pending');</script>
     <script>
+      window.fitInlineMath = function(root) {{
+        (root || document).querySelectorAll('mjx-container:not([display="true"])').forEach(function(el) {{
+          el.classList.remove('inline-math-overflow');
+          const content = el.closest('.reading-card-content, .detail-summary, .feed-card-body');
+          if(content && el.getBoundingClientRect().width > content.clientWidth) {{
+            el.classList.add('inline-math-overflow');
+            el.tabIndex = 0;
+            el.setAttribute('aria-label', '长公式，可横向滑动阅读');
+          }}
+        }});
+      }};
+      window.addEventListener('resize', function() {{ window.fitInlineMath(); }});
       window.MathJax = {{
         tex: {{
           inlineMath: [['$', '$'], ['\\\\(', '\\\\)']],
@@ -1076,6 +1173,7 @@ def generate_head(
             MathJax.startup.promise.then(function() {{
               document.documentElement.classList.remove('math-pending');
               document.documentElement.dataset.mathReady = 'true';
+              window.requestAnimationFrame(function() {{ window.fitInlineMath(); }});
             }});
           }}
         }}
@@ -1147,155 +1245,59 @@ def render_theme_toggle() -> str:
 
 
 def generate_index_html(program: str = "Daily") -> str:
-    keyword = get_arxiv_keyword_label()
-    is_collection = program == "Collection"
-    site_title = f"{keyword} Collection 论文卡" if is_collection else DAILY_SITE_TITLE
-    site_description = (
-        "Paper Collection 已完成全文核验的论文卡片，按发表日期排序"
-        if is_collection
-        else f"{keyword} 论文精选卡片"
-    )
-    eyebrow = "Paper Collection" if is_collection else "Physics + AI Feed"
-    headline = "Collection <span class=\"site-title-nowrap\">论文卡</span>" if is_collection else DAILY_SITE_TITLE
-    subtitle = (
-        "汇集长期 Paper Collection 中已完成的全文精读卡片，按发表日期从新到旧排列；这些卡片不继承 Daily 的日期、分数或 S 级评级。"
-        if is_collection
-        else "聚合最新论文，提炼核心贡献、方法与实验结果，用更清晰的阅读路径持续跟进前沿研究。"
-    )
-    status = "独立 Collection 来源" if is_collection else "每日自动更新"
-    script_name = "collection-app.js" if is_collection else "app.js"
-    feed_path = "collection-feed.xml" if is_collection else "feed.xml"
-    hero_tags = (
-        ("全文证据", "公式与适用边界", "按发表日期")
-        if is_collection
-        else ("中文精读", "核心贡献提炼", "论文原图速览")
-    )
-
-    page_title = f"{site_title} - ArXiv Papers" if is_collection else site_title
-    canonical_url = f"{PUBLIC_BASE_URL}{COLLECTION_DOCUMENT_NAME if is_collection else SITE_DOCUMENT_NAME}"
-    structured_data = {
-        "@context": "https://schema.org",
-        "@type": "CollectionPage",
-        "name": site_title,
-        "description": site_description,
-        "url": canonical_url,
-        "inLanguage": "zh-CN",
-        "creator": {
-            "@type": "Person",
-            "name": "Xineng Cao",
-            "alternateName": ["Xixi Cao", "曹溪能"],
-            "url": "https://xixi-cc.github.io/",
-        },
-        "isPartOf": {
-            "@type": "WebSite",
-            "name": "Xixi Research Atlas",
-            "url": "https://xixi-cc.github.io/",
-        },
-    }
-
+    # Legacy entry URLs share one reader-facing catalog; production remains separate.
     return f"""<!doctype html>
 <html lang="zh-CN">
-  <head>
-    {generate_head(page_title, site_description, include_math=True, canonical_url=canonical_url, structured_data=structured_data)}
-    <link rel="alternate" type="application/atom+xml" title="{escape(site_title)} 更新" href="{PUBLIC_BASE_URL}{feed_path}" />
-    <link rel="alternate" type="application/atom+xml" title="全部论文卡更新" href="{PUBLIC_BASE_URL}all-feed.xml" />
-  </head>
-  <body>
-    <div class="page-noise"></div>
-    <div class="page-blur page-blur-a"></div>
-    <div class="page-blur page-blur-b"></div>
-
-    <header class="header">
-      <div class="container">
-        <nav class="site-nav" aria-label="站点导航">
-          <a class="site-brand" href="{SITE_DOCUMENT_NAME}" aria-label="返回首页">
-            <span class="site-brand-mark">PHY+AI</span>
-            <span>Research Brief</span>
-          </a>
-          <div class="site-nav-actions">
-            <div class="program-nav" aria-label="论文卡来源">
-              <a href="{SITE_DOCUMENT_NAME}" {'aria-current="page"' if not is_collection else ''}>Daily</a>
-              <a href="{COLLECTION_DOCUMENT_NAME}" {'aria-current="page"' if is_collection else ''}>Collection</a>
-            </div>
-            <span class="site-nav-status">
-              <span class="site-nav-dot" aria-hidden="true"></span>
-              {status}
-            </span>
-            {render_theme_toggle()}
-          </div>
-        </nav>
-        <div class="header-content">
-          <div class="header-copy">
-            <p class="eyebrow">{eyebrow}</p>
-            <h1 class="site-title">{headline}</h1>
-            <p class="site-subtitle">{subtitle}</p>
-            <div class="hero-tags" aria-label="站点特点">
-              <span class="hero-tag">{hero_tags[0]}</span>
-              <span class="hero-tag">{hero_tags[1]}</span>
-              <span class="hero-tag">{hero_tags[2]}</span>
-            </div>
-          </div>
-          <div class="search-panel">
-            <div class="search-panel-heading">
-              <span class="search-panel-title">探索论文库</span>
-              <span class="search-availability"><span id="paper-count">加载中</span></span>
-            </div>
-            <label class="search-label" for="search">搜标题、机构、摘要亮点</label>
-            <div class="search-wrapper">
-              <svg class="search-icon" width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true">
-                <path d="M9 17A8 8 0 1 0 9 1a8 8 0 0 0 0 16zM18 18l-4-4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-              </svg>
-              <input id="search" type="search" placeholder="比如：神经网络场论、SPDE、生成模型..." aria-label="搜索论文卡片" />
-            </div>
-            <div class="taxonomy-filters" aria-label="论文分类与标签筛选">
-              <label class="taxonomy-filter-label" for="category-filter">
-                <span>文章分类</span>
-                <select id="category-filter"><option value="">全部分类</option></select>
-              </label>
-              <label class="taxonomy-filter-label" for="tag-filter">
-                <span>主题标签</span>
-                <select id="tag-filter"><option value="">全部标签</option></select>
-              </label>
-            </div>
-            <p class="search-hint">可按文章分类和主题标签筛选；搜索覆盖标题、机构、摘要、标签和 arXiv ID。</p>
-            <div class="reader-tools" aria-label="收藏与订阅">
-              <button id="favorites-only" class="reader-tool-button" type="button" aria-pressed="false">★ 只看收藏 <span id="favorite-count">0</span></button>
-              <button id="favorites-export" class="reader-tool-button" type="button">导出收藏</button>
-              <button id="favorites-import" class="reader-tool-button" type="button">导入收藏</button>
-              <input id="favorites-file" class="visually-hidden" type="file" accept="application/json,.json" />
-              <a class="reader-tool-link" href="{feed_path}">关注本页 · RSS</a>
-              <a class="reader-tool-link" href="all-feed.xml">全部论文卡 · RSS</a>
-            </div>
-          </div>
+<head>
+{generate_head("论文卡", "物理与人工智能论文的中文解读", include_math=True, canonical_url=PUBLIC_BASE_URL)}
+</head>
+<body>
+<header class="header">
+  <div class="container">
+    <nav class="site-nav" aria-label="站点导航">
+      <a class="site-brand" href="index.html"><span class="site-brand-mark">PHY+AI</span><span>论文卡</span></a>
+      {render_theme_toggle()}
+    </nav>
+    <div class="header-content">
+      <div class="header-copy">
+        <h1 class="site-title">论文卡</h1>
+        <p class="site-subtitle">追踪每日“AI+physics” arxiv 论文<br>paper collection论文卡片</p>
+      </div>
+      <div class="search-panel">
+        <div class="search-panel-heading"><span class="search-panel-title">探索论文库</span><span id="paper-count">加载中</span></div>
+        <label class="search-label" for="search">搜索论文</label>
+        <div class="search-wrapper"><input id="search" type="search" placeholder="标题、作者、摘要、标签或论文编号" aria-label="搜索论文" /></div>
+        <div class="taxonomy-filters">
+          <label class="taxonomy-filter-label" for="tag-filter"><span>文章标签</span><select id="tag-filter"><option value="">全部标签</option></select></label>
         </div>
       </div>
-    </header>
-
-    <main class="container main-content">
-      <section id="status" class="status-panel hidden" aria-live="polite"></section>
-      <section id="groups"></section>
-    </main>
-
-    <footer class="footer">
-      <div class="container">
-        <p>内容来自 <a href="https://arxiv.org" target="_blank" rel="noopener noreferrer">arXiv.org</a>；原创解读采用 CC BY-NC 4.0。<a href="rights.html">许可与引用</a></p>
-      </div>
-    </footer>
-
-    <script src="assets/theme.js"></script>
-    <script src="assets/media.js"></script>
-    <script src="assets/{script_name}"></script>
-    {CLOUDFLARE_ANALYTICS_HTML}
-  </body>
-</html>
-""".strip()
+    </div>
+    <div class="browse-controls">
+      <label for="browse-mode">排序
+        <select id="browse-mode"><option value="daily">Daily</option><option value="published">最新发表</option><option value="category">按类别</option></select>
+      </label>
+      <label for="grade-filter">论文等级
+        <select id="grade-filter"><option value="all">全部</option><option value="S">S 级</option><option value="A">A 级</option><option value="B">B 级</option></select>
+      </label>
+    </div>
+  </div>
+</header>
+<main class="container main-content">
+  <section id="status" class="status-panel hidden" aria-live="polite"></section>
+  <section id="groups" aria-label="论文列表"></section>
+  <nav id="pagination" class="pagination" aria-label="论文分页"></nav>
+</main>
+<footer class="footer"><div class="container"><p>原创解读采用 CC BY-NC 4.0。原论文与图表权利归原作者。<a href="rights.html">许可与引用</a></p></div></footer>
+<script src="assets/theme.js"></script><script src="assets/media.js"></script><script src="assets/app.js"></script>
+{CLOUDFLARE_ANALYTICS_HTML}
+</body></html>"""
 
 
 def generate_paper_html(record: Dict[str, object], prev_record: Dict[str, object] | None = None, next_record: Dict[str, object] | None = None) -> str:
     keyword = get_arxiv_keyword_label()
     is_collection = record.get("program") == "Collection"
-    site_title = f"{keyword} Collection 论文卡" if is_collection else DAILY_SITE_TITLE
-    back_document = COLLECTION_DOCUMENT_NAME if is_collection else SITE_DOCUMENT_NAME
+    site_title = DAILY_SITE_TITLE
+    back_document = "index.html"
     detail_root = "collection-papers" if is_collection else "papers"
     canonical_url = f"{PUBLIC_BASE_URL}{detail_root}/{record['page_dir']}/"
     page_title = str(record["title"])
@@ -1370,19 +1372,12 @@ def generate_paper_html(record: Dict[str, object], prev_record: Dict[str, object
         <div class="detail-hero-grid">
           <div class="detail-hero-cover">{cover_html}</div>
           <div class="detail-hero-copy">
-            <p class="eyebrow">{'Collection 全文卡' if is_collection else '论文详情'}</p>
+            <p class="eyebrow">论文详情</p>
             <h1 class="detail-page-title">{escape(page_title)}</h1>
             {f'<p class="detail-page-title-zh">{render_math_text(record["title_zh"])}</p>' if record.get("title_zh") else ''}
             <div class="detail-meta">{meta_html}</div>
             <p class="detail-summary">{render_math_text(record["preview_text"])}</p>
-            <div class="detail-micro-meta">
-              <span class="meta-pill">{escape(str(record.get("category", "跨学科")))}</span>
-              <span class="meta-pill">{escape(str(record.get("research_type", "理论")))}</span>
-              {''.join(f'<span class="meta-pill">#{escape(str(tag))}</span>' for tag in record.get("tags", [])[:3])}
-              <span class="meta-pill">{escape(str(record["reading_minutes"]))} 分钟读完</span>
-              <span class="meta-pill">{escape(str(record["section_count"]))} 张阅读卡</span>
-              {f'<span class="meta-pill">{escape(str(record["research_unit"]))}</span>' if record["research_unit"] else ''}
-            </div>
+
           </div>
         </div>
       </div>
@@ -1904,7 +1899,8 @@ input[type=search]:focus {
 
 .reading-flow, .reading-card, .detail-layout > *, .detail-hero-grid > *, .detail-main, .detail-content, .detail-hero, .detail-copy, .detail-section, .feed-card-body { min-width: 0; }
 .reading-card-content mjx-container:not([display="true"]), .detail-summary mjx-container:not([display="true"]) { display: inline-block; vertical-align: middle; }
-.reading-card-content mjx-container, .detail-summary mjx-container, .display-math, mjx-container[display="true"] { max-width: 100%; overflow-x: auto; overflow-y: hidden; }
+.display-math, mjx-container[display="true"] { max-width: 100%; overflow-x: auto; overflow-y: hidden; scrollbar-width: none; }
+.reading-card-content mjx-container:not([display="true"]), .detail-summary mjx-container:not([display="true"]) { overflow: visible; }
 .detail-page { overflow-wrap: anywhere; }
 .paper-figure-image {
   display: block;
@@ -2969,999 +2965,7 @@ def generate_media_js() -> str:
 
 
 def generate_app_js() -> str:
-    return """
-/**
- * @file app.js
- * @description 首页逻辑：加载 data.json，渲染信息流卡片与搜索。
- */
-(function(){
-  /** @type {Array<{date:string,title:string,link:string,arxiv_id:string,detail_path:string,cover_path:string,paper_image_path:string,paper_image_full_path:string,preview_text:string,research_unit:string,hook_text:string,key_points:string[],reading_minutes:number,section_count:number,cover_theme:Record<string,string>}>} */
-  let DATA = [];
-
-  const $ = (selector) => document.querySelector(selector);
-  const statusEl = $('#status');
-  const groupsEl = $('#groups');
-  const searchEl = $('#search');
-  const categoryFilterEl = $('#category-filter');
-  const tagFilterEl = $('#tag-filter');
-  const paperCountEl = $('#paper-count');
-  const favoritesOnlyEl = $('#favorites-only');
-  const favoriteCountEl = $('#favorite-count');
-  const favoritesExportEl = $('#favorites-export');
-  const favoritesImportEl = $('#favorites-import');
-  const favoritesFileEl = $('#favorites-file');
-  const homeScrollKey = 'home-scroll:index';
-  const favoritesStorageKey = 'xixi-paper-favorites-v1';
-  const paperModalQueryKey = 'paper';
-  let FAVORITES = readFavorites();
-  let favoritesOnly = false;
-  let restoredScroll = false;
-  let paperModalEl = null;
-  let paperModalFrameEl = null;
-  let paperModalTitleEl = null;
-  let paperModalOpenLinkEl = null;
-  let paperModalLoaderEl = null;
-  let modalReturnFocusEl = null;
-  let modalCleanupTimerId = null;
-  let modalSessionId = 0;
-
-  function readFavorites(){
-    try{
-      const parsed = JSON.parse(window.localStorage.getItem(favoritesStorageKey) || '[]');
-      return Array.isArray(parsed) ? Array.from(new Set(parsed.filter((value) => typeof value === 'string'))).sort() : [];
-    } catch (error) {
-      console.warn('读取收藏失败', error);
-      return [];
-    }
-  }
-
-  function writeFavorites(values){
-    FAVORITES = Array.from(new Set(values)).sort();
-    try{
-      window.localStorage.setItem(favoritesStorageKey, JSON.stringify(FAVORITES));
-    } catch (error) {
-      console.warn('保存收藏失败', error);
-    }
-  }
-
-  function getFavoriteKey(item){
-    const program = String(item.detail_path || '').startsWith('collection-papers/') ? 'collection' : 'daily';
-    return `${program}:${item.arxiv_id || item.detail_path}`;
-  }
-
-  function isFavorite(item){
-    return FAVORITES.includes(getFavoriteKey(item));
-  }
-
-  function toggleFavorite(item){
-    const key = getFavoriteKey(item);
-    writeFavorites(FAVORITES.includes(key) ? FAVORITES.filter((value) => value !== key) : [...FAVORITES, key]);
-    sync();
-  }
-
-  function updateFavoriteControls(){
-    const currentCount = DATA.filter((item) => isFavorite(item)).length;
-    if(favoriteCountEl){
-      favoriteCountEl.textContent = String(currentCount);
-    }
-    if(favoritesOnlyEl){
-      favoritesOnlyEl.setAttribute('aria-pressed', String(favoritesOnly));
-    }
-    if(favoritesExportEl){
-      favoritesExportEl.disabled = FAVORITES.length === 0;
-    }
-  }
-
-  function exportFavorites(){
-    const payload = JSON.stringify({ version: 1, exported_at: new Date().toISOString(), favorites: FAVORITES }, null, 2);
-    const objectURL = URL.createObjectURL(new Blob([payload], { type: 'application/json' }));
-    const anchor = document.createElement('a');
-    anchor.href = objectURL;
-    anchor.download = `xixi-paper-favorites-${new Date().toISOString().slice(0, 10)}.json`;
-    anchor.click();
-    URL.revokeObjectURL(objectURL);
-  }
-
-  async function importFavorites(file){
-    if(!file){
-      return;
-    }
-    try{
-      const parsed = JSON.parse(await file.text());
-      const values = Array.isArray(parsed) ? parsed : parsed && parsed.favorites;
-      if(!Array.isArray(values) || !values.every((value) => typeof value === 'string')){
-        throw new Error('invalid favorites payload');
-      }
-      writeFavorites([...FAVORITES, ...values]);
-      sync();
-    } catch (error) {
-      window.alert('无法导入：请选择本站导出的收藏 JSON 文件。');
-    } finally {
-      favoritesFileEl.value = '';
-    }
-  }
-
-  function getPaperIdentifier(item){
-    return item.arxiv_id || item.detail_path;
-  }
-
-  function getStandalonePaperURL(detailPath){
-    return new URL(detailPath, window.location.href).href;
-  }
-
-  function getEmbeddedPaperURL(detailPath){
-    const embeddedURL = new URL(detailPath, window.location.href);
-    embeddedURL.searchParams.set('embed', '1');
-    return embeddedURL.href;
-  }
-
-  function replacePaperModalFrameLocation(frameURL){
-    if(!paperModalFrameEl){
-      return;
-    }
-
-    try {
-      if(paperModalFrameEl.contentWindow){
-        paperModalFrameEl.contentWindow.location.replace(frameURL);
-        return;
-      }
-    } catch (error) {
-      console.warn('无法替换论文浮窗地址，改用 iframe src 导航', error);
-    }
-
-    paperModalFrameEl.src = frameURL;
-  }
-
-  function ensurePaperModal(){
-    if(paperModalEl){
-      return;
-    }
-
-    paperModalEl = document.createElement('div');
-    paperModalEl.className = 'paper-modal';
-    paperModalEl.setAttribute('aria-hidden', 'true');
-    paperModalEl.innerHTML = `
-      <div class="paper-modal-backdrop" data-paper-modal-close></div>
-      <section class="paper-modal-panel" role="dialog" aria-modal="true" aria-labelledby="paper-modal-title">
-        <header class="paper-modal-toolbar">
-          <div class="paper-modal-heading">
-            <span class="paper-modal-kicker">论文阅读</span>
-            <span id="paper-modal-title" class="paper-modal-title"></span>
-          </div>
-          <div class="paper-modal-actions">
-            <a class="paper-modal-open-link" href="#" target="_blank" rel="noopener noreferrer">新页面打开 ↗</a>
-            <button class="paper-modal-close" type="button" aria-label="关闭论文浮窗">×</button>
-          </div>
-        </header>
-        <div class="paper-modal-content">
-          <div class="paper-modal-loader" aria-hidden="true">
-            <span class="paper-modal-spinner"></span>
-            <span>正在打开论文阅读卡</span>
-          </div>
-          <iframe class="paper-modal-frame" title="论文详情" loading="eager"></iframe>
-        </div>
-      </section>
-    `;
-
-    document.body.appendChild(paperModalEl);
-    paperModalFrameEl = paperModalEl.querySelector('.paper-modal-frame');
-    paperModalTitleEl = paperModalEl.querySelector('.paper-modal-title');
-    paperModalOpenLinkEl = paperModalEl.querySelector('.paper-modal-open-link');
-    paperModalLoaderEl = paperModalEl.querySelector('.paper-modal-loader');
-
-    paperModalEl.querySelector('[data-paper-modal-close]').addEventListener('click', requestClosePaperModal);
-    paperModalEl.querySelector('.paper-modal-close').addEventListener('click', requestClosePaperModal);
-    paperModalFrameEl.addEventListener('load', () => {
-      connectPaperModalImageZoom();
-      paperModalLoaderEl.classList.add('hidden');
-      paperModalFrameEl.classList.add('is-ready');
-    });
-  }
-
-  function connectPaperModalImageZoom(){
-    if(!paperModalFrameEl || !window.PaperImageViewer){
-      return;
-    }
-
-    let frameDocument = null;
-    try {
-      frameDocument = paperModalFrameEl.contentDocument;
-    } catch (error) {
-      console.warn('无法访问论文浮窗内容，保留嵌入页自身的图片预览逻辑', error);
-      return;
-    }
-
-    if(!frameDocument){
-      return;
-    }
-
-    frameDocument.querySelectorAll('.paper-figure-image').forEach((imageEl) => {
-      if(imageEl.dataset.parentZoomBound === 'true'){
-        return;
-      }
-      imageEl.dataset.parentZoomBound = 'true';
-
-      const openImage = (event) => {
-        event.preventDefault();
-        event.stopPropagation();
-        const figureEl = imageEl.closest('.paper-figure-card');
-        const captionEl = figureEl ? figureEl.querySelector('.paper-figure-caption') : null;
-        window.PaperImageViewer.open({
-          src: imageEl.currentSrc || imageEl.src,
-          alt: imageEl.alt || '论文图片',
-          caption: captionEl ? captionEl.textContent.trim() : imageEl.alt || ''
-        });
-      };
-
-      imageEl.addEventListener('click', openImage, true);
-      imageEl.addEventListener('keydown', (event) => {
-        if(event.key === 'Enter' || event.key === ' '){
-          openImage(event);
-        }
-      }, true);
-    });
-  }
-
-  function openPaperModal(item, options){
-    if(!item){
-      return;
-    }
-
-    const settings = options || {};
-    ensurePaperModal();
-    modalSessionId += 1;
-    if(modalCleanupTimerId !== null){
-      window.clearTimeout(modalCleanupTimerId);
-      modalCleanupTimerId = null;
-    }
-    modalReturnFocusEl = settings.returnFocus || modalReturnFocusEl || document.activeElement;
-    if(window.MathJax?.typesetClear){ MathJax.typesetClear([paperModalTitleEl]); }
-    paperModalTitleEl.textContent = item.title || '论文详情';
-    typesetSurface(paperModalTitleEl);
-    paperModalOpenLinkEl.href = getStandalonePaperURL(item.detail_path);
-    paperModalFrameEl.title = `论文详情：${item.title || ''}`;
-    paperModalFrameEl.classList.remove('is-ready');
-    paperModalLoaderEl.classList.remove('hidden');
-    replacePaperModalFrameLocation(getEmbeddedPaperURL(item.detail_path));
-    paperModalEl.classList.add('is-open');
-    paperModalEl.setAttribute('aria-hidden', 'false');
-    document.body.classList.add('has-paper-modal');
-
-    if(settings.updateHistory){
-      const modalURL = new URL(window.location.href);
-      const paperIdentifier = getPaperIdentifier(item);
-      const currentHistoryState = window.history.state && typeof window.history.state === 'object'
-        ? window.history.state
-        : {};
-      modalURL.searchParams.set(paperModalQueryKey, paperIdentifier);
-      window.history.pushState(
-        { ...currentHistoryState, paperModal: paperIdentifier },
-        '',
-        modalURL
-      );
-    }
-
-    window.requestAnimationFrame(() => {
-      paperModalEl.querySelector('.paper-modal-close').focus();
-    });
-  }
-
-  function hidePaperModal(){
-    if(!paperModalEl || !paperModalEl.classList.contains('is-open')){
-      return;
-    }
-
-    const closingSessionId = modalSessionId;
-    paperModalEl.classList.remove('is-open');
-    paperModalEl.setAttribute('aria-hidden', 'true');
-    document.body.classList.remove('has-paper-modal');
-    if(modalCleanupTimerId !== null){
-      window.clearTimeout(modalCleanupTimerId);
-    }
-    modalCleanupTimerId = window.setTimeout(() => {
-      modalCleanupTimerId = null;
-      const modalWasNotReopened = modalSessionId === closingSessionId;
-      if(modalWasNotReopened && !paperModalEl.classList.contains('is-open')){
-        replacePaperModalFrameLocation('about:blank');
-      }
-    }, 220);
-
-    if(modalReturnFocusEl && typeof modalReturnFocusEl.focus === 'function'){
-      modalReturnFocusEl.focus({ preventScroll: true });
-    }
-    modalReturnFocusEl = null;
-  }
-
-  function requestClosePaperModal(){
-    if(window.PaperImageViewer && window.PaperImageViewer.isOpen()){
-      window.PaperImageViewer.close();
-      return;
-    }
-
-    const modalURL = new URL(window.location.href);
-    const paperIdentifier = modalURL.searchParams.get(paperModalQueryKey);
-    const historyPaperIdentifier = window.history.state && typeof window.history.state === 'object'
-      ? window.history.state.paperModal
-      : null;
-    const canReturnToPreviousHistoryEntry = Boolean(
-      paperIdentifier && historyPaperIdentifier === paperIdentifier
-    );
-
-    hidePaperModal();
-
-    if(canReturnToPreviousHistoryEntry){
-      window.history.back();
-      return;
-    }
-
-    modalURL.searchParams.delete(paperModalQueryKey);
-    const replacementHistoryState = window.history.state && typeof window.history.state === 'object'
-      ? { ...window.history.state }
-      : null;
-    if(replacementHistoryState){
-      delete replacementHistoryState.paperModal;
-    }
-    window.history.replaceState(replacementHistoryState, '', modalURL);
-  }
-
-  function openPaperModalFromURL(){
-    const paperIdentifier = new URL(window.location.href).searchParams.get(paperModalQueryKey);
-    if(!paperIdentifier){
-      hidePaperModal();
-      return;
-    }
-
-    const item = DATA.find((candidate) => getPaperIdentifier(candidate) === paperIdentifier);
-    if(item){
-      openPaperModal(item, { updateHistory: false });
-    }
-  }
-
-  function openPaperImage(item, imageEl){
-    if(!window.PaperImageViewer){
-      return;
-    }
-
-    window.PaperImageViewer.open({
-      src: item.paper_image_full_path || item.paper_image_path,
-      alt: item.title || imageEl.alt,
-      caption: item.title || '',
-      returnFocus: imageEl
-    });
-  }
-
-  function updatePaperCount(visibleCount){
-    if(!paperCountEl){
-      return;
-    }
-
-    const hasQuery = Boolean(
-      (searchEl.value || '').trim() || categoryFilterEl.value || tagFilterEl.value
-    );
-    paperCountEl.textContent = hasQuery
-      ? `${visibleCount} / ${DATA.length} 篇`
-      : `${DATA.length} 篇已收录`;
-  }
-
-  function applyCoverTheme(el, theme){
-    if(!el || !theme){
-      return;
-    }
-
-    const vars = {
-      from: '--cover-from',
-      to: '--cover-to',
-      spot: '--cover-spot',
-      ink: '--cover-ink',
-      muted: '--cover-muted',
-      chip: '--cover-chip',
-      stroke: '--cover-stroke'
-    };
-
-    Object.entries(vars).forEach(([key, cssVar]) => {
-      if(theme[key]){
-        el.style.setProperty(cssVar, theme[key]);
-      }
-    });
-  }
-
-  function clearStatus(){
-    statusEl.innerHTML = '';
-    statusEl.classList.add('hidden');
-  }
-
-  function renderStatus(state, title, text, action){
-    statusEl.classList.remove('hidden');
-    statusEl.innerHTML = '';
-
-    const card = document.createElement('div');
-    card.className = 'status-card';
-    card.dataset.state = state;
-
-    const titleEl = document.createElement('div');
-    titleEl.className = 'status-title';
-    titleEl.textContent = title;
-
-    const textEl = document.createElement('div');
-    textEl.className = 'status-text';
-    textEl.textContent = text;
-
-    card.appendChild(titleEl);
-    card.appendChild(textEl);
-
-    if(action){
-      const button = document.createElement('button');
-      button.type = 'button';
-      button.className = 'status-action';
-      button.textContent = action.label;
-      button.addEventListener('click', action.onClick);
-      card.appendChild(button);
-    }
-
-    statusEl.appendChild(card);
-  }
-
-  function buildSearchText(item){
-    return [
-      item.title || '',
-      item.title_zh || '',
-      item.preview_text || '',
-      item.research_unit || '',
-      item.arxiv_id || '',
-      item.hook_text || '',
-      item.category || '',
-      item.research_type || '',
-      ...(item.tags || []),
-      ...(item.arxiv_categories || []),
-      ...(item.key_points || [])
-    ].join(' ').toLowerCase();
-  }
-
-  function filterItems(items, query){
-    const raw = (query || '').trim().toLowerCase();
-    const tokens = raw.split(/\\s+/).filter(Boolean);
-    return items.filter((item) => {
-      if(favoritesOnly && !isFavorite(item)){
-        return false;
-      }
-      if(categoryFilterEl.value && item.category !== categoryFilterEl.value){
-        return false;
-      }
-      if(tagFilterEl.value && !(item.tags || []).includes(tagFilterEl.value)){
-        return false;
-      }
-      if(!tokens.length){
-        return true;
-      }
-      const hay = buildSearchText(item).replace(/[-_]/g, '');
-      return tokens.every((t) => hay.includes(t.replace(/[-_]/g, '')));
-    });
-  }
-
-  function populateTaxonomyFilters(){
-    const categories = Array.from(new Set(DATA.map((item) => item.category).filter(Boolean))).sort();
-    const tags = Array.from(new Set(DATA.flatMap((item) => item.tags || []))).sort();
-    const selectedCategory = new URL(window.location).searchParams.get('category') || '';
-    const selectedTag = new URL(window.location).searchParams.get('tag') || '';
-    categories.forEach((value) => categoryFilterEl.add(new Option(value, value)));
-    tags.forEach((value) => tagFilterEl.add(new Option(value, value)));
-    if(categories.includes(selectedCategory)) categoryFilterEl.value = selectedCategory;
-    if(tags.includes(selectedTag)) tagFilterEl.value = selectedTag;
-  }
-
-  let mathQueue = Promise.resolve();
-  function typesetSurface(element){
-    if(!window.MathJax || !MathJax.startup){ return; }
-    mathQueue = mathQueue.then(async () => {
-      if(!MathJax.typesetPromise){ await new Promise(resolve => window.addEventListener('load', resolve, {once:true})); }
-      await MathJax.startup.promise;
-    }).then(() => {
-      if(element.isConnected){ return MathJax.typesetPromise([element]); }
-    }).catch(error => console.error('公式排版失败', error));
-  }
-
-  function createFeedCard(item){
-    const cardShell = document.createElement('div');
-    cardShell.className = 'feed-card-shell';
-
-    const cardLink = document.createElement('a');
-    cardLink.className = 'feed-card-link';
-    cardLink.href = item.detail_path;
-    cardLink.setAttribute('aria-label', `查看论文：${item.title}`);
-    cardLink.setAttribute('aria-haspopup', 'dialog');
-    cardLink.addEventListener('click', (event) => {
-      const shouldUseNormalNavigation = event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey;
-      if(shouldUseNormalNavigation){
-        return;
-      }
-      event.preventDefault();
-      openPaperModal(item, { updateHistory: true, returnFocus: cardLink });
-    });
-
-    const card = document.createElement('article');
-    card.className = 'feed-card';
-
-    const coverWrap = document.createElement('div');
-    coverWrap.className = 'feed-card-cover';
-    if(item.paper_image_path){
-      const figure = document.createElement('figure');
-      figure.className = 'feed-card-figure';
-
-      const image = document.createElement('img');
-      image.className = 'paper-figure-image';
-      image.src = item.paper_image_path;
-      image.alt = item.cover_alt_text || item.title || '论文封面图';
-      image.loading = 'lazy';
-      image.dataset.zoomable = 'true';
-      image.addEventListener('click', (event) => {
-        event.preventDefault();
-        event.stopPropagation();
-        openPaperImage(item, image);
-      });
-
-      figure.appendChild(image);
-      coverWrap.appendChild(figure);
-    } else {
-      const cover = document.createElement('div');
-      cover.className = 'note-cover note-cover-feed note-cover-title-abstract';
-      applyCoverTheme(cover, item.cover_theme);
-
-      const mesh = document.createElement('div');
-      mesh.className = 'note-cover-mesh';
-      cover.appendChild(mesh);
-
-      const titleShell = document.createElement('div');
-      titleShell.className = 'note-cover-title-shell';
-
-      const kicker = document.createElement('span');
-      kicker.className = 'note-cover-kicker';
-      kicker.textContent = 'TITLE · ABSTRACT';
-      titleShell.appendChild(kicker);
-
-      const title = document.createElement('h3');
-      title.className = 'note-cover-title';
-      title.textContent = item.title;
-      titleShell.appendChild(title);
-
-      const abstractText = document.createElement('p');
-      abstractText.className = 'note-cover-abstract';
-      abstractText.textContent = item.cover_summary || item.preview_text || '';
-      titleShell.appendChild(abstractText);
-      cover.appendChild(titleShell);
-      coverWrap.appendChild(cover);
-    }
-
-    const cardBody = document.createElement('div');
-    cardBody.className = 'feed-card-body';
-
-    const meta = document.createElement('div');
-    meta.className = 'feed-card-meta';
-
-    if(item.research_unit){
-      const org = document.createElement('span');
-      org.className = 'feed-chip';
-      org.textContent = item.research_unit;
-      meta.appendChild(org);
-    }
-
-    if(item.program_label){
-      const program = document.createElement('span');
-      program.className = 'feed-chip feed-chip-program';
-      program.textContent = item.topic ? `${item.program_label} · ${item.topic}` : item.program_label;
-      meta.prepend(program);
-    }
-
-    if(item.category){
-      const category = document.createElement('span');
-      category.className = 'feed-chip feed-chip-category';
-      category.textContent = item.category;
-      meta.appendChild(category);
-    }
-
-    (item.tags || []).slice(0, 2).forEach((value) => {
-      const tag = document.createElement('span');
-      tag.className = 'feed-chip subtle';
-      tag.textContent = `#${value}`;
-      meta.appendChild(tag);
-    });
-
-    const bodyTitle = document.createElement('div');
-    bodyTitle.className = 'feed-card-title';
-    bodyTitle.textContent = item.title || '未命名论文';
-
-    const bodyTitleZh = document.createElement('div');
-    bodyTitleZh.className = 'feed-card-title-zh';
-    bodyTitleZh.textContent = item.title_zh || '';
-
-    const preview = document.createElement('div');
-    preview.className = 'feed-card-preview';
-    preview.textContent = item.cover_summary || (item.program === 'Collection' ? item.hook_text : item.preview_text) || '摘要还在生成中';
-
-    const footer = document.createElement('div');
-    footer.className = 'feed-card-footer';
-
-    const action = document.createElement('div');
-    action.className = 'feed-card-action';
-    action.textContent = '打开阅读卡';
-
-    const stats = document.createElement('div');
-    stats.className = 'feed-card-stats';
-    stats.textContent = `${item.section_count || 0} 张卡 · ${item.reading_minutes || 1} 分钟`;
-
-    footer.appendChild(action);
-    footer.appendChild(stats);
-
-    if(meta.childNodes.length){
-      cardBody.appendChild(meta);
-    }
-    cardBody.appendChild(bodyTitle);
-    if(item.title_zh){
-      cardBody.appendChild(bodyTitleZh);
-    }
-    cardBody.appendChild(preview);
-    cardBody.appendChild(footer);
-
-    card.appendChild(coverWrap);
-    card.appendChild(cardBody);
-    cardLink.appendChild(card);
-
-    const favoriteButton = document.createElement('button');
-    const favorite = isFavorite(item);
-    favoriteButton.type = 'button';
-    favoriteButton.className = 'feed-favorite-button';
-    favoriteButton.textContent = favorite ? '★' : '☆';
-    favoriteButton.setAttribute('aria-pressed', String(favorite));
-    favoriteButton.setAttribute('aria-label', `${favorite ? '取消收藏' : '收藏'}：${item.title || '论文'}`);
-    favoriteButton.title = favorite ? '取消收藏' : '收藏';
-    favoriteButton.addEventListener('click', () => toggleFavorite(item));
-
-    cardShell.appendChild(cardLink);
-    cardShell.appendChild(favoriteButton);
-    return cardShell;
-  }
-
-  const GROUPS_PER_BATCH = 3;
-  let pendingDates = [];
-  let pendingGrouped = new Map();
-  let sentinelEl = null;
-  let lazyObserver = null;
-
-  function createGroupSection(date, items){
-    const section = document.createElement('section');
-    section.className = 'group';
-
-    const heading = document.createElement('div');
-    heading.className = 'group-heading';
-
-    const h2 = document.createElement('h2');
-    h2.textContent = date;
-
-    const count = document.createElement('div');
-    count.className = 'group-count';
-    count.textContent = `${items.length} 篇`;
-
-    const grid = document.createElement('div');
-    grid.className = 'grid';
-
-    items.forEach((item) => {
-      grid.appendChild(createFeedCard(item));
-    });
-
-    heading.appendChild(h2);
-    heading.appendChild(count);
-    section.appendChild(heading);
-    section.appendChild(grid);
-    return section;
-  }
-
-  function removeSentinel(){
-    if(sentinelEl && sentinelEl.parentNode){
-      sentinelEl.parentNode.removeChild(sentinelEl);
-    }
-    sentinelEl = null;
-  }
-
-  function destroyLazyObserver(){
-    if(lazyObserver){
-      lazyObserver.disconnect();
-      lazyObserver = null;
-    }
-    removeSentinel();
-  }
-
-  function loadNextBatch(){
-    if(!pendingDates.length){
-      removeSentinel();
-      return;
-    }
-
-    const batch = pendingDates.splice(0, GROUPS_PER_BATCH);
-    removeSentinel();
-
-    batch.forEach((date) => {
-      const section = createGroupSection(date, pendingGrouped.get(date));
-      groupsEl.appendChild(section);
-      typesetSurface(section);
-    });
-
-    if(pendingDates.length){
-      sentinelEl = document.createElement('div');
-      sentinelEl.className = 'lazy-sentinel';
-      sentinelEl.setAttribute('aria-hidden', 'true');
-      groupsEl.appendChild(sentinelEl);
-      if(lazyObserver){
-        lazyObserver.observe(sentinelEl);
-      }
-    }
-  }
-
-  function renderGroups(items){
-    destroyLazyObserver();
-    if(window.MathJax?.typesetClear){ MathJax.typesetClear([groupsEl]); }
-    groupsEl.innerHTML = '';
-
-    if(!items.length){
-      return;
-    }
-
-    const grouped = new Map();
-    items.forEach((item) => {
-      if(!grouped.has(item.date)){
-        grouped.set(item.date, []);
-      }
-      grouped.get(item.date).push(item);
-    });
-
-    const dates = Array.from(grouped.keys()).sort((a, b) => b.localeCompare(a));
-
-    pendingGrouped = grouped;
-    pendingDates = dates.slice(GROUPS_PER_BATCH);
-
-    dates.slice(0, GROUPS_PER_BATCH).forEach((date) => {
-      const section = createGroupSection(date, grouped.get(date));
-      groupsEl.appendChild(section);
-      typesetSurface(section);
-    });
-
-    if(pendingDates.length){
-      lazyObserver = new IntersectionObserver((entries) => {
-        if(entries.some((e) => e.isIntersecting)){
-          loadNextBatch();
-        }
-      }, { rootMargin: '400px' });
-
-      sentinelEl = document.createElement('div');
-      sentinelEl.className = 'lazy-sentinel';
-      sentinelEl.setAttribute('aria-hidden', 'true');
-      groupsEl.appendChild(sentinelEl);
-      lazyObserver.observe(sentinelEl);
-    }
-  }
-
-  function sync(){
-    const items = filterItems(DATA, searchEl.value);
-    updateFavoriteControls();
-    updatePaperCount(items.length);
-
-    if(!DATA.length){
-      renderGroups([]);
-      renderStatus('empty', '还没有论文卡片', '当前还没有可展示的数据，等抓取和摘要生成完成后，这里会自动出现。');
-      return;
-    }
-
-    if(!items.length){
-      renderGroups([]);
-      renderStatus(
-        'empty',
-        '没有找到匹配卡片',
-        `换个关键词试试，当前一共收录了 ${DATA.length} 篇论文。`,
-        {
-          label: '清空搜索',
-          onClick: () => {
-            searchEl.value = '';
-            categoryFilterEl.value = '';
-            tagFilterEl.value = '';
-            favoritesOnly = false;
-            syncSearchURL();
-            sync();
-            searchEl.focus();
-          }
-        }
-      );
-      return;
-    }
-
-    clearStatus();
-    renderGroups(items);
-    restoreScroll();
-  }
-
-  function syncSearchURL(){
-    const q = (searchEl.value || '').trim();
-    const url = new URL(window.location);
-    if(q){
-      url.searchParams.set('q', q);
-    } else {
-      url.searchParams.delete('q');
-    }
-    if(categoryFilterEl.value){
-      url.searchParams.set('category', categoryFilterEl.value);
-    } else {
-      url.searchParams.delete('category');
-    }
-    if(tagFilterEl.value){
-      url.searchParams.set('tag', tagFilterEl.value);
-    } else {
-      url.searchParams.delete('tag');
-    }
-    window.history.replaceState(null, '', url);
-  }
-
-  searchEl.addEventListener('input', () => {
-    syncSearchURL();
-    sync();
-  });
-  categoryFilterEl.addEventListener('change', () => {
-    syncSearchURL();
-    sync();
-  });
-  tagFilterEl.addEventListener('change', () => {
-    syncSearchURL();
-    sync();
-  });
-  favoritesOnlyEl.addEventListener('click', () => {
-    favoritesOnly = !favoritesOnly;
-    restoredScroll = true;
-    sync();
-  });
-  favoritesExportEl.addEventListener('click', exportFavorites);
-  favoritesImportEl.addEventListener('click', () => favoritesFileEl.click());
-  favoritesFileEl.addEventListener('change', () => importFavorites(favoritesFileEl.files && favoritesFileEl.files[0]));
-
-  window.addEventListener('storage', (event) => {
-    if(event.key === favoritesStorageKey){
-      FAVORITES = readFavorites();
-      sync();
-    }
-  });
-
-  function restoreScroll(){
-    if(restoredScroll || window.location.hash){
-      return;
-    }
-
-    try{
-      const saved = window.localStorage.getItem(homeScrollKey);
-      if(saved === null){
-        restoredScroll = true;
-        return;
-      }
-
-      const scrollY = Number(saved);
-      restoredScroll = true;
-      if(!Number.isFinite(scrollY) || scrollY <= 0){
-        return;
-      }
-
-      while(pendingDates.length && document.documentElement.scrollHeight < scrollY + window.innerHeight){
-        loadNextBatch();
-      }
-
-      window.requestAnimationFrame(() => {
-        window.scrollTo(0, scrollY);
-      });
-    } catch (error) {
-      restoredScroll = true;
-      console.warn('恢复首页滚动进度失败', error);
-    }
-  }
-
-  function saveScroll(){
-    try{
-      window.localStorage.setItem(homeScrollKey, String(window.scrollY || 0));
-    } catch (error) {
-      console.warn('保存首页滚动进度失败', error);
-    }
-  }
-
-  let ticking = false;
-  window.addEventListener('scroll', () => {
-    if(ticking){
-      return;
-    }
-
-    ticking = true;
-    window.requestAnimationFrame(() => {
-      saveScroll();
-      ticking = false;
-    });
-  }, { passive: true });
-
-  window.addEventListener('pagehide', saveScroll);
-
-  window.addEventListener('popstate', openPaperModalFromURL);
-
-  window.addEventListener('message', (event) => {
-    if(event.origin !== window.location.origin || !paperModalFrameEl || event.source !== paperModalFrameEl.contentWindow){
-      return;
-    }
-
-    const message = event.data || {};
-    if(message.type === 'paper-modal-close'){
-      requestClosePaperModal();
-      return;
-    }
-
-    if(message.type === 'paper-modal-ready'){
-      if(message.title){
-        paperModalTitleEl.textContent = message.title;
-      }
-      if(message.url){
-        const standaloneURL = new URL(message.url, window.location.href);
-        standaloneURL.searchParams.delete('embed');
-        paperModalOpenLinkEl.href = standaloneURL.href;
-      }
-      return;
-    }
-
-    if(message.type === 'paper-favorite-changed'){
-      FAVORITES = readFavorites();
-      sync();
-      return;
-    }
-
-    if(message.type === 'paper-image-open' && window.PaperImageViewer){
-      window.PaperImageViewer.open({
-        src: message.src,
-        alt: message.alt || '论文图片',
-        caption: message.caption || message.alt || ''
-      });
-    }
-  });
-
-  window.addEventListener('keydown', (event) => {
-    if(event.defaultPrevented || event.key !== 'Escape'){
-      return;
-    }
-    if(paperModalEl && paperModalEl.classList.contains('is-open')){
-      event.preventDefault();
-      requestClosePaperModal();
-    }
-  });
-
-  async function loadData(){
-    renderStatus('loading', '正在加载论文卡片', '页面正在读取静态数据并搭建阅读流，你可以稍后直接开始搜索。');
-
-    try{
-      const response = await fetch('assets/data.json');
-      if(!response.ok){
-        throw new Error(`HTTP ${response.status}`);
-      }
-
-      DATA = await response.json();
-      populateTaxonomyFilters();
-      sync();
-      openPaperModalFromURL();
-    } catch (error) {
-      console.error(error);
-      renderGroups([]);
-      renderStatus(
-        'error',
-        '论文卡片加载失败',
-        '无法读取 data.json。你可以刷新页面重试，或者重新运行构建脚本。',
-        { label: '重新加载', onClick: loadData }
-      );
-    }
-  }
-
-  const initialQuery = new URL(window.location).searchParams.get('q') || '';
-  if(initialQuery){
-    searchEl.value = initialQuery;
-  }
-
-  loadData();
-})();
-""".strip()
+    return read_text(PROJECT_ROOT / "scripts" / "unified_app.js")
 
 
 def generate_paper_js() -> str:
@@ -4109,7 +3113,7 @@ def generate_paper_js() -> str:
         event.preventDefault();
         const targetURL = new URL(linkEl.href, window.location.href);
         targetURL.searchParams.set('embed', '1');
-        window.location.href = targetURL.href;
+        window.location.replace(targetURL.href);
       });
     });
 
@@ -4248,6 +3252,17 @@ def generate_paper_js() -> str:
 
   window.addEventListener('pagehide', saveScroll);
 
+  const backLink = document.querySelector('.back-link');
+  if(backLink){
+    try {
+      const stored = window.sessionStorage.getItem('paper-catalog-return-url');
+      const savedURL = stored ? new URL(stored, window.location.href) : null;
+      if(savedURL && savedURL.origin === window.location.origin && (['index.html', 'physics_AI.html', 'collection.html', ''].includes(savedURL.pathname.split('/').pop()))){
+        savedURL.searchParams.delete('paper');
+        backLink.href = savedURL.href;
+      }
+    } catch (error) { console.warn('无法恢复列表位置', error); }
+  }
   initializeEmbeddedMode();
   initializeReaderActions();
   initializeImageZoom();
@@ -4258,9 +3273,7 @@ def generate_paper_js() -> str:
 
 
 def generate_collection_app_js() -> str:
-    return generate_app_js().replace("assets/data.json", "assets/collection-data.json").replace(
-        "无法读取 data.json", "无法读取 collection-data.json"
-    )
+    return generate_app_js()
 
 
 THUMB_DIR = IMAGE_DIR / "thumbs"
@@ -4289,14 +3302,6 @@ def resize_image_for_webp(image: Image.Image) -> tuple[Image.Image, bool]:
 def create_paper_thumbnail(image: Image.Image) -> Image.Image:
     """生成列表缩略图，并避免极端纵向图片产生超长资源。"""
     thumbnail_source = image
-    is_extreme_portrait = image.height > image.width * EXTREME_PORTRAIT_RATIO
-    if is_extreme_portrait:
-        crop_height = max(1, round(image.width / CARD_THUMB_ASPECT_RATIO))
-        crop_top = max(0, (image.height - crop_height) // 2)
-        thumbnail_source = image.crop(
-            (0, crop_top, image.width, min(image.height, crop_top + crop_height))
-        )
-
     if thumbnail_source.width <= THUMB_MAX_WIDTH:
         return thumbnail_source
 
@@ -4445,6 +3450,10 @@ def main() -> int:
     if CARD_FIGURES_DIR.exists():
         shutil.copytree(CARD_FIGURES_DIR, CARD_FIGURES_SITE_DIR)
 
+    reader_covers = PROJECT_ROOT / "data" / "reader-covers"
+    if reader_covers.exists():
+        shutil.copytree(reader_covers, ASSETS_DIR / "reader-covers", dirs_exist_ok=True)
+
     # 优化图片：转 WebP + 生成缩略图
     thumb_map = optimize_paper_images()
 
@@ -4468,10 +3477,12 @@ def main() -> int:
     site_records = build_site_records(records, paper_image_manifest)
     attach_daily_metadata(site_records)
     collection_records = build_collection_records(paper_image_manifest)
+    apply_reader_cover_overrides([*site_records, *collection_records])
 
     # 为首页列表数据使用缩略图路径
     list_data = build_list_data(site_records, thumb_map)
     collection_list_data = build_list_data(collection_records, thumb_map)
+    unified_list_data = merge_reader_lists(list_data, collection_list_data)
 
     shutil.rmtree(PAPERS_DIR, ignore_errors=True)
     shutil.rmtree(COVERS_DIR, ignore_errors=True)
@@ -4486,16 +3497,7 @@ def main() -> int:
         "User-agent: *\nAllow: /\n\n"
         f"Sitemap: {PUBLIC_BASE_URL}sitemap.xml\n",
     )
-    write_text(
-        SITE_DIR / "index.html",
-        '<!doctype html><html lang="zh-CN"><head><meta charset="utf-8">'
-        f'<meta http-equiv="refresh" content="0; url={SITE_DOCUMENT_NAME}">'
-        f'<link rel="canonical" href="{PUBLIC_BASE_URL}{SITE_DOCUMENT_NAME}">'
-        f'<title>{DAILY_SITE_TITLE}</title></head><body>'
-        f'<a href="{SITE_DOCUMENT_NAME}">进入 {DAILY_SITE_TITLE}</a>'
-        f'{CLOUDFLARE_ANALYTICS_HTML}'
-        '</body></html>\n',
-    )
+    write_text(SITE_DIR / "index.html", generate_index_html())
     write_text(ASSETS_DIR / "style.css", generate_style_css())
     write_text(ASSETS_DIR / "theme.js", generate_theme_js())
     write_text(ASSETS_DIR / "media.js", generate_media_js())
@@ -4504,6 +3506,7 @@ def main() -> int:
     write_text(ASSETS_DIR / "paper.js", generate_paper_js())
     write_text(ASSETS_DIR / "data.json", json.dumps(list_data, ensure_ascii=False, indent=2))
     write_text(ASSETS_DIR / "collection-data.json", json.dumps(collection_list_data, ensure_ascii=False, indent=2))
+    write_text(ASSETS_DIR / "all-data.json", json.dumps(unified_list_data, ensure_ascii=False, indent=2))
     write_text(
         SITE_DIR / "feed.xml",
         generate_atom_feed(

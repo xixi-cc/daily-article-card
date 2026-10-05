@@ -3,10 +3,10 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Weight Decay may matter more than muP for Learning Rate Transfer in Practice - physics+AI Collection 论文卡</title>
-    <meta name="description" content="作者为 Atli Kosson、Jeremy Welborn、Yang Liu、Martin Jaggi、Xi Chen。Kosson 同时署名 Amazon FAR（Frontier AI &amp; Robotics）与 EPFL，Welborn、Liu、Chen 署名 Amazon FAR，Jaggi 署名 EPFL；Kosson 的脚注注明工作在 Amazon FAR 实习期间完成。论文未明确指定通讯作者。 本卡核验 arXiv:2510.19093v2，共37页，包含全部参考文献与附录。首版提交于2025年10月21日，本版修订于2026年2月13日；官方摘要页与PDF页眉标明 ICLR 2026，单独的会议出版日期未核验。Collection收录日期是2026年8月30日，与论文提交日期分开。" />
+    <title>Weight Decay may matter more than muP for Learning Rate Transfer in Practice - 论文卡</title>
+    <meta name="description" content="把小网络的最优学习率用于大网络，能节省昂贵的调参成本。最大更新参数化 \(\mu\mathrm{P}\) 希望按宽度调整更新量，使内部表示的学习既不消失也不爆炸。问题是：实际训练中长期起作用的，究竟是初始化时的几何缩放，还是权重衰减后来改变了相对更新的尺度？" />
     <link rel="canonical" href="https://xixi-cc.github.io/daily-article-card/collection-papers/2510.19093/" />
-    <script type="application/ld+json">{"@context": "https://schema.org", "@type": "Article", "headline": "Weight Decay may matter more than muP for Learning Rate Transfer in Practice", "description": "作者为 Atli Kosson、Jeremy Welborn、Yang Liu、Martin Jaggi、Xi Chen。Kosson 同时署名 Amazon FAR（Frontier AI & Robotics）与 EPFL，Welborn、Liu、Chen 署名 Amazon FAR，Jaggi 署名 EPFL；Kosson 的脚注注明工作在 Amazon FAR 实习期间完成。论文未明确指定通讯作者。 本卡核验 arXiv:2510.19093v2，共37页，包含全部参考文献与附录。首版提交于2025年10月21日，本版修订于2026年2月13日；官方摘要页与PDF页眉标明 ICLR 2026，单独的会议出版日期未核验。Collection收录日期是2026年8月30日，与论文提交日期分开。", "url": "https://xixi-cc.github.io/daily-article-card/collection-papers/2510.19093/", "mainEntityOfPage": "https://xixi-cc.github.io/daily-article-card/collection-papers/2510.19093/", "inLanguage": "zh-CN", "author": {"@type": "Person", "name": "Xineng Cao", "alternateName": ["Xixi Cao", "曹溪能"], "url": "https://xixi-cc.github.io/"}, "isBasedOn": "https://arxiv.org/abs/2510.19093v2"}</script>
+    <script type="application/ld+json">{"@context": "https://schema.org", "@type": "Article", "headline": "Weight Decay may matter more than muP for Learning Rate Transfer in Practice", "description": "把小网络的最优学习率用于大网络，能节省昂贵的调参成本。最大更新参数化 \\(\\mu\\mathrm{P}\\) 希望按宽度调整更新量，使内部表示的学习既不消失也不爆炸。问题是：实际训练中长期起作用的，究竟是初始化时的几何缩放，还是权重衰减后来改变了相对更新的尺度？", "url": "https://xixi-cc.github.io/daily-article-card/collection-papers/2510.19093/", "mainEntityOfPage": "https://xixi-cc.github.io/daily-article-card/collection-papers/2510.19093/", "inLanguage": "zh-CN", "author": {"@type": "Person", "name": "Xineng Cao", "alternateName": ["Xixi Cao", "曹溪能"], "url": "https://xixi-cc.github.io/"}, "isBasedOn": "https://arxiv.org/abs/2510.19093v2"}</script>
     <script>
       (function() {
         try {
@@ -30,6 +30,18 @@
     <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700;800&family=Noto+Sans+SC:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
     <script>document.documentElement.classList.add('math-pending');</script>
     <script>
+      window.fitInlineMath = function(root) {
+        (root || document).querySelectorAll('mjx-container:not([display="true"])').forEach(function(el) {
+          el.classList.remove('inline-math-overflow');
+          const content = el.closest('.reading-card-content, .detail-summary, .feed-card-body');
+          if(content && el.getBoundingClientRect().width > content.clientWidth) {
+            el.classList.add('inline-math-overflow');
+            el.tabIndex = 0;
+            el.setAttribute('aria-label', '长公式，可横向滑动阅读');
+          }
+        });
+      };
+      window.addEventListener('resize', function() { window.fitInlineMath(); });
       window.MathJax = {
         tex: {
           inlineMath: [['$', '$'], ['\\(', '\\)']],
@@ -49,6 +61,7 @@
             MathJax.startup.promise.then(function() {
               document.documentElement.classList.remove('math-pending');
               document.documentElement.dataset.mathReady = 'true';
+              window.requestAnimationFrame(function() { window.fitInlineMath(); });
             });
           }
         }
@@ -65,9 +78,9 @@
     <header class="header detail-page-header">
       <div class="container">
         <div class="detail-page-topbar">
-          <a class="back-link" href="../../collection.html">返回列表</a>
+          <a class="back-link" href="../../index.html">返回列表</a>
           <div class="detail-topbar-actions">
-            <span class="detail-site-name">physics+AI Collection 论文卡</span>
+            <span class="detail-site-name">论文卡</span>
             <button id="detail-favorite" class="detail-favorite-button" type="button" aria-pressed="false">☆ 收藏</button>
             <button class="theme-toggle" type="button" data-theme-toggle aria-label="当前主题：设备，点击切换主题" title="当前主题：设备">
   <span class="theme-toggle-icons" aria-hidden="true">
@@ -89,29 +102,17 @@
         </div>
 
         <div class="detail-hero-grid">
-          <div class="detail-hero-cover"><article class="note-cover note-cover-title-abstract" style="--cover-from: #6f4cc9; --cover-to: #c57be8; --cover-spot: #efd9ff; --cover-ink: #fdf7ff; --cover-muted: rgba(253, 247, 255, 0.82); --cover-chip: rgba(253, 247, 255, 0.16); --cover-stroke: rgba(253, 247, 255, 0.24)">
-  <div class="note-cover-mesh"></div>
-  <div class="note-cover-title-shell">
-    <span class="note-cover-kicker">TITLE · ABSTRACT</span>
-    <h1 class="note-cover-title">Weight Decay may matter more than muP for Learning Rate Transfer in Practice</h1>
-    <p class="note-cover-title-zh">跨宽度学习率迁移：权重衰减如何改写更新尺度</p>
-    <p class="note-cover-abstract">小网络调好的学习率为何有时能迁移到宽网络？作者在有限宽度训练中测量表示与权重的相对变化，发现初始化对齐假设很快失效，而独立权重衰减能稳定后期的相对更新。实验支持把相关缩放的部分作用理解为隐式预热；修改显式预热可改善迁移，但仍有调参与稳定性边界。</p>
-  </div>
-</article></div>
+          <div class="detail-hero-cover"><figure class="paper-figure-card paper-figure-card-detail">
+  <img class="paper-figure-image" src="../../assets/reader-covers/structured/2510.19093.webp" alt="归一化、抵消增益和齐次激活三种网络重标度不变性的概念示意。" loading="lazy" onclick="window.openPaperFigureImage && window.openPaperFigureImage(this)" />
+  <figcaption class="paper-figure-caption">归一化、抵消增益和齐次激活三种网络重标度不变性的概念示意。原作者原图／原文摘录，Figure 2，物理 PDF 第 3 页；仅作本地封面评审。 <a href="https://arxiv.org/pdf/2510.19093v2" target="_blank" rel="noopener noreferrer">原文图源 ↗</a></figcaption>
+</figure></div>
           <div class="detail-hero-copy">
-            <p class="eyebrow">Collection 全文卡</p>
+            <p class="eyebrow">论文详情</p>
             <h1 class="detail-page-title">Weight Decay may matter more than muP for Learning Rate Transfer in Practice</h1>
             <p class="detail-page-title-zh">跨宽度学习率迁移：权重衰减如何改写更新尺度</p>
-            <div class="detail-meta">Paper Collection · Machine Learning · <a href="https://arxiv.org/abs/2510.19093v2" target="_blank" rel="noopener noreferrer">原文</a></div>
-            <p class="detail-summary">作者为 Atli Kosson、Jeremy Welborn、Yang Liu、Martin Jaggi、Xi Chen。Kosson 同时署名 Amazon FAR（Frontier AI &amp; Robotics）与 EPFL，Welborn、Liu、Chen 署名 Amazon FAR，Jaggi 署名 EPFL；Kosson 的脚注注明工作在 Amazon FAR 实习期间完成。论文未明确指定通讯作者。 本卡核验 arXiv:2510.19093v2，共37页，包含全部参考文献与附录。首版提交于2025年10月21日，本版修订于2026年2月13日；官方摘要页与PDF页眉标明 ICLR 2026，单独的会议出版日期未核验。Collection收录日期是2026年8月30日，与论文提交日期分开。</p>
-            <div class="detail-micro-meta">
-              <span class="meta-pill">机器人与具身智能</span>
-              <span class="meta-pill">AI 实证</span>
-              <span class="meta-pill">#Machine Learning</span><span class="meta-pill">#机器学习</span><span class="meta-pill">#语言模型</span>
-              <span class="meta-pill">24 分钟读完</span>
-              <span class="meta-pill">9 张阅读卡</span>
-              <span class="meta-pill">作者为 Atli Kosson、Jeremy Welborn、Yang Liu、Martin Jagg…</span>
-            </div>
+            <div class="detail-meta">Atli Kosson、Jeremy Welborn、Yang Liu、Martin Jaggi、Xi Chen · 发表信息待核验 · arXiv:2510.19093 · <a href="https://arxiv.org/abs/2510.19093v2" target="_blank" rel="noopener noreferrer">论文原文 ↗</a></div>
+            <p class="detail-summary">把小网络的最优学习率用于大网络，能节省昂贵的调参成本。最大更新参数化 \(\mu\mathrm{P}\) 希望按宽度调整更新量，使内部表示的学习既不消失也不爆炸。问题是：实际训练中长期起作用的，究竟是初始化时的几何缩放，还是权重衰减后来改变了相对更新的尺度？</p>
+
           </div>
         </div>
       </div>
@@ -120,42 +121,18 @@
     <main class="container detail-layout">
       <div class="detail-shell">
         <article id="detail-body" class="reading-flow"><section class="reading-card reading-card-section">
-  <div class="reading-card-topline">
-    <span class="reading-step">Card 01</span>
-    <span class="reading-step-note">作者信息</span>
-  </div>
-  <h2>作者信息</h2>
-  <div class="reading-card-content"><ul><li>作者为 Atli Kosson、Jeremy Welborn、Yang Liu、Martin Jaggi、Xi Chen。Kosson 同时署名 Amazon FAR（Frontier AI &amp; Robotics）与 EPFL，Welborn、Liu、Chen 署名 Amazon FAR，Jaggi 署名 EPFL；Kosson 的脚注注明工作在 Amazon FAR 实习期间完成。论文未明确指定通讯作者。</li><li>本卡核验 arXiv:2510.19093v2，共37页，包含全部参考文献与附录。首版提交于2025年10月21日，本版修订于2026年2月13日；官方摘要页与PDF页眉标明 ICLR 2026，单独的会议出版日期未核验。Collection收录日期是2026年8月30日，与论文提交日期分开。</li></ul></div>
-</section>
-<section class="reading-card reading-card-section">
-  <div class="reading-card-topline">
-    <span class="reading-step">Card 02</span>
-    <span class="reading-step-note">研究问题</span>
-  </div>
   <h2>研究问题</h2>
   <div class="reading-card-content"><ul><li>把小网络的最优学习率用于大网络，能节省昂贵的调参成本。最大更新参数化 \(\mu\mathrm{P}\) 希望按宽度调整更新量，使内部表示的学习既不消失也不爆炸。问题是：实际训练中长期起作用的，究竟是初始化时的几何缩放，还是权重衰减后来改变了相对更新的尺度？</li><li>作者在 LLaMA 类语言模型和 ResNet 上同时测量权重、表示与两者的对齐关系，并比较标准衰减、独立衰减、无衰减、修改预热以及固定权重范数等设置。结果支持分阶段的机制解释：初始缩放可以抑制过大的表示变化，后期保持相对更新更关键。这里讨论有限宽度训练及一种分层学习率缩放变体，不是对完整无限宽 \(\mu\mathrm{P}\) 定理的反例。证据：正文第2—9页、附录F第25页与附录H第32—33页。</li></ul></div>
 </section>
 <section class="reading-card reading-card-section">
-  <div class="reading-card-topline">
-    <span class="reading-step">Card 03</span>
-    <span class="reading-step-note">背景</span>
-  </div>
   <h2>背景</h2>
   <div class="reading-card-content"><ul><li>这是现代AI优化机制研究。神经网络常有不改变当前输出的参数重标度，例如线性层后接归一化，或把一层权重放大、后续增益缩小。因此，同样大小的绝对权重更新未必意味着同样大小的功能变化；相对于现有权重和表示的变化，更适合比较不同宽度与训练时刻。Figure 2（第3页）给出这些尺度变换，但实际LLaMA并非处处严格尺度不变。</li><li>已有工作研究过权重衰减的有效学习率作用，也发现独立权重衰减有利于迁移。本文的贡献是把这些现象接到可测的对齐比与局部表示变化上，并用干预检验解释。既不能把已有衰减平衡重新宣称为首次发现，也不能把几何相似性当成热力学等价；这里的“平衡”指权重范数增长与收缩在简化更新模型中的平衡。</li></ul></div>
 </section>
 <section class="reading-card reading-card-section">
-  <div class="reading-card-topline">
-    <span class="reading-step">Card 04</span>
-    <span class="reading-step-note">物理读者桥接</span>
-  </div>
   <h2>物理读者桥接</h2>
   <div class="reading-card-content"><ul><li>输入与表示：语言模型接收离散文本片段token，把它们变成向量，再经注意力与多层感知机变换。本文把某一线性层的输入记为 \(X\)，可训练矩阵记为 \(W\)，输出表示记为 \(Y\)。训练由下一token预测的交叉熵梯度驱动，表示变化是中间观测，最终损失是任务观测。</li><li>学习率与预热：学习率控制每步参数更新的尺度；预热是在训练开头逐渐增大这一尺度，以避免早期不稳定。本文关心的是宽度改变后，哪个基础学习率产生相似的表示更新，并不证明该相似性足以保证同样的最优泛化性能。</li><li>权重衰减与对齐：AdamW先按梯度更新，同时把权重乘一个接近1的收缩因子。对齐量度权重行或更新行与层输入方向的重合程度；当对齐变大，同样权重变化会引起更大的表示变化。其符号与归一化见下节。</li></ul></div>
 </section>
 <section class="reading-card reading-card-section">
-  <div class="reading-card-topline">
-    <span class="reading-step">Card 05</span>
-    <span class="reading-step-note">模型与方法</span>
-  </div>
   <h2>模型与方法</h2>
   <div class="reading-card-content"><ul><li>先把整网问题压到同一输入下的单层变化：\(C\) 是输入特征维数，\(K\) 是输出维数，\(B\) 是本层批量样本数，\(W\in\mathbb R^{K\times C}\)、\(X\in\mathbb R^{C\times B}\)、\(Y\in\mathbb R^{K\times B}\)。第2页 Eq. (1) 为</li></ul>
 
@@ -176,10 +153,6 @@
 <ul><li>独立缩放保留 \(\eta\lambda\)，所以跨宽度保留同一收缩率；“独立”指不随基础学习率的宽度缩放而额外改变该收缩，不意味着训练时间上的调度被取消。第25页 Algorithm 1与F.1说明具体实现。</li><li>主要语言实验使用20个Transformer块，宽度128—2048、MLP扩张3倍、注意力头维128且通过增加头数增宽，标准初始化、未绑定输入/输出嵌入。任务为DCLM首个全局分片约10%数据上的下一token交叉熵训练；每批256条、序列长4096，20000步共约20.97B token。AdamW一阶/二阶平滑系数分别为 \(\beta_1=0.9\)、\(\beta_2=0.95\)，数值稳定项 \(\epsilon=10^{-8}\)，缩放前 \(\lambda=0.1\)，10%线性预热后线性衰减至零（第26页F.3）。</li><li>学习率扫描先在最窄网络调全局学习率，再固定输入层、偏置和增益的学习率，只扫描随宽度变化的矩阵。实验采用标准参数化加分层 \(\mu\mathrm{P}\) 式学习率缩放；输出层初始化、注意力归一化与完整 \(\mu\mathrm{P}\) 有差异，不能忽略（第25页F.2）。</li></ul></div>
 </section>
 <section class="reading-card reading-card-section">
-  <div class="reading-card-topline">
-    <span class="reading-step">Card 06</span>
-    <span class="reading-step-note">核心结果与证据</span>
-  </div>
   <h2>核心结果与证据</h2>
   <div class="reading-card-content"><ul><li>一、后期相对表示变化由几何与范数共同控制。Figure 3（第5页）从左至右画相对表示变化、对齐比、相对权重更新，横轴是训练步数，蓝/橙比较宽128与2048。标准衰减下后期宽网络的更新更小；独立衰减下左右两列较好重合。中列两种设置的对齐比均很快降到1量级，所以此时再按初始化的 \(m^{-1/2}\) 缩小相对更新会压低宽网络的局部表示学习。Figure 4（第6页）把两个对齐分量拆开；Figures 21—24（第34—37页）增加层与学习率覆盖。这是有限实验的测量，不是所有层、所有训练时刻精确等于1的定律。</li><li>原图阅读：<a href="https://arxiv.org/pdf/2510.19093v2#page=5" target="_blank" rel="noopener noreferrer">Figure 3：相对变化与对齐的分解</a>，<a href="https://arxiv.org/pdf/2510.19093v2#page=6" target="_blank" rel="noopener noreferrer">Figure 4：训练中的对齐测量</a>。以下描述保留原图的宽度、轴与实验范围，不复制图像。</li><li>二、独立衰减为什么能抵消后期缩放？第20页Eqs. (27)—(31) 用一个明确简化的范数模型说明。令 \(\rho_t=\|W_t\|_F/\sqrt{KC}\) 为权重元素的均方根，\(t\) 为步数，\(a=1-\eta\lambda\)，恒定学习率下假定梯度更新与当前权重正交、元素更新均方根约为学习率。则</li></ul>
 
@@ -196,26 +169,14 @@
 <ul><li>该式先用了比值期望的二阶矩近似，后又简化了Eq. (25)，不是有严格误差界的期望公式。低信噪比时，\(B\ll C\) 主要给 \(B^{-1/2}\)，\(B\gg C\) 主要给 \(C^{-1/2}\)；Figure 10（第17页）画的是模型预测。语言训练把每批token数类比有效批量，远大于层宽；真实SNR和token相关性仍需测量，不能把这一简化模型当作完整训练证明。</li><li>五、预热解释有干预支持，但替代尚非等价。Figure 5（第7页）固定 \(\eta\lambda\)，高衰减/低学习率配置初始相对更新更小，后期接近另一配置，像额外预热。Figure 6（第8页）比较缩放加独立衰减、只延长线性预热、额外指数/decay-away预热。后两者改善学习率迁移，却仍需调参且高学习率更易不稳定；额外预热施加到所有参数也是差异。Table 2（第27页）用末100步平均训练损失，不是验证损失；宽2048的独立方案2.792、decay-away 2.800、指数方案2.808，不能据此宣称泛化等价。</li><li>六、控制相对更新本身提供额外证据。附录H用LionAR把权重行等投影回初始范数，去掉权重衰减及其范数漂移。Figure 19（第33页）显示1000和20000步实验中，不按宽度缩小相对学习率也能使最优值较接近；100步短训练仍明显有尺度位移。Figure 20同时显示不缩放更好保持后期相对表示变化。该干预支持分阶段解释，但改变了优化器和约束，不能单独识别AdamW中全部因果链条。100和1000步损失为5个seed平均，论文未将此声明延伸到20000步（第28页F.3.6）。</li></ul></div>
 </section>
 <section class="reading-card reading-card-section">
-  <div class="reading-card-topline">
-    <span class="reading-step">Card 07</span>
-    <span class="reading-step-note">有效性与局限</span>
-  </div>
   <h2>有效性与局限</h2>
   <div class="reading-card-content"><ul><li>局部恒等式、简化模型与有限实验有不同证据等级。固定输入的变化不等于全网表示学习；保持相对变化到最优学习率迁移的联系在第3页明确是无保证的启发式。有限 \(B\gg C\) 与固定批量的无限宽极限不同，本文也未直接测试完整 \(\mu\mathrm{P}\) 的全部参数化。</li><li>真实动量和时间相关使范数模型不能预测实测瞬态；文章第7页明确说Eq. (11)高估达到平衡的时间。本文的状态量是有用诊断，尚不是闭合的整网动力学。表示指标用1/64批量的微批，每10步记录并排除末0.5%，不能视为全批确定值（第27页）。Figure 22还有首块注意力输出层的相对迁移例外，原因未解释。</li><li>ResNet控制（第22—24页）支持相对更新机制，但训练损失和验证损失的最优学习率随宽度朝不同方向移动，可能有正则化混杂；Figure 15中无缩放也能有相近迁移和稳定性，额外预热并非处处必要。AdamW主实验未提供统一多seed误差统计，不能把小loss差异当稳健优势。无衰减组还对输入与增益用了不同学习率（第26页）。</li><li>固定 \(\eta\lambda\) 不保证所有初始轨迹、表示范数或损失相同。Figures 17—18（第29—30页）显示可训练归一化增益能补偿部分权重范数变化，却不能统一所有残差分支的输出。论文对Muon、Scion等矩阵级优化器的对齐及预热讨论在第9页是推测，不是本篇验证结果。</li></ul></div>
 </section>
 <section class="reading-card reading-card-section">
-  <div class="reading-card-topline">
-    <span class="reading-step">Card 08</span>
-    <span class="reading-step-note">复现与资源</span>
-  </div>
   <h2>复现与资源</h2>
   <div class="reading-card-content"><ul><li>论文描述修改版Lingua用于语言训练、修改版timm用于ResNet训练；未在完整PDF中识别到本篇专门的代码仓库、训练检查点或独立数据发布。上游项目：Lingua https://github.com/facebookresearch/lingua ，timm https://github.com/rwightman/pytorch-image-models ，分词器来源 https://huggingface.co/meta-llama/Meta-Llama-3-8B 。这些是论文明确给出的资源，不是已核验可直接复现本文的代码快照。</li><li>参数与配方见第25—28页附录F，AdamW和约束范数LionAR伪代码分别见第25、32页。作者报告最大宽度语言模型单次训练约需8张H200、14小时；最大ResNet宽度约需同样8张H200、10小时，且日志较重、未优化。这些是作者报告的单次运行需求，本卡未执行训练或估算整篇研究成本。</li><li>证据状态：官方精确版本全文核验，全部附录读完；未开展独立训练复现。公开PDF与HTML分别为 https://arxiv.org/pdf/2510.19093v2 和 https://arxiv.org/html/2510.19093v2 。原图阅读请使用论文；本卡不复制源图。</li></ul></div>
 </section>
 <section class="reading-card reading-card-section">
-  <div class="reading-card-topline">
-    <span class="reading-step">Card 09</span>
-    <span class="reading-step-note">阅读指南</span>
-  </div>
   <h2>阅读指南</h2>
   <div class="reading-card-content"><ul><li>快速路线：先读第2—3页的单层模型和Eq. (4)，明白“对齐比×相对更新”；再并看第5页Figure 3与第26页Table 1，区分表示尺度机制、最优基础学习率迁移和最佳损失。最后读第8页Figure 6的稳定性边界以及第25页参数化差异。</li><li>深入路线：第17—19页附录C比较 \(B/C\) 与信噪比的不同极限；第20—22页附录D先读简化条件再跟范数递推；第32—33页附录H看固定范数的干预；第34—37页检查跨层反例及相对/绝对表示指标的差别。最低前置是矩阵范数、梯度下降与随机变量二阶矩，不需要先掌握整个Tensor Programs体系。</li></ul></div>
 </section></article>
@@ -224,7 +185,7 @@
           <nav id="detail-toc-nav" class="detail-toc-nav"></nav>
         </aside>
       </div>
-      <nav class="paper-nav"><a class="paper-nav-link paper-nav-prev" href="../../collection-papers/2510.25553/"><span class="paper-nav-label">← 上一篇</span><span class="paper-nav-title">Renormalization group for deep neural networks: Universality of learning and scaling laws</span></a>
+      <nav class="paper-nav"><a class="paper-nav-link paper-nav-prev" href="../../collection-papers/2601.04480/"><span class="paper-nav-label">← 上一篇</span><span class="paper-nav-title">When Models Manipulate Manifolds: The Geometry of a Counting Task</span></a>
       <a class="paper-nav-link paper-nav-next" href="../../collection-papers/2510.16732/"><span class="paper-nav-label">下一篇 →</span><span class="paper-nav-title">A Comprehensive Survey on World Models for Embodied AI</span></a></nav>
       <section id="comments" class="comments-panel" aria-labelledby="comments-title">
         <div class="comments-heading">

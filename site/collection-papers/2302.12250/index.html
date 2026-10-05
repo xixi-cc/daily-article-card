@@ -3,10 +3,10 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Phase diagram of early training dynamics in deep neural networks: effect of the learning rate, depth, and width - physics+AI Collection 论文卡</title>
-    <meta name="description" content="作者：Dayal Singh Kalra、Maissam Barkeshli（University of Maryland）。arXiv:2302.12250v2，发表于 NeurIPS 2023。论文用 Hessian top eigenvalue 追踪 DNN 从初始化到 edge-of-stability 的早期与中期动力学。" />
+    <title>Phase diagram of early training dynamics in deep neural networks: effect of the learning rate, depth, and width - 论文卡</title>
+    <meta name="description" content="局部二次优化给出 η&lt;2/λ_max(H) 的稳定直觉，但深网曲率在训练初期快速变化，超临界步长可能先 catapult 再落入更平坦区域。作者问：以初始 sharpness 归一化 η=c/λ_0^H 后，loss/sharpness 的瞬态如何随 depth d 和 width w 改变？" />
     <link rel="canonical" href="https://xixi-cc.github.io/daily-article-card/collection-papers/2302.12250/" />
-    <script type="application/ld+json">{"@context": "https://schema.org", "@type": "Article", "headline": "Phase diagram of early training dynamics in deep neural networks: effect of the learning rate, depth, and width", "description": "作者：Dayal Singh Kalra、Maissam Barkeshli（University of Maryland）。arXiv:2302.12250v2，发表于 NeurIPS 2023。论文用 Hessian top eigenvalue 追踪 DNN 从初始化到 edge-of-stability 的早期与中期动力学。", "url": "https://xixi-cc.github.io/daily-article-card/collection-papers/2302.12250/", "mainEntityOfPage": "https://xixi-cc.github.io/daily-article-card/collection-papers/2302.12250/", "inLanguage": "zh-CN", "author": {"@type": "Person", "name": "Xineng Cao", "alternateName": ["Xixi Cao", "曹溪能"], "url": "https://xixi-cc.github.io/"}, "isBasedOn": "https://arxiv.org/abs/2302.12250"}</script>
+    <script type="application/ld+json">{"@context": "https://schema.org", "@type": "Article", "headline": "Phase diagram of early training dynamics in deep neural networks: effect of the learning rate, depth, and width", "description": "局部二次优化给出 η<2/λ_max(H) 的稳定直觉，但深网曲率在训练初期快速变化，超临界步长可能先 catapult 再落入更平坦区域。作者问：以初始 sharpness 归一化 η=c/λ_0^H 后，loss/sharpness 的瞬态如何随 depth d 和 width w 改变？", "url": "https://xixi-cc.github.io/daily-article-card/collection-papers/2302.12250/", "mainEntityOfPage": "https://xixi-cc.github.io/daily-article-card/collection-papers/2302.12250/", "inLanguage": "zh-CN", "author": {"@type": "Person", "name": "Xineng Cao", "alternateName": ["Xixi Cao", "曹溪能"], "url": "https://xixi-cc.github.io/"}, "isBasedOn": "https://arxiv.org/abs/2302.12250"}</script>
     <script>
       (function() {
         try {
@@ -30,6 +30,18 @@
     <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700;800&family=Noto+Sans+SC:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
     <script>document.documentElement.classList.add('math-pending');</script>
     <script>
+      window.fitInlineMath = function(root) {
+        (root || document).querySelectorAll('mjx-container:not([display="true"])').forEach(function(el) {
+          el.classList.remove('inline-math-overflow');
+          const content = el.closest('.reading-card-content, .detail-summary, .feed-card-body');
+          if(content && el.getBoundingClientRect().width > content.clientWidth) {
+            el.classList.add('inline-math-overflow');
+            el.tabIndex = 0;
+            el.setAttribute('aria-label', '长公式，可横向滑动阅读');
+          }
+        });
+      };
+      window.addEventListener('resize', function() { window.fitInlineMath(); });
       window.MathJax = {
         tex: {
           inlineMath: [['$', '$'], ['\\(', '\\)']],
@@ -49,6 +61,7 @@
             MathJax.startup.promise.then(function() {
               document.documentElement.classList.remove('math-pending');
               document.documentElement.dataset.mathReady = 'true';
+              window.requestAnimationFrame(function() { window.fitInlineMath(); });
             });
           }
         }
@@ -65,9 +78,9 @@
     <header class="header detail-page-header">
       <div class="container">
         <div class="detail-page-topbar">
-          <a class="back-link" href="../../collection.html">返回列表</a>
+          <a class="back-link" href="../../index.html">返回列表</a>
           <div class="detail-topbar-actions">
-            <span class="detail-site-name">physics+AI Collection 论文卡</span>
+            <span class="detail-site-name">论文卡</span>
             <button id="detail-favorite" class="detail-favorite-button" type="button" aria-pressed="false">☆ 收藏</button>
             <button class="theme-toggle" type="button" data-theme-toggle aria-label="当前主题：设备，点击切换主题" title="当前主题：设备">
   <span class="theme-toggle-icons" aria-hidden="true">
@@ -91,22 +104,15 @@
         <div class="detail-hero-grid">
           <div class="detail-hero-cover"><figure class="paper-figure-card paper-figure-card-detail">
   <img class="paper-figure-image" src="../../assets/collection-figures/2302.12250/figure-3-width-phase-diagram.webp" alt="横轴为归一化学习率常数 c、纵轴为逆宽度 1/w 的相图，多条临界线分隔绿色、黄色、橙色和红色训练区。" loading="lazy" onclick="window.openPaperFigureImage && window.openPaperFigureImage(this)" />
-  <figcaption class="paper-figure-caption">有限宽使 loss、sharpness 与 divergence 阈值分裂，并打开新的早期 sharpness-reduction 区域。</figcaption>
+  <figcaption class="paper-figure-caption">有限宽使 loss、sharpness 与 divergence 阈值分裂，并打开新的早期 sharpness-reduction 区域。 <a href="https://arxiv.org/abs/2302.12250" target="_blank" rel="noopener noreferrer">原文图源 ↗</a></figcaption>
 </figure></div>
           <div class="detail-hero-copy">
-            <p class="eyebrow">Collection 全文卡</p>
+            <p class="eyebrow">论文详情</p>
             <h1 class="detail-page-title">Phase diagram of early training dynamics in deep neural networks: effect of the learning rate, depth, and width</h1>
             <p class="detail-page-title-zh">深度神经网络早期训练动力学相图：学习率、深度与宽度的作用</p>
-            <div class="detail-meta">Paper Collection · Training Dynamics · <a href="https://arxiv.org/abs/2302.12250" target="_blank" rel="noopener noreferrer">原文</a></div>
-            <p class="detail-summary">作者：Dayal Singh Kalra、Maissam Barkeshli（University of Maryland）。arXiv:2302.12250v2，发表于 NeurIPS 2023。论文用 Hessian top eigenvalue 追踪 DNN 从初始化到 edge-of-stability 的早期与中期动力学。</p>
-            <div class="detail-micro-meta">
-              <span class="meta-pill">AI for Science</span>
-              <span class="meta-pill">理论与实验</span>
-              <span class="meta-pill">#Training Dynamics</span><span class="meta-pill">#机器学习</span><span class="meta-pill">#无序系统与神经网络</span>
-              <span class="meta-pill">10 分钟读完</span>
-              <span class="meta-pill">7 张阅读卡</span>
-              <span class="meta-pill">作者：Dayal Singh Kalra、Maissam Barkeshli（University o…</span>
-            </div>
+            <div class="detail-meta">Dayal Singh Kalra、Maissam Barkeshli · 预印本 · arXiv:2302.12250 · <a href="https://arxiv.org/abs/2302.12250" target="_blank" rel="noopener noreferrer">论文原文 ↗</a></div>
+            <p class="detail-summary">局部二次优化给出 \(\eta\)&lt;2/\(\lambda_{\mathrm{max}}\)(\(H\)) 的稳定直觉，但深网曲率在训练初期快速变化，超临界步长可能先 catapult 再落入更平坦区域。作者问：以初始 sharpness 归一化 \(\eta=c\)/\(\lambda_{0}^{H}\) 后，loss/sharpness 的瞬态如何随 depth \(d\) 和 width w 改变？</p>
+
           </div>
         </div>
       </div>
@@ -115,34 +121,14 @@
     <main class="container detail-layout">
       <div class="detail-shell">
         <article id="detail-body" class="reading-flow"><section class="reading-card reading-card-section">
-  <div class="reading-card-topline">
-    <span class="reading-step">Card 01</span>
-    <span class="reading-step-note">作者信息</span>
-  </div>
-  <h2>作者信息</h2>
-  <div class="reading-card-content"><ul><li>作者：Dayal Singh Kalra、Maissam Barkeshli（University of Maryland）。arXiv:2302.12250v2，发表于 NeurIPS 2023。论文用 Hessian top eigenvalue 追踪 DNN 从初始化到 edge-of-stability 的早期与中期动力学。</li></ul></div>
-</section>
-<section class="reading-card reading-card-section">
-  <div class="reading-card-topline">
-    <span class="reading-step">Card 02</span>
-    <span class="reading-step-note">研究问题</span>
-  </div>
   <h2>研究问题</h2>
   <div class="reading-card-content"><ul><li>局部二次优化给出 \(\eta\)&lt;2/\(\lambda_{\mathrm{max}}\)(\(H\)) 的稳定直觉，但深网曲率在训练初期快速变化，超临界步长可能先 catapult 再落入更平坦区域。作者问：以初始 sharpness 归一化 \(\eta=c\)/\(\lambda_{0}^{H}\) 后，loss/sharpness 的瞬态如何随 depth \(d\) 和 width w 改变？</li><li>论文区分早期 transient、intermediate saturation、progressive sharpening 与晚期 EoS 四阶段，重点绘制前两阶段的 phase diagram，而不是把训练全程压成单一稳定阈值。</li></ul></div>
 </section>
 <section class="reading-card reading-card-section">
-  <div class="reading-card-topline">
-    <span class="reading-step">Card 03</span>
-    <span class="reading-step-note">模型与方法</span>
-  </div>
   <h2>模型与方法</h2>
   <div class="reading-card-content"><ul><li>实验覆盖 FCN、Myrtle-style CNN 与无 batch normalization 的 ResNet，在 MNIST、Fashion-MNIST、CIFAR-10 上用 vanilla SGD；主结果用 MSE，附录加入 cross-entropy。每次初始化计算 \(\lambda_{0}^{H}\)，并扫描 c、\(d\)、w，早期约 10 steps 密集测量 loss 与 \(\lambda_{t}^{H}\)。</li><li>定义 \(c_{\mathrm{loss}}\) 为 early window 内 loss 首次高于初值所需的最小 c，\(c_{\mathrm{sharp}}\) 类似地针对 sharpness，\(c_{\mathrm{max}}\) 是仍能训练的最大 c；另用 \(c_{\mathrm{crit}}\)/response derivatives 标记 intermediate sharpness transition。把这些临界线画在 (c,1/w) 或 (c,\(d\)) 平面，得到 normal、sharpness reduction、loss catapult、loss–sharpness catapult 与 divergence 区域。</li><li>为理解机制，作者研究两层线性 uv model \(f(x)=v^{T}ux\)/\(\sqrt w\)，在单样本 (1,0) 上解析更新 \(f_{t}\) 与 tr(\(H_{t}\))。其中 1/w 修正把无限宽阈值分裂，说明 finite width 与大 initial output 可打开 sharpness-reduction phase。</li></ul></div>
 </section>
 <section class="reading-card reading-card-section">
-  <div class="reading-card-topline">
-    <span class="reading-step">Card 04</span>
-    <span class="reading-step-note">核心结果与证据</span>
-  </div>
   <h2>核心结果与证据</h2>
   <div class="reading-card-content"><ul><li>Figure 3 的 width phase diagram 显示：宽网络接近 \(c\approx 2\) 的经典 catapult picture；随 1/w 增大，\(c_{\mathrm{loss}}\)、\(c_{\mathrm{sharp}}\)、\(c_{\mathrm{max}}\) 分离，并出现 loss 仍下降但 sharpness 先下降的区域。增加 depth 产生相似扩展，深而窄的网络可在远高于 2 的 c 才发生 loss catapult。</li><li>论文报告两个此前未强调的区：sharpness reduction，以及 loss–sharpness catapult。把网络最后一层置零或对输出做 centering 后，超临界 sharpness reduction 大幅缩小/消失，支持初始输出相对标签尺度是关键驱动，而不只是 Hessian eigenvalue 本身。</li><li>uv model 复现相图的定性拓扑，并把 tr(\(H\)) 更新中的 ηf_t²\(\eta trH_{t}−4\)/w 项识别为 finite-width 来源。它是单样本线性模型，解释的是一种机制而非对 ReLU CNN 全部临界线的精确预测。MSE 主图每点平均 10 次初始化；部分深窄区随机波动使边界难以分辨。</li></ul><figure class="evidence-figure">
   <button class="evidence-figure-image-button" type="button" aria-label="放大查看 Figure 3(a)" onclick="window.openPaperFigureImage && window.openPaperFigureImage(this.querySelector('img'))">
@@ -156,26 +142,14 @@
 </figure></div>
 </section>
 <section class="reading-card reading-card-section">
-  <div class="reading-card-topline">
-    <span class="reading-step">Card 05</span>
-    <span class="reading-step-note">有效性与局限</span>
-  </div>
   <h2>有效性与局限</h2>
   <div class="reading-card-content"><ul><li>\(\lambda_{\mathrm{max}}\)(\(H\)) 只刻画最尖方向，不能完整描述非正规、梯度噪声或多方向 instability；有限 batch 下 Hessian 与 trajectory 都有随机性。以 \(\lambda_{0}^{H}\) 归一化有利于比较，但不同 parameterization、loss/output scale、normalization 与数据编码会改变 c。</li><li>主相图针对短 early window、固定 optimizer 和 architecture families；momentum、Adam、weight decay、augmentation、schedule 与 batch normalization 未纳入核心结论。sharpness reduction 不等同于更好 generalization，catapult 后的 basin connectivity 也只用线性插值等有限诊断。</li></ul></div>
 </section>
 <section class="reading-card reading-card-section">
-  <div class="reading-card-topline">
-    <span class="reading-step">Card 06</span>
-    <span class="reading-step-note">复现与资源</span>
-  </div>
   <h2>复现与资源</h2>
   <div class="reading-card-content"><ul><li>原文：https://arxiv.org/abs/2302.12250；代码：https://github.com/dayal-kalra/early-training。官方 PDF SHA-256：c7d5c8a78aa63a431b397b5a96da3f6eae1a1ff8ba9c58d9d77d4b446676adb7。</li><li>复现需冻结 JAX/Flax 模型定义、parameterization、initialization/output scale、dataset preprocessing、\(B=512\) 主协议、Hessian eigensolver/tolerance、early window、c grid、临界线插值和 10 初始化；同时保存每步 loss、accuracy、\(\lambda_{\mathrm{max}}\)、seed 与 non-convergence 分类。Evidence status: full-text verified; no independent reproduction performed.</li></ul></div>
 </section>
 <section class="reading-card reading-card-section">
-  <div class="reading-card-topline">
-    <span class="reading-step">Card 07</span>
-    <span class="reading-step-note">阅读指南</span>
-  </div>
   <h2>阅读指南</h2>
   <div class="reading-card-content"><ul><li>先看 pp. 1–2 Figure 1 区分四个时间阶段；再读 pp. 3–6 的临界常数、Figure 2/3 phase diagrams 与 depth/width trends；用 pp. 7–9 的 output-centering 与 uv model 检查机制；最后读 Discussion 和附录 A–\(J\) 的 CE、batch-size、parameterization 与复现细节。</li></ul></div>
 </section></article>

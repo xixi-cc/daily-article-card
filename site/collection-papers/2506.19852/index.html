@@ -3,10 +3,10 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Radial Attention: $O(n\log n)$ Sparse Attention with Energy Decay for Long Video Generation - physics+AI Collection 论文卡</title>
-    <meta name="description" content="Xingyang Li、Muyang Li、Tianle Cai、Haocheng Xi、Shuo Yang、Yujun Lin、Lvmin Zhang、Songlin Yang、Jinbo Hu、Kelly Peng、Maneesh Agrawala、Ion Stoica、Kurt Keutzer、Song Han；前两人标等贡献。首页列 MIT、NVIDIA、Princeton、UC Berkeley、Stanford、First Intelligence，但没有逐作者机构编号或通讯标签，不猜分工。核读arXiv:2506.19852v2，2025-12-06更新，NeurIPS 2025 camera-ready，25个物理页。（第1、11页）" />
+    <title>Radial Attention: $O(n\log n)$ Sparse Attention with Energy Decay for Long Video Generation - 论文卡</title>
+    <meta name="description" content="视频扩散一次注意力需同时处理空间与时间，长视频增加帧数后，两两token相互作用成本迅速增长。能否保留附近的强作用和少量远处联系，使用一个可训练的静态稀疏图替代每个head在线选空间/时间mask？本文把视频模型中观测到的平均注意力衰减变成分层稀疏预算，并用LoRA使已有模型适应长视频。（第2–6页）" />
     <link rel="canonical" href="https://xixi-cc.github.io/daily-article-card/collection-papers/2506.19852/" />
-    <script type="application/ld+json">{"@context": "https://schema.org", "@type": "Article", "headline": "Radial Attention: $O(n\\log n)$ Sparse Attention with Energy Decay for Long Video Generation", "description": "Xingyang Li、Muyang Li、Tianle Cai、Haocheng Xi、Shuo Yang、Yujun Lin、Lvmin Zhang、Songlin Yang、Jinbo Hu、Kelly Peng、Maneesh Agrawala、Ion Stoica、Kurt Keutzer、Song Han；前两人标等贡献。首页列 MIT、NVIDIA、Princeton、UC Berkeley、Stanford、First Intelligence，但没有逐作者机构编号或通讯标签，不猜分工。核读arXiv:2506.19852v2，2025-12-06更新，NeurIPS 2025 camera-ready，25个物理页。（第1、11页）", "url": "https://xixi-cc.github.io/daily-article-card/collection-papers/2506.19852/", "mainEntityOfPage": "https://xixi-cc.github.io/daily-article-card/collection-papers/2506.19852/", "inLanguage": "zh-CN", "author": {"@type": "Person", "name": "Xineng Cao", "alternateName": ["Xixi Cao", "曹溪能"], "url": "https://xixi-cc.github.io/"}, "isBasedOn": "https://arxiv.org/abs/2506.19852"}</script>
+    <script type="application/ld+json">{"@context": "https://schema.org", "@type": "Article", "headline": "Radial Attention: $O(n\\log n)$ Sparse Attention with Energy Decay for Long Video Generation", "description": "视频扩散一次注意力需同时处理空间与时间，长视频增加帧数后，两两token相互作用成本迅速增长。能否保留附近的强作用和少量远处联系，使用一个可训练的静态稀疏图替代每个head在线选空间/时间mask？本文把视频模型中观测到的平均注意力衰减变成分层稀疏预算，并用LoRA使已有模型适应长视频。（第2–6页）", "url": "https://xixi-cc.github.io/daily-article-card/collection-papers/2506.19852/", "mainEntityOfPage": "https://xixi-cc.github.io/daily-article-card/collection-papers/2506.19852/", "inLanguage": "zh-CN", "author": {"@type": "Person", "name": "Xineng Cao", "alternateName": ["Xixi Cao", "曹溪能"], "url": "https://xixi-cc.github.io/"}, "isBasedOn": "https://arxiv.org/abs/2506.19852"}</script>
     <script>
       (function() {
         try {
@@ -30,6 +30,18 @@
     <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700;800&family=Noto+Sans+SC:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
     <script>document.documentElement.classList.add('math-pending');</script>
     <script>
+      window.fitInlineMath = function(root) {
+        (root || document).querySelectorAll('mjx-container:not([display="true"])').forEach(function(el) {
+          el.classList.remove('inline-math-overflow');
+          const content = el.closest('.reading-card-content, .detail-summary, .feed-card-body');
+          if(content && el.getBoundingClientRect().width > content.clientWidth) {
+            el.classList.add('inline-math-overflow');
+            el.tabIndex = 0;
+            el.setAttribute('aria-label', '长公式，可横向滑动阅读');
+          }
+        });
+      };
+      window.addEventListener('resize', function() { window.fitInlineMath(); });
       window.MathJax = {
         tex: {
           inlineMath: [['$', '$'], ['\\(', '\\)']],
@@ -49,6 +61,7 @@
             MathJax.startup.promise.then(function() {
               document.documentElement.classList.remove('math-pending');
               document.documentElement.dataset.mathReady = 'true';
+              window.requestAnimationFrame(function() { window.fitInlineMath(); });
             });
           }
         }
@@ -65,9 +78,9 @@
     <header class="header detail-page-header">
       <div class="container">
         <div class="detail-page-topbar">
-          <a class="back-link" href="../../collection.html">返回列表</a>
+          <a class="back-link" href="../../index.html">返回列表</a>
           <div class="detail-topbar-actions">
-            <span class="detail-site-name">physics+AI Collection 论文卡</span>
+            <span class="detail-site-name">论文卡</span>
             <button id="detail-favorite" class="detail-favorite-button" type="button" aria-pressed="false">☆ 收藏</button>
             <button class="theme-toggle" type="button" data-theme-toggle aria-label="当前主题：设备，点击切换主题" title="当前主题：设备">
   <span class="theme-toggle-icons" aria-hidden="true">
@@ -91,22 +104,15 @@
         <div class="detail-hero-grid">
           <div class="detail-hero-cover"><figure class="paper-figure-card paper-figure-card-detail">
   <img class="paper-figure-image" src="../../assets/collection-figures/2506.19852/figure-5-radial-mask.png" alt="时间分带的计算密度、带宽与频率变化后的注意力mask、实际HunyuanVideo三面板矩阵示意。" loading="lazy" onclick="window.openPaperFigureImage && window.openPaperFigureImage(this)" />
-  <figcaption class="paper-figure-caption">Li等，Figure5（arXiv:2506.19852v2，PDF第6页，CC BY4.0）：a/b为12帧示意，横轴key、纵轴query；时间距离按二进制带分组，空间对角带先变窄，继而降低远帧配对频率，首帧sink保留。mask中0允许配对，负无穷禁止配对；c展示253帧720p HunyuanVideo的实际稀疏图。三面板、轴与箭头完整保留。这是算法图，不能据此证明物理耗散或附录A.2的统一指数误差界。</figcaption>
+  <figcaption class="paper-figure-caption">Li等，Figure5（arXiv:2506.19852v2，PDF第6页，CC BY4.0）：a/b为12帧示意，横轴key、纵轴query；时间距离按二进制带分组，空间对角带先变窄，继而降低远帧配对频率，首帧sink保留。mask中0允许配对，负无穷禁止配对；c展示253帧720p HunyuanVideo的实际稀疏图。三面板、轴与箭头完整保留。这是算法图，不能据此证明物理耗散或附录A.2的统一指数误差界。 <a href="https://arxiv.org/abs/2506.19852" target="_blank" rel="noopener noreferrer">原文图源 ↗</a></figcaption>
 </figure></div>
           <div class="detail-hero-copy">
-            <p class="eyebrow">Collection 全文卡</p>
+            <p class="eyebrow">论文详情</p>
             <h1 class="detail-page-title">Radial Attention: $O(n\log n)$ Sparse Attention with Energy Decay for Long Video Generation</h1>
             <p class="detail-page-title-zh">径向注意力：利用时空衰减加速长视频生成</p>
-            <div class="detail-meta">Paper Collection · Machine Learning · <a href="https://arxiv.org/abs/2506.19852" target="_blank" rel="noopener noreferrer">原文</a></div>
-            <p class="detail-summary">Xingyang Li、Muyang Li、Tianle Cai、Haocheng Xi、Shuo Yang、Yujun Lin、Lvmin Zhang、Songlin Yang、Jinbo Hu、Kelly Peng、Maneesh Agrawala、Ion Stoica、Kurt Keutzer、Song Han；前两人标等贡献。首页列 MIT、NVIDIA、Princeton、UC Berkeley、Stanford、First Intelligence，但没有逐作者机构编号或通讯标签，不猜分工。核读arXiv:2506.19852v2，2025-12-06更新，NeurIPS 2025 camera-ready，25个物理页。（第1、11页）</p>
-            <div class="detail-micro-meta">
-              <span class="meta-pill">AI 基础理论</span>
-              <span class="meta-pill">AI 实证</span>
-              <span class="meta-pill">#Machine Learning</span><span class="meta-pill">#计算机视觉</span><span class="meta-pill">#人工智能</span>
-              <span class="meta-pill">18 分钟读完</span>
-              <span class="meta-pill">8 张阅读卡</span>
-              <span class="meta-pill">Xingyang Li、Muyang Li、Tianle Cai、Haocheng Xi、Shuo Y…</span>
-            </div>
+            <div class="detail-meta">Li, Xingyang、Li, Muyang、Cai, Tianle、Xi, Haocheng、Yang, Shuo、Lin, Yujun、Zhang, Lvmin、Yang, Songlin、Hu, Jinbo、Peng, Kelly、Agrawala, Maneesh、Stoica, Ion、Keutzer, Kurt、Han, Song · 预印本 · arXiv:2506.19852 · <a href="https://arxiv.org/abs/2506.19852" target="_blank" rel="noopener noreferrer">论文原文 ↗</a></div>
+            <p class="detail-summary">视频扩散一次注意力需同时处理空间与时间，长视频增加帧数后，两两token相互作用成本迅速增长。能否保留附近的强作用和少量远处联系，使用一个可训练的静态稀疏图替代每个head在线选空间/时间mask？本文把视频模型中观测到的平均注意力衰减变成分层稀疏预算，并用LoRA使已有模型适应长视频。（第2–6页）</p>
+
           </div>
         </div>
       </div>
@@ -115,34 +121,14 @@
     <main class="container detail-layout">
       <div class="detail-shell">
         <article id="detail-body" class="reading-flow"><section class="reading-card reading-card-section">
-  <div class="reading-card-topline">
-    <span class="reading-step">Card 01</span>
-    <span class="reading-step-note">作者信息</span>
-  </div>
-  <h2>作者信息</h2>
-  <div class="reading-card-content"><ul><li>Xingyang Li、Muyang Li、Tianle Cai、Haocheng Xi、Shuo Yang、Yujun Lin、Lvmin Zhang、Songlin Yang、Jinbo Hu、Kelly Peng、Maneesh Agrawala、Ion Stoica、Kurt Keutzer、Song Han；前两人标等贡献。首页列 MIT、NVIDIA、Princeton、UC Berkeley、Stanford、First Intelligence，但没有逐作者机构编号或通讯标签，不猜分工。核读arXiv:2506.19852v2，2025-12-06更新，NeurIPS 2025 camera-ready，25个物理页。（第1、11页）</li></ul></div>
-</section>
-<section class="reading-card reading-card-section">
-  <div class="reading-card-topline">
-    <span class="reading-step">Card 02</span>
-    <span class="reading-step-note">研究问题</span>
-  </div>
   <h2>研究问题</h2>
   <div class="reading-card-content"><ul><li>视频扩散一次注意力需同时处理空间与时间，长视频增加帧数后，两两token相互作用成本迅速增长。能否保留附近的强作用和少量远处联系，使用一个可训练的静态稀疏图替代每个head在线选空间/时间mask？本文把视频模型中观测到的平均注意力衰减变成分层稀疏预算，并用LoRA使已有模型适应长视频。（第2–6页）</li><li>读者桥：输入是加噪视频latent token；\(Q\)/K给出不同token间的匹配，softmax行是归一化权重，V是被加权的内容。本文改变允许发生的相互作用图，默认长度推理固定权重，长度扩展再训练LoRA。时间轴是视频帧索引和扩散采样步，不能混作真实物理耗散；所谓energy是注意力权重的类比，没有测量物理能量或证明热力学定律。</li></ul></div>
 </section>
 <section class="reading-card reading-card-section">
-  <div class="reading-card-topline">
-    <span class="reading-step">Card 03</span>
-    <span class="reading-step-note">背景</span>
-  </div>
   <h2>背景</h2>
   <div class="reading-card-content"><ul><li>FlashAttention降低密集注意力的访存代价；已有空间或时间稀疏方法则限制不同的作用轴，并可能逐head选择mask。本文希望用同一静态分层图覆盖时空相关性，在减少配对数量的同时保留视频生成质量，再用低秩适配把预训练模型扩展到更长序列。它是算法与系统实证研究，借注意力衰减类比物理而不建立新的热力学理论。（第2–4页。）</li></ul></div>
 </section>
 <section class="reading-card reading-card-section">
-  <div class="reading-card-topline">
-    <span class="reading-step">Card 04</span>
-    <span class="reading-step-note">模型与方法</span>
-  </div>
   <h2>模型与方法</h2>
   <div class="reading-card-content"><ul><li>视频latent有f帧，每帧s个token，总数n=fs；\(Q\)/\(K\)/V为n×d矩阵。保留原有softmax，将mask中被禁的配对置为负无穷：</li></ul>
 
@@ -168,10 +154,6 @@
 </figure></div>
 </section>
 <section class="reading-card reading-card-section">
-  <div class="reading-card-topline">
-    <span class="reading-step">Card 05</span>
-    <span class="reading-step-note">核心结果与证据</span>
-  </div>
   <h2>核心结果与证据</h2>
   <div class="reading-card-content"><ul><li>逐带计数给长帧数、固定每帧分辨率s下的保留配对上界：</li></ul>
 
@@ -184,26 +166,14 @@
 <ul><li>$a_{j,l}$ 为正的未归一化权重，Z为总权重，$Z_{\rm out}$ 是丢弃质量；$\widetilde p$ 是保留集上的重新归一化行。这里是L1误差，通常定义的total variation是它的一半。作者由相对指数上界进一步声称误差以s指数变小，但该更强界的推导存在下述未闭合步骤，不能与此恒等式的证据强度混同。（第17–18页 A.2，第6页 Eq.(7)）</li></ul></div>
 </section>
 <section class="reading-card reading-card-section">
-  <div class="reading-card-topline">
-    <span class="reading-step">Card 06</span>
-    <span class="reading-step-note">有效性与局限</span>
-  </div>
   <h2>有效性与局限</h2>
   <div class="reading-card-content"><ul><li>第18页A.2空间尾部推导使用“Δt≤s时w(Δt)≥s/2”，但其第17页定义w(Δt)=s/2^floor(log₂ max(Δt,1))；取s≥4、Δt=4便得到s/4，已不满足该前提。空间尾求和还包含更远时刻；Eq.(4)的|\(k\)-l|+1边界与附录的|l-k₀|≤w也未完全一致。因此本卡保留原文Eq.(7)的出处，但不把O(\(C_{\mathrm{rel}}\) exp[-min(\(\beta\)/2,\(\alpha\))s])当作经独立核验成立的统一误差保证。这里是解析代入发现证明缺口，没有另做训练或数值反证；不据此否定mask计数或作者实测效果。</li><li>指数衰减只是受测平均权重的经验启发，不能把首段“thermodynamic principles”当作物理定律的推导。跨head异常远程联系、分辨率变化和内容运动会影响统一mask；论文自己指出分辨率仍二次，尚未解决所有长高分辨率视频的成本。静态图被LoRA适应后，其注意力分布也可能改变。（第5、10页）</li><li>必须保留协议差异：Table1默认117/69帧768p，模型概述另列125/81帧720p；Table2使用125/163/81帧作长度倍数基准。第20页TableC/D标题讨论4倍视频，模型标签却仍写117帧，相关FigureC的dense-LoRA训练cost749GPUh又与Table2的93.6×8约749、Figure1的746略有差别，按具体表图报告，不能默改为同一口径。StyleLoRA合并仅给视觉例子，附录承认风格偏差，不是普适无损兼容。（第7–8、19–20、23、25页）</li><li>比较倍数仅适用于对应模型、长度和硬件的密集基线。稀疏方法及warm-up消融按所测稀疏率或PFLOPs匹配，未保证使用同一kernel或相同总训练预算；不能把注意力算术量与整网wall-clock耗时等同。（第7–9、19–20页。）</li></ul></div>
 </section>
 <section class="reading-card reading-card-section">
-  <div class="reading-card-topline">
-    <span class="reading-step">Card 07</span>
-    <span class="reading-step-note">复现与资源</span>
-  </div>
   <h2>复现与资源</h2>
   <div class="reading-card-content"><ul><li>首页与摘要给作者仓库 https://github.com/mit-han-lab/radial-attention 。实现依FlashInfer推理、Block-Sparse-Attention与FA2训练；算法可与FA3等系统优化组合，但此论文1.88/3.71倍来自其实际核，不能以未来实现推算更快值。训练global batch Hunyuan/Mochi为1且sequence parallel、Wan为8；2400/1200步训练Hunyuan2/4倍，Mochi两长度5000步，Wan2倍2500步。（第8、18页）</li><li>官方CC BY4.0元数据支持署名复用作者Figure5，选用静态mask机制图，完整保留三面板、全部轴、sink与图例。第20页另列模型/数据的不同资产许可，不能把本文许可推广成所有权重与数据的许可。官方v2 PDF SHA-256：43375b7ef5bad7ddd4ff5a1a2667f706f06c923e844be8373f26d45073c2475b；全文25个物理页含参考文献和附录已核读。本轮未运行生成器、训练LoRA或重测性能，无独立数值复现。Evidence status: full-text verified; no independent reproduction performed.</li></ul></div>
 </section>
 <section class="reading-card reading-card-section">
-  <div class="reading-card-topline">
-    <span class="reading-step">Card 08</span>
-    <span class="reading-step-note">阅读指南</span>
-  </div>
   <h2>阅读指南</h2>
   <div class="reading-card-content"><ul><li>先读第5–6页Figure4/5：分清经验衰减、理论逐位置上界和mask实际形状。接第16–18页检查固定分辨率计数及误差推导缺口，再用第7–8页两表分别读默认/延长视频的质量与硬件。复现最后检查第18–20页batch、步数、密集warm-up与block数；视频美观示例只能补充，不能替代这些比较。</li></ul></div>
 </section></article>
@@ -212,8 +182,8 @@
           <nav id="detail-toc-nav" class="detail-toc-nav"></nav>
         </aside>
       </div>
-      <nav class="paper-nav"><a class="paper-nav-link paper-nav-prev" href="../../collection-papers/2506.19774/"><span class="paper-nav-label">← 上一篇</span><span class="paper-nav-title">Kling-Foley: Multimodal Diffusion Transformer for High-Quality Video-to-Audio Generation</span></a>
-      <a class="paper-nav-link paper-nav-next" href="../../collection-papers/2506.19686/"><span class="paper-nav-label">下一篇 →</span><span class="paper-nav-title">From Memories to Maps: Mechanisms of In-Context Reinforcement Learning in Transformers</span></a></nav>
+      <nav class="paper-nav"><a class="paper-nav-link paper-nav-prev" href="../../collection-papers/2506.20623/"><span class="paper-nav-label">← 上一篇</span><span class="paper-nav-title">Lost in Retraining: Roaming the Parameter Space of Exponential Families Under Closed-Loop Learning</span></a>
+      <a class="paper-nav-link paper-nav-next" href="../../collection-papers/2506.19774/"><span class="paper-nav-label">下一篇 →</span><span class="paper-nav-title">Kling-Foley: Multimodal Diffusion Transformer for High-Quality Video-to-Audio Generation</span></a></nav>
       <section id="comments" class="comments-panel" aria-labelledby="comments-title">
         <div class="comments-heading">
           <div>

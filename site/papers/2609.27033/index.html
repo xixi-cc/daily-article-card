@@ -3,10 +3,10 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>WTF?! Simulation-Free Reinforcement Learning with Wasserstein-Tilted Flow Maps - 每日论文卡</title>
-    <meta name="description" content="Abbas Mammadov、Jerry Y. Huang、Justin Lin 为共同第一作者；其余作者为 Partha Kaushik、Sheel Shah、Kartik Nair、Yee Whye Teh、Nicholas M. Boffi。Mammadov 与 Teh 来自 University of Oxford，其余来自 Carnegie Mellon University；通讯作者为 Mammadov 与 Huang（PDF p. 1）。核读 arXiv:2609.27033v1；首次提交 2026-09-22、cs.LG listing 2026-09-24、原用户报告 2026-09-25。" />
+    <title>WTF?! Simulation-Free Reinforcement Learning with Wasserstein-Tilted Flow Maps - 论文卡</title>
+    <meta name="description" content="生成模型已有从噪声到图像的确定性流映射，为什么奖励微调还要展开长随机轨道？本文同时更换“接近基准生成器”的定义与训练计算方式：以基准漂移诱导的运输作用量取代末端 KL，再用流映射直接跳到未来状态，更新价值梯度而非回传整个多步轨道。关键不是减少一个既定目标的求解步数，而是研究一个不同的正则化目标。" />
     <link rel="canonical" href="https://xixi-cc.github.io/daily-article-card/papers/2609.27033/" />
-    <script type="application/ld+json">{"@context": "https://schema.org", "@type": "Article", "headline": "WTF?! Simulation-Free Reinforcement Learning with Wasserstein-Tilted Flow Maps", "description": "Abbas Mammadov、Jerry Y. Huang、Justin Lin 为共同第一作者；其余作者为 Partha Kaushik、Sheel Shah、Kartik Nair、Yee Whye Teh、Nicholas M. Boffi。Mammadov 与 Teh 来自 University of Oxford，其余来自 Carnegie Mellon University；通讯作者为 Mammadov 与 Huang（PDF p. 1）。核读 arXiv:2609.27033v1；首次提交 2026-09-22、cs.LG listing 2026-09-24、原用户报告 2026-09-25。", "url": "https://xixi-cc.github.io/daily-article-card/papers/2609.27033/", "mainEntityOfPage": "https://xixi-cc.github.io/daily-article-card/papers/2609.27033/", "inLanguage": "zh-CN", "author": {"@type": "Person", "name": "Xineng Cao", "alternateName": ["Xixi Cao", "曹溪能"], "url": "https://xixi-cc.github.io/"}, "isBasedOn": "https://arxiv.org/abs/2609.27033", "datePublished": "2026-09-25", "dateModified": "2026-09-25"}</script>
+    <script type="application/ld+json">{"@context": "https://schema.org", "@type": "Article", "headline": "WTF?! Simulation-Free Reinforcement Learning with Wasserstein-Tilted Flow Maps", "description": "生成模型已有从噪声到图像的确定性流映射，为什么奖励微调还要展开长随机轨道？本文同时更换“接近基准生成器”的定义与训练计算方式：以基准漂移诱导的运输作用量取代末端 KL，再用流映射直接跳到未来状态，更新价值梯度而非回传整个多步轨道。关键不是减少一个既定目标的求解步数，而是研究一个不同的正则化目标。", "url": "https://xixi-cc.github.io/daily-article-card/papers/2609.27033/", "mainEntityOfPage": "https://xixi-cc.github.io/daily-article-card/papers/2609.27033/", "inLanguage": "zh-CN", "author": {"@type": "Person", "name": "Xineng Cao", "alternateName": ["Xixi Cao", "曹溪能"], "url": "https://xixi-cc.github.io/"}, "isBasedOn": "https://arxiv.org/abs/2609.27033", "datePublished": "2026-09-25", "dateModified": "2026-09-25"}</script>
     <script>
       (function() {
         try {
@@ -30,6 +30,18 @@
     <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700;800&family=Noto+Sans+SC:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
     <script>document.documentElement.classList.add('math-pending');</script>
     <script>
+      window.fitInlineMath = function(root) {
+        (root || document).querySelectorAll('mjx-container:not([display="true"])').forEach(function(el) {
+          el.classList.remove('inline-math-overflow');
+          const content = el.closest('.reading-card-content, .detail-summary, .feed-card-body');
+          if(content && el.getBoundingClientRect().width > content.clientWidth) {
+            el.classList.add('inline-math-overflow');
+            el.tabIndex = 0;
+            el.setAttribute('aria-label', '长公式，可横向滑动阅读');
+          }
+        });
+      };
+      window.addEventListener('resize', function() { window.fitInlineMath(); });
       window.MathJax = {
         tex: {
           inlineMath: [['$', '$'], ['\\(', '\\)']],
@@ -49,6 +61,7 @@
             MathJax.startup.promise.then(function() {
               document.documentElement.classList.remove('math-pending');
               document.documentElement.dataset.mathReady = 'true';
+              window.requestAnimationFrame(function() { window.fitInlineMath(); });
             });
           }
         }
@@ -65,9 +78,9 @@
     <header class="header detail-page-header">
       <div class="container">
         <div class="detail-page-topbar">
-          <a class="back-link" href="../../physics_AI.html">返回列表</a>
+          <a class="back-link" href="../../index.html">返回列表</a>
           <div class="detail-topbar-actions">
-            <span class="detail-site-name">每日论文卡</span>
+            <span class="detail-site-name">论文卡</span>
             <button id="detail-favorite" class="detail-favorite-button" type="button" aria-pressed="false">☆ 收藏</button>
             <button class="theme-toggle" type="button" data-theme-toggle aria-label="当前主题：设备，点击切换主题" title="当前主题：设备">
   <span class="theme-toggle-icons" aria-hidden="true">
@@ -91,22 +104,15 @@
         <div class="detail-hero-grid">
           <div class="detail-hero-cover"><figure class="paper-figure-card paper-figure-card-detail">
   <img class="paper-figure-image" src="../../assets/curated_figures/2609.27033/figure-2.png" alt="Wasserstein局部运输与KL奖励重加权的双面板机制示意" loading="lazy" onclick="window.openPaperFigureImage && window.openPaperFigureImage(this)" />
-  <figcaption class="paper-figure-caption">Figure 2 示意两类正则化：左侧按预训练漂移诱导的运输成本将粒子移向附近高奖励区域；右侧 KL tilt 对原分布按奖励重加权。横轴为样本坐标，曲线和箭头是机制示意，不是统计实验或保证多样性不会下降。原作者 Abbas Mammadov 等，CC BY 4.0，来源 https://arxiv.org/pdf/2609.27033v1，PDF \(p\). 2。</figcaption>
+  <figcaption class="paper-figure-caption">Figure 2 示意两类正则化：左侧按预训练漂移诱导的运输成本将粒子移向附近高奖励区域；右侧 KL tilt 对原分布按奖励重加权。横轴为样本坐标，曲线和箭头是机制示意，不是统计实验或保证多样性不会下降。原作者 Abbas Mammadov 等，CC BY 4.0，来源 https://arxiv.org/pdf/2609.27033v1，PDF \(p\). 2。 <a href="https://arxiv.org/abs/2609.27033" target="_blank" rel="noopener noreferrer">原文图源 ↗</a></figcaption>
 </figure></div>
           <div class="detail-hero-copy">
             <p class="eyebrow">论文详情</p>
             <h1 class="detail-page-title">WTF?! Simulation-Free Reinforcement Learning with Wasserstein-Tilted Flow Maps</h1>
             <p class="detail-page-title-zh">WTF：用 Wasserstein 倾斜流映射进行免逐步模拟的强化学习</p>
-            <div class="detail-meta">2026-09-25 · <a href="https://arxiv.org/abs/2609.27033" target="_blank" rel="noopener noreferrer">原文</a></div>
-            <p class="detail-summary">Abbas Mammadov、Jerry \(Y\). Huang、Justin Lin 为共同第一作者；其余作者为 Partha Kaushik、Sheel Shah、Kartik Nair、Yee Whye Teh、Nicholas \(M\). Boffi。Mammadov 与 Teh 来自 University of Oxford，其余来自 Carnegie Mellon University；通讯作者为 Mammadov 与 Huang（PDF \(p\). 1）。核读 arXiv:2609.27033v1；首次提交 2026-09-22、cs.LG listing 2026-09-24、原用户报告 2026-09-25。</p>
-            <div class="detail-micro-meta">
-              <span class="meta-pill">AI 基础理论</span>
-              <span class="meta-pill">理论与数值</span>
-              <span class="meta-pill">#机器学习</span><span class="meta-pill">#计算机视觉</span><span class="meta-pill">#生成模型</span>
-              <span class="meta-pill">15 分钟读完</span>
-              <span class="meta-pill">9 张阅读卡</span>
-              <span class="meta-pill">Abbas Mammadov、Jerry Y.</span>
-            </div>
+            <div class="detail-meta">Mammadov, Abbas、Huang, Jerry Y.、Lin, Justin、Kaushik, Partha、Shah, Sheel、Nair, Kartik、Teh, Yee Whye、Boffi, Nicholas M. · 预印本 · arXiv:2609.27033 · <a href="https://arxiv.org/abs/2609.27033" target="_blank" rel="noopener noreferrer">论文原文 ↗</a></div>
+            <p class="detail-summary">生成模型已有从噪声到图像的确定性流映射，为什么奖励微调还要展开长随机轨道？本文同时更换“接近基准生成器”的定义与训练计算方式：以基准漂移诱导的运输作用量取代末端 KL，再用流映射直接跳到未来状态，更新价值梯度而非回传整个多步轨道。关键不是减少一个既定目标的求解步数，而是研究一个不同的正则化目标。</p>
+
           </div>
         </div>
       </div>
@@ -115,43 +121,19 @@
     <main class="container detail-layout">
       <div class="detail-shell">
         <article id="detail-body" class="reading-flow"><section class="reading-card reading-card-section">
-  <div class="reading-card-topline">
-    <span class="reading-step">Card 01</span>
-    <span class="reading-step-note">作者信息</span>
-  </div>
-  <h2>作者信息</h2>
-  <div class="reading-card-content"><p>Abbas Mammadov、Jerry \(Y\). Huang、Justin Lin 为共同第一作者；其余作者为 Partha Kaushik、Sheel Shah、Kartik Nair、Yee Whye Teh、Nicholas \(M\). Boffi。Mammadov 与 Teh 来自 University of Oxford，其余来自 Carnegie Mellon University；通讯作者为 Mammadov 与 Huang（PDF \(p\). 1）。核读 arXiv:2609.27033v1；首次提交 2026-09-22、cs.LG listing 2026-09-24、原用户报告 2026-09-25。</p></div>
-</section>
-<section class="reading-card reading-card-section">
-  <div class="reading-card-topline">
-    <span class="reading-step">Card 02</span>
-    <span class="reading-step-note">研究问题</span>
-  </div>
   <h2>研究问题</h2>
   <div class="reading-card-content"><p>生成模型已有从噪声到图像的确定性流映射，为什么奖励微调还要展开长随机轨道？本文同时更换“接近基准生成器”的定义与训练计算方式：以基准漂移诱导的运输作用量取代末端 KL，再用流映射直接跳到未来状态，更新价值梯度而非回传整个多步轨道。关键不是减少一个既定目标的求解步数，而是研究一个不同的正则化目标（PDF pp. 2–8）。</p></div>
 </section>
 <section class="reading-card reading-card-section">
-  <div class="reading-card-topline">
-    <span class="reading-step">Card 03</span>
-    <span class="reading-step-note">背景</span>
-  </div>
   <h2>背景</h2>
   <div class="reading-card-content"><p>这是生成式 AI 与最优控制的基础方法及数值实验。经典奖励倾斜 \(\widetilde\rho_1\propto e^{\lambda r}\rho_1\) 是 KL 正则奖励目标的解；它重加权已有分布。WTF 把输入先验沿已知漂移运输到新终端律，付残差控制的平方代价。该代价在漂移为零时退化为平方Wasserstein距离的一半，普通情形却由漂移决定。此处的生成时间是算法坐标，不是材料或图像的真实物理时间（PDF pp. 4–6）。</p></div>
 </section>
 <section class="reading-card reading-card-section">
-  <div class="reading-card-topline">
-    <span class="reading-step">Card 04</span>
-    <span class="reading-step-note">读者桥接</span>
-  </div>
   <h2>读者桥接</h2>
   <div class="reading-card-content"><p>输入是初始噪声 \(x_0\sim\rho_0\) 和类别或文本条件；状态 \(x_t\) 是生成过程中的图像或压缩坐标。预训练漂移 \(b_t\) 已固定，可训练的两时间map把当前状态跳到未来。奖励函数给末端图像打分，回归其未来价值梯度并维持跨时间跳转一致性，输出同一个奖励对齐、仍可少步采样的map。</p>
 <p>flow map 指常微分方程的有限时间解算子；它将逐步积分成本预先吸收到网络内。“价值函数”是未来奖励减去剩余控制代价，非热力学自由能。“critic-free”表示不另训价值估计网络；“simulation-free”表示不逐步数值积分整条轨道，仍然采样初态和随机时间并调用神经网络。NFE 是推理时网络调用次数，不能直接当作 GPU 时间（PDF pp. 3, 6–10）。</p></div>
 </section>
 <section class="reading-card reading-card-section">
-  <div class="reading-card-topline">
-    <span class="reading-step">Card 05</span>
-    <span class="reading-step-note">模型与方法</span>
-  </div>
   <h2>模型与方法</h2>
   <div class="reading-card-content"><p>先定义粒子与分布的先验运输代价：</p>
 
@@ -187,10 +169,6 @@
 </figure></div>
 </section>
 <section class="reading-card reading-card-section">
-  <div class="reading-card-topline">
-    <span class="reading-step">Card 06</span>
-    <span class="reading-step-note">核心结果与证据</span>
-  </div>
   <h2>核心结果与证据</h2>
   <div class="reading-card-content"><p>解析部分证明先验运输问题与确定性控制最优值相同，并给策略改进恒等式与理想总体固定点最优性。无偏随机时间价值估计依赖真实流map的半群性质；附录E.4专门在固定点利用蒸馏条件建立它。实际有限网络、有限训练和未收敛map不自动得到这些保证（PDF pp. 6–8, 24–29）。</p>
 <p>ImageNet-256 使用 DMF XL/2，训练覆盖1000类，但评测取固定前32类、每类16张图；WTF以三个匹配训练种子平均。表6中1 NFE的 HPSv2为0.319，VFM为0.307；DreamSim多样性同为0.482，而PickScore和ImageReward上VFM更高，不能写成全部指标全面领先。多样性衡量同类样本在固定嵌入中的平均平方距离，并非物理多样性的证明（PDF pp. 10–11, 31–32）。</p>
@@ -198,27 +176,15 @@
 <p>Figure 7在共同8×H100环境下比较达到基线峰值HPSv2所需累计GPU小时，给出最高280×和47×较少计算；表11则列各展示checkpoint的总微调成本，二者端点不同。基准预训练、评估、已有flow map的蒸馏成本均未计入；不能拿280×替代全流程计算比（PDF pp. 11–12, 33）。</p></div>
 </section>
 <section class="reading-card reading-card-section">
-  <div class="reading-card-topline">
-    <span class="reading-step">Card 07</span>
-    <span class="reading-step-note">有效性与局限</span>
-  </div>
   <h2>有效性与局限</h2>
   <div class="reading-card-content"><p>命题4.2是具有全支撑初始分布、足够丰富且凸的两时间函数类、正则性与冻结目标变分条件下的总体固定点结论；并未保证给定神经参数训练达到固定点。大规模图像实验用欧氏奖励梯度代替精确map Jacobian拉回，属于理论目标的实际变体。附录H.2支持它在受测协议下更好，不能因此宣称同一个精确最优性定理成立（PDF pp. 12, 21, 27–29, 33）。</p>
 <p>增加奖励权重可减小多样性；文本图像实验将原始奖励梯度作范数归一化和截断。该方法要求预训练flow map，只有速度模型时要先蒸馏，这一成本排除在本文比较外。表征的模拟时间可以反转，附录F.1的最优控制梯度符号随之翻转；本文卡片仅使用正文从噪声到数据的正向约定（PDF pp. 12, 29–33）。</p></div>
 </section>
 <section class="reading-card reading-card-section">
-  <div class="reading-card-topline">
-    <span class="reading-step">Card 08</span>
-    <span class="reading-step-note">复现与资源</span>
-  </div>
   <h2>复现与资源</h2>
   <div class="reading-card-content"><p>算法4、附录F–G和表10给训练配置：ImageNet训练12,500步，文本图像训练1,460步、LoRA rank16，均使用8×\(H_{100}\)，HPSv2 \(v_{2}\).1作奖励。预训练checkpoint、文本编码与压缩模型名称均在附录G.1；全文没有给出可确认的本论文独立代码仓库链接，不猜URL。原文 https://arxiv.org/abs/2609.27033。本轮仅全文、公式与图表核读，未独立训练或计算实验。</p></div>
 </section>
 <section class="reading-card reading-card-section">
-  <div class="reading-card-topline">
-    <span class="reading-step">Card 09</span>
-    <span class="reading-step-note">阅读指南</span>
-  </div>
   <h2>阅读指南</h2>
   <div class="reading-card-content"><p>快速路径从 \(p\). 2 Figure 2 理解目标差异，再读 \(p\). 5–8 的代价、控制与估计链，接 \(p\). 12 的局限和 \(p\). 33 的计算端点。深读 \(p\). 21 正则性假设与 \(p\). 27–29 固定点证明，再看 \(p\). 29–32 奖励梯度、归一化、评测切分。生成样本网格可后读；主结论的科学支撑不取决于挑选的漂亮样本。</p></div>
 </section></article>

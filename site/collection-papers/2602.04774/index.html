@@ -3,10 +3,10 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Theory of Optimal Learning Rate Schedules and Scaling Laws for a Random Feature Model - physics+AI Collection 论文卡</title>
-    <meta name="description" content="Blake Bordelon、Francesco Mori，两位作者同等贡献（PDF 星号注明 equal contribution）。两人隶属 Harvard University 的 Center for Mathematical Sciences and Applications；Bordelon 另列 UT Austin 的 Oden Institute for Computational Engineering and Sciences 与 Department of Neuroscience。单位均按 PDF 第 1 页核实。 本文审阅 arXiv:2602.04774v2，首次提交 2026-02-04，v2 修订 2026-05-08，共 23 个物理页（含附录与参考文献）。这是长期 Collection 卡，公开原文为 版本摘要页 和 精确版本 PDF。" />
+    <title>Theory of Optimal Learning Rate Schedules and Scaling Laws for a Random Feature Model - 论文卡</title>
+    <meta name="description" content="训练更久时，能否直接沿用短训练的学习率？把学习率逐渐降到零，为什么有时可让最优基础学习率不再随训练预算变化，有时仍须重新调小？论文在一个可解的随机特征线性模型中，把整个调度当作控制轨迹，最小化给定终点的测试误差；关键在于剩余训练能否消除早先引入的随机梯度噪声。" />
     <link rel="canonical" href="https://xixi-cc.github.io/daily-article-card/collection-papers/2602.04774/" />
-    <script type="application/ld+json">{"@context": "https://schema.org", "@type": "Article", "headline": "Theory of Optimal Learning Rate Schedules and Scaling Laws for a Random Feature Model", "description": "Blake Bordelon、Francesco Mori，两位作者同等贡献（PDF 星号注明 equal contribution）。两人隶属 Harvard University 的 Center for Mathematical Sciences and Applications；Bordelon 另列 UT Austin 的 Oden Institute for Computational Engineering and Sciences 与 Department of Neuroscience。单位均按 PDF 第 1 页核实。 本文审阅 arXiv:2602.04774v2，首次提交 2026-02-04，v2 修订 2026-05-08，共 23 个物理页（含附录与参考文献）。这是长期 Collection 卡，公开原文为 版本摘要页 和 精确版本 PDF。", "url": "https://xixi-cc.github.io/daily-article-card/collection-papers/2602.04774/", "mainEntityOfPage": "https://xixi-cc.github.io/daily-article-card/collection-papers/2602.04774/", "inLanguage": "zh-CN", "author": {"@type": "Person", "name": "Xineng Cao", "alternateName": ["Xixi Cao", "曹溪能"], "url": "https://xixi-cc.github.io/"}, "isBasedOn": "https://arxiv.org/abs/2602.04774"}</script>
+    <script type="application/ld+json">{"@context": "https://schema.org", "@type": "Article", "headline": "Theory of Optimal Learning Rate Schedules and Scaling Laws for a Random Feature Model", "description": "训练更久时，能否直接沿用短训练的学习率？把学习率逐渐降到零，为什么有时可让最优基础学习率不再随训练预算变化，有时仍须重新调小？论文在一个可解的随机特征线性模型中，把整个调度当作控制轨迹，最小化给定终点的测试误差；关键在于剩余训练能否消除早先引入的随机梯度噪声。", "url": "https://xixi-cc.github.io/daily-article-card/collection-papers/2602.04774/", "mainEntityOfPage": "https://xixi-cc.github.io/daily-article-card/collection-papers/2602.04774/", "inLanguage": "zh-CN", "author": {"@type": "Person", "name": "Xineng Cao", "alternateName": ["Xixi Cao", "曹溪能"], "url": "https://xixi-cc.github.io/"}, "isBasedOn": "https://arxiv.org/abs/2602.04774"}</script>
     <script>
       (function() {
         try {
@@ -30,6 +30,18 @@
     <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700;800&family=Noto+Sans+SC:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
     <script>document.documentElement.classList.add('math-pending');</script>
     <script>
+      window.fitInlineMath = function(root) {
+        (root || document).querySelectorAll('mjx-container:not([display="true"])').forEach(function(el) {
+          el.classList.remove('inline-math-overflow');
+          const content = el.closest('.reading-card-content, .detail-summary, .feed-card-body');
+          if(content && el.getBoundingClientRect().width > content.clientWidth) {
+            el.classList.add('inline-math-overflow');
+            el.tabIndex = 0;
+            el.setAttribute('aria-label', '长公式，可横向滑动阅读');
+          }
+        });
+      };
+      window.addEventListener('resize', function() { window.fitInlineMath(); });
       window.MathJax = {
         tex: {
           inlineMath: [['$', '$'], ['\\(', '\\)']],
@@ -49,6 +61,7 @@
             MathJax.startup.promise.then(function() {
               document.documentElement.classList.remove('math-pending');
               document.documentElement.dataset.mathReady = 'true';
+              window.requestAnimationFrame(function() { window.fitInlineMath(); });
             });
           }
         }
@@ -65,9 +78,9 @@
     <header class="header detail-page-header">
       <div class="container">
         <div class="detail-page-topbar">
-          <a class="back-link" href="../../collection.html">返回列表</a>
+          <a class="back-link" href="../../index.html">返回列表</a>
           <div class="detail-topbar-actions">
-            <span class="detail-site-name">physics+AI Collection 论文卡</span>
+            <span class="detail-site-name">论文卡</span>
             <button id="detail-favorite" class="detail-favorite-button" type="button" aria-pressed="false">☆ 收藏</button>
             <button class="theme-toggle" type="button" data-theme-toggle aria-label="当前主题：设备，点击切换主题" title="当前主题：设备">
   <span class="theme-toggle-icons" aria-hidden="true">
@@ -91,22 +104,15 @@
         <div class="detail-hero-grid">
           <div class="detail-hero-cover"><figure class="paper-figure-card paper-figure-card-detail">
   <img class="paper-figure-image" src="../../assets/collection-figures/2602.04774/figure-2.png" alt="六面板比较 hard 与 easy 区间的最优学习率、误差动力学和终点缩放，保留完整坐标、图例及基线。" loading="lazy" onclick="window.openPaperFigureImage && window.openPaperFigureImage(this)" />
-  <figcaption class="paper-figure-caption">平台后集中退火与缩放后的多项式衰减：两种谱区间对应不同的终点调度。模型数值对照支持解析预测，不证明真实网络满足相同假设。 来源：Blake Bordelon、Francesco Mori；arXiv:2602.04774v2, Figure 2, CC BY 4.0；仅裁去周围正文与印刷图注；https://arxiv.org/pdf/2602.04774v2#page=5</figcaption>
+  <figcaption class="paper-figure-caption">平台后集中退火与缩放后的多项式衰减：两种谱区间对应不同的终点调度。模型数值对照支持解析预测，不证明真实网络满足相同假设。 来源：Blake Bordelon、Francesco Mori；arXiv:2602.04774v2, Figure 2, CC BY 4.0；仅裁去周围正文与印刷图注；https://arxiv.org/pdf/2602.04774v2#page=5 <a href="https://arxiv.org/abs/2602.04774" target="_blank" rel="noopener noreferrer">原文图源 ↗</a></figcaption>
 </figure></div>
           <div class="detail-hero-copy">
-            <p class="eyebrow">Collection 全文卡</p>
+            <p class="eyebrow">论文详情</p>
             <h1 class="detail-page-title">Theory of Optimal Learning Rate Schedules and Scaling Laws for a Random Feature Model</h1>
             <p class="detail-page-title-zh">随机特征模型的最优学习率调度与缩放律理论</p>
-            <div class="detail-meta">Paper Collection · Training Dynamics · <a href="https://arxiv.org/abs/2602.04774" target="_blank" rel="noopener noreferrer">原文</a></div>
-            <p class="detail-summary">Blake Bordelon、Francesco Mori，两位作者同等贡献（PDF 星号注明 equal contribution）。两人隶属 Harvard University 的 Center for Mathematical Sciences and Applications；Bordelon 另列 UT Austin 的 Oden Institute for Computational Engineering and Sciences 与 Department of Neuroscience。单位均按 PDF 第 1 页核实。 本文审阅 arXiv:2602.04774v2，首次提交 2026-02-04，\(v_{2}\) 修订 2026-05-08，共 23 个物理页（含附录与参考文献）。这是长期 Collection 卡，公开原文为 版本摘要页 和 精确版本 PDF。</p>
-            <div class="detail-micro-meta">
-              <span class="meta-pill">AI for Science</span>
-              <span class="meta-pill">理论与数值</span>
-              <span class="meta-pill">#Training Dynamics</span><span class="meta-pill">#无序系统与神经网络</span><span class="meta-pill">#机器学习</span>
-              <span class="meta-pill">30 分钟读完</span>
-              <span class="meta-pill">8 张阅读卡</span>
-              <span class="meta-pill">Blake Bordelon、Francesco Mori，两位作者同等贡献（PDF 星号注明 equ…</span>
-            </div>
+            <div class="detail-meta">Blake Bordelon、Francesco Mori · 发表信息待核验 · arXiv:2602.04774 · <a href="https://arxiv.org/abs/2602.04774" target="_blank" rel="noopener noreferrer">论文原文 ↗</a></div>
+            <p class="detail-summary">训练更久时，能否直接沿用短训练的学习率？把学习率逐渐降到零，为什么有时可让最优基础学习率不再随训练预算变化，有时仍须重新调小？论文在一个可解的随机特征线性模型中，把整个调度当作控制轨迹，最小化给定终点的测试误差；关键在于剩余训练能否消除早先引入的随机梯度噪声。</p>
+
           </div>
         </div>
       </div>
@@ -115,34 +121,14 @@
     <main class="container detail-layout">
       <div class="detail-shell">
         <article id="detail-body" class="reading-flow"><section class="reading-card reading-card-section">
-  <div class="reading-card-topline">
-    <span class="reading-step">Card 01</span>
-    <span class="reading-step-note">作者信息</span>
-  </div>
-  <h2>作者信息</h2>
-  <div class="reading-card-content"><ul><li>Blake Bordelon、Francesco Mori，两位作者同等贡献（PDF 星号注明 equal contribution）。两人隶属 Harvard University 的 Center for Mathematical Sciences and Applications；Bordelon 另列 UT Austin 的 Oden Institute for Computational Engineering and Sciences 与 Department of Neuroscience。单位均按 PDF 第 1 页核实。</li><li>本文审阅 arXiv:2602.04774v2，首次提交 2026-02-04，\(v_{2}\) 修订 2026-05-08，共 23 个物理页（含附录与参考文献）。这是长期 Collection 卡，公开原文为 <a href="https://arxiv.org/abs/2602.04774v2" target="_blank" rel="noopener noreferrer">版本摘要页</a> 和 <a href="https://arxiv.org/pdf/2602.04774v2" target="_blank" rel="noopener noreferrer">精确版本 PDF</a>。</li></ul></div>
-</section>
-<section class="reading-card reading-card-section">
-  <div class="reading-card-topline">
-    <span class="reading-step">Card 02</span>
-    <span class="reading-step-note">研究问题</span>
-  </div>
   <h2>研究问题</h2>
   <div class="reading-card-content"><ul><li>训练更久时，能否直接沿用短训练的学习率？把学习率逐渐降到零，为什么有时可让最优基础学习率不再随训练预算变化，有时仍须重新调小？论文在一个可解的随机特征线性模型中，把整个调度当作控制轨迹，最小化给定终点的测试误差；关键在于剩余训练能否消除早先引入的随机梯度噪声。</li><li>[论文范围] 输入先变成固定特征，只有线性读出权重被训练。作者解析求解连续时间近似下的学习率与 batch 调度，并用离散模型的数值最优控制对照；动量和真实深度网络部分提供作者数值或实验结果。模型的 easy/hard 是谱指数与稳定约束的两种渐近区间，并非对所有 AI 任务难度的分类。（PDF 第 3–9 页）</li></ul></div>
 </section>
 <section class="reading-card reading-card-section">
-  <div class="reading-card-topline">
-    <span class="reading-step">Card 03</span>
-    <span class="reading-step-note">背景</span>
-  </div>
   <h2>背景</h2>
   <div class="reading-card-content"><ul><li>[概念定位：physics of AI] 大学习率使慢谱模更快学习，也会放大随机梯度造成的方差；减小学习率抑制噪声，却减少剩余的偏差消除能力。论文把这两个需求置于同一个终点损失泛函，推导为何有时应该全程缓慢退火，有时应该接近终点才集中退火。谱模的衰减与噪声注入是实际数学对象；这里不把损失当作热力学能量，也不把两种调度区间当作已证实的物理相变。</li><li>读者桥接①：随机特征是输入的一组固定坐标，类似在固定基底中拟合函数；保留哪些谱模决定可表示的目标部分。若特征也随训练改变，本文固定谱的闭合就失去依据。②：随机梯度下降（SGD）用每步新抽取的一小批样本估计下降方向；batch 是这一批的样本数，增大它可降低方向噪声。③：训练时域是预先确定的更新步数，调度不是单个学习率，而是每一步该走多大的整条函数；其输出可观测量是终点的期望测试均方误差。④：动量平均先前和当前下降方向，需要额外跟踪误差与速度的相关量；它不同于语言模型实验使用的 Adam 自适应优化器。（PDF 第 3–7、22 页）</li><li>[相关工作边界] 随机特征缩放规律、teacher–student 最优控制与增大 batch 的实践都有先例。本文的价值在于求完整终点调度及其约束切换，而不是首次提出控制理论、谱模型或 batch ramp。（PDF 第 2–3 页）</li></ul></div>
 </section>
 <section class="reading-card reading-card-section">
-  <div class="reading-card-topline">
-    <span class="reading-step">Card 04</span>
-    <span class="reading-step-note">模型与方法</span>
-  </div>
   <h2>模型与方法</h2>
   <div class="reading-card-content"><ul><li>[定义与假设] 输入 \(x\) 来自分布 \(p(x)\)，固定特征向量 \(\psi(x)\) 有 \(M\) 个分量（可无限）；教师权重 \(w^*\) 产生目标，独立标准正态变量 \(z\) 加上标签噪声幅度 \(\sigma_0&gt;0\)。学生仅保留协方差最大的前 \(N\) 个特征 \(\widetilde\psi\)，训练其权重 \(w\)。\(\lambda_k\) 是第 \(k\) 个协方差本征值；\(b\) 控制特征谱衰减，\(a\) 控制目标在各模上的能量衰减。（PDF 第 3–4 页）</li></ul>
 
@@ -169,10 +155,6 @@
 <div class="display-math">\[A(\chi)=\frac{\sigma^2}{m}f_{2b}(2\chi),\quad \dot\chi^{\,2}A(\chi)=c&gt;0,\quad F(\chi)=\int_0^\chi\sqrt{A(u)}\,du,\quad \frac{F(\chi(t))}{F(\chi_0)}=1-\frac{t}{T}.\]</div></div>
 </section>
 <section class="reading-card reading-card-section">
-  <div class="reading-card-topline">
-    <span class="reading-step">Card 05</span>
-    <span class="reading-step-note">核心结果与证据</span>
-  </div>
   <h2>核心结果与证据</h2>
   <div class="reading-card-content"><ul><li>[解析渐近：easy] 当 \(a&gt;b\)，目标在慢特征上的能量衰减足够快，最优总积分步长 \(\chi_0\sim T^{b/a}\)，初始学习率随训练时域增大而下降。谱和大参数渐近导出多项式退火；比例常数还依赖 batch、底噪和谱归一化。这里给出 Eq. (39) 的系数，保留 Eq. (37) 定义的 \(\chi_0\)，而不把它误写成只依赖 \(a,b\)。（PDF 第 5、15 页）</li></ul>
 
@@ -226,26 +208,14 @@
 </figure></div>
 </section>
 <section class="reading-card reading-card-section">
-  <div class="reading-card-topline">
-    <span class="reading-step">Card 06</span>
-    <span class="reading-step-note">有效性与局限</span>
-  </div>
   <h2>有效性与局限</h2>
   <div class="reading-card-content"><ul><li>[源文限制] 高斯固定特征、线性读出、独立在线样本、平方损失是闭合的基础；解析缩放还依赖幂律谱、零初始化、非零标签底噪及晚时小本征值主导。标签噪声趋零、有限谱截止、数据反复使用、显著特征学习或更换损失与优化器，都需要另行分析。正文中的真实网络交叉熵和 Adam 结果只提供现象对照，不能认证这些模型满足随机特征理论。（PDF 第 3、9、13 页）</li><li>[近似自洽性与审阅边界] 端点附近 \(\chi\) 小，谱核不能统一用大参数幂律替代；附录 \(C\).3.1 检查最优轨迹的端点方差为次阶。缩放公式亦需要足够多慢谱模仍存在，不能直接宣称在固定有限 \(N\) 后无限训练仍保持同一幂律。上述渐近推导并非有显式余项控制的所有有限时域保证；本次全文核对没有进行证明认证。（PDF 第 13–15、19–20 页）</li><li>[实施限制与审阅判断] \(\eta_{\max}\) 是渐近控制中的稳定约束，精确离散噪声递推仍需核查；不能把 \(2/\lambda_1\) 当成对任意 batch 与谱必然安全的 SGD 步长。batch ramp 是连续松弛形式，须满足最少一个样本，并处理整数 batch、终点边界、显存与吞吐约束；理论用串行更新数代表 wall-clock，不保证真实系统端到端快多少。（PDF 第 5 页脚注、第 21–22 页；最后两项为由模型范围作出的实施判断）</li><li>[未解决项] 动量的 hard-phase 解析指数尚未给出；有限模型控制用局部非线性优化器求得，源码描述未构成全局优化证书。网络图未提供能把真实模型映射到正确谱统计的完整检验，作者将其列为未来工作；不据此宣称普适 Transformer 学习率定律。（PDF 第 9、23 页）</li></ul></div>
 </section>
 <section class="reading-card reading-card-section">
-  <div class="reading-card-topline">
-    <span class="reading-step">Card 07</span>
-    <span class="reading-step-note">复现与资源</span>
-  </div>
   <h2>复现与资源</h2>
   <div class="reading-card-content"><ul><li>[资源核实] <a href="https://arxiv.org/abs/2602.04774v2" target="_blank" rel="noopener noreferrer">原文与精确 PDF</a>、<a href="https://arxiv.org/src/2602.04774v2" target="_blank" rel="noopener noreferrer">匹配 \(v_{2}\) TeX 与原始图包</a> 可获得。附录 F 说明 CasADi 自动微分、IPOPT、limited-memory Hessian 与 MUMPS，并称实现位于 supplementary material；本次官方源包只包含 TeX、参考文献、样式和图文件，未取得可运行实验代码或公开的本文专属代码链接，不将补充材料声称改成已核验仓库。</li><li>[作者报告的实验设置] 语言模型基于 OLMo 的模型及训练脚本，宽度 768、12 个 attention heads、12 个 blocks；GPT-2 tokenizer 词表约 50k，weight decay 0.1。每个语言模型实验使用 3 张 Nvidia \(A_{100}\)，作者报告约 1–10 小时；ResNet 使用一张 \(A_{100}\)，每次约 10–15 分钟。这是作者运行情况，本次未复跑。复现还需固定谱归一化、\(a,b,N,\sigma,m\)、初始化、训练时域、学习率稳定约束、控制求解容差、momentum 时序以及网络数据划分与扫描预算。（PDF 第 23 页）</li><li>[证据边界] full-text verified; no independent reproduction performed。本卡逐页阅读全文、核对承重公式与原图；未独立重跑随机特征最优控制、ResNet 或 GPT 风格模型实验，未认证论文证明。原图按 <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener noreferrer">CC BY 4.0</a> 标明作者、论文及裁切说明。</li></ul></div>
 </section>
 <section class="reading-card reading-card-section">
-  <div class="reading-card-topline">
-    <span class="reading-step">Card 08</span>
-    <span class="reading-step-note">阅读指南</span>
-  </div>
   <h2>阅读指南</h2>
   <div class="reading-card-content"><ul><li>最低前置知识是线性回归、协方差本征分解、随机梯度与变分法。先看第 5 页 Figure 2，辨认平台与缩放后的多项式曲线；再看第 16 页 Figure 5 的偏差—方差分解。接着从第 3 页 Eq. (5) 到第 14 页 Eq. (25)，分清精确离散闭合与晚时近似泛函。</li><li>深读走第 14–16 页 Eqs. (26)–(47)，检查自由初值、学习率上界与退火比例；随后看第 19–20 页端点方差。batch 和 momentum 可第二遍读第 21–23 页；数值求解细节与计算量不是理解核心机制的先决条件。最后回到第 9 页局限，再读网络 Figure 4，避免把现象一致性读成真实模型假设的验证。</li></ul></div>
 </section></article>
@@ -254,8 +224,8 @@
           <nav id="detail-toc-nav" class="detail-toc-nav"></nav>
         </aside>
       </div>
-      <nav class="paper-nav"><a class="paper-nav-link paper-nav-prev" href="../../collection-papers/2602.05435/"><span class="paper-nav-label">← 上一篇</span><span class="paper-nav-title">Stable Velocity: A Variance Perspective on Flow Matching</span></a>
-      <a class="paper-nav-link paper-nav-next" href="../../collection-papers/2602.05065/"><span class="paper-nav-label">下一篇 →</span><span class="paper-nav-title">Does SGD Seek Flatness or Sharpness? An Exactly Solvable Model</span></a></nav>
+      <nav class="paper-nav"><a class="paper-nav-link paper-nav-prev" href="../../collection-papers/2602.05065/"><span class="paper-nav-label">← 上一篇</span><span class="paper-nav-title">Does SGD Seek Flatness or Sharpness? An Exactly Solvable Model</span></a>
+      <a class="paper-nav-link paper-nav-next" href="../../collection-papers/2602.02385/"><span class="paper-nav-label">下一篇 →</span><span class="paper-nav-title">Transformers learn factored representations</span></a></nav>
       <section id="comments" class="comments-panel" aria-labelledby="comments-title">
         <div class="comments-heading">
           <div>

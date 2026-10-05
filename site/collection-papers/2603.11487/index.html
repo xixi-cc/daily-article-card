@@ -3,10 +3,10 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Attention Sinks Are Provably Necessary in Softmax Transformers: Evidence from Trigger-Conditional Tasks - physics+AI Collection 论文卡</title>
-    <meta name="description" content="在单层、单头的因果softmax注意力模型中，作者构造一个任务：只有遇到trigger时输出此前非BOS向量的平均，否则输出零。若要求整个输入支持集上的误差任意小，则模型以高概率必须在每一个非trigger位置几乎把全部注意力交给BOS。[Theorem1，p5；附录\(D\)] 对固定深度的单头纯注意力层复合，结论减弱为：在trigger不位于第二个位置的输入上，至少有一层、一个非BOS非trigger位置出现近乎完全的BOS注意力。另一方面，带已知长度缩放的ReLU注意力存在零误差、零BOS权重的显式解。[Theorems2–3，p5–6] 这是一项有内容的架构必要性结果，但不是“所有softmax Transformer都必须有sink”。正式证明不包含多头之间的有符号抵消、残差、MLP或LayerNorm。本卡还给出多头反例，解释为什么不能把实验中经常出现sink，升级为多头模型的数学必然性。" />
+    <title>Attention Sinks Are Provably Necessary in Softmax Transformers: Evidence from Trigger-Conditional Tasks - 论文卡</title>
+    <meta name="description" content="在单层、单头的因果softmax注意力模型中，作者构造一个任务：只有遇到trigger时输出此前非BOS向量的平均，否则输出零。若要求整个输入支持集上的误差任意小，则模型以高概率必须在每一个非trigger位置几乎把全部注意力交给BOS。[Theorem1，p5；附录\(D\)]" />
     <link rel="canonical" href="https://xixi-cc.github.io/daily-article-card/collection-papers/2603.11487/" />
-    <script type="application/ld+json">{"@context": "https://schema.org", "@type": "Article", "headline": "Attention Sinks Are Provably Necessary in Softmax Transformers: Evidence from Trigger-Conditional Tasks", "description": "在单层、单头的因果softmax注意力模型中，作者构造一个任务：只有遇到trigger时输出此前非BOS向量的平均，否则输出零。若要求整个输入支持集上的误差任意小，则模型以高概率必须在每一个非trigger位置几乎把全部注意力交给BOS。[Theorem1，p5；附录\\(D\\)] 对固定深度的单头纯注意力层复合，结论减弱为：在trigger不位于第二个位置的输入上，至少有一层、一个非BOS非trigger位置出现近乎完全的BOS注意力。另一方面，带已知长度缩放的ReLU注意力存在零误差、零BOS权重的显式解。[Theorems2–3，p5–6] 这是一项有内容的架构必要性结果，但不是“所有softmax Transformer都必须有sink”。正式证明不包含多头之间的有符号抵消、残差、MLP或LayerNorm。本卡还给出多头反例，解释为什么不能把实验中经常出现sink，升级为多头模型的数学必然性。", "url": "https://xixi-cc.github.io/daily-article-card/collection-papers/2603.11487/", "mainEntityOfPage": "https://xixi-cc.github.io/daily-article-card/collection-papers/2603.11487/", "inLanguage": "zh-CN", "author": {"@type": "Person", "name": "Xineng Cao", "alternateName": ["Xixi Cao", "曹溪能"], "url": "https://xixi-cc.github.io/"}, "isBasedOn": "https://arxiv.org/abs/2603.11487v5"}</script>
+    <script type="application/ld+json">{"@context": "https://schema.org", "@type": "Article", "headline": "Attention Sinks Are Provably Necessary in Softmax Transformers: Evidence from Trigger-Conditional Tasks", "description": "在单层、单头的因果softmax注意力模型中，作者构造一个任务：只有遇到trigger时输出此前非BOS向量的平均，否则输出零。若要求整个输入支持集上的误差任意小，则模型以高概率必须在每一个非trigger位置几乎把全部注意力交给BOS。[Theorem1，p5；附录\\(D\\)]", "url": "https://xixi-cc.github.io/daily-article-card/collection-papers/2603.11487/", "mainEntityOfPage": "https://xixi-cc.github.io/daily-article-card/collection-papers/2603.11487/", "inLanguage": "zh-CN", "author": {"@type": "Person", "name": "Xineng Cao", "alternateName": ["Xixi Cao", "曹溪能"], "url": "https://xixi-cc.github.io/"}, "isBasedOn": "https://arxiv.org/abs/2603.11487v5"}</script>
     <script>
       (function() {
         try {
@@ -30,6 +30,18 @@
     <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700;800&family=Noto+Sans+SC:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
     <script>document.documentElement.classList.add('math-pending');</script>
     <script>
+      window.fitInlineMath = function(root) {
+        (root || document).querySelectorAll('mjx-container:not([display="true"])').forEach(function(el) {
+          el.classList.remove('inline-math-overflow');
+          const content = el.closest('.reading-card-content, .detail-summary, .feed-card-body');
+          if(content && el.getBoundingClientRect().width > content.clientWidth) {
+            el.classList.add('inline-math-overflow');
+            el.tabIndex = 0;
+            el.setAttribute('aria-label', '长公式，可横向滑动阅读');
+          }
+        });
+      };
+      window.addEventListener('resize', function() { window.fitInlineMath(); });
       window.MathJax = {
         tex: {
           inlineMath: [['$', '$'], ['\\(', '\\)']],
@@ -49,6 +61,7 @@
             MathJax.startup.promise.then(function() {
               document.documentElement.classList.remove('math-pending');
               document.documentElement.dataset.mathReady = 'true';
+              window.requestAnimationFrame(function() { window.fitInlineMath(); });
             });
           }
         }
@@ -65,9 +78,9 @@
     <header class="header detail-page-header">
       <div class="container">
         <div class="detail-page-topbar">
-          <a class="back-link" href="../../collection.html">返回列表</a>
+          <a class="back-link" href="../../index.html">返回列表</a>
           <div class="detail-topbar-actions">
-            <span class="detail-site-name">physics+AI Collection 论文卡</span>
+            <span class="detail-site-name">论文卡</span>
             <button id="detail-favorite" class="detail-favorite-button" type="button" aria-pressed="false">☆ 收藏</button>
             <button class="theme-toggle" type="button" data-theme-toggle aria-label="当前主题：设备，点击切换主题" title="当前主题：设备">
   <span class="theme-toggle-icons" aria-hidden="true">
@@ -91,22 +104,15 @@
         <div class="detail-hero-grid">
           <div class="detail-hero-cover"><figure class="paper-figure-card paper-figure-card-detail">
   <img class="paper-figure-image" src="../../assets/collection-figures/2603.11487/fig3.png" alt="完整四panel、坐标、色条与英文原图注；作者v5原版实验图。" loading="lazy" onclick="window.openPaperFigureImage && window.openPaperFigureImage(this)" />
-  <figcaption class="paper-figure-caption">完整四panel、坐标、色条与英文原图注；作者v5原版实验图。 来源：Yuval Ran-Milo；arXiv:2603.11487v5；Figure3 PDF \(p_{4}\)；CC BY 4.0 https://creativecommons.org/licenses/by/4.0/；作者版本，完整四panel及英文图注。</figcaption>
+  <figcaption class="paper-figure-caption">完整四panel、坐标、色条与英文原图注；作者v5原版实验图。 来源：Yuval Ran-Milo；arXiv:2603.11487v5；Figure3 PDF \(p_{4}\)；CC BY 4.0 https://creativecommons.org/licenses/by/4.0/；作者版本，完整四panel及英文图注。 <a href="https://arxiv.org/abs/2603.11487v5" target="_blank" rel="noopener noreferrer">原文图源 ↗</a></figcaption>
 </figure></div>
           <div class="detail-hero-copy">
-            <p class="eyebrow">Collection 全文卡</p>
+            <p class="eyebrow">论文详情</p>
             <h1 class="detail-page-title">Attention Sinks Are Provably Necessary in Softmax Transformers: Evidence from Trigger-Conditional Tasks</h1>
             <p class="detail-page-title-zh">一个注意力头要“什么都不做”，为什么会盯住BOS？</p>
-            <div class="detail-meta">Paper Collection · Physics of AI · <a href="https://arxiv.org/abs/2603.11487v5" target="_blank" rel="noopener noreferrer">原文</a></div>
-            <p class="detail-summary">在单层、单头的因果softmax注意力模型中，作者构造一个任务：只有遇到trigger时输出此前非BOS向量的平均，否则输出零。若要求整个输入支持集上的误差任意小，则模型以高概率必须在每一个非trigger位置几乎把全部注意力交给BOS。[Theorem1，\(p_{5}\)；附录\(D\)] 对固定深度的单头纯注意力层复合，结论减弱为：在trigger不位于第二个位置的输入上，至少有一层、一个非BOS非trigger位置出现近乎完全的BOS注意力。另一方面，带已知长度缩放的ReLU注意力存在零误差、零BOS权重的显式解。[Theorems2–3，\(p_{5}\)–6] 这是一项有内容的架构必要性结果，但不是“所有softmax Transformer都必须有sink”。正式证明不包含多头之间的有符号抵消、残差、MLP或LayerNorm。本卡还给出多头反例，解释为什么不能把实验中经常出现sink，升级为多头模型的数学必然性。</p>
-            <div class="detail-micro-meta">
-              <span class="meta-pill">AI 基础理论</span>
-              <span class="meta-pill">理论与数值</span>
-              <span class="meta-pill">#Physics of AI</span><span class="meta-pill">#Transformer</span><span class="meta-pill">#语言模型</span>
-              <span class="meta-pill">23 分钟读完</span>
-              <span class="meta-pill">8 张阅读卡</span>
-              <span class="meta-pill">Yuval Ran-Milo来自Tel Aviv University。论文研究attention s…</span>
-            </div>
+            <div class="detail-meta">Yuval Ran-Milo · 预印本 · arXiv:2603.11487 · <a href="https://arxiv.org/abs/2603.11487v5" target="_blank" rel="noopener noreferrer">论文原文 ↗</a></div>
+            <p class="detail-summary">在单层、单头的因果softmax注意力模型中，作者构造一个任务：只有遇到trigger时输出此前非BOS向量的平均，否则输出零。若要求整个输入支持集上的误差任意小，则模型以高概率必须在每一个非trigger位置几乎把全部注意力交给BOS。[Theorem1，\(p_{5}\)；附录\(D\)]</p>
+
           </div>
         </div>
       </div>
@@ -115,34 +121,14 @@
     <main class="container detail-layout">
       <div class="detail-shell">
         <article id="detail-body" class="reading-flow"><section class="reading-card reading-card-section">
-  <div class="reading-card-topline">
-    <span class="reading-step">Card 01</span>
-    <span class="reading-step-note">作者信息</span>
-  </div>
-  <h2>作者信息</h2>
-  <div class="reading-card-content"><ul><li>Yuval Ran-Milo来自Tel Aviv University。论文研究attention sink的一个功能性解释：某些注意力头只在特殊输入上工作，其他时候应该不向后续计算贡献任何内容，但softmax又必须把总权重分配出去。于是，一个内容稳定、value接近零的BOS位置可能充当“关闭状态”的接收点。[\(p_{1}\)–3]</li><li>作者将这个直觉转化为表达能力问题：不问训练过程会不会偏好sink，而问在规定的架构和误差标准下，所有成功实现某个任务的模型是否都必须有sink。这个问题与优化动力学解释互补；必要性若成立，说明仅仅更换优化器不能消除该架构中的约束。</li></ul></div>
-</section>
-<section class="reading-card reading-card-section">
-  <div class="reading-card-topline">
-    <span class="reading-step">Card 02</span>
-    <span class="reading-step-note">摘要</span>
-  </div>
   <h2>摘要</h2>
   <div class="reading-card-content"><ul><li>在单层、单头的因果softmax注意力模型中，作者构造一个任务：只有遇到trigger时输出此前非BOS向量的平均，否则输出零。若要求整个输入支持集上的误差任意小，则模型以高概率必须在每一个非trigger位置几乎把全部注意力交给BOS。[Theorem1，\(p_{5}\)；附录\(D\)]</li><li>对固定深度的单头纯注意力层复合，结论减弱为：在trigger不位于第二个位置的输入上，至少有一层、一个非BOS非trigger位置出现近乎完全的BOS注意力。另一方面，带已知长度缩放的ReLU注意力存在零误差、零BOS权重的显式解。[Theorems2–3，\(p_{5}\)–6]</li><li>这是一项有内容的架构必要性结果，但不是“所有softmax Transformer都必须有sink”。正式证明不包含多头之间的有符号抵消、残差、MLP或LayerNorm。本卡还给出多头反例，解释为什么不能把实验中经常出现sink，升级为多头模型的数学必然性。</li></ul></div>
 </section>
 <section class="reading-card reading-card-section">
-  <div class="reading-card-topline">
-    <span class="reading-step">Card 03</span>
-    <span class="reading-step-note">背景</span>
-  </div>
   <h2>背景</h2>
   <div class="reading-card-content"><ul><li>设单头输出为\(\sum_k\alpha_{ik}Vx^{(k)}\)。softmax保证\(\alpha_{ik}&gt;0\)且\(\sum_k\alpha_{ik}=1\)。一个未经归一化的门可以让所有权重都为零；softmax不行，它必须把一份总质量放到某些value上。</li><li>不过，“权重和为一”本身还不足以证明sink必需。不同value可以抵消，\(V\)也可以学会压缩输入，多个头之间还可以相减。因此真正的证明要排除这些其他实现，而不能只诉诸概率单纯形的图像。本研究依靠的是同一个value映射既要在非trigger位置输出零，又必须在trigger处保留任意变化的内容。[\(p_{11}\)–17]</li><li>论文用真实模型中的apostrophe head、active–dormant head作为动机：有触发信息时聚合内容，没有时关注BOS。这些案例说明合成任务有现实参照，但它们不是本文定理已覆盖真实LLM的证明。</li></ul></div>
 </section>
 <section class="reading-card reading-card-section">
-  <div class="reading-card-topline">
-    <span class="reading-step">Card 04</span>
-    <span class="reading-step-note">模型与方法</span>
-  </div>
   <h2>模型与方法</h2>
   <div class="reading-card-content"><ul><li>序列长度\(L\ge4\)，向量维数\(n\ge5\)。每个token的前三个坐标分别标记BOS、trigger、普通token，其余坐标为独立连续随机内容。BOS是\(e_1\)且没有随机内容；唯一trigger的位置\(j\)从2到\(L\)选择。目标为</li></ul>
 <div class="display-math">\[\begin{aligned}y^{(i)}&amp;=0,\quad i\ne j,\\y^{(j)}&amp;=\frac1{j-1}\sum_{k=2}^j x^{(k)}.\end{aligned}\]</div>
@@ -155,10 +141,6 @@
 <p> 这要求每一个支持集内的输入都准确，是一个很强的表达能力标准。实验内容来自\(U(-1,1)\)，支持集有界，因而这个标准可以非平凡地满足。原文只要求内容密度有界；对无界支持的分布，存在性需要额外检查，详见局限部分。</p></div>
 </section>
 <section class="reading-card reading-card-section">
-  <div class="reading-card-topline">
-    <span class="reading-step">Card 05</span>
-    <span class="reading-step-note">核心结果与证据</span>
-  </div>
   <h2>核心结果与证据</h2>
   <div class="reading-card-content"><ul><li>第一，BOS的value必须接近零。在位置1，因果注意力只有BOS可看，输出就是\(Ve_1\)；该位置的目标为零，因此\(\lVert Ve_1\rVert_2\le\eta\)，其中\(\eta=\mathcal L(f)\)。这直接找到一个可以接收注意力、又不输出内容的稳定位置。[Lemma1，\(p_{15}\)–16]</li><li>第二，若非trigger位置仍给普通内容显著权重，该内容的value就必须被压小。单层模型中，保持query和现有key不变、增加key，只会增大softmax分母。作者因此把长序列缩短到含BOS和一两个普通token的前缀，逐项控制输出：</li></ul>
 <div class="display-math">\[\begin{aligned}\lVert\alpha_{ii}Vx^{(i)}\rVert_2&amp;\le2\eta,\\\lVert\alpha_{hi}Vx^{(i)}\rVert_2&amp;\le4\eta,\quad i&lt;h.\end{aligned}\]</div>
@@ -206,10 +188,6 @@
 </figure></div>
 </section>
 <section class="reading-card reading-card-section">
-  <div class="reading-card-topline">
-    <span class="reading-step">Card 06</span>
-    <span class="reading-step-note">有效性与局限</span>
-  </div>
   <h2>有效性与局限</h2>
   <div class="reading-card-content"><ul><li>最重要的边界是多头。以下为本卡复核的反例，不是原文实验。设\(R=\operatorname{diag}(0,1,\ldots,1)\)，用两个头的正、负value输出相减，并让它们的score分别为</li></ul>
 <div class="display-math">\[\begin{aligned}s_{ik}^{(A)}&amp;=-T x_2^{(i)}x_1^{(k)},\\s_{ik}^{(B)}&amp;=+T x_2^{(i)}x_1^{(k)}.\end{aligned}\]</div>
@@ -222,18 +200,10 @@
 <ul><li>第二，有界密度不等于有界输入。高斯分布密度有界，但支持集无界。在位置2让内容沿某个方向无限增长，有限单头softmax要么在非trigger处保留导致无限误差的value，要么压掉这个内容方向、进而无法在trigger处输出无限增长的目标。因此高斯内容下，脚注“任意η都有低统一误差解”的存在性说法不成立；必要性蕴含可以成为空命题。读者应优先使用有界支持的非空版本。[脚注10–11；无界支持反例为本卡复核]</li><li>第三，脚注9向一般归一化机制的推广也需要重写。若把softmax所有权重乘以\(c_0&lt;1\)，再把value除以\(c_0\)，模型函数不变，但单个权重至多\(c_0\)，不可能满足原样的\(\alpha_{i1}\ge1-\epsilon\)阈值。推广至少需要采用相对总质量的sink定义及相应有界性条件，不能只要求权重和有正下界。</li><li>第四，实验支持的是观察到的实现，不是完整的最坏情况证书。单头实验在1,000个测试样本、固定trigger位置8上展示均值与标准差；多头图主要是单个代表性输入。训练采用\(n=16\)、\(L=16\)、batch128和Adam，按批次误差小于\(10^{-2}\)停止，并未验证整个连续支持集的sup误差。多头与残差实验的成功不自动证明该架构的所有成功解都必需sink。[§4、附录A/\(C\)]</li><li>最后，论文没有实测这些定理能够改善真实LLM的量化、长上下文性能或安全性。它们提供的是解释和设计约束，不是直接部署收益。优化过程仍决定具体哪个头、哪一层形成sink，必要性与学习偏好并不互相排斥。</li></ul></div>
 </section>
 <section class="reading-card reading-card-section">
-  <div class="reading-card-topline">
-    <span class="reading-step">Card 07</span>
-    <span class="reading-step-note">复现与资源</span>
-  </div>
   <h2>复现与资源</h2>
   <div class="reading-card-content"><ul><li>论文：<a href="https://arxiv.org/abs/2603.11487v5" target="_blank" rel="noopener noreferrer">https://arxiv.org/abs/2603.11487v5</a> 全文：<a href="https://arxiv.org/pdf/2603.11487v5" target="_blank" rel="noopener noreferrer">https://arxiv.org/pdf/2603.11487v5</a> 作者代码：<a href="https://github.com/YuvMilo/sinks-are-provably-necessary" target="_blank" rel="noopener noreferrer">https://github.com/YuvMilo/sinks-are-provably-necessary</a> 论文许可：CC BY 4.0，<a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener noreferrer">https://creativecommons.org/licenses/by/4.0/</a></li><li>本卡实际阅读21页全文和8幅图，复核单头证明及上述适用边界，并检查作者仓库说明；未训练模型或执行独立数值复现。所用<a href="https://arxiv.org/pdf/2603.11487v5#page=4" target="_blank" rel="noopener noreferrer">Figure3</a>、<a href="https://arxiv.org/pdf/2603.11487v5#page=5" target="_blank" rel="noopener noreferrer">Figure4</a>、<a href="https://arxiv.org/pdf/2603.11487v5#page=6" target="_blank" rel="noopener noreferrer">Figure5</a>为本文自身实验图，保留完整panel、坐标、色条及英文图注，裁切只去除图外内容。不将第三方再授权图或原版边缘已经截断的Figure8作为完整原图交付。</li></ul></div>
 </section>
 <section class="reading-card reading-card-section">
-  <div class="reading-card-topline">
-    <span class="reading-step">Card 08</span>
-    <span class="reading-step-note">阅读指南</span>
-  </div>
   <h2>阅读指南</h2>
   <div class="reading-card-content"><ul><li>先看<a href="https://arxiv.org/pdf/2603.11487v5#page=4" target="_blank" rel="noopener noreferrer">Figure3</a>：单头softmax在非trigger处集中到BOS，ReLU则直接给出零权重。然后读任务定义，特别确认平均包括trigger自身、误差是sup而非MSE。再读Lemmas1–5，理解“BOS value接近零”和“有权重的普通value必须被压小”两步如何连接。</li><li>之后读Theorem4的投影矛盾和多层位置2的乘积公式。这两处是论文真正有价值的证明结构。最后回到多头实验，同时检查本卡的抵消反例：观察到某种实现，与证明不存在其他实现，是两件不同的事。</li><li>对模型设计，这项工作的启发是把“关闭一个计算单元”本身作为可表示性问题。单个凸组合、带符号的多头相加、显式gate，拥有不同的零输出机制。讨论sink是否必要之前，先说明允许哪些机制、在哪个输入域上要求多小的误差，结论才有可检验的含义。</li></ul></div>
 </section></article>
@@ -242,7 +212,7 @@
           <nav id="detail-toc-nav" class="detail-toc-nav"></nav>
         </aside>
       </div>
-      <nav class="paper-nav"><a class="paper-nav-link paper-nav-prev" href="../../collection-papers/2604.16288/"><span class="paper-nav-label">← 上一篇</span><span class="paper-nav-title">Phase transitions in Doi-Onsager, Noisy Transformer, and other multimodal models</span></a>
+      <nav class="paper-nav"><a class="paper-nav-link paper-nav-prev" href="../../collection-papers/2604.16079/"><span class="paper-nav-label">← 上一篇</span><span class="paper-nav-title">The Amazing Stability of Flow Matching</span></a>
       <a class="paper-nav-link paper-nav-next" href="../../collection-papers/2604.12151/"><span class="paper-nav-label">下一篇 →</span><span class="paper-nav-title">Distinct mechanisms underlying in-context learning in transformers</span></a></nav>
       <section id="comments" class="comments-panel" aria-labelledby="comments-title">
         <div class="comments-heading">

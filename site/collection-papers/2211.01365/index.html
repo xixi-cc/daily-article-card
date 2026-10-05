@@ -3,10 +3,10 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>QuACK: Accelerating Gradient-Based Quantum Optimization with Koopman Operator Learning - physics+AI Collection 论文卡</title>
-    <meta name="description" content="作者：Di Luo、Jiayu Shen、Rumen Dangovski、Marin Soljačić。arXiv:2211.01365v3，NeurIPS 2023 spotlight。工作来自 MIT、Harvard、University of Illinois Urbana-Champaign 与相关量子/AI 研究中心。" />
+    <title>QuACK: Accelerating Gradient-Based Quantum Optimization with Koopman Operator Learning - 论文卡</title>
+    <meta name="description" content="变分量子算法每一步需要在量子线路上估计损失或梯度，参数越多，测量调用成本通常越高。梯度法具有良好优化结构，却可能被反复量子评估拖慢。论文问：能否用少量真实梯度轨迹学习参数更新的低维动力学，并在经典机上外推多步，只偶尔返回量子线路校正？" />
     <link rel="canonical" href="https://xixi-cc.github.io/daily-article-card/collection-papers/2211.01365/" />
-    <script type="application/ld+json">{"@context": "https://schema.org", "@type": "Article", "headline": "QuACK: Accelerating Gradient-Based Quantum Optimization with Koopman Operator Learning", "description": "作者：Di Luo、Jiayu Shen、Rumen Dangovski、Marin Soljačić。arXiv:2211.01365v3，NeurIPS 2023 spotlight。工作来自 MIT、Harvard、University of Illinois Urbana-Champaign 与相关量子/AI 研究中心。", "url": "https://xixi-cc.github.io/daily-article-card/collection-papers/2211.01365/", "mainEntityOfPage": "https://xixi-cc.github.io/daily-article-card/collection-papers/2211.01365/", "inLanguage": "zh-CN", "author": {"@type": "Person", "name": "Xineng Cao", "alternateName": ["Xixi Cao", "曹溪能"], "url": "https://xixi-cc.github.io/"}, "isBasedOn": "https://arxiv.org/abs/2211.01365"}</script>
+    <script type="application/ld+json">{"@context": "https://schema.org", "@type": "Article", "headline": "QuACK: Accelerating Gradient-Based Quantum Optimization with Koopman Operator Learning", "description": "变分量子算法每一步需要在量子线路上估计损失或梯度，参数越多，测量调用成本通常越高。梯度法具有良好优化结构，却可能被反复量子评估拖慢。论文问：能否用少量真实梯度轨迹学习参数更新的低维动力学，并在经典机上外推多步，只偶尔返回量子线路校正？", "url": "https://xixi-cc.github.io/daily-article-card/collection-papers/2211.01365/", "mainEntityOfPage": "https://xixi-cc.github.io/daily-article-card/collection-papers/2211.01365/", "inLanguage": "zh-CN", "author": {"@type": "Person", "name": "Xineng Cao", "alternateName": ["Xixi Cao", "曹溪能"], "url": "https://xixi-cc.github.io/"}, "isBasedOn": "https://arxiv.org/abs/2211.01365"}</script>
     <script>
       (function() {
         try {
@@ -30,6 +30,18 @@
     <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700;800&family=Noto+Sans+SC:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
     <script>document.documentElement.classList.add('math-pending');</script>
     <script>
+      window.fitInlineMath = function(root) {
+        (root || document).querySelectorAll('mjx-container:not([display="true"])').forEach(function(el) {
+          el.classList.remove('inline-math-overflow');
+          const content = el.closest('.reading-card-content, .detail-summary, .feed-card-body');
+          if(content && el.getBoundingClientRect().width > content.clientWidth) {
+            el.classList.add('inline-math-overflow');
+            el.tabIndex = 0;
+            el.setAttribute('aria-label', '长公式，可横向滑动阅读');
+          }
+        });
+      };
+      window.addEventListener('resize', function() { window.fitInlineMath(); });
       window.MathJax = {
         tex: {
           inlineMath: [['$', '$'], ['\\(', '\\)']],
@@ -49,6 +61,7 @@
             MathJax.startup.promise.then(function() {
               document.documentElement.classList.remove('math-pending');
               document.documentElement.dataset.mathReady = 'true';
+              window.requestAnimationFrame(function() { window.fitInlineMath(); });
             });
           }
         }
@@ -65,9 +78,9 @@
     <header class="header detail-page-header">
       <div class="container">
         <div class="detail-page-topbar">
-          <a class="back-link" href="../../collection.html">返回列表</a>
+          <a class="back-link" href="../../index.html">返回列表</a>
           <div class="detail-topbar-actions">
-            <span class="detail-site-name">physics+AI Collection 论文卡</span>
+            <span class="detail-site-name">论文卡</span>
             <button id="detail-favorite" class="detail-favorite-button" type="button" aria-pressed="false">☆ 收藏</button>
             <button class="theme-toggle" type="button" data-theme-toggle aria-label="当前主题：设备，点击切换主题" title="当前主题：设备">
   <span class="theme-toggle-icons" aria-hidden="true">
@@ -91,22 +104,15 @@
         <div class="detail-hero-grid">
           <div class="detail-hero-cover"><figure class="paper-figure-card paper-figure-card-detail">
   <img class="paper-figure-image" src="../../assets/collection-figures/2211.01365/figure-1-quack-loop.webp" alt="量子线路产生参数优化时间序列，经典 Koopman/DMD 学习其动力学并预测多步，再把最低损失候选送回量子优化。" loading="lazy" onclick="window.openPaperFigureImage && window.openPaperFigureImage(this)" />
-  <figcaption class="paper-figure-caption">QuACK 交替执行昂贵的真实量子梯度段与廉价的经典参数预测段。</figcaption>
+  <figcaption class="paper-figure-caption">QuACK 交替执行昂贵的真实量子梯度段与廉价的经典参数预测段。 <a href="https://arxiv.org/abs/2211.01365" target="_blank" rel="noopener noreferrer">原文图源 ↗</a></figcaption>
 </figure></div>
           <div class="detail-hero-copy">
-            <p class="eyebrow">Collection 全文卡</p>
+            <p class="eyebrow">论文详情</p>
             <h1 class="detail-page-title">QuACK: Accelerating Gradient-Based Quantum Optimization with Koopman Operator Learning</h1>
             <p class="detail-page-title-zh">QuACK：用 Koopman 算子学习加速基于梯度的量子优化</p>
-            <div class="detail-meta">Paper Collection · Machine Learning · <a href="https://arxiv.org/abs/2211.01365" target="_blank" rel="noopener noreferrer">原文</a></div>
-            <p class="detail-summary">作者：Di Luo、Jiayu Shen、Rumen Dangovski、Marin Soljačić。arXiv:2211.01365v3，NeurIPS 2023 spotlight。工作来自 MIT、Harvard、University of Illinois Urbana-Champaign 与相关量子/AI 研究中心。</p>
-            <div class="detail-micro-meta">
-              <span class="meta-pill">AI for Science</span>
-              <span class="meta-pill">理论与实验</span>
-              <span class="meta-pill">#Machine Learning</span><span class="meta-pill">#量子信息</span><span class="meta-pill">#人工智能</span>
-              <span class="meta-pill">8 分钟读完</span>
-              <span class="meta-pill">7 张阅读卡</span>
-              <span class="meta-pill">作者：Di Luo、Jiayu Shen、Rumen Dangovski、Marin Soljačić…</span>
-            </div>
+            <div class="detail-meta">Di Luo、Jiayu Shen、Rumen Dangovski、Marin Soljačić · 预印本 · arXiv:2211.01365 · <a href="https://arxiv.org/abs/2211.01365" target="_blank" rel="noopener noreferrer">论文原文 ↗</a></div>
+            <p class="detail-summary">变分量子算法每一步需要在量子线路上估计损失或梯度，参数越多，测量调用成本通常越高。梯度法具有良好优化结构，却可能被反复量子评估拖慢。论文问：能否用少量真实梯度轨迹学习参数更新的低维动力学，并在经典机上外推多步，只偶尔返回量子线路校正？</p>
+
           </div>
         </div>
       </div>
@@ -115,26 +121,10 @@
     <main class="container detail-layout">
       <div class="detail-shell">
         <article id="detail-body" class="reading-flow"><section class="reading-card reading-card-section">
-  <div class="reading-card-topline">
-    <span class="reading-step">Card 01</span>
-    <span class="reading-step-note">作者信息</span>
-  </div>
-  <h2>作者信息</h2>
-  <div class="reading-card-content"><ul><li>作者：Di Luo、Jiayu Shen、Rumen Dangovski、Marin Soljačić。arXiv:2211.01365v3，NeurIPS 2023 spotlight。工作来自 MIT、Harvard、University of Illinois Urbana-Champaign 与相关量子/AI 研究中心。</li></ul></div>
-</section>
-<section class="reading-card reading-card-section">
-  <div class="reading-card-topline">
-    <span class="reading-step">Card 02</span>
-    <span class="reading-step-note">研究问题</span>
-  </div>
   <h2>研究问题</h2>
   <div class="reading-card-content"><ul><li>变分量子算法每一步需要在量子线路上估计损失或梯度，参数越多，测量调用成本通常越高。梯度法具有良好优化结构，却可能被反复量子评估拖慢。论文问：能否用少量真实梯度轨迹学习参数更新的低维动力学，并在经典机上外推多步，只偶尔返回量子线路校正？</li><li>QuACK 的目标是降低达到同一目标损失/准确率所需的量子电路评估成本，而不是让每个量子门运行得更快，也不是给出量子复杂度意义上的普适指数加速。</li></ul></div>
 </section>
 <section class="reading-card reading-card-section">
-  <div class="reading-card-topline">
-    <span class="reading-step">Card 03</span>
-    <span class="reading-step-note">模型与方法</span>
-  </div>
   <h2>模型与方法</h2>
   <div class="reading-card-content"><ul><li>算法先执行 \(n_{\mathrm{sim}}\) 步常规 VQE/QML 梯度更新，收集参数时间序列 \(\theta\)(\(t\))。Dynamic Mode Decomposition（DMD）或带非线性 embedding 的变体拟合有限维 Koopman 近似 \(K\)，再在经典侧预测 \(n_{\mathrm{DMD}}\) 个未来参数。</li><li>预测段不直接接受最后一步，而是用量子线路评价候选参数的损失，从预测窗口中选最低损失 \(\theta\)(\(t_{\mathrm{opt}}\))，将它作为下一轮真实优化的起点。真实梯度段与 Koopman 预测段交替，避免长时间自由外推失稳；若预测无益，候选集合包含最近真实迭代，可回退。</li><li>理论部分把 quantum natural gradient 在充分表达的波函数流形上联系到近似线性虚时演化，并分析 Koopman 谱稳定性、过参数化收敛与速度上界。实验包含 Ising VQE、H₂/LiH 量子化学、MNIST 二分类 QML、shot/device noise，以及 IBM Lima 真机。</li></ul><figure class="evidence-figure">
   <button class="evidence-figure-image-button" type="button" aria-label="放大查看 Figure 1" onclick="window.openPaperFigureImage && window.openPaperFigureImage(this.querySelector('img'))">
@@ -148,34 +138,18 @@
 </figure></div>
 </section>
 <section class="reading-card reading-card-section">
-  <div class="reading-card-topline">
-    <span class="reading-step">Card 04</span>
-    <span class="reading-step-note">核心结果与证据</span>
-  </div>
   <h2>核心结果与证据</h2>
   <div class="reading-card-content"><ul><li>Figure 1 清楚区分昂贵的量子数据采集与参数数无关的经典 Koopman 预测。作者用达到 1% relative loss（VQE）或距最高测试准确率 0.5%（QML）的计算成本定义 speedup，并以完整 VQE/QML 运行的最小损失作为归一化参照。</li><li>在所测设置中，标准 DMD 对 quantum natural gradient 可用 4 步真实训练预测 40 步，并报告约 20.18×；过参数化平滑区域报告超过 200×，一般平滑区域超过 10×，非光滑/噪声条件约 3×以上。LiH、Ising 和 QML 的交替轨迹显示预测段可跳过部分量子梯度评估。</li><li>速度数字依赖目标阈值、真实/预测步数、DMD embedding、线路参数数和成本模型。它们衡量作者实现中到达目标的相对电路/梯度成本，不等于墙钟时间在所有硬件上同倍缩短，也不证明最终能量低于基线。</li></ul></div>
 </section>
 <section class="reading-card reading-card-section">
-  <div class="reading-card-topline">
-    <span class="reading-step">Card 05</span>
-    <span class="reading-step-note">有效性与局限</span>
-  </div>
   <h2>有效性与局限</h2>
   <div class="reading-card-content"><ul><li>Koopman 线性预测只在局部平滑轨迹或合适 embedding 下可靠；跨越曲率变化、非平滑区或噪声漂移时需频繁真实校正。DMD 的伪逆、窗口长度和截断谱会影响稳定性，经典拟合与候选损失评估也有成本。</li><li>主要实验规模为少量至十余 qubit 的模拟和小型 IBM 设备。超过 200×出现在特别有利的过参数化区域，不能外推到容错量子优势或所有 VQA。与完整基线共享初始点和目标仍不排除超参数选择偏差；真实硬件队列、编译、shot 数、通信和误差缓解会改变 wall-clock 收益。</li></ul></div>
 </section>
 <section class="reading-card reading-card-section">
-  <div class="reading-card-topline">
-    <span class="reading-step">Card 06</span>
-    <span class="reading-step-note">复现与资源</span>
-  </div>
   <h2>复现与资源</h2>
   <div class="reading-card-content"><ul><li>原文：https://arxiv.org/abs/2211.01365。官方 PDF SHA-256：dfdd29d20d33cf4c4b5a0008ac387018e6e36441c2b0a50927c5eed61b5fe2e6。论文报告使用 Qiskit、PyTorch、Yao 与 PennyLane；附录给出线路、DMD 网络、噪声和消融细节。</li><li>复现需冻结 ansatz/qubit 数、Hamiltonian、优化器与学习率、梯度/shot 估计方式、\(n_{\mathrm{sim}}\)/\(n_{\mathrm{DMD}}\)、滑动窗口 \(d\)、DMD 秩和 embedding、候选选择、目标阈值及成本计数；同时报告量子电路调用、经典拟合时间、总 wall-clock、最终损失与失败率。Evidence status: full-text verified; no independent reproduction performed.</li></ul></div>
 </section>
 <section class="reading-card reading-card-section">
-  <div class="reading-card-topline">
-    <span class="reading-step">Card 07</span>
-    <span class="reading-step-note">阅读指南</span>
-  </div>
   <h2>阅读指南</h2>
   <div class="reading-card-content"><ul><li>先看 Figure 1 的交替闭环，再读 §3 的 VQA/Koopman/DMD 定义和 §4 的候选回退；随后核对 §5 的自然梯度线性化假设与速度公式；最后逐图检查不同 regime 的目标阈值、量子调用与噪声设置，避免只比较摘要中的最大 speedup。</li></ul></div>
 </section></article>

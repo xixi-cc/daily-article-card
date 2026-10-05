@@ -3,10 +3,10 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>How Transformers Learn Causal Structure with Gradient Descent - physics+AI Collection 论文卡</title>
-    <meta name="description" content="作者 Eshaan Nichani、Alex Damian 与 Jason D. Lee。论文发表于 ICML 2024，研究 simplified transformer 在合成序列任务上如何经 gradient descent 获得 latent causal graph，而不只展示某组手工权重可以完成任务。arXiv:2402.14735v2。" />
+    <title>How Transformers Learn Causal Structure with Gradient Descent - 论文卡</title>
+    <meta name="description" content="Self-attention 能跨序列位置传递信息，但‘可表达某种 causal computation’不等于‘训练会发现它’。本文构造一个 in-context learning 任务：每条序列由共同的有向无环图 G 决定位置依赖，但 transition matrix π 在不同 context 间随机变化；模型必须由一条 context 同时识别哪些位置互为父子并估计当前 π，才能预测 query token 的后继。" />
     <link rel="canonical" href="https://xixi-cc.github.io/daily-article-card/collection-papers/2402.14735/" />
-    <script type="application/ld+json">{"@context": "https://schema.org", "@type": "Article", "headline": "How Transformers Learn Causal Structure with Gradient Descent", "description": "作者 Eshaan Nichani、Alex Damian 与 Jason D. Lee。论文发表于 ICML 2024，研究 simplified transformer 在合成序列任务上如何经 gradient descent 获得 latent causal graph，而不只展示某组手工权重可以完成任务。arXiv:2402.14735v2。", "url": "https://xixi-cc.github.io/daily-article-card/collection-papers/2402.14735/", "mainEntityOfPage": "https://xixi-cc.github.io/daily-article-card/collection-papers/2402.14735/", "inLanguage": "zh-CN", "author": {"@type": "Person", "name": "Xineng Cao", "alternateName": ["Xixi Cao", "曹溪能"], "url": "https://xixi-cc.github.io/"}, "isBasedOn": "https://arxiv.org/abs/2402.14735"}</script>
+    <script type="application/ld+json">{"@context": "https://schema.org", "@type": "Article", "headline": "How Transformers Learn Causal Structure with Gradient Descent", "description": "Self-attention 能跨序列位置传递信息，但‘可表达某种 causal computation’不等于‘训练会发现它’。本文构造一个 in-context learning 任务：每条序列由共同的有向无环图 G 决定位置依赖，但 transition matrix π 在不同 context 间随机变化；模型必须由一条 context 同时识别哪些位置互为父子并估计当前 π，才能预测 query token 的后继。", "url": "https://xixi-cc.github.io/daily-article-card/collection-papers/2402.14735/", "mainEntityOfPage": "https://xixi-cc.github.io/daily-article-card/collection-papers/2402.14735/", "inLanguage": "zh-CN", "author": {"@type": "Person", "name": "Xineng Cao", "alternateName": ["Xixi Cao", "曹溪能"], "url": "https://xixi-cc.github.io/"}, "isBasedOn": "https://arxiv.org/abs/2402.14735"}</script>
     <script>
       (function() {
         try {
@@ -30,6 +30,18 @@
     <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700;800&family=Noto+Sans+SC:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
     <script>document.documentElement.classList.add('math-pending');</script>
     <script>
+      window.fitInlineMath = function(root) {
+        (root || document).querySelectorAll('mjx-container:not([display="true"])').forEach(function(el) {
+          el.classList.remove('inline-math-overflow');
+          const content = el.closest('.reading-card-content, .detail-summary, .feed-card-body');
+          if(content && el.getBoundingClientRect().width > content.clientWidth) {
+            el.classList.add('inline-math-overflow');
+            el.tabIndex = 0;
+            el.setAttribute('aria-label', '长公式，可横向滑动阅读');
+          }
+        });
+      };
+      window.addEventListener('resize', function() { window.fitInlineMath(); });
       window.MathJax = {
         tex: {
           inlineMath: [['$', '$'], ['\\(', '\\)']],
@@ -49,6 +61,7 @@
             MathJax.startup.promise.then(function() {
               document.documentElement.classList.remove('math-pending');
               document.documentElement.dataset.mathReady = 'true';
+              window.requestAnimationFrame(function() { window.fitInlineMath(); });
             });
           }
         }
@@ -65,9 +78,9 @@
     <header class="header detail-page-header">
       <div class="container">
         <div class="detail-page-topbar">
-          <a class="back-link" href="../../collection.html">返回列表</a>
+          <a class="back-link" href="../../index.html">返回列表</a>
           <div class="detail-topbar-actions">
-            <span class="detail-site-name">physics+AI Collection 论文卡</span>
+            <span class="detail-site-name">论文卡</span>
             <button id="detail-favorite" class="detail-favorite-button" type="button" aria-pressed="false">☆ 收藏</button>
             <button class="theme-toggle" type="button" data-theme-toggle aria-label="当前主题：设备，点击切换主题" title="当前主题：设备">
   <span class="theme-toggle-icons" aria-hidden="true">
@@ -91,22 +104,15 @@
         <div class="detail-hero-grid">
           <div class="detail-hero-cover"><figure class="paper-figure-card paper-figure-card-detail">
   <img class="paper-figure-image" src="../../assets/collection-figures/2402.14735/figure-1-causal-graph.webp" alt="六个序列位置的有向图：s1 指向 s2 与 s3，s2 指向 s4，s3 指向 s5；s6 是用于预测下一 token 的独立 query 位置。" loading="lazy" onclick="window.openPaperFigureImage && window.openPaperFigureImage(this)" />
-  <figcaption class="paper-figure-caption">训练任务把未知 transition 与固定 latent graph 分离：模型需先找父节点，再在 context 内估计转移。</figcaption>
+  <figcaption class="paper-figure-caption">训练任务把未知 transition 与固定 latent graph 分离：模型需先找父节点，再在 context 内估计转移。 <a href="https://arxiv.org/abs/2402.14735" target="_blank" rel="noopener noreferrer">原文图源 ↗</a></figcaption>
 </figure></div>
           <div class="detail-hero-copy">
-            <p class="eyebrow">Collection 全文卡</p>
+            <p class="eyebrow">论文详情</p>
             <h1 class="detail-page-title">How Transformers Learn Causal Structure with Gradient Descent</h1>
             <p class="detail-page-title-zh">Transformer 如何通过梯度下降学习因果结构</p>
-            <div class="detail-meta">Paper Collection · Transformer Theory · <a href="https://arxiv.org/abs/2402.14735" target="_blank" rel="noopener noreferrer">原文</a></div>
-            <p class="detail-summary">作者 Eshaan Nichani、Alex Damian 与 Jason \(D\). Lee。论文发表于 ICML 2024，研究 simplified transformer 在合成序列任务上如何经 gradient descent 获得 latent causal graph，而不只展示某组手工权重可以完成任务。arXiv:2402.14735v2。</p>
-            <div class="detail-micro-meta">
-              <span class="meta-pill">AI 基础理论</span>
-              <span class="meta-pill">理论与实验</span>
-              <span class="meta-pill">#Transformer Theory</span><span class="meta-pill">#机器学习</span><span class="meta-pill">#Transformer</span>
-              <span class="meta-pill">12 分钟读完</span>
-              <span class="meta-pill">7 张阅读卡</span>
-              <span class="meta-pill">作者 Eshaan Nichani、Alex Damian 与 Jason D. Lee。论文发表于…</span>
-            </div>
+            <div class="detail-meta">Eshaan Nichani、Alex Damian、Jason D. Lee · 预印本 · arXiv:2402.14735 · <a href="https://arxiv.org/abs/2402.14735" target="_blank" rel="noopener noreferrer">论文原文 ↗</a></div>
+            <p class="detail-summary">Self-attention 能跨序列位置传递信息，但‘可表达某种 causal computation’不等于‘训练会发现它’。本文构造一个 in-context learning 任务：每条序列由共同的有向无环图 G 决定位置依赖，但 transition matrix \(\pi\) 在不同 context 间随机变化；模型必须由一条 context 同时识别哪些位置互为父子并估计当前 \(\pi\)，才能预测 query token 的后继。</p>
+
           </div>
         </div>
       </div>
@@ -115,18 +121,6 @@
     <main class="container detail-layout">
       <div class="detail-shell">
         <article id="detail-body" class="reading-flow"><section class="reading-card reading-card-section">
-  <div class="reading-card-topline">
-    <span class="reading-step">Card 01</span>
-    <span class="reading-step-note">作者信息</span>
-  </div>
-  <h2>作者信息</h2>
-  <div class="reading-card-content"><ul><li>作者 Eshaan Nichani、Alex Damian 与 Jason \(D\). Lee。论文发表于 ICML 2024，研究 simplified transformer 在合成序列任务上如何经 gradient descent 获得 latent causal graph，而不只展示某组手工权重可以完成任务。arXiv:2402.14735v2。</li></ul></div>
-</section>
-<section class="reading-card reading-card-section">
-  <div class="reading-card-topline">
-    <span class="reading-step">Card 02</span>
-    <span class="reading-step-note">研究问题</span>
-  </div>
   <h2>研究问题</h2>
   <div class="reading-card-content"><ul><li>Self-attention 能跨序列位置传递信息，但‘可表达某种 causal computation’不等于‘训练会发现它’。本文构造一个 in-context learning 任务：每条序列由共同的有向无环图 G 决定位置依赖，但 transition matrix \(\pi\) 在不同 context 间随机变化；模型必须由一条 context 同时识别哪些位置互为父子并估计当前 \(\pi\)，才能预测 query token 的后继。</li><li>核心问题是：标准的 gradient signal 是否足以辨认真实 parent edge？若能，第一层 attention 如何编码图，第二层又如何把图结构变成 transition-counting algorithm？Markov chain 情形是否自然退化为 induction head？</li></ul><figure class="evidence-figure">
   <button class="evidence-figure-image-button" type="button" aria-label="放大查看 Figure 1" onclick="window.openPaperFigureImage && window.openPaperFigureImage(this.querySelector('img'))">
@@ -140,42 +134,22 @@
 </figure></div>
 </section>
 <section class="reading-card reading-card-section">
-  <div class="reading-card-topline">
-    <span class="reading-step">Card 03</span>
-    <span class="reading-step-note">模型与方法</span>
-  </div>
   <h2>模型与方法</h2>
   <div class="reading-card-content"><ul><li>输入 token 同时带 symbol 与 position embedding。作者研究 two-layer attention-only 的 disentangled transformer：它把 residual stream 的不同通道显式保留，并以单个 attention matrix \(A=QK^{T}\) 表示 query-key interaction；附录证明在允许宽度扩张时与相应 decoder transformer 等价。</li><li>Task 1 先限制每个非根节点至多一个 parent。训练分两阶段：先固定第二层与输出方向，分析第一层 A^(1) 的梯度；再固定已学图结构，训练第二层 content attention。理想化梯度 \(g_{i}\),j 可写成 token pair 的 χ² mutual-information quantity。由 conditional Markov chain 与 data-processing inequality，真实 parent \(p\)(i) 对应的梯度严格大于其他较早位置，因而 attention pattern 向 graph adjacency 对齐。</li><li>前向算法中，第一层让每个 token 读取并附加其 parent token；第二层寻找历史中 parent value 等于当前 query value 的位置，平均这些位置的 child symbols。这个操作等价于用 graph edges 构造 empirical transition matrix。作者还给出多父节点时由多个 heads 分摊 parent sets 的构造，并以训练实验检查所得 attention maps。</li></ul></div>
 </section>
 <section class="reading-card reading-card-section">
-  <div class="reading-card-topline">
-    <span class="reading-step">Card 04</span>
-    <span class="reading-step-note">核心结果与证据</span>
-  </div>
   <h2>核心结果与证据</h2>
   <div class="reading-card-content"><ul><li>Theorem 1 在树状/单父节点图、特定初始化、步长和分阶段训练等假设下证明：gradient descent 使第一层恢复 G，并使第二层输出接近真实 transition \(\pi\)；当 G 是相邻位置组成的 Markov chain 时，所得机制就是 induction head。</li><li>关键证据不是相关性可视化，而是 gradient ordering。对真实 parent，\(g_{i}\),\(p(i)=I_{\chi²}\)\(s_{i};s_{p}(i)|\pi\)；对 \(j\ne p(i)\)，data-processing inequality 给出严格更小的上界。Figure 4 画出对应 attention entry 更快增长，随后 softmax 放大差距，形成离散 parent selection。</li><li>Figure 2/6 的合成实验显示训练后的 position-position block 复现链、树和随机图；Figure 3 逐步展示 first-layer parent retrieval 与 second-layer matching 如何计算预测分布。Figure 5/7 中，多头模型在 \(k=2\) 或 3 个 parents 的任务上把不同 parent relation 分配给不同 heads，与构造的定性预言一致。</li></ul></div>
 </section>
 <section class="reading-card reading-card-section">
-  <div class="reading-card-topline">
-    <span class="reading-step">Card 05</span>
-    <span class="reading-step-note">有效性与局限</span>
-  </div>
   <h2>有效性与局限</h2>
   <div class="reading-card-content"><ul><li>结论针对已知拓扑顺序、离散 symbols、共享 DAG 且 transition 来自受控 prior 的任务；它不是从 observational data 中处理 hidden confounders、干预或 Markov-equivalent graphs 的一般 causal discovery 结果。这里的‘causal’首先指生成任务中预设的有向位置依赖。</li><li>主定理依赖单父节点树、irreducible/aperiodic Markov transitions、information gap、初始化尺度、足够样本/有效序列长度以及人为分开的训练 stages。多父节点部分主要是表达构造与数值支持，没有给出同等强度的 gradient-descent recovery theorem。</li><li>模型是两层 attention-only/disentangled architecture；标准 Transformer 实验规模有限，MLP、normalization、optimizer、有限宽度与真实语言分布可能改变动力学。严格 mutual-information ordering 在弱依赖或近并列 parent 候选下会变脆弱。本文未证明预训练 LLM 内部实际使用同一算法，本卡也未独立复现实验。</li></ul></div>
 </section>
 <section class="reading-card reading-card-section">
-  <div class="reading-card-topline">
-    <span class="reading-step">Card 06</span>
-    <span class="reading-step-note">复现与资源</span>
-  </div>
   <h2>复现与资源</h2>
   <div class="reading-card-content"><ul><li>原文：https://arxiv.org/abs/2402.14735。官方 \(v_{2}\) PDF SHA-256：77b3581969922a84fe525fb077fee631f992443dcc743082c88a622cda1fd521。正文给出 task、两层构造、两阶段动力学与多父节点扩展；附录包含 transformer equivalence、finite-time bounds、gradient lemmas 和实验细节。</li><li>最小复现可先固定 Figure 1 的 graph，逐 context 随机采样 \(\pi\) 与 sequences，训练两层 decoder transformer；记录每个 epoch 的第一层 position-position attention matrix，检查 \(A_{i}\),\(p\)(i) 与最大 non-parent entry 的 margin，并把最终预测与 Eq. (6) 的 empirical transition 做逐状态比较。随后再改变 graph、dependency strength 与 seed，明确报告 graph recovery、prediction error 和失败样本。Evidence status: full-text verified; no independent reproduction performed.</li></ul></div>
 </section>
 <section class="reading-card reading-card-section">
-  <div class="reading-card-topline">
-    <span class="reading-step">Card 07</span>
-    <span class="reading-step-note">阅读指南</span>
-  </div>
   <h2>阅读指南</h2>
   <div class="reading-card-content"><ul><li>先读 Figure 1 与 Task 1 明确 graph 是如何进入数据生成过程的；再看 Figure 2–3 理解构造算法。证明阅读可抓住 Lemma 2、Eqs. (23)–(26) 的 mutual-information gradient ordering，再回到 Theorem 1 的全部假设。最后看 Section 6 与 Figure 5，区分单父节点理论保证和多父节点经验推广。</li></ul></div>
 </section></article>

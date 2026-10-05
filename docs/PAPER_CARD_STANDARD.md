@@ -6,6 +6,15 @@ Status: canonical
 
 This document is the authoritative editorial and evidence standard for physics+AI paper cards. Automation prompts and validators implement parts of this contract, but passing a structural validator alone does not establish scientific quality.
 
+## Reader presentation amendment — 2026-10-05
+
+The user requested a unified reader-facing catalog and source-title/abstract
+excerpts as cover fallback. Follow `docs/READER_PRESENTATION.md` for this
+presentation layer. Independent Daily/Collection scientific records, admission,
+evidence and feeds remain authoritative. This amendment supersedes the ban on
+source-title/abstract screenshots for reviewed reader-cover overrides; it does
+not change historical card JSON or infer new grades.
+
 ## 1. Provenance and collection boundaries
 
 Every card must declare why it is eligible and where it belongs.

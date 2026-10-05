@@ -3,10 +3,10 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>DSO: Dual-Scale Neural Operators for Stable Long-term Fluid Dynamics Forecasting - physics+AI Collection 论文卡</title>
-    <meta name="description" content="论文将长期 autoregressive fluid forecast 的失败拆为 local detail blurring（涡核/梯度逐步平滑）和 global trend deviation（整体轨迹/相位漂移）。 DSO 的 encoder–translator–decoder 中，每个 translator block 先用 depthwise-separable convolution 提取局部结构，再用 spatial/channel MLP-Mixer 汇聚全域信息。 在 forced 与 decaying 2D Navier–Stokes turbulence 上，DSO 的 all-step MSE 最低；最大相对改善来自 99-step decaying rollout，但结果来自单一固定 seed 与两个合成 benchmark。" />
+    <title>DSO: Dual-Scale Neural Operators for Stable Long-term Fluid Dynamics Forecasting - 论文卡</title>
+    <meta name="description" content="论文将长期 autoregressive fluid forecast 的失败拆为 local detail blurring（涡核/梯度逐步平滑）和 global trend deviation（整体轨迹/相位漂移）。" />
     <link rel="canonical" href="https://xixi-cc.github.io/daily-article-card/collection-papers/2603.26800/" />
-    <script type="application/ld+json">{"@context": "https://schema.org", "@type": "Article", "headline": "DSO: Dual-Scale Neural Operators for Stable Long-term Fluid Dynamics Forecasting", "description": "论文将长期 autoregressive fluid forecast 的失败拆为 local detail blurring（涡核/梯度逐步平滑）和 global trend deviation（整体轨迹/相位漂移）。 DSO 的 encoder–translator–decoder 中，每个 translator block 先用 depthwise-separable convolution 提取局部结构，再用 spatial/channel MLP-Mixer 汇聚全域信息。 在 forced 与 decaying 2D Navier–Stokes turbulence 上，DSO 的 all-step MSE 最低；最大相对改善来自 99-step decaying rollout，但结果来自单一固定 seed 与两个合成 benchmark。", "url": "https://xixi-cc.github.io/daily-article-card/collection-papers/2603.26800/", "mainEntityOfPage": "https://xixi-cc.github.io/daily-article-card/collection-papers/2603.26800/", "inLanguage": "zh-CN", "author": {"@type": "Person", "name": "Xineng Cao", "alternateName": ["Xixi Cao", "曹溪能"], "url": "https://xixi-cc.github.io/"}, "isBasedOn": "https://arxiv.org/abs/2603.26800"}</script>
+    <script type="application/ld+json">{"@context": "https://schema.org", "@type": "Article", "headline": "DSO: Dual-Scale Neural Operators for Stable Long-term Fluid Dynamics Forecasting", "description": "论文将长期 autoregressive fluid forecast 的失败拆为 local detail blurring（涡核/梯度逐步平滑）和 global trend deviation（整体轨迹/相位漂移）。", "url": "https://xixi-cc.github.io/daily-article-card/collection-papers/2603.26800/", "mainEntityOfPage": "https://xixi-cc.github.io/daily-article-card/collection-papers/2603.26800/", "inLanguage": "zh-CN", "author": {"@type": "Person", "name": "Xineng Cao", "alternateName": ["Xixi Cao", "曹溪能"], "url": "https://xixi-cc.github.io/"}, "isBasedOn": "https://arxiv.org/abs/2603.26800"}</script>
     <script>
       (function() {
         try {
@@ -30,6 +30,18 @@
     <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700;800&family=Noto+Sans+SC:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
     <script>document.documentElement.classList.add('math-pending');</script>
     <script>
+      window.fitInlineMath = function(root) {
+        (root || document).querySelectorAll('mjx-container:not([display="true"])').forEach(function(el) {
+          el.classList.remove('inline-math-overflow');
+          const content = el.closest('.reading-card-content, .detail-summary, .feed-card-body');
+          if(content && el.getBoundingClientRect().width > content.clientWidth) {
+            el.classList.add('inline-math-overflow');
+            el.tabIndex = 0;
+            el.setAttribute('aria-label', '长公式，可横向滑动阅读');
+          }
+        });
+      };
+      window.addEventListener('resize', function() { window.fitInlineMath(); });
       window.MathJax = {
         tex: {
           inlineMath: [['$', '$'], ['\\(', '\\)']],
@@ -49,6 +61,7 @@
             MathJax.startup.promise.then(function() {
               document.documentElement.classList.remove('math-pending');
               document.documentElement.dataset.mathReady = 'true';
+              window.requestAnimationFrame(function() { window.fitInlineMath(); });
             });
           }
         }
@@ -65,9 +78,9 @@
     <header class="header detail-page-header">
       <div class="container">
         <div class="detail-page-topbar">
-          <a class="back-link" href="../../collection.html">返回列表</a>
+          <a class="back-link" href="../../index.html">返回列表</a>
           <div class="detail-topbar-actions">
-            <span class="detail-site-name">physics+AI Collection 论文卡</span>
+            <span class="detail-site-name">论文卡</span>
             <button id="detail-favorite" class="detail-favorite-button" type="button" aria-pressed="false">☆ 收藏</button>
             <button class="theme-toggle" type="button" data-theme-toggle aria-label="当前主题：设备，点击切换主题" title="当前主题：设备">
   <span class="theme-toggle-icons" aria-hidden="true">
@@ -91,22 +104,15 @@
         <div class="detail-hero-grid">
           <div class="detail-hero-cover"><figure class="paper-figure-card paper-figure-card-detail">
   <img class="paper-figure-image" src="../../assets/collection-figures/2603.26800/cover-source.webp" alt="涡偶极子在近场与远场扰动下的时间演化。" loading="lazy" onclick="window.openPaperFigureImage && window.openPaperFigureImage(this)" />
-  <figcaption class="paper-figure-caption">涡偶极子在近场与远场扰动下的时间演化。来源：原论文 Figure 2（PDF 第 4 页）。</figcaption>
+  <figcaption class="paper-figure-caption">涡偶极子在近场与远场扰动下的时间演化。来源：原论文 Figure 2（PDF 第 4 页）。 <a href="https://arxiv.org/abs/2603.26800" target="_blank" rel="noopener noreferrer">原文图源 ↗</a></figcaption>
 </figure></div>
           <div class="detail-hero-copy">
-            <p class="eyebrow">Collection 全文卡</p>
+            <p class="eyebrow">论文详情</p>
             <h1 class="detail-page-title">DSO: Dual-Scale Neural Operators for Stable Long-term Fluid Dynamics Forecasting</h1>
             <p class="detail-page-title-zh">DSO：用于稳定长期流体动力学预测的双尺度神经算子</p>
-            <div class="detail-meta">Paper Collection · Neural Operators · <a href="https://arxiv.org/abs/2603.26800" target="_blank" rel="noopener noreferrer">原文</a></div>
-            <p class="detail-summary">论文将长期 autoregressive fluid forecast 的失败拆为 local detail blurring（涡核/梯度逐步平滑）和 global trend deviation（整体轨迹/相位漂移）。 DSO 的 encoder–translator–decoder 中，每个 translator block 先用 depthwise-separable convolution 提取局部结构，再用 spatial/channel MLP-Mixer 汇聚全域信息。 在 forced 与 decaying 2D Navier–Stokes turbulence 上，DSO 的 all-step MSE 最低；最大相对改善来自 99-step decaying rollout，但结果来自单一固定 seed 与两个合成 benchmark。</p>
-            <div class="detail-micro-meta">
-              <span class="meta-pill">AI for Science</span>
-              <span class="meta-pill">AI 实证</span>
-              <span class="meta-pill">#Neural Operators</span><span class="meta-pill">#机器学习</span><span class="meta-pill">#人工智能</span>
-              <span class="meta-pill">13 分钟读完</span>
-              <span class="meta-pill">8 张阅读卡</span>
-              <span class="meta-pill">作者：Huanshuo Dong、Hao Wu、Hong Wang、Qin-Yi Zhang、Zhez…</span>
-            </div>
+            <div class="detail-meta">Huanshuo Dong、Hao Wu、Hong Wang、Qin-Yi Zhang、Zhezheng Hao · 预印本 · arXiv:2603.26800 · <a href="https://arxiv.org/abs/2603.26800" target="_blank" rel="noopener noreferrer">论文原文 ↗</a></div>
+            <p class="detail-summary">论文将长期 autoregressive fluid forecast 的失败拆为 local detail blurring（涡核/梯度逐步平滑）和 global trend deviation（整体轨迹/相位漂移）。</p>
+
           </div>
         </div>
       </div>
@@ -115,66 +121,30 @@
     <main class="container detail-layout">
       <div class="detail-shell">
         <article id="detail-body" class="reading-flow"><section class="reading-card reading-card-section">
-  <div class="reading-card-topline">
-    <span class="reading-step">Card 01</span>
-    <span class="reading-step-note">作者信息</span>
-  </div>
-  <h2>作者信息</h2>
-  <div class="reading-card-content"><ul><li>作者：Huanshuo Dong、Hao Wu、Hong Wang、Qin-Yi Zhang、Zhezheng Hao；来自中国科大、清华、中科院自动化所、浙江大学。</li><li>官方快照：arXiv:2603.26800v1；分类 cs.LG/cs.AI/physics.flu-dyn。</li><li>稿件排版仍保留 ACM 模板占位符（Conference acronym XX、2018、虚拟 DOI），因此不能据此声称已正式会议发表。</li></ul></div>
-</section>
-<section class="reading-card reading-card-section">
-  <div class="reading-card-topline">
-    <span class="reading-step">Card 02</span>
-    <span class="reading-step-note">摘要</span>
-  </div>
   <h2>摘要</h2>
   <div class="reading-card-content"><ul><li>论文将长期 autoregressive fluid forecast 的失败拆为 local detail blurring（涡核/梯度逐步平滑）和 global trend deviation（整体轨迹/相位漂移）。</li><li>DSO 的 encoder–translator–decoder 中，每个 translator block 先用 depthwise-separable convolution 提取局部结构，再用 spatial/channel MLP-Mixer 汇聚全域信息。</li><li>在 forced 与 decaying 2D Navier–Stokes turbulence 上，DSO 的 all-step MSE 最低；最大相对改善来自 99-step decaying rollout，但结果来自单一固定 seed 与两个合成 benchmark。</li></ul></div>
 </section>
 <section class="reading-card reading-card-section">
-  <div class="reading-card-topline">
-    <span class="reading-step">Card 03</span>
-    <span class="reading-step-note">背景</span>
-  </div>
   <h2>背景</h2>
   <div class="reading-card-content"><ul><li>one-step model 在测试时把预测反复作为下一步输入，小误差会复合；仅看早期 MSE 会掩盖数值 collapse、涡旋形态消失和位置漂移。</li><li>作者用 vortex dipole 加近/远 perturbing vortex 的数值实验作设计动机：近扰动使最大局部梯度 +45%，远扰动则为 −29%；全局位移分别 0.8 与 0.6，差异主要在影响类型而非简单幅度。</li><li>该动机支持分别处理 bounded local interactions 与 domain-wide coupling，但并未证明 pressure coupling 必须由 MLP-Mixer 或先局部后全局的唯一架构实现。</li></ul></div>
 </section>
 <section class="reading-card reading-card-section">
-  <div class="reading-card-topline">
-    <span class="reading-step">Card 04</span>
-    <span class="reading-step-note">模型与方法</span>
-  </div>
   <h2>模型与方法</h2>
   <div class="reading-card-content"><ul><li>Encoder 以多层卷积降采样并保留浅层 skip；decoder 用 transposed convolution 重建。Translator 堆叠 8 个 dual-path blocks，hidden dimensions 128/256。</li><li>Local pathway 是 residual depthwise convolution + pointwise channel mixing；global pathway 是 residual spatial MLP 后接 channel MLP，提供 all-to-all spatial communication。</li><li>所有模型用 8×\(A_{100}\) 40GB 训练、单 \(A_{100}\) 推理；batch 20、500 epochs、初始 learning rate 0.001、固定 random seed 42。训练做 one-step，测试从首帧递归 rollout。</li><li>NS-Forced 含 1200×20×1×64×64，\(\nu=10^-5\) 且低波数持续外力，预测 19 steps；NS-Decaying 含 1200×100×1×128×128，无外力自然衰减，预测 99 steps。</li><li>比较对象含 FNO/UNO/CNO/LSM、ResNet/U-Net/Swin、ConvLSTM/PastNet/SimVP；评价 all-step 与特定 horizon MSE，并补充 SSIM、gradient-vector error 和 divergence error。</li></ul></div>
 </section>
 <section class="reading-card reading-card-section">
-  <div class="reading-card-topline">
-    <span class="reading-step">Card 05</span>
-    <span class="reading-step-note">核心结果与证据</span>
-  </div>
   <h2>核心结果与证据</h2>
   <div class="reading-card-content"><ul><li>Table 2：NS-Forced all-step MSE 为 DSO 0.0153、次优 FNO 0.0263；19-step 为 0.1086 对 0.1852，约为 FNO 的 58.6%。</li><li>NS-Decaying all-step 为 DSO 0.1714、次优 SimVP 1.5510，即 DSO 为其 11.0%，对应误差降低约 89%；99-step 为 0.4986，对 FNO 2.9465、SimVP 3.2480。</li><li>UNO 在 decaying long horizon 出现 NaN；可视化中 FNO 模糊细节、ConvLSTM collapse、LSM 保留形态但有运动漂移。Figure 4 的 SSIM 说明相似 MSE 的模型仍可能有不同结构保真度。</li><li>Ablation Table 3：去 convolution 后 all-step/99-step 为 0.2059/0.5871；去 MLP-Mixer 后升为 1.1335/2.4606。两路都有贡献，global path 对长期稳定更关键。</li><li>论文摘要称 over 88%，正文结论写 up to 89%；精确来源是 0.1714 相对 1.5510 的 decaying all-step 比较，而不是对所有 baselines/datasets 的统一改善。</li></ul></div>
 </section>
 <section class="reading-card reading-card-section">
-  <div class="reading-card-topline">
-    <span class="reading-step">Card 06</span>
-    <span class="reading-step-note">有效性与局限</span>
-  </div>
   <h2>有效性与局限</h2>
   <div class="reading-card-content"><ul><li>只覆盖二维周期域上的 forced/decaying synthetic turbulence；作者也承认需扩展到更多 physical scenarios 与 boundary conditions。</li><li>训练只报告 seed 42，没有多 seed 均值、置信区间或 seed-level raw results；曲线阴影是不同 samples 的 variance，不能替代训练随机性检验。</li><li>各 baseline 参数量、训练细节和 inductive bias 不完全匹配；8×\(A_{100}\) 资源下的精度表也没有报告 wall-clock、memory、FLOPs 或 solver speedup。</li><li>MSE、SSIM、gradient/divergence 都是有用 proxy，但没有 energy/enstrophy spectrum、conservation drift 或独立 DNS stability gate；视觉近似不等于物理轨迹正确。</li><li>arXiv \(v_{1}\) 的会议模板元数据未清理且正文未给代码仓库链接，降低了发表状态与可复现性的可核查程度。</li></ul></div>
 </section>
 <section class="reading-card reading-card-section">
-  <div class="reading-card-topline">
-    <span class="reading-step">Card 07</span>
-    <span class="reading-step-note">复现与资源</span>
-  </div>
   <h2>复现与资源</h2>
   <div class="reading-card-content"><ul><li>严格复现应保存固定 80/10/10 split、所有 1200 trajectories、one-step checkpoints、逐 rollout step predictions，以及 MSE/SSIM/gradient/divergence raw arrays。</li><li>必须用多个训练 seeds 重跑，并确保所有 baseline 获得同等 tuning budget；对 NaN/collapse 保存首次失稳 step 和数值范围，而非只在表中记 nan。</li><li>建议增加 energy/enstrophy spectra、vortex-center trajectory、长期守恒误差与推理吞吐，才能分别验证 local detail、global drift 和部署成本。</li><li>本站 PDF SHA-256：9db7768b011a3d8cdf17192913c19f460a81fb419dd036ff4995bf339b120fd8。</li><li>Evidence status: full-text verified; no independent reproduction performed.</li></ul></div>
 </section>
 <section class="reading-card reading-card-section">
-  <div class="reading-card-topline">
-    <span class="reading-step">Card 08</span>
-    <span class="reading-step-note">阅读指南</span>
-  </div>
   <h2>阅读指南</h2>
   <div class="reading-card-content"><ul><li>先看 Figure 2/Table 1，判断局部/全局动机证据的范围；它是设计启发，不是唯一机制证明。</li><li>再读 Figure 3 与 equations (7)–(13)，明确卷积和 MLP-Mixer 各自处理什么。</li><li>最后把 Table 2、Figure 4、Table 3 与 Limitations 合读：89% 数字来自单个 decaying all-step 对照，真正下一步是多 seed、复杂边界和物理守恒验证。</li></ul></div>
 </section></article>

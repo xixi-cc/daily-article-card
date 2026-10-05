@@ -3,10 +3,10 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>The Information Dynamics of Generative Diffusion - physics+AI Collection 论文卡</title>
-    <meta name="description" content="Dejan Stančević 与 Luca Ambrogioni；二人均署名荷兰 Radboud University 的 Donders Institute for Brain, Cognition and Behaviour，且均列为通讯作者。本文核对的是 2026 年 2 月 10 日发表的《Entropy》28(2):195，DOI 10.3390/e28020195，实体 PDF 共 26 页；arXiv 2508.19897v4 为后发修订，不作为本卡公式与页码依据（PDF 第 1 页）。 这是兼有综述性组织与原创分析的理论文章：引言明确把既有条件熵和对称破缺结果归于前人，将局部轨道分析及路径熵方差的特化标志列为第 6、7 节的新贡献；不能把整套扩散信息论归为本文首创（PDF 第 2–3 页）。" />
+    <title>The Information Dynamics of Generative Diffusion - 论文卡</title>
+    <meta name="description" content="从噪声生成一个样本时，模型在哪个噪声尺度才被迫在多个可能结果之间作选择？论文用对干净样本的条件不确定性、score 场的曲率和路径之间的差异，尝试给出同一过程的三个读法。" />
     <link rel="canonical" href="https://xixi-cc.github.io/daily-article-card/collection-papers/2508.19897/" />
-    <script type="application/ld+json">{"@context": "https://schema.org", "@type": "Article", "headline": "The Information Dynamics of Generative Diffusion", "description": "Dejan Stančević 与 Luca Ambrogioni；二人均署名荷兰 Radboud University 的 Donders Institute for Brain, Cognition and Behaviour，且均列为通讯作者。本文核对的是 2026 年 2 月 10 日发表的《Entropy》28(2):195，DOI 10.3390/e28020195，实体 PDF 共 26 页；arXiv 2508.19897v4 为后发修订，不作为本卡公式与页码依据（PDF 第 1 页）。 这是兼有综述性组织与原创分析的理论文章：引言明确把既有条件熵和对称破缺结果归于前人，将局部轨道分析及路径熵方差的特化标志列为第 6、7 节的新贡献；不能把整套扩散信息论归为本文首创（PDF 第 2–3 页）。", "url": "https://xixi-cc.github.io/daily-article-card/collection-papers/2508.19897/", "mainEntityOfPage": "https://xixi-cc.github.io/daily-article-card/collection-papers/2508.19897/", "inLanguage": "zh-CN", "author": {"@type": "Person", "name": "Xineng Cao", "alternateName": ["Xixi Cao", "曹溪能"], "url": "https://xixi-cc.github.io/"}, "isBasedOn": "https://doi.org/10.3390/e28020195"}</script>
+    <script type="application/ld+json">{"@context": "https://schema.org", "@type": "Article", "headline": "The Information Dynamics of Generative Diffusion", "description": "从噪声生成一个样本时，模型在哪个噪声尺度才被迫在多个可能结果之间作选择？论文用对干净样本的条件不确定性、score 场的曲率和路径之间的差异，尝试给出同一过程的三个读法。", "url": "https://xixi-cc.github.io/daily-article-card/collection-papers/2508.19897/", "mainEntityOfPage": "https://xixi-cc.github.io/daily-article-card/collection-papers/2508.19897/", "inLanguage": "zh-CN", "author": {"@type": "Person", "name": "Xineng Cao", "alternateName": ["Xixi Cao", "曹溪能"], "url": "https://xixi-cc.github.io/"}, "isBasedOn": "https://doi.org/10.3390/e28020195"}</script>
     <script>
       (function() {
         try {
@@ -30,6 +30,18 @@
     <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700;800&family=Noto+Sans+SC:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
     <script>document.documentElement.classList.add('math-pending');</script>
     <script>
+      window.fitInlineMath = function(root) {
+        (root || document).querySelectorAll('mjx-container:not([display="true"])').forEach(function(el) {
+          el.classList.remove('inline-math-overflow');
+          const content = el.closest('.reading-card-content, .detail-summary, .feed-card-body');
+          if(content && el.getBoundingClientRect().width > content.clientWidth) {
+            el.classList.add('inline-math-overflow');
+            el.tabIndex = 0;
+            el.setAttribute('aria-label', '长公式，可横向滑动阅读');
+          }
+        });
+      };
+      window.addEventListener('resize', function() { window.fitInlineMath(); });
       window.MathJax = {
         tex: {
           inlineMath: [['$', '$'], ['\\(', '\\)']],
@@ -49,6 +61,7 @@
             MathJax.startup.promise.then(function() {
               document.documentElement.classList.remove('math-pending');
               document.documentElement.dataset.mathReady = 'true';
+              window.requestAnimationFrame(function() { window.fitInlineMath(); });
             });
           }
         }
@@ -65,9 +78,9 @@
     <header class="header detail-page-header">
       <div class="container">
         <div class="detail-page-topbar">
-          <a class="back-link" href="../../collection.html">返回列表</a>
+          <a class="back-link" href="../../index.html">返回列表</a>
           <div class="detail-topbar-actions">
-            <span class="detail-site-name">physics+AI Collection 论文卡</span>
+            <span class="detail-site-name">论文卡</span>
             <button id="detail-favorite" class="detail-favorite-button" type="button" aria-pressed="false">☆ 收藏</button>
             <button class="theme-toggle" type="button" data-theme-toggle aria-label="当前主题：设备，点击切换主题" title="当前主题：设备">
   <span class="theme-toggle-icons" aria-hidden="true">
@@ -91,22 +104,15 @@
         <div class="detail-hero-grid">
           <div class="detail-hero-cover"><figure class="paper-figure-card paper-figure-card-detail">
   <img class="paper-figure-image" src="../../assets/collection-figures/2508.19897/figure-1.png" alt="稳定 score 零点的分支与条件熵率峰在同一噪声时间轴上并列展示。" loading="lazy" onclick="window.openPaperFigureImage && window.openPaperFigureImage(this)" />
-  <figcaption class="paper-figure-caption">图 1：score 零点分支（黑虚线）与条件熵率（红线）的同轴示例；正式论文第 12 页。 来源：Dejan Stančević、Luca Ambrogioni；https://doi.org/10.3390/e28020195; CC BY 4.0</figcaption>
+  <figcaption class="paper-figure-caption">图 1：score 零点分支（黑虚线）与条件熵率（红线）的同轴示例；正式论文第 12 页。 来源：Dejan Stančević、Luca Ambrogioni；https://doi.org/10.3390/e28020195; CC BY 4.0 <a href="https://doi.org/10.3390/e28020195" target="_blank" rel="noopener noreferrer">原文图源 ↗</a></figcaption>
 </figure></div>
           <div class="detail-hero-copy">
-            <p class="eyebrow">Collection 全文卡</p>
+            <p class="eyebrow">论文详情</p>
             <h1 class="detail-page-title">The Information Dynamics of Generative Diffusion</h1>
             <p class="detail-page-title-zh">生成扩散的信息动力学</p>
-            <div class="detail-meta">Paper Collection · Generative Models · <a href="https://doi.org/10.3390/e28020195" target="_blank" rel="noopener noreferrer">原文</a></div>
-            <p class="detail-summary">Dejan Stančević 与 Luca Ambrogioni；二人均署名荷兰 Radboud University 的 Donders Institute for Brain, Cognition and Behaviour，且均列为通讯作者。本文核对的是 2026 年 2 月 10 日发表的《Entropy》28(2):195，DOI 10.3390/\(e_{28020195}\)，实体 PDF 共 26 页；arXiv 2508.19897v4 为后发修订，不作为本卡公式与页码依据（PDF 第 1 页）。 这是兼有综述性组织与原创分析的理论文章：引言明确把既有条件熵和对称破缺结果归于前人，将局部轨道分析及路径熵方差的特化标志列为第 6、7 节的新贡献；不能把整套扩散信息论归为本文首创（PDF 第 2–3 页）。</p>
-            <div class="detail-micro-meta">
-              <span class="meta-pill">AI 基础理论</span>
-              <span class="meta-pill">理论与数值</span>
-              <span class="meta-pill">#Generative Models</span><span class="meta-pill">#机器学习</span><span class="meta-pill">#人工智能</span>
-              <span class="meta-pill">15 分钟读完</span>
-              <span class="meta-pill">8 张阅读卡</span>
-              <span class="meta-pill">Dejan Stančević 与 Luca Ambrogioni；二人均署名荷兰 Radboud U…</span>
-            </div>
+            <div class="detail-meta">Dejan Stančević、Luca Ambrogioni · Entropy 28(2), article 195 (2026) · <a href="https://doi.org/10.3390/e28020195" target="_blank" rel="noopener noreferrer">论文原文 ↗</a></div>
+            <p class="detail-summary">从噪声生成一个样本时，模型在哪个噪声尺度才被迫在多个可能结果之间作选择？论文用对干净样本的条件不确定性、score 场的曲率和路径之间的差异，尝试给出同一过程的三个读法。</p>
+
           </div>
         </div>
       </div>
@@ -115,34 +121,14 @@
     <main class="container detail-layout">
       <div class="detail-shell">
         <article id="detail-body" class="reading-flow"><section class="reading-card reading-card-section">
-  <div class="reading-card-topline">
-    <span class="reading-step">Card 01</span>
-    <span class="reading-step-note">作者信息</span>
-  </div>
-  <h2>作者信息</h2>
-  <div class="reading-card-content"><ul><li>Dejan Stančević 与 Luca Ambrogioni；二人均署名荷兰 Radboud University 的 Donders Institute for Brain, Cognition and Behaviour，且均列为通讯作者。本文核对的是 2026 年 2 月 10 日发表的《Entropy》28(2):195，DOI 10.3390/\(e_{28020195}\)，实体 PDF 共 26 页；arXiv 2508.19897v4 为后发修订，不作为本卡公式与页码依据（PDF 第 1 页）。</li><li>这是兼有综述性组织与原创分析的理论文章：引言明确把既有条件熵和对称破缺结果归于前人，将局部轨道分析及路径熵方差的特化标志列为第 6、7 节的新贡献；不能把整套扩散信息论归为本文首创（PDF 第 2–3 页）。</li></ul></div>
-</section>
-<section class="reading-card reading-card-section">
-  <div class="reading-card-topline">
-    <span class="reading-step">Card 02</span>
-    <span class="reading-step-note">研究问题</span>
-  </div>
   <h2>研究问题</h2>
   <div class="reading-card-content"><ul><li>从噪声生成一个样本时，模型在哪个噪声尺度才被迫在多个可能结果之间作选择？论文用对干净样本的条件不确定性、score 场的曲率和路径之间的差异，尝试给出同一过程的三个读法（PDF 第 1–3 页）。</li><li>读者桥梁：输入是数据分布中的干净样本 $Y$；正向过程把它变为带噪状态 $X_t$。生成时从高噪声向低噪声反行；可训练对象是近似 $\nabla_x\log p_t(x)$ 的 score 网络，监督信号是噪声预测/去噪误差，输出是一条样本轨道。本文的等式主要讨论可得精确 score 的理想系统，图和附录则用解析混合分布检验该机制；它们不是对训练好的图像扩散器的实测结论（PDF 第 5–6、18–24 页）。</li></ul></div>
 </section>
 <section class="reading-card reading-card-section">
-  <div class="reading-card-topline">
-    <span class="reading-step">Card 03</span>
-    <span class="reading-step-note">背景</span>
-  </div>
   <h2>背景</h2>
   <div class="reading-card-content"><ul><li>正向高斯加噪使不同数据模式逐渐重叠；反向生成的 score 是当前带噪密度的对数梯度，指定平均去噪方向。多个干净样本与同一个带噪状态兼容时，后验仍宽，随机增量可以影响最终选择。论文把这一直觉与既有的条件熵工作及模式分岔工作相连（PDF 第 2、5、7–9 页）。</li><li>“时间”是所选的加噪参数，既非实验物理时间，也不是网络训练步数。论文先以 EDM/VE 型加噪推导信息率，再为尖锐的分支时间使用 VP/OU 参数化；两者的方差峰尺度不能混用（PDF 第 5、18、24 页）。</li></ul></div>
 </section>
 <section class="reading-card reading-card-section">
-  <div class="reading-card-topline">
-    <span class="reading-step">Card 04</span>
-    <span class="reading-step-note">模型与方法</span>
-  </div>
   <h2>模型与方法</h2>
   <div class="reading-card-content"><ul><li>理想化正向核为 $p(x_t\mid y)=\mathcal N(x_t;y,\sigma_t^2 I)$；$y$ 是干净样本、$x_t$ 是带噪状态、$\sigma_t$ 是各向同性噪声标准差、$I$ 是单位矩阵。由后验均值 $\mu(x_t)=\mathbb E[Y\mid X_t=x_t]$ 得到 score $\nabla_x\log p_t(x_t)=[\mu(x_t)-x_t]/\sigma_t^2$。因此 score 同时反映当前状态与所有兼容干净样本的加权平均，而非某一个已知目标（PDF 第 5、7 页，式 (7)、(22)）。</li><li>以 $H(Y\mid X_t)$ 度量给定当前状态后对最终样本的剩余不确定性。对纯扩散热方程、可微密度和可用的分部积分边界条件，式 (19) 把正向时间导数写成条件核和边缘 score 的平方范数之差；$D$ 为环境维数、$\nu(t)$ 为扩散幅度：</li></ul>
 
@@ -151,10 +137,6 @@
 <ul><li>它随正向加噪非负；反向生成读作消除不确定性的速率。不能把数值大小脱离 $\nu(t)$、$\sigma_t$ 或时间参数直接比较（PDF 第 6–7 页，式 (17)–(19)）。</li><li>第 5 节用离散数据点的高斯混合追踪 score 的稳定零点及其分支；两点近对称例子经近似映射到 Curie–Weiss 自洽方程。第 6 节再区分局部固定点与典型轨道附近的整体平均曲率。第 7 节把每条路径当前状态的后验熵定义为 $h_t(x_t)=H(Y\mid X_t=x_t)$，研究 $V_h(t)=\operatorname{Var}_{X_t}[h_t(X_t)]$；这里的方差跨路径取样，不是单条轨道的时间方差（PDF 第 10–12、13–17 页，式 (39)–(46)、(47)–(66)）。</li></ul></div>
 </section>
 <section class="reading-card reading-card-section">
-  <div class="reading-card-topline">
-    <span class="reading-step">Card 05</span>
-    <span class="reading-step-note">核心结果与证据</span>
-  </div>
   <h2>核心结果与证据</h2>
   <div class="reading-card-content"><ul><li>对上述纯高斯加噪，令 $\operatorname{div}(t)=\mathbb E[\Delta_x\log p_t(X_t)]$，$\operatorname{div}_1(t)=-D/\sigma_t^2$ 为单个高斯核基线，定义 $\Delta\operatorname{div}=\operatorname{div}-\operatorname{div}_1$。论文得到精确关系</li></ul>
 
@@ -182,26 +164,14 @@
 </figure></div>
 </section>
 <section class="reading-card reading-card-section">
-  <div class="reading-card-topline">
-    <span class="reading-step">Card 06</span>
-    <span class="reading-step-note">有效性与局限</span>
-  </div>
   <h2>有效性与局限</h2>
   <div class="reading-card-content"><ul><li>式 (19)、(56) 以精确 score、纯各向同性高斯加噪及适当光滑/边界条件为前提；真实训练网络的近似误差或非可积向量场会改变等式。固定点分支与轨道选择的图像依赖例子及局部线性化，整体期望散度只给平均量；没有训练模型基准、图像生成质量或采样速度增益的实证检验（PDF 第 6、12–16、20 页）。</li><li>高维峰的解析定位要求有限类别、$\Theta(\sqrt d)$ 类间距离、$O(1)$ 类内涨落及 VP/OU 时间参数；EDM 中不出现相同的峰局域化。作者明确把路径熵涨落是否带来实用优势列为开放问题（PDF 第 17–18、20–24 页）。</li><li>源文另有不宜沿用的等式：PDF 第 6 页式 (15) 的 $C_t=\mathbb E\operatorname{Var}(Z\mid X_t)$ 与式 (16) 写成的 $\mathbb E\operatorname{Var}(Y\mid X_t)$ 之间应有 $1/\sigma_t^2$ 因子（$Y=X_t-\sigma_t Z$）；第 9 页式 (34) 的符号/系数也与式 (12)–(15)、(33) 不一致。本卡不据此推断训练损失可直接给出信息率；待正式勘误或独立证明前，将该连接视为未解决的源文边界。</li></ul></div>
 </section>
 <section class="reading-card reading-card-section">
-  <div class="reading-card-topline">
-    <span class="reading-step">Card 07</span>
-    <span class="reading-step-note">复现与资源</span>
-  </div>
   <h2>复现与资源</h2>
   <div class="reading-card-content"><ul><li>论文数据可用性声明为“Data are contained within the article”；PDF 未提供可核验的代码仓库、模型权重、训练集或复现实验命令。图 1、4、\(A_{1}\) 为所述理论混合例子/示意证据，公开的公式及参数可用于独立实现，但本卡未运行独立复现（PDF 第 12、19–20、24 页）。</li><li>正式论文与 CC BY 许可见 https://doi.org/10.3390/e28020195；arXiv 条目 https://arxiv.org/abs/2508.19897 可追溯预印本版本，页码和公式以本卡核对的正式版为准。</li></ul></div>
 </section>
 <section class="reading-card reading-card-section">
-  <div class="reading-card-topline">
-    <span class="reading-step">Card 08</span>
-    <span class="reading-step-note">阅读指南</span>
-  </div>
   <h2>阅读指南</h2>
   <div class="reading-card-content"><ul><li>速读：先看第 5 页的高斯加噪与 score 定义，再看第 7、15 页式 (19)、(56)，配合第 12 页图 1；最后直接读第 18–19 页的 VP 信噪比和第 24 页图 \(A_{1}\)。这样可辨认“平均信息率”和“跨路径差异”是两个不同量。</li><li>深读：沿第 7–9 页的条件熵推导、第 10–12 页的零点分岔、第 13–16 页的局部/总体曲率，再读第 20–24 页附录 A 的 SNR 渐近。第 3–4 页二十问是类比而非连续扩散的证明；读式 (15)–(16)、(34) 时应保留上述代数疑点。</li></ul></div>
 </section></article>

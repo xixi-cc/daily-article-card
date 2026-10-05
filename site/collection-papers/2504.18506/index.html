@@ -3,10 +3,10 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Action-Minimization Meets Generative Modeling: Efficient Transition Path Sampling with the Onsager-Machlup Functional - physics+AI Collection 论文卡</title>
-    <meta name="description" content="作者：Sanjeev Raja、Martin Šípka、Michael Psenka、Tobias Kreiman、Michal Pavelka、Aditi S. Krishnapriyan；arXiv:2504.18506v3。全文 38 页，覆盖 Müller–Brown、alanine dipeptide、fast-folding proteins 与未见 tetrapeptides。" />
+    <title>Action-Minimization Meets Generative Modeling: Efficient Transition Path Sampling with the Onsager-Machlup Functional - 论文卡</title>
+    <meta name="description" content="生成模型擅长独立 equilibrium samples，却不直接给出带动力学意义的 rare transition paths。论文问：能否把 diffusion/flow model 的 learned score 解释为随机动力学 drift，用 Onsager–Machlup action 在给定端点间优化高概率路径，而不为 TPS 另训模型？" />
     <link rel="canonical" href="https://xixi-cc.github.io/daily-article-card/collection-papers/2504.18506/" />
-    <script type="application/ld+json">{"@context": "https://schema.org", "@type": "Article", "headline": "Action-Minimization Meets Generative Modeling: Efficient Transition Path Sampling with the Onsager-Machlup Functional", "description": "作者：Sanjeev Raja、Martin Šípka、Michael Psenka、Tobias Kreiman、Michal Pavelka、Aditi S. Krishnapriyan；arXiv:2504.18506v3。全文 38 页，覆盖 Müller–Brown、alanine dipeptide、fast-folding proteins 与未见 tetrapeptides。", "url": "https://xixi-cc.github.io/daily-article-card/collection-papers/2504.18506/", "mainEntityOfPage": "https://xixi-cc.github.io/daily-article-card/collection-papers/2504.18506/", "inLanguage": "zh-CN", "author": {"@type": "Person", "name": "Xineng Cao", "alternateName": ["Xixi Cao", "曹溪能"], "url": "https://xixi-cc.github.io/"}, "isBasedOn": "https://arxiv.org/abs/2504.18506"}</script>
+    <script type="application/ld+json">{"@context": "https://schema.org", "@type": "Article", "headline": "Action-Minimization Meets Generative Modeling: Efficient Transition Path Sampling with the Onsager-Machlup Functional", "description": "生成模型擅长独立 equilibrium samples，却不直接给出带动力学意义的 rare transition paths。论文问：能否把 diffusion/flow model 的 learned score 解释为随机动力学 drift，用 Onsager–Machlup action 在给定端点间优化高概率路径，而不为 TPS 另训模型？", "url": "https://xixi-cc.github.io/daily-article-card/collection-papers/2504.18506/", "mainEntityOfPage": "https://xixi-cc.github.io/daily-article-card/collection-papers/2504.18506/", "inLanguage": "zh-CN", "author": {"@type": "Person", "name": "Xineng Cao", "alternateName": ["Xixi Cao", "曹溪能"], "url": "https://xixi-cc.github.io/"}, "isBasedOn": "https://arxiv.org/abs/2504.18506"}</script>
     <script>
       (function() {
         try {
@@ -30,6 +30,18 @@
     <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700;800&family=Noto+Sans+SC:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
     <script>document.documentElement.classList.add('math-pending');</script>
     <script>
+      window.fitInlineMath = function(root) {
+        (root || document).querySelectorAll('mjx-container:not([display="true"])').forEach(function(el) {
+          el.classList.remove('inline-math-overflow');
+          const content = el.closest('.reading-card-content, .detail-summary, .feed-card-body');
+          if(content && el.getBoundingClientRect().width > content.clientWidth) {
+            el.classList.add('inline-math-overflow');
+            el.tabIndex = 0;
+            el.setAttribute('aria-label', '长公式，可横向滑动阅读');
+          }
+        });
+      };
+      window.addEventListener('resize', function() { window.fitInlineMath(); });
       window.MathJax = {
         tex: {
           inlineMath: [['$', '$'], ['\\(', '\\)']],
@@ -49,6 +61,7 @@
             MathJax.startup.promise.then(function() {
               document.documentElement.classList.remove('math-pending');
               document.documentElement.dataset.mathReady = 'true';
+              window.requestAnimationFrame(function() { window.fitInlineMath(); });
             });
           }
         }
@@ -65,9 +78,9 @@
     <header class="header detail-page-header">
       <div class="container">
         <div class="detail-page-topbar">
-          <a class="back-link" href="../../collection.html">返回列表</a>
+          <a class="back-link" href="../../index.html">返回列表</a>
           <div class="detail-topbar-actions">
-            <span class="detail-site-name">physics+AI Collection 论文卡</span>
+            <span class="detail-site-name">论文卡</span>
             <button id="detail-favorite" class="detail-favorite-button" type="button" aria-pressed="false">☆ 收藏</button>
             <button class="theme-toggle" type="button" data-theme-toggle aria-label="当前主题：设备，点击切换主题" title="当前主题：设备">
   <span class="theme-toggle-icons" aria-hidden="true">
@@ -91,22 +104,15 @@
         <div class="detail-hero-grid">
           <div class="detail-hero-cover"><figure class="paper-figure-card paper-figure-card-detail">
   <img class="paper-figure-image" src="../../assets/collection-figures/2504.18506/figure-1-om-schematic.webp" alt="从原子生成模型的 learned score 到 Onsager–Machlup action optimization 与分子跃迁路径的流程。" loading="lazy" onclick="window.openPaperFigureImage && window.openPaperFigureImage(this)" />
-  <figcaption class="paper-figure-caption">把 learned score 解释为 drift 后，可在 OM action 上直接优化稀有跃迁路径。</figcaption>
+  <figcaption class="paper-figure-caption">把 learned score 解释为 drift 后，可在 OM action 上直接优化稀有跃迁路径。 <a href="https://arxiv.org/abs/2504.18506" target="_blank" rel="noopener noreferrer">原文图源 ↗</a></figcaption>
 </figure></div>
           <div class="detail-hero-copy">
-            <p class="eyebrow">Collection 全文卡</p>
+            <p class="eyebrow">论文详情</p>
             <h1 class="detail-page-title">Action-Minimization Meets Generative Modeling: Efficient Transition Path Sampling with the Onsager-Machlup Functional</h1>
             <p class="detail-page-title-zh">作用量最小化遇见生成建模：以 Onsager–Machlup 泛函高效采样跃迁路径</p>
-            <div class="detail-meta">Paper Collection · Generative Models · <a href="https://arxiv.org/abs/2504.18506" target="_blank" rel="noopener noreferrer">原文</a></div>
-            <p class="detail-summary">作者：Sanjeev Raja、Martin Šípka、Michael Psenka、Tobias Kreiman、Michal Pavelka、Aditi S. Krishnapriyan；arXiv:2504.18506v3。全文 38 页，覆盖 Müller–Brown、alanine dipeptide、fast-folding proteins 与未见 tetrapeptides。</p>
-            <div class="detail-micro-meta">
-              <span class="meta-pill">生物与神经</span>
-              <span class="meta-pill">理论与数值</span>
-              <span class="meta-pill">#Generative Models</span><span class="meta-pill">#机器学习</span><span class="meta-pill">#生成模型</span>
-              <span class="meta-pill">10 分钟读完</span>
-              <span class="meta-pill">8 张阅读卡</span>
-              <span class="meta-pill">作者：Sanjeev Raja、Martin Šípka、Michael Psenka、Tobias…</span>
-            </div>
+            <div class="detail-meta">Sanjeev Raja、Martin Šípka、Michael Psenka、Tobias Kreiman、Michal Pavelka、Aditi S. Krishnapriyan · 预印本 · arXiv:2504.18506 · <a href="https://arxiv.org/abs/2504.18506" target="_blank" rel="noopener noreferrer">论文原文 ↗</a></div>
+            <p class="detail-summary">生成模型擅长独立 equilibrium samples，却不直接给出带动力学意义的 rare transition paths。论文问：能否把 diffusion/flow model 的 learned score 解释为随机动力学 drift，用 Onsager–Machlup action 在给定端点间优化高概率路径，而不为 TPS 另训模型？</p>
+
           </div>
         </div>
       </div>
@@ -115,42 +121,18 @@
     <main class="container detail-layout">
       <div class="detail-shell">
         <article id="detail-body" class="reading-flow"><section class="reading-card reading-card-section">
-  <div class="reading-card-topline">
-    <span class="reading-step">Card 01</span>
-    <span class="reading-step-note">作者信息</span>
-  </div>
-  <h2>作者信息</h2>
-  <div class="reading-card-content"><ul><li>作者：Sanjeev Raja、Martin Šípka、Michael Psenka、Tobias Kreiman、Michal Pavelka、Aditi S. Krishnapriyan；arXiv:2504.18506v3。全文 38 页，覆盖 Müller–Brown、alanine dipeptide、fast-folding proteins 与未见 tetrapeptides。</li></ul></div>
-</section>
-<section class="reading-card reading-card-section">
-  <div class="reading-card-topline">
-    <span class="reading-step">Card 02</span>
-    <span class="reading-step-note">研究问题</span>
-  </div>
   <h2>研究问题</h2>
   <div class="reading-card-content"><ul><li>生成模型擅长独立 equilibrium samples，却不直接给出带动力学意义的 rare transition paths。论文问：能否把 diffusion/flow model 的 learned score 解释为随机动力学 drift，用 Onsager–Machlup action 在给定端点间优化高概率路径，而不为 TPS 另训模型？</li></ul></div>
 </section>
 <section class="reading-card reading-card-section">
-  <div class="reading-card-topline">
-    <span class="reading-step">Card 03</span>
-    <span class="reading-step-note">背景</span>
-  </div>
   <h2>背景</h2>
   <div class="reading-card-content"><ul><li>过阻尼 Langevin path 的概率权重由 OM functional 决定，包含 drift mismatch 与 divergence/Laplacian correction。若 \(p_{\rm data}\propto e^{-\beta U}\)，score 与 force 成比例；生成模型提供可微的近似 score。</li><li>Figure 1 将 atomistic generative model、learned vector field/score、OM action landscape 与 transition paths 连成一条物理解释链。</li></ul></div>
 </section>
 <section class="reading-card reading-card-section">
-  <div class="reading-card-topline">
-    <span class="reading-step">Card 04</span>
-    <span class="reading-step-note">模型与方法</span>
-  </div>
   <h2>模型与方法</h2>
   <div class="reading-card-content"><ul><li>路径由离散 beads 参数化，固定反应物/产物端点，以 gradient optimizer 最小化 full 或 truncated OM action。diffusion model 在选择的 noise time 提供 score；flow matching 通过 stochastic encoding/decoding 与 velocity-score relation 提取等效 drift。</li><li>Hutchinson trace estimator 近似 score divergence；优化得到的路径还用于训练 committor network，并通过 backward Kolmogorov relation估计 transition rate。</li></ul></div>
 </section>
 <section class="reading-card reading-card-section">
-  <div class="reading-card-topline">
-    <span class="reading-step">Card 05</span>
-    <span class="reading-step-note">核心结果与证据</span>
-  </div>
   <h2>核心结果与证据</h2>
   <div class="reading-card-content"><ul><li>Figure 1 展示核心转换：原本只生成 i.i.\(d\). equilibrium conformations 的模型，经 score-as-force 解释后成为 transition-path action。</li><li>在 alanine dipeptide 上，作者报告 OM optimization 每 1000-step path 所需 force evaluations 少于 metadynamics 与 shooting baselines；Müller–Brown 上由优化路径得到的 rate 为 \(1.3\times10^{-5}\)，接近文中 reference。</li><li>在 BBA、Trp-cage 等 coarse-grained proteins 上，路径穿过经验 committor \(q\approx0.5\) 的 transition-state region；未见 tetrapeptides 的 MSM metrics 与 50–100 ns MD 相当。</li></ul><figure class="evidence-figure">
   <button class="evidence-figure-image-button" type="button" aria-label="放大查看 Figure 1" onclick="window.openPaperFigureImage && window.openPaperFigureImage(this.querySelector('img'))">
@@ -164,26 +146,14 @@
 </figure></div>
 </section>
 <section class="reading-card reading-card-section">
-  <div class="reading-card-topline">
-    <span class="reading-step">Card 06</span>
-    <span class="reading-step-note">有效性与局限</span>
-  </div>
   <h2>有效性与局限</h2>
   <div class="reading-card-content"><ul><li>作者明确指出方法不保证从正确 transition-path ensemble 无偏采样；action minimization 更接近最可能路径搜索，可能漏掉多通道熵贡献。learned score 的 force interpretation 依赖 equilibrium、temperature 与 coarse-graining assumptions。</li><li>端点、路径长度、diffusivity、noise-time 与 optimizer initialization 都会选择不同局部极小。committor/rate 结果需要额外 dynamics validation；低 force-evaluation count 也不等于相同硬件 wall time。</li></ul></div>
 </section>
 <section class="reading-card reading-card-section">
-  <div class="reading-card-topline">
-    <span class="reading-step">Card 07</span>
-    <span class="reading-step-note">复现与资源</span>
-  </div>
   <h2>复现与资源</h2>
   <div class="reading-card-content"><ul><li>原文：https://arxiv.org/abs/2504.18506；代码：https://github.com/ASK-Berkeley/Action-Minimization-Generative-Modeling。全文 38 页，PDF SHA-256：c5d7b59e338facfa30a108eb41db324b43165072e92077d8fe9351f97fe50663。</li><li>复现需固定 generative checkpoint、score extraction time、temperature/friction/diffusivity、beads/horizon、full/truncated action、trace samples、optimizer/seeds、endpoint definitions、force-field与 committor/MSM protocol。</li><li>Evidence status: full-text verified; no independent reproduction performed.</li></ul></div>
 </section>
 <section class="reading-card reading-card-section">
-  <div class="reading-card-topline">
-    <span class="reading-step">Card 08</span>
-    <span class="reading-step-note">阅读指南</span>
-  </div>
   <h2>阅读指南</h2>
   <div class="reading-card-content"><ul><li>先看 Figure 1 与 OM functional，核对 score–force 假设；再读 diffusion/flow score extraction 和 discretized action。随后审查 alanine/protein figures 与 force-evaluation table，最后读 limitations，把最可能路径、transition-path ensemble、committor 和 rate 四个对象分开。</li></ul></div>
 </section></article>

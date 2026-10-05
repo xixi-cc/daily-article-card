@@ -3,10 +3,10 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>The Spacetime of Diffusion Models: An Information Geometry Perspective - physics+AI Collection 论文卡</title>
-    <meta name="description" content="Rafal Karczewski、Markus Heinonen、Alison Pouplin、Soren Hauberg 与 Vikas Garg 合作完成。单位包括 Aalto University、Technical University of Denmark 与 YaiYai Ltd。PDF 首页记录 arXiv:2505.17517v4 [cs.LG]（2026-02-26）及 ICLR 2026 conference-paper 状态。论文讨论的不是在曲面上训练扩散模型，而是扩散去噪器本身在实向量数据空间上诱导出何种几何。" />
+    <title>The Spacetime of Diffusion Models: An Information Geometry Perspective - 论文卡</title>
+    <meta name="description" content="如果把扩散模型的终端噪声 x_T 当 latent，并以 deterministic probability-flow ODE 作为 decoder，常规 pullback 度量能否得到有意义的数据内禀测地线？作者证明这种做法失败：latent 中的最短路解码后必为数据空间直线段，因而忽略模型学到的几何。替代问题是如何让“一个 latent 状态所代表的去噪分布”成为几何对象，并在全部噪声尺度上定义非退化、可计算的距离和最短编辑路径。" />
     <link rel="canonical" href="https://xixi-cc.github.io/daily-article-card/collection-papers/2505.17517/" />
-    <script type="application/ld+json">{"@context": "https://schema.org", "@type": "Article", "headline": "The Spacetime of Diffusion Models: An Information Geometry Perspective", "description": "Rafal Karczewski、Markus Heinonen、Alison Pouplin、Soren Hauberg 与 Vikas Garg 合作完成。单位包括 Aalto University、Technical University of Denmark 与 YaiYai Ltd。PDF 首页记录 arXiv:2505.17517v4 [cs.LG]（2026-02-26）及 ICLR 2026 conference-paper 状态。论文讨论的不是在曲面上训练扩散模型，而是扩散去噪器本身在实向量数据空间上诱导出何种几何。", "url": "https://xixi-cc.github.io/daily-article-card/collection-papers/2505.17517/", "mainEntityOfPage": "https://xixi-cc.github.io/daily-article-card/collection-papers/2505.17517/", "inLanguage": "zh-CN", "author": {"@type": "Person", "name": "Xineng Cao", "alternateName": ["Xixi Cao", "曹溪能"], "url": "https://xixi-cc.github.io/"}, "isBasedOn": "https://arxiv.org/abs/2505.17517"}</script>
+    <script type="application/ld+json">{"@context": "https://schema.org", "@type": "Article", "headline": "The Spacetime of Diffusion Models: An Information Geometry Perspective", "description": "如果把扩散模型的终端噪声 x_T 当 latent，并以 deterministic probability-flow ODE 作为 decoder，常规 pullback 度量能否得到有意义的数据内禀测地线？作者证明这种做法失败：latent 中的最短路解码后必为数据空间直线段，因而忽略模型学到的几何。替代问题是如何让“一个 latent 状态所代表的去噪分布”成为几何对象，并在全部噪声尺度上定义非退化、可计算的距离和最短编辑路径。", "url": "https://xixi-cc.github.io/daily-article-card/collection-papers/2505.17517/", "mainEntityOfPage": "https://xixi-cc.github.io/daily-article-card/collection-papers/2505.17517/", "inLanguage": "zh-CN", "author": {"@type": "Person", "name": "Xineng Cao", "alternateName": ["Xixi Cao", "曹溪能"], "url": "https://xixi-cc.github.io/"}, "isBasedOn": "https://arxiv.org/abs/2505.17517"}</script>
     <script>
       (function() {
         try {
@@ -30,6 +30,18 @@
     <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700;800&family=Noto+Sans+SC:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
     <script>document.documentElement.classList.add('math-pending');</script>
     <script>
+      window.fitInlineMath = function(root) {
+        (root || document).querySelectorAll('mjx-container:not([display="true"])').forEach(function(el) {
+          el.classList.remove('inline-math-overflow');
+          const content = el.closest('.reading-card-content, .detail-summary, .feed-card-body');
+          if(content && el.getBoundingClientRect().width > content.clientWidth) {
+            el.classList.add('inline-math-overflow');
+            el.tabIndex = 0;
+            el.setAttribute('aria-label', '长公式，可横向滑动阅读');
+          }
+        });
+      };
+      window.addEventListener('resize', function() { window.fitInlineMath(); });
       window.MathJax = {
         tex: {
           inlineMath: [['$', '$'], ['\\(', '\\)']],
@@ -49,6 +61,7 @@
             MathJax.startup.promise.then(function() {
               document.documentElement.classList.remove('math-pending');
               document.documentElement.dataset.mathReady = 'true';
+              window.requestAnimationFrame(function() { window.fitInlineMath(); });
             });
           }
         }
@@ -65,9 +78,9 @@
     <header class="header detail-page-header">
       <div class="container">
         <div class="detail-page-topbar">
-          <a class="back-link" href="../../collection.html">返回列表</a>
+          <a class="back-link" href="../../index.html">返回列表</a>
           <div class="detail-topbar-actions">
-            <span class="detail-site-name">physics+AI Collection 论文卡</span>
+            <span class="detail-site-name">论文卡</span>
             <button id="detail-favorite" class="detail-favorite-button" type="button" aria-pressed="false">☆ 收藏</button>
             <button class="theme-toggle" type="button" data-theme-toggle aria-label="当前主题：设备，点击切换主题" title="当前主题：设备">
   <span class="theme-toggle-icons" aria-hidden="true">
@@ -91,22 +104,15 @@
         <div class="detail-hero-grid">
           <div class="detail-hero-cover"><figure class="paper-figure-card paper-figure-card-detail">
   <img class="paper-figure-image" src="../../assets/collection-figures/2505.17517/figure-4-spacetime-geodesics.webp" alt="四行图像对之间的扩散时空测地线：清晰端点先经历噪声化中间态，再逐步去噪成另一端点。" loading="lazy" onclick="window.openPaperFigureImage && window.openPaperFigureImage(this)" />
-  <figcaption class="paper-figure-caption">Diffusion Edit Distance 的图像例子：每行的时空测地线通过噪声状态连接两张清晰图，路径长度被定义为最小总编辑代价。</figcaption>
+  <figcaption class="paper-figure-caption">Diffusion Edit Distance 的图像例子：每行的时空测地线通过噪声状态连接两张清晰图，路径长度被定义为最小总编辑代价。 <a href="https://arxiv.org/abs/2505.17517" target="_blank" rel="noopener noreferrer">原文图源 ↗</a></figcaption>
 </figure></div>
           <div class="detail-hero-copy">
-            <p class="eyebrow">Collection 全文卡</p>
+            <p class="eyebrow">论文详情</p>
             <h1 class="detail-page-title">The Spacetime of Diffusion Models: An Information Geometry Perspective</h1>
             <p class="detail-page-title-zh">扩散模型的时空：信息几何视角</p>
-            <div class="detail-meta">Paper Collection · Diffusion Models and Information Geometry · <a href="https://arxiv.org/abs/2505.17517" target="_blank" rel="noopener noreferrer">原文</a></div>
-            <p class="detail-summary">Rafal Karczewski、Markus Heinonen、Alison Pouplin、Soren Hauberg 与 Vikas Garg 合作完成。单位包括 Aalto University、Technical University of Denmark 与 YaiYai Ltd。PDF 首页记录 arXiv:2505.17517v4 [cs.LG]（2026-02-26）及 ICLR 2026 conference-paper 状态。论文讨论的不是在曲面上训练扩散模型，而是扩散去噪器本身在实向量数据空间上诱导出何种几何。</p>
-            <div class="detail-micro-meta">
-              <span class="meta-pill">AI 基础理论</span>
-              <span class="meta-pill">理论与数值</span>
-              <span class="meta-pill">#Diffusion Models and Information Geometry</span><span class="meta-pill">#机器学习</span><span class="meta-pill">#表示学习</span>
-              <span class="meta-pill">10 分钟读完</span>
-              <span class="meta-pill">8 张阅读卡</span>
-              <span class="meta-pill">Rafal Karczewski、Markus Heinonen、Alison Pouplin、Sor…</span>
-            </div>
+            <div class="detail-meta">Rafal Karczewski、Markus Heinonen、Alison Pouplin、Soren Hauberg、Vikas Garg · 预印本 · arXiv:2505.17517 · <a href="https://arxiv.org/abs/2505.17517" target="_blank" rel="noopener noreferrer">论文原文 ↗</a></div>
+            <p class="detail-summary">如果把扩散模型的终端噪声 \(x_{T}\) 当 latent，并以 deterministic probability-flow ODE 作为 decoder，常规 pullback 度量能否得到有意义的数据内禀测地线？作者证明这种做法失败：latent 中的最短路解码后必为数据空间直线段，因而忽略模型学到的几何。替代问题是如何让“一个 latent 状态所代表的去噪分布”成为几何对象，并在全部噪声尺度上定义非退化、可计算的距离和最短编辑路径。</p>
+
           </div>
         </div>
       </div>
@@ -115,42 +121,18 @@
     <main class="container detail-layout">
       <div class="detail-shell">
         <article id="detail-body" class="reading-flow"><section class="reading-card reading-card-section">
-  <div class="reading-card-topline">
-    <span class="reading-step">Card 01</span>
-    <span class="reading-step-note">作者信息</span>
-  </div>
-  <h2>作者信息</h2>
-  <div class="reading-card-content"><ul><li>Rafal Karczewski、Markus Heinonen、Alison Pouplin、Soren Hauberg 与 Vikas Garg 合作完成。单位包括 Aalto University、Technical University of Denmark 与 YaiYai Ltd。PDF 首页记录 arXiv:2505.17517v4 [cs.LG]（2026-02-26）及 ICLR 2026 conference-paper 状态。论文讨论的不是在曲面上训练扩散模型，而是扩散去噪器本身在实向量数据空间上诱导出何种几何。</li></ul></div>
-</section>
-<section class="reading-card reading-card-section">
-  <div class="reading-card-topline">
-    <span class="reading-step">Card 02</span>
-    <span class="reading-step-note">研究问题</span>
-  </div>
   <h2>研究问题</h2>
   <div class="reading-card-content"><ul><li>如果把扩散模型的终端噪声 \(x_{T}\) 当 latent，并以 deterministic probability-flow ODE 作为 decoder，常规 pullback 度量能否得到有意义的数据内禀测地线？作者证明这种做法失败：latent 中的最短路解码后必为数据空间直线段，因而忽略模型学到的几何。替代问题是如何让“一个 latent 状态所代表的去噪分布”成为几何对象，并在全部噪声尺度上定义非退化、可计算的距离和最短编辑路径。</li></ul></div>
 </section>
 <section class="reading-card reading-card-section">
-  <div class="reading-card-topline">
-    <span class="reading-step">Card 03</span>
-    <span class="reading-step-note">背景</span>
-  </div>
   <h2>背景</h2>
   <div class="reading-card-content"><ul><li>扩散前向核把 clean data \(x_{0}\) 逐渐变为高斯噪声，采样可用随机 reverse SDE 或与其边缘分布一致的 deterministic PF-ODE。生成模型的 pullback geometry 通常将数据空间欧氏度量拉回 latent；但可逆确定 decoder 会使该结构仅是欧氏直线的坐标重写。随机 decoder 则给每个状态一个 \(p\)(\(x_{0}\)|\(x_{t}\))，可使用 Fisher-Rao 度量比较分布改变。困难是 \(x_{T}\) 近似无记忆，\(p\)(\(x_{0}\)|\(x_{T}\)) 对终端噪声几乎不变，Fisher metric 会塌缩为零。</li></ul></div>
 </section>
 <section class="reading-card reading-card-section">
-  <div class="reading-card-topline">
-    <span class="reading-step">Card 04</span>
-    <span class="reading-step-note">模型与方法</span>
-  </div>
   <h2>模型与方法</h2>
   <div class="reading-card-content"><ul><li>作者把 latent 从单一 \(x_{T}\) 提升为 \(z\)=\(x_{t},t\) 的 (\(D\)+1) 维 spacetime，代表所有噪声层级上的 denoising posterior。clean datum \(x\) 对应 (\(x\),0) 和 Dirac 后验。论文证明该去噪分布族是 exponential family，因而 Fisher-Rao 能量可改写为依赖 expectation parameter 的形式；该参数用 Tweedie 公式及近似 denoiser 估计，避免沿曲线反复运行 reverse SDE。数值上离散一条固定端点曲线，最小化 Fisher-Rao 能量求 geodesic；其长度定义为 Diffusion Edit Distance（DiffED）。同一几何还被加入方差或禁区约束，用于分子转变路径采样。</li></ul></div>
 </section>
 <section class="reading-card reading-card-section">
-  <div class="reading-card-topline">
-    <span class="reading-step">Card 05</span>
-    <span class="reading-step-note">核心结果与证据</span>
-  </div>
   <h2>核心结果与证据</h2>
   <div class="reading-card-content"><ul><li>第一，作者指出 PF-ODE pullback 的 geodesic 虽会在 noise space 弯曲，却在 data space 解码成直线，Figure 2 因而给出负面基线。第二，时空 Fisher-Rao 构造恢复非平凡结构，并通过 exponential-family 结论得到 simulation-free 曲线能量估计。Figure 4（第 8--9 页）展示不同 ImageNet 图像对的 geodesic：每条路径由清晰源图进入噪声态，再逐步去噪到目标，作者将其长度解释为最小总 edit cost。第三，Alanine Dipeptide 上 Figure 5--7 显示所求 geodesic 可作为 transition-path sampling 的骨架，并可加入低方差或避开限定区域的约束；论文称其结果与专用方法具有竞争性，而非证明普遍最优。</li></ul><figure class="evidence-figure">
   <button class="evidence-figure-image-button" type="button" aria-label="放大查看 Figure 4" onclick="window.openPaperFigureImage && window.openPaperFigureImage(this.querySelector('img'))">
@@ -164,26 +146,14 @@
 </figure></div>
 </section>
 <section class="reading-card reading-card-section">
-  <div class="reading-card-topline">
-    <span class="reading-step">Card 06</span>
-    <span class="reading-step-note">有效性与局限</span>
-  </div>
   <h2>有效性与局限</h2>
   <div class="reading-card-content"><ul><li>框架的清晰贡献是先严格否定一个诱人的 ODE pullback 解释，再以 stochastic posterior 的信息几何提出可计算替代；将时间纳入坐标也精确处理了终端无记忆的度量塌缩。限制同样明确：接近 clean endpoint 时 posterior 接近 Dirac，局部 KL/Fisher 距离数值上趋于无穷，实际优化须把端点放在非忽略噪声水平；DiffED 又明显慢于 LPIPS/SSIM 等相似度。exponential-family 与能量估计依赖文中的扩散模型、近似 score/denoiser 和离散优化，图像路径的“编辑”解释是作者的语义，不构成对人类感知距离的通用验证。</li></ul></div>
 </section>
 <section class="reading-card reading-card-section">
-  <div class="reading-card-topline">
-    <span class="reading-step">Card 07</span>
-    <span class="reading-step-note">复现与资源</span>
-  </div>
   <h2>复现与资源</h2>
   <div class="reading-card-content"><ul><li>论文给出代码链接 https://github.com/rafalkarczewski/spacetime-geometry。最小复核可从训练好的小型 score model 出发，比较 PF-ODE pullback path 解码后的直线性，再从多个 \(t\) 的后验估计 Fisher-Rao 能量。完整 DiffED 复核需记录噪声 schedule、denoiser、Tweedie expectation-parameter 近似、曲线节点数、端点最小噪声、能量优化器与收敛阈值；随后用相同 image pairs 比较 geodesic 长度而非只看中间帧。分子实验还须固定势能、数据预处理、约束函数和采样随机性。本卡仅核验 25 页 PDF、完整 MinerU Markdown 和已有渲染页，未运行仓库、生成路径或基准比较。</li></ul></div>
 </section>
 <section class="reading-card reading-card-section">
-  <div class="reading-card-topline">
-    <span class="reading-step">Card 08</span>
-    <span class="reading-step-note">阅读指南</span>
-  </div>
   <h2>阅读指南</h2>
   <div class="reading-card-content"><ul><li>先读第 2--4 节，把 PF-ODE、reverse SDE 和 decoder 的不同角色分开；尤其不要把“相同边缘分布”误读为“相同几何”。接着读第 5 节的 memorylessness 论证，理解为何必须用 \(x_{t},t\) 而非只用 \(x_{T}\)。然后以 Eq. (4) 和 exponential-family 能量推导检查何处节省了 reverse-SDE 采样。Figure 4 最适合直观看 DiffED，但需连同其定义和 Section 8 的端点不稳定/计算慢限制阅读。最后再看 Figure 5--7，把分子结果视为该几何的受控应用与约束能力展示，而非对所有 transition path 方法的覆盖性结论。</li></ul></div>
 </section></article>

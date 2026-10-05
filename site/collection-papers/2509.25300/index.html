@@ -3,10 +3,10 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Scaling Behaviors of LLM Reinforcement Learning Post-Training: An Empirical Study in Mathematical Reasoning - physics+AI Collection 论文卡</title>
-    <meta name="description" content="作者：Zelin Tan、Hejia Geng、Xiaohang Yu、Mulei Zhang、Guancheng Wan 等 17 位；arXiv:2509.25300v4。全文 21 页。研究以 GRPO 对 Qwen2.5 0.5B–72B dense models 做数学推理 post-training，并用 Llama 3 1B–70B 做跨架构检验。" />
+    <title>Scaling Behaviors of LLM Reinforcement Learning Post-Training: An Empirical Study in Mathematical Reasoning - 论文卡</title>
+    <meta name="description" content="预训练 scaling laws 已较成熟，但 RL post-training 中模型大小 \(N\)、训练 FLOPs \(C\)、数据量 \(D\) 与重复使用如何共同控制 reasoning loss 尚不清楚。论文问：早期训练曲线能否预测后期和更大模型，larger model 的学习效率是否无限增长，以及数据稀缺时重复高质量样本何时有益或过拟合？" />
     <link rel="canonical" href="https://xixi-cc.github.io/daily-article-card/collection-papers/2509.25300/" />
-    <script type="application/ld+json">{"@context": "https://schema.org", "@type": "Article", "headline": "Scaling Behaviors of LLM Reinforcement Learning Post-Training: An Empirical Study in Mathematical Reasoning", "description": "作者：Zelin Tan、Hejia Geng、Xiaohang Yu、Mulei Zhang、Guancheng Wan 等 17 位；arXiv:2509.25300v4。全文 21 页。研究以 GRPO 对 Qwen2.5 0.5B–72B dense models 做数学推理 post-training，并用 Llama 3 1B–70B 做跨架构检验。", "url": "https://xixi-cc.github.io/daily-article-card/collection-papers/2509.25300/", "mainEntityOfPage": "https://xixi-cc.github.io/daily-article-card/collection-papers/2509.25300/", "inLanguage": "zh-CN", "author": {"@type": "Person", "name": "Xineng Cao", "alternateName": ["Xixi Cao", "曹溪能"], "url": "https://xixi-cc.github.io/"}, "isBasedOn": "https://arxiv.org/abs/2509.25300"}</script>
+    <script type="application/ld+json">{"@context": "https://schema.org", "@type": "Article", "headline": "Scaling Behaviors of LLM Reinforcement Learning Post-Training: An Empirical Study in Mathematical Reasoning", "description": "预训练 scaling laws 已较成熟，但 RL post-training 中模型大小 \\(N\\)、训练 FLOPs \\(C\\)、数据量 \\(D\\) 与重复使用如何共同控制 reasoning loss 尚不清楚。论文问：早期训练曲线能否预测后期和更大模型，larger model 的学习效率是否无限增长，以及数据稀缺时重复高质量样本何时有益或过拟合？", "url": "https://xixi-cc.github.io/daily-article-card/collection-papers/2509.25300/", "mainEntityOfPage": "https://xixi-cc.github.io/daily-article-card/collection-papers/2509.25300/", "inLanguage": "zh-CN", "author": {"@type": "Person", "name": "Xineng Cao", "alternateName": ["Xixi Cao", "曹溪能"], "url": "https://xixi-cc.github.io/"}, "isBasedOn": "https://arxiv.org/abs/2509.25300"}</script>
     <script>
       (function() {
         try {
@@ -30,6 +30,18 @@
     <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700;800&family=Noto+Sans+SC:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
     <script>document.documentElement.classList.add('math-pending');</script>
     <script>
+      window.fitInlineMath = function(root) {
+        (root || document).querySelectorAll('mjx-container:not([display="true"])').forEach(function(el) {
+          el.classList.remove('inline-math-overflow');
+          const content = el.closest('.reading-card-content, .detail-summary, .feed-card-body');
+          if(content && el.getBoundingClientRect().width > content.clientWidth) {
+            el.classList.add('inline-math-overflow');
+            el.tabIndex = 0;
+            el.setAttribute('aria-label', '长公式，可横向滑动阅读');
+          }
+        });
+      };
+      window.addEventListener('resize', function() { window.fitInlineMath(); });
       window.MathJax = {
         tex: {
           inlineMath: [['$', '$'], ['\\(', '\\)']],
@@ -49,6 +61,7 @@
             MathJax.startup.promise.then(function() {
               document.documentElement.classList.remove('math-pending');
               document.documentElement.dataset.mathReady = 'true';
+              window.requestAnimationFrame(function() { window.fitInlineMath(); });
             });
           }
         }
@@ -65,9 +78,9 @@
     <header class="header detail-page-header">
       <div class="container">
         <div class="detail-page-topbar">
-          <a class="back-link" href="../../collection.html">返回列表</a>
+          <a class="back-link" href="../../index.html">返回列表</a>
           <div class="detail-topbar-actions">
-            <span class="detail-site-name">physics+AI Collection 论文卡</span>
+            <span class="detail-site-name">论文卡</span>
             <button id="detail-favorite" class="detail-favorite-button" type="button" aria-pressed="false">☆ 收藏</button>
             <button class="theme-toggle" type="button" data-theme-toggle aria-label="当前主题：设备，点击切换主题" title="当前主题：设备">
   <span class="theme-toggle-icons" aria-hidden="true">
@@ -91,22 +104,15 @@
         <div class="detail-hero-grid">
           <div class="detail-hero-cover"><figure class="paper-figure-card paper-figure-card-detail">
   <img class="paper-figure-image" src="../../assets/collection-figures/2509.25300/figure-1-rl-scaling.webp" alt="Qwen2.5 不同模型规模的 test loss 随 post-training FLOPs 变化，以及跨模型和单模型外推。" loading="lazy" onclick="window.openPaperFigureImage && window.openPaperFigureImage(this)" />
-  <figcaption class="paper-figure-caption">小模型与早期轨迹拟合可外推 72B 和后期快速提升区；有效范围仍受模型族与数学域限制。</figcaption>
+  <figcaption class="paper-figure-caption">小模型与早期轨迹拟合可外推 72B 和后期快速提升区；有效范围仍受模型族与数学域限制。 <a href="https://arxiv.org/abs/2509.25300" target="_blank" rel="noopener noreferrer">原文图源 ↗</a></figcaption>
 </figure></div>
           <div class="detail-hero-copy">
-            <p class="eyebrow">Collection 全文卡</p>
+            <p class="eyebrow">论文详情</p>
             <h1 class="detail-page-title">Scaling Behaviors of LLM Reinforcement Learning Post-Training: An Empirical Study in Mathematical Reasoning</h1>
             <p class="detail-page-title-zh">大语言模型强化学习后训练的标度行为：数学推理实证研究</p>
-            <div class="detail-meta">Paper Collection · Control &amp; Reinforcement Learning · <a href="https://arxiv.org/abs/2509.25300" target="_blank" rel="noopener noreferrer">原文</a></div>
-            <p class="detail-summary">作者：Zelin Tan、Hejia Geng、Xiaohang Yu、Mulei Zhang、Guancheng Wan 等 17 位；arXiv:2509.25300v4。全文 21 页。研究以 GRPO 对 Qwen2.5 0.5B–72B dense models 做数学推理 post-training，并用 Llama 3 1B–70B 做跨架构检验。</p>
-            <div class="detail-micro-meta">
-              <span class="meta-pill">AI 基础理论</span>
-              <span class="meta-pill">AI 实证</span>
-              <span class="meta-pill">#Control &amp; Reinforcement Learning</span><span class="meta-pill">#机器学习</span><span class="meta-pill">#人工智能</span>
-              <span class="meta-pill">10 分钟读完</span>
-              <span class="meta-pill">8 张阅读卡</span>
-              <span class="meta-pill">作者：Zelin Tan、Hejia Geng、Xiaohang Yu、Mulei Zhang、Gua…</span>
-            </div>
+            <div class="detail-meta">Zelin Tan、Hejia Geng、Xiaohang Yu、Mulei Zhang、Guancheng Wan、Yifan Zhou、Qiang He、Xiangyuan Xue、Heng Zhou、Yutao Fan、Zhongzhi Li、Zaibin Zhang、Guibin Zhang、Chen Zhang、Zhenfei Yin、Philip Torr、Lei Bai · 预印本 · arXiv:2509.25300 · <a href="https://arxiv.org/abs/2509.25300" target="_blank" rel="noopener noreferrer">论文原文 ↗</a></div>
+            <p class="detail-summary">预训练 scaling laws 已较成熟，但 RL post-training 中模型大小 \(N\)、训练 FLOPs \(C\)、数据量 \(D\) 与重复使用如何共同控制 reasoning loss 尚不清楚。论文问：早期训练曲线能否预测后期和更大模型，larger model 的学习效率是否无限增长，以及数据稀缺时重复高质量样本何时有益或过拟合？</p>
+
           </div>
         </div>
       </div>
@@ -115,42 +121,18 @@
     <main class="container detail-layout">
       <div class="detail-shell">
         <article id="detail-body" class="reading-flow"><section class="reading-card reading-card-section">
-  <div class="reading-card-topline">
-    <span class="reading-step">Card 01</span>
-    <span class="reading-step-note">作者信息</span>
-  </div>
-  <h2>作者信息</h2>
-  <div class="reading-card-content"><ul><li>作者：Zelin Tan、Hejia Geng、Xiaohang Yu、Mulei Zhang、Guancheng Wan 等 17 位；arXiv:2509.25300v4。全文 21 页。研究以 GRPO 对 Qwen2.5 0.5B–72B dense models 做数学推理 post-training，并用 Llama 3 1B–70B 做跨架构检验。</li></ul></div>
-</section>
-<section class="reading-card reading-card-section">
-  <div class="reading-card-topline">
-    <span class="reading-step">Card 02</span>
-    <span class="reading-step-note">研究问题</span>
-  </div>
   <h2>研究问题</h2>
   <div class="reading-card-content"><ul><li>预训练 scaling laws 已较成熟，但 RL post-training 中模型大小 \(N\)、训练 FLOPs \(C\)、数据量 \(D\) 与重复使用如何共同控制 reasoning loss 尚不清楚。论文问：早期训练曲线能否预测后期和更大模型，larger model 的学习效率是否无限增长，以及数据稀缺时重复高质量样本何时有益或过拟合？</li></ul></div>
 </section>
 <section class="reading-card reading-card-section">
-  <div class="reading-card-topline">
-    <span class="reading-step">Card 03</span>
-    <span class="reading-step-note">背景</span>
-  </div>
   <h2>背景</h2>
   <div class="reading-card-content"><ul><li>主要指标定义为 test loss \(L=1-\mathrm{PassRate}\)，在固定 holdout math benchmark 上比较。作者将 compute-constrained、data-constrained 和 fixed-total-data reuse 三种 ensemble 分开，并对 base/instruct families 分别拟合。</li><li>Figure 1 汇总 inter-model 与 intra-model extrapolation：用 0.5B–32B 拟合的直线外推 held-out 72B，用早期 steps 外推同一模型后期；颜色随参数规模变化，展示大模型具有更陡 loss–resource slope。</li></ul></div>
 </section>
 <section class="reading-card reading-card-section">
-  <div class="reading-card-topline">
-    <span class="reading-step">Card 04</span>
-    <span class="reading-step-note">模型与方法</span>
-  </div>
   <h2>模型与方法</h2>
   <div class="reading-card-content"><ul><li>经验式为 \(\log L(N,X)=-k(N)\log X+E(N)\)，其中 \(X=C\) 或 \(D\)。学习效率 \(k(N)\) 再拟合饱和式 \(K_{\max}/(1+N_0/N)\)，把随模型增大的边际收益限制在 \(K_{\max}\)。训练共覆盖 Qwen2.5 0.5B、1.5B、3B、7B、14B、32B、72B，正文称共 fine-tune 63 个 LLM runs。</li><li>data reuse 保持 \(D_{\rm unique}\tau=D_{\rm total}\)，通过不同子集大小与 repetition factor \(\tau\) 比较同总步数。课程难度分布保持一致；域迁移同时测 math、HumanEval、SuperGPQA 与 zebra puzzle。</li></ul></div>
 </section>
 <section class="reading-card reading-card-section">
-  <div class="reading-card-topline">
-    <span class="reading-step">Card 05</span>
-    <span class="reading-step-note">核心结果与证据</span>
-  </div>
   <h2>核心结果与证据</h2>
   <div class="reading-card-content"><ul><li>Figure 1 的 held-out 72B 虚线与实测轨迹接近，intra-model 早期拟合也能外推快速提升阶段；Qwen 的 compute/data inter-与 intra-model fits 均报告 \(R^2&gt;0.99\)。Llama 3 1B–70B 重复实验同样 \(R^2&gt;0.99\)，但绝对性能不同：Llama-70B holdout accuracy 约 50%，Qwen-72B 约 59%。</li><li>\(k_C(N)\) 与 \(k_D(N)\) 随规模增加，但 32B 后增益开始减弱；这是有限范围内对饱和函数的支持，不是对 \(N\to\infty\) 的观测。Figure 7 显示固定 \(D_{\rm total}\) 时 \(\tau\le25\) 的 final loss 无显著退化，\(\tau=100\) 出现过拟合。</li><li>RL 改善主要迁移到未见过的数学任务；HumanEval 与 SuperGPQA 增益很小，较大模型的 zebra-puzzle 甚至退化。因此“总优化步数主导”仅在所测数学域和中等复用区成立，不能理解为样本唯一性普遍不重要。</li></ul><figure class="evidence-figure">
   <button class="evidence-figure-image-button" type="button" aria-label="放大查看 Figure 1" onclick="window.openPaperFigureImage && window.openPaperFigureImage(this.querySelector('img'))">
@@ -164,26 +146,14 @@
 </figure></div>
 </section>
 <section class="reading-card reading-card-section">
-  <div class="reading-card-topline">
-    <span class="reading-step">Card 06</span>
-    <span class="reading-step-note">有效性与局限</span>
-  </div>
   <h2>有效性与局限</h2>
   <div class="reading-card-content"><ul><li>论文是单一主算法 GRPO、数学奖励、dense Qwen/Llama families 的经验研究；\(R^2\) 高只说明所采样资源窗口内 log-linear fit 好，不能证明机制或远尺度外推。test loss 强依赖题集难度与 PassRate estimator，\(K_{\max},N_0,E\) 不能跨环境直接解释。</li><li>作者明确指出未覆盖多域 RL、72B 以上规模和 MoE；饱和趋势因此尚未在更大尺度验证。63 runs 的超参、数据筛选和 rollout cost 会影响拟合；moderate reuse 的结论也受 curriculum 与 high-quality math data 条件限制。</li></ul></div>
 </section>
 <section class="reading-card reading-card-section">
-  <div class="reading-card-topline">
-    <span class="reading-step">Card 07</span>
-    <span class="reading-step-note">复现与资源</span>
-  </div>
   <h2>复现与资源</h2>
   <div class="reading-card-content"><ul><li>原文：https://arxiv.org/abs/2509.25300。全文 21 页，PDF SHA-256：cab7b0093cb2a4a87d8f6541324d2bb7bd82acc270fe448e3516750fa5dac2f0。</li><li>复现需固定 Qwen/Llama checkpoints、GRPO group size/reward normalization、50k+ math problem pool、difficulty strata、rollout length、FLOP accounting、holdout PassRate sampling、fit windows、reuse \(\tau\) 和 domain-transfer prompts。拟合应报告 bootstrap intervals 与 held-out residuals。</li><li>Evidence status: full-text verified; no independent reproduction performed.</li></ul></div>
 </section>
 <section class="reading-card reading-card-section">
-  <div class="reading-card-topline">
-    <span class="reading-step">Card 08</span>
-    <span class="reading-step-note">阅读指南</span>
-  </div>
   <h2>阅读指南</h2>
   <div class="reading-card-content"><ul><li>先看 Figure 1，区分跨模型和单模型外推；再读 Eqs. (1)–(8)，检查 \(k(N)\) 的饱和参数化。随后看 Figures 4–5 的跨架构结果，再读 Figures 6–9 的 reuse/domain-transfer 边界，最后核对 Limitations，避免把有限尺度拟合提升为普适 RL scaling law。</li></ul></div>
 </section></article>

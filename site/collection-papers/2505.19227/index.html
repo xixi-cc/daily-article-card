@@ -3,10 +3,10 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Scaling Laws for Gradient Descent and Sign Descent for Linear Bigram Models under Zipf&#x27;s Law - physics+AI Collection 论文卡</title>
-    <meta name="description" content="Frederik Kunstner 与 Francis Bach 合著，PDF 列出 Inria 联系信息。本文为 arXiv:2505.19227v1 [cs.LG]，日期 2025-05-25，首页注明 under review。它研究的目标不是给语言模型选择一个通用 optimizer，而是在可解析的 next-token 线性 bigram 问题中量化 Zipf 重尾频率如何改变迭代优化的维度缩放。" />
+    <title>Scaling Laws for Gradient Descent and Sign Descent for Linear Bigram Models under Zipf&#x27;s Law - 论文卡</title>
+    <meta name="description" content="文本词频常满足 pi_k proportional 1/k。若词表随规模增大，许多罕见 token 构成巨大 tail；常规 GD 是否会因这些坐标而显著变慢，且 sign descent 的坐标尺度不敏感更新为何可能缓解问题？作者将频率一般化为 pi_k proportional k^{-alpha}，关心达到相对误差 epsilon 所需步数 t 对 vocabulary dimension d 的标度，特别比较 Zipf alpha=1 与较轻尾 alpha&gt;1。" />
     <link rel="canonical" href="https://xixi-cc.github.io/daily-article-card/collection-papers/2505.19227/" />
-    <script type="application/ld+json">{"@context": "https://schema.org", "@type": "Article", "headline": "Scaling Laws for Gradient Descent and Sign Descent for Linear Bigram Models under Zipf's Law", "description": "Frederik Kunstner 与 Francis Bach 合著，PDF 列出 Inria 联系信息。本文为 arXiv:2505.19227v1 [cs.LG]，日期 2025-05-25，首页注明 under review。它研究的目标不是给语言模型选择一个通用 optimizer，而是在可解析的 next-token 线性 bigram 问题中量化 Zipf 重尾频率如何改变迭代优化的维度缩放。", "url": "https://xixi-cc.github.io/daily-article-card/collection-papers/2505.19227/", "mainEntityOfPage": "https://xixi-cc.github.io/daily-article-card/collection-papers/2505.19227/", "inLanguage": "zh-CN", "author": {"@type": "Person", "name": "Xineng Cao", "alternateName": ["Xixi Cao", "曹溪能"], "url": "https://xixi-cc.github.io/"}, "isBasedOn": "https://arxiv.org/abs/2505.19227"}</script>
+    <script type="application/ld+json">{"@context": "https://schema.org", "@type": "Article", "headline": "Scaling Laws for Gradient Descent and Sign Descent for Linear Bigram Models under Zipf's Law", "description": "文本词频常满足 pi_k proportional 1/k。若词表随规模增大，许多罕见 token 构成巨大 tail；常规 GD 是否会因这些坐标而显著变慢，且 sign descent 的坐标尺度不敏感更新为何可能缓解问题？作者将频率一般化为 pi_k proportional k^{-alpha}，关心达到相对误差 epsilon 所需步数 t 对 vocabulary dimension d 的标度，特别比较 Zipf alpha=1 与较轻尾 alpha>1。", "url": "https://xixi-cc.github.io/daily-article-card/collection-papers/2505.19227/", "mainEntityOfPage": "https://xixi-cc.github.io/daily-article-card/collection-papers/2505.19227/", "inLanguage": "zh-CN", "author": {"@type": "Person", "name": "Xineng Cao", "alternateName": ["Xixi Cao", "曹溪能"], "url": "https://xixi-cc.github.io/"}, "isBasedOn": "https://arxiv.org/abs/2505.19227"}</script>
     <script>
       (function() {
         try {
@@ -30,6 +30,18 @@
     <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700;800&family=Noto+Sans+SC:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
     <script>document.documentElement.classList.add('math-pending');</script>
     <script>
+      window.fitInlineMath = function(root) {
+        (root || document).querySelectorAll('mjx-container:not([display="true"])').forEach(function(el) {
+          el.classList.remove('inline-math-overflow');
+          const content = el.closest('.reading-card-content, .detail-summary, .feed-card-body');
+          if(content && el.getBoundingClientRect().width > content.clientWidth) {
+            el.classList.add('inline-math-overflow');
+            el.tabIndex = 0;
+            el.setAttribute('aria-label', '长公式，可横向滑动阅读');
+          }
+        });
+      };
+      window.addEventListener('resize', function() { window.fitInlineMath(); });
       window.MathJax = {
         tex: {
           inlineMath: [['$', '$'], ['\\(', '\\)']],
@@ -49,6 +61,7 @@
             MathJax.startup.promise.then(function() {
               document.documentElement.classList.remove('math-pending');
               document.documentElement.dataset.mathReady = 'true';
+              window.requestAnimationFrame(function() { window.fitInlineMath(); });
             });
           }
         }
@@ -65,9 +78,9 @@
     <header class="header detail-page-header">
       <div class="container">
         <div class="detail-page-topbar">
-          <a class="back-link" href="../../collection.html">返回列表</a>
+          <a class="back-link" href="../../index.html">返回列表</a>
           <div class="detail-topbar-actions">
-            <span class="detail-site-name">physics+AI Collection 论文卡</span>
+            <span class="detail-site-name">论文卡</span>
             <button id="detail-favorite" class="detail-favorite-button" type="button" aria-pressed="false">☆ 收藏</button>
             <button class="theme-toggle" type="button" data-theme-toggle aria-label="当前主题：设备，点击切换主题" title="当前主题：设备">
   <span class="theme-toggle-icons" aria-hidden="true">
@@ -91,22 +104,15 @@
         <div class="detail-hero-grid">
           <div class="detail-hero-cover"><figure class="paper-figure-card paper-figure-card-detail">
   <img class="paper-figure-image" src="../../assets/collection-figures/2505.19227/figure-2-sign-descent-zipf-scaling.webp" alt="OpenWebText 线性二元模型中达到不同相对误差所需 sign descent 步数随词表大小增加的散点和 d 的平方根虚线。" loading="lazy" onclick="window.openPaperFigureImage && window.openPaperFigureImage(this)" />
-  <figcaption class="paper-figure-caption">Figure 2 的 sign-descent 面板：真实数据点随 vocabulary size 增长的趋势与作者在 Zipf 情形下的 \(d\)^(1/2) 标度比较。</figcaption>
+  <figcaption class="paper-figure-caption">Figure 2 的 sign-descent 面板：真实数据点随 vocabulary size 增长的趋势与作者在 Zipf 情形下的 \(d\)^(1/2) 标度比较。 <a href="https://arxiv.org/abs/2505.19227" target="_blank" rel="noopener noreferrer">原文图源 ↗</a></figcaption>
 </figure></div>
           <div class="detail-hero-copy">
-            <p class="eyebrow">Collection 全文卡</p>
+            <p class="eyebrow">论文详情</p>
             <h1 class="detail-page-title">Scaling Laws for Gradient Descent and Sign Descent for Linear Bigram Models under Zipf&#x27;s Law</h1>
             <p class="detail-page-title-zh">Zipf 定律下线性二元模型的梯度下降与符号下降缩放律</p>
-            <div class="detail-meta">Paper Collection · Optimization and Language Modeling · <a href="https://arxiv.org/abs/2505.19227" target="_blank" rel="noopener noreferrer">原文</a></div>
-            <p class="detail-summary">Frederik Kunstner 与 Francis Bach 合著，PDF 列出 Inria 联系信息。本文为 arXiv:2505.19227v1 [cs.LG]，日期 2025-05-25，首页注明 under review。它研究的目标不是给语言模型选择一个通用 optimizer，而是在可解析的 next-token 线性 bigram 问题中量化 Zipf 重尾频率如何改变迭代优化的维度缩放。</p>
-            <div class="detail-micro-meta">
-              <span class="meta-pill">AI 基础理论</span>
-              <span class="meta-pill">理论与数值</span>
-              <span class="meta-pill">#Optimization and Language Modeling</span><span class="meta-pill">#机器学习</span><span class="meta-pill">#Transformer</span>
-              <span class="meta-pill">9 分钟读完</span>
-              <span class="meta-pill">8 张阅读卡</span>
-              <span class="meta-pill">Frederik Kunstner 与 Francis Bach 合著，PDF 列出 Inria 联系…</span>
-            </div>
+            <div class="detail-meta">Frederik Kunstner、Francis Bach · 预印本 · arXiv:2505.19227 · <a href="https://arxiv.org/abs/2505.19227" target="_blank" rel="noopener noreferrer">论文原文 ↗</a></div>
+            <p class="detail-summary">文本词频常满足 \(pi_{k}\) proportional 1/\(k\)。若词表随规模增大，许多罕见 token 构成巨大 tail；常规 GD 是否会因这些坐标而显著变慢，且 sign descent 的坐标尺度不敏感更新为何可能缓解问题？作者将频率一般化为 \(pi_{k}\) proportional \(k^{-alpha}\)，关心达到相对误差 epsilon 所需步数 \(t\) 对 vocabulary dimension \(d\) 的标度，特别比较 Zipf \(alpha=1\) 与较轻尾 alpha&gt;1。</p>
+
           </div>
         </div>
       </div>
@@ -115,42 +121,18 @@
     <main class="container detail-layout">
       <div class="detail-shell">
         <article id="detail-body" class="reading-flow"><section class="reading-card reading-card-section">
-  <div class="reading-card-topline">
-    <span class="reading-step">Card 01</span>
-    <span class="reading-step-note">作者信息</span>
-  </div>
-  <h2>作者信息</h2>
-  <div class="reading-card-content"><ul><li>Frederik Kunstner 与 Francis Bach 合著，PDF 列出 Inria 联系信息。本文为 arXiv:2505.19227v1 [cs.LG]，日期 2025-05-25，首页注明 under review。它研究的目标不是给语言模型选择一个通用 optimizer，而是在可解析的 next-token 线性 bigram 问题中量化 Zipf 重尾频率如何改变迭代优化的维度缩放。</li></ul></div>
-</section>
-<section class="reading-card reading-card-section">
-  <div class="reading-card-topline">
-    <span class="reading-step">Card 02</span>
-    <span class="reading-step-note">研究问题</span>
-  </div>
   <h2>研究问题</h2>
   <div class="reading-card-content"><ul><li>文本词频常满足 \(pi_{k}\) proportional 1/\(k\)。若词表随规模增大，许多罕见 token 构成巨大 tail；常规 GD 是否会因这些坐标而显著变慢，且 sign descent 的坐标尺度不敏感更新为何可能缓解问题？作者将频率一般化为 \(pi_{k}\) proportional \(k^{-alpha}\)，关心达到相对误差 epsilon 所需步数 \(t\) 对 vocabulary dimension \(d\) 的标度，特别比较 Zipf \(alpha=1\) 与较轻尾 alpha&gt;1。</li></ul></div>
 </section>
 <section class="reading-card reading-card-section">
-  <div class="reading-card-topline">
-    <span class="reading-step">Card 03</span>
-    <span class="reading-step-note">背景</span>
-  </div>
   <h2>背景</h2>
   <div class="reading-card-content"><ul><li>已有很多理论缩放律假设 Hessian/数据谱指数 alpha&gt;1，此时质量集中于头部，维度可在极限中变得不重要。文本 Zipf 的 \(alpha=1\) 正好在边界：尾部概率总量不可忽略，却有极端频率不平衡。Adam 的优势常被归因于 preconditioning 或逐坐标归一化；本文以 sign descent 抽取“更新幅度对坐标尺度较均匀”这一性质。必须注意 sign descent 不是 Adam 的完整动力学，线性 bigram 也不是 transformer 的 embedding/attention/softmax。</li></ul></div>
 </section>
 <section class="reading-card reading-card-section">
-  <div class="reading-card-topline">
-    <span class="reading-step">Card 04</span>
-    <span class="reading-step-note">模型与方法</span>
-  </div>
   <h2>模型与方法</h2>
   <div class="reading-card-content"><ul><li>给定 one-hot token 对 \(X\),\(Y\)，学习 \(d\) by \(d\) 条件表 W，最小化平方 Frobenius loss。边缘词频和条件频率服从作者的幂律近似；损失与 GD、SD 动态因此能按频率坐标写成闭式。relative accuracy 定义为剩余次优损失占初始次优损失的比例 epsilon。作者对 GD 在不同 alpha 推出 large-\(d\) 缩放；对 SD 因更新会振荡，引入将振荡阶段近似为常数的 Assumption 4.1，并为固定训练 horizon 选择随 \(d\),\(t\) 调整的步长。有限 \(d\) 时又以 OpenWebText 的 BPE 词表频率和条件表评估闭式误差。</li></ul></div>
 </section>
 <section class="reading-card reading-card-section">
-  <div class="reading-card-topline">
-    <span class="reading-step">Card 05</span>
-    <span class="reading-step-note">核心结果与证据</span>
-  </div>
   <h2>核心结果与证据</h2>
   <div class="reading-card-content"><ul><li>Theorem 1.1 的非正式表述称：GD 在 alpha&lt;1 时 \(t\) approximately \(d^{a}lpha\) log(1/epsilon)，在 \(alpha=1\) 时为 \(d\)^(1-epsilon)，alpha&gt;1 时不需随 \(d\) 增长。对 SD，阈值转为 \(alpha=1\)/2；Zipf \(alpha=1\) 时 \(t\) approximately \(d\)^(1/2)/sqrt(epsilon)。故在高精度 epsilon 小时，Zipf GD 近线性地受词表大小限制，而 SD 仅平方根。Figure 1 显示 GD 在 \(alpha=1\) 的维度恶化最突出，Figure 2（第 2--3 页）以 OpenWebText/不同 \(d\) 的点与 c \(d\)^(1-epsilon)、c \(d\)^(1/2) 虚线比较；Figure 3 验证词频和条件频率的 Zipf 近似，Figure 4、7 分别展示两算法跨 alpha 的有限维趋近。</li></ul><figure class="evidence-figure">
   <button class="evidence-figure-image-button" type="button" aria-label="放大查看 Figure 2" onclick="window.openPaperFigureImage && window.openPaperFigureImage(this.querySelector('img'))">
@@ -164,26 +146,14 @@
 </figure></div>
 </section>
 <section class="reading-card reading-card-section">
-  <div class="reading-card-topline">
-    <span class="reading-step">Card 06</span>
-    <span class="reading-step-note">有效性与局限</span>
-  </div>
   <h2>有效性与局限</h2>
   <div class="reading-card-content"><ul><li>贡献在于把“Zipf 对优化困难”的经验说法分出 alpha 区域，且得到 GD 与 SD 不同的维度阈值；它还强调哪种算法更好取决于数据尾部，而非绝对。条件很强：linear bigram、square loss、deterministic full-data dynamics、近似幂律条件表和 SD 振荡近似。结果是 large-\(d\) 渐近，\(alpha=1\) 的有限维收敛可能慢；论文不覆盖 online stochasticity、momentum、bilinear embeddings 或 cross-entropy。SD 的最优步长依赖 horizon，故图示不等于实践 Adam 的默认超参收益；对于 alpha&gt;1 SD 反而可能有更差维度缩放。</li></ul></div>
 </section>
 <section class="reading-card reading-card-section">
-  <div class="reading-card-topline">
-    <span class="reading-step">Card 07</span>
-    <span class="reading-step-note">复现与资源</span>
-  </div>
   <h2>复现与资源</h2>
   <div class="reading-card-content"><ul><li>复核可先生成满足 Assumption 2.3 的条件频率表，利用文中闭式而非显式 \(d^{2}\) 训练，计算 \(r_{d}\)(\(t\)) 并用 \(tau=log(t)\)/log(\(d\)) 比较曲线。再从 OpenWebText 建 BPE 词表（论文报告 1000、3612、10000、31622），估计边缘/条件频率，复算 Figure 2 各 epsilon 的 time-to-error；SD 需网格搜索 phi 并固定所选 horizon。应单独记录 \(d\)、alpha、epsilon、normalizer、GD learning rate 和 SD schedule，不能把对 \(d\) 的运行时间复杂度与迭代次数混同。本卡只核验 28 页 PDF、完整 MinerU Markdown 和既有渲染页，未下载语料或运行计算。</li></ul></div>
 </section>
 <section class="reading-card reading-card-section">
-  <div class="reading-card-topline">
-    <span class="reading-step">Card 08</span>
-    <span class="reading-step-note">阅读指南</span>
-  </div>
   <h2>阅读指南</h2>
   <div class="reading-card-content"><ul><li>先读 Theorem 1.1 的 relative accuracy 定义：epsilon 是剩余误差比例，不是 token perplexity。再看 Figure 1--2，把 Zipf \(alpha=1\) 的 \(d\)^(1-epsilon) 与 SD \(d\)^(1/2) 放在同一精度条件下解释。随后读 Figure 3 和 Assumption 2.3，确认真实文本只近似满足模型频率。第 3、4 节应并读，因 SD 结果依赖不同的阈值 \(alpha=1\)/2 和调步长策略。最后读 limitations，尤其不要把“sign descent proxy”扩张成 Adam 已被完全理论刻画，或把线性 square-loss 结论直接外推到端到端 transformer。</li></ul></div>
 </section></article>

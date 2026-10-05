@@ -3,10 +3,10 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>The Dynamics of Continuous Mixture Collapse in Language Models - 每日论文卡</title>
-    <meta name="description" content="Ali Backour，Massachusetts Institute of Technology，首页通讯邮箱abackour@mit.edu。完整核读arXiv:2609.02049v1，共13页；官方分类cs.LG、cs.CL，论文为under review预印本（p.1）。报告日期2026-09-04保留，官方listing日期独立核验。" />
+    <title>The Dynamics of Continuous Mixture Collapse in Language Models - 论文卡</title>
+    <meta name="description" content="把多条思路的token嵌入混成一个连续向量，是否真的保留了各条思路的比例？论文分离三个失真来源：Transformer架构、学习到的权重、以及即使传输线性仍存在的softmax反馈。二分支模型给出多数放大和初态抹除两侧界限，多分支则给出上下文修正的局部维数下界。贡献是受控诊断与条件性动力学结果，不是已提升完整推理任务性能（pp.2-9）。" />
     <link rel="canonical" href="https://xixi-cc.github.io/daily-article-card/papers/2609.02049/" />
-    <script type="application/ld+json">{"@context": "https://schema.org", "@type": "Article", "headline": "The Dynamics of Continuous Mixture Collapse in Language Models", "description": "Ali Backour，Massachusetts Institute of Technology，首页通讯邮箱abackour@mit.edu。完整核读arXiv:2609.02049v1，共13页；官方分类cs.LG、cs.CL，论文为under review预印本（p.1）。报告日期2026-09-04保留，官方listing日期独立核验。", "url": "https://xixi-cc.github.io/daily-article-card/papers/2609.02049/", "mainEntityOfPage": "https://xixi-cc.github.io/daily-article-card/papers/2609.02049/", "inLanguage": "zh-CN", "author": {"@type": "Person", "name": "Xineng Cao", "alternateName": ["Xixi Cao", "曹溪能"], "url": "https://xixi-cc.github.io/"}, "isBasedOn": "https://arxiv.org/abs/2609.02049", "datePublished": "2026-09-04", "dateModified": "2026-09-04"}</script>
+    <script type="application/ld+json">{"@context": "https://schema.org", "@type": "Article", "headline": "The Dynamics of Continuous Mixture Collapse in Language Models", "description": "把多条思路的token嵌入混成一个连续向量，是否真的保留了各条思路的比例？论文分离三个失真来源：Transformer架构、学习到的权重、以及即使传输线性仍存在的softmax反馈。二分支模型给出多数放大和初态抹除两侧界限，多分支则给出上下文修正的局部维数下界。贡献是受控诊断与条件性动力学结果，不是已提升完整推理任务性能（pp.2-9）。", "url": "https://xixi-cc.github.io/daily-article-card/papers/2609.02049/", "mainEntityOfPage": "https://xixi-cc.github.io/daily-article-card/papers/2609.02049/", "inLanguage": "zh-CN", "author": {"@type": "Person", "name": "Xineng Cao", "alternateName": ["Xixi Cao", "曹溪能"], "url": "https://xixi-cc.github.io/"}, "isBasedOn": "https://arxiv.org/abs/2609.02049", "datePublished": "2026-09-04", "dateModified": "2026-09-04"}</script>
     <script>
       (function() {
         try {
@@ -30,6 +30,18 @@
     <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700;800&family=Noto+Sans+SC:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
     <script>document.documentElement.classList.add('math-pending');</script>
     <script>
+      window.fitInlineMath = function(root) {
+        (root || document).querySelectorAll('mjx-container:not([display="true"])').forEach(function(el) {
+          el.classList.remove('inline-math-overflow');
+          const content = el.closest('.reading-card-content, .detail-summary, .feed-card-body');
+          if(content && el.getBoundingClientRect().width > content.clientWidth) {
+            el.classList.add('inline-math-overflow');
+            el.tabIndex = 0;
+            el.setAttribute('aria-label', '长公式，可横向滑动阅读');
+          }
+        });
+      };
+      window.addEventListener('resize', function() { window.fitInlineMath(); });
       window.MathJax = {
         tex: {
           inlineMath: [['$', '$'], ['\\(', '\\)']],
@@ -49,6 +61,7 @@
             MathJax.startup.promise.then(function() {
               document.documentElement.classList.remove('math-pending');
               document.documentElement.dataset.mathReady = 'true';
+              window.requestAnimationFrame(function() { window.fitInlineMath(); });
             });
           }
         }
@@ -65,9 +78,9 @@
     <header class="header detail-page-header">
       <div class="container">
         <div class="detail-page-topbar">
-          <a class="back-link" href="../../physics_AI.html">返回列表</a>
+          <a class="back-link" href="../../index.html">返回列表</a>
           <div class="detail-topbar-actions">
-            <span class="detail-site-name">每日论文卡</span>
+            <span class="detail-site-name">论文卡</span>
             <button id="detail-favorite" class="detail-favorite-button" type="button" aria-pressed="false">☆ 收藏</button>
             <button class="theme-toggle" type="button" data-theme-toggle aria-label="当前主题：设备，点击切换主题" title="当前主题：设备">
   <span class="theme-toggle-icons" aria-hidden="true">
@@ -91,22 +104,15 @@
         <div class="detail-hero-grid">
           <div class="detail-hero-cover"><figure class="paper-figure-card paper-figure-card-detail">
   <img class="paper-figure-image" src="../../assets/backfill-0901-0905/2609.02049/cover.png" alt="作者 Figure 1：三token混合单纯形，左为忠实权重参考，右两幅为Qwen3.5-4B与Gemma-4-E4B-it的颜色概率。内部大量点转成近纯分支；只代表受控混合探针，不代表完整推理性能。" loading="lazy" onclick="window.openPaperFigureImage && window.openPaperFigureImage(this)" />
-  <figcaption class="paper-figure-caption">作者 Figure 1：三token混合单纯形，左为忠实权重参考，右两幅为Qwen3.5-4B与Gemma-4-E4B-it的颜色概率。内部大量点转成近纯分支；只代表受控混合探针，不代表完整推理性能。 来源：Backour, Ali；The Dynamics of Continuous Mixture Collapse in Language Models; https://arxiv.org/pdf/2609.02049v1; CC BY 4.0</figcaption>
+  <figcaption class="paper-figure-caption">作者 Figure 1：三token混合单纯形，左为忠实权重参考，右两幅为Qwen3.5-4B与Gemma-4-E4B-it的颜色概率。内部大量点转成近纯分支；只代表受控混合探针，不代表完整推理性能。 来源：Backour, Ali；The Dynamics of Continuous Mixture Collapse in Language Models; https://arxiv.org/pdf/2609.02049v1; CC BY 4.0 <a href="https://arxiv.org/abs/2609.02049" target="_blank" rel="noopener noreferrer">原文图源 ↗</a></figcaption>
 </figure></div>
           <div class="detail-hero-copy">
             <p class="eyebrow">论文详情</p>
             <h1 class="detail-page-title">The Dynamics of Continuous Mixture Collapse in Language Models</h1>
             <p class="detail-page-title-zh">语言模型中的连续混合为何坍缩：架构、读出与反馈动力学</p>
-            <div class="detail-meta">2026-09-04 · <a href="https://arxiv.org/abs/2609.02049" target="_blank" rel="noopener noreferrer">原文</a></div>
-            <p class="detail-summary">Ali Backour，Massachusetts Institute of Technology，首页通讯邮箱abackour@mit.edu。完整核读arXiv:2609.02049v1，共13页；官方分类cs.LG、cs.CL，论文为under review预印本（\(p\).1）。报告日期2026-09-04保留，官方listing日期独立核验。</p>
-            <div class="detail-micro-meta">
-              <span class="meta-pill">AI 基础理论</span>
-              <span class="meta-pill">理论与数值</span>
-              <span class="meta-pill">#机器学习</span><span class="meta-pill">#语言模型</span><span class="meta-pill">#Transformer</span>
-              <span class="meta-pill">15 分钟读完</span>
-              <span class="meta-pill">9 张阅读卡</span>
-              <span class="meta-pill">Ali Backour，Massachusetts Institute of Technology，首…</span>
-            </div>
+            <div class="detail-meta">Backour, Ali · 预印本 · arXiv:2609.02049 · <a href="https://arxiv.org/abs/2609.02049" target="_blank" rel="noopener noreferrer">论文原文 ↗</a></div>
+            <p class="detail-summary">把多条思路的token嵌入混成一个连续向量，是否真的保留了各条思路的比例？论文分离三个失真来源：Transformer架构、学习到的权重、以及即使传输线性仍存在的softmax反馈。二分支模型给出多数放大和初态抹除两侧界限，多分支则给出上下文修正的局部维数下界。贡献是受控诊断与条件性动力学结果，不是已提升完整推理任务性能（pp.2-9）。</p>
+
           </div>
         </div>
       </div>
@@ -115,43 +121,19 @@
     <main class="container detail-layout">
       <div class="detail-shell">
         <article id="detail-body" class="reading-flow"><section class="reading-card reading-card-section">
-  <div class="reading-card-topline">
-    <span class="reading-step">Card 01</span>
-    <span class="reading-step-note">作者信息</span>
-  </div>
-  <h2>作者信息</h2>
-  <div class="reading-card-content"><p>Ali Backour，Massachusetts Institute of Technology，首页通讯邮箱abackour@mit.edu。完整核读arXiv:2609.02049v1，共13页；官方分类cs.LG、cs.CL，论文为under review预印本（\(p\).1）。报告日期2026-09-04保留，官方listing日期独立核验。</p></div>
-</section>
-<section class="reading-card reading-card-section">
-  <div class="reading-card-topline">
-    <span class="reading-step">Card 02</span>
-    <span class="reading-step-note">研究问题</span>
-  </div>
   <h2>研究问题</h2>
   <div class="reading-card-content"><p>把多条思路的token嵌入混成一个连续向量，是否真的保留了各条思路的比例？论文分离三个失真来源：Transformer架构、学习到的权重、以及即使传输线性仍存在的softmax反馈。二分支模型给出多数放大和初态抹除两侧界限，多分支则给出上下文修正的局部维数下界。贡献是受控诊断与条件性动力学结果，不是已提升完整推理任务性能（pp.2-9）。</p></div>
 </section>
 <section class="reading-card reading-card-section">
-  <div class="reading-card-topline">
-    <span class="reading-step">Card 03</span>
-    <span class="reading-step-note">背景</span>
-  </div>
   <h2>背景</h2>
   <div class="reading-card-content"><p>连续思维方法试图绕过每步必须选择一个离散token的瓶颈。embedding是token对应的连续输入向量；隐藏状态是多层网络处理后的表示；logit是输出词表概率归一化前的分数。输入混合的权重在这些空间之间可能失真，不能把“连续”本身当成“保存多个独立推理分支”的证明（pp.1-4）。</p></div>
 </section>
 <section class="reading-card reading-card-section">
-  <div class="reading-card-topline">
-    <span class="reading-step">Card 04</span>
-    <span class="reading-step-note">读者桥梁</span>
-  </div>
   <h2>读者桥梁</h2>
   <div class="reading-card-content"><p>输入为题目上下文和两个或三个token嵌入的凸组合；表示状态是网络层内隐向量与被读出的混合比例；本论文不训练新模型，而比较预训练模型和同架构随机权重控制；目标是测量几何保真与闭环反馈；输出为恢复比例、CALIB及随解码轮次变化的权重。</p>
 <p>softmax把加性分数转成正归一化概率；线性插值分数后所得是几何混合，因此移除Transformer非线性仍不能去掉读出失真。rollout指反复将本步提案送回下一步。与Curie–Weiss迭代共享tanh固定点形式，但此处序参量是token比例，耦合随上下文变动，不能据此断言语言模型发生真实热力学相变（pp.4-6）。</p></div>
 </section>
 <section class="reading-card reading-card-section">
-  <div class="reading-card-topline">
-    <span class="reading-step">Card 05</span>
-    <span class="reading-step-note">模型与方法</span>
-  </div>
   <h2>模型与方法</h2>
   <div class="reading-card-content"><p>先将二分支的logit按w线性插值。由于两个纯分布分别经过同一softmax，乘性归一化常数抵消，可得到几何混合。公式中的y是词表位置，不是空间坐标（\(p\).4）。</p>
 
@@ -166,10 +148,6 @@
 <p>1000个受控binary样本覆盖颜色、温度、大小、速度、硬度、重量、亮度七类。词与答案必须在两家模型tokenizer下都是单token，且纯输入对应答案概率至少0.5；因此是筛过的明确定义任务池。八个预训练模型各有五个同架构随机初始化控制，用隐藏端点连线上的投影测量恢复权重；CALIB归一化为完美线性1、在0.5硬阈值0（pp.3-4、10-11）。</p></div>
 </section>
 <section class="reading-card reading-card-section">
-  <div class="reading-card-topline">
-    <span class="reading-step">Card 06</span>
-    <span class="reading-step-note">核心结果与证据</span>
-  </div>
   <h2>核心结果与证据</h2>
   <div class="reading-card-content"><p>Table1的最终CALIB：Qwen3.5-4B预训练0.332，同架构未训练控制0.\(732\pm 0.003\)；Gemma-4-E4B-it为0.475对0.\(765\pm 0.003\)。误差条是五个随机初始化的标准差，不是训练语料差异的因果估计。预训练组失真更大，但第一层及中间深度并非统一单调，不能声称每层都随训练恶化（pp.3-4）。</p>
 <p>二元模型中零场、固定正耦合的均衡点在L=2改变稳定性；作者进一步证明全程超临界的极化下界和次临界含时场上界。下面保留非零初态条件和场项；在零场且耦合始终次临界时，中心化权重趋于0；对相同系数序列，不同初始比例的影响几何衰减。一般含时场下，上界只控制初态项与累积场项，持续偏置仍可推动近纯输出；实际上下文依赖的不同轨迹不能仅由L_t&lt;2推出趋同。（物理第6、12页 Theorem2/Remark1；第7页 Eq.11后的rollout定义。）</p>
@@ -194,29 +172,17 @@
 </figure></div>
 </section>
 <section class="reading-card reading-card-section">
-  <div class="reading-card-topline">
-    <span class="reading-step">Card 07</span>
-    <span class="reading-step-note">有效性与局限</span>
-  </div>
   <h2>有效性与局限</h2>
   <div class="reading-card-content"><p>受控词嵌入组合未必涵盖全部潜在语义状态；数据经过single-token与端点概率筛选，实证主要binary且仅两模型家族。随机权重对照隔离“与训练权重关联”的变化，却不能识别训练的哪个步骤造成失真（\(p\).9）。</p>
 <p>多分支满秩条件未直接测量，精确保真与可微邻域是假设。使用Curie–Weiss形式是数学映射，不建立热力学极限、自由能或普适临界指数。本文未训练完整连续推理系统，也没有证明保真改进会提升最终任务正确率。</p></div>
 </section>
 <section class="reading-card reading-card-section">
-  <div class="reading-card-topline">
-    <span class="reading-step">Card 08</span>
-    <span class="reading-step-note">复现与资源</span>
-  </div>
   <h2>复现与资源</h2>
   <div class="reading-card-content"><p>Appendix A给出样本构造、门槛和提示策略，Table2列10个示例；需保留相同模型tokenizer、chat template与关闭reasoning block的策略，才有可比较的下一token读出。全文未核实到作者公开的完整1000样本列表、专属代码仓库或运行硬件成本，不以通用模型链接代替这些资源（pp.10-11）。</p>
 <p>已完成全文和公式核读；full-text verified; no independent reproduction performed。</p>
 <p>原图复用署名：The Dynamics of Continuous Mixture Collapse in Language Models，Backour, Ali；Official PDF \(p\). 2, Figure 1；https://arxiv.org/pdf/2609.02049v1。许可：CC BY 4.0（https://creativecommons.org/licenses/by/4.0/）。仅裁切 PDF 版面中的图区，未改动图内科学内容；完整 PDF 页与裁切图已逐一视觉比对。</p></div>
 </section>
 <section class="reading-card reading-card-section">
-  <div class="reading-card-topline">
-    <span class="reading-step">Card 09</span>
-    <span class="reading-step-note">阅读指南</span>
-  </div>
   <h2>阅读指南</h2>
   <div class="reading-card-content"><p>先p.2 Figure1对比请求混合与实际概率，再p.4 Eq.(3)理解线性为何仍失真；随后p.5 Eq.(7)及p.6 Theorem2把两种失败分开。深读p.13的链式法则证明与p.11的数据筛选；可以暂跳相关工作，但不能跳过p.9的任务和满秩限制。</p></div>
 </section></article>

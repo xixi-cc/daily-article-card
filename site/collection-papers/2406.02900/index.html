@@ -3,10 +3,10 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Scaling Laws for Reward Model Overoptimization in Direct Alignment Algorithms - physics+AI Collection 论文卡</title>
-    <meta name="description" content="作者：Rafael Rafailov、Yaswanth Chittepu、Ryan Park、Harshit Sikchi、Joey Hejna、W. Bradley Knox、Chelsea Finn、Scott Niekum。 机构：Stanford University、University of Massachusetts Amherst、The University of Texas at Austin。论文发表于 NeurIPS 2024；本卡核对 arXiv:2406.02900v2。 研究对象是 DPO、IPO 与 SLiC 等离线直接对齐算法（DAA）的训练动力学，而不是经典在线 RLHF 中显式奖励模型的误差传播。" />
+    <title>Scaling Laws for Reward Model Overoptimization in Direct Alignment Algorithms - 论文卡</title>
+    <meta name="description" content="直接对齐跳过了独立奖励模型，却仍出现随优化加深而质量先升后降的现象。论文追问：这种“过优化”应以什么状态变量刻画，它是否跨目标函数和模型尺度稳定出现，以及有限偏好数据为何允许策略把概率质量转移到数据外响应。" />
     <link rel="canonical" href="https://xixi-cc.github.io/daily-article-card/collection-papers/2406.02900/" />
-    <script type="application/ld+json">{"@context": "https://schema.org", "@type": "Article", "headline": "Scaling Laws for Reward Model Overoptimization in Direct Alignment Algorithms", "description": "作者：Rafael Rafailov、Yaswanth Chittepu、Ryan Park、Harshit Sikchi、Joey Hejna、W. Bradley Knox、Chelsea Finn、Scott Niekum。 机构：Stanford University、University of Massachusetts Amherst、The University of Texas at Austin。论文发表于 NeurIPS 2024；本卡核对 arXiv:2406.02900v2。 研究对象是 DPO、IPO 与 SLiC 等离线直接对齐算法（DAA）的训练动力学，而不是经典在线 RLHF 中显式奖励模型的误差传播。", "url": "https://xixi-cc.github.io/daily-article-card/collection-papers/2406.02900/", "mainEntityOfPage": "https://xixi-cc.github.io/daily-article-card/collection-papers/2406.02900/", "inLanguage": "zh-CN", "author": {"@type": "Person", "name": "Xineng Cao", "alternateName": ["Xixi Cao", "曹溪能"], "url": "https://xixi-cc.github.io/"}, "isBasedOn": "https://arxiv.org/abs/2406.02900"}</script>
+    <script type="application/ld+json">{"@context": "https://schema.org", "@type": "Article", "headline": "Scaling Laws for Reward Model Overoptimization in Direct Alignment Algorithms", "description": "直接对齐跳过了独立奖励模型，却仍出现随优化加深而质量先升后降的现象。论文追问：这种“过优化”应以什么状态变量刻画，它是否跨目标函数和模型尺度稳定出现，以及有限偏好数据为何允许策略把概率质量转移到数据外响应。", "url": "https://xixi-cc.github.io/daily-article-card/collection-papers/2406.02900/", "mainEntityOfPage": "https://xixi-cc.github.io/daily-article-card/collection-papers/2406.02900/", "inLanguage": "zh-CN", "author": {"@type": "Person", "name": "Xineng Cao", "alternateName": ["Xixi Cao", "曹溪能"], "url": "https://xixi-cc.github.io/"}, "isBasedOn": "https://arxiv.org/abs/2406.02900"}</script>
     <script>
       (function() {
         try {
@@ -30,6 +30,18 @@
     <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700;800&family=Noto+Sans+SC:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
     <script>document.documentElement.classList.add('math-pending');</script>
     <script>
+      window.fitInlineMath = function(root) {
+        (root || document).querySelectorAll('mjx-container:not([display="true"])').forEach(function(el) {
+          el.classList.remove('inline-math-overflow');
+          const content = el.closest('.reading-card-content, .detail-summary, .feed-card-body');
+          if(content && el.getBoundingClientRect().width > content.clientWidth) {
+            el.classList.add('inline-math-overflow');
+            el.tabIndex = 0;
+            el.setAttribute('aria-label', '长公式，可横向滑动阅读');
+          }
+        });
+      };
+      window.addEventListener('resize', function() { window.fitInlineMath(); });
       window.MathJax = {
         tex: {
           inlineMath: [['$', '$'], ['\\(', '\\)']],
@@ -49,6 +61,7 @@
             MathJax.startup.promise.then(function() {
               document.documentElement.classList.remove('math-pending');
               document.documentElement.dataset.mathReady = 'true';
+              window.requestAnimationFrame(function() { window.fitInlineMath(); });
             });
           }
         }
@@ -65,9 +78,9 @@
     <header class="header detail-page-header">
       <div class="container">
         <div class="detail-page-topbar">
-          <a class="back-link" href="../../collection.html">返回列表</a>
+          <a class="back-link" href="../../index.html">返回列表</a>
           <div class="detail-topbar-actions">
-            <span class="detail-site-name">physics+AI Collection 论文卡</span>
+            <span class="detail-site-name">论文卡</span>
             <button id="detail-favorite" class="detail-favorite-button" type="button" aria-pressed="false">☆ 收藏</button>
             <button class="theme-toggle" type="button" data-theme-toggle aria-label="当前主题：设备，点击切换主题" title="当前主题：设备">
   <span class="theme-toggle-icons" aria-hidden="true">
@@ -91,22 +104,15 @@
         <div class="detail-hero-grid">
           <div class="detail-hero-cover"><figure class="paper-figure-card paper-figure-card-detail">
   <img class="paper-figure-image" src="../../assets/collection-figures/2406.02900/figure-6-tree-mdp.webp" alt="一个从初态分叉、经多层动作到达共同吸收态的树形马尔可夫决策过程。" loading="lazy" onclick="window.openPaperFigureImage && window.openPaperFigureImage(this)" />
-  <figcaption class="paper-figure-caption">树形 MDP 将 token 生成抽象为有限分支，用来显示偏好数据只约束少数轨迹而大量数据外路径仍可吸收概率质量。</figcaption>
+  <figcaption class="paper-figure-caption">树形 MDP 将 token 生成抽象为有限分支，用来显示偏好数据只约束少数轨迹而大量数据外路径仍可吸收概率质量。 <a href="https://arxiv.org/abs/2406.02900" target="_blank" rel="noopener noreferrer">原文图源 ↗</a></figcaption>
 </figure></div>
           <div class="detail-hero-copy">
-            <p class="eyebrow">Collection 全文卡</p>
+            <p class="eyebrow">论文详情</p>
             <h1 class="detail-page-title">Scaling Laws for Reward Model Overoptimization in Direct Alignment Algorithms</h1>
             <p class="detail-page-title-zh">直接偏好对齐中的过优化标度律与欠约束机制</p>
-            <div class="detail-meta">Paper Collection · Scaling Laws · <a href="https://arxiv.org/abs/2406.02900" target="_blank" rel="noopener noreferrer">原文</a></div>
-            <p class="detail-summary">作者：Rafael Rafailov、Yaswanth Chittepu、Ryan Park、Harshit Sikchi、Joey Hejna、W. Bradley Knox、Chelsea Finn、Scott Niekum。 机构：Stanford University、University of Massachusetts Amherst、The University of Texas at Austin。论文发表于 NeurIPS 2024；本卡核对 arXiv:2406.02900v2。 研究对象是 DPO、IPO 与 SLiC 等离线直接对齐算法（DAA）的训练动力学，而不是经典在线 RLHF 中显式奖励模型的误差传播。</p>
-            <div class="detail-micro-meta">
-              <span class="meta-pill">AI 基础理论</span>
-              <span class="meta-pill">AI 实证</span>
-              <span class="meta-pill">#Scaling Laws</span><span class="meta-pill">#机器学习</span><span class="meta-pill">#人工智能</span>
-              <span class="meta-pill">10 分钟读完</span>
-              <span class="meta-pill">8 张阅读卡</span>
-              <span class="meta-pill">作者：Rafael Rafailov、Yaswanth Chittepu、Ryan Park、Hars…</span>
-            </div>
+            <div class="detail-meta">Rafael Rafailov、Yaswanth Chittepu、Ryan Park、Harshit Sikchi、Joey Hejna、Bradley Knox、Chelsea Finn、Scott Niekum · 预印本 · arXiv:2406.02900 · <a href="https://arxiv.org/abs/2406.02900" target="_blank" rel="noopener noreferrer">论文原文 ↗</a></div>
+            <p class="detail-summary">直接对齐跳过了独立奖励模型，却仍出现随优化加深而质量先升后降的现象。论文追问：这种“过优化”应以什么状态变量刻画，它是否跨目标函数和模型尺度稳定出现，以及有限偏好数据为何允许策略把概率质量转移到数据外响应。</p>
+
           </div>
         </div>
       </div>
@@ -115,34 +121,14 @@
     <main class="container detail-layout">
       <div class="detail-shell">
         <article id="detail-body" class="reading-flow"><section class="reading-card reading-card-section">
-  <div class="reading-card-topline">
-    <span class="reading-step">Card 01</span>
-    <span class="reading-step-note">作者信息</span>
-  </div>
-  <h2>作者信息</h2>
-  <div class="reading-card-content"><ul><li>作者：Rafael Rafailov、Yaswanth Chittepu、Ryan Park、Harshit Sikchi、Joey Hejna、W. Bradley Knox、Chelsea Finn、Scott Niekum。</li><li>机构：Stanford University、University of Massachusetts Amherst、The University of Texas at Austin。论文发表于 NeurIPS 2024；本卡核对 arXiv:2406.02900v2。</li><li>研究对象是 DPO、IPO 与 SLiC 等离线直接对齐算法（DAA）的训练动力学，而不是经典在线 RLHF 中显式奖励模型的误差传播。</li></ul></div>
-</section>
-<section class="reading-card reading-card-section">
-  <div class="reading-card-topline">
-    <span class="reading-step">Card 02</span>
-    <span class="reading-step-note">研究问题</span>
-  </div>
   <h2>研究问题</h2>
   <div class="reading-card-content"><ul><li>直接对齐跳过了独立奖励模型，却仍出现随优化加深而质量先升后降的现象。论文追问：这种“过优化”应以什么状态变量刻画，它是否跨目标函数和模型尺度稳定出现，以及有限偏好数据为何允许策略把概率质量转移到数据外响应。</li><li>作者把策略相对参考模型的 KL 偏离 $d=D_{\mathrm{KL}}(\pi_\theta\Vert\pi_{\mathrm{ref}})$ 当作比 epoch 更可比较的反应坐标，并用 GPT-4 对 held-out 摘要的胜率作为外部质量代理。</li></ul></div>
 </section>
 <section class="reading-card reading-card-section">
-  <div class="reading-card-topline">
-    <span class="reading-step">Card 03</span>
-    <span class="reading-step-note">背景</span>
-  </div>
   <h2>背景</h2>
   <div class="reading-card-content"><ul><li>经典 RLHF 最大化学习到的代理奖励，同时以 $\beta D_{\mathrm{KL}}$ 约束策略偏离；奖励模型在分布外可能失真。DPO 类方法把隐式奖励消去并直接优化偏好对，但“没有显式奖励模型”并不消除有限数据覆盖和目标欠约束。</li><li>物理上可把训练看作在高维概率单纯形上的驱动过程：KL 是离开参考分布的位移尺度，偏好损失只约束少量方向；其余零空间方向可在几乎不改变训练损失时重排概率质量。</li></ul></div>
 </section>
 <section class="reading-card reading-card-section">
-  <div class="reading-card-topline">
-    <span class="reading-step">Card 04</span>
-    <span class="reading-step-note">模型与方法</span>
-  </div>
   <h2>模型与方法</h2>
   <div class="reading-card-content"><ul><li>统一的 DAA 目标写为</li></ul>
 
@@ -151,10 +137,6 @@
 <ul><li>不同凸函数 $g$ 给出 DPO、IPO 或 SLiC。实验扫描 7 个 $\beta$、1B/2.8B/6.9B 三种 Pythia 尺度；在 TL;DR 的 92k 偏好对上训练一轮，并用固定的 256 个 held-out prompts 评估胜率、长度与 KL。</li><li>作者还把有限偏好比较写成查询矩阵 $Q$。由于响应空间维度远大于比较数，$Q$ 通常有非平凡零空间；这使偏好损失存在许多等价极小值，其中一些把显著概率放到未观测响应。</li></ul></div>
 </section>
 <section class="reading-card reading-card-section">
-  <div class="reading-card-topline">
-    <span class="reading-step">Card 05</span>
-    <span class="reading-step-note">核心结果与证据</span>
-  </div>
   <h2>核心结果与证据</h2>
   <div class="reading-card-content"><ul><li>Figure 2 显示 6.9B 模型在 DPO、SLiC、IPO 下常于约四分之一 epoch 达到最高胜率，随后 KL 继续增大而胜率下降。因而 epoch 不是单调的性能坐标，checkpoint 选择本身就是对齐控制变量。</li><li>作者用 $R(d)=d(\alpha-\beta\log d)$ 拟合胜率—KL 曲线；相对直接用 KL 的二次拟合，该形式的 RMSE 约减半，但对 $\sqrt d$ 作二次拟合得到相近误差。因此数据支持经验压缩关系，不足以证明该函数具有唯一机制地位。</li><li>Figure 6 的树形 MDP 把语言生成压缩为有限分支；Figure 7 随后显示三类 DAA 都可把概率质量推向偏好数据未覆盖的轨迹，同时降低数据内轨迹的概率。这给出“有限约束 + 大零空间”机制的可视化实例。</li></ul><figure class="evidence-figure">
   <button class="evidence-figure-image-button" type="button" aria-label="放大查看 Figure 2" onclick="window.openPaperFigureImage && window.openPaperFigureImage(this.querySelector('img'))">
@@ -178,26 +160,14 @@
 </figure></div>
 </section>
 <section class="reading-card reading-card-section">
-  <div class="reading-card-topline">
-    <span class="reading-step">Card 06</span>
-    <span class="reading-step-note">有效性与局限</span>
-  </div>
   <h2>有效性与局限</h2>
   <div class="reading-card-content"><ul><li>Proposition 1 的结论是条件性的：若 $\mathcal N(Q)$ 与数据支持张成空间存在非平凡交，并且每个 prompt 都有数据外响应，则 DAA 目标存在无穷多个极小值，其中可有极小值对 OOD 响应赋权。它解释了可能性，而不证明大型语言模型必然沿该方向演化。</li><li>实验覆盖多种目标、KL 预算和三个尺度，但同一配置未运行多个随机种子；论文检查表明确说明没有误差条或显著性检验。GPT-4-turbo-2024-04-09 作为裁判也引入代理评价与位置偏差边界，尽管作者使用随机位置翻转。</li><li>主要 LLM 结果集中于 Pythia/TL;DR，附加 Gemma2-2b/Anthropic-HH 只用于检查趋势是否完全依赖单一模型与数据集。论文没有给出消除过优化的新算法，也未覆盖在线数据刷新或更大模型尺度。</li><li>该卡完成全文、公式和图证据核验；no independent reproduction performed，不能把曲线拟合、裁判胜率或 toy-MDP 结果当作独立复现实证。</li></ul></div>
 </section>
 <section class="reading-card reading-card-section">
-  <div class="reading-card-topline">
-    <span class="reading-step">Card 07</span>
-    <span class="reading-step-note">复现与资源</span>
-  </div>
   <h2>复现与资源</h2>
   <div class="reading-card-content"><ul><li>原文：https://arxiv.org/abs/2406.02900；PDF：https://arxiv.org/pdf/2406.02900；论文指向 DPO 基础代码 https://github.com/eric-mitchell/direct-preference-optimization。</li><li>全文快照 SHA-256：b92241e5714f35fb6f248429dc3735fe3d399a40609336a1b887cbffac3cee49；PDF 共 36 个实质页面，另含提取器末尾空页。</li><li>复现实验需固定模型尺度、$\beta$、checkpoint/epoch fraction、TL;DR 划分、生成温度 1.0、最大长度 512、裁判模型版本和位置翻转策略，并补做多随机种子统计。</li><li>Evidence status: full-text verified; no independent reproduction performed.</li></ul></div>
 </section>
 <section class="reading-card reading-card-section">
-  <div class="reading-card-topline">
-    <span class="reading-step">Card 08</span>
-    <span class="reading-step-note">阅读指南</span>
-  </div>
   <h2>阅读指南</h2>
   <div class="reading-card-content"><ul><li>先读正文第 2–5 页：从统一 DAA 目标到 Figure 2 的 epoch 内非单调动力学；再读第 7–9 页的查询矩阵、Proposition 1 与 toy MDP。</li><li>Figure 2 回答“何时开始变差”，Figure 6–7 回答“有限偏好约束为何容许数据外质量增长”；二者分别是经验现象和机制实例，不能相互替代。</li><li>若关心标度律，应比较 Eq. (5) 与文中两个二次基线的残差，而不是只看拟合曲线；若关心因果机制，应重点检查零空间条件在真实数据和参数化策略中是否成立。</li></ul></div>
 </section></article>

@@ -3,10 +3,10 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Fine-Tuning Generative Models for Extreme Events via CVaR-Penalized Wasserstein Gradient Flows - 每日论文卡</title>
-    <meta name="description" content="作者：Thejani Gamage、Hyemin Gu、Zhizhen Zhang、Ziyu Chen、Markos Katsoulakis、Luc Rey-Bellet。 机构：University of Massachusetts Amherst；University of North Carolina at Chapel Hill。 版本：arXiv:2608.11544v1，2026-08-12；分类 stat.ML。" />
+    <title>Fine-Tuning Generative Models for Extreme Events via CVaR-Penalized Wasserstein Gradient Flows - 论文卡</title>
+    <meta name="description" content="Lipschitz generator 从轻尾 source 出发通常保留尾型，且 finite data 尾部稀少会让 KL particle flow 过早速度归零。CVaR-GPA 不预估 tail index，而在 Lipschitz-regularized KL 的 Wasserstein gradient flow 中加入目标/模型 CVaR discrepancy，为欠采样极端区恢复 transport velocity。" />
     <link rel="canonical" href="https://xixi-cc.github.io/daily-article-card/papers/2608.11544/" />
-    <script type="application/ld+json">{"@context": "https://schema.org", "@type": "Article", "headline": "Fine-Tuning Generative Models for Extreme Events via CVaR-Penalized Wasserstein Gradient Flows", "description": "作者：Thejani Gamage、Hyemin Gu、Zhizhen Zhang、Ziyu Chen、Markos Katsoulakis、Luc Rey-Bellet。 机构：University of Massachusetts Amherst；University of North Carolina at Chapel Hill。 版本：arXiv:2608.11544v1，2026-08-12；分类 stat.ML。", "url": "https://xixi-cc.github.io/daily-article-card/papers/2608.11544/", "mainEntityOfPage": "https://xixi-cc.github.io/daily-article-card/papers/2608.11544/", "inLanguage": "zh-CN", "author": {"@type": "Person", "name": "Xineng Cao", "alternateName": ["Xixi Cao", "曹溪能"], "url": "https://xixi-cc.github.io/"}, "isBasedOn": "https://arxiv.org/abs/2608.11544", "datePublished": "2026-08-14", "dateModified": "2026-08-14"}</script>
+    <script type="application/ld+json">{"@context": "https://schema.org", "@type": "Article", "headline": "Fine-Tuning Generative Models for Extreme Events via CVaR-Penalized Wasserstein Gradient Flows", "description": "Lipschitz generator 从轻尾 source 出发通常保留尾型，且 finite data 尾部稀少会让 KL particle flow 过早速度归零。CVaR-GPA 不预估 tail index，而在 Lipschitz-regularized KL 的 Wasserstein gradient flow 中加入目标/模型 CVaR discrepancy，为欠采样极端区恢复 transport velocity。", "url": "https://xixi-cc.github.io/daily-article-card/papers/2608.11544/", "mainEntityOfPage": "https://xixi-cc.github.io/daily-article-card/papers/2608.11544/", "inLanguage": "zh-CN", "author": {"@type": "Person", "name": "Xineng Cao", "alternateName": ["Xixi Cao", "曹溪能"], "url": "https://xixi-cc.github.io/"}, "isBasedOn": "https://arxiv.org/abs/2608.11544", "datePublished": "2026-08-14", "dateModified": "2026-08-14"}</script>
     <script>
       (function() {
         try {
@@ -30,6 +30,18 @@
     <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700;800&family=Noto+Sans+SC:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
     <script>document.documentElement.classList.add('math-pending');</script>
     <script>
+      window.fitInlineMath = function(root) {
+        (root || document).querySelectorAll('mjx-container:not([display="true"])').forEach(function(el) {
+          el.classList.remove('inline-math-overflow');
+          const content = el.closest('.reading-card-content, .detail-summary, .feed-card-body');
+          if(content && el.getBoundingClientRect().width > content.clientWidth) {
+            el.classList.add('inline-math-overflow');
+            el.tabIndex = 0;
+            el.setAttribute('aria-label', '长公式，可横向滑动阅读');
+          }
+        });
+      };
+      window.addEventListener('resize', function() { window.fitInlineMath(); });
       window.MathJax = {
         tex: {
           inlineMath: [['$', '$'], ['\\(', '\\)']],
@@ -49,6 +61,7 @@
             MathJax.startup.promise.then(function() {
               document.documentElement.classList.remove('math-pending');
               document.documentElement.dataset.mathReady = 'true';
+              window.requestAnimationFrame(function() { window.fitInlineMath(); });
             });
           }
         }
@@ -65,9 +78,9 @@
     <header class="header detail-page-header">
       <div class="container">
         <div class="detail-page-topbar">
-          <a class="back-link" href="../../physics_AI.html">返回列表</a>
+          <a class="back-link" href="../../index.html">返回列表</a>
           <div class="detail-topbar-actions">
-            <span class="detail-site-name">每日论文卡</span>
+            <span class="detail-site-name">论文卡</span>
             <button id="detail-favorite" class="detail-favorite-button" type="button" aria-pressed="false">☆ 收藏</button>
             <button class="theme-toggle" type="button" data-theme-toggle aria-label="当前主题：设备，点击切换主题" title="当前主题：设备">
   <span class="theme-toggle-icons" aria-hidden="true">
@@ -90,23 +103,16 @@
 
         <div class="detail-hero-grid">
           <div class="detail-hero-cover"><figure class="paper-figure-card paper-figure-card-detail">
-  <img class="paper-figure-image" src="../../assets/paper-images/2608.11544.webp" alt="Fine-Tuning Generative Models for Extreme Events via CVaR-Penalized Wasserstein Gradient Flows" loading="lazy" onclick="window.openPaperFigureImage && window.openPaperFigureImage(this)" />
-  <figcaption class="paper-figure-caption">图 1 的 2D Student-\(t\) $\nu=1$、\(N=5000\)：Lip-KL-GPA 20,000 iterations 后速度几乎处处消失且漏尾；CVaR 项在极端半径恢复非零速度。</figcaption>
+  <img class="paper-figure-image" src="../../assets/reader-covers/legacy/2608.11544-v1-retained.webp" alt="Fine-Tuning Generative Models for Extreme Events via CVaR-Penalized Wasserstein Gradient Flows — 极端事件微调中的 CVaR 惩罚与 Wasserstein 梯度流。" loading="lazy" onclick="window.openPaperFigureImage && window.openPaperFigureImage(this)" />
+  <figcaption class="paper-figure-caption">极端事件微调中的 CVaR 惩罚与 Wasserstein 梯度流。 来源：arXiv:2608.11544v1，PDF 第 5 页，Figure 1。 <a href="https://arxiv.org/pdf/2608.11544v1" target="_blank" rel="noopener noreferrer">原文图源 ↗</a></figcaption>
 </figure></div>
           <div class="detail-hero-copy">
             <p class="eyebrow">论文详情</p>
             <h1 class="detail-page-title">Fine-Tuning Generative Models for Extreme Events via CVaR-Penalized Wasserstein Gradient Flows</h1>
             <p class="detail-page-title-zh">通过 CVaR 惩罚 Wasserstein 梯度流微调极端事件生成模型</p>
-            <div class="detail-meta">2026-08-14 · <a href="https://arxiv.org/abs/2608.11544" target="_blank" rel="noopener noreferrer">原文</a></div>
-            <p class="detail-summary">作者：Thejani Gamage、Hyemin Gu、Zhizhen Zhang、Ziyu Chen、Markos Katsoulakis、Luc Rey-Bellet。 机构：University of Massachusetts Amherst；University of North Carolina at Chapel Hill。 版本：arXiv:2608.11544v1，2026-08-12；分类 stat.ML。</p>
-            <div class="detail-micro-meta">
-              <span class="meta-pill">AI 基础理论</span>
-              <span class="meta-pill">理论</span>
-              <span class="meta-pill">#相变与临界性</span><span class="meta-pill">#表示学习</span>
-              <span class="meta-pill">8 分钟读完</span>
-              <span class="meta-pill">7 张阅读卡</span>
-              <span class="meta-pill">作者：Thejani Gamage、Hyemin Gu、Zhizhen Zhang、Ziyu Chen…</span>
-            </div>
+            <div class="detail-meta">Thejani Gamage、Hyemin Gu、Zhizhen Zhang、Ziyu Chen、Markos Katsoulakis、Luc Rey-Bellet · 预印本 · arXiv:2608.11544 · <a href="https://arxiv.org/abs/2608.11544" target="_blank" rel="noopener noreferrer">论文原文 ↗</a></div>
+            <p class="detail-summary">Lipschitz generator 从轻尾 source 出发通常保留尾型，且 finite data 尾部稀少会让 KL particle flow 过早速度归零。CVaR-GPA 不预估 tail index，而在 Lipschitz-regularized KL 的 Wasserstein gradient flow 中加入目标/模型 CVaR discrepancy，为欠采样极端区恢复 transport velocity。</p>
+
           </div>
         </div>
       </div>
@@ -115,58 +121,26 @@
     <main class="container detail-layout">
       <div class="detail-shell">
         <article id="detail-body" class="reading-flow"><section class="reading-card reading-card-section">
-  <div class="reading-card-topline">
-    <span class="reading-step">Card 01</span>
-    <span class="reading-step-note">作者信息</span>
-  </div>
-  <h2>作者信息</h2>
-  <div class="reading-card-content"><ul><li>作者：Thejani Gamage、Hyemin Gu、Zhizhen Zhang、Ziyu Chen、Markos Katsoulakis、Luc Rey-Bellet。</li><li>机构：University of Massachusetts Amherst；University of North Carolina at Chapel Hill。</li><li>版本：arXiv:2608.11544v1，2026-08-12；分类 stat.ML。</li></ul></div>
-</section>
-<section class="reading-card reading-card-section">
-  <div class="reading-card-topline">
-    <span class="reading-step">Card 02</span>
-    <span class="reading-step-note">研究问题</span>
-  </div>
   <h2>研究问题</h2>
   <div class="reading-card-content"><p>Lipschitz generator 从轻尾 source 出发通常保留尾型，且 finite data 尾部稀少会让 KL particle flow 过早速度归零。CVaR-GPA 不预估 tail index，而在 Lipschitz-regularized KL 的 Wasserstein gradient flow 中加入目标/模型 CVaR discrepancy，为欠采样极端区恢复 transport velocity。</p></div>
 </section>
 <section class="reading-card reading-card-section">
-  <div class="reading-card-topline">
-    <span class="reading-step">Card 03</span>
-    <span class="reading-step-note">模型与方法</span>
-  </div>
   <h2>模型与方法</h2>
   <div class="reading-card-content"><ul><li>输入可为任意 pretrained generator 的输出样本，无需访问网络内部；把样本作为 interacting particles 继续 transport。</li><li>基础 loss 是 variational Lipschitz-regularized KL，在仅有限一阶矩等弱条件下可由 samples 估计。</li><li>风险函数 $g$ 默认径向；用 Rockafellar–Uryasev representation 推导 CVaR 对 empirical measures 的 first-variation subgradient，避免 density formula 在离散经验测度失效。</li><li>所得 Wasserstein velocity 有界但非 Lipschitz；这正允许跨越标准 Lipschitz map 的 tail-preservation 障碍。</li><li>用 particle kinetic energy 作为停止条件，使 flow depth 由 target data 决定；比较 Lip-KL-GPA baseline。</li></ul></div>
 </section>
 <section class="reading-card reading-card-section">
-  <div class="reading-card-topline">
-    <span class="reading-step">Card 04</span>
-    <span class="reading-step-note">核心结果与证据</span>
-  </div>
   <h2>核心结果与证据</h2>
   <div class="reading-card-content"><ul><li>图 1 的 2D Student-\(t\) $\nu=1$、\(N=5000\)：Lip-KL-GPA 20,000 iterations 后速度几乎处处消失且漏尾；CVaR 项在极端半径恢复非零速度。</li><li>理论证明 penalized functional 的 divergence/critical-point 性质，并为经验粒子定义合法 subgradient flow，而非假设已有平滑 density。</li><li>Student-\(t\)、Neal's funnel 和 Fama–French 25 portfolios 上，CVaR fine-tuning 同时降低 global $L^1$ 与 tail error。</li><li>5D anisotropic Student-\(t\) $\nu=(1,1.5,3,10,30)$ 中，对前四个重尾 marginal 改善，但对近 Gaussian $\nu=30$ 反而增加 global/tail error，明确展示过度尾部惩罚。</li><li>算法称 tail-agnostic 是不需 tail index；仍需选 CVaR level、penalty 与 risk function。</li></ul></div>
 </section>
 <section class="reading-card reading-card-section">
-  <div class="reading-card-topline">
-    <span class="reading-step">Card 05</span>
-    <span class="reading-step-note">有效性与局限</span>
-  </div>
   <h2>有效性与局限</h2>
   <div class="reading-card-content"><ul><li>CVaR 强度/level 错配会损害轻尾维度，图 5 已给负结果。</li><li>径向 $g$ 对各向异性尾不最优；per-coordinate/adaptive risk 是未来方向。</li><li>粒子/critic 近似与 non-Lipschitz velocity 带来数值稳定和有限样本误差。</li><li>能量停止阈值是额外超参数，不保证统计最优 stopping。</li><li>实验优于强 Lip-KL baseline，但未与所有最新 tail generator 在统一预算完整比较。</li></ul></div>
 </section>
 <section class="reading-card reading-card-section">
-  <div class="reading-card-topline">
-    <span class="reading-step">Card 06</span>
-    <span class="reading-step-note">复现与资源</span>
-  </div>
   <h2>复现与资源</h2>
   <div class="reading-card-content"><ul><li>原文 PDF：https://arxiv.org/pdf/2608.11544。</li><li>无代码链接；复现应保留 pretrained samples、相同 \(N\)/iterations，并按 marginal 同时报 global 与 tail error。</li><li>必须包括 $\nu=30$ 负结果和 penalty/alpha sweep，避免只报重尾收益。</li></ul></div>
 </section>
 <section class="reading-card reading-card-section">
-  <div class="reading-card-topline">
-    <span class="reading-step">Card 07</span>
-    <span class="reading-step-note">阅读指南</span>
-  </div>
   <h2>阅读指南</h2>
   <div class="reading-card-content"><ul><li>先看图 1理解 premature saturation。</li><li>第 2–4 节读 CVaR empirical subgradient 与 flow。</li><li>第 5 节按 Student-\(t\)/funnel/finance 查看 tail 与 global error。</li><li>结论里的各向异性和轻尾损害决定实际使用边界。</li></ul></div>
 </section></article>

@@ -3,10 +3,10 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>A Theoretical Framework for Grokking: Interpolation followed by Riemannian Norm Minimisation - physics+AI Collection 论文卡</title>
-    <meta name="description" content="Etienne Boursier、Scott Pesme 与 Radu-Alexandru Dragomir 合作完成，分别署 INRIA/Universite Paris-Saclay、INRIA Grenoble 与 Telecom Paris。PDF 首页记录 arXiv:2505.20172v2 [cs.LG]（2025-11-05）及 NeurIPS 2025。论文提出一个纯优化的 grokking 机制：小 weight decay 的梯度流先迅速插值，再在很慢的时间尺度上沿零训练损失解流形降低参数范数。" />
+    <title>A Theoretical Framework for Grokking: Interpolation followed by Riemannian Norm Minimisation - 论文卡</title>
+    <meta name="description" content="Grokking 的典型曲线是训练损失很快为零、测试损失长时间平台、随后才明显改善。作者问这是否能在不诉诸特定表征相变或任务结构的条件下，由正则化优化本身解释。具体地，给一般训练损失 F，加很小 L2 decay lambda 后的梯度流，lambda 趋零时是否呈现两个彼此分离的动力学：先逼近无正则流的插值临界点，再在 t 约为 1/lambda 的尺度上选择一个更小范数、可能泛化更好的解。" />
     <link rel="canonical" href="https://xixi-cc.github.io/daily-article-card/collection-papers/2505.20172/" />
-    <script type="application/ld+json">{"@context": "https://schema.org", "@type": "Article", "headline": "A Theoretical Framework for Grokking: Interpolation followed by Riemannian Norm Minimisation", "description": "Etienne Boursier、Scott Pesme 与 Radu-Alexandru Dragomir 合作完成，分别署 INRIA/Universite Paris-Saclay、INRIA Grenoble 与 Telecom Paris。PDF 首页记录 arXiv:2505.20172v2 [cs.LG]（2025-11-05）及 NeurIPS 2025。论文提出一个纯优化的 grokking 机制：小 weight decay 的梯度流先迅速插值，再在很慢的时间尺度上沿零训练损失解流形降低参数范数。", "url": "https://xixi-cc.github.io/daily-article-card/collection-papers/2505.20172/", "mainEntityOfPage": "https://xixi-cc.github.io/daily-article-card/collection-papers/2505.20172/", "inLanguage": "zh-CN", "author": {"@type": "Person", "name": "Xineng Cao", "alternateName": ["Xixi Cao", "曹溪能"], "url": "https://xixi-cc.github.io/"}, "isBasedOn": "https://arxiv.org/abs/2505.20172"}</script>
+    <script type="application/ld+json">{"@context": "https://schema.org", "@type": "Article", "headline": "A Theoretical Framework for Grokking: Interpolation followed by Riemannian Norm Minimisation", "description": "Grokking 的典型曲线是训练损失很快为零、测试损失长时间平台、随后才明显改善。作者问这是否能在不诉诸特定表征相变或任务结构的条件下，由正则化优化本身解释。具体地，给一般训练损失 F，加很小 L2 decay lambda 后的梯度流，lambda 趋零时是否呈现两个彼此分离的动力学：先逼近无正则流的插值临界点，再在 t 约为 1/lambda 的尺度上选择一个更小范数、可能泛化更好的解。", "url": "https://xixi-cc.github.io/daily-article-card/collection-papers/2505.20172/", "mainEntityOfPage": "https://xixi-cc.github.io/daily-article-card/collection-papers/2505.20172/", "inLanguage": "zh-CN", "author": {"@type": "Person", "name": "Xineng Cao", "alternateName": ["Xixi Cao", "曹溪能"], "url": "https://xixi-cc.github.io/"}, "isBasedOn": "https://arxiv.org/abs/2505.20172"}</script>
     <script>
       (function() {
         try {
@@ -30,6 +30,18 @@
     <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700;800&family=Noto+Sans+SC:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
     <script>document.documentElement.classList.add('math-pending');</script>
     <script>
+      window.fitInlineMath = function(root) {
+        (root || document).querySelectorAll('mjx-container:not([display="true"])').forEach(function(el) {
+          el.classList.remove('inline-math-overflow');
+          const content = el.closest('.reading-card-content, .detail-summary, .feed-card-body');
+          if(content && el.getBoundingClientRect().width > content.clientWidth) {
+            el.classList.add('inline-math-overflow');
+            el.tabIndex = 0;
+            el.setAttribute('aria-label', '长公式，可横向滑动阅读');
+          }
+        });
+      };
+      window.addEventListener('resize', function() { window.fitInlineMath(); });
       window.MathJax = {
         tex: {
           inlineMath: [['$', '$'], ['\\(', '\\)']],
@@ -49,6 +61,7 @@
             MathJax.startup.promise.then(function() {
               document.documentElement.classList.remove('math-pending');
               document.documentElement.dataset.mathReady = 'true';
+              window.requestAnimationFrame(function() { window.fitInlineMath(); });
             });
           }
         }
@@ -65,9 +78,9 @@
     <header class="header detail-page-header">
       <div class="container">
         <div class="detail-page-topbar">
-          <a class="back-link" href="../../collection.html">返回列表</a>
+          <a class="back-link" href="../../index.html">返回列表</a>
           <div class="detail-topbar-actions">
-            <span class="detail-site-name">physics+AI Collection 论文卡</span>
+            <span class="detail-site-name">论文卡</span>
             <button id="detail-favorite" class="detail-favorite-button" type="button" aria-pressed="false">☆ 收藏</button>
             <button class="theme-toggle" type="button" data-theme-toggle aria-label="当前主题：设备，点击切换主题" title="当前主题：设备">
   <span class="theme-toggle-icons" aria-hidden="true">
@@ -91,22 +104,15 @@
         <div class="detail-hero-grid">
           <div class="detail-hero-cover"><figure class="paper-figure-card paper-figure-card-detail">
   <img class="paper-figure-image" src="../../assets/collection-figures/2505.20172/figure-2-matrix-completion-singular-values.webp" alt="矩阵补全的重构矩阵奇异值随训练时间变化：多余奇异值在晚期缓慢衰减，三个保留值接近真矩阵的虚线奇异值。" loading="lazy" onclick="window.openPaperFigureImage && window.openPaperFigureImage(this)" />
-  <figcaption class="paper-figure-caption">Figure 2 的奇异值面板：快速插值后，weight decay 驱动的慢漂移压低冗余谱成分，最终只留下低秩真实结构对应的三个奇异值。</figcaption>
+  <figcaption class="paper-figure-caption">Figure 2 的奇异值面板：快速插值后，weight decay 驱动的慢漂移压低冗余谱成分，最终只留下低秩真实结构对应的三个奇异值。 <a href="https://arxiv.org/abs/2505.20172" target="_blank" rel="noopener noreferrer">原文图源 ↗</a></figcaption>
 </figure></div>
           <div class="detail-hero-copy">
-            <p class="eyebrow">Collection 全文卡</p>
+            <p class="eyebrow">论文详情</p>
             <h1 class="detail-page-title">A Theoretical Framework for Grokking: Interpolation followed by Riemannian Norm Minimisation</h1>
             <p class="detail-page-title-zh">顿悟式泛化的理论框架：插值之后的黎曼范数最小化</p>
-            <div class="detail-meta">Paper Collection · Grokking and Optimization Geometry · <a href="https://arxiv.org/abs/2505.20172" target="_blank" rel="noopener noreferrer">原文</a></div>
-            <p class="detail-summary">Etienne Boursier、Scott Pesme 与 Radu-Alexandru Dragomir 合作完成，分别署 INRIA/Universite Paris-Saclay、INRIA Grenoble 与 Telecom Paris。PDF 首页记录 arXiv:2505.20172v2 [cs.LG]（2025-11-05）及 NeurIPS 2025。论文提出一个纯优化的 grokking 机制：小 weight decay 的梯度流先迅速插值，再在很慢的时间尺度上沿零训练损失解流形降低参数范数。</p>
-            <div class="detail-micro-meta">
-              <span class="meta-pill">AI 基础理论</span>
-              <span class="meta-pill">理论与数值</span>
-              <span class="meta-pill">#Grokking and Optimization Geometry</span><span class="meta-pill">#机器学习</span><span class="meta-pill">#相变与临界性</span>
-              <span class="meta-pill">9 分钟读完</span>
-              <span class="meta-pill">8 张阅读卡</span>
-              <span class="meta-pill">Etienne Boursier、Scott Pesme 与 Radu-Alexandru Drago…</span>
-            </div>
+            <div class="detail-meta">Etienne Boursier、Scott Pesme、Radu-Alexandru Dragomir · 预印本 · arXiv:2505.20172 · <a href="https://arxiv.org/abs/2505.20172" target="_blank" rel="noopener noreferrer">论文原文 ↗</a></div>
+            <p class="detail-summary">Grokking 的典型曲线是训练损失很快为零、测试损失长时间平台、随后才明显改善。作者问这是否能在不诉诸特定表征相变或任务结构的条件下，由正则化优化本身解释。具体地，给一般训练损失 F，加很小 \(L_{2}\) decay lambda 后的梯度流，lambda 趋零时是否呈现两个彼此分离的动力学：先逼近无正则流的插值临界点，再在 \(t\) 约为 1/lambda 的尺度上选择一个更小范数、可能泛化更好的解。</p>
+
           </div>
         </div>
       </div>
@@ -115,42 +121,18 @@
     <main class="container detail-layout">
       <div class="detail-shell">
         <article id="detail-body" class="reading-flow"><section class="reading-card reading-card-section">
-  <div class="reading-card-topline">
-    <span class="reading-step">Card 01</span>
-    <span class="reading-step-note">作者信息</span>
-  </div>
-  <h2>作者信息</h2>
-  <div class="reading-card-content"><ul><li>Etienne Boursier、Scott Pesme 与 Radu-Alexandru Dragomir 合作完成，分别署 INRIA/Universite Paris-Saclay、INRIA Grenoble 与 Telecom Paris。PDF 首页记录 arXiv:2505.20172v2 [cs.LG]（2025-11-05）及 NeurIPS 2025。论文提出一个纯优化的 grokking 机制：小 weight decay 的梯度流先迅速插值，再在很慢的时间尺度上沿零训练损失解流形降低参数范数。</li></ul></div>
-</section>
-<section class="reading-card reading-card-section">
-  <div class="reading-card-topline">
-    <span class="reading-step">Card 02</span>
-    <span class="reading-step-note">研究问题</span>
-  </div>
   <h2>研究问题</h2>
   <div class="reading-card-content"><ul><li>Grokking 的典型曲线是训练损失很快为零、测试损失长时间平台、随后才明显改善。作者问这是否能在不诉诸特定表征相变或任务结构的条件下，由正则化优化本身解释。具体地，给一般训练损失 F，加很小 \(L_{2}\) decay lambda 后的梯度流，lambda 趋零时是否呈现两个彼此分离的动力学：先逼近无正则流的插值临界点，再在 \(t\) 约为 1/lambda 的尺度上选择一个更小范数、可能泛化更好的解。</li></ul></div>
 </section>
 <section class="reading-card reading-card-section">
-  <div class="reading-card-topline">
-    <span class="reading-step">Card 03</span>
-    <span class="reading-step-note">背景</span>
-  </div>
   <h2>背景</h2>
   <div class="reading-card-content"><ul><li>过参数模型的零损失解通常不是一点而是 critical manifold。无正则 gradient flow 由初始化决定落到其中某处；小 weight decay 在任何固定有限时间内看似可忽略，因此表面上应有相同极限。但论文强调 \(t\to infinity\) 与 \(lambda\to 0\) 的极限不可交换：先长时间训练再令 decay 很小，会得到不同于无正则终点的低范数选择。这里的“Riemannian norm minimisation”是指在临界流形携带的诱导度量上做范数下降，不是简单地在环境欧氏空间投影。</li></ul></div>
 </section>
 <section class="reading-card reading-card-section">
-  <div class="reading-card-topline">
-    <span class="reading-step">Card 04</span>
-    <span class="reading-step-note">模型与方法</span>
-  </div>
   <h2>模型与方法</h2>
   <div class="reading-card-content"><ul><li>作者对光滑 F 考察 dot w=-nabla F(w)-lambda w，假定无正则流收敛并对临界流形有足够正则结构。奇异摄动分析给出 fast phase：regularised path 跟踪无正则流至临界流形；slow phase：以缩放时间沿流形上的黎曼梯度流减小 \(l_{2}\) norm。实验包括 rank-3 matrix completion（随机观测 20 by 20 矩阵一半条目、factor U,V）、两层 ReLU 拟合少量一维样本，以及 diagonal linear Fourier-feature network。训练记录 train/test loss、norm、函数快照和重构奇异值；离散迭代以 \(t_{k}=gamma\) \(k\) 对齐连续理论。</li></ul></div>
 </section>
 <section class="reading-card reading-card-section">
-  <div class="reading-card-topline">
-    <span class="reading-step">Card 05</span>
-    <span class="reading-step-note">核心结果与证据</span>
-  </div>
   <h2>核心结果与证据</h2>
   <div class="reading-card-content"><ul><li>主结论是：lambda 小时，初期到达插值 critical manifold 的轨迹近似不含 decay 的 gradient flow，之后在 1/lambda 量级的慢时间上下降参数 norm，并趋向该流形中低范数解。Figure 1 概括两相机制。Figure 2（第 6--7 页）在低秩矩阵补全中显示训练 loss 快速归零而 test loss长平台；晚期 norm 降低时 test loss 改善。其右面板显示早期多条重构奇异值都大，grokking 开始后仅三个向真实 rank-3 奇异值靠拢，其余衰减。Figure 3 的两层 ReLU 也显示慢 norm 下降与函数从训练点插值向三 ReLU teacher 的泛化靠近。作者将这些视为权重衰减诱导的低复杂度选择，而非训练误差再次降低。</li></ul><figure class="evidence-figure">
   <button class="evidence-figure-image-button" type="button" aria-label="放大查看 Figure 2" onclick="window.openPaperFigureImage && window.openPaperFigureImage(this.querySelector('img'))">
@@ -164,26 +146,14 @@
 </figure></div>
 </section>
 <section class="reading-card reading-card-section">
-  <div class="reading-card-topline">
-    <span class="reading-step">Card 06</span>
-    <span class="reading-step-note">有效性与局限</span>
-  </div>
   <h2>有效性与局限</h2>
   <div class="reading-card-content"><ul><li>优势是把延迟泛化写成明确的 singular-perturbation/流形选择问题，并将时间尺度同 lambda 关联；矩阵补全的谱图提供了直观的结构选择证据。理论并不自动覆盖所有深网：需要 F 光滑、无正则流收敛和适当流形条件；ReLU 不光滑，论文也只将其作为相似现象的数值例子。低 \(l_{2}\) norm 与更好泛化在这些受控任务中相关，却不是所有数据、参数化或正则化下的充分因果判据。实际训练是离散、小 batch、可能 Adam 的过程，lambda、stepsize、初始化和数据噪声均可改变可见窗口；论文解释的是一类 grokking，不排除熵、表示或优化器动力学的其他机制。</li></ul></div>
 </section>
 <section class="reading-card reading-card-section">
-  <div class="reading-card-topline">
-    <span class="reading-step">Card 07</span>
-    <span class="reading-step-note">复现与资源</span>
-  </div>
   <h2>复现与资源</h2>
   <div class="reading-card-content"><ul><li>最低成本复核是按文中矩阵补全设置生成 rank-3 20 by 20 真矩阵、观测 50% entries，以 lambda=1e-3、stepsize 1e-2 的 factorised GD 追踪完整矩阵 test error、||U||_F^2+||V||_F^2 和 \(UV^{T}\) 奇异值。必须将绘图横轴转换成 \(t=gamma\) \(k\)，训练足够久覆盖 1/lambda 尺度；只跑 fast phase 会错误否定机制。再可复现一维 ReLU/diagonal-linear toy，保存每个函数快照与独立 test grid。验证定理还需检查 F 的光滑性和临界流形假设，不能从曲线本身推出。本卡只核验 30 页 PDF、完整 MinerU Markdown 和既有渲染页，未执行代码、数值积分或证明复算。</li></ul></div>
 </section>
 <section class="reading-card reading-card-section">
-  <div class="reading-card-topline">
-    <span class="reading-step">Card 08</span>
-    <span class="reading-step-note">阅读指南</span>
-  </div>
   <h2>阅读指南</h2>
   <div class="reading-card-content"><ul><li>先读 Figure 1 与 Theorem 1 的假设，把“fast tracks unregularised flow”和“slow selects along manifold”分开。随后阅读两个极限不交换的论证，这是为什么极小 decay 最终仍有大效果。Figure 2 是最干净的可视例：左图确认时间尺度，右图展示低秩谱选择；不要忽略它的合成矩阵边界。再看 Figure 3，认可 ReLU 现象但不把它等同于光滑定理。最后阅读附录的离散时间换算，避免将 \(t\) about 1/lambda 误认为恒定的 iteration 数；它要除以 stepsize 才对应步数。</li></ul></div>
 </section></article>

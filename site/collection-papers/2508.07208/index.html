@@ -3,10 +3,10 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>What One Cannot, Two Can: Two-Layer Transformers Provably Represent Induction Heads on Any-Order Markov Chains - physics+AI Collection 论文卡</title>
-    <meta name="description" content="作者按论文 PDF 首页顺序为 Chanakya Ekbote、Marco Bondaschi、Nived Rajaraman、Jason D. Lee、Michael Gastpar、Ashok Vardhan Makkuva、Paul Pu Liang。首页标注 Ekbote 为通讯作者；机构分别见元数据，含 MIT、EPFL、UC Berkeley 和 Princeton。来源：NeurIPS 2025 正式论文 PDF 第 1 页。 主证据采用 NeurIPS 2025 proceedings 的 81 页版本（DOI: 10.52202/085713-1259）；另核对 arXiv:2508.07208v2 的 74 页 PDF。两者的作者顺序和图 2 对应；会议网页的作者显示顺序不同，故采用 PDF 首页顺序。此条是 Collection 来源，未赋 Daily 日期、分数或等级。" />
+    <title>What One Cannot, Two Can: Two-Layer Transformers Provably Represent Induction Heads on Any-Order Markov Chains - 论文卡</title>
+    <meta name="description" content="输入是来自未知转移核的有限字母表马尔可夫序列。给定末尾 \(k\) 个符号，模型应从当前上下文里找出过去具有同样长度 \(k\) 前缀的出现位置，并用其后继符号的频数预测下一符号；训练时可见许多独立采样的转移核，测试时则靠当前序列适应。问题是：每层仅一个注意力头、总共两层时，对任意 \(k\) 能否表示这种条件 \(k\)-gram 估计器？来源：PDF 第 2、4–5 页，定义 1、2、4。" />
     <link rel="canonical" href="https://xixi-cc.github.io/daily-article-card/collection-papers/2508.07208/" />
-    <script type="application/ld+json">{"@context": "https://schema.org", "@type": "Article", "headline": "What One Cannot, Two Can: Two-Layer Transformers Provably Represent Induction Heads on Any-Order Markov Chains", "description": "作者按论文 PDF 首页顺序为 Chanakya Ekbote、Marco Bondaschi、Nived Rajaraman、Jason D. Lee、Michael Gastpar、Ashok Vardhan Makkuva、Paul Pu Liang。首页标注 Ekbote 为通讯作者；机构分别见元数据，含 MIT、EPFL、UC Berkeley 和 Princeton。来源：NeurIPS 2025 正式论文 PDF 第 1 页。 主证据采用 NeurIPS 2025 proceedings 的 81 页版本（DOI: 10.52202/085713-1259）；另核对 arXiv:2508.07208v2 的 74 页 PDF。两者的作者顺序和图 2 对应；会议网页的作者显示顺序不同，故采用 PDF 首页顺序。此条是 Collection 来源，未赋 Daily 日期、分数或等级。", "url": "https://xixi-cc.github.io/daily-article-card/collection-papers/2508.07208/", "mainEntityOfPage": "https://xixi-cc.github.io/daily-article-card/collection-papers/2508.07208/", "inLanguage": "zh-CN", "author": {"@type": "Person", "name": "Xineng Cao", "alternateName": ["Xixi Cao", "曹溪能"], "url": "https://xixi-cc.github.io/"}, "isBasedOn": "https://proceedings.neurips.cc/paper_files/paper/2025/hash/35c82c1d26f84f1485fecba6c9488ffe-Abstract-Conference.html"}</script>
+    <script type="application/ld+json">{"@context": "https://schema.org", "@type": "Article", "headline": "What One Cannot, Two Can: Two-Layer Transformers Provably Represent Induction Heads on Any-Order Markov Chains", "description": "输入是来自未知转移核的有限字母表马尔可夫序列。给定末尾 \\(k\\) 个符号，模型应从当前上下文里找出过去具有同样长度 \\(k\\) 前缀的出现位置，并用其后继符号的频数预测下一符号；训练时可见许多独立采样的转移核，测试时则靠当前序列适应。问题是：每层仅一个注意力头、总共两层时，对任意 \\(k\\) 能否表示这种条件 \\(k\\)-gram 估计器？来源：PDF 第 2、4–5 页，定义 1、2、4。", "url": "https://xixi-cc.github.io/daily-article-card/collection-papers/2508.07208/", "mainEntityOfPage": "https://xixi-cc.github.io/daily-article-card/collection-papers/2508.07208/", "inLanguage": "zh-CN", "author": {"@type": "Person", "name": "Xineng Cao", "alternateName": ["Xixi Cao", "曹溪能"], "url": "https://xixi-cc.github.io/"}, "isBasedOn": "https://proceedings.neurips.cc/paper_files/paper/2025/hash/35c82c1d26f84f1485fecba6c9488ffe-Abstract-Conference.html"}</script>
     <script>
       (function() {
         try {
@@ -30,6 +30,18 @@
     <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700;800&family=Noto+Sans+SC:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
     <script>document.documentElement.classList.add('math-pending');</script>
     <script>
+      window.fitInlineMath = function(root) {
+        (root || document).querySelectorAll('mjx-container:not([display="true"])').forEach(function(el) {
+          el.classList.remove('inline-math-overflow');
+          const content = el.closest('.reading-card-content, .detail-summary, .feed-card-body');
+          if(content && el.getBoundingClientRect().width > content.clientWidth) {
+            el.classList.add('inline-math-overflow');
+            el.tabIndex = 0;
+            el.setAttribute('aria-label', '长公式，可横向滑动阅读');
+          }
+        });
+      };
+      window.addEventListener('resize', function() { window.fitInlineMath(); });
       window.MathJax = {
         tex: {
           inlineMath: [['$', '$'], ['\\(', '\\)']],
@@ -49,6 +61,7 @@
             MathJax.startup.promise.then(function() {
               document.documentElement.classList.remove('math-pending');
               document.documentElement.dataset.mathReady = 'true';
+              window.requestAnimationFrame(function() { window.fitInlineMath(); });
             });
           }
         }
@@ -65,9 +78,9 @@
     <header class="header detail-page-header">
       <div class="container">
         <div class="detail-page-topbar">
-          <a class="back-link" href="../../collection.html">返回列表</a>
+          <a class="back-link" href="../../index.html">返回列表</a>
           <div class="detail-topbar-actions">
-            <span class="detail-site-name">physics+AI Collection 论文卡</span>
+            <span class="detail-site-name">论文卡</span>
             <button id="detail-favorite" class="detail-favorite-button" type="button" aria-pressed="false">☆ 收藏</button>
             <button class="theme-toggle" type="button" data-theme-toggle aria-label="当前主题：设备，点击切换主题" title="当前主题：设备">
   <span class="theme-toggle-icons" aria-hidden="true">
@@ -91,22 +104,15 @@
         <div class="detail-hero-grid">
           <div class="detail-hero-cover"><figure class="paper-figure-card paper-figure-card-detail">
   <img class="paper-figure-image" src="../../assets/collection-figures/2508.07208/figure-2.png" alt="两层单头 Transformer 的训练注意力图：第一层三条下对角线，第二层与理想匹配图并列。" loading="lazy" onclick="window.openPaperFigureImage && window.openPaperFigureImage(this)" />
-  <figcaption class="paper-figure-caption">作者图 2，三阶合成 Markov 链的训练注意力与理想归纳头模式对照；颜色表示注意力权重。图像不能证明高阶训练收敛。 来源：Chanakya Ekbote、Marco Bondaschi、Nived Rajaraman、Jason \(D\). Lee、Michael Gastpar、Ashok Vardhan Makkuva、Paul Pu Liang；Ekbote et al., arXiv:2508.07208v2, Figure 2, CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/); crop excludes surrounding prose</figcaption>
+  <figcaption class="paper-figure-caption">作者图 2，三阶合成 Markov 链的训练注意力与理想归纳头模式对照；颜色表示注意力权重。图像不能证明高阶训练收敛。 来源：Chanakya Ekbote、Marco Bondaschi、Nived Rajaraman、Jason \(D\). Lee、Michael Gastpar、Ashok Vardhan Makkuva、Paul Pu Liang；Ekbote et al., arXiv:2508.07208v2, Figure 2, CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/); crop excludes surrounding prose <a href="https://proceedings.neurips.cc/paper_files/paper/2025/hash/35c82c1d26f84f1485fecba6c9488ffe-Abstract-Conference.html" target="_blank" rel="noopener noreferrer">原文图源 ↗</a></figcaption>
 </figure></div>
           <div class="detail-hero-copy">
-            <p class="eyebrow">Collection 全文卡</p>
+            <p class="eyebrow">论文详情</p>
             <h1 class="detail-page-title">What One Cannot, Two Can: Two-Layer Transformers Provably Represent Induction Heads on Any-Order Markov Chains</h1>
             <p class="detail-page-title-zh">单层做不到、双层可以：两层 Transformer 可在任意阶马尔可夫链上表示归纳头</p>
-            <div class="detail-meta">Paper Collection · Transformer Theory · <a href="https://proceedings.neurips.cc/paper_files/paper/2025/hash/35c82c1d26f84f1485fecba6c9488ffe-Abstract-Conference.html" target="_blank" rel="noopener noreferrer">原文</a></div>
-            <p class="detail-summary">作者按论文 PDF 首页顺序为 Chanakya Ekbote、Marco Bondaschi、Nived Rajaraman、Jason \(D\). Lee、Michael Gastpar、Ashok Vardhan Makkuva、Paul Pu Liang。首页标注 Ekbote 为通讯作者；机构分别见元数据，含 MIT、EPFL、UC Berkeley 和 Princeton。来源：NeurIPS 2025 正式论文 PDF 第 1 页。 主证据采用 NeurIPS 2025 proceedings 的 81 页版本（DOI: 10.52202/085713-1259）；另核对 arXiv:2508.07208v2 的 74 页 PDF。两者的作者顺序和图 2 对应；会议网页的作者显示顺序不同，故采用 PDF 首页顺序。此条是 Collection 来源，未赋 Daily 日期、分数或等级。</p>
-            <div class="detail-micro-meta">
-              <span class="meta-pill">AI 基础理论</span>
-              <span class="meta-pill">理论与数值</span>
-              <span class="meta-pill">#Transformer Theory</span><span class="meta-pill">#Transformer</span>
-              <span class="meta-pill">14 分钟读完</span>
-              <span class="meta-pill">8 张阅读卡</span>
-              <span class="meta-pill">作者按论文 PDF 首页顺序为 Chanakya Ekbote、Marco Bondaschi、Niv…</span>
-            </div>
+            <div class="detail-meta">Chanakya Ekbote、Marco Bondaschi、Nived Rajaraman、Jason D. Lee、Michael Gastpar、Ashok Vardhan Makkuva、Paul Pu Liang · Advances in Neural Information Processing Systems 38, Main Conference (2025) · <a href="https://proceedings.neurips.cc/paper_files/paper/2025/hash/35c82c1d26f84f1485fecba6c9488ffe-Abstract-Conference.html" target="_blank" rel="noopener noreferrer">论文原文 ↗</a></div>
+            <p class="detail-summary">输入是来自未知转移核的有限字母表马尔可夫序列。给定末尾 \(k\) 个符号，模型应从当前上下文里找出过去具有同样长度 \(k\) 前缀的出现位置，并用其后继符号的频数预测下一符号；训练时可见许多独立采样的转移核，测试时则靠当前序列适应。问题是：每层仅一个注意力头、总共两层时，对任意 \(k\) 能否表示这种条件 \(k\)-gram 估计器？来源：PDF 第 2、4–5 页，定义 1、2、4。</p>
+
           </div>
         </div>
       </div>
@@ -115,34 +121,14 @@
     <main class="container detail-layout">
       <div class="detail-shell">
         <article id="detail-body" class="reading-flow"><section class="reading-card reading-card-section">
-  <div class="reading-card-topline">
-    <span class="reading-step">Card 01</span>
-    <span class="reading-step-note">作者信息</span>
-  </div>
-  <h2>作者信息</h2>
-  <div class="reading-card-content"><ul><li>作者按论文 PDF 首页顺序为 Chanakya Ekbote、Marco Bondaschi、Nived Rajaraman、Jason \(D\). Lee、Michael Gastpar、Ashok Vardhan Makkuva、Paul Pu Liang。首页标注 Ekbote 为通讯作者；机构分别见元数据，含 MIT、EPFL、UC Berkeley 和 Princeton。来源：NeurIPS 2025 正式论文 PDF 第 1 页。</li><li>主证据采用 NeurIPS 2025 proceedings 的 81 页版本（DOI: 10.52202/085713-1259）；另核对 arXiv:2508.07208v2 的 74 页 PDF。两者的作者顺序和图 2 对应；会议网页的作者显示顺序不同，故采用 PDF 首页顺序。此条是 Collection 来源，未赋 Daily 日期、分数或等级。</li></ul></div>
-</section>
-<section class="reading-card reading-card-section">
-  <div class="reading-card-topline">
-    <span class="reading-step">Card 02</span>
-    <span class="reading-step-note">研究问题</span>
-  </div>
   <h2>研究问题</h2>
   <div class="reading-card-content"><ul><li>输入是来自未知转移核的有限字母表马尔可夫序列。给定末尾 \(k\) 个符号，模型应从当前上下文里找出过去具有同样长度 \(k\) 前缀的出现位置，并用其后继符号的频数预测下一符号；训练时可见许多独立采样的转移核，测试时则靠当前序列适应。问题是：每层仅一个注意力头、总共两层时，对任意 \(k\) 能否表示这种条件 \(k\)-gram 估计器？来源：PDF 第 2、4–5 页，定义 1、2、4。</li><li>这里的“上下文学习”指推理时利用输入序列估计其转移规律，不是更新网络权重；“归纳头”是把当前局部上下文与历史局部上下文匹配，再读出匹配位置后的符号。表示存在性、训练可达性和真实语言任务泛化是不同问题。</li></ul></div>
 </section>
 <section class="reading-card reading-card-section">
-  <div class="reading-card-topline">
-    <span class="reading-step">Card 03</span>
-    <span class="reading-step-note">背景</span>
-  </div>
   <h2>背景</h2>
   <div class="reading-card-content"><ul><li>已有构造表明条件 1-gram 可由两层单头表示，而任意阶的已知单头构造需要三层；另一条路是两层但第一层有随 \(k\) 增长的多个头。本文在这个受控 Markov-ICL 问题中追问深度与头数的关系，而非宣称一般 Transformer 的普适最小深度。来源：PDF 第 2–3 页、表 1。</li><li>物理读者可把“状态”理解为最近 \(k\) 个离散符号组成的有限记忆，转移核给出下一符号分布；注意力权重是模型的检索系数，并不等同于物理相互作用或因果影响。</li></ul></div>
 </section>
 <section class="reading-card reading-card-section">
-  <div class="reading-card-topline">
-    <span class="reading-step">Card 04</span>
-    <span class="reading-step-note">模型与方法</span>
-  </div>
   <h2>模型与方法</h2>
   <div class="reading-card-content"><ul><li>设字母表为 \(\mathcal S\)，大小为 \(S\)，序列为 \(x_{0:T}\)。论文定义的条件计数估计器是</li></ul>
 
@@ -151,10 +137,6 @@
 <ul><li>分母须非零；它对匹配历史的后继符号做经验频率估计，而不是直接恢复真实转移核。来源：PDF 第 4 页，定义 2。</li><li>构造使用因果 softmax 注意力、相对位置编码、残差、ReLU 多层感知机（MLP）及修正的层归一化。第一层唯一的头按距离 \(j=1,\ldots,k\) 的权重 \(3^j\) 编码过去 \(k\) 个符号，得到 \(v_n\)。由于最远一项权重大于此前项总和，MLP 的阈值与 ReLU 可从混合向量中辨认 \(x_{n-k}\)，再结合残差里的当前符号 \(x_n\) 构造移位后的 \(u_n\)。第二层比较 \(u_T\) 与各位置 \(v_i\) 的归一化方向，在大 logit 尺度极限将权重集中到匹配上下文的位置。来源：PDF 第 7–8、16、23–27 页，定理 3、附录 A.1/B.1。</li><li>训练分析另取一阶链，固定大部分网络参数为设定的理想值，只训练第一层位置标量 \(p_j\) 与第二层注意力标量 \(a_2\)。两阶段分别优化 \(p_j\) 和 \(a_2\)，第一阶段省略 MLP 层归一化、第二阶段再加入；损失是下一符号交叉熵，带小的正数 \(\varepsilon\)。来源：PDF 第 9、33–37 页，式 (1)/(2)、算法 1。</li></ul></div>
 </section>
 <section class="reading-card reading-card-section">
-  <div class="reading-card-topline">
-    <span class="reading-step">Card 05</span>
-    <span class="reading-step-note">核心定理与证据</span>
-  </div>
   <h2>核心定理与证据</h2>
   <div class="reading-card-content"><ul><li>定理 3 给出任意阶 \(k\ge1\) 的两层单头存在性构造，嵌入维数为 \(6S+3\)。证明关键是用第一层加 MLP 取代双头方案中第二个负责“当前窗口”的头，再用第二层形成归纳头；附录 B.1 的三层 MLP 方案在硬注意力极限给出条件计数，附录 B.2 的两层 MLP 变体还带早期位置偏差，在不可约链且序列增长时该偏差才消失。有限 logit 尺度与有限位精度对应近似，不应写成所有有限网络参数都精确等于估计器。来源：PDF 第 7–8、23–32 页，定理 3/6、附录 B。</li><li>表示开销为 \(9(6S+3)^2+(6S+3)(2T+2S+9)\) 个参数；附录 B 给出稍省参数的方案。论文说明每参数 \(\Omega(\log T+k)\) 位可使加性误差为 \(O(1/T)\)。这些是特定显式构造的规模/精度结果，不能推出任意训练设置都会学到该构造。来源：PDF 第 3、7、74 页，表 1、表 6、备注 2。</li><li>图 2 是训练模型的独立数值佐证：三阶随机马尔可夫序列下，第一层注意力集中在前三条下对角线，第二层注意力与理想匹配图相近。颜色条表示注意力权重（0 到 1）；这是所示合成序列上的视觉相似性，不是定理 3 的证明，也没有证明对任意阶的优化收敛。来源：PDF 第 7 页，图 2。</li><li>定理 4 的两阶段一阶简化模型，在论文规定的转移核先验、足够长序列与所选学习率/步数下，给出 \(\mathcal L(\widehat\theta)-\mathcal L^\star\lesssim \log(T+1)/(T+1)^{c\gamma}\)；\(c\) 与 \(\gamma\) 的含义和条件见正文及附录 \(C\)。它是近最优损失的渐近界，不是完整两层网络经普通端到端训练的收敛定理。来源：PDF 第 9–10、33–41 页，定理 4/7、假设 1。</li><li>附录 \(H\).2 的二阶合成链实验报告单层与双层的 excess cross-entropy 分别为 \(0.131\pm0.000\) 与 \(0.100\pm0.003\)；噪声实验中替换概率从 \(0\) 到 \(0.5\) 时损失差从 \(0.10\pm0.003\) 增至 \(0.21\pm0.005\)（三种子）。这支持所测配置上的差异及脆弱性，不能单凭有限实验推出单层架构一般不可能。来源：PDF 第 70–72 页，表 2、表 3。</li></ul><figure class="evidence-figure">
   <button class="evidence-figure-image-button" type="button" aria-label="放大查看 Figure 2" onclick="window.openPaperFigureImage && window.openPaperFigureImage(this.querySelector('img'))">
@@ -168,26 +150,14 @@
 </figure></div>
 </section>
 <section class="reading-card reading-card-section">
-  <div class="reading-card-topline">
-    <span class="reading-step">Card 06</span>
-    <span class="reading-step-note">有效性与局限</span>
-  </div>
   <h2>有效性与局限</h2>
   <div class="reading-card-content"><ul><li>任意阶结论只针对有限字母表、相对位置编码、特制 MLP/层归一化和可选大注意力尺度的显式架构；条件计数式须至少有一个匹配历史。附录 A.1 把标准 LayerNorm 经拼接向量及缩放改写为 \(\ell_2\) 方向归一化。附录 B.2 还出现长度有限时的早期位置偏差。来源：PDF 第 4、7–8、16、21–22、31–32 页。</li><li>一阶学习定理固定多数权重并使用两阶段训练，假设正转移、非平凡混合、置换不变且平均转移矩阵均匀。附录 \(D\) 对高阶学习只处理第一层双头的更强简化：一个头已最优初始化、其余模块固定，并使用数据依赖预条件器及特殊温度过程；它没有证明高阶单头完整模型能从标准初始化学出定理 3 的构造。来源：PDF 第 9–10、33–34、42–43、51–52 页，假设 1/2/3、定理 9/10。</li><li>实验使用合成二元 Markov 数据（序列长度 8/32/64、单卡 \(A_{100}\)），而非自然语言；图 2 的注意力图与第 70–72 页的损失差只是有限设置的经验观察。令牌替换与转移扰动会增大损失差。来源：PDF 第 7、70–73 页，表 2–5。</li></ul></div>
 </section>
 <section class="reading-card reading-card-section">
-  <div class="reading-card-topline">
-    <span class="reading-step">Card 07</span>
-    <span class="reading-step-note">复现与资源</span>
-  </div>
   <h2>复现与资源</h2>
   <div class="reading-card-content"><ul><li>作者代码仓库：https://github.com/cekbote/what-one-cannot-two-can ，README 提供依赖安装与运行 \(\texttt{src/main.py}\) 的简要步骤。数据由随机转移核生成：每一行从参数向量全 1 的 Dirichlet 分布抽样，初始 \(k\) 个符号均匀取样。未见独立固定数据集或训练检查点。来源：PDF 第 1、4、73 页，附录 \(H\).5；作者仓库 README。</li><li>实验设置包括 AdamW、余弦学习率、30,000 次迭代，批量 16/32/64、嵌入维数 32/64/128 的网格搜索；每个实验在单张 NVIDIA \(A_{100}\) 上约 30 分钟到 2 小时。表 5 写五次重复，噪声表 3/4 明确给出三种子均值与标准差，应按各表分别解释。来源：PDF 第 71–73 页，表 3–5。</li></ul></div>
 </section>
 <section class="reading-card reading-card-section">
-  <div class="reading-card-topline">
-    <span class="reading-step">Card 08</span>
-    <span class="reading-step-note">阅读指南</span>
-  </div>
   <h2>阅读指南</h2>
   <div class="reading-card-content"><ul><li>快读：先看第 4 页定义 2 的计数目标和第 5 页定义 4 的匹配规则，再看第 7 页图 2、定理 3 与第 8 页 MLP 如何恢复缺失窗口，最后读第 9–10 页定理 4 的训练限制。</li><li>细读：沿第 23–27 页附录 B.1 核验 triadic 权重、ReLU 阈值、窗口重建和第二层相似度；再读第 31–32 页的替代构造偏差。关心训练时读第 33–41 页附录 \(C\) 的假设与两阶段证明，必要时再读第 42–66 页的高阶扰动分析及技术引理。</li></ul></div>
 </section></article>

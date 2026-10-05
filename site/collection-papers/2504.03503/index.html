@@ -3,10 +3,10 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Operator Learning: A Statistical Perspective - physics+AI Collection 论文卡</title>
-    <meta name="description" content="文章把 operator learning 写成随机 input function v∼μ、output G(v) 的 function-to-function regression；学习器从 n 个 i.i.d. pairs 构造 F̂n，并以 population risk 衡量。 与有限维 supervised learning 相比，除了 approximation、optimization/statistical error，还必须显式考虑 input/output representation 的 truncation error 和 grid sampling/evaluation 的 discretization error。 作者审视 kernel、PCA/functional regression、FNO、DeepONet、random-feature/operator models，并提出 active data collection、uncertainty quantification 和 non-i.i.d. solver-query theory。" />
+    <title>Operator Learning: A Statistical Perspective - 论文卡</title>
+    <meta name="description" content="文章把 operator learning 写成随机 input function v∼μ、output G(v) 的 function-to-function regression；学习器从 n 个 i.i.d. pairs 构造 F̂n，并以 population risk 衡量。" />
     <link rel="canonical" href="https://xixi-cc.github.io/daily-article-card/collection-papers/2504.03503/" />
-    <script type="application/ld+json">{"@context": "https://schema.org", "@type": "Article", "headline": "Operator Learning: A Statistical Perspective", "description": "文章把 operator learning 写成随机 input function v∼μ、output G(v) 的 function-to-function regression；学习器从 n 个 i.i.d. pairs 构造 F̂n，并以 population risk 衡量。 与有限维 supervised learning 相比，除了 approximation、optimization/statistical error，还必须显式考虑 input/output representation 的 truncation error 和 grid sampling/evaluation 的 discretization error。 作者审视 kernel、PCA/functional regression、FNO、DeepONet、random-feature/operator models，并提出 active data collection、uncertainty quantification 和 non-i.i.d. solver-query theory。", "url": "https://xixi-cc.github.io/daily-article-card/collection-papers/2504.03503/", "mainEntityOfPage": "https://xixi-cc.github.io/daily-article-card/collection-papers/2504.03503/", "inLanguage": "zh-CN", "author": {"@type": "Person", "name": "Xineng Cao", "alternateName": ["Xixi Cao", "曹溪能"], "url": "https://xixi-cc.github.io/"}, "isBasedOn": "https://arxiv.org/abs/2504.03503"}</script>
+    <script type="application/ld+json">{"@context": "https://schema.org", "@type": "Article", "headline": "Operator Learning: A Statistical Perspective", "description": "文章把 operator learning 写成随机 input function v∼μ、output G(v) 的 function-to-function regression；学习器从 n 个 i.i.d. pairs 构造 F̂n，并以 population risk 衡量。", "url": "https://xixi-cc.github.io/daily-article-card/collection-papers/2504.03503/", "mainEntityOfPage": "https://xixi-cc.github.io/daily-article-card/collection-papers/2504.03503/", "inLanguage": "zh-CN", "author": {"@type": "Person", "name": "Xineng Cao", "alternateName": ["Xixi Cao", "曹溪能"], "url": "https://xixi-cc.github.io/"}, "isBasedOn": "https://arxiv.org/abs/2504.03503"}</script>
     <script>
       (function() {
         try {
@@ -30,6 +30,18 @@
     <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700;800&family=Noto+Sans+SC:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
     <script>document.documentElement.classList.add('math-pending');</script>
     <script>
+      window.fitInlineMath = function(root) {
+        (root || document).querySelectorAll('mjx-container:not([display="true"])').forEach(function(el) {
+          el.classList.remove('inline-math-overflow');
+          const content = el.closest('.reading-card-content, .detail-summary, .feed-card-body');
+          if(content && el.getBoundingClientRect().width > content.clientWidth) {
+            el.classList.add('inline-math-overflow');
+            el.tabIndex = 0;
+            el.setAttribute('aria-label', '长公式，可横向滑动阅读');
+          }
+        });
+      };
+      window.addEventListener('resize', function() { window.fitInlineMath(); });
       window.MathJax = {
         tex: {
           inlineMath: [['$', '$'], ['\\(', '\\)']],
@@ -49,6 +61,7 @@
             MathJax.startup.promise.then(function() {
               document.documentElement.classList.remove('math-pending');
               document.documentElement.dataset.mathReady = 'true';
+              window.requestAnimationFrame(function() { window.fitInlineMath(); });
             });
           }
         }
@@ -65,9 +78,9 @@
     <header class="header detail-page-header">
       <div class="container">
         <div class="detail-page-topbar">
-          <a class="back-link" href="../../collection.html">返回列表</a>
+          <a class="back-link" href="../../index.html">返回列表</a>
           <div class="detail-topbar-actions">
-            <span class="detail-site-name">physics+AI Collection 论文卡</span>
+            <span class="detail-site-name">论文卡</span>
             <button id="detail-favorite" class="detail-favorite-button" type="button" aria-pressed="false">☆ 收藏</button>
             <button class="theme-toggle" type="button" data-theme-toggle aria-label="当前主题：设备，点击切换主题" title="当前主题：设备">
   <span class="theme-toggle-icons" aria-hidden="true">
@@ -91,22 +104,15 @@
         <div class="detail-hero-grid">
           <div class="detail-hero-cover"><figure class="paper-figure-card paper-figure-card-detail">
   <img class="paper-figure-image" src="../../assets/collection-figures/2504.03503/cover-source.webp" alt="神经算子的输入函数、热方程真值和预测。" loading="lazy" onclick="window.openPaperFigureImage && window.openPaperFigureImage(this)" />
-  <figcaption class="paper-figure-caption">神经算子的输入函数、热方程真值和预测。来源：原论文 Figure 1（PDF 第 2 页）。</figcaption>
+  <figcaption class="paper-figure-caption">神经算子的输入函数、热方程真值和预测。来源：原论文 Figure 1（PDF 第 2 页）。 <a href="https://arxiv.org/abs/2504.03503" target="_blank" rel="noopener noreferrer">原文图源 ↗</a></figcaption>
 </figure></div>
           <div class="detail-hero-copy">
-            <p class="eyebrow">Collection 全文卡</p>
+            <p class="eyebrow">论文详情</p>
             <h1 class="detail-page-title">Operator Learning: A Statistical Perspective</h1>
             <p class="detail-page-title-zh">算子学习：统计学视角</p>
-            <div class="detail-meta">Paper Collection · Neural Operators · <a href="https://arxiv.org/abs/2504.03503" target="_blank" rel="noopener noreferrer">原文</a></div>
-            <p class="detail-summary">文章把 operator learning 写成随机 input function \(v\sim \mu\)、output G(v) 的 function-to-function regression；学习器从 \(n\) 个 i.i.\(d\). pairs 构造 F̂\(n\)，并以 population risk 衡量。 与有限维 supervised learning 相比，除了 approximation、optimization/statistical error，还必须显式考虑 input/output representation 的 truncation error 和 grid sampling/evaluation 的 discretization error。 作者审视 kernel、PCA/functional regression、FNO、DeepONet、random-feature/operator models，并提出 active data collection、uncertainty quantification 和 non-i.i.\(d\). solver-query theory。</p>
-            <div class="detail-micro-meta">
-              <span class="meta-pill">AI 基础理论</span>
-              <span class="meta-pill">AI 实证</span>
-              <span class="meta-pill">#Neural Operators</span><span class="meta-pill">#机器学习</span><span class="meta-pill">#神经算子</span>
-              <span class="meta-pill">12 分钟读完</span>
-              <span class="meta-pill">8 张阅读卡</span>
-              <span class="meta-pill">作者：Unique Subedi、Ambuj Tewari。</span>
-            </div>
+            <div class="detail-meta">Unique Subedi、Ambuj Tewari · 预印本 · arXiv:2504.03503 · <a href="https://arxiv.org/abs/2504.03503" target="_blank" rel="noopener noreferrer">论文原文 ↗</a></div>
+            <p class="detail-summary">文章把 operator learning 写成随机 input function \(v\sim \mu\)、output G(v) 的 function-to-function regression；学习器从 \(n\) 个 i.i.\(d\). pairs 构造 F̂\(n\)，并以 population risk 衡量。</p>
+
           </div>
         </div>
       </div>
@@ -115,66 +121,30 @@
     <main class="container detail-layout">
       <div class="detail-shell">
         <article id="detail-body" class="reading-flow"><section class="reading-card reading-card-section">
-  <div class="reading-card-topline">
-    <span class="reading-step">Card 01</span>
-    <span class="reading-step-note">作者信息</span>
-  </div>
-  <h2>作者信息</h2>
-  <div class="reading-card-content"><ul><li>作者：Unique Subedi、Ambuj Tewari。</li><li>官方快照：arXiv:2504.03503v1；主分类 stat.ML。</li><li>这是统计理论视角的综述/立场文章，不提供新的大规模统一实验；卡片重点是误差分解与尚未解决的理论问题。</li></ul></div>
-</section>
-<section class="reading-card reading-card-section">
-  <div class="reading-card-topline">
-    <span class="reading-step">Card 02</span>
-    <span class="reading-step-note">摘要</span>
-  </div>
   <h2>摘要</h2>
   <div class="reading-card-content"><ul><li>文章把 operator learning 写成随机 input function \(v\sim \mu\)、output G(v) 的 function-to-function regression；学习器从 \(n\) 个 i.i.\(d\). pairs 构造 F̂\(n\)，并以 population risk 衡量。</li><li>与有限维 supervised learning 相比，除了 approximation、optimization/statistical error，还必须显式考虑 input/output representation 的 truncation error 和 grid sampling/evaluation 的 discretization error。</li><li>作者审视 kernel、PCA/functional regression、FNO、DeepONet、random-feature/operator models，并提出 active data collection、uncertainty quantification 和 non-i.i.\(d\). solver-query theory。</li></ul></div>
 </section>
 <section class="reading-card reading-card-section">
-  <div class="reading-card-topline">
-    <span class="reading-step">Card 03</span>
-    <span class="reading-step-note">背景</span>
-  </div>
   <h2>背景</h2>
   <div class="reading-card-content"><ul><li>operator 的输入输出是函数，但训练时只能看到有限 sensors/grid；模型通常还通过 encoder E、finite latent map \(h\)、decoder \(D\)，把无限维对象截断为有限维。</li><li>训练 input 常从 GP(0,\(\alpha\)(-\(\Delta\)+βI)^-\(\gamma\)) 的 Karhunen–Loève expansion 截断采样；\(\gamma\) 控制 smoothness，截断 modes 与 grid 会把 prior 假设写入 benchmark。</li><li>因此 test error 不只是“模型好坏”：训练 \(\mu\)、函数 smoothness、solver、截断 basis、grid 和 loss metric 共同决定风险。</li></ul></div>
 </section>
 <section class="reading-card reading-card-section">
-  <div class="reading-card-topline">
-    <span class="reading-step">Card 04</span>
-    <span class="reading-step-note">模型与方法</span>
-  </div>
   <h2>模型与方法</h2>
   <div class="reading-card-content"><ul><li>统计框架定义 hypothesis class F、loss ℓ、source distribution \(\mu\) 与 learning rule；well-specified 假设要求 G 可被 F 小误差逼近，否则 approximation error 即使 \(n\)→∞ 也不消失。</li><li>FNO 通过 Fourier truncation/kernel layers近似 operator；DeepONet 常以固定 sensor vector E(v) 编码，若不改 encoder 就不能自然接受另一 input grid。inner-product/integral encoder 可改善 discretization invariance。</li><li>评价建议既做 in-distribution held-out \(\mu\)，也通过改变 GP smoothness \(\gamma\)、Karhunen–Loève coefficients 分布或 PDE parameters 构造 OOD；只换 output grid 不是完整 OOD。</li><li>physics-informed loss 可看成 empirical risk 加约束 regularizer，可能缩小有效 hypothesis class并提升 sample efficiency，但权重、方程误设与 residual sampling 影响统计解释。</li></ul></div>
 </section>
 <section class="reading-card reading-card-section">
-  <div class="reading-card-topline">
-    <span class="reading-step">Card 05</span>
-    <span class="reading-step-note">核心结果与证据</span>
-  </div>
   <h2>核心结果与证据</h2>
   <div class="reading-card-content"><ul><li>文章给出核心分解：approximation error 来自 G∉F；statistical error 来自有限 \(n\)；truncation error来自 GP/data、encoder/decoder、Fourier/PCA modes；discretization error来自有限 grid 上训练与评价。</li><li>现有 universality/error-bound 工作主要解决 approximation；对“train grid \(N_{1}\)、test grid \(N_{2}\)”的一般 multiresolution generalization 仍缺理论，因此 zero-shot super-resolution 的经验成功尚无统一统计基础。</li><li>一般 Lipschitz operator class 的 minimax error 可慢至约 (log \(n\))^-1，说明仅用 Lipschitz 正则的类太大；实际可高效学习的 PDE operator 必须利用更强结构。</li><li>DeepONet/FNO 的现有 generalization bounds 往往通过 covering/Rademacher complexity，随参数量或层数指数恶化，数值上过松，不能解释经验成功。</li><li>i.i.\(d\). \(\mu\) 模型本身可能不适合可主动调用 solver 的场景；active learner 可选择 vi、resolution 和 acquisition，理论目标应包括单次 label 的 solver cost 与信息量。</li></ul></div>
 </section>
 <section class="reading-card reading-card-section">
-  <div class="reading-card-topline">
-    <span class="reading-step">Card 06</span>
-    <span class="reading-step-note">有效性与局限</span>
-  </div>
   <h2>有效性与局限</h2>
   <div class="reading-card-content"><ul><li>文章是选择性理论综述，未穷尽快速发展的 operator-learning 文献；提出的统一误差图景不等于已证明各项可独立相加。</li><li>很多理论假设 compactness、smoothness、Gaussian input 或已知 function spaces，与 shock、irregular geometry、adaptive mesh 和实验噪声有距离。</li><li>population risk 对 \(\mu\) 平均，可能掩盖 rare/extreme inputs；OOD、worst-case、conservation 与 calibrated uncertainty 需额外目标。</li><li>physics constraints 并不自动带来正确性：若 PDE/BC 不完整或模型误设，regularizer 会系统性偏向错误 operator。</li></ul></div>
 </section>
 <section class="reading-card reading-card-section">
-  <div class="reading-card-topline">
-    <span class="reading-step">Card 07</span>
-    <span class="reading-step-note">复现与资源</span>
-  </div>
   <h2>复现与资源</h2>
   <div class="reading-card-content"><ul><li>论文 Figure 1 的 FNO heat-equation notebook由正文链接提供；其余主要资源是被综述论文而非统一代码库。</li><li>设计实验时应分别改变 \(n\)、input truncation modes、train/test grid、sensor locations 和 model capacity，测出四类误差的可识别 proxy；同时记录 solver discretization truth。</li><li>本站 PDF SHA-256：2dff71d04ac3c86804e22c27facc2370ac6af100d8e1d08ff0ff0ed6ad9e111a。</li><li>Evidence status: full-text verified; no independent reproduction performed.</li></ul></div>
 </section>
 <section class="reading-card reading-card-section">
-  <div class="reading-card-topline">
-    <span class="reading-step">Card 08</span>
-    <span class="reading-step-note">阅读指南</span>
-  </div>
   <h2>阅读指南</h2>
   <div class="reading-card-content"><ul><li>先读 Section 2 的统计定义，再读 Section 5 的四类误差；用这套分解审查任何 operator benchmark。</li><li>随后对照 FNO/DeepONet encoding 与 Section 4 的 GP sampling，判断所谓 OOD 到底改变了什么。</li><li>最后读 active learning 与 UQ 展望；真正可比较的样本效率应把 solver query cost 和 resolution 纳入预算。</li></ul></div>
 </section></article>
@@ -183,8 +153,8 @@
           <nav id="detail-toc-nav" class="detail-toc-nav"></nav>
         </aside>
       </div>
-      <nav class="paper-nav"><a class="paper-nav-link paper-nav-prev" href="../../collection-papers/2504.05646/"><span class="paper-nav-label">← 上一篇</span><span class="paper-nav-title">Lattice: Learning to Efficiently Compress the Memory</span></a>
-      <a class="paper-nav-link paper-nav-next" href="../../collection-papers/2504.03933/"><span class="paper-nav-label">下一篇 →</span><span class="paper-nav-title">Language Models Are Implicitly Continuous</span></a></nav>
+      <nav class="paper-nav"><a class="paper-nav-link paper-nav-prev" href="../../collection-papers/2504.03889/"><span class="paper-nav-label">← 上一篇</span><span class="paper-nav-title">Identifying and Evaluating Inactive Heads in Pretrained LLMs</span></a>
+      <a class="paper-nav-link paper-nav-next" href="../../collection-papers/2504.02918/"><span class="paper-nav-label">下一篇 →</span><span class="paper-nav-title">Evaluating Newtonian Mechanics in Video Generative Models with Real Physical Systems</span></a></nav>
       <section id="comments" class="comments-panel" aria-labelledby="comments-title">
         <div class="comments-heading">
           <div>

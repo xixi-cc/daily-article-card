@@ -3,10 +3,10 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>The Kuramoto Neural Operator: Learning to Solve PDEs via Coupled Oscillator Dynamics - 每日论文卡</title>
-    <meta name="description" content="作者：Petr Badolia、Leonid Obukhov、Dmitry Bylinkin、Aleksandr Beznosikov。 机构：Basic Research of Artificial Intelligence Laboratory（BRAIn Lab）；Innopolis University。 版本：arXiv:2608.10234v1，2026-08-10；分类 cs.CE。" />
+    <title>The Kuramoto Neural Operator: Learning to Solve PDEs via Coupled Oscillator Dynamics - 论文卡</title>
+    <meta name="description" content="FNO 等神经算子常在固定全局基中表示解，对局部传播、反应扩散和异质介质不总合适。KNO 把解的 latent representation 视为球面耦合振子场，在网络深度中用局域 Kuramoto-like rotation/synchronization 演化，并研究振子局部不相干能否成为无需额外 uncertainty head 的误差风险信号。" />
     <link rel="canonical" href="https://xixi-cc.github.io/daily-article-card/papers/2608.10234/" />
-    <script type="application/ld+json">{"@context": "https://schema.org", "@type": "Article", "headline": "The Kuramoto Neural Operator: Learning to Solve PDEs via Coupled Oscillator Dynamics", "description": "作者：Petr Badolia、Leonid Obukhov、Dmitry Bylinkin、Aleksandr Beznosikov。 机构：Basic Research of Artificial Intelligence Laboratory（BRAIn Lab）；Innopolis University。 版本：arXiv:2608.10234v1，2026-08-10；分类 cs.CE。", "url": "https://xixi-cc.github.io/daily-article-card/papers/2608.10234/", "mainEntityOfPage": "https://xixi-cc.github.io/daily-article-card/papers/2608.10234/", "inLanguage": "zh-CN", "author": {"@type": "Person", "name": "Xineng Cao", "alternateName": ["Xixi Cao", "曹溪能"], "url": "https://xixi-cc.github.io/"}, "isBasedOn": "https://arxiv.org/abs/2608.10234", "datePublished": "2026-08-13", "dateModified": "2026-08-13"}</script>
+    <script type="application/ld+json">{"@context": "https://schema.org", "@type": "Article", "headline": "The Kuramoto Neural Operator: Learning to Solve PDEs via Coupled Oscillator Dynamics", "description": "FNO 等神经算子常在固定全局基中表示解，对局部传播、反应扩散和异质介质不总合适。KNO 把解的 latent representation 视为球面耦合振子场，在网络深度中用局域 Kuramoto-like rotation/synchronization 演化，并研究振子局部不相干能否成为无需额外 uncertainty head 的误差风险信号。", "url": "https://xixi-cc.github.io/daily-article-card/papers/2608.10234/", "mainEntityOfPage": "https://xixi-cc.github.io/daily-article-card/papers/2608.10234/", "inLanguage": "zh-CN", "author": {"@type": "Person", "name": "Xineng Cao", "alternateName": ["Xixi Cao", "曹溪能"], "url": "https://xixi-cc.github.io/"}, "isBasedOn": "https://arxiv.org/abs/2608.10234", "datePublished": "2026-08-13", "dateModified": "2026-08-13"}</script>
     <script>
       (function() {
         try {
@@ -30,6 +30,18 @@
     <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700;800&family=Noto+Sans+SC:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
     <script>document.documentElement.classList.add('math-pending');</script>
     <script>
+      window.fitInlineMath = function(root) {
+        (root || document).querySelectorAll('mjx-container:not([display="true"])').forEach(function(el) {
+          el.classList.remove('inline-math-overflow');
+          const content = el.closest('.reading-card-content, .detail-summary, .feed-card-body');
+          if(content && el.getBoundingClientRect().width > content.clientWidth) {
+            el.classList.add('inline-math-overflow');
+            el.tabIndex = 0;
+            el.setAttribute('aria-label', '长公式，可横向滑动阅读');
+          }
+        });
+      };
+      window.addEventListener('resize', function() { window.fitInlineMath(); });
       window.MathJax = {
         tex: {
           inlineMath: [['$', '$'], ['\\(', '\\)']],
@@ -49,6 +61,7 @@
             MathJax.startup.promise.then(function() {
               document.documentElement.classList.remove('math-pending');
               document.documentElement.dataset.mathReady = 'true';
+              window.requestAnimationFrame(function() { window.fitInlineMath(); });
             });
           }
         }
@@ -65,9 +78,9 @@
     <header class="header detail-page-header">
       <div class="container">
         <div class="detail-page-topbar">
-          <a class="back-link" href="../../physics_AI.html">返回列表</a>
+          <a class="back-link" href="../../index.html">返回列表</a>
           <div class="detail-topbar-actions">
-            <span class="detail-site-name">每日论文卡</span>
+            <span class="detail-site-name">论文卡</span>
             <button id="detail-favorite" class="detail-favorite-button" type="button" aria-pressed="false">☆ 收藏</button>
             <button class="theme-toggle" type="button" data-theme-toggle aria-label="当前主题：设备，点击切换主题" title="当前主题：设备">
   <span class="theme-toggle-icons" aria-hidden="true">
@@ -90,23 +103,16 @@
 
         <div class="detail-hero-grid">
           <div class="detail-hero-cover"><figure class="paper-figure-card paper-figure-card-detail">
-  <img class="paper-figure-image" src="../../assets/paper-images/2608.10234.webp" alt="The Kuramoto Neural Operator: Learning to Solve PDEs via Coupled Oscillator Dynamics" loading="lazy" onclick="window.openPaperFigureImage && window.openPaperFigureImage(this)" />
-  <figcaption class="paper-figure-caption">表 1 中 KNO 在 8 个任务的 ID/OOD 分别有 7/6 个排名第一或第二；对五个局部结构显著的任务，ID 与 OOD 均第一。</figcaption>
+  <img class="paper-figure-image" src="../../assets/reader-covers/legacy/2608.10234-v1-retained.webp" alt="The Kuramoto Neural Operator: Learning to Solve PDEs via Coupled Oscillator Dynamics — Kuramoto 神经算子的特征场、振子态与时间推进结构。" loading="lazy" onclick="window.openPaperFigureImage && window.openPaperFigureImage(this)" />
+  <figcaption class="paper-figure-caption">Kuramoto 神经算子的特征场、振子态与时间推进结构。 来源：arXiv:2608.10234v1，PDF 第 4 页，Figure 1。 <a href="https://arxiv.org/pdf/2608.10234v1" target="_blank" rel="noopener noreferrer">原文图源 ↗</a></figcaption>
 </figure></div>
           <div class="detail-hero-copy">
             <p class="eyebrow">论文详情</p>
             <h1 class="detail-page-title">The Kuramoto Neural Operator: Learning to Solve PDEs via Coupled Oscillator Dynamics</h1>
             <p class="detail-page-title-zh">Kuramoto 神经算子：通过耦合振子动力学学习求解 PDE</p>
-            <div class="detail-meta">2026-08-13 · <a href="https://arxiv.org/abs/2608.10234" target="_blank" rel="noopener noreferrer">原文</a></div>
-            <p class="detail-summary">作者：Petr Badolia、Leonid Obukhov、Dmitry Bylinkin、Aleksandr Beznosikov。 机构：Basic Research of Artificial Intelligence Laboratory（BRAIn Lab）；Innopolis University。 版本：arXiv:2608.10234v1，2026-08-10；分类 cs.CE。</p>
-            <div class="detail-micro-meta">
-              <span class="meta-pill">AI for Science</span>
-              <span class="meta-pill">AI 实证</span>
-              <span class="meta-pill">#Neural Operators</span><span class="meta-pill">#神经算子</span><span class="meta-pill">#表示学习</span>
-              <span class="meta-pill">8 分钟读完</span>
-              <span class="meta-pill">7 张阅读卡</span>
-              <span class="meta-pill">作者：Petr Badolia、Leonid Obukhov、Dmitry Bylinkin、Alek…</span>
-            </div>
+            <div class="detail-meta">Petr Badolia、Leonid Obukhov、Dmitry Bylinkin、Aleksandr Beznosikov · 预印本 · arXiv:2608.10234 · <a href="https://arxiv.org/abs/2608.10234" target="_blank" rel="noopener noreferrer">论文原文 ↗</a></div>
+            <p class="detail-summary">FNO 等神经算子常在固定全局基中表示解，对局部传播、反应扩散和异质介质不总合适。KNO 把解的 latent representation 视为球面耦合振子场，在网络深度中用局域 Kuramoto-like rotation/synchronization 演化，并研究振子局部不相干能否成为无需额外 uncertainty head 的误差风险信号。</p>
+
           </div>
         </div>
       </div>
@@ -115,58 +121,26 @@
     <main class="container detail-layout">
       <div class="detail-shell">
         <article id="detail-body" class="reading-flow"><section class="reading-card reading-card-section">
-  <div class="reading-card-topline">
-    <span class="reading-step">Card 01</span>
-    <span class="reading-step-note">作者信息</span>
-  </div>
-  <h2>作者信息</h2>
-  <div class="reading-card-content"><ul><li>作者：Petr Badolia、Leonid Obukhov、Dmitry Bylinkin、Aleksandr Beznosikov。</li><li>机构：Basic Research of Artificial Intelligence Laboratory（BRAIn Lab）；Innopolis University。</li><li>版本：arXiv:2608.10234v1，2026-08-10；分类 cs.CE。</li></ul></div>
-</section>
-<section class="reading-card reading-card-section">
-  <div class="reading-card-topline">
-    <span class="reading-step">Card 02</span>
-    <span class="reading-step-note">研究问题</span>
-  </div>
   <h2>研究问题</h2>
   <div class="reading-card-content"><p>FNO 等神经算子常在固定全局基中表示解，对局部传播、反应扩散和异质介质不总合适。KNO 把解的 latent representation 视为球面耦合振子场，在网络深度中用局域 Kuramoto-like rotation/synchronization 演化，并研究振子局部不相干能否成为无需额外 uncertainty head 的误差风险信号。</p></div>
 </section>
 <section class="reading-card reading-card-section">
-  <div class="reading-card-topline">
-    <span class="reading-step">Card 03</span>
-    <span class="reading-step-note">模型与方法</span>
-  </div>
   <h2>模型与方法</h2>
   <div class="reading-card-content"><ul><li>输入逐点 lift 为 feature field $h$；随机初始化单位球振子 $q$，band-limited 输入投影初始化 persistent stimulus $s$。</li><li>每个 KNO layer 在 canonical uniform grid 上局域耦合邻近振子，计算切空间 rotation vector field，经多步 weight-tied integration 和 retraction/normalization 保持球面约束。</li><li>feature、oscillator、stimulus 三场共同更新，末端 pointwise projection 输出 PDE 解；随机 $q_0$ 可多次平均评估。</li><li>局部 order/incoherence $D_{loc}$ 由邻域振子同步程度构造；比较它与目标几何、逐像素 normalized error 的 Spearman/correlation 及 top-10%-error AUROC/AP。</li><li>八类 PDE 任务含 Poisson、wave、Allen–Cahn、连续/离散 translation、Darcy、Airfoil 等，评估 ID/OOD 并与 FNO、RNO、CNO、DeepONet、UNet、AKOrN 等统一比较。</li></ul></div>
 </section>
 <section class="reading-card reading-card-section">
-  <div class="reading-card-topline">
-    <span class="reading-step">Card 04</span>
-    <span class="reading-step-note">核心结果与证据</span>
-  </div>
   <h2>核心结果与证据</h2>
   <div class="reading-card-content"><ul><li>表 1 中 KNO 在 8 个任务的 ID/OOD 分别有 7/6 个排名第一或第二；对五个局部结构显著的任务，ID 与 OOD 均第一。</li><li>代表数值：Wave ID/OOD 相对 $L^2$ 为 \(0.0032\pm 0.0012\) / \(0.0137\pm 0.0002\)；Allen–Cahn 为 \(0.0013\pm 0.0001\) / \(0.0251\pm 0.0056\)；Darcy ID 为 \(0.0141\pm 0.0013\)。</li><li>Poisson 上 KNO \(0.0074\pm 0.0008\)，逊于 CNO \(0.0034\pm 0.0001\)；作者将其解释为简单全局线性 smoothing 已被卷积模型很好捕获，而非 KNO 全面领先。</li><li>表 2 消融显示 local coupling 与 rotation 是最大增益源，stimulus 贡献较小；表 3 显示 retraction/normalization 最关键，球面参数化在部分任务不必需但提升总体稳定。</li><li>图 2–3 显示初始 $D_{loc}$ 与误差几乎无关，随 learned dynamics 深化才在解的边界/局部结构形成并与误差对齐；该关联在 OOD 仍保留，能定位高误差像素。</li></ul></div>
 </section>
 <section class="reading-card reading-card-section">
-  <div class="reading-card-topline">
-    <span class="reading-step">Card 05</span>
-    <span class="reading-step-note">有效性与局限</span>
-  </div>
   <h2>有效性与局限</h2>
   <div class="reading-card-content"><ul><li>KNO 在 uniform grid 上演化，对不规则几何不自然；Airfoil 结果暴露这一限制。</li><li>简单线性全局算子上额外振子动力学优势小，甚至不如 CNO。</li><li>误差关联是 architecture-native risk signal，但不是 calibrated uncertainty 或严格误差上界。</li><li>随机振子初始化与多次平均增加推理方差/成本；积分步数虽 weight-tied 仍增加 wall time。</li><li>八个 benchmark 的优势不能替代高分辨率真实 PDE 的守恒律、边界条件和长期稳定性检查。</li></ul></div>
 </section>
 <section class="reading-card reading-card-section">
-  <div class="reading-card-topline">
-    <span class="reading-step">Card 06</span>
-    <span class="reading-step-note">复现与资源</span>
-  </div>
   <h2>复现与资源</h2>
   <div class="reading-card-content"><ul><li>原文 PDF：https://arxiv.org/pdf/2608.10234；OpenReview 链接在正文中但本次抽取未获得完整 paper-specific URL。</li><li>复现必须使用同一 grid、参数预算、三 checkpoint/seed 统计和 ID/OOD split，并报告参数量与 integration steps。</li><li>除相对 $L^2$ 外应重画 $D_{loc}$ 的 error-pixel AUROC/AP、geometry alignment 与随机初始化方差。</li></ul></div>
 </section>
 <section class="reading-card reading-card-section">
-  <div class="reading-card-topline">
-    <span class="reading-step">Card 07</span>
-    <span class="reading-step-note">阅读指南</span>
-  </div>
   <h2>阅读指南</h2>
   <div class="reading-card-content"><ul><li>先看图 1，分清 $h,q,s$ 三场和球面 retraction。</li><li>表 1按任务结构读，不要只数第一名。</li><li>表 2–3检查 coupling、rotation、stimulus、projection/retraction 的贡献。</li><li>图 2–3和表 6用于判断 incoherence 是何时形成、是否 OOD 有效；最后读 uniform-grid 限制。</li></ul></div>
 </section></article>

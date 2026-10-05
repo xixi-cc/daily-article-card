@@ -3,10 +3,10 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Gradient Flow Polarizes Softmax Outputs towards Low-Entropy Solutions - physics+AI Collection 论文卡</title>
-    <meta name="description" content="设输出为\(\beta=V\operatorname{softmax}(a)\)，同时训练\(V\)和\(a\)。一个位置的value若更有利于降低损失，它会获得更大的注意力；更大的注意力又会让这个位置的value更新得更快。二者形成相互增强，在特定初始化与logistic目标下，把均匀注意力逐渐推向一个位置。[Theorems3.2–3.3，p4–5] 决定这种竞争能走多远的，不只是softmax函数，而是累计有效学习量\(\tau(t)=\int_0^t\gamma(h)\,dh\)。对本文的logistic问题，\(\tau\)持续发散，最终出现one-hot；对从零value初始化的平方损失问题，残差快速衰减，\(\tau\)只走到有限值，注意力保持严格正的分散成分。[p5–6、附录B–C] 因此，准确的结论不是“softmax必然让一切注意力塌缩”。这是一个带明确条件、可以解析追踪的相互增强机制。本文v1有多处符号与证明错误；本卡采用可直接核验的修正梯度流，并将补足证明与原文结果分开说明。真实Transformer中的sink和大激活属于经验联系，不是这套定理已覆盖的对象。" />
+    <title>Gradient Flow Polarizes Softmax Outputs towards Low-Entropy Solutions - 论文卡</title>
+    <meta name="description" content="设输出为\(\beta=V\operatorname{softmax}(a)\)，同时训练\(V\)和\(a\)。一个位置的value若更有利于降低损失，它会获得更大的注意力；更大的注意力又会让这个位置的value更新得更快。二者形成相互增强，在特定初始化与logistic目标下，把均匀注意力逐渐推向一个位置。[Theorems3.2–3.3，p4–5]" />
     <link rel="canonical" href="https://xixi-cc.github.io/daily-article-card/collection-papers/2603.06248/" />
-    <script type="application/ld+json">{"@context": "https://schema.org", "@type": "Article", "headline": "Gradient Flow Polarizes Softmax Outputs towards Low-Entropy Solutions", "description": "设输出为\\(\\beta=V\\operatorname{softmax}(a)\\)，同时训练\\(V\\)和\\(a\\)。一个位置的value若更有利于降低损失，它会获得更大的注意力；更大的注意力又会让这个位置的value更新得更快。二者形成相互增强，在特定初始化与logistic目标下，把均匀注意力逐渐推向一个位置。[Theorems3.2–3.3，p4–5] 决定这种竞争能走多远的，不只是softmax函数，而是累计有效学习量\\(\\tau(t)=\\int_0^t\\gamma(h)\\,dh\\)。对本文的logistic问题，\\(\\tau\\)持续发散，最终出现one-hot；对从零value初始化的平方损失问题，残差快速衰减，\\(\\tau\\)只走到有限值，注意力保持严格正的分散成分。[p5–6、附录B–C] 因此，准确的结论不是“softmax必然让一切注意力塌缩”。这是一个带明确条件、可以解析追踪的相互增强机制。本文v1有多处符号与证明错误；本卡采用可直接核验的修正梯度流，并将补足证明与原文结果分开说明。真实Transformer中的sink和大激活属于经验联系，不是这套定理已覆盖的对象。", "url": "https://xixi-cc.github.io/daily-article-card/collection-papers/2603.06248/", "mainEntityOfPage": "https://xixi-cc.github.io/daily-article-card/collection-papers/2603.06248/", "inLanguage": "zh-CN", "author": {"@type": "Person", "name": "Xineng Cao", "alternateName": ["Xixi Cao", "曹溪能"], "url": "https://xixi-cc.github.io/"}, "isBasedOn": "https://arxiv.org/abs/2603.06248v1"}</script>
+    <script type="application/ld+json">{"@context": "https://schema.org", "@type": "Article", "headline": "Gradient Flow Polarizes Softmax Outputs towards Low-Entropy Solutions", "description": "设输出为\\(\\beta=V\\operatorname{softmax}(a)\\)，同时训练\\(V\\)和\\(a\\)。一个位置的value若更有利于降低损失，它会获得更大的注意力；更大的注意力又会让这个位置的value更新得更快。二者形成相互增强，在特定初始化与logistic目标下，把均匀注意力逐渐推向一个位置。[Theorems3.2–3.3，p4–5]", "url": "https://xixi-cc.github.io/daily-article-card/collection-papers/2603.06248/", "mainEntityOfPage": "https://xixi-cc.github.io/daily-article-card/collection-papers/2603.06248/", "inLanguage": "zh-CN", "author": {"@type": "Person", "name": "Xineng Cao", "alternateName": ["Xixi Cao", "曹溪能"], "url": "https://xixi-cc.github.io/"}, "isBasedOn": "https://arxiv.org/abs/2603.06248v1"}</script>
     <script>
       (function() {
         try {
@@ -30,6 +30,18 @@
     <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700;800&family=Noto+Sans+SC:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
     <script>document.documentElement.classList.add('math-pending');</script>
     <script>
+      window.fitInlineMath = function(root) {
+        (root || document).querySelectorAll('mjx-container:not([display="true"])').forEach(function(el) {
+          el.classList.remove('inline-math-overflow');
+          const content = el.closest('.reading-card-content, .detail-summary, .feed-card-body');
+          if(content && el.getBoundingClientRect().width > content.clientWidth) {
+            el.classList.add('inline-math-overflow');
+            el.tabIndex = 0;
+            el.setAttribute('aria-label', '长公式，可横向滑动阅读');
+          }
+        });
+      };
+      window.addEventListener('resize', function() { window.fitInlineMath(); });
       window.MathJax = {
         tex: {
           inlineMath: [['$', '$'], ['\\(', '\\)']],
@@ -49,6 +61,7 @@
             MathJax.startup.promise.then(function() {
               document.documentElement.classList.remove('math-pending');
               document.documentElement.dataset.mathReady = 'true';
+              window.requestAnimationFrame(function() { window.fitInlineMath(); });
             });
           }
         }
@@ -65,9 +78,9 @@
     <header class="header detail-page-header">
       <div class="container">
         <div class="detail-page-topbar">
-          <a class="back-link" href="../../collection.html">返回列表</a>
+          <a class="back-link" href="../../index.html">返回列表</a>
           <div class="detail-topbar-actions">
-            <span class="detail-site-name">physics+AI Collection 论文卡</span>
+            <span class="detail-site-name">论文卡</span>
             <button id="detail-favorite" class="detail-favorite-button" type="button" aria-pressed="false">☆ 收藏</button>
             <button class="theme-toggle" type="button" data-theme-toggle aria-label="当前主题：设备，点击切换主题" title="当前主题：设备">
   <span class="theme-toggle-icons" aria-hidden="true">
@@ -91,22 +104,15 @@
         <div class="detail-hero-grid">
           <div class="detail-hero-cover"><figure class="paper-figure-card paper-figure-card-detail">
   <img class="paper-figure-image" src="../../assets/collection-figures/2603.06248/fig2.png" alt="左右双panel分别展示完整注意力与value投影轨迹；保留全部曲线、坐标、图例和英文原图注。" loading="lazy" onclick="window.openPaperFigureImage && window.openPaperFigureImage(this)" />
-  <figcaption class="paper-figure-caption">左右双panel分别展示完整注意力与value投影轨迹；保留全部曲线、坐标、图例和英文原图注。 来源：Aditya Varre、Mark Rofin、Nicolas Flammarion；arXiv:2603.06248v1，Figure2 PDF \(p_{5}\)；CC BY 4.0 https://creativecommons.org/licenses/by/4.0/；仅裁去图外正文与空白，保留完整双panel及英文原图注。</figcaption>
+  <figcaption class="paper-figure-caption">左右双panel分别展示完整注意力与value投影轨迹；保留全部曲线、坐标、图例和英文原图注。 来源：Aditya Varre、Mark Rofin、Nicolas Flammarion；arXiv:2603.06248v1，Figure2 PDF \(p_{5}\)；CC BY 4.0 https://creativecommons.org/licenses/by/4.0/；仅裁去图外正文与空白，保留完整双panel及英文原图注。 <a href="https://arxiv.org/abs/2603.06248v1" target="_blank" rel="noopener noreferrer">原文图源 ↗</a></figcaption>
 </figure></div>
           <div class="detail-hero-copy">
-            <p class="eyebrow">Collection 全文卡</p>
+            <p class="eyebrow">论文详情</p>
             <h1 class="detail-page-title">Gradient Flow Polarizes Softmax Outputs towards Low-Entropy Solutions</h1>
             <p class="detail-page-title-zh">注意力为什么会走向“赢家通吃”？</p>
-            <div class="detail-meta">Paper Collection · Physics of AI · <a href="https://arxiv.org/abs/2603.06248v1" target="_blank" rel="noopener noreferrer">原文</a></div>
-            <p class="detail-summary">设输出为\(\beta=V\operatorname{softmax}(a)\)，同时训练\(V\)和\(a\)。一个位置的value若更有利于降低损失，它会获得更大的注意力；更大的注意力又会让这个位置的value更新得更快。二者形成相互增强，在特定初始化与logistic目标下，把均匀注意力逐渐推向一个位置。[Theorems3.2–3.3，\(p_{4}\)–5] 决定这种竞争能走多远的，不只是softmax函数，而是累计有效学习量\(\tau(t)=\int_0^t\gamma(h)\,dh\)。对本文的logistic问题，\(\tau\)持续发散，最终出现one-hot；对从零value初始化的平方损失问题，残差快速衰减，\(\tau\)只走到有限值，注意力保持严格正的分散成分。[\(p_{5}\)–6、附录B–\(C\)] 因此，准确的结论不是“softmax必然让一切注意力塌缩”。这是一个带明确条件、可以解析追踪的相互增强机制。本文v1有多处符号与证明错误；本卡采用可直接核验的修正梯度流，并将补足证明与原文结果分开说明。真实Transformer中的sink和大激活属于经验联系，不是这套定理已覆盖的对象。</p>
-            <div class="detail-micro-meta">
-              <span class="meta-pill">AI 基础理论</span>
-              <span class="meta-pill">理论与数值</span>
-              <span class="meta-pill">#Physics of AI</span><span class="meta-pill">#Transformer</span><span class="meta-pill">#语言模型</span>
-              <span class="meta-pill">21 分钟读完</span>
-              <span class="meta-pill">8 张阅读卡</span>
-              <span class="meta-pill">Aditya Varre、Mark Rofin与Nicolas Flammarion来自EPFL的Th…</span>
-            </div>
+            <div class="detail-meta">Aditya Varre、Mark Rofin、Nicolas Flammarion · 预印本 · arXiv:2603.06248 · <a href="https://arxiv.org/abs/2603.06248v1" target="_blank" rel="noopener noreferrer">论文原文 ↗</a></div>
+            <p class="detail-summary">设输出为\(\beta=V\operatorname{softmax}(a)\)，同时训练\(V\)和\(a\)。一个位置的value若更有利于降低损失，它会获得更大的注意力；更大的注意力又会让这个位置的value更新得更快。二者形成相互增强，在特定初始化与logistic目标下，把均匀注意力逐渐推向一个位置。[Theorems3.2–3.3，\(p_{4}\)–5]</p>
+
           </div>
         </div>
       </div>
@@ -115,34 +121,14 @@
     <main class="container detail-layout">
       <div class="detail-shell">
         <article id="detail-body" class="reading-flow"><section class="reading-card reading-card-section">
-  <div class="reading-card-topline">
-    <span class="reading-step">Card 01</span>
-    <span class="reading-step-note">作者信息</span>
-  </div>
-  <h2>作者信息</h2>
-  <div class="reading-card-content"><ul><li>Aditya Varre、Mark Rofin与Nicolas Flammarion来自EPFL的Theory of Machine Learning Lab。这项研究试图解释一个比“模型应该关注哪些词”更基础的问题：当许多分散的注意力方案都能得到同样的预测时，训练为什么仍可能选出特别集中的方案？作者从单个注意力头中抽出value矩阵乘softmax向量的结构，研究这个参数化本身带来的优化偏好。[\(p_{1}\)–3]</li></ul></div>
-</section>
-<section class="reading-card reading-card-section">
-  <div class="reading-card-topline">
-    <span class="reading-step">Card 02</span>
-    <span class="reading-step-note">摘要</span>
-  </div>
   <h2>摘要</h2>
   <div class="reading-card-content"><ul><li>设输出为\(\beta=V\operatorname{softmax}(a)\)，同时训练\(V\)和\(a\)。一个位置的value若更有利于降低损失，它会获得更大的注意力；更大的注意力又会让这个位置的value更新得更快。二者形成相互增强，在特定初始化与logistic目标下，把均匀注意力逐渐推向一个位置。[Theorems3.2–3.3，\(p_{4}\)–5]</li><li>决定这种竞争能走多远的，不只是softmax函数，而是累计有效学习量\(\tau(t)=\int_0^t\gamma(h)\,dh\)。对本文的logistic问题，\(\tau\)持续发散，最终出现one-hot；对从零value初始化的平方损失问题，残差快速衰减，\(\tau\)只走到有限值，注意力保持严格正的分散成分。[\(p_{5}\)–6、附录B–\(C\)]</li><li>因此，准确的结论不是“softmax必然让一切注意力塌缩”。这是一个带明确条件、可以解析追踪的相互增强机制。本文v1有多处符号与证明错误；本卡采用可直接核验的修正梯度流，并将补足证明与原文结果分开说明。真实Transformer中的sink和大激活属于经验联系，不是这套定理已覆盖的对象。</li></ul></div>
 </section>
 <section class="reading-card reading-card-section">
-  <div class="reading-card-topline">
-    <span class="reading-step">Card 03</span>
-    <span class="reading-step-note">背景</span>
-  </div>
   <h2>背景</h2>
   <div class="reading-card-content"><ul><li>单头注意力的输出是若干value向量的加权和。若所有value都等于同一个目标向量，均匀权重就能完成任务；若某一个value携带全部有效信息，集中到它也可能完成任务。只看最终预测是否正确，无法区分这两种内部实现。[\(p_{3}\)]</li><li>作者关注的是隐式偏好：在没有显式稀疏正则项时，梯度下降会更容易抵达哪种实现？这与统计物理中的对称性破缺有相似直觉，但这里不能直接称热力学相变。系统的竞争坐标有限，初始value投影已含有微小差异；定理描述的是这些差异如何被确定性动力学放大。</li><li>还应分清三个层次。低熵注意力意味着一次查询主要看少数位置；attention sink要求某个位置在许多查询上持续吸收注意力；大激活则描述隐藏向量中少数坐标的幅度异常。第一种现象并不自动推出后两种，论文为它们之间的联系提供了简化模型和实验，而非逻辑上的等价关系。</li></ul></div>
 </section>
 <section class="reading-card reading-card-section">
-  <div class="reading-card-topline">
-    <span class="reading-step">Card 04</span>
-    <span class="reading-step-note">模型与方法</span>
-  </div>
   <h2>模型与方法</h2>
   <div class="reading-card-content"><ul><li>令\(s=\operatorname{softmax}(a)\)，\(V\)的第\(i\)列为\(v_i\)，\(\beta=Vs\)。注意力logit \(a\)与value矩阵\(V\)在这个模型里都是自由参数，没有真实Transformer中的共享\(Q\)、\(K\)投影、跨样本约束或残差层耦合。研究采用连续时间梯度流，不包含离散步长、Adam、自适应预条件或小批量噪声。[Eq1–4，\(p_{3}\)]</li><li>分类型目标取为</li></ul>
 <div class="display-math">\[\begin{aligned}L&amp;=\log\!\left[1+\exp(-\langle\beta^*,Vs\rangle)\right],\end{aligned}\]</div>
@@ -154,10 +140,6 @@
 <ul><li>原文Eq6–7及附录Eq15–16把这两式写成了负号，与前面的求导及后续证明不一致。这里使用正号；照抄负号会变成相反的动力学，不能得到文中结论。这是必须修正的公式，不是记号约定。</li><li>logistic定理假定\(a(0)=0\)，即\(s(0)\)均匀，并将初始投影按\(u_0(0)&gt;u_1(0)&gt;\cdots\)排序。随机连续初始化通常没有并列投影，但均匀logit本身仍是一个明确条件。平方损失部分采用另一组初始化：\(V(0)=0\)，而初始注意力严格有序。两组结论不能混用初始化。[Assumptions3.1、3.4]</li></ul></div>
 </section>
 <section class="reading-card reading-card-section">
-  <div class="reading-card-topline">
-    <span class="reading-step">Card 05</span>
-    <span class="reading-step-note">核心结果与证据</span>
-  </div>
   <h2>核心结果与证据</h2>
   <div class="reading-card-content"><ul><li>第一，排序不会交叉。原文构造</li></ul>
 <div class="display-math">\[\begin{aligned}\Phi_{ij}&amp;=(u_i-u_j)\\&amp;\quad\times(e^{-a_j}-e^{-a_i}),\end{aligned}\]</div>
@@ -219,26 +201,14 @@
 </figure></div>
 </section>
 <section class="reading-card reading-card-section">
-  <div class="reading-card-topline">
-    <span class="reading-step">Card 06</span>
-    <span class="reading-step-note">有效性与局限</span>
-  </div>
   <h2>有效性与局限</h2>
   <div class="reading-card-content"><ul><li>理论最有价值之处是给出了一个可算的机制，也因此必须保留它的边界。固定目标方向、自由value/logit、特定初始化和连续梯度流共同构成定理前提。一般训练中梯度方向会旋转，不同样本共享参数，LayerNorm、位置编码及多个头会改变耦合。作者明确承认梯度对齐假设不能直接推广。[\(p_{6}\)]</li><li>低熵也不等于熵在每一步都严格下降。本文主要证明排序、比例衰减和极限，不是对所有初始条件、所有时刻的熵单调性定理。完全对称的value与均匀注意力可以维持对称，这正是定理排除并列的原因。</li><li>泛化到\(\sigma_f(a)_i=\frac{f(a_i)}{\sum_j f(a_j)}\)时，附录D.4仅写“单调可微”还不够：需要分母及导数等条件，使其势函数与排序论证合法。取严格递增的\(f(x)=x-1\)，在\(a=0\)时分母为\(-p\)，logit初始演化的排序就与其结论相反。原文举出的\(x^2\)也不是全实轴单调函数。因此这里不将一般normalizer命题当作无条件定理。[\(p_{21}\)–22；反例为本卡复核]</li><li>实验的筛选口径同样重要。induction的sink统计只保留准确率超过95%的运行，测量随机位置对BOS的平均占比是否超过90%，且只展示第二层。附录的平均准确率图包含训练表现更差的设置，不能把筛选后的sink比例理解为全部训练运行的无条件结果。配置列出五个随机种子，但主要柱状图没有置信区间。[Table2、\(p_{23}\)]</li><li>分类实验把词表分成互不相交的类别，每条序列的词都来自同一类，再把最大注意力词换成另一类中的词，检查预测翻转。报告的是跨头和层的最大翻转率；替换后样本已不符合训练数据的纯类别生成规则。它说明单头模型可能过度依赖一个词，不等于证明真实语言模型普遍不安全。增加头数或层数后，翻转明显减弱。[Figures6、18–21，\(p_{24}\)–25、\(p_{33}\)–35]</li><li>此外，病态回归更稀疏是有限实验观察，不是“条件数增大必然降低熵”的定理；自由\(V\)下所谓KL目标还需保证预测是合法概率分布。大激活的联系来自额外的耦合toy实验，也不能把一列value范数增大直接等同于真实模型中少数隐藏通道的大激活。</li></ul></div>
 </section>
 <section class="reading-card reading-card-section">
-  <div class="reading-card-topline">
-    <span class="reading-step">Card 07</span>
-    <span class="reading-step-note">复现与资源</span>
-  </div>
   <h2>复现与资源</h2>
   <div class="reading-card-content"><ul><li>论文：<a href="https://arxiv.org/abs/2603.06248v1" target="_blank" rel="noopener noreferrer">https://arxiv.org/abs/2603.06248v1</a> 全文：<a href="https://arxiv.org/pdf/2603.06248v1" target="_blank" rel="noopener noreferrer">https://arxiv.org/pdf/2603.06248v1</a> 作者代码：<a href="https://github.com/tml-epfl/softmax" target="_blank" rel="noopener noreferrer">https://github.com/tml-epfl/softmax</a> 预训练softmax/sigmoid实验依赖：<a href="https://github.com/apple/ml-sigmoid-attention" target="_blank" rel="noopener noreferrer">https://github.com/apple/ml-sigmoid-attention</a> 图源许可：CC BY 4.0，<a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener noreferrer">https://creativecommons.org/licenses/by/4.0/</a></li><li>本卡核验全文、公式、全部21幅图与实验配置，并检查作者仓库说明；没有重新训练模型，也没有把复核推导包装成已完成的独立数值复现。保留的原图应标明作者、版本和图号；裁切仅去除页面周边，不改变坐标、图例或数据。</li></ul></div>
 </section>
 <section class="reading-card reading-card-section">
-  <div class="reading-card-topline">
-    <span class="reading-step">Card 08</span>
-    <span class="reading-step-note">阅读指南</span>
-  </div>
   <h2>阅读指南</h2>
   <div class="reading-card-content"><ul><li>先看<a href="https://arxiv.org/pdf/2603.06248v1#page=5" target="_blank" rel="noopener noreferrer">Figure2</a>，建立“注意力集中、赢家value持续增长”的直观图像；再读Eq1–4与附录B开头，自己从损失求一次梯度，避开v1的错误负号。随后把\(\tau\)当作新时间，理解为什么相同的竞争几何在logistic与平方损失下会停在不同位置。</li><li>接着并排看<a href="https://arxiv.org/pdf/2603.06248v1#page=29" target="_blank" rel="noopener noreferrer">Figure14</a>与<a href="https://arxiv.org/pdf/2603.06248v1#page=30" target="_blank" rel="noopener noreferrer">Figure15</a>：没有随机位置的预测压力时，softmax不一定形成BOS sink。这能防止把toy的单一赢家直接泛化成真实Transformer的固定位置吸引。最后读<a href="https://arxiv.org/pdf/2603.06248v1#page=8" target="_blank" rel="noopener noreferrer">Figure7</a>及分类替换实验，区分注意力集中、位置固定和输出脆弱性三个指标。</li><li>对研究训练动力学的人，值得带走的问题是：哪些损失和参数共享结构允许把“方向竞争”与“学习速度”分离？一个累计的有效时间是否比epoch数更能预测表征极化？这些是可检验的建模方向；本文没有证明它们已统一真实LLM的训练。</li></ul></div>
 </section></article>

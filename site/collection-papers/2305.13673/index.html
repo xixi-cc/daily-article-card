@@ -3,10 +3,10 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Physics of Language Models: Part 1, Learning Hierarchical Language Structures - physics+AI Collection 论文卡</title>
-    <meta name="description" content="作者：Zeyuan Allen-Zhu（Meta/FAIR）、Yuanzhi Li（MBZUAI）。arXiv:2305.13673v4。论文构造必须进行全局层级解析的 synthetic CFG，训练 GPT 类模型，并用 probing 与 attention 分析检验其内部是否形成类似动态规划的信息流。" />
+    <title>Physics of Language Models: Part 1, Learning Hierarchical Language Structures - 论文卡</title>
+    <meta name="description" content="许多机制可解释性任务只需复制或局部匹配，不能代表递归推理。作者问：当字符串长达数百 token、局部高度歧义且需要 CFG parsing 时，autoregressive transformer 能否学到正确分布；隐藏状态和 attention 又如何承载 nonterminal（NT）祖先与边界信息？" />
     <link rel="canonical" href="https://xixi-cc.github.io/daily-article-card/collection-papers/2305.13673/" />
-    <script type="application/ld+json">{"@context": "https://schema.org", "@type": "Article", "headline": "Physics of Language Models: Part 1, Learning Hierarchical Language Structures", "description": "作者：Zeyuan Allen-Zhu（Meta/FAIR）、Yuanzhi Li（MBZUAI）。arXiv:2305.13673v4。论文构造必须进行全局层级解析的 synthetic CFG，训练 GPT 类模型，并用 probing 与 attention 分析检验其内部是否形成类似动态规划的信息流。", "url": "https://xixi-cc.github.io/daily-article-card/collection-papers/2305.13673/", "mainEntityOfPage": "https://xixi-cc.github.io/daily-article-card/collection-papers/2305.13673/", "inLanguage": "zh-CN", "author": {"@type": "Person", "name": "Xineng Cao", "alternateName": ["Xixi Cao", "曹溪能"], "url": "https://xixi-cc.github.io/"}, "isBasedOn": "https://arxiv.org/abs/2305.13673"}</script>
+    <script type="application/ld+json">{"@context": "https://schema.org", "@type": "Article", "headline": "Physics of Language Models: Part 1, Learning Hierarchical Language Structures", "description": "许多机制可解释性任务只需复制或局部匹配，不能代表递归推理。作者问：当字符串长达数百 token、局部高度歧义且需要 CFG parsing 时，autoregressive transformer 能否学到正确分布；隐藏状态和 attention 又如何承载 nonterminal（NT）祖先与边界信息？", "url": "https://xixi-cc.github.io/daily-article-card/collection-papers/2305.13673/", "mainEntityOfPage": "https://xixi-cc.github.io/daily-article-card/collection-papers/2305.13673/", "inLanguage": "zh-CN", "author": {"@type": "Person", "name": "Xineng Cao", "alternateName": ["Xixi Cao", "曹溪能"], "url": "https://xixi-cc.github.io/"}, "isBasedOn": "https://arxiv.org/abs/2305.13673"}</script>
     <script>
       (function() {
         try {
@@ -30,6 +30,18 @@
     <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700;800&family=Noto+Sans+SC:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
     <script>document.documentElement.classList.add('math-pending');</script>
     <script>
+      window.fitInlineMath = function(root) {
+        (root || document).querySelectorAll('mjx-container:not([display="true"])').forEach(function(el) {
+          el.classList.remove('inline-math-overflow');
+          const content = el.closest('.reading-card-content, .detail-summary, .feed-card-body');
+          if(content && el.getBoundingClientRect().width > content.clientWidth) {
+            el.classList.add('inline-math-overflow');
+            el.tabIndex = 0;
+            el.setAttribute('aria-label', '长公式，可横向滑动阅读');
+          }
+        });
+      };
+      window.addEventListener('resize', function() { window.fitInlineMath(); });
       window.MathJax = {
         tex: {
           inlineMath: [['$', '$'], ['\\(', '\\)']],
@@ -49,6 +61,7 @@
             MathJax.startup.promise.then(function() {
               document.documentElement.classList.remove('math-pending');
               document.documentElement.dataset.mathReady = 'true';
+              window.requestAnimationFrame(function() { window.fitInlineMath(); });
             });
           }
         }
@@ -65,9 +78,9 @@
     <header class="header detail-page-header">
       <div class="container">
         <div class="detail-page-topbar">
-          <a class="back-link" href="../../collection.html">返回列表</a>
+          <a class="back-link" href="../../index.html">返回列表</a>
           <div class="detail-topbar-actions">
-            <span class="detail-site-name">physics+AI Collection 论文卡</span>
+            <span class="detail-site-name">论文卡</span>
             <button id="detail-favorite" class="detail-favorite-button" type="button" aria-pressed="false">☆ 收藏</button>
             <button class="theme-toggle" type="button" data-theme-toggle aria-label="当前主题：设备，点击切换主题" title="当前主题：设备">
   <span class="theme-toggle-icons" aria-hidden="true">
@@ -91,22 +104,15 @@
         <div class="detail-hero-grid">
           <div class="detail-hero-cover"><figure class="paper-figure-card paper-figure-card-detail">
   <img class="paper-figure-image" src="../../assets/collection-figures/2305.13673/figure-2-cfg-dp-boundaries.webp" alt="上方是 CFG 动态规划层级和 NT ancestors，中间是 token 序列，下方标出 transformer 编码的 NT boundaries 与跨边界 attention。" loading="lazy" onclick="window.openPaperFigureImage && window.openPaperFigureImage(this)" />
-  <figcaption class="paper-figure-caption">模型在子树结束位置编码 NT 标签，并以 boundary-based attention 连接相邻层级，形成 DP-like 信息流。</figcaption>
+  <figcaption class="paper-figure-caption">模型在子树结束位置编码 NT 标签，并以 boundary-based attention 连接相邻层级，形成 DP-like 信息流。 <a href="https://arxiv.org/abs/2305.13673" target="_blank" rel="noopener noreferrer">原文图源 ↗</a></figcaption>
 </figure></div>
           <div class="detail-hero-copy">
-            <p class="eyebrow">Collection 全文卡</p>
+            <p class="eyebrow">论文详情</p>
             <h1 class="detail-page-title">Physics of Language Models: Part 1, Learning Hierarchical Language Structures</h1>
             <p class="detail-page-title-zh">语言模型物理学（一）：学习层级语言结构</p>
-            <div class="detail-meta">Paper Collection · Language Model Mechanisms · <a href="https://arxiv.org/abs/2305.13673" target="_blank" rel="noopener noreferrer">原文</a></div>
-            <p class="detail-summary">作者：Zeyuan Allen-Zhu（Meta/FAIR）、Yuanzhi Li（MBZUAI）。arXiv:2305.13673v4。论文构造必须进行全局层级解析的 synthetic CFG，训练 GPT 类模型，并用 probing 与 attention 分析检验其内部是否形成类似动态规划的信息流。</p>
-            <div class="detail-micro-meta">
-              <span class="meta-pill">AI 基础理论</span>
-              <span class="meta-pill">AI 实证</span>
-              <span class="meta-pill">#Language Model Mechanisms</span><span class="meta-pill">#语言模型</span><span class="meta-pill">#Transformer</span>
-              <span class="meta-pill">10 分钟读完</span>
-              <span class="meta-pill">7 张阅读卡</span>
-              <span class="meta-pill">作者：Zeyuan Allen-Zhu（Meta/FAIR）、Yuanzhi Li（MBZUAI）。a…</span>
-            </div>
+            <div class="detail-meta">Zeyuan Allen-Zhu、Yuanzhi Li · 预印本 · arXiv:2305.13673 · <a href="https://arxiv.org/abs/2305.13673" target="_blank" rel="noopener noreferrer">论文原文 ↗</a></div>
+            <p class="detail-summary">许多机制可解释性任务只需复制或局部匹配，不能代表递归推理。作者问：当字符串长达数百 token、局部高度歧义且需要 CFG parsing 时，autoregressive transformer 能否学到正确分布；隐藏状态和 attention 又如何承载 nonterminal（NT）祖先与边界信息？</p>
+
           </div>
         </div>
       </div>
@@ -115,34 +121,14 @@
     <main class="container detail-layout">
       <div class="detail-shell">
         <article id="detail-body" class="reading-flow"><section class="reading-card reading-card-section">
-  <div class="reading-card-topline">
-    <span class="reading-step">Card 01</span>
-    <span class="reading-step-note">作者信息</span>
-  </div>
-  <h2>作者信息</h2>
-  <div class="reading-card-content"><ul><li>作者：Zeyuan Allen-Zhu（Meta/FAIR）、Yuanzhi Li（MBZUAI）。arXiv:2305.13673v4。论文构造必须进行全局层级解析的 synthetic CFG，训练 GPT 类模型，并用 probing 与 attention 分析检验其内部是否形成类似动态规划的信息流。</li></ul></div>
-</section>
-<section class="reading-card reading-card-section">
-  <div class="reading-card-topline">
-    <span class="reading-step">Card 02</span>
-    <span class="reading-step-note">研究问题</span>
-  </div>
   <h2>研究问题</h2>
   <div class="reading-card-content"><ul><li>许多机制可解释性任务只需复制或局部匹配，不能代表递归推理。作者问：当字符串长达数百 token、局部高度歧义且需要 CFG parsing 时，autoregressive transformer 能否学到正确分布；隐藏状态和 attention 又如何承载 nonterminal（NT）祖先与边界信息？</li><li>合成 CFG 给出了已知生成树和动态规划基线，便于精确标注内部状态；代价是符号、规则和训练分布都远比自然语言受控，因此不能把结果直接等同于真实语言模型的句法推理。</li></ul></div>
 </section>
 <section class="reading-card reading-card-section">
-  <div class="reading-card-topline">
-    <span class="reading-step">Card 03</span>
-    <span class="reading-step-note">模型与方法</span>
-  </div>
   <h2>模型与方法</h2>
   <div class="reading-card-content"><ul><li>作者设计多组分层概率 CFG，每条规则展开为 2 或 3 个子符号，生成长且局部不可消歧的字符串。模型包括绝对位置 GPT、relative attention、RoPE、仅位置 attention、固定多窗口 uniform attention，以及 encoder-only DeBERTa 对照。</li><li>外部评价同时检查生成字符串是否属于 CFG、生成分布的 entropy/support diversity，以及模型 next-token distribution 与已知 CFG distribution 的 KL divergence，避免把记忆少量合法字符串误当规则学习。</li><li>内部评价用 multi-head linear probes 从各层 hidden states 预测不同深度的 NT ancestor、NT boundary 和 subtree index；再按相对位置和 boundary relation 汇总 attention，寻找从邻近低层子树边界向高层边界传递信息的模式。robustness 部分给输入/预训练数据注入结构扰动。</li></ul></div>
 </section>
 <section class="reading-card reading-card-section">
-  <div class="reading-card-topline">
-    <span class="reading-step">Card 04</span>
-    <span class="reading-step-note">核心结果与证据</span>
-  </div>
   <h2>核心结果与证据</h2>
   <div class="reading-card-content"><ul><li>Results 1–3：relative 与 rotary GPT 在多数 synthetic CFG 上能高准确率生成合法且多样的字符串，并逼近真实 next-token distribution；绝对位置 GPT 在较难 CFG 上显著较差，甚至落后固定 uniform attention 变体。该比较限于本文架构、训练长度和 CFG family。</li><li>Results 4–5：训练后 hidden states 可被线性 probe 以接近完美准确率读出多层 NT ancestors 和 boundaries，信息尤其集中在相应 subtree 的结束位置。Figure 2 把 CFG/DP 解析树与模型中的 boundary encoding、跨边界 attention 对齐。</li><li>Results 6–9 显示部分 heads 具有 position-based 与 boundary-based attention：当前高层边界会关注相邻低层 NT boundaries，类似 inside-style DP 合并子区间。作者称其为 DP-like information flow；由于证据主要来自 probe 和 attention pattern，而非逐步 causal replacement，不能认定模型严格执行某个唯一 DP 程序。</li><li>额外结果表明 encoder-only masked-LM 对深层 CFG 较弱；在训练语料加入约 10% 结构噪声可显著提高对 corrupted prompts 的恢复，并诱发是否继续犯语法错误的 mode switch。</li></ul><figure class="evidence-figure">
   <button class="evidence-figure-image-button" type="button" aria-label="放大查看 Figure 2" onclick="window.openPaperFigureImage && window.openPaperFigureImage(this.querySelector('img'))">
@@ -156,26 +142,14 @@
 </figure></div>
 </section>
 <section class="reading-card reading-card-section">
-  <div class="reading-card-topline">
-    <span class="reading-step">Card 05</span>
-    <span class="reading-step-note">有效性与局限</span>
-  </div>
   <h2>有效性与局限</h2>
   <div class="reading-card-content"><ul><li>linear decodability 不等于该变量被模型因果使用，attention weight 也不等于完整信息流。更强验证应干预特定 NT code、边界 heads 或 residual directions，并测量 CFG completion 退化；不同 probes 还可能从分布冗余中读出标签。</li><li>语法是人工分层且 terminal vocabulary 很小，模型、序列窗 512、训练步数和规则族均受控。对 relative/RoPE、uniform attention、autoregressive/encoder-only 与噪声训练的优劣结论不应外推为所有自然语言任务或相同参数预算下的普遍架构排名。</li></ul></div>
 </section>
 <section class="reading-card reading-card-section">
-  <div class="reading-card-topline">
-    <span class="reading-step">Card 06</span>
-    <span class="reading-step-note">复现与资源</span>
-  </div>
   <h2>复现与资源</h2>
   <div class="reading-card-content"><ul><li>原文：https://arxiv.org/abs/2305.13673。项目页：https://physics.allen-zhu.com/part-1-hierarchical-language-structure/。官方 PDF SHA-256：2b76821e8b6b0c6a53527bfdefda3649f5f71e798e8d19704106e781ce768814。</li><li>复现需冻结 CFG rule tables、语料 seed、architecture/position variant、100k-step 训练设定、generation sampler、20,000-sample KL 估计和 probe split；还应报告 random-feature probe 与 label-frequency baselines。Evidence status: full-text verified; no independent reproduction performed.</li></ul></div>
 </section>
 <section class="reading-card reading-card-section">
-  <div class="reading-card-topline">
-    <span class="reading-step">Card 07</span>
-    <span class="reading-step-note">阅读指南</span>
-  </div>
   <h2>阅读指南</h2>
   <div class="reading-card-content"><ul><li>先读 pp. 2–6 的 CFG 动机、符号和 Figure 2；再读 pp. 6–8 的生成准确率/多样性/KL；重点看 pp. 8‑6 的 NT probing 与 attention analysis；最后查 robustness、Appendices A–\(C\)/\(H\)，核对模型规模、uniform-attention 对照和 probe 边界。</li></ul></div>
 </section></article>

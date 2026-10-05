@@ -1,29 +1,221 @@
 /**
- * @file app.js
- * @description 首页逻辑：加载 data.json，渲染信息流卡片与搜索。
+ * Unified Daily / Collection reader. The parent build serves this source as
+ * assets/app.js and collection-app.js; it consumes only assets/all-data.json.
+ * Calendar pages stay anchored to actual collection dates, even while filtering.
+ */
+if (!window.PaperImageViewer) {
+/**
+ * @file media.js
+ * @description 通用论文图片灯箱：支持点击放大、滚轮缩放、拖拽查看和键盘关闭。
  */
 (function(){
-  /** @type {Array<{date:string,title:string,link:string,arxiv_id:string,detail_path:string,cover_path:string,paper_image_path:string,paper_image_full_path:string,preview_text:string,research_unit:string,hook_text:string,key_points:string[],reading_minutes:number,section_count:number,cover_theme:Record<string,string>}>} */
-  let DATA = [];
+  let lightboxEl = null;
+  let imageEl = null;
+  let captionEl = null;
+  let scaleLabelEl = null;
+  let closeButtonEl = null;
+  let imageScale = 1;
+  let imageOffsetX = 0;
+  let imageOffsetY = 0;
+  let dragStartX = 0;
+  let dragStartY = 0;
+  let dragOriginX = 0;
+  let dragOriginY = 0;
+  let activePointerId = null;
+  let returnFocusEl = null;
 
+  function clampScale(value){
+    return Math.min(4, Math.max(1, value));
+  }
+
+  function renderTransform(){
+    if(!imageEl || !scaleLabelEl){
+      return;
+    }
+
+    imageEl.style.transform = `translate3d(${imageOffsetX}px, ${imageOffsetY}px, 0) scale(${imageScale})`;
+    imageEl.classList.toggle('is-zoomed', imageScale > 1);
+    scaleLabelEl.textContent = `${Math.round(imageScale * 100)}%`;
+  }
+
+  function setScale(nextScale){
+    const normalizedScale = clampScale(nextScale);
+    if(normalizedScale === 1){
+      imageOffsetX = 0;
+      imageOffsetY = 0;
+    }
+    imageScale = normalizedScale;
+    renderTransform();
+  }
+
+  function resetImagePosition(){
+    imageScale = 1;
+    imageOffsetX = 0;
+    imageOffsetY = 0;
+    renderTransform();
+  }
+
+  function ensureLightbox(){
+    if(lightboxEl){
+      return;
+    }
+
+    lightboxEl = document.createElement('div');
+    lightboxEl.className = 'image-lightbox';
+    lightboxEl.setAttribute('aria-hidden', 'true');
+    lightboxEl.innerHTML = `
+      <div class="image-lightbox-stage" data-image-lightbox-close>
+        <img class="image-lightbox-image" alt="" draggable="false" />
+      </div>
+      <div class="image-lightbox-topbar">
+        <p class="image-lightbox-caption"></p>
+        <button class="image-lightbox-close" type="button" aria-label="关闭图片预览">×</button>
+      </div>
+      <div class="image-lightbox-controls" aria-label="图片缩放控制">
+        <button type="button" data-image-zoom-out aria-label="缩小图片">−</button>
+        <button class="image-lightbox-scale" type="button" data-image-zoom-reset aria-label="恢复原始缩放">100%</button>
+        <button type="button" data-image-zoom-in aria-label="放大图片">+</button>
+      </div>
+    `;
+
+    document.body.appendChild(lightboxEl);
+    imageEl = lightboxEl.querySelector('.image-lightbox-image');
+    captionEl = lightboxEl.querySelector('.image-lightbox-caption');
+    scaleLabelEl = lightboxEl.querySelector('.image-lightbox-scale');
+    closeButtonEl = lightboxEl.querySelector('.image-lightbox-close');
+    const stageEl = lightboxEl.querySelector('.image-lightbox-stage');
+
+    lightboxEl.addEventListener('click', (event) => {
+      if(event.target.closest('[data-image-lightbox-close]') && event.target !== imageEl){
+        close();
+      }
+    });
+
+    closeButtonEl.addEventListener('click', close);
+    lightboxEl.querySelector('[data-image-zoom-out]').addEventListener('click', () => setScale(imageScale - 0.5));
+    lightboxEl.querySelector('[data-image-zoom-in]').addEventListener('click', () => setScale(imageScale + 0.5));
+    lightboxEl.querySelector('[data-image-zoom-reset]').addEventListener('click', resetImagePosition);
+
+    stageEl.addEventListener('wheel', (event) => {
+      if(!lightboxEl.classList.contains('is-open')){
+        return;
+      }
+      event.preventDefault();
+      setScale(imageScale + (event.deltaY < 0 ? 0.25 : -0.25));
+    }, { passive: false });
+
+    imageEl.addEventListener('dblclick', () => {
+      setScale(imageScale > 1 ? 1 : 2);
+    });
+
+    imageEl.addEventListener('pointerdown', (event) => {
+      if(imageScale <= 1){
+        return;
+      }
+      activePointerId = event.pointerId;
+      dragStartX = event.clientX;
+      dragStartY = event.clientY;
+      dragOriginX = imageOffsetX;
+      dragOriginY = imageOffsetY;
+      imageEl.setPointerCapture(event.pointerId);
+      imageEl.classList.add('is-dragging');
+    });
+
+    imageEl.addEventListener('pointermove', (event) => {
+      if(activePointerId !== event.pointerId){
+        return;
+      }
+      imageOffsetX = dragOriginX + event.clientX - dragStartX;
+      imageOffsetY = dragOriginY + event.clientY - dragStartY;
+      renderTransform();
+    });
+
+    function stopDragging(event){
+      if(activePointerId !== event.pointerId){
+        return;
+      }
+      activePointerId = null;
+      imageEl.classList.remove('is-dragging');
+    }
+
+    imageEl.addEventListener('pointerup', stopDragging);
+    imageEl.addEventListener('pointercancel', stopDragging);
+
+    window.addEventListener('keydown', (event) => {
+      if(!lightboxEl.classList.contains('is-open')){
+        return;
+      }
+      if(event.key === 'Escape'){
+        event.preventDefault();
+        close();
+      }
+      if(event.key === '+' || event.key === '='){
+        setScale(imageScale + 0.5);
+      }
+      if(event.key === '-'){
+        setScale(imageScale - 0.5);
+      }
+    });
+  }
+
+  function open(options){
+    if(!options || !options.src){
+      return;
+    }
+
+    ensureLightbox();
+    returnFocusEl = options.returnFocus || document.activeElement;
+    imageEl.src = options.src;
+    imageEl.alt = options.alt || '论文图片放大预览';
+    captionEl.textContent = options.caption || options.alt || '';
+    captionEl.classList.toggle('hidden', !captionEl.textContent);
+    resetImagePosition();
+    lightboxEl.classList.add('is-open');
+    lightboxEl.setAttribute('aria-hidden', 'false');
+    document.body.classList.add('has-image-lightbox');
+    window.requestAnimationFrame(() => closeButtonEl.focus());
+  }
+
+  function close(){
+    if(!lightboxEl || !lightboxEl.classList.contains('is-open')){
+      return;
+    }
+
+    lightboxEl.classList.remove('is-open');
+    lightboxEl.setAttribute('aria-hidden', 'true');
+    document.body.classList.remove('has-image-lightbox');
+    imageEl.removeAttribute('src');
+    if(returnFocusEl && typeof returnFocusEl.focus === 'function'){
+      returnFocusEl.focus({ preventScroll: true });
+    }
+    returnFocusEl = null;
+  }
+
+  function isOpen(){
+    return Boolean(lightboxEl && lightboxEl.classList.contains('is-open'));
+  }
+
+  window.PaperImageViewer = { open, close, isOpen };
+})();
+}
+(function(){
+  'use strict';
+  let DATA = [];
   const $ = (selector) => document.querySelector(selector);
   const statusEl = $('#status');
   const groupsEl = $('#groups');
   const searchEl = $('#search');
-  const categoryFilterEl = $('#category-filter');
   const tagFilterEl = $('#tag-filter');
+  const modeEl = $('#browse-mode');
+  const gradeEl = $('#grade-filter');
   const paperCountEl = $('#paper-count');
-  const favoritesOnlyEl = $('#favorites-only');
-  const favoriteCountEl = $('#favorite-count');
-  const favoritesExportEl = $('#favorites-export');
-  const favoritesImportEl = $('#favorites-import');
-  const favoritesFileEl = $('#favorites-file');
-  const homeScrollKey = 'home-scroll:index';
+  const paginationEl = $('#pagination');
   const favoritesStorageKey = 'xixi-paper-favorites-v1';
   const paperModalQueryKey = 'paper';
+  const favoriteItems = new WeakMap();
   let FAVORITES = readFavorites();
-  let favoritesOnly = false;
-  let restoredScroll = false;
+  let state = {mode: 'daily', page: 1, tag: '', grade: 'all', q: ''};
+  let loaded = false;
   let paperModalEl = null;
   let paperModalFrameEl = null;
   let paperModalTitleEl = null;
@@ -32,6 +224,7 @@
   let modalReturnFocusEl = null;
   let modalCleanupTimerId = null;
   let modalSessionId = 0;
+  let openIdentifier = null;
 
   function readFavorites(){
     try{
@@ -52,65 +245,65 @@
     }
   }
 
-  function getFavoriteKey(item){
+  function getFavoriteKeys(item){
     const program = String(item.detail_path || '').startsWith('collection-papers/') ? 'collection' : 'daily';
-    return `${program}:${item.arxiv_id || item.detail_path}`;
+    const primary = `${program}:${item.arxiv_id || item.detail_path}`;
+    const aliases = Array.isArray(item.favorite_keys) ? item.favorite_keys : [];
+    return Array.from(new Set([primary, ...aliases].filter(key => typeof key === 'string' && key)));
   }
 
   function isFavorite(item){
-    return FAVORITES.includes(getFavoriteKey(item));
+    return getFavoriteKeys(item).some(key => FAVORITES.includes(key));
+  }
+
+  function updateFavoriteButtons(){
+    document.querySelectorAll('.feed-favorite-button').forEach(button => {
+      const item = favoriteItems.get(button);
+      if(!item) return;
+      const favorite = isFavorite(item);
+      button.textContent = favorite ? '★' : '☆';
+      button.setAttribute('aria-pressed', String(favorite));
+      button.setAttribute('aria-label', `${favorite ? '取消收藏' : '收藏'}：${item.title || '论文'}`);
+      button.title = favorite ? '取消收藏' : '收藏';
+    });
   }
 
   function toggleFavorite(item){
-    const key = getFavoriteKey(item);
-    writeFavorites(FAVORITES.includes(key) ? FAVORITES.filter((value) => value !== key) : [...FAVORITES, key]);
-    sync();
+    const keys = getFavoriteKeys(item);
+    writeFavorites(isFavorite(item) ? FAVORITES.filter(key => !keys.includes(key)) : [...FAVORITES, ...keys]);
+    updateFavoriteButtons();
   }
 
-  function updateFavoriteControls(){
-    const currentCount = DATA.filter((item) => isFavorite(item)).length;
-    if(favoriteCountEl){
-      favoriteCountEl.textContent = String(currentCount);
-    }
-    if(favoritesOnlyEl){
-      favoritesOnlyEl.setAttribute('aria-pressed', String(favoritesOnly));
-    }
-    if(favoritesExportEl){
-      favoritesExportEl.disabled = FAVORITES.length === 0;
-    }
+  // A detail page edits its own legacy key. Mirror that change to all aliases
+  // so removing a favorite there also removes the deduplicated list's star.
+  function refreshFavorites(changedKey){
+    const previous = FAVORITES;
+    const next = readFavorites();
+    const changed = changedKey ? [changedKey] : [...new Set([...previous, ...next])]
+      .filter(key => previous.includes(key) !== next.includes(key));
+    let values = next.slice();
+    DATA.forEach(item => {
+      const keys = getFavoriteKeys(item);
+      const key = changed.find(value => keys.includes(value));
+      if(!key) return;
+      values = next.includes(key) ? [...values, ...keys] : values.filter(value => !keys.includes(value));
+    });
+    const normalized = Array.from(new Set(values)).sort();
+    if(JSON.stringify(normalized) !== JSON.stringify(next)) writeFavorites(normalized);
+    else FAVORITES = next;
+    updateFavoriteButtons();
   }
 
-  function exportFavorites(){
-    const payload = JSON.stringify({ version: 1, exported_at: new Date().toISOString(), favorites: FAVORITES }, null, 2);
-    const objectURL = URL.createObjectURL(new Blob([payload], { type: 'application/json' }));
-    const anchor = document.createElement('a');
-    anchor.href = objectURL;
-    anchor.download = `xixi-paper-favorites-${new Date().toISOString().slice(0, 10)}.json`;
-    anchor.click();
-    URL.revokeObjectURL(objectURL);
-  }
-
-  async function importFavorites(file){
-    if(!file){
-      return;
-    }
-    try{
-      const parsed = JSON.parse(await file.text());
-      const values = Array.isArray(parsed) ? parsed : parsed && parsed.favorites;
-      if(!Array.isArray(values) || !values.every((value) => typeof value === 'string')){
-        throw new Error('invalid favorites payload');
-      }
-      writeFavorites([...FAVORITES, ...values]);
-      sync();
-    } catch (error) {
-      window.alert('无法导入：请选择本站导出的收藏 JSON 文件。');
-    } finally {
-      favoritesFileEl.value = '';
-    }
+  function saveCatalogReturnURL(){
+    try {
+      const url = new URL(window.location.href);
+      url.searchParams.delete(paperModalQueryKey);
+      window.sessionStorage.setItem('paper-catalog-return-url', url.href);
+    } catch(error){ console.warn('保存目录返回地址失败', error); }
   }
 
   function getPaperIdentifier(item){
-    return item.arxiv_id || item.detail_path;
+    return String(item.arxiv_id || item.detail_path || '');
   }
 
   function getStandalonePaperURL(detailPath){
@@ -231,12 +424,14 @@
   }
 
   function openPaperModal(item, options){
-    if(!item){
+    if(!item || !item.detail_path){
       return;
     }
 
+    saveCatalogReturnURL();
     const settings = options || {};
     ensurePaperModal();
+    openIdentifier = getPaperIdentifier(item);
     modalSessionId += 1;
     if(modalCleanupTimerId !== null){
       window.clearTimeout(modalCleanupTimerId);
@@ -279,6 +474,8 @@
       return;
     }
 
+    openIdentifier = null;
+    if(window.PaperImageViewer?.isOpen()) window.PaperImageViewer.close();
     const closingSessionId = modalSessionId;
     paperModalEl.classList.remove('is-open');
     paperModalEl.setAttribute('aria-hidden', 'true');
@@ -339,9 +536,11 @@
       return;
     }
 
-    const item = DATA.find((candidate) => getPaperIdentifier(candidate) === paperIdentifier);
-    if(item){
+    const item = DATA.find(candidate => getPaperIdentifier(candidate) === paperIdentifier || candidate.detail_path === paperIdentifier);
+    if(item && openIdentifier !== getPaperIdentifier(item)){
       openPaperModal(item, { updateHistory: false });
+    } else if(!item){
+      hidePaperModal();
     }
   }
 
@@ -351,24 +550,11 @@
     }
 
     window.PaperImageViewer.open({
-      src: item.paper_image_full_path || item.paper_image_path,
+      src: item.paper_image_full_path || item.paper_image_path || item.fallback_image_path || imageEl.currentSrc || imageEl.src,
       alt: item.title || imageEl.alt,
       caption: item.title || '',
       returnFocus: imageEl
     });
-  }
-
-  function updatePaperCount(visibleCount){
-    if(!paperCountEl){
-      return;
-    }
-
-    const hasQuery = Boolean(
-      (searchEl.value || '').trim() || categoryFilterEl.value || tagFilterEl.value
-    );
-    paperCountEl.textContent = hasQuery
-      ? `${visibleCount} / ${DATA.length} 篇`
-      : `${DATA.length} 篇已收录`;
   }
 
   function applyCoverTheme(el, theme){
@@ -429,9 +615,41 @@
     statusEl.appendChild(card);
   }
 
+  // Reader-facing subjects consolidate aliases. Original tags remain searchable
+  // and usable by old shared links; production classifications are unchanged.
+  const subjectRules = [
+    ['学习理论', /泛化|标度律|Scaling Laws|Learning Theory|Deep Learning Theory|In.Context Learning|Neural Scaling|Compositional|Length Generalization|AI Theory|Physics of AI|physics of AI|Physics of Deep Learning|^Theory$/i],
+    ['优化与训练', /优化|训练|Training|Optimization|Initialization|Signal Propagation|Grokking|Lottery Tickets|Transformer Dynamics/i],
+    ['表示与可解释性', /表示学习|可解释性|Representation|Interpretability|Explainable|Model Analysis|Neurosymbolic|Symbolic Reasoning|Modular Networks|Compositionality/i],
+    ['语言模型', /语言模型|Transformer|Language Model|LLM|Prompting/i],
+    ['生成模型', /生成模型|Generative|Flow Matching|Diffusion|Video Generation/i],
+    ['强化学习与控制', /强化学习|Reinforcement|Control|World Models|世界模型|AI Agents|LLM Agents/i],
+    ['科学机器学习', /AI for Science|AI for Physics|Scientific|神经算子|Neural Operators|计算物理|物理数据分析|Symbolic Regression|Reduced.Order Modeling/i],
+    ['统计物理', /统计物理|相变|临界|无序系统|Spin Glass|Ising|低温刚性|关联恒等式|Renormalization Group|Statistical Physics|Statistical Mechanics|Statistical mechanics|Mean.field Phase Transitions/i],
+    ['活性与软物质', /活性物质|Active Matter|软物质|Soft Matter|Nonreciprocal/i],
+    ['流体物理', /流体|水动力学|Fluid Dynamics|Hydrodynamic|Climate Dynamics/i],
+    ['生物与神经', /生物|神经动力学|神经计算|Neuroscience|NeuroAI|Learning Dynamics and Neuroscience/i],
+    ['凝聚态物理', /凝聚态|强关联|Condensed Matter|Photonic Computing|Thermodynamic Computing/i],
+    ['场论与高能', /场论|高能|Field Theory/i],
+    ['对称性与几何', /对称性与规范|Representation Theory|Representation Geometry|Geometric/i],
+    ['概率与数学', /概率|随机过程|随机动力学|Information Theory|数学物理|Mathematical Physics|应用数学|数值分析|浓缩不等式|整数高度场|Random Matrix/i],
+    ['非线性与复杂系统', /非线性|混沌|动力系统|Complex Systems|Dynamical Systems|动力学相变|弱噪声极限/i],
+    ['量子物理', /量子|Quantum Physics/i],
+    ['机器人与具身智能', /机器人|具身智能|Robotics/i],
+    ['视觉与感知', /计算机视觉|Computer Vision/i],
+    ['机器学习', /^机器学习$|^人工智能$|^Machine Learning$|^Efficient AI$/i],
+    ['跨学科', /^跨学科$/i]
+  ];
+  function readerTags(tags){
+    const subjects = subjectRules.filter(([, pattern]) => tags.some(tag => pattern.test(tag))).map(([name]) => name);
+    // Broad AI labels add little when a paper already has a specific subject.
+    return subjects.length > 1 ? subjects.filter(tag => tag !== '机器学习') : subjects;
+  }
+
   function buildSearchText(item){
     return [
       item.title || '',
+      item.authors || '',
       item.title_zh || '',
       item.preview_text || '',
       item.research_unit || '',
@@ -439,52 +657,18 @@
       item.hook_text || '',
       item.category || '',
       item.research_type || '',
-      ...(item.tags || []),
+      ...(item.originalTags || item.tags || []),
       ...(item.arxiv_categories || []),
       ...(item.key_points || [])
     ].join(' ').toLowerCase();
   }
 
-  function filterItems(items, query){
-    const raw = (query || '').trim().toLowerCase();
-    const tokens = raw.split(/\s+/).filter(Boolean);
-    return items.filter((item) => {
-      if(favoritesOnly && !isFavorite(item)){
-        return false;
-      }
-      if(categoryFilterEl.value && item.category !== categoryFilterEl.value){
-        return false;
-      }
-      if(tagFilterEl.value && !(item.tags || []).includes(tagFilterEl.value)){
-        return false;
-      }
-      if(!tokens.length){
-        return true;
-      }
-      const hay = buildSearchText(item).replace(/[-_]/g, '');
-      return tokens.every((t) => hay.includes(t.replace(/[-_]/g, '')));
-    });
-  }
-
-  function populateTaxonomyFilters(){
-    const categories = Array.from(new Set(DATA.map((item) => item.category).filter(Boolean))).sort();
-    const tags = Array.from(new Set(DATA.flatMap((item) => item.tags || []))).sort();
-    const selectedCategory = new URL(window.location).searchParams.get('category') || '';
-    const selectedTag = new URL(window.location).searchParams.get('tag') || '';
-    categories.forEach((value) => categoryFilterEl.add(new Option(value, value)));
-    tags.forEach((value) => tagFilterEl.add(new Option(value, value)));
-    if(categories.includes(selectedCategory)) categoryFilterEl.value = selectedCategory;
-    if(tags.includes(selectedTag)) tagFilterEl.value = selectedTag;
-  }
-
   let mathQueue = Promise.resolve();
   function typesetSurface(element){
-    if(!window.MathJax || !MathJax.startup){ return; }
-    mathQueue = mathQueue.then(async () => {
-      if(!MathJax.typesetPromise){ await new Promise(resolve => window.addEventListener('load', resolve, {once:true})); }
-      await MathJax.startup.promise;
-    }).then(() => {
-      if(element.isConnected){ return MathJax.typesetPromise([element]); }
+    const math = window.MathJax;
+    if(!math || !math.startup) return;
+    mathQueue = mathQueue.then(() => math.startup.promise).then(() => {
+      if(element.isConnected && math.typesetPromise) return math.typesetPromise([element]).then(() => window.fitInlineMath?.(element));
     }).catch(error => console.error('公式排版失败', error));
   }
 
@@ -497,7 +681,11 @@
     cardLink.href = item.detail_path;
     cardLink.setAttribute('aria-label', `查看论文：${item.title}`);
     cardLink.setAttribute('aria-haspopup', 'dialog');
+    cardLink.addEventListener('pointerdown', saveCatalogReturnURL);
+    cardLink.addEventListener('auxclick', saveCatalogReturnURL);
+    cardLink.addEventListener('contextmenu', saveCatalogReturnURL);
     cardLink.addEventListener('click', (event) => {
+      saveCatalogReturnURL();
       const shouldUseNormalNavigation = event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey;
       if(shouldUseNormalNavigation){
         return;
@@ -511,16 +699,27 @@
 
     const coverWrap = document.createElement('div');
     coverWrap.className = 'feed-card-cover';
-    if(item.paper_image_path){
+    const imagePath = item.paper_image_path || item.fallback_image_path || '';
+    if(imagePath){
       const figure = document.createElement('figure');
       figure.className = 'feed-card-figure';
 
       const image = document.createElement('img');
       image.className = 'paper-figure-image';
-      image.src = item.paper_image_path;
+      image.src = imagePath;
       image.alt = item.cover_alt_text || item.title || '论文封面图';
       image.loading = 'lazy';
       image.dataset.zoomable = 'true';
+      image.tabIndex = 0;
+      image.setAttribute('role', 'button');
+      image.setAttribute('aria-label', `放大图片：${item.title || '论文'}`);
+      image.addEventListener('keydown', event => {
+        if(event.key === 'Enter' || event.key === ' '){
+          event.preventDefault();
+          event.stopPropagation();
+          openPaperImage(item, image);
+        }
+      });
       image.addEventListener('click', (event) => {
         event.preventDefault();
         event.stopPropagation();
@@ -553,7 +752,7 @@
 
       const abstractText = document.createElement('p');
       abstractText.className = 'note-cover-abstract';
-      abstractText.textContent = item.cover_summary || item.preview_text || '';
+      abstractText.textContent = item.preview_text || '暂无摘要';
       titleShell.appendChild(abstractText);
       cover.appendChild(titleShell);
       coverWrap.appendChild(cover);
@@ -565,31 +764,10 @@
     const meta = document.createElement('div');
     meta.className = 'feed-card-meta';
 
-    if(item.research_unit){
-      const org = document.createElement('span');
-      org.className = 'feed-chip';
-      org.textContent = item.research_unit;
-      meta.appendChild(org);
-    }
-
-    if(item.program_label){
-      const program = document.createElement('span');
-      program.className = 'feed-chip feed-chip-program';
-      program.textContent = item.topic ? `${item.program_label} · ${item.topic}` : item.program_label;
-      meta.prepend(program);
-    }
-
-    if(item.category){
-      const category = document.createElement('span');
-      category.className = 'feed-chip feed-chip-category';
-      category.textContent = item.category;
-      meta.appendChild(category);
-    }
-
-    (item.tags || []).slice(0, 2).forEach((value) => {
+    [...new Set([...(item.tags || []).slice(0, 3), item.grade].filter(Boolean))].forEach(value => {
       const tag = document.createElement('span');
-      tag.className = 'feed-chip subtle';
-      tag.textContent = `#${value}`;
+      tag.className = 'feed-chip feed-chip-tag';
+      tag.textContent = value;
       meta.appendChild(tag);
     });
 
@@ -603,7 +781,7 @@
 
     const preview = document.createElement('div');
     preview.className = 'feed-card-preview';
-    preview.textContent = item.cover_summary || (item.program === 'Collection' ? item.hook_text : item.preview_text) || '摘要还在生成中';
+    preview.textContent = item.preview_text || '暂无摘要';
 
     const footer = document.createElement('div');
     footer.className = 'feed-card-footer';
@@ -614,7 +792,7 @@
 
     const stats = document.createElement('div');
     stats.className = 'feed-card-stats';
-    stats.textContent = `${item.section_count || 0} 张卡 · ${item.reading_minutes || 1} 分钟`;
+    stats.textContent = `约 ${item.reading_minutes || 1} 分钟`;
 
     footer.appendChild(action);
     footer.appendChild(stats);
@@ -635,6 +813,7 @@
 
     const favoriteButton = document.createElement('button');
     const favorite = isFavorite(item);
+    favoriteItems.set(favoriteButton, item);
     favoriteButton.type = 'button';
     favoriteButton.className = 'feed-favorite-button';
     favoriteButton.textContent = favorite ? '★' : '☆';
@@ -647,12 +826,6 @@
     cardShell.appendChild(favoriteButton);
     return cardShell;
   }
-
-  const GROUPS_PER_BATCH = 3;
-  let pendingDates = [];
-  let pendingGrouped = new Map();
-  let sentinelEl = null;
-  let lazyObserver = null;
 
   function createGroupSection(date, items){
     const section = document.createElement('section');
@@ -678,314 +851,336 @@
     heading.appendChild(h2);
     heading.appendChild(count);
     section.appendChild(heading);
-    section.appendChild(grid);
+    if(items.length) section.appendChild(grid);
+    else {
+      const empty = document.createElement('p');
+      empty.className = 'group-empty empty-day';
+      empty.textContent = state.q || state.tag || state.grade !== 'all' ? '这一天没有匹配的论文。' : '这一天没有收录论文。';
+      section.appendChild(empty);
+    }
     return section;
   }
 
-  function removeSentinel(){
-    if(sentinelEl && sentinelEl.parentNode){
-      sentinelEl.parentNode.removeChild(sentinelEl);
-    }
-    sentinelEl = null;
+  const DAY_MS = 86400000;
+  const textCompare = (a, b) => String(a || '').localeCompare(String(b || ''), 'zh-CN');
+
+  // UTC arithmetic avoids DST changes; only real calendar dates are accepted.
+  function dayNumber(value){
+    const match = /^(\d{4})-(\d{2})-(\d{2})(?:$|[T\s])/.exec(String(value || ''));
+    if(!match) return null;
+    const iso = `${match[1]}-${match[2]}-${match[3]}`;
+    const time = Date.parse(`${iso}T00:00:00Z`);
+    return Number.isFinite(time) && new Date(time).toISOString().slice(0, 10) === iso ? time / DAY_MS : null;
   }
 
-  function destroyLazyObserver(){
-    if(lazyObserver){
-      lazyObserver.disconnect();
-      lazyObserver = null;
-    }
-    removeSentinel();
+  function collectionDay(item){ return dayNumber(item.collection_date); }
+  function publishedDay(item){
+    const value = String(item.published || '');
+    // Partial publication dates remain known dates: sort at the start of their
+    // stated year/month, without inventing precision in the record or label.
+    if(/^\d{4}$/.test(value)) return dayNumber(`${value}-01-01`);
+    if(/^\d{4}-\d{2}$/.test(value)) return dayNumber(`${value}-01`);
+    return dayNumber(value);
   }
+  function descendingDay(a, b){
+    if(a === b) return 0;
+    if(a === null) return 1;
+    if(b === null) return -1;
+    return b - a;
+  }
+  function stableRecordCompare(a, b){
+    return descendingDay(collectionDay(a), collectionDay(b)) ||
+      descendingDay(publishedDay(a), publishedDay(b)) || textCompare(a.title, b.title) ||
+      textCompare(a.arxiv_id || a.detail_path, b.arxiv_id || b.detail_path);
+  }
+  function categoryName(item){ return item.category || '未分类'; }
 
-  function loadNextBatch(){
-    if(!pendingDates.length){
-      removeSentinel();
-      return;
-    }
-
-    const batch = pendingDates.splice(0, GROUPS_PER_BATCH);
-    removeSentinel();
-
-    batch.forEach((date) => {
-      const section = createGroupSection(date, pendingGrouped.get(date));
-      groupsEl.appendChild(section);
-      typesetSurface(section);
+  function filterItems(){
+    const tokens = state.q.trim().toLowerCase().split(/\s+/).filter(Boolean).map(value => value.replace(/[-_]/g, ''));
+    return DATA.filter(item => {
+      if(state.tag && !item.tags.includes(state.tag) && !item.originalTags.includes(state.tag)) return false;
+      if(state.grade !== 'all' && item.grade !== state.grade) return false;
+      const haystack = buildSearchText(item).replace(/[-_]/g, '');
+      return tokens.every(token => haystack.includes(token));
     });
+  }
 
-    if(pendingDates.length){
-      sentinelEl = document.createElement('div');
-      sentinelEl.className = 'lazy-sentinel';
-      sentinelEl.setAttribute('aria-hidden', 'true');
-      groupsEl.appendChild(sentinelEl);
-      if(lazyObserver){
-        lazyObserver.observe(sentinelEl);
-      }
+  function readURLState(){
+    const params = new URL(window.location.href).searchParams;
+    const page = Number(params.get('page') || 1);
+    state = {
+      mode: ['daily', 'published', 'category'].includes(params.get('mode')) ? params.get('mode') : 'daily',
+      page: Number.isSafeInteger(page) && page > 0 ? page : 1,
+      tag: params.get('tag') || '',
+      grade: ['S', 'A', 'B'].includes(params.get('grade')) ? params.get('grade') : 'all',
+      q: params.get('q') || ''
+    };
+    // Preserve even a retired tag in a shared link, so it produces an honest
+    // empty result instead of silently broadening the filter.
+    if(state.tag && !Array.from(tagFilterEl.options).some(option => option.value === state.tag)){
+      tagFilterEl.add(new Option(state.tag, state.tag));
     }
+    searchEl.value = state.q;
+    modeEl.value = state.mode;
+    gradeEl.value = state.grade;
+    tagFilterEl.value = state.tag;
+  }
+
+  function writeURLState(replace){
+    const url = new URL(window.location.href);
+    Object.entries(state).forEach(([key, value]) => {
+      if(value === '' || (key === 'grade' && value === 'all')) url.searchParams.delete(key);
+      else url.searchParams.set(key, String(value));
+    });
+    if(url.href === window.location.href) return;
+    const previous = window.history.state && typeof window.history.state === 'object' ? window.history.state : {};
+    window.history[replace ? 'replaceState' : 'pushState']({...previous}, '', url);
+  }
+
+  function goToPage(page){
+    state.page = page;
+    writeURLState(false);
+    sync();
+    groupsEl.scrollIntoView({block: 'start'});
+  }
+
+  function renderPagination(totalPages){
+    paginationEl.replaceChildren();
+    paginationEl.setAttribute('aria-label', '论文分页');
+    const button = (label, page, disabled = false) => {
+      const el = document.createElement('button');
+      el.type = 'button';
+      el.className = 'pagination-button';
+      el.textContent = label;
+      el.disabled = disabled;
+      el.addEventListener('click', () => goToPage(page));
+      return el;
+    };
+    paginationEl.appendChild(button('首页', 1, state.page <= 1));
+    paginationEl.appendChild(button('上一页', state.page - 1, state.page <= 1));
+    const start = Math.max(1, Math.min(state.page - 2, totalPages - 4));
+    for(let page = start; page <= Math.min(totalPages, start + 4); page++){
+      const el = button(String(page), page);
+      el.setAttribute('aria-label', `第 ${page} 页`);
+      if(page === state.page) el.setAttribute('aria-current', 'page');
+      paginationEl.appendChild(el);
+    }
+    paginationEl.appendChild(button('下一页', state.page + 1, state.page >= totalPages));
+    paginationEl.appendChild(button('尾页', totalPages, state.page >= totalPages));
+    const jumpLabel = document.createElement('label');
+    jumpLabel.className = 'page-jump';
+    jumpLabel.textContent = '跳转到';
+    const select = document.createElement('select');
+    select.id = 'page-select';
+    select.setAttribute('aria-label', '选择页码');
+    for(let page = 1; page <= totalPages; page++) select.add(new Option(`第 ${page} 页`, String(page)));
+    select.value = String(state.page);
+    select.addEventListener('change', () => goToPage(Number(select.value)));
+    jumpLabel.appendChild(select);
+    paginationEl.appendChild(jumpLabel);
+    const label = document.createElement('span');
+    label.className = 'pagination-info page-summary';
+    label.setAttribute('aria-live', 'polite');
+    label.textContent = `第 ${state.page} / ${totalPages} 页` + (state.mode === 'daily' ? ' · 每页 5 天' : ` · 每页 ${catalogPageSize} 篇`);
+    paginationEl.appendChild(label);
+  }
+
+  let catalogPageSize = 10;
+  function measurePageSize(){
+    const probe = document.createElement('div');
+    probe.className = 'grid';
+    probe.style.cssText = 'height:0;visibility:hidden;overflow:hidden';
+    groupsEl.appendChild(probe);
+    const columns = Math.max(1, getComputedStyle(probe).gridTemplateColumns.split(/\s+/).filter(Boolean).length);
+    probe.remove();
+    return Math.ceil(10 / columns) * columns;
   }
 
   function renderGroups(items){
-    destroyLazyObserver();
-    if(window.MathJax?.typesetClear){ MathJax.typesetClear([groupsEl]); }
-    groupsEl.innerHTML = '';
-
-    if(!items.length){
-      return;
-    }
-
-    const grouped = new Map();
-    items.forEach((item) => {
-      if(!grouped.has(item.date)){
-        grouped.set(item.date, []);
-      }
-      grouped.get(item.date).push(item);
-    });
-
-    const dates = Array.from(grouped.keys()).sort((a, b) => b.localeCompare(a));
-
-    pendingGrouped = grouped;
-    pendingDates = dates.slice(GROUPS_PER_BATCH);
-
-    dates.slice(0, GROUPS_PER_BATCH).forEach((date) => {
-      const section = createGroupSection(date, grouped.get(date));
-      groupsEl.appendChild(section);
-      typesetSurface(section);
-    });
-
-    if(pendingDates.length){
-      lazyObserver = new IntersectionObserver((entries) => {
-        if(entries.some((e) => e.isIntersecting)){
-          loadNextBatch();
+    if(window.MathJax?.typesetClear) window.MathJax.typesetClear([groupsEl]);
+    groupsEl.replaceChildren();
+    let totalPages;
+    if(state.mode === 'daily'){
+      const timeline = state.q || state.tag || state.grade !== 'all' ? items : DATA;
+      const dates = timeline.map(collectionDay).filter(day => day !== null);
+      const latest = dates.length ? dates.reduce((a, b) => Math.max(a, b)) : null;
+      const earliest = dates.length ? dates.reduce((a, b) => Math.min(a, b)) : null;
+      const calendarPages = dates.length ? Math.ceil((latest - earliest + 1) / 5) : 0;
+      const hasUndated = timeline.some(item => collectionDay(item) === null);
+      totalPages = Math.max(1, calendarPages + Number(hasUndated));
+      state.page = Math.min(state.page, totalPages);
+      if(state.page <= calendarPages){
+        const first = latest - (state.page - 1) * 5;
+        for(let offset = 0; offset < 5; offset++){
+          const day = first - offset;
+          const records = items.filter(item => collectionDay(item) === day).sort(stableRecordCompare);
+          groupsEl.appendChild(createGroupSection(new Date(day * DAY_MS).toISOString().slice(0, 10), records));
         }
-      }, { rootMargin: '400px' });
-
-      sentinelEl = document.createElement('div');
-      sentinelEl.className = 'lazy-sentinel';
-      sentinelEl.setAttribute('aria-hidden', 'true');
-      groupsEl.appendChild(sentinelEl);
-      lazyObserver.observe(sentinelEl);
+      } else if(hasUndated){
+        groupsEl.appendChild(createGroupSection('收录日期未知', items.filter(item => collectionDay(item) === null).sort(stableRecordCompare)));
+      }
+    } else {
+      const sorted = items.slice().sort(state.mode === 'published'
+        ? (a, b) => descendingDay(publishedDay(a), publishedDay(b)) || stableRecordCompare(a, b)
+        : (a, b) => textCompare(categoryName(a), categoryName(b)) || stableRecordCompare(a, b));
+      totalPages = Math.max(1, Math.ceil(sorted.length / catalogPageSize));
+      state.page = Math.min(state.page, totalPages);
+      const pageItems = sorted.slice((state.page - 1) * catalogPageSize, state.page * catalogPageSize);
+      if(state.mode === 'category'){
+        const groups = new Map();
+        pageItems.forEach(item => {
+          const category = categoryName(item);
+          if(!groups.has(category)) groups.set(category, []);
+          groups.get(category).push(item);
+        });
+        groups.forEach((records, category) => groupsEl.appendChild(createGroupSection(category, records)));
+      } else if(pageItems.length){
+        groupsEl.appendChild(createGroupSection('按发表日期', pageItems));
+      }
     }
+    renderPagination(totalPages);
+    // Normalize an invalid/out-of-range page without adding another history entry.
+    writeURLState(true);
+    typesetSurface(groupsEl);
   }
 
   function sync(){
-    const items = filterItems(DATA, searchEl.value);
-    updateFavoriteControls();
-    updatePaperCount(items.length);
-
-    if(!DATA.length){
-      renderGroups([]);
-      renderStatus('empty', '还没有论文卡片', '当前还没有可展示的数据，等抓取和摘要生成完成后，这里会自动出现。');
-      return;
-    }
-
-    if(!items.length){
-      renderGroups([]);
-      renderStatus(
-        'empty',
-        '没有找到匹配卡片',
-        `换个关键词试试，当前一共收录了 ${DATA.length} 篇论文。`,
-        {
-          label: '清空搜索',
-          onClick: () => {
-            searchEl.value = '';
-            categoryFilterEl.value = '';
-            tagFilterEl.value = '';
-            favoritesOnly = false;
-            syncSearchURL();
-            sync();
-            searchEl.focus();
-          }
-        }
-      );
-      return;
-    }
-
-    clearStatus();
+    if(!loaded) return;
+    catalogPageSize = measurePageSize();
+    const items = filterItems();
+    paperCountEl.textContent = state.q || state.tag || state.grade !== 'all'
+      ? `${items.length} / ${DATA.length} 篇` : `${DATA.length} 篇已收录`;
     renderGroups(items);
-    restoreScroll();
-  }
-
-  function syncSearchURL(){
-    const q = (searchEl.value || '').trim();
-    const url = new URL(window.location);
-    if(q){
-      url.searchParams.set('q', q);
-    } else {
-      url.searchParams.delete('q');
-    }
-    if(categoryFilterEl.value){
-      url.searchParams.set('category', categoryFilterEl.value);
-    } else {
-      url.searchParams.delete('category');
-    }
-    if(tagFilterEl.value){
-      url.searchParams.set('tag', tagFilterEl.value);
-    } else {
-      url.searchParams.delete('tag');
-    }
-    window.history.replaceState(null, '', url);
-  }
-
-  searchEl.addEventListener('input', () => {
-    syncSearchURL();
-    sync();
-  });
-  categoryFilterEl.addEventListener('change', () => {
-    syncSearchURL();
-    sync();
-  });
-  tagFilterEl.addEventListener('change', () => {
-    syncSearchURL();
-    sync();
-  });
-  favoritesOnlyEl.addEventListener('click', () => {
-    favoritesOnly = !favoritesOnly;
-    restoredScroll = true;
-    sync();
-  });
-  favoritesExportEl.addEventListener('click', exportFavorites);
-  favoritesImportEl.addEventListener('click', () => favoritesFileEl.click());
-  favoritesFileEl.addEventListener('change', () => importFavorites(favoritesFileEl.files && favoritesFileEl.files[0]));
-
-  window.addEventListener('storage', (event) => {
-    if(event.key === favoritesStorageKey){
-      FAVORITES = readFavorites();
-      sync();
-    }
-  });
-
-  function restoreScroll(){
-    if(restoredScroll || window.location.hash){
-      return;
-    }
-
-    try{
-      const saved = window.localStorage.getItem(homeScrollKey);
-      if(saved === null){
-        restoredScroll = true;
-        return;
-      }
-
-      const scrollY = Number(saved);
-      restoredScroll = true;
-      if(!Number.isFinite(scrollY) || scrollY <= 0){
-        return;
-      }
-
-      while(pendingDates.length && document.documentElement.scrollHeight < scrollY + window.innerHeight){
-        loadNextBatch();
-      }
-
-      window.requestAnimationFrame(() => {
-        window.scrollTo(0, scrollY);
+    if(!DATA.length){
+      renderStatus('empty', '还没有论文卡片', '暂时没有可展示的论文。');
+    } else if(!items.length){
+      renderStatus('empty', '没有找到匹配卡片', '试试其他关键词、标签或等级。', {
+        label: '清空筛选', onClick: () => {
+          state = {...state, page: 1, q: '', tag: '', grade: 'all'};
+          writeURLState(false);
+          readURLState();
+          sync();
+          searchEl.focus();
+        }
       });
-    } catch (error) {
-      restoredScroll = true;
-      console.warn('恢复首页滚动进度失败', error);
-    }
+    } else clearStatus();
   }
 
-  function saveScroll(){
-    try{
-      window.localStorage.setItem(homeScrollKey, String(window.scrollY || 0));
-    } catch (error) {
-      console.warn('保存首页滚动进度失败', error);
-    }
+  function controlsChanged(){
+    state = {mode: modeEl.value, page: 1, q: searchEl.value, tag: tagFilterEl.value, grade: gradeEl.value};
+    writeURLState(false);
+    sync();
   }
+  searchEl.addEventListener('input', controlsChanged);
+  [modeEl, tagFilterEl, gradeEl].forEach(el => el.addEventListener('change', controlsChanged));
+  window.addEventListener('popstate', () => {
+    readURLState();
+    sync();
+    openPaperModalFromURL();
+  });
+  let resizeTimer;
+  window.addEventListener('resize', () => {
+    clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(() => {
+      if(!loaded || state.mode === 'daily') return;
+      const nextSize = measurePageSize();
+      if(nextSize === catalogPageSize) return;
+      state.page = Math.floor((state.page - 1) * catalogPageSize / nextSize) + 1;
+      sync();
+    }, 160);
+  });
+  window.addEventListener('storage', event => {
+    if(event.key === favoritesStorageKey || event.key === null) refreshFavorites();
+  });
 
-  let ticking = false;
-  window.addEventListener('scroll', () => {
-    if(ticking){
-      return;
-    }
-
-    ticking = true;
-    window.requestAnimationFrame(() => {
-      saveScroll();
-      ticking = false;
-    });
-  }, { passive: true });
-
-  window.addEventListener('pagehide', saveScroll);
-
-  window.addEventListener('popstate', openPaperModalFromURL);
-
-  window.addEventListener('message', (event) => {
-    if(event.origin !== window.location.origin || !paperModalFrameEl || event.source !== paperModalFrameEl.contentWindow){
-      return;
-    }
-
+  window.addEventListener('message', event => {
+    if(event.origin !== window.location.origin || !paperModalFrameEl || event.source !== paperModalFrameEl.contentWindow) return;
     const message = event.data || {};
-    if(message.type === 'paper-modal-close'){
-      requestClosePaperModal();
-      return;
-    }
-
-    if(message.type === 'paper-modal-ready'){
+    if(message.type === 'paper-modal-close') requestClosePaperModal();
+    if(message.type === 'paper-modal-ready' && paperModalEl?.classList.contains('is-open')){
       if(message.title){
+        if(window.MathJax?.typesetClear) window.MathJax.typesetClear([paperModalTitleEl]);
         paperModalTitleEl.textContent = message.title;
+        typesetSurface(paperModalTitleEl);
       }
       if(message.url){
-        const standaloneURL = new URL(message.url, window.location.href);
-        standaloneURL.searchParams.delete('embed');
-        paperModalOpenLinkEl.href = standaloneURL.href;
+        try {
+          const url = new URL(message.url, window.location.href);
+          if(url.origin === window.location.origin){
+            url.searchParams.delete('embed');
+            paperModalOpenLinkEl.href = url.href;
+            const destination = DATA.find(item => [item.detail_path, ...(item.source_records || []).map(record => record.detail_path)].some(path => new URL(path, window.location.href).pathname === url.pathname));
+            if(destination){
+              openIdentifier = getPaperIdentifier(destination);
+              const catalogURL = new URL(window.location.href);
+              catalogURL.searchParams.set(paperModalQueryKey, openIdentifier);
+              const ownedState = window.history.state || {};
+              window.history.replaceState({...ownedState, ...(ownedState.paperModal ? {paperModal: openIdentifier} : {})}, '', catalogURL);
+            }
+          }
+        } catch(error){ console.warn('无效的论文地址', error); }
       }
-      return;
     }
-
-    if(message.type === 'paper-favorite-changed'){
-      FAVORITES = readFavorites();
-      sync();
-      return;
-    }
-
+    if(message.type === 'paper-favorite-changed') refreshFavorites(message.key);
     if(message.type === 'paper-image-open' && window.PaperImageViewer){
-      window.PaperImageViewer.open({
-        src: message.src,
-        alt: message.alt || '论文图片',
-        caption: message.caption || message.alt || ''
-      });
+      window.PaperImageViewer.open({src: message.src, alt: message.alt || '论文图片', caption: message.caption || message.alt || ''});
     }
   });
 
-  window.addEventListener('keydown', (event) => {
-    if(event.defaultPrevented || event.key !== 'Escape'){
+  window.addEventListener('keydown', event => {
+    if(event.defaultPrevented) return;
+    // Handle the lightbox first even on its first open (its listener is lazy).
+    if(event.key === 'Escape' && window.PaperImageViewer?.isOpen()){
+      event.preventDefault();
+      window.PaperImageViewer.close();
       return;
     }
-    if(paperModalEl && paperModalEl.classList.contains('is-open')){
+    if(!paperModalEl?.classList.contains('is-open')) return;
+    if(event.key === 'Escape'){
       event.preventDefault();
       requestClosePaperModal();
+    } else if(event.key === 'Tab' && !window.PaperImageViewer?.isOpen()){
+      const first = paperModalOpenLinkEl;
+      const last = paperModalFrameEl;
+      if(event.shiftKey && document.activeElement === first){ event.preventDefault(); last.focus(); }
+      else if(!event.shiftKey && document.activeElement === last){ event.preventDefault(); first.focus(); }
     }
   });
 
+  let loading = false;
   async function loadData(){
-    renderStatus('loading', '正在加载论文卡片', '页面正在读取静态数据并搭建阅读流，你可以稍后直接开始搜索。');
-
-    try{
-      const response = await fetch('assets/collection-data.json');
-      if(!response.ok){
-        throw new Error(`HTTP ${response.status}`);
-      }
-
-      DATA = await response.json();
-      populateTaxonomyFilters();
+    if(loading) return;
+    loading = true;
+    renderStatus('loading', '正在加载论文卡片', '正在读取论文列表。');
+    try {
+      const response = await fetch('assets/all-data.json');
+      if(!response.ok) throw new Error(`HTTP ${response.status}`);
+      const records = await response.json();
+      if(!Array.isArray(records)) throw new Error('论文数据应为数组');
+      DATA = records.filter(item => item && typeof item === 'object' && typeof item.detail_path === 'string' && item.detail_path)
+        .map(item => {
+          const originalTags = Array.isArray(item.tags) ? item.tags.filter(tag => typeof tag === 'string' && tag) : [];
+          return {...item, originalTags, tags: readerTags(originalTags)};
+        });
+      const selectedTag = new URL(window.location.href).searchParams.get('tag') || '';
+      tagFilterEl.replaceChildren(new Option('全部标签', ''));
+      const tags = [...new Set(DATA.flatMap(item => item.tags))].sort(textCompare);
+      tags.forEach(tag => tagFilterEl.add(new Option(tag, tag)));
+      if(selectedTag && !tags.includes(selectedTag)) tagFilterEl.add(new Option(selectedTag, selectedTag));
+      loaded = true;
+      readURLState();
       sync();
       openPaperModalFromURL();
-    } catch (error) {
-      console.error(error);
-      renderGroups([]);
-      renderStatus(
-        'error',
-        '论文卡片加载失败',
-        '无法读取 collection-data.json。你可以刷新页面重试，或者重新运行构建脚本。',
-        { label: '重新加载', onClick: loadData }
-      );
-    }
+    } catch(error){
+      console.error('论文列表加载失败', error);
+      loaded = false;
+      groupsEl.replaceChildren();
+      paginationEl.replaceChildren();
+      paperCountEl.textContent = '暂无法读取论文数量';
+      renderStatus('error', '论文卡片加载失败', '无法读取论文列表，请稍后重试。', {label: '重新加载', onClick: loadData});
+    } finally { loading = false; }
   }
 
-  const initialQuery = new URL(window.location).searchParams.get('q') || '';
-  if(initialQuery){
-    searchEl.value = initialQuery;
-  }
-
+  readURLState();
   loadData();
 })();

@@ -3,10 +3,10 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>The Multiple Timescales of Gradient Descent on the Edge of Stability: A Perturbative Derivation of the Central Flow - 每日论文卡</title>
-    <meta name="description" content="Raphaël Berthier 独著，索邦大学、Inria及其索邦中心，法国巴黎。首页核验机构；本文审读arXiv v1全部36页，包含多尺度推导附录。" />
+    <title>The Multiple Timescales of Gradient Descent on the Edge of Stability: A Perturbative Derivation of the Central Flow - 论文卡</title>
+    <meta name="description" content="大步长梯度下降在Hessian最大本征值约等于2/eta处振荡，但平均路径仍可稳定推进。已有Central Flow把它写成稳定区域内的受约束梯度流；本文寻找一个明确的小参数极限，解释怎样从离散迭代得到这条平均路径，以及多个临界方向为什么维持涨落。它提供的是形式渐近推导，未证明收敛或余项误差界。" />
     <link rel="canonical" href="https://xixi-cc.github.io/daily-article-card/papers/2609.01034/" />
-    <script type="application/ld+json">{"@context": "https://schema.org", "@type": "Article", "headline": "The Multiple Timescales of Gradient Descent on the Edge of Stability: A Perturbative Derivation of the Central Flow", "description": "Raphaël Berthier 独著，索邦大学、Inria及其索邦中心，法国巴黎。首页核验机构；本文审读arXiv v1全部36页，包含多尺度推导附录。", "url": "https://xixi-cc.github.io/daily-article-card/papers/2609.01034/", "mainEntityOfPage": "https://xixi-cc.github.io/daily-article-card/papers/2609.01034/", "inLanguage": "zh-CN", "author": {"@type": "Person", "name": "Xineng Cao", "alternateName": ["Xixi Cao", "曹溪能"], "url": "https://xixi-cc.github.io/"}, "isBasedOn": "https://arxiv.org/abs/2609.01034", "datePublished": "2026-09-03", "dateModified": "2026-09-03"}</script>
+    <script type="application/ld+json">{"@context": "https://schema.org", "@type": "Article", "headline": "The Multiple Timescales of Gradient Descent on the Edge of Stability: A Perturbative Derivation of the Central Flow", "description": "大步长梯度下降在Hessian最大本征值约等于2/eta处振荡，但平均路径仍可稳定推进。已有Central Flow把它写成稳定区域内的受约束梯度流；本文寻找一个明确的小参数极限，解释怎样从离散迭代得到这条平均路径，以及多个临界方向为什么维持涨落。它提供的是形式渐近推导，未证明收敛或余项误差界。", "url": "https://xixi-cc.github.io/daily-article-card/papers/2609.01034/", "mainEntityOfPage": "https://xixi-cc.github.io/daily-article-card/papers/2609.01034/", "inLanguage": "zh-CN", "author": {"@type": "Person", "name": "Xineng Cao", "alternateName": ["Xixi Cao", "曹溪能"], "url": "https://xixi-cc.github.io/"}, "isBasedOn": "https://arxiv.org/abs/2609.01034", "datePublished": "2026-09-03", "dateModified": "2026-09-03"}</script>
     <script>
       (function() {
         try {
@@ -30,6 +30,18 @@
     <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700;800&family=Noto+Sans+SC:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
     <script>document.documentElement.classList.add('math-pending');</script>
     <script>
+      window.fitInlineMath = function(root) {
+        (root || document).querySelectorAll('mjx-container:not([display="true"])').forEach(function(el) {
+          el.classList.remove('inline-math-overflow');
+          const content = el.closest('.reading-card-content, .detail-summary, .feed-card-body');
+          if(content && el.getBoundingClientRect().width > content.clientWidth) {
+            el.classList.add('inline-math-overflow');
+            el.tabIndex = 0;
+            el.setAttribute('aria-label', '长公式，可横向滑动阅读');
+          }
+        });
+      };
+      window.addEventListener('resize', function() { window.fitInlineMath(); });
       window.MathJax = {
         tex: {
           inlineMath: [['$', '$'], ['\\(', '\\)']],
@@ -49,6 +61,7 @@
             MathJax.startup.promise.then(function() {
               document.documentElement.classList.remove('math-pending');
               document.documentElement.dataset.mathReady = 'true';
+              window.requestAnimationFrame(function() { window.fitInlineMath(); });
             });
           }
         }
@@ -65,9 +78,9 @@
     <header class="header detail-page-header">
       <div class="container">
         <div class="detail-page-topbar">
-          <a class="back-link" href="../../physics_AI.html">返回列表</a>
+          <a class="back-link" href="../../index.html">返回列表</a>
           <div class="detail-topbar-actions">
-            <span class="detail-site-name">每日论文卡</span>
+            <span class="detail-site-name">论文卡</span>
             <button id="detail-favorite" class="detail-favorite-button" type="button" aria-pressed="false">☆ 收藏</button>
             <button class="theme-toggle" type="button" data-theme-toggle aria-label="当前主题：设备，点击切换主题" title="当前主题：设备">
   <span class="theme-toggle-icons" aria-hidden="true">
@@ -91,22 +104,15 @@
         <div class="detail-hero-grid">
           <div class="detail-hero-cover"><figure class="paper-figure-card paper-figure-card-detail">
   <img class="paper-figure-image" src="../../assets/backfill-0901-0905/2609.01034/cover.png" alt="最小尖锐谷模型在慢时间与中间时间上的缩放涨落；保留四面板、epsilon图例及两个时间坐标。" loading="lazy" onclick="window.openPaperFigureImage && window.openPaperFigureImage(this)" />
-  <figcaption class="paper-figure-caption">最小尖锐谷模型在慢时间与中间时间上的缩放涨落；保留四面板、epsilon图例及两个时间坐标。 来源：Berthier, Raphaël；The Multiple Timescales of Gradient Descent on the Edge of Stability: A Perturbative Derivation of the Central Flow; https://arxiv.org/pdf/2609.01034v1; CC BY 4.0</figcaption>
+  <figcaption class="paper-figure-caption">最小尖锐谷模型在慢时间与中间时间上的缩放涨落；保留四面板、epsilon图例及两个时间坐标。 来源：Berthier, Raphaël；The Multiple Timescales of Gradient Descent on the Edge of Stability: A Perturbative Derivation of the Central Flow; https://arxiv.org/pdf/2609.01034v1; CC BY 4.0 <a href="https://arxiv.org/abs/2609.01034" target="_blank" rel="noopener noreferrer">原文图源 ↗</a></figcaption>
 </figure></div>
           <div class="detail-hero-copy">
             <p class="eyebrow">论文详情</p>
             <h1 class="detail-page-title">The Multiple Timescales of Gradient Descent on the Edge of Stability: A Perturbative Derivation of the Central Flow</h1>
             <p class="detail-page-title-zh">稳定性边缘梯度下降的多重时间尺度：Central Flow的摄动推导</p>
-            <div class="detail-meta">2026-09-03 · <a href="https://arxiv.org/abs/2609.01034" target="_blank" rel="noopener noreferrer">原文</a></div>
-            <p class="detail-summary">Raphaël Berthier 独著，索邦大学、Inria及其索邦中心，法国巴黎。首页核验机构；本文审读arXiv v1全部36页，包含多尺度推导附录。</p>
-            <div class="detail-micro-meta">
-              <span class="meta-pill">AI for Science</span>
-              <span class="meta-pill">理论与数值</span>
-              <span class="meta-pill">#机器学习</span><span class="meta-pill">#优化理论</span><span class="meta-pill">#优化动力学</span>
-              <span class="meta-pill">13 分钟读完</span>
-              <span class="meta-pill">9 张阅读卡</span>
-              <span class="meta-pill">Raphaël Berthier 独著，索邦大学、Inria及其索邦中心，法国巴黎。首页核验机构；本文…</span>
-            </div>
+            <div class="detail-meta">Berthier, Raphaël · 预印本 · arXiv:2609.01034 · <a href="https://arxiv.org/abs/2609.01034" target="_blank" rel="noopener noreferrer">论文原文 ↗</a></div>
+            <p class="detail-summary">大步长梯度下降在Hessian最大本征值约等于2/eta处振荡，但平均路径仍可稳定推进。已有Central Flow把它写成稳定区域内的受约束梯度流；本文寻找一个明确的小参数极限，解释怎样从离散迭代得到这条平均路径，以及多个临界方向为什么维持涨落。它提供的是形式渐近推导，未证明收敛或余项误差界。</p>
+
           </div>
         </div>
       </div>
@@ -115,42 +121,18 @@
     <main class="container detail-layout">
       <div class="detail-shell">
         <article id="detail-body" class="reading-flow"><section class="reading-card reading-card-section">
-  <div class="reading-card-topline">
-    <span class="reading-step">Card 01</span>
-    <span class="reading-step-note">作者信息</span>
-  </div>
-  <h2>作者信息</h2>
-  <div class="reading-card-content"><p>Raphaël Berthier 独著，索邦大学、Inria及其索邦中心，法国巴黎。首页核验机构；本文审读arXiv v1全部36页，包含多尺度推导附录。</p></div>
-</section>
-<section class="reading-card reading-card-section">
-  <div class="reading-card-topline">
-    <span class="reading-step">Card 02</span>
-    <span class="reading-step-note">研究问题</span>
-  </div>
   <h2>研究问题</h2>
   <div class="reading-card-content"><p>大步长梯度下降在Hessian最大本征值约等于2/eta处振荡，但平均路径仍可稳定推进。已有Central Flow把它写成稳定区域内的受约束梯度流；本文寻找一个明确的小参数极限，解释怎样从离散迭代得到这条平均路径，以及多个临界方向为什么维持涨落。它提供的是形式渐近推导，未证明收敛或余项误差界。</p></div>
 </section>
 <section class="reading-card reading-card-section">
-  <div class="reading-card-topline">
-    <span class="reading-step">Card 03</span>
-    <span class="reading-step-note">背景</span>
-  </div>
   <h2>背景</h2>
   <div class="reading-card-content"><p>损失分解f=\(g\)+epsilon*\(h\)，g提供尖锐谷底，弱扰动h驱动沿谷移动；学习率eta固定而epsilon趋零，避免eta趋零时失去稳定性边缘。采用线性谷V={(0,\(y\))}，x是法向尖锐坐标，y是切向慢坐标，S=\(Hessian_{x}\)(\(g\))在谷内正定。稳定谷满足eta*S≤2I。真实网络为何具有这一分解仍是开放问题。</p></div>
 </section>
 <section class="reading-card reading-card-section">
-  <div class="reading-card-topline">
-    <span class="reading-step">Card 04</span>
-    <span class="reading-step-note">读者桥梁</span>
-  </div>
   <h2>读者桥梁</h2>
   <div class="reading-card-content"><p>这与物理中的快振动、慢包络和更慢漂移的分离相似。局部二次势下，梯度下降的法向乘子为1-eta*S；临界本征值令乘子等于-1，因而相邻步符号交替。振幅本身却受慢变量反馈：振幅增大改变切向运动并降低曲率。两次平均必须区分，先消去逐步正负交替，再平均自稳定包络；仅平均相邻两步仍保留中间时间尺度。</p></div>
 </section>
 <section class="reading-card reading-card-section">
-  <div class="reading-card-topline">
-    <span class="reading-step">Card 05</span>
-    <span class="reading-step-note">模型与方法</span>
-  </div>
   <h2>模型与方法</h2>
   <div class="reading-card-content"><p>多尺度变量是t1=\(k\)、\(t_{2}=sqrt(epsilon)\)*k和t3=epsilon*\(k\)；展开z=\(z_{0}\)+sqrt(epsilon)*\(z_{1}\)+epsilon*\(z_{2}\)+…，把三个时间先视为独立变量。阶次匹配与消除随时间无限增长的世俗项，给出z0只依赖t3、临界法向z1包含(-1)^k振动。此步骤是渐近自洽规则，不能代替数学收敛证明。</p>
 <p>一维法向最小例g=(\(y\)+zeta*\(x\))x²/2、\(h\)=-\(x\)-\(y\)，稳定边界y=2/eta。在边界上写x1=(-1)^\(k\)*\(a_{1}\)，得到振幅a1与曲率修正y1的中间尺度ODE。该ODE对固定t3保持能量E，进而允许对一周期求平均。慢尺度流中的拉格朗日乘子sigma²就是a1²的周期平均。</p>
@@ -173,10 +155,6 @@
 <p>额外一阶匹配说明阻尼符号；大能量破坏展开时不再预测。符号：E：最小模型中包络能量；zeta：\(g\)=(\(y\)+zeta*\(x\))*x²/2的三次系数；\(y_{1}\)：一阶切向修正；angle brackets：固定t3时对一个t2周期平均；eta：学习率。（Official PDF \(p\). 15, Result 4.4; pp. 27–30, Appendix A。）</p></div>
 </section>
 <section class="reading-card reading-card-section">
-  <div class="reading-card-topline">
-    <span class="reading-step">Card 06</span>
-    <span class="reading-step-note">核心结果与证据</span>
-  </div>
   <h2>核心结果与证据</h2>
   <div class="reading-card-content"><p>Result 3.1/3.2及6.1给出稳定谷上的受约束h梯度流。前提包括极限路径存在、位于谷内且满足稳定约束。多临界情形还需平均矩存在；附录讨论没有平均极限时用累积点表达约束作用。作者没有把这些假设从任意初始化的梯度下降中独立推出。</p>
 <p>图4/5在最小例eta=.3,zeta=1和epsilon=10^-2到10^-5展示：原路径接近慢流，sqrt(epsilon)缩放后显露包络及慢阻尼。图5上排省略epsilon=10^-5只为可读性，不能推断该曲线失败。快、中、慢三尺度有各自证据，图像接近不提供统一误差界。</p>
@@ -193,28 +171,16 @@
 </figure></div>
 </section>
 <section class="reading-card reading-card-section">
-  <div class="reading-card-topline">
-    <span class="reading-step">Card 07</span>
-    <span class="reading-step-note">有效性与局限</span>
-  </div>
   <h2>有效性与局限</h2>
   <div class="reading-card-content"><p>全篇科学结果是正式标注的形式推导或有数值支持的猜想，未证明epsilon极限收敛、余项控制或对长时间的一致有效性。线性谷假设避开曲率与移动基底效应，推广到曲面谷是未来工作。</p>
 <p>Remark 4.3及图6给出实际失效例：把h改为-\(y\)，法向扰动指数变小，轨迹可长时间越过稳定边界，之后自稳定过强而发散。没有横向驱动、噪声或数值扰动时，不能自动声称轨迹守在稳定谷。多临界方向的周期性也未知，平均需要条件。能量漂移公式只在O(1)涨落能量及所列最小模型内成立。</p></div>
 </section>
 <section class="reading-card reading-card-section">
-  <div class="reading-card-topline">
-    <span class="reading-step">Card 08</span>
-    <span class="reading-step-note">复现与资源</span>
-  </div>
   <h2>复现与资源</h2>
   <div class="reading-card-content"><p>已核验官方v1 PDF、历史listing、逐页文本、SHA-256以及附录公式来源。未执行优化实验，未进行独立复现。本文致谢已有Central Flow作者公开代码并用于图8，不能由此声称本文所有新推导实验有独立已核验仓库。若复现，应分别检查最小例步长、epsilon、横向扰动及多尺度缩放，并保留失效分支。</p>
 <p>原图复用署名：The Multiple Timescales of Gradient Descent on the Edge of Stability: A Perturbative Derivation of the Central Flow，Berthier, Raphaël；Official PDF \(p\). 10, Figure 5；https://arxiv.org/pdf/2609.01034v1。许可：CC BY 4.0（https://creativecommons.org/licenses/by/4.0/）。仅裁切 PDF 版面中的图区，未改动图内科学内容；完整 PDF 页与裁切图已逐一视觉比对。</p></div>
 </section>
 <section class="reading-card reading-card-section">
-  <div class="reading-card-topline">
-    <span class="reading-step">Card 09</span>
-    <span class="reading-step-note">阅读指南</span>
-  </div>
   <h2>阅读指南</h2>
   <div class="reading-card-content"><p>先读第2节谷分解和第3节条件性声明，再按第4.2节从最小模型学习世俗项消除。第4.3节及附录A需要多一阶展开才得到能量漂移。随后第5节解释单临界周期平均，第6节和附录C说明矩阵涨落作用与平均条件；阅读图6以防把受约束流扩写成无条件收敛。</p></div>
 </section></article>

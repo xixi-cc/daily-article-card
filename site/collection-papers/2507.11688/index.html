@@ -3,10 +3,10 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Composing Linear Layers from Irreducibles - physics+AI Collection 论文卡</title>
-    <meta name="description" content="Travis Pence、Daisuke Yamada、Vikas Singh均署名威斯康星大学麦迪逊分校，首页列三人联系邮箱，没有等贡献或单独通讯作者星号，不推断具体分工。本卡全文依据arXiv:2507.11688v4（2026-06-09），共35个物理页；原始提交为2025-07-15。官方NeurIPS页面核实收录于2025年卷38主会，但本次使用的是此后更新的arXiv v4，不把它等同出版社最终PDF。许可CC BY4.0。（第1页及官方arXiv/NeurIPS记录。）" />
+    <title>Composing Linear Layers from Irreducibles - 论文卡</title>
+    <meta name="description" content="能否把语言模型中参数很多的线性投影，改成少量几何原语的组合？本文用Clifford代数的双向量与旋量构造受约束的变换，再拟合少量预训练注意力块的query/key/value投影。约数千旋量系数可取得接近低秩或Block-Hadamard替代层的有限任务性能，但不是把任意稠密矩阵无损变成对数平方个参数，当前实现也没有更快的实际运行。（第2–10、22–35页。）" />
     <link rel="canonical" href="https://xixi-cc.github.io/daily-article-card/collection-papers/2507.11688/" />
-    <script type="application/ld+json">{"@context": "https://schema.org", "@type": "Article", "headline": "Composing Linear Layers from Irreducibles", "description": "Travis Pence、Daisuke Yamada、Vikas Singh均署名威斯康星大学麦迪逊分校，首页列三人联系邮箱，没有等贡献或单独通讯作者星号，不推断具体分工。本卡全文依据arXiv:2507.11688v4（2026-06-09），共35个物理页；原始提交为2025-07-15。官方NeurIPS页面核实收录于2025年卷38主会，但本次使用的是此后更新的arXiv v4，不把它等同出版社最终PDF。许可CC BY4.0。（第1页及官方arXiv/NeurIPS记录。）", "url": "https://xixi-cc.github.io/daily-article-card/collection-papers/2507.11688/", "mainEntityOfPage": "https://xixi-cc.github.io/daily-article-card/collection-papers/2507.11688/", "inLanguage": "zh-CN", "author": {"@type": "Person", "name": "Xineng Cao", "alternateName": ["Xixi Cao", "曹溪能"], "url": "https://xixi-cc.github.io/"}, "isBasedOn": "https://arxiv.org/abs/2507.11688"}</script>
+    <script type="application/ld+json">{"@context": "https://schema.org", "@type": "Article", "headline": "Composing Linear Layers from Irreducibles", "description": "能否把语言模型中参数很多的线性投影，改成少量几何原语的组合？本文用Clifford代数的双向量与旋量构造受约束的变换，再拟合少量预训练注意力块的query/key/value投影。约数千旋量系数可取得接近低秩或Block-Hadamard替代层的有限任务性能，但不是把任意稠密矩阵无损变成对数平方个参数，当前实现也没有更快的实际运行。（第2–10、22–35页。）", "url": "https://xixi-cc.github.io/daily-article-card/collection-papers/2507.11688/", "mainEntityOfPage": "https://xixi-cc.github.io/daily-article-card/collection-papers/2507.11688/", "inLanguage": "zh-CN", "author": {"@type": "Person", "name": "Xineng Cao", "alternateName": ["Xixi Cao", "曹溪能"], "url": "https://xixi-cc.github.io/"}, "isBasedOn": "https://arxiv.org/abs/2507.11688"}</script>
     <script>
       (function() {
         try {
@@ -30,6 +30,18 @@
     <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700;800&family=Noto+Sans+SC:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
     <script>document.documentElement.classList.add('math-pending');</script>
     <script>
+      window.fitInlineMath = function(root) {
+        (root || document).querySelectorAll('mjx-container:not([display="true"])').forEach(function(el) {
+          el.classList.remove('inline-math-overflow');
+          const content = el.closest('.reading-card-content, .detail-summary, .feed-card-body');
+          if(content && el.getBoundingClientRect().width > content.clientWidth) {
+            el.classList.add('inline-math-overflow');
+            el.tabIndex = 0;
+            el.setAttribute('aria-label', '长公式，可横向滑动阅读');
+          }
+        });
+      };
+      window.addEventListener('resize', function() { window.fitInlineMath(); });
       window.MathJax = {
         tex: {
           inlineMath: [['$', '$'], ['\\(', '\\)']],
@@ -49,6 +61,7 @@
             MathJax.startup.promise.then(function() {
               document.documentElement.classList.remove('math-pending');
               document.documentElement.dataset.mathReady = 'true';
+              window.requestAnimationFrame(function() { window.fitInlineMath(); });
             });
           }
         }
@@ -65,9 +78,9 @@
     <header class="header detail-page-header">
       <div class="container">
         <div class="detail-page-topbar">
-          <a class="back-link" href="../../collection.html">返回列表</a>
+          <a class="back-link" href="../../index.html">返回列表</a>
           <div class="detail-topbar-actions">
-            <span class="detail-site-name">physics+AI Collection 论文卡</span>
+            <span class="detail-site-name">论文卡</span>
             <button id="detail-favorite" class="detail-favorite-button" type="button" aria-pressed="false">☆ 收藏</button>
             <button class="theme-toggle" type="button" data-theme-toggle aria-label="当前主题：设备，点击切换主题" title="当前主题：设备">
   <span class="theme-toggle-icons" aria-hidden="true">
@@ -91,22 +104,15 @@
         <div class="detail-hero-grid">
           <div class="detail-hero-cover"><figure class="paper-figure-card paper-figure-card-detail">
   <img class="paper-figure-image" src="../../assets/collection-figures/2507.11688/figure-4-rotor-modules.png" alt="三个输入多向量子块经六条双旋量映射与汇集合成两个输出子块" loading="lazy" onclick="window.openPaperFigureImage && window.openPaperFigureImage(this)" />
-  <figcaption class="paper-figure-caption">Travis Pence、Daisuke Yamada、Vikas Singh，Figure4（arXiv:2507.11688v4，PDF第6页，https://arxiv.org/abs/2507.11688v4，CC BY4.0）：输入分成3个多向量子块，6条双旋量模块路径映向2个输出子块，经pooling合并为完整输出；保留x、xIi、yOj、最终y、Cl(\(n\))、子集索引、Six rotors和pooling标签。此图展示块间组合机制，不能证明任意稠密矩阵无损、整个网络严格线性或实际计算更快。</figcaption>
+  <figcaption class="paper-figure-caption">Travis Pence、Daisuke Yamada、Vikas Singh，Figure4（arXiv:2507.11688v4，PDF第6页，https://arxiv.org/abs/2507.11688v4，CC BY4.0）：输入分成3个多向量子块，6条双旋量模块路径映向2个输出子块，经pooling合并为完整输出；保留x、xIi、yOj、最终y、Cl(\(n\))、子集索引、Six rotors和pooling标签。此图展示块间组合机制，不能证明任意稠密矩阵无损、整个网络严格线性或实际计算更快。 <a href="https://arxiv.org/abs/2507.11688" target="_blank" rel="noopener noreferrer">原文图源 ↗</a></figcaption>
 </figure></div>
           <div class="detail-hero-copy">
-            <p class="eyebrow">Collection 全文卡</p>
+            <p class="eyebrow">论文详情</p>
             <h1 class="detail-page-title">Composing Linear Layers from Irreducibles</h1>
             <p class="detail-page-title-zh">旋量组合线性层：Clifford几何参数化、近似性能及证明边界</p>
-            <div class="detail-meta">Paper Collection · Representation Learning · <a href="https://arxiv.org/abs/2507.11688" target="_blank" rel="noopener noreferrer">原文</a></div>
-            <p class="detail-summary">Travis Pence、Daisuke Yamada、Vikas Singh均署名威斯康星大学麦迪逊分校，首页列三人联系邮箱，没有等贡献或单独通讯作者星号，不推断具体分工。本卡全文依据arXiv:2507.11688v4（2026-06-09），共35个物理页；原始提交为2025-07-15。官方NeurIPS页面核实收录于2025年卷38主会，但本次使用的是此后更新的arXiv \(v_{4}\)，不把它等同出版社最终PDF。许可CC BY4.0。（第1页及官方arXiv/NeurIPS记录。）</p>
-            <div class="detail-micro-meta">
-              <span class="meta-pill">AI 基础理论</span>
-              <span class="meta-pill">AI 实证</span>
-              <span class="meta-pill">#Representation Learning</span><span class="meta-pill">#机器学习</span><span class="meta-pill">#语言模型</span>
-              <span class="meta-pill">28 分钟读完</span>
-              <span class="meta-pill">8 张阅读卡</span>
-              <span class="meta-pill">Travis Pence、Daisuke Yamada、Vikas Singh均署名威斯康星大学麦迪逊…</span>
-            </div>
+            <div class="detail-meta">Travis Pence、Daisuke Yamada、Vikas Singh · 预印本 · arXiv:2507.11688 · <a href="https://arxiv.org/abs/2507.11688" target="_blank" rel="noopener noreferrer">论文原文 ↗</a></div>
+            <p class="detail-summary">能否把语言模型中参数很多的线性投影，改成少量几何原语的组合？本文用Clifford代数的双向量与旋量构造受约束的变换，再拟合少量预训练注意力块的query/key/value投影。约数千旋量系数可取得接近低秩或Block-Hadamard替代层的有限任务性能，但不是把任意稠密矩阵无损变成对数平方个参数，当前实现也没有更快的实际运行。（第2–10、22–35页。）</p>
+
           </div>
         </div>
       </div>
@@ -115,34 +121,14 @@
     <main class="container detail-layout">
       <div class="detail-shell">
         <article id="detail-body" class="reading-flow"><section class="reading-card reading-card-section">
-  <div class="reading-card-topline">
-    <span class="reading-step">Card 01</span>
-    <span class="reading-step-note">作者信息</span>
-  </div>
-  <h2>作者信息</h2>
-  <div class="reading-card-content"><ul><li>Travis Pence、Daisuke Yamada、Vikas Singh均署名威斯康星大学麦迪逊分校，首页列三人联系邮箱，没有等贡献或单独通讯作者星号，不推断具体分工。本卡全文依据arXiv:2507.11688v4（2026-06-09），共35个物理页；原始提交为2025-07-15。官方NeurIPS页面核实收录于2025年卷38主会，但本次使用的是此后更新的arXiv \(v_{4}\)，不把它等同出版社最终PDF。许可CC BY4.0。（第1页及官方arXiv/NeurIPS记录。）</li></ul></div>
-</section>
-<section class="reading-card reading-card-section">
-  <div class="reading-card-topline">
-    <span class="reading-step">Card 02</span>
-    <span class="reading-step-note">研究问题</span>
-  </div>
   <h2>研究问题</h2>
   <div class="reading-card-content"><ul><li>能否把语言模型中参数很多的线性投影，改成少量几何原语的组合？本文用Clifford代数的双向量与旋量构造受约束的变换，再拟合少量预训练注意力块的query/key/value投影。约数千旋量系数可取得接近低秩或Block-Hadamard替代层的有限任务性能，但不是把任意稠密矩阵无损变成对数平方个参数，当前实现也没有更快的实际运行。（第2–10、22–35页。）</li><li>读者桥：输入是原语言模型某注意力层的隐藏向量；原稠密矩阵给出目标投影。待训练的是双向量系数，算法将它们变成作用于多向量坐标的旋量，并用原投影输出的平方误差学习近似替代。最后插回模型测log perplexity和问答正确率。这里的旋转是表示空间线性代数，不是电子自旋或真实物理动力学；标题中的irreducibles指简单双向量几何原语，没有证明这些原语就是模型中的因果功能模块。（第3–9、28–31页。）</li></ul></div>
 </section>
 <section class="reading-card reading-card-section">
-  <div class="reading-card-topline">
-    <span class="reading-step">Card 03</span>
-    <span class="reading-step-note">背景</span>
-  </div>
   <h2>背景</h2>
   <div class="reading-card-content"><ul><li>普通输入维数d的稠密投影有约d²个自由参数；低秩近似减少秩，Block-Hadamard用固定Hadamard变换加可训练分块。本文选择另一结构族：将2^n个输入坐标解释为n个生成元的多向量系数，仅训练双向量的n(\(n\)−1)/2个系数，让它们在整个Clifford代数上诱导变换。参数少源于约束可选变换族，不能仅由“2^n维作用”推断能表达全部2^\(n\)×2^n矩阵。（第2–6、10、24–28页。）</li><li>第3页引述的一般线性映射可以写成多项任意多向量左右乘积之和；这不等于有限几个旋量就能表示任意映射。原文已明确单个同旋量夹乘只给旋转保结构变换、不能捕获任意线性层。实际用子块、不同左右旋量、固定置换、归一化和非线性增加拟合能力；每项表达能力与代价都应单独看，不能用一般多向量表示引理替有限参数网络作无损性证明。（第3页Lemma1、第6、29–30页。）</li></ul></div>
 </section>
 <section class="reading-card reading-card-section">
-  <div class="reading-card-topline">
-    <span class="reading-step">Card 04</span>
-    <span class="reading-step-note">模型与方法</span>
-  </div>
   <h2>模型与方法</h2>
   <div class="reading-card-content"><ul><li>本文只用欧氏Cl(\(n\),0)，记Cl(\(n\))。向量的几何乘积是内积加反对称外积：</li></ul>
 
@@ -180,10 +166,6 @@
 </figure></div>
 </section>
 <section class="reading-card reading-card-section">
-  <div class="reading-card-topline">
-    <span class="reading-step">Card 05</span>
-    <span class="reading-step-note">核心结果与证据</span>
-  </div>
   <h2>核心结果与证据</h2>
   <div class="reading-card-content"><ul><li>参数账目很小，但只计所替代投影。Table7的LLaMa-3.2 1B原Q/\(K\)/V总数6,291,456；Rotor列≤3,056（\(Q\le 896\)、\(K\)/V各≤1080），LR4为36,864，BH1为49,152。原Q alone4,194,304对≤896的约4700倍比值是投影参数减少，不是整个1B模型减少4700倍；输出Wo重训练且其稠密参数保留。Qwen三投影原3,145,728对≤2,704。都是所列架构的系数上界，没有认证峰值显存、全部权重文件或推理速度同倍改善。（第8、10、32页Tables4/7。）</li><li>Table1单注意力块替换时，Wikitext2的LLaMa log-PPL原2.575，Rotor2.629、BH2.636、LR4 2.658；Qwen原2.287，Rotor2.307、BH2.323、LR4 2.342。接近的是替代基线，仍逊于原稠密模型。Arc Challenge单块：LLaMa原58.37%、Rotor55.31%、BH54.83%；Qwen原66.09%、Rotor61.34%、BH60.11%、LR4 57.48%。第9页正文该句选择LR4的57.48作比较，未同时列出更高的BH60.11，本卡按视觉核对表格列值，不据文字制造更大的胜幅。数值为log-PPL，不能把2.629直接称未取对数的perplexity。（第7页Table1、第9页，PDF视觉核对。）</li><li>更多替换有明确失败情形：Table1 Qwen三块Arc准确率Rotor47.28%，低于LR4 60.77%和BH60.68%；HellaSwag Rotor6.868%，低于LR1 13.93%、BH13.06%，原模型55.00%。两块HellaSwag Rotor40.60%，也不及BH42.73%。所以不能发布“所有指标最佳／无损”。Table1单块对所有所测层取平均，两/三块对五个随机层组合取平均；这是层选择平均，不是五个独立训练seed或误差条。源Checklist明确准确率未报告误差条。（第7、17页。）</li><li>层位置也影响比较：Table2为LLaMa-3.2 1B层1–15及后部两层组合。第9页把12/13层的59.66%例子说成Qwen，但Table2标题明确LLaMa；本卡不搬成Qwen结果。附录另有Qwen27层、LLaMa3B27层和Fox31层，不能用主文“up to1.5B”抹去附录的3B试验。Fox两块Arc Rotor30.22%不及BH31.42%，而HellaSwag32.87%较基线好；代表性优劣都保留。（第8–9、33–35页Tables2、8–11。）</li><li>FMNIST端到端MLP提供另一种可行性：除最终分类头外替换两隐藏层，10轮dense89.67%、Rotor88.36%，早期dense更快。第31页dense隐藏512，Rotor用Cl(15)、width3/depth1，验证选择学习率分别.002和.005，并非参数量相同或每个超参数完全相同；没有大语言模型全层替换或从零端到端训练结果。Figure5只在Qwen第13层扫width/depth，PPL逐渐接近原9.845，不能当全部层、全部任务调参后都恢复。（第9、31页Table3、Figure5。）</li><li>旋量的数学性质也有精确范围。同旋量夹乘在各阶分量上的矩阵为：</li></ul>
 
@@ -196,26 +178,14 @@
 <ul><li>取基序 $(1,e_1,e_2,e_1e_2)$，单位奇versor $g=e_1$ 的夹乘保阶且全空间正交、总行列式+1，但向量块为diag(1,−1)、行列式−1，不能属于Spin(2)夹乘像。故原文未限制n的交集刻画不能由所给全空间行列式条件成立；至少需要更强的取向/偶性条件。本例为本卡使用源定义的直接代数核查，不是作者发现、也不是训练复现；不据此否定Properties1–2的正向性质或有限实验性能。（第27–28页Property3，PDF视觉核对。）</li></ul></div>
 </section>
 <section class="reading-card reading-card-section">
-  <div class="reading-card-topline">
-    <span class="reading-step">Card 06</span>
-    <span class="reading-step-note">有效性与局限</span>
-  </div>
   <h2>有效性与局限</h2>
   <div class="reading-card-content"><ul><li>旋量参数化减少自由度，不保证任意矩阵、能力或因果模块完全被保留。有限width/depth与分块覆盖是实际表达边界；一般多向量线性表示引理、同旋量Spin性质、双旋量推广及非线性网络不能相互替换。源内Property3逆向刻画、近似投影被称精确分解及可微/退化边界已说明，不用概述的“closed-form”认证完整算法或全部证明。（第3–6、22–30页。）</li><li>当前wall-clock更慢。正文报告随width×depth大致增加；FLOPs虽给LLaMa1B 35.8M×wd对dense206.1M、3B82.4M×wd对515.3M，但稠密实现/顺序运算使实际时间未改善。附录“优化实现最多2×slowdown”是并行假设下估计，不是已部署测量。正向同旋量矩阵的非零项上界为组合数，减少也非任意n维下的指数级运行优势；芯片上由少量系数合成、降低带宽是未来系统工作，没有本次实测内存带宽收益。（第9–10、22、26、31页。）</li><li>只替换少数注意力块且保留输出投影，未完成LLM全模型转换；参数数目、超参数、校准条件不全相同，没有所有任务/层的性能保证、准确率置信区间或解释性因果测试。多替换退化和Fox负例已给，FMNIST学习率/宽度不同不能说严格等容量公平。数据MSE拟合接近不意味着模型安全、推理或知识能力保持。（第7–10、17、29–35页。）</li><li>资源文字仍需审慎：1500+1500+1000+500约4500 GPU小时与“8张GPU连续3周”不是同一个可直接相乘得等值的精确账本；可能有利用率或并行安排，本卡不补造。width/depth设置和第9页Qwen/表格归属冲突同样保留；没有读取作者全部代码来认证哪一处为实现事实。本卡完成35页PDF文字与关键原图/代数核查，没有训练、基线拟合或系统性能复现。（第9、29–31页。）</li></ul></div>
 </section>
 <section class="reading-card reading-card-section">
-  <div class="reading-card-topline">
-    <span class="reading-step">Card 07</span>
-    <span class="reading-step-note">复现与资源</span>
-  </div>
   <h2>复现与资源</h2>
   <div class="reading-card-content"><ul><li>官方代码 https://github.com/vsingh-group/ComposingLinearLayers 已核对同名论文README及训练入口。代码路线包括作者修改版torch_ga_fix的submission分支与fast-hadamard-transform；主实验run/\(run_{\mathrm{llama}}\).sh、\(run_{\mathrm{qwen}}\).sh、\(run_{\mathrm{fox}}\).sh，合成投影收敛run.test_projection_convergence。论文附录给8张A100 PCIe、每卡40GB；四模型相关试验约1500、1500、1000、500 GPU小时，总约4500，作者称约3周运行。版本、校准集与超参数应锁定，不在本卡声称已执行或已通过复现。（第9、29–32页与官方代码页。）</li><li>复现应先在小Cl(\(n\))检查简单指数、零范数极限、同旋量夹乘与exp(2B)一致，再测Alg.2容差/谱隙、近退化及计算梯度；随后对实际注意力输入拟合，按递增层顺序抽新的校准数据并重训Wo，分别记录projection参数、全部模型内存、FLOPs与wall-clock。这是核查路线，Property3反例仅是已执行的小型代数检查，不替代训练。选图为CC BY4.0的Figure4，保留全部输入/子块/双旋量模块/pooling/输出标签及作者署名。Evidence status: full-text verified; no independent reproduction performed.</li></ul></div>
 </section>
 <section class="reading-card reading-card-section">
-  <div class="reading-card-topline">
-    <span class="reading-step">Card 08</span>
-    <span class="reading-step-note">阅读指南</span>
-  </div>
   <h2>阅读指南</h2>
   <div class="reading-card-content"><ul><li>先用第2页区分n维生成空间与2^n维多向量，第3页区分任意左右多向量与同旋量夹乘；再看第5页简单指数、第6页Figure4的子块汇集和c1c2计数。读实验必须同时看Table1的原模型及三块负例、Table7投影参数，以及第29–31页Wo重训、非线性和实际耗时。附录B的正向外幂矩阵帮助理解保阶，Property3反向证明宜与本卡给的Cl(2)例子分开检查。前置知识为矩阵、旋转/Lie生成元、反对称外积、幂迭代与监督MSE，不需将几何原语当成已定位的语言认知模块。</li></ul></div>
 </section></article>

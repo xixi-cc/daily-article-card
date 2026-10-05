@@ -141,7 +141,7 @@
         event.preventDefault();
         const targetURL = new URL(linkEl.href, window.location.href);
         targetURL.searchParams.set('embed', '1');
-        window.location.href = targetURL.href;
+        window.location.replace(targetURL.href);
       });
     });
 
@@ -280,6 +280,17 @@
 
   window.addEventListener('pagehide', saveScroll);
 
+  const backLink = document.querySelector('.back-link');
+  if(backLink){
+    try {
+      const stored = window.sessionStorage.getItem('paper-catalog-return-url');
+      const savedURL = stored ? new URL(stored, window.location.href) : null;
+      if(savedURL && savedURL.origin === window.location.origin && (['index.html', 'physics_AI.html', 'collection.html', ''].includes(savedURL.pathname.split('/').pop()))){
+        savedURL.searchParams.delete('paper');
+        backLink.href = savedURL.href;
+      }
+    } catch (error) { console.warn('无法恢复列表位置', error); }
+  }
   initializeEmbeddedMode();
   initializeReaderActions();
   initializeImageZoom();

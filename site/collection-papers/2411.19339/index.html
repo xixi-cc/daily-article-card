@@ -3,10 +3,10 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Towards a Mechanistic Explanation of Diffusion Model Generalization - physics+AI Collection 论文卡</title>
-    <meta name="description" content="Matthew Niedoba、Berend Zwartsenberg、Kevin Murphy 与 Frank Wood。论文比较有限训练集上的最优 empirical denoiser 与实际卷积 denoiser，提出局部 patch posterior composition（PSPC）解释扩散模型为何生成非记忆样本，arXiv:2411.19339v3。" />
+    <title>Towards a Mechanistic Explanation of Diffusion Model Generalization - 论文卡</title>
+    <meta name="description" content="标准 denoising loss 在有限经验分布上的精确最优解会把 noisy input 映回训练样本的全局 posterior mean；若网络足够拟合该解，反向过程应趋向记忆。为什么实际 CNN diffusion model 却能生成新图像？" />
     <link rel="canonical" href="https://xixi-cc.github.io/daily-article-card/collection-papers/2411.19339/" />
-    <script type="application/ld+json">{"@context": "https://schema.org", "@type": "Article", "headline": "Towards a Mechanistic Explanation of Diffusion Model Generalization", "description": "Matthew Niedoba、Berend Zwartsenberg、Kevin Murphy 与 Frank Wood。论文比较有限训练集上的最优 empirical denoiser 与实际卷积 denoiser，提出局部 patch posterior composition（PSPC）解释扩散模型为何生成非记忆样本，arXiv:2411.19339v3。", "url": "https://xixi-cc.github.io/daily-article-card/collection-papers/2411.19339/", "mainEntityOfPage": "https://xixi-cc.github.io/daily-article-card/collection-papers/2411.19339/", "inLanguage": "zh-CN", "author": {"@type": "Person", "name": "Xineng Cao", "alternateName": ["Xixi Cao", "曹溪能"], "url": "https://xixi-cc.github.io/"}, "isBasedOn": "https://arxiv.org/abs/2411.19339"}</script>
+    <script type="application/ld+json">{"@context": "https://schema.org", "@type": "Article", "headline": "Towards a Mechanistic Explanation of Diffusion Model Generalization", "description": "标准 denoising loss 在有限经验分布上的精确最优解会把 noisy input 映回训练样本的全局 posterior mean；若网络足够拟合该解，反向过程应趋向记忆。为什么实际 CNN diffusion model 却能生成新图像？", "url": "https://xixi-cc.github.io/daily-article-card/collection-papers/2411.19339/", "mainEntityOfPage": "https://xixi-cc.github.io/daily-article-card/collection-papers/2411.19339/", "inLanguage": "zh-CN", "author": {"@type": "Person", "name": "Xineng Cao", "alternateName": ["Xixi Cao", "曹溪能"], "url": "https://xixi-cc.github.io/"}, "isBasedOn": "https://arxiv.org/abs/2411.19339"}</script>
     <script>
       (function() {
         try {
@@ -30,6 +30,18 @@
     <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700;800&family=Noto+Sans+SC:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
     <script>document.documentElement.classList.add('math-pending');</script>
     <script>
+      window.fitInlineMath = function(root) {
+        (root || document).querySelectorAll('mjx-container:not([display="true"])').forEach(function(el) {
+          el.classList.remove('inline-math-overflow');
+          const content = el.closest('.reading-card-content, .detail-summary, .feed-card-body');
+          if(content && el.getBoundingClientRect().width > content.clientWidth) {
+            el.classList.add('inline-math-overflow');
+            el.tabIndex = 0;
+            el.setAttribute('aria-label', '长公式，可横向滑动阅读');
+          }
+        });
+      };
+      window.addEventListener('resize', function() { window.fitInlineMath(); });
       window.MathJax = {
         tex: {
           inlineMath: [['$', '$'], ['\\(', '\\)']],
@@ -49,6 +61,7 @@
             MathJax.startup.promise.then(function() {
               document.documentElement.classList.remove('math-pending');
               document.documentElement.dataset.mathReady = 'true';
+              window.requestAnimationFrame(function() { window.fitInlineMath(); });
             });
           }
         }
@@ -65,9 +78,9 @@
     <header class="header detail-page-header">
       <div class="container">
         <div class="detail-page-topbar">
-          <a class="back-link" href="../../collection.html">返回列表</a>
+          <a class="back-link" href="../../index.html">返回列表</a>
           <div class="detail-topbar-actions">
-            <span class="detail-site-name">physics+AI Collection 论文卡</span>
+            <span class="detail-site-name">论文卡</span>
             <button id="detail-favorite" class="detail-favorite-button" type="button" aria-pressed="false">☆ 收藏</button>
             <button class="theme-toggle" type="button" data-theme-toggle aria-label="当前主题：设备，点击切换主题" title="当前主题：设备">
   <span class="theme-toggle-icons" aria-hidden="true">
@@ -91,22 +104,15 @@
         <div class="detail-hero-grid">
           <div class="detail-hero-cover"><figure class="paper-figure-card paper-figure-card-detail">
   <img class="paper-figure-image" src="../../assets/collection-figures/2411.19339/figure-1-denoiser-comparison.webp" alt="多组相同 noisy inputs 下，经验最优 denoiser、多个网络和无训练 patch posterior composition 的输出并列。" loading="lazy" onclick="window.openPaperFigureImage && window.openPaperFigureImage(this)" />
-  <figcaption class="paper-figure-caption">实际扩散网络共同偏离全局经验最优解，并接近局部补丁组合。</figcaption>
+  <figcaption class="paper-figure-caption">实际扩散网络共同偏离全局经验最优解，并接近局部补丁组合。 <a href="https://arxiv.org/abs/2411.19339" target="_blank" rel="noopener noreferrer">原文图源 ↗</a></figcaption>
 </figure></div>
           <div class="detail-hero-copy">
-            <p class="eyebrow">Collection 全文卡</p>
+            <p class="eyebrow">论文详情</p>
             <h1 class="detail-page-title">Towards a Mechanistic Explanation of Diffusion Model Generalization</h1>
             <p class="detail-page-title-zh">迈向扩散模型泛化的机制解释</p>
-            <div class="detail-meta">Paper Collection · Machine Learning · <a href="https://arxiv.org/abs/2411.19339" target="_blank" rel="noopener noreferrer">原文</a></div>
-            <p class="detail-summary">Matthew Niedoba、Berend Zwartsenberg、Kevin Murphy 与 Frank Wood。论文比较有限训练集上的最优 empirical denoiser 与实际卷积 denoiser，提出局部 patch posterior composition（PSPC）解释扩散模型为何生成非记忆样本，arXiv:2411.19339v3。</p>
-            <div class="detail-micro-meta">
-              <span class="meta-pill">AI 基础理论</span>
-              <span class="meta-pill">理论与实验</span>
-              <span class="meta-pill">#Machine Learning</span><span class="meta-pill">#机器学习</span><span class="meta-pill">#人工智能</span>
-              <span class="meta-pill">8 分钟读完</span>
-              <span class="meta-pill">7 张阅读卡</span>
-              <span class="meta-pill">Matthew Niedoba、Berend Zwartsenberg、Kevin Murphy 与…</span>
-            </div>
+            <div class="detail-meta">Matthew Niedoba、Berend Zwartsenberg、Kevin Murphy、Frank Wood · 预印本 · arXiv:2411.19339 · <a href="https://arxiv.org/abs/2411.19339" target="_blank" rel="noopener noreferrer">论文原文 ↗</a></div>
+            <p class="detail-summary">标准 denoising loss 在有限经验分布上的精确最优解会把 noisy input 映回训练样本的全局 posterior mean；若网络足够拟合该解，反向过程应趋向记忆。为什么实际 CNN diffusion model 却能生成新图像？</p>
+
           </div>
         </div>
       </div>
@@ -115,34 +121,14 @@
     <main class="container detail-layout">
       <div class="detail-shell">
         <article id="detail-body" class="reading-flow"><section class="reading-card reading-card-section">
-  <div class="reading-card-topline">
-    <span class="reading-step">Card 01</span>
-    <span class="reading-step-note">作者信息</span>
-  </div>
-  <h2>作者信息</h2>
-  <div class="reading-card-content"><ul><li>Matthew Niedoba、Berend Zwartsenberg、Kevin Murphy 与 Frank Wood。论文比较有限训练集上的最优 empirical denoiser 与实际卷积 denoiser，提出局部 patch posterior composition（PSPC）解释扩散模型为何生成非记忆样本，arXiv:2411.19339v3。</li></ul></div>
-</section>
-<section class="reading-card reading-card-section">
-  <div class="reading-card-topline">
-    <span class="reading-step">Card 02</span>
-    <span class="reading-step-note">研究问题</span>
-  </div>
   <h2>研究问题</h2>
   <div class="reading-card-content"><ul><li>标准 denoising loss 在有限经验分布上的精确最优解会把 noisy input 映回训练样本的全局 posterior mean；若网络足够拟合该解，反向过程应趋向记忆。为什么实际 CNN diffusion model 却能生成新图像？</li><li>作者假设有限感受野和卷积局部性使网络学习的是 patch-level posterior：不同位置可选择来自不同训练图的局部证据，再通过重叠补丁组合成新样本。</li></ul></div>
 </section>
 <section class="reading-card reading-card-section">
-  <div class="reading-card-topline">
-    <span class="reading-step">Card 03</span>
-    <span class="reading-step-note">模型与方法</span>
-  </div>
   <h2>模型与方法</h2>
   <div class="reading-card-content"><ul><li>先精确计算 CIFAR-10 有限训练集的 empirical optimal denoiser，并在同一 noisy \(z\)、time \(t\) 上比较 DDPM++、DiT 等网络输出。MSE 随 \(t\) 扫描定位偏离最大的中间噪声区。</li><li>用输出像素对输入 \(z\) 的 Jacobian gradient sensitivity heatmap 测量实际 receptive field；再定义 patch posterior mean，只在裁剪窗口内计算经验 posterior，并把多窗口输出重叠平均形成 learning-free PSPC denoiser。</li><li>Figure 1 按相同 reverse inputs 并列 empirical、多个网络与 PSPC 输出；随后比较 memorization、sample quality 和网络局部性。</li></ul></div>
 </section>
 <section class="reading-card reading-card-section">
-  <div class="reading-card-topline">
-    <span class="reading-step">Card 04</span>
-    <span class="reading-step-note">核心结果与证据</span>
-  </div>
   <h2>核心结果与证据</h2>
   <div class="reading-card-content"><ul><li>实际网络在很小和很大 \(t\) 接近 empirical denoiser，却在中间 \(t\) 以相似方式系统偏离；不同架构的偏差共性提示不是单一训练失败。Figure 3 显示 denoiser 对局部 patch 更敏感，且有效范围随 \(t\) 变化。</li><li>局部 patch posterior 能在小 \(t\) 精确匹配对应 optimal patch，在较大 \(t\) 需要更大窗口。PSPC 不训练神经网络，只组合训练图局部 posterior，却能生成非训练样本并在若干指标/视觉上接近 learned denoiser。</li><li>结论是 architectural locality 可阻止全局 empirical memorization并支持 patch recombination；这是一种机制候选，不是所有 diffusion generalization 的完备解释，尤其不覆盖全局 self-attention 的语义组织。</li></ul><figure class="evidence-figure">
   <button class="evidence-figure-image-button" type="button" aria-label="放大查看 Figure 1" onclick="window.openPaperFigureImage && window.openPaperFigureImage(this.querySelector('img'))">
@@ -156,26 +142,14 @@
 </figure></div>
 </section>
 <section class="reading-card reading-card-section">
-  <div class="reading-card-topline">
-    <span class="reading-step">Card 05</span>
-    <span class="reading-step-note">有效性与局限</span>
-  </div>
   <h2>有效性与局限</h2>
   <div class="reading-card-content"><ul><li>PSPC 直接访问完整训练集并做 posterior 计算，计算方式与训练后的神经网络不同；视觉相似不证明网络内部显式执行同一算法。Patch size、形状和重叠规则是手工选择。</li><li>CIFAR-10 小图像与卷积架构最适合局部解释；高分辨率、文本条件、Transformer/attention diffusion 需要全局一致性，局部马赛克机制可能不足。</li><li>sample originality 若只以最近邻或有限指标衡量，仍可能存在 patch-level memorization。需训练集删改、patch provenance 和因果 receptive-field干预。本卡未独立复现。</li></ul></div>
 </section>
 <section class="reading-card reading-card-section">
-  <div class="reading-card-topline">
-    <span class="reading-step">Card 06</span>
-    <span class="reading-step-note">复现与资源</span>
-  </div>
   <h2>复现与资源</h2>
   <div class="reading-card-content"><ul><li>原文：https://arxiv.org/abs/2411.19339。官方 \(v_{3}\) PDF SHA-256：966852de7eba96b230140581b6a52148ec27bf1069cca4483e0ecabfa1f8cce7。</li><li>复现应固定同一 forward/reverse noise，逐 \(t\) 保存 empirical、network 与 patch posterior outputs，测 Jacobian receptive field 和 MSE；改变 patch size、训练集规模及删图干预，并追踪生成 patch 的最近训练来源。Evidence status: full-text verified; no independent reproduction performed.</li></ul></div>
 </section>
 <section class="reading-card reading-card-section">
-  <div class="reading-card-topline">
-    <span class="reading-step">Card 07</span>
-    <span class="reading-step-note">阅读指南</span>
-  </div>
   <h2>阅读指南</h2>
   <div class="reading-card-content"><ul><li>Figure 1 先看三类 denoiser 的系统差异，Figure 2 定位中间噪声区，Figures 3–4 建立局部性，Figure 5 给出 PSPC。阅读结论时把“局部性足以产生新组合”与“真实网络唯一机制”分开。</li></ul></div>
 </section></article>
@@ -185,7 +159,7 @@
         </aside>
       </div>
       <nav class="paper-nav"><a class="paper-nav-link paper-nav-prev" href="../../collection-papers/doi-10.1038-s42256-024-00937-0/"><span class="paper-nav-label">← 上一篇</span><span class="paper-nav-title">Deep learning for predicting rate-induced tipping</span></a>
-      <a class="paper-nav-link paper-nav-next" href="../../collection-papers/2411.18579/"><span class="paper-nav-label">下一篇 →</span><span class="paper-nav-title">Surveying the space of descriptions of a composite system with machine learning</span></a></nav>
+      <a class="paper-nav-link paper-nav-next" href="../../collection-papers/2411.18704/"><span class="paper-nav-label">下一篇 →</span><span class="paper-nav-title">Exponential Moving Average of Weights in Deep Learning: Dynamics and Benefits</span></a></nav>
       <section id="comments" class="comments-panel" aria-labelledby="comments-title">
         <div class="comments-heading">
           <div>

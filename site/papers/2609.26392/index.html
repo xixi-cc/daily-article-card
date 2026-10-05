@@ -3,10 +3,10 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Double Descent and Malign Overfitting in Diffusion Models - 每日论文卡</title>
-    <meta name="description" content="Raphaël Urfin、Tony Bonnaire、Giulio Biroli、Marc Mézard；Urfin 与 Bonnaire 标注共同贡献，Urfin 在原 PDF 物理 p.1 以星号及邮箱明确标注通讯作者。Urfin、Biroli 属巴黎高师物理实验室及 ENS、Université PSL、CNRS、Sorbonne Université、Université Paris Cité 联合机构；Bonnaire 属 Université Paris-Saclay/CNRS 的 Institut d’Astrophysique Spatiale；Mézard 属米兰 Bocconi University 的 Department of Computing Sciences。作者归属按物理 p.1 核对。" />
+    <title>Double Descent and Malign Overfitting in Diffusion Models - 论文卡</title>
+    <meta name="description" content="扩散模型把生成学习写成噪声回归，为什么增大模型、把训练损失降到零，仍可能使总体泛化变差？本文把固定训练样本上的新噪声测试与真正更换干净样本的总体测试分开，发现第二次下降可停在高于第一次最低点的平台；低噪声时尤为显著。承重贡献是有限噪声副本数下的随机特征学习曲线及偏差—方差解释，配合 CelebA U-Net 实验，而不是“所有扩散大模型都一定记忆”的定理。" />
     <link rel="canonical" href="https://xixi-cc.github.io/daily-article-card/papers/2609.26392/" />
-    <script type="application/ld+json">{"@context": "https://schema.org", "@type": "Article", "headline": "Double Descent and Malign Overfitting in Diffusion Models", "description": "Raphaël Urfin、Tony Bonnaire、Giulio Biroli、Marc Mézard；Urfin 与 Bonnaire 标注共同贡献，Urfin 在原 PDF 物理 p.1 以星号及邮箱明确标注通讯作者。Urfin、Biroli 属巴黎高师物理实验室及 ENS、Université PSL、CNRS、Sorbonne Université、Université Paris Cité 联合机构；Bonnaire 属 Université Paris-Saclay/CNRS 的 Institut d’Astrophysique Spatiale；Mézard 属米兰 Bocconi University 的 Department of Computing Sciences。作者归属按物理 p.1 核对。", "url": "https://xixi-cc.github.io/daily-article-card/papers/2609.26392/", "mainEntityOfPage": "https://xixi-cc.github.io/daily-article-card/papers/2609.26392/", "inLanguage": "zh-CN", "author": {"@type": "Person", "name": "Xineng Cao", "alternateName": ["Xixi Cao", "曹溪能"], "url": "https://xixi-cc.github.io/"}, "isBasedOn": "https://arxiv.org/abs/2609.26392", "datePublished": "2026-09-24", "dateModified": "2026-09-24"}</script>
+    <script type="application/ld+json">{"@context": "https://schema.org", "@type": "Article", "headline": "Double Descent and Malign Overfitting in Diffusion Models", "description": "扩散模型把生成学习写成噪声回归，为什么增大模型、把训练损失降到零，仍可能使总体泛化变差？本文把固定训练样本上的新噪声测试与真正更换干净样本的总体测试分开，发现第二次下降可停在高于第一次最低点的平台；低噪声时尤为显著。承重贡献是有限噪声副本数下的随机特征学习曲线及偏差—方差解释，配合 CelebA U-Net 实验，而不是“所有扩散大模型都一定记忆”的定理。", "url": "https://xixi-cc.github.io/daily-article-card/papers/2609.26392/", "mainEntityOfPage": "https://xixi-cc.github.io/daily-article-card/papers/2609.26392/", "inLanguage": "zh-CN", "author": {"@type": "Person", "name": "Xineng Cao", "alternateName": ["Xixi Cao", "曹溪能"], "url": "https://xixi-cc.github.io/"}, "isBasedOn": "https://arxiv.org/abs/2609.26392", "datePublished": "2026-09-24", "dateModified": "2026-09-24"}</script>
     <script>
       (function() {
         try {
@@ -30,6 +30,18 @@
     <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700;800&family=Noto+Sans+SC:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
     <script>document.documentElement.classList.add('math-pending');</script>
     <script>
+      window.fitInlineMath = function(root) {
+        (root || document).querySelectorAll('mjx-container:not([display="true"])').forEach(function(el) {
+          el.classList.remove('inline-math-overflow');
+          const content = el.closest('.reading-card-content, .detail-summary, .feed-card-body');
+          if(content && el.getBoundingClientRect().width > content.clientWidth) {
+            el.classList.add('inline-math-overflow');
+            el.tabIndex = 0;
+            el.setAttribute('aria-label', '长公式，可横向滑动阅读');
+          }
+        });
+      };
+      window.addEventListener('resize', function() { window.fitInlineMath(); });
       window.MathJax = {
         tex: {
           inlineMath: [['$', '$'], ['\\(', '\\)']],
@@ -49,6 +61,7 @@
             MathJax.startup.promise.then(function() {
               document.documentElement.classList.remove('math-pending');
               document.documentElement.dataset.mathReady = 'true';
+              window.requestAnimationFrame(function() { window.fitInlineMath(); });
             });
           }
         }
@@ -65,9 +78,9 @@
     <header class="header detail-page-header">
       <div class="container">
         <div class="detail-page-topbar">
-          <a class="back-link" href="../../physics_AI.html">返回列表</a>
+          <a class="back-link" href="../../index.html">返回列表</a>
           <div class="detail-topbar-actions">
-            <span class="detail-site-name">每日论文卡</span>
+            <span class="detail-site-name">论文卡</span>
             <button id="detail-favorite" class="detail-favorite-button" type="button" aria-pressed="false">☆ 收藏</button>
             <button class="theme-toggle" type="button" data-theme-toggle aria-label="当前主题：设备，点击切换主题" title="当前主题：设备">
   <span class="theme-toggle-icons" aria-hidden="true">
@@ -91,22 +104,15 @@
         <div class="detail-hero-grid">
           <div class="detail-hero-cover"><figure class="paper-figure-card paper-figure-card-detail">
   <img class="paper-figure-image" src="../../assets/curated_figures/2609.26392/figure-1.png" alt="三种DSM损失、独立干净样本与噪声副本插值尺度、低噪声高平台的完整定性示意" loading="lazy" onclick="window.openPaperFigureImage && window.openPaperFigureImage(this)" />
-  <figcaption class="paper-figure-caption">Figure 1，原作者 Raphaël Urfin、Tony Bonnaire、Giulio Biroli、Marc Mézard；来源 https://arxiv.org/pdf/2609.26392v1 ，CC-BY 4.0。保留原图轴、线型图例与两尺度标记。此图是定性示意；原横轴写参数p，RFNN正文中p实际为随机特征宽度、可训练参数为pd，U-Net的p才是网络参数数。</figcaption>
+  <figcaption class="paper-figure-caption">Figure 1，原作者 Raphaël Urfin、Tony Bonnaire、Giulio Biroli、Marc Mézard；来源 https://arxiv.org/pdf/2609.26392v1 ，CC-BY 4.0。保留原图轴、线型图例与两尺度标记。此图是定性示意；原横轴写参数p，RFNN正文中p实际为随机特征宽度、可训练参数为pd，U-Net的p才是网络参数数。 <a href="https://arxiv.org/abs/2609.26392" target="_blank" rel="noopener noreferrer">原文图源 ↗</a></figcaption>
 </figure></div>
           <div class="detail-hero-copy">
             <p class="eyebrow">论文详情</p>
             <h1 class="detail-page-title">Double Descent and Malign Overfitting in Diffusion Models</h1>
             <p class="detail-page-title-zh">扩散模型中的双下降与恶性过拟合</p>
-            <div class="detail-meta">2026-09-24 · <a href="https://arxiv.org/abs/2609.26392" target="_blank" rel="noopener noreferrer">原文</a></div>
-            <p class="detail-summary">Raphaël Urfin、Tony Bonnaire、Giulio Biroli、Marc Mézard；Urfin 与 Bonnaire 标注共同贡献，Urfin 在原 PDF 物理 \(p\).1 以星号及邮箱明确标注通讯作者。Urfin、Biroli 属巴黎高师物理实验室及 ENS、Université PSL、CNRS、Sorbonne Université、Université Paris Cité 联合机构；Bonnaire 属 Université Paris-Saclay/CNRS 的 Institut \(d\)’Astrophysique Spatiale；Mézard 属米兰 Bocconi University 的 Department of Computing Sciences。作者归属按物理 \(p\).1 核对。</p>
-            <div class="detail-micro-meta">
-              <span class="meta-pill">AI for Science</span>
-              <span class="meta-pill">理论与数值</span>
-              <span class="meta-pill">#机器学习</span><span class="meta-pill">#无序系统与神经网络</span>
-              <span class="meta-pill">25 分钟读完</span>
-              <span class="meta-pill">9 张阅读卡</span>
-              <span class="meta-pill">Raphaël Urfin、Tony Bonnaire、Giulio Biroli、Marc Méza…</span>
-            </div>
+            <div class="detail-meta">Raphaël Urfin、Tony Bonnaire、Giulio Biroli、Marc Mézard · 预印本 · arXiv:2609.26392 · <a href="https://arxiv.org/abs/2609.26392" target="_blank" rel="noopener noreferrer">论文原文 ↗</a></div>
+            <p class="detail-summary">扩散模型把生成学习写成噪声回归，为什么增大模型、把训练损失降到零，仍可能使总体泛化变差？本文把固定训练样本上的新噪声测试与真正更换干净样本的总体测试分开，发现第二次下降可停在高于第一次最低点的平台；低噪声时尤为显著。承重贡献是有限噪声副本数下的随机特征学习曲线及偏差—方差解释，配合 CelebA U-Net 实验，而不是“所有扩散大模型都一定记忆”的定理。</p>
+
           </div>
         </div>
       </div>
@@ -115,43 +121,19 @@
     <main class="container detail-layout">
       <div class="detail-shell">
         <article id="detail-body" class="reading-flow"><section class="reading-card reading-card-section">
-  <div class="reading-card-topline">
-    <span class="reading-step">Card 01</span>
-    <span class="reading-step-note">作者信息</span>
-  </div>
-  <h2>作者信息</h2>
-  <div class="reading-card-content"><p>Raphaël Urfin、Tony Bonnaire、Giulio Biroli、Marc Mézard；Urfin 与 Bonnaire 标注共同贡献，Urfin 在原 PDF 物理 \(p\).1 以星号及邮箱明确标注通讯作者。Urfin、Biroli 属巴黎高师物理实验室及 ENS、Université PSL、CNRS、Sorbonne Université、Université Paris Cité 联合机构；Bonnaire 属 Université Paris-Saclay/CNRS 的 Institut \(d\)’Astrophysique Spatiale；Mézard 属米兰 Bocconi University 的 Department of Computing Sciences。作者归属按物理 \(p\).1 核对。</p></div>
-</section>
-<section class="reading-card reading-card-section">
-  <div class="reading-card-topline">
-    <span class="reading-step">Card 02</span>
-    <span class="reading-step-note">研究问题</span>
-  </div>
   <h2>研究问题</h2>
   <div class="reading-card-content"><p>扩散模型把生成学习写成噪声回归，为什么增大模型、把训练损失降到零，仍可能使总体泛化变差？本文把固定训练样本上的新噪声测试与真正更换干净样本的总体测试分开，发现第二次下降可停在高于第一次最低点的平台；低噪声时尤为显著。承重贡献是有限噪声副本数下的随机特征学习曲线及偏差—方差解释，配合 CelebA U-Net 实验，而不是“所有扩散大模型都一定记忆”的定理（原 PDF 物理 pp.2–8，Eqs.1–13、Figures1–5）。</p></div>
 </section>
 <section class="reading-card reading-card-section">
-  <div class="reading-card-topline">
-    <span class="reading-step">Card 03</span>
-    <span class="reading-step-note">背景</span>
-  </div>
   <h2>背景</h2>
   <div class="reading-card-content"><p>监督回归的良性过拟合讨论通常围绕插值后总体测试误差能否继续下降。扩散训练额外复制每个干净样本周围的噪声云，样本之间独立，云内输入却共享同一个干净中心。于是增加噪声副本可改变插值峰，却没有增加独立干净样本的数量。原 PDF 物理 pp.2–4 把这个结构与经验 score 假设连接起来；Appendix A（物理 pp.15–16）还区分逼近经验 score 的过拟合和反向生成轨迹实际复制训练样本的记忆，二者不可直接画等号。</p></div>
 </section>
 <section class="reading-card reading-card-section">
-  <div class="reading-card-topline">
-    <span class="reading-step">Card 04</span>
-    <span class="reading-step-note">读者桥接</span>
-  </div>
   <h2>读者桥接</h2>
   <div class="reading-card-content"><p>输入是 \(n\) 个干净数据点和每点 \(m\) 个固定高斯噪声；表示是扩散时间 \(t\) 的加噪输入以及随机特征或 U-Net 隐表示；演化对象是 score 的可训练权重；目标是去噪均方误差，解析模型另加岭惩罚；输出是训练、经验测试、总体测试三条曲线以及生成质量。扩散时间 \(t\) 控制噪声，不是优化训练时间 \(\tau\)（原 PDF 物理 pp.2–5、17）。</p>
 <p>三个必要概念：score 是概率密度对输入的对数梯度；DSM 用已知注入噪声的回归监督来学习这个场；随机特征网络冻结第一层，只训练线性读出，使高维随机矩阵方法可用。岭回归限制读出范数，而早停限制训练演化时间；两者能缓解过拟合，但本文最佳强度与时刻依赖测试评价，不能据此声称已有无需验证集的自动选择算法（原 PDF 物理 pp.4–5、8–9、42）。</p></div>
 </section>
 <section class="reading-card reading-card-section">
-  <div class="reading-card-topline">
-    <span class="reading-step">Card 05</span>
-    <span class="reading-step-note">模型与方法</span>
-  </div>
   <h2>模型与方法</h2>
   <div class="reading-card-content"><div class="display-math">\[ \mathcal L_{\rm train}^{n,m}(s)=\frac{1}{nmd}\sum_{\nu=1}^{n}\sum_{\mu=1}^{m}\left\|\sqrt{\Delta_t}s(e^{-t}x^\nu+\sqrt{\Delta_t}\xi^{\nu\mu})+\xi^{\nu\mu}\right\|^2,\quad \mathcal L_{\rm test}(s)=\frac1d\mathbb E_{x,\xi}\left\|\sqrt{\Delta_t}s(e^{-t}x+\sqrt{\Delta_t}\xi)+\xi\right\|^2 \]</div>
 
@@ -185,10 +167,6 @@
 <p>实验用灰度 32×32 CelebA、四层分辨率 DDPM 风格 U-Net，基础通道宽度 W 从 2 到 192，对应约 2.9 万至 2.4 亿网络参数；此处论文记号 \(p\) 才表示总参数数，随 W² 变化。训练采用固定噪声对、1000 点扩散时间网格及 Adam，最多 200 万更新，不使用 EMA 或 weight decay。低宽度结构略有调整，实验配置与解析 RFNN 应分别解释（原 PDF 物理 pp.4、17–18）。</p></div>
 </section>
 <section class="reading-card reading-card-section">
-  <div class="reading-card-topline">
-    <span class="reading-step">Card 06</span>
-    <span class="reading-step-note">核心结果与证据</span>
-  </div>
   <h2>核心结果与证据</h2>
   <div class="reading-card-content"><p>RFNN 小噪声、有限 \(m&gt;1\) 时，总体损失先降再升，插值后第二次下降停在较高平台。偏差约从特征宽度 \(p\sim n\) 开始增长，方差主导的插值峰约在 \(p\sim nm\)；可训练参数实际分别是这些宽度乘以 \(d\)。两个尺度在方法上对应独立干净样本信息与有限训练约束数量，不能混作一个阈值。解析曲线和有限维模拟互相支持，经验测试损失却持续接近经验 score（原 PDF 物理 pp.5–8，Figures2–5；pp.42–43，Figure15）。</p>
 <p>增加 \(m\) 将插值峰向右推，\(m\)→∞ 时峰移出有限宽度范围，但逼近经验目标产生的偏差仍可能存在；\(m=1\) 则回到本文解析模型的良性情形。扩散时间也改变结论：附录明确在较大 \(t\) 恢复常规良性过拟合、最优零正则，不能把“小 \(t\)、\(m\)&gt;1”的恶性平台结论推广到任意噪声强度（原 PDF 物理 pp.8、40–42，Figure5、Appendix \(C\).13.1）。</p>
@@ -205,29 +183,17 @@
 </figure></div>
 </section>
 <section class="reading-card reading-card-section">
-  <div class="reading-card-topline">
-    <span class="reading-step">Card 07</span>
-    <span class="reading-step-note">有效性与局限</span>
-  </div>
   <h2>有效性与局限</h2>
   <div class="reading-card-content"><p>解析承重结果依赖比例高维极限、冻结高斯首层、激活矩条件、固定有限噪声云，以及高斯等价和附录的 replica-symmetric 推导。原文提供零均值次高斯总体及谱分布的推广，但这仍有协方差与极限条件，不能据此覆盖所有自然图像、端到端特征学习或任意训练动态（原 PDF 物理 pp.22、25–26、31、41–42）。</p>
 <p>训练、经验测试、总体测试的区分是精确的目标层结论；RFNN 学习曲线是带模型及渐近前提的理论；U-Net 和生成评价属于经验支持。CelebA 真 score 未知，附录高斯混合数据的偏差估计和已知目标另作检查，不能作为真实图片偏差的直接精确测量。不同实验的重复范围不同：部分误差条来自六次随机种子或十组独立数据集，不表示整个宽度网格均有相同重复数（原 PDF 物理 pp.6–7、18–20）。</p>
 <p>有限噪声训练对真实持续重采噪声过程的代表性需结合训练访问次数与相关性判断；本卡仅核读论文及图式，没有独立验证 GEP 的适用边界、数值自洽方程、实验统计或 reverse diffusion 的记忆阈值。</p></div>
 </section>
 <section class="reading-card reading-card-section">
-  <div class="reading-card-topline">
-    <span class="reading-step">Card 08</span>
-    <span class="reading-step-note">复现与资源</span>
-  </div>
   <h2>复现与资源</h2>
   <div class="reading-card-content"><p>原文给出 RFNN 和 U-Net 的结构、正则、噪声及数据设置，附录完整说明随机矩阵计算、极限与附加图，足以明确复现对象和必要前提；但未找到作者发布本研究代码与实验数据的具体公开仓库 URL。不可把参考文献或第三方工具当成本研究实现（原 PDF 物理 pp.17–22、25–44）。</p>
 <p>物理 \(p\).18 提供第三方 FID 工具 https://github.com/mseitzer/pytorch-fid ，已仅核查公开 HTML 页面可访问，未运行代码、下载模型或计算 FID。可复现性首要检查是固定噪声、\(p\) 的两套定义、各实验随机重复数及测试选择正则的协议；当前只有 full-text verification，没有独立复现。</p></div>
 </section>
 <section class="reading-card reading-card-section">
-  <div class="reading-card-topline">
-    <span class="reading-step">Card 09</span>
-    <span class="reading-step-note">阅读指南</span>
-  </div>
   <h2>阅读指南</h2>
   <div class="reading-card-content"><p>先读物理 pp.2–3 的三种损失，再用 \(p\).24 的平均分解和经验 score 恒等式辨认目标差异。接着读 pp.4–5、26 的 RFNN 设定与相关噪声代理，再读 pp.6–8 的两尺度、偏差及副本数实验；有随机矩阵背景再进入 pp.29–40 的自洽求解。最后必须连同 \(p\).9 limitations、pp.21、42 的记忆与大 \(t\) 例外一起看，避免把示意 Figure1 当成无条件定律。</p></div>
 </section></article>

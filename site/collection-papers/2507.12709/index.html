@@ -3,10 +3,10 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>From SGD to Spectra: A Theory of Neural Network Weight Dynamics - physics+AI Collection 论文卡</title>
-    <meta name="description" content="Brian Richard Olsen、Sam Fatehmanesh、Frank Xiao、Adarsh Kumarappan、Anirudh Gajula均署名California Institute of Technology（Pasadena）。Frank Xiao与Adarsh Kumarappan的星号表示等贡献；通讯联系人明确为Brian Richard Olsen、Sam Fatehmanesh。全文依据arXiv:2507.12709v2（2026-02-07），17个物理页，首发2025-07-17，CC BY4.0。PDF首页有ICML2025/PMLR267模板页脚，作者个人页称ICML2025与NeurIPS2025 Mechanistic Interpretability Workshop，但本次未在PMLR核实同名正式条目，OpenReview入口受验证限制；不把页脚或个人页认证为PMLR主会正式发表。（第1页与官方arXiv记录。）" />
+    <title>From SGD to Spectra: A Theory of Neural Network Weight Dynamics - 论文卡</title>
+    <meta name="description" content="训练期间权重矩阵的奇异值为什么从近随机初始化分布变成主体与外侧大模式？作者用各向同性矩阵噪声模型、奇异值Itô公式、均场单粒子稳态和小网络图表连接这一过程。本卡保留模型与观测，但不照搬摘要的“严格解释深度学习为何有效”：打印的奇异值漂移系数不通过标量极限，Gamma型分布的远尾也不是幂律。预测图在后期偏离、计数拟合偏低，以及各向异性未实测，都直接影响主结论。（第1–5、8–17页。）" />
     <link rel="canonical" href="https://xixi-cc.github.io/daily-article-card/collection-papers/2507.12709/" />
-    <script type="application/ld+json">{"@context": "https://schema.org", "@type": "Article", "headline": "From SGD to Spectra: A Theory of Neural Network Weight Dynamics", "description": "Brian Richard Olsen、Sam Fatehmanesh、Frank Xiao、Adarsh Kumarappan、Anirudh Gajula均署名California Institute of Technology（Pasadena）。Frank Xiao与Adarsh Kumarappan的星号表示等贡献；通讯联系人明确为Brian Richard Olsen、Sam Fatehmanesh。全文依据arXiv:2507.12709v2（2026-02-07），17个物理页，首发2025-07-17，CC BY4.0。PDF首页有ICML2025/PMLR267模板页脚，作者个人页称ICML2025与NeurIPS2025 Mechanistic Interpretability Workshop，但本次未在PMLR核实同名正式条目，OpenReview入口受验证限制；不把页脚或个人页认证为PMLR主会正式发表。（第1页与官方arXiv记录。）", "url": "https://xixi-cc.github.io/daily-article-card/collection-papers/2507.12709/", "mainEntityOfPage": "https://xixi-cc.github.io/daily-article-card/collection-papers/2507.12709/", "inLanguage": "zh-CN", "author": {"@type": "Person", "name": "Xineng Cao", "alternateName": ["Xixi Cao", "曹溪能"], "url": "https://xixi-cc.github.io/"}, "isBasedOn": "https://arxiv.org/abs/2507.12709"}</script>
+    <script type="application/ld+json">{"@context": "https://schema.org", "@type": "Article", "headline": "From SGD to Spectra: A Theory of Neural Network Weight Dynamics", "description": "训练期间权重矩阵的奇异值为什么从近随机初始化分布变成主体与外侧大模式？作者用各向同性矩阵噪声模型、奇异值Itô公式、均场单粒子稳态和小网络图表连接这一过程。本卡保留模型与观测，但不照搬摘要的“严格解释深度学习为何有效”：打印的奇异值漂移系数不通过标量极限，Gamma型分布的远尾也不是幂律。预测图在后期偏离、计数拟合偏低，以及各向异性未实测，都直接影响主结论。（第1–5、8–17页。）", "url": "https://xixi-cc.github.io/daily-article-card/collection-papers/2507.12709/", "mainEntityOfPage": "https://xixi-cc.github.io/daily-article-card/collection-papers/2507.12709/", "inLanguage": "zh-CN", "author": {"@type": "Person", "name": "Xineng Cao", "alternateName": ["Xixi Cao", "曹溪能"], "url": "https://xixi-cc.github.io/"}, "isBasedOn": "https://arxiv.org/abs/2507.12709"}</script>
     <script>
       (function() {
         try {
@@ -30,6 +30,18 @@
     <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700;800&family=Noto+Sans+SC:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
     <script>document.documentElement.classList.add('math-pending');</script>
     <script>
+      window.fitInlineMath = function(root) {
+        (root || document).querySelectorAll('mjx-container:not([display="true"])').forEach(function(el) {
+          el.classList.remove('inline-math-overflow');
+          const content = el.closest('.reading-card-content, .detail-summary, .feed-card-body');
+          if(content && el.getBoundingClientRect().width > content.clientWidth) {
+            el.classList.add('inline-math-overflow');
+            el.tabIndex = 0;
+            el.setAttribute('aria-label', '长公式，可横向滑动阅读');
+          }
+        });
+      };
+      window.addEventListener('resize', function() { window.fitInlineMath(); });
       window.MathJax = {
         tex: {
           inlineMath: [['$', '$'], ['\\(', '\\)']],
@@ -49,6 +61,7 @@
             MathJax.startup.promise.then(function() {
               document.documentElement.classList.remove('math-pending');
               document.documentElement.dataset.mathReady = 'true';
+              window.requestAnimationFrame(function() { window.fitInlineMath(); });
             });
           }
         }
@@ -65,9 +78,9 @@
     <header class="header detail-page-header">
       <div class="container">
         <div class="detail-page-topbar">
-          <a class="back-link" href="../../collection.html">返回列表</a>
+          <a class="back-link" href="../../index.html">返回列表</a>
           <div class="detail-topbar-actions">
-            <span class="detail-site-name">physics+AI Collection 论文卡</span>
+            <span class="detail-site-name">论文卡</span>
             <button id="detail-favorite" class="detail-favorite-button" type="button" aria-pressed="false">☆ 收藏</button>
             <button class="theme-toggle" type="button" data-theme-toggle aria-label="当前主题：设备，点击切换主题" title="当前主题：设备">
   <span class="theme-toggle-icons" aria-hidden="true">
@@ -91,22 +104,15 @@
         <div class="detail-hero-grid">
           <div class="detail-hero-cover"><figure class="paper-figure-card paper-figure-card-detail">
   <img class="paper-figure-image" src="../../assets/collection-figures/2507.12709/figure-1-spectral-histograms.png" alt="初始化与200、400批次的三面板奇异值直方图、MP虚线和TW橙色边缘示意" loading="lazy" onclick="window.openPaperFigureImage && window.openPaperFigureImage(this)" />
-  <figcaption class="paper-figure-caption">Brian Richard Olsen等，Figure1（arXiv:2507.12709v2，PDF第3页，https://arxiv.org/abs/2507.12709v2，CC BY4.0）：batch0/200/400的奇异值横轴与Count纵轴直方图，保留各面板范围及红虚线Marchenko–Pastur、橙色TW图例。后期主体外有稀疏大模式；橙色与原图注称绿色的文字不一致。图显示有限谱形变化，不能单独证明幂律远尾、精确MP/TW规范匹配、公式系数正确或泛化因果。</figcaption>
+  <figcaption class="paper-figure-caption">Brian Richard Olsen等，Figure1（arXiv:2507.12709v2，PDF第3页，https://arxiv.org/abs/2507.12709v2，CC BY4.0）：batch0/200/400的奇异值横轴与Count纵轴直方图，保留各面板范围及红虚线Marchenko–Pastur、橙色TW图例。后期主体外有稀疏大模式；橙色与原图注称绿色的文字不一致。图显示有限谱形变化，不能单独证明幂律远尾、精确MP/TW规范匹配、公式系数正确或泛化因果。 <a href="https://arxiv.org/abs/2507.12709" target="_blank" rel="noopener noreferrer">原文图源 ↗</a></figcaption>
 </figure></div>
           <div class="detail-hero-copy">
-            <p class="eyebrow">Collection 全文卡</p>
+            <p class="eyebrow">论文详情</p>
             <h1 class="detail-page-title">From SGD to Spectra: A Theory of Neural Network Weight Dynamics</h1>
             <p class="detail-page-title-zh">从SGD到权重谱：随机矩阵模型、有限拟合与系数核查</p>
-            <div class="detail-meta">Paper Collection · Learning Theory · <a href="https://arxiv.org/abs/2507.12709" target="_blank" rel="noopener noreferrer">原文</a></div>
-            <p class="detail-summary">Brian Richard Olsen、Sam Fatehmanesh、Frank Xiao、Adarsh Kumarappan、Anirudh Gajula均署名California Institute of Technology（Pasadena）。Frank Xiao与Adarsh Kumarappan的星号表示等贡献；通讯联系人明确为Brian Richard Olsen、Sam Fatehmanesh。全文依据arXiv:2507.12709v2（2026-02-07），17个物理页，首发2025-07-17，CC BY4.0。PDF首页有ICML2025/PMLR267模板页脚，作者个人页称ICML2025与NeurIPS2025 Mechanistic Interpretability Workshop，但本次未在PMLR核实同名正式条目，OpenReview入口受验证限制；不把页脚或个人页认证为PMLR主会正式发表。（第1页与官方arXiv记录。）</p>
-            <div class="detail-micro-meta">
-              <span class="meta-pill">AI 基础理论</span>
-              <span class="meta-pill">理论与数值</span>
-              <span class="meta-pill">#Learning Theory</span><span class="meta-pill">#机器学习</span><span class="meta-pill">#机制可解释性</span>
-              <span class="meta-pill">25 分钟读完</span>
-              <span class="meta-pill">8 张阅读卡</span>
-              <span class="meta-pill">Brian Richard Olsen、Sam Fatehmanesh、Frank Xiao、Adar…</span>
-            </div>
+            <div class="detail-meta">Brian Richard Olsen、Sam Fatehmanesh、Frank Xiao、Adarsh Kumarappan、Anirudh Gajula · 预印本 · arXiv:2507.12709 · <a href="https://arxiv.org/abs/2507.12709" target="_blank" rel="noopener noreferrer">论文原文 ↗</a></div>
+            <p class="detail-summary">训练期间权重矩阵的奇异值为什么从近随机初始化分布变成主体与外侧大模式？作者用各向同性矩阵噪声模型、奇异值Itô公式、均场单粒子稳态和小网络图表连接这一过程。本卡保留模型与观测，但不照搬摘要的“严格解释深度学习为何有效”：打印的奇异值漂移系数不通过标量极限，Gamma型分布的远尾也不是幂律。预测图在后期偏离、计数拟合偏低，以及各向异性未实测，都直接影响主结论。（第1–5、8–17页。）</p>
+
           </div>
         </div>
       </div>
@@ -115,34 +121,14 @@
     <main class="container detail-layout">
       <div class="detail-shell">
         <article id="detail-body" class="reading-flow"><section class="reading-card reading-card-section">
-  <div class="reading-card-topline">
-    <span class="reading-step">Card 01</span>
-    <span class="reading-step-note">作者信息</span>
-  </div>
-  <h2>作者信息</h2>
-  <div class="reading-card-content"><ul><li>Brian Richard Olsen、Sam Fatehmanesh、Frank Xiao、Adarsh Kumarappan、Anirudh Gajula均署名California Institute of Technology（Pasadena）。Frank Xiao与Adarsh Kumarappan的星号表示等贡献；通讯联系人明确为Brian Richard Olsen、Sam Fatehmanesh。全文依据arXiv:2507.12709v2（2026-02-07），17个物理页，首发2025-07-17，CC BY4.0。PDF首页有ICML2025/PMLR267模板页脚，作者个人页称ICML2025与NeurIPS2025 Mechanistic Interpretability Workshop，但本次未在PMLR核实同名正式条目，OpenReview入口受验证限制；不把页脚或个人页认证为PMLR主会正式发表。（第1页与官方arXiv记录。）</li></ul></div>
-</section>
-<section class="reading-card reading-card-section">
-  <div class="reading-card-topline">
-    <span class="reading-step">Card 02</span>
-    <span class="reading-step-note">研究问题</span>
-  </div>
   <h2>研究问题</h2>
   <div class="reading-card-content"><ul><li>训练期间权重矩阵的奇异值为什么从近随机初始化分布变成主体与外侧大模式？作者用各向同性矩阵噪声模型、奇异值Itô公式、均场单粒子稳态和小网络图表连接这一过程。本卡保留模型与观测，但不照搬摘要的“严格解释深度学习为何有效”：打印的奇异值漂移系数不通过标量极限，Gamma型分布的远尾也不是幂律。预测图在后期偏离、计数拟合偏低，以及各向异性未实测，都直接影响主结论。（第1–5、8–17页。）</li><li>读者桥：输入是训练数据、小批次及某层权重W；小批次梯度改变W。奇异值σ表示线性层沿特定输入方向的放大倍数，平方λ是WᵀW的特征值。待描述的对象是这些模式的漂移和涨落，不是样本空间粒子。梯度提供方向性学习信号，噪声提供随机更新；可观测量是谱直方图、领先模式轨迹及最大值减中位数的展宽。谱形与泛化可能相关，但本次实验没有给出由谱尾推出测试误差的定理或干预因果证据。（第2–5、16–17页。）</li></ul></div>
 </section>
 <section class="reading-card reading-card-section">
-  <div class="reading-card-topline">
-    <span class="reading-step">Card 03</span>
-    <span class="reading-step-note">背景</span>
-  </div>
   <h2>背景</h2>
   <div class="reading-card-content"><ul><li>初始化的Marchenko–Pastur（MP）律针对大随机矩阵的平方奇异值，Tracy–Widom（TW）描述最大特征值经适当中心化/缩放后的边缘涨落；二者不是把单次谱直方图横轴和尾部直接贴上标准函数就能认证的结果。学习后大奇异值超出初始主体区间提供谱结构改变的有限观测，但不单独说明所有尾部来自有益特征或都为重尾幂律。（第1–4、12–13页。）</li><li>SGD噪声一般依赖参数与方向；本文先把矩阵各元素噪声设为同一强度、独立Brownian增量，再写一般协方差形式。后者没有数值实验。正文借其他网络凸化/均场文献来说明二次谱势的动机，不能据此证明任意非凸网络损失只由奇异值决定，或确定性large-r闭合在所有架构成立。（第2–4、10–15页。）</li></ul></div>
 </section>
 <section class="reading-card reading-card-section">
-  <div class="reading-card-topline">
-    <span class="reading-step">Card 04</span>
-    <span class="reading-step-note">模型与方法</span>
-  </div>
   <h2>模型与方法</h2>
   <div class="reading-card-content"><ul><li>原矩阵模型及谱变量为：</li></ul>
 
@@ -171,10 +157,6 @@
 <ul><li>$G_t$ 为当前更新矩阵，$M_t\in\mathbb R^{k\times k}$ 为其投影；δ是防负值阈值，与理论噪声Brownian增量不同。还更新左右向量、对σ差/和加epsilon正则，再正交化和对齐符号。这个算法没有显式独立采样上述SDE噪声，也不是只凭初始谱无未来梯度预测未来训练。只跟踪前k模式且近简并须小心，它不认证全部谱的动力学。（第4、16页。）</li><li>实验均使用SGD。小型nanoGPT式decoder为4层、每层4头、embedding256，Shakespeare文本，batch12×256token，学习率5×10⁻⁴ cosine降到5×10⁻⁵；视觉Transformer为2层、4头、embedding256、FFN扩张2，MNIST用28×28图/7×7patch、CIFAR100用32×32/8×8patch。MLP三个隐藏层、每层1024，偏置零、按fan-in高斯初始化。主设置称MNIST/CIFAR100，但Figure2正文称CIFAR10，不自行统一。没有给具体GPU、总时长、重复seed或统一谱拟合误差表。（第3、16–17页。）</li></ul></div>
 </section>
 <section class="reading-card reading-card-section">
-  <div class="reading-card-topline">
-    <span class="reading-step">Card 05</span>
-    <span class="reading-step-note">核心结果与证据</span>
-  </div>
   <h2>核心结果与证据</h2>
   <div class="reading-card-content"><ul><li>Figure1三面板为batch0、200、400的奇异值Count直方图。初始化主体与红虚线近，后续主体外出现稀疏大模式；橙色TW示意位于edge2.00附近。三面板横轴范围不同，第三幅延伸到7以上，需按标签看变化，不能仅按柱宽作同归一化比较。图注说TW绿色，但原图图例实际为橙色；本卡保留原图完整图例。横轴为σ，而附录MP公式自变量是归一化λ；缺少源拟合具体变换/缩放，图本身不能认证“MP完全吻合”或TW正式边缘统计检验。（第3–4、12–13页Figure1。）</li><li>Figure2有限曲线展示领先模式初期实线与虚线接近，在约batch300后偏差开始扩大；正文称800批次与top8，实际图横轴截止约600且可见曲线不止8，本卡不从图外延伸或补造具体RMSE。Figure3为σ≥2.5尾区计数和峰识别/拟合，正文承认计数显著低估。没有置信区间、留出预测误差或独立种子分布；“全奇异值准确预测”比现有图和仅topk算法支持的范围更强。（第4、16页Figures2–3。）</li><li>Gamma型有效稳态有明确远尾：λ的大值方向带exp(−qλ)，σ带exp(−qσ²)，在β₁、ηD正的条件下为指数/高斯型截断。前面的幂函数乘子只控制近零等形状，不能把远尾叫power-law或heavy-tailed。若β₁=0去掉截断，一般又不能归一化为这里的平稳概率密度。故原摘要、正文第3页、第12页“由Gamma证明幂律重尾”的解释不被其公式支持；这不否认有限直方图有超出主体的模式。（第3、9、12页。）</li><li>零梯度的纯矩阵Brownian没有恢复力，谱二阶尺度随时间增长，不提供该Gamma稳态；加线性恢复、均场去相互作用是额外模型。原文第8页其实将平方奇异值称Wishart过程，正文的Dyson比喻不能消去乘性√λ扩散和非负边界。第11页的时间替换s=\(t\)/\(2\eta D\)也与把噪声幅度化为2√λ不一致；按同一个λ变量须s=2ηDt。此为对源规范的直接时间单位核查，不是独立建立整套正确一般谱SDE。（第8–12页。）</li><li>Figure4只有几个层的repulsive/non-repulsive项随批次数变化；从两组项相似或相关不能证明原始噪声协方差非各向同性。原式还通过动力学残差定义“噪声”，与同一漂移项代数耦合；它不是独立噪声样本的方向协方差估计、没有因果干预或检验。将偏差归因于各向异性是作者假说，Proposition6.17给出可能加入它的方法，实验尚未完成。（第5、12、14–15页。）</li><li>Figure5改变学习率、观察最大奇异值减中位数。五种视觉Transformer权重在约10⁻³至中等学习率时展宽增大，但四个内部投影在最高10⁻¹点回落，不能说全区间单调增加。红虚线斜率是对该有限扫参图的拟合：layer1第二投影约.812，输出头.160；它们不是普遍临界指数，也不单独证明噪声更多就提高泛化。源说回落可能少学特征是解释而非已测特征数。（第17页Figure5。）</li><li>Algorithm1复杂度比较仅对维护谱相对每步全SVD：一次O(min(m²n,mn²))，每步还包括梯度代价G、kmn投影及k²max(\(m\),\(n\))更新/正交化。k远小于维数时，SVD相关工作可降低约min(\(m\),\(n\))/\(k\)；没有端到端实测速度、硬件延迟或精度损失界，不能把这写成整网训练同比加速。谱初始化、剪枝和新优化器均为潜在应用，本篇没有相应效果实验。（第5、16页。）</li></ul><figure class="evidence-figure">
   <button class="evidence-figure-image-button" type="button" aria-label="放大查看 Figure1" onclick="window.openPaperFigureImage && window.openPaperFigureImage(this.querySelector('img'))">
@@ -188,26 +170,14 @@
 </figure></div>
 </section>
 <section class="reading-card reading-card-section">
-  <div class="reading-card-topline">
-    <span class="reading-step">Card 06</span>
-    <span class="reading-step-note">有效性与局限</span>
-  </div>
   <h2>有效性与局限</h2>
   <div class="reading-card-content"><ul><li>矩阵各向同性噪声、连续时间、非重合正奇异值、有效D和二次谱势/单粒子闭合均为条件，不能用结构验证通过补成数学证明。打印漂移的标量极限失败、时间重标度及恢复率/噪声参数混用必须先解决，才能把该框架用于精确数值推演。附录一般Itô协方差形式有用，但没有建立简并/零谱处的全局强解或任意SGD的严格极限。（第2–3、8–15页。）</li><li>平稳Gamma解属于简化SDE而不具有幂律远尾，平均场的相互作用替换缺少控制误差，其他网络凸化文献不自动证明谱势。MP/TW图比较需明确λ/σ转换、归一化和有限维边缘缩放；正文某些Corollary/Lemma编号指向并不一致，本卡按实际所在页与真实标签引用。没有把未复证Airy/Hilbert-transform等附录引用升格为本卡独立证明。（第3–4、9、12–15页。）</li><li>小模型观测没有统一量化预测误差、种子误差条、跨大模型验证或泛化因果控制。文本/图的batch数量、模态数和CIFAR10/100表述不一致保留；方向性噪声未完成实验，曲线相关不足以证明。卡片已完整读取17页并核查关键图、公式和标量极限，未运行网络训练、拟合或大型随机矩阵实验。（第3–5、14、16–17页。）</li></ul></div>
 </section>
 <section class="reading-card reading-card-section">
-  <div class="reading-card-topline">
-    <span class="reading-step">Card 07</span>
-    <span class="reading-step-note">复现与资源</span>
-  </div>
   <h2>复现与资源</h2>
   <div class="reading-card-content"><ul><li>论文给完整Algorithm1和小模型配置，并引用Karpathy/nanoGPT作为实现基础；没有明确提供本论文独立公开代码仓库、原始谱轨迹、seed、完整拟合程序或GPU账本。本次不把通用nanoGPT仓库称为作者实验已可一键复现。PDF、元数据和Figure1 CC BY4.0来源均已哈希记录；页面只发布公开来源与裁图，不暴露本地PDF。</li><li>核查路线应先按原元素噪声规范测试1×1与向量范数极限，再修正一般谱漂移、边界与时间尺度；分别记录每批真实梯度协方差及σ/λ转换，建立独立留出预测误差，而不是用同一残差拟合噪声再声称证明。均场Gamma参数须区分恢复率、协方差和统计方差，报告尾部分布而非仅峰计数。本卡仅完成源定义下的直接Itô/归一化与远尾检查，没有训练、拟合或系统性能复现。Evidence status: full-text verified; no independent reproduction performed.</li></ul></div>
 </section>
 <section class="reading-card reading-card-section">
-  <div class="reading-card-topline">
-    <span class="reading-step">Card 08</span>
-    <span class="reading-step-note">阅读指南</span>
-  </div>
   <h2>阅读指南</h2>
   <div class="reading-card-content"><ul><li>先看第2页矩阵SDE与谱变量，再直接读第8、11页公式，并用1×1极限检验系数。第9页单模Gamma推导帮助区别正确条件解与不成立的幂律解释；第14–15页一般协方差可作为扩展入口。实验需并读第3–5页图与第16–17页算法配置、最高学习率回落。前置知识是SVD、Itô公式、Fokker–Planck零流稳态与随机矩阵有限维规范；不要用摘要的rigorous或power-law词汇代替这些检查。</li></ul></div>
 </section></article>

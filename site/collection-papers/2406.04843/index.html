@@ -3,10 +3,10 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Variational Flow Matching for Graph Generation - physics+AI Collection 论文卡</title>
-    <meta name="description" content="作者：Floor Eijkelboom、Grigory Bartosh、Christian Andersson Naesseth、Max Welling、Jan-Willem van de Meent；arXiv:2406.04843v2。全文 31 页，提出 VFM 与 categorical special case CatFlow。" />
+    <title>Variational Flow Matching for Graph Generation - 论文卡</title>
+    <meta name="description" content="标准 flow matching 直接回归 marginal velocity，却隐藏了穿过当前点 \(x\) 的所有可能终点 \(x_1\)。论文问：能否显式学习 posterior endpoint distribution \(p_t(x_1\mid x)\)，并在 conditional velocity 对 \(x_1\) 线性时，用低维 mean-field marginals 精确恢复同一 velocity，从而自然处理 categorical graph nodes/edges？" />
     <link rel="canonical" href="https://xixi-cc.github.io/daily-article-card/collection-papers/2406.04843/" />
-    <script type="application/ld+json">{"@context": "https://schema.org", "@type": "Article", "headline": "Variational Flow Matching for Graph Generation", "description": "作者：Floor Eijkelboom、Grigory Bartosh、Christian Andersson Naesseth、Max Welling、Jan-Willem van de Meent；arXiv:2406.04843v2。全文 31 页，提出 VFM 与 categorical special case CatFlow。", "url": "https://xixi-cc.github.io/daily-article-card/collection-papers/2406.04843/", "mainEntityOfPage": "https://xixi-cc.github.io/daily-article-card/collection-papers/2406.04843/", "inLanguage": "zh-CN", "author": {"@type": "Person", "name": "Xineng Cao", "alternateName": ["Xixi Cao", "曹溪能"], "url": "https://xixi-cc.github.io/"}, "isBasedOn": "https://arxiv.org/abs/2406.04843"}</script>
+    <script type="application/ld+json">{"@context": "https://schema.org", "@type": "Article", "headline": "Variational Flow Matching for Graph Generation", "description": "标准 flow matching 直接回归 marginal velocity，却隐藏了穿过当前点 \\(x\\) 的所有可能终点 \\(x_1\\)。论文问：能否显式学习 posterior endpoint distribution \\(p_t(x_1\\mid x)\\)，并在 conditional velocity 对 \\(x_1\\) 线性时，用低维 mean-field marginals 精确恢复同一 velocity，从而自然处理 categorical graph nodes/edges？", "url": "https://xixi-cc.github.io/daily-article-card/collection-papers/2406.04843/", "mainEntityOfPage": "https://xixi-cc.github.io/daily-article-card/collection-papers/2406.04843/", "inLanguage": "zh-CN", "author": {"@type": "Person", "name": "Xineng Cao", "alternateName": ["Xixi Cao", "曹溪能"], "url": "https://xixi-cc.github.io/"}, "isBasedOn": "https://arxiv.org/abs/2406.04843"}</script>
     <script>
       (function() {
         try {
@@ -30,6 +30,18 @@
     <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700;800&family=Noto+Sans+SC:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
     <script>document.documentElement.classList.add('math-pending');</script>
     <script>
+      window.fitInlineMath = function(root) {
+        (root || document).querySelectorAll('mjx-container:not([display="true"])').forEach(function(el) {
+          el.classList.remove('inline-math-overflow');
+          const content = el.closest('.reading-card-content, .detail-summary, .feed-card-body');
+          if(content && el.getBoundingClientRect().width > content.clientWidth) {
+            el.classList.add('inline-math-overflow');
+            el.tabIndex = 0;
+            el.setAttribute('aria-label', '长公式，可横向滑动阅读');
+          }
+        });
+      };
+      window.addEventListener('resize', function() { window.fitInlineMath(); });
       window.MathJax = {
         tex: {
           inlineMath: [['$', '$'], ['\\(', '\\)']],
@@ -49,6 +61,7 @@
             MathJax.startup.promise.then(function() {
               document.documentElement.classList.remove('math-pending');
               document.documentElement.dataset.mathReady = 'true';
+              window.requestAnimationFrame(function() { window.fitInlineMath(); });
             });
           }
         }
@@ -65,9 +78,9 @@
     <header class="header detail-page-header">
       <div class="container">
         <div class="detail-page-topbar">
-          <a class="back-link" href="../../collection.html">返回列表</a>
+          <a class="back-link" href="../../index.html">返回列表</a>
           <div class="detail-topbar-actions">
-            <span class="detail-site-name">physics+AI Collection 论文卡</span>
+            <span class="detail-site-name">论文卡</span>
             <button id="detail-favorite" class="detail-favorite-button" type="button" aria-pressed="false">☆ 收藏</button>
             <button class="theme-toggle" type="button" data-theme-toggle aria-label="当前主题：设备，点击切换主题" title="当前主题：设备">
   <span class="theme-toggle-icons" aria-hidden="true">
@@ -91,22 +104,15 @@
         <div class="detail-hero-grid">
           <div class="detail-hero-cover"><figure class="paper-figure-card paper-figure-card-detail">
   <img class="paper-figure-image" src="../../assets/collection-figures/2406.04843/figure-1-catflow-simplex.webp" alt="当前位置、categorical endpoint distribution 的 simplex 表示以及指向其均值的 CatFlow velocity。" loading="lazy" onclick="window.openPaperFigureImage && window.openPaperFigureImage(this)" />
-  <figcaption class="paper-figure-caption">CatFlow 先预测 simplex 上的 endpoint probabilities \(\mu_t(x)\)，再令 velocity 指向该点，保证终态收敛到 categorical simplex。</figcaption>
+  <figcaption class="paper-figure-caption">CatFlow 先预测 simplex 上的 endpoint probabilities \(\mu_t(x)\)，再令 velocity 指向该点，保证终态收敛到 categorical simplex。 <a href="https://arxiv.org/abs/2406.04843" target="_blank" rel="noopener noreferrer">原文图源 ↗</a></figcaption>
 </figure></div>
           <div class="detail-hero-copy">
-            <p class="eyebrow">Collection 全文卡</p>
+            <p class="eyebrow">论文详情</p>
             <h1 class="detail-page-title">Variational Flow Matching for Graph Generation</h1>
             <p class="detail-page-title-zh">用于图生成的变分流匹配</p>
-            <div class="detail-meta">Paper Collection · Flow Matching · <a href="https://arxiv.org/abs/2406.04843" target="_blank" rel="noopener noreferrer">原文</a></div>
-            <p class="detail-summary">作者：Floor Eijkelboom、Grigory Bartosh、Christian Andersson Naesseth、Max Welling、Jan-Willem van de Meent；arXiv:2406.04843v2。全文 31 页，提出 VFM 与 categorical special case CatFlow。</p>
-            <div class="detail-micro-meta">
-              <span class="meta-pill">AI 基础理论</span>
-              <span class="meta-pill">理论与数值</span>
-              <span class="meta-pill">#Flow Matching</span><span class="meta-pill">#机器学习</span><span class="meta-pill">#生成模型</span>
-              <span class="meta-pill">10 分钟读完</span>
-              <span class="meta-pill">8 张阅读卡</span>
-              <span class="meta-pill">作者：Floor Eijkelboom、Grigory Bartosh、Christian Ander…</span>
-            </div>
+            <div class="detail-meta">Floor Eijkelboom、Grigory Bartosh、Christian Andersson Naesseth、Max Welling、Jan-Willem van de Meent · 预印本 · arXiv:2406.04843 · <a href="https://arxiv.org/abs/2406.04843" target="_blank" rel="noopener noreferrer">论文原文 ↗</a></div>
+            <p class="detail-summary">标准 flow matching 直接回归 marginal velocity，却隐藏了穿过当前点 \(x\) 的所有可能终点 \(x_1\)。论文问：能否显式学习 posterior endpoint distribution \(p_t(x_1\mid x)\)，并在 conditional velocity 对 \(x_1\) 线性时，用低维 mean-field marginals 精确恢复同一 velocity，从而自然处理 categorical graph nodes/edges？</p>
+
           </div>
         </div>
       </div>
@@ -115,42 +121,18 @@
     <main class="container detail-layout">
       <div class="detail-shell">
         <article id="detail-body" class="reading-flow"><section class="reading-card reading-card-section">
-  <div class="reading-card-topline">
-    <span class="reading-step">Card 01</span>
-    <span class="reading-step-note">作者信息</span>
-  </div>
-  <h2>作者信息</h2>
-  <div class="reading-card-content"><ul><li>作者：Floor Eijkelboom、Grigory Bartosh、Christian Andersson Naesseth、Max Welling、Jan-Willem van de Meent；arXiv:2406.04843v2。全文 31 页，提出 VFM 与 categorical special case CatFlow。</li></ul></div>
-</section>
-<section class="reading-card reading-card-section">
-  <div class="reading-card-topline">
-    <span class="reading-step">Card 02</span>
-    <span class="reading-step-note">研究问题</span>
-  </div>
   <h2>研究问题</h2>
   <div class="reading-card-content"><ul><li>标准 flow matching 直接回归 marginal velocity，却隐藏了穿过当前点 \(x\) 的所有可能终点 \(x_1\)。论文问：能否显式学习 posterior endpoint distribution \(p_t(x_1\mid x)\)，并在 conditional velocity 对 \(x_1\) 线性时，用低维 mean-field marginals 精确恢复同一 velocity，从而自然处理 categorical graph nodes/edges？</li></ul></div>
 </section>
 <section class="reading-card reading-card-section">
-  <div class="reading-card-topline">
-    <span class="reading-step">Card 03</span>
-    <span class="reading-step-note">背景</span>
-  </div>
   <h2>背景</h2>
   <div class="reading-card-content"><ul><li>marginal field 是 conditional fields 对 endpoint posterior 的平均：\(u_t(x)=\mathbb E_{p_t(x_1|x)}u_t(x|x_1)\)。VFM 用 \(q_t^\theta(x_1|x)\) 近似这一 posterior，并把训练写成 KL/cross-entropy。若 field 对 endpoint 线性，速度只依赖一阶矩，因此不需要学习 endpoint components 的全部相关结构。</li><li>图被表示为 fully connected categorical variables：每个 node 取 \(K_v\) 类，每条 edge 取 \(K_e+1\) 类（额外一类表示 absent）。这不是带三维坐标的 geometric graph generation。</li></ul></div>
 </section>
 <section class="reading-card reading-card-section">
-  <div class="reading-card-topline">
-    <span class="reading-step">Card 04</span>
-    <span class="reading-step-note">模型与方法</span>
-  </div>
   <h2>模型与方法</h2>
   <div class="reading-card-content"><ul><li>CatFlow 对每个 component 输出 categorical probabilities \(\mu_t^d(x)\)，再定义 \(v_t^{\theta,d}(x)=(\mu_t^d(x)-x^d)/(1-t)\)。Figure 1 显示当前位置、预测的 simplex point 与速度方向；这种参数化保证 \(t\to1\) 时 trajectory 指向 simplex corner。</li><li>训练目标退化为逐 component cross-entropy，而生成仍是连续 ODE integration，不是逐类别 CTMC sampling。graph network 保持 permutation equivariance；Theorem 2 说明在相应条件下生成分布对 vertex relabeling exchangeable。</li></ul></div>
 </section>
 <section class="reading-card reading-card-section">
-  <div class="reading-card-topline">
-    <span class="reading-step">Card 05</span>
-    <span class="reading-step-note">核心结果与证据</span>
-  </div>
   <h2>核心结果与证据</h2>
   <div class="reading-card-content"><ul><li>Figure 1 说明 CatFlow 的关键 inductive bias：网络不直接回归任意 vector，而先预测 simplex 上的 endpoint distribution，再沿其 mean 方向流动；这排除了指向不可能 categorical endpoint 的 misaligned paths。</li><li>abstract graphs 上，CatFlow 在 Ego-small 的 degree/clustering/orbit MMD 为 0.013/0.024/0.008，在 Community-small 为 0.018/0.086/0.007，达到或匹配表中最佳。</li><li>10,000 个 molecule samples 上，QM9 validity/uniqueness/FCD 为 99.81%/99.95%/0.441；ZINC250k 为 99.21%/100.00%/13.211。相对普通 flow matching，CatFlow 在小模型和 5%–20% data ablation 下退化更慢，并报告更快 convergence。</li></ul><figure class="evidence-figure">
   <button class="evidence-figure-image-button" type="button" aria-label="放大查看 Figure 1" onclick="window.openPaperFigureImage && window.openPaperFigureImage(this.querySelector('img'))">
@@ -164,26 +146,14 @@
 </figure></div>
 </section>
 <section class="reading-card reading-card-section">
-  <div class="reading-card-topline">
-    <span class="reading-step">Card 06</span>
-    <span class="reading-step-note">有效性与局限</span>
-  </div>
   <h2>有效性与局限</h2>
   <div class="reading-card-content"><ul><li>mean-field 的“无损”只针对 conditional velocity 对 endpoint 线性的情形；它保证相同 first-moment field，不保证学到真实 endpoint joint correlations。CatFlow 在 simplex embedding 中积分连续 ODE，因此与严格离散 CTMC、chemical reaction dynamics 或物理分子轨迹不同。</li><li>实验仅含 categorical graphs；fully connected edge representation 的计算/内存随 nodes 二次增长，论文明确指出不适合大图。QM9 novelty 不适合作为主指标，ZINC 的接近 100% novelty 也不能证明 drug usefulness；validity/FCD 对 preprocessing 和 valency protocol 敏感。</li></ul></div>
 </section>
 <section class="reading-card reading-card-section">
-  <div class="reading-card-topline">
-    <span class="reading-step">Card 07</span>
-    <span class="reading-step-note">复现与资源</span>
-  </div>
   <h2>复现与资源</h2>
   <div class="reading-card-content"><ul><li>原文：https://arxiv.org/abs/2406.04843。全文 31 页，PDF SHA-256：ef9aada33f5376f38333b63f76a27fbea86cae2f6baca59e2f1cd55f0b298b83。</li><li>复现需固定 graph categorical encoding、permutation-equivariant network、interpolant、ODE solver/tolerances、RDKit kekulization、hydrogen removal、10,000-sample protocol、validity rule、FCD model 与 MMD kernels。</li><li>Evidence status: full-text verified; no independent reproduction performed.</li></ul></div>
 </section>
 <section class="reading-card reading-card-section">
-  <div class="reading-card-topline">
-    <span class="reading-step">Card 08</span>
-    <span class="reading-step-note">阅读指南</span>
-  </div>
   <h2>阅读指南</h2>
   <div class="reading-card-content"><ul><li>先读 Eqs. (6)–(12)，抓住 endpoint posterior 与 first-moment sufficiency；再看 Figure 1 和 Eqs. (15)–(20)，区分“预测类别分布”与“连续积分”。最后检查 Tables 1–2 和 Figure 3，并把 graph topology、molecular validity 与 large-graph scalability 分开判断。</li></ul></div>
 </section></article>

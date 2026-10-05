@@ -3,10 +3,10 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Scaling Collapse Reveals Universal Dynamics in Compute-Optimally Trained Neural Networks - physics+AI Collection 论文卡</title>
-    <meta name="description" content="Shikai Qiu、Andrew Gordon Wilson署名纽约大学；Lechao Xiao、Jeffrey Pennington、Atish Agarwala署名Google DeepMind。首页注明Qiu部分工作在DeepMind实习期间完成，并列Qiu与Agarwala为通讯联系人。第10页给明确贡献：Qiu承担多数实验、主导理论和写作；Xiao首先观察supercollapse并参与理论/实验设计/写作；Wilson指导Qiu并编辑；Pennington参与理论/设计/写作；Agarwala管理项目、证明部分定理并指导理论。不是按作者位置猜测分工。论文发表于ICML2025、PMLR267:50697–50720；本卡全文依据24物理页arXivv2。（第1、10页及官方PMLR记录。）" />
+    <title>Scaling Collapse Reveals Universal Dynamics in Compute-Optimally Trained Neural Networks - 论文卡</title>
+    <meta name="description" content="模型和训练token数同时增加时，整条训练损失曲线能否在适当归一化后保持共同形状，而不只是最终损失符合幂律？本文在有限规模算力分配梯子上观察collapse；学习率下降时，终点自归一化的曲线差异进一步低于未自归一化的跨seed相对噪声，称supercollapse。它提出标度诊断和噪声机制解释，没有由经验曲线证明任意神经网络都存在同一个严格普适极限。（第1–4、9页。）" />
     <link rel="canonical" href="https://xixi-cc.github.io/daily-article-card/collection-papers/2507.02119/" />
-    <script type="application/ld+json">{"@context": "https://schema.org", "@type": "Article", "headline": "Scaling Collapse Reveals Universal Dynamics in Compute-Optimally Trained Neural Networks", "description": "Shikai Qiu、Andrew Gordon Wilson署名纽约大学；Lechao Xiao、Jeffrey Pennington、Atish Agarwala署名Google DeepMind。首页注明Qiu部分工作在DeepMind实习期间完成，并列Qiu与Agarwala为通讯联系人。第10页给明确贡献：Qiu承担多数实验、主导理论和写作；Xiao首先观察supercollapse并参与理论/实验设计/写作；Wilson指导Qiu并编辑；Pennington参与理论/设计/写作；Agarwala管理项目、证明部分定理并指导理论。不是按作者位置猜测分工。论文发表于ICML2025、PMLR267:50697–50720；本卡全文依据24物理页arXivv2。（第1、10页及官方PMLR记录。）", "url": "https://xixi-cc.github.io/daily-article-card/collection-papers/2507.02119/", "mainEntityOfPage": "https://xixi-cc.github.io/daily-article-card/collection-papers/2507.02119/", "inLanguage": "zh-CN", "author": {"@type": "Person", "name": "Xineng Cao", "alternateName": ["Xixi Cao", "曹溪能"], "url": "https://xixi-cc.github.io/"}, "isBasedOn": "https://arxiv.org/abs/2507.02119"}</script>
+    <script type="application/ld+json">{"@context": "https://schema.org", "@type": "Article", "headline": "Scaling Collapse Reveals Universal Dynamics in Compute-Optimally Trained Neural Networks", "description": "模型和训练token数同时增加时，整条训练损失曲线能否在适当归一化后保持共同形状，而不只是最终损失符合幂律？本文在有限规模算力分配梯子上观察collapse；学习率下降时，终点自归一化的曲线差异进一步低于未自归一化的跨seed相对噪声，称supercollapse。它提出标度诊断和噪声机制解释，没有由经验曲线证明任意神经网络都存在同一个严格普适极限。（第1–4、9页。）", "url": "https://xixi-cc.github.io/daily-article-card/collection-papers/2507.02119/", "mainEntityOfPage": "https://xixi-cc.github.io/daily-article-card/collection-papers/2507.02119/", "inLanguage": "zh-CN", "author": {"@type": "Person", "name": "Xineng Cao", "alternateName": ["Xixi Cao", "曹溪能"], "url": "https://xixi-cc.github.io/"}, "isBasedOn": "https://arxiv.org/abs/2507.02119"}</script>
     <script>
       (function() {
         try {
@@ -30,6 +30,18 @@
     <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700;800&family=Noto+Sans+SC:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
     <script>document.documentElement.classList.add('math-pending');</script>
     <script>
+      window.fitInlineMath = function(root) {
+        (root || document).querySelectorAll('mjx-container:not([display="true"])').forEach(function(el) {
+          el.classList.remove('inline-math-overflow');
+          const content = el.closest('.reading-card-content, .detail-summary, .feed-card-body');
+          if(content && el.getBoundingClientRect().width > content.clientWidth) {
+            el.classList.add('inline-math-overflow');
+            el.tabIndex = 0;
+            el.setAttribute('aria-label', '长公式，可横向滑动阅读');
+          }
+        });
+      };
+      window.addEventListener('resize', function() { window.fitInlineMath(); });
       window.MathJax = {
         tex: {
           inlineMath: [['$', '$'], ['\\(', '\\)']],
@@ -49,6 +61,7 @@
             MathJax.startup.promise.then(function() {
               document.documentElement.classList.remove('math-pending');
               document.documentElement.dataset.mathReady = 'true';
+              window.requestAnimationFrame(function() { window.fitInlineMath(); });
             });
           }
         }
@@ -65,9 +78,9 @@
     <header class="header detail-page-header">
       <div class="container">
         <div class="detail-page-topbar">
-          <a class="back-link" href="../../collection.html">返回列表</a>
+          <a class="back-link" href="../../index.html">返回列表</a>
           <div class="detail-topbar-actions">
-            <span class="detail-site-name">physics+AI Collection 论文卡</span>
+            <span class="detail-site-name">论文卡</span>
             <button id="detail-favorite" class="detail-favorite-button" type="button" aria-pressed="false">☆ 收藏</button>
             <button class="theme-toggle" type="button" data-theme-toggle aria-label="当前主题：设备，点击切换主题" title="当前主题：设备">
   <span class="theme-toggle-icons" aria-hidden="true">
@@ -91,22 +104,15 @@
         <div class="detail-hero-grid">
           <div class="detail-hero-cover"><figure class="paper-figure-card paper-figure-card-detail">
   <img class="paper-figure-image" src="../../assets/collection-figures/2507.02119/figure-1-supercollapse.png" alt="六面板算力前沿、损失归一化、噪声比较、日程差异及近终点理论标度" loading="lazy" onclick="window.openPaperFigureImage && window.openPaperFigureImage(this)" />
-  <figcaption class="paper-figure-caption">Qiu等，Figure1（PMLR267:50697–50720，第2个PDF物理页；https://proceedings.mlr.press/v267/qiu25j.html，CC BY4.0）：a为有限算力前沿，b为同seed终点自归一化曲线，c比较Δ与原可约损失噪声σ；d各日程分别给共同形状，e/f是噪声模型的曲线与近终点标度对照。完整保留a–\(f\)、宽度/日程图例、log坐标、原始Loss与Normalized Loss区别。归一化强制终点重合，远离终点区间才提供额外证据；图不证明任意大模型或所有日程同一普适曲线。</figcaption>
+  <figcaption class="paper-figure-caption">Qiu等，Figure1（PMLR267:50697–50720，第2个PDF物理页；https://proceedings.mlr.press/v267/qiu25j.html，CC BY4.0）：a为有限算力前沿，b为同seed终点自归一化曲线，c比较Δ与原可约损失噪声σ；d各日程分别给共同形状，e/f是噪声模型的曲线与近终点标度对照。完整保留a–\(f\)、宽度/日程图例、log坐标、原始Loss与Normalized Loss区别。归一化强制终点重合，远离终点区间才提供额外证据；图不证明任意大模型或所有日程同一普适曲线。 <a href="https://arxiv.org/abs/2507.02119" target="_blank" rel="noopener noreferrer">原文图源 ↗</a></figcaption>
 </figure></div>
           <div class="detail-hero-copy">
-            <p class="eyebrow">Collection 全文卡</p>
+            <p class="eyebrow">论文详情</p>
             <h1 class="detail-page-title">Scaling Collapse Reveals Universal Dynamics in Compute-Optimally Trained Neural Networks</h1>
             <p class="detail-page-title-zh">算力最优训练的标度塌缩：终点自归一化与学习率噪声模型</p>
-            <div class="detail-meta">Paper Collection · Machine Learning · <a href="https://arxiv.org/abs/2507.02119" target="_blank" rel="noopener noreferrer">原文</a></div>
-            <p class="detail-summary">Shikai Qiu、Andrew Gordon Wilson署名纽约大学；Lechao Xiao、Jeffrey Pennington、Atish Agarwala署名Google DeepMind。首页注明Qiu部分工作在DeepMind实习期间完成，并列Qiu与Agarwala为通讯联系人。第10页给明确贡献：Qiu承担多数实验、主导理论和写作；Xiao首先观察supercollapse并参与理论/实验设计/写作；Wilson指导Qiu并编辑；Pennington参与理论/设计/写作；Agarwala管理项目、证明部分定理并指导理论。不是按作者位置猜测分工。论文发表于ICML2025、PMLR267:50697–50720；本卡全文依据24物理页arXivv2。（第1、10页及官方PMLR记录。）</p>
-            <div class="detail-micro-meta">
-              <span class="meta-pill">AI 基础理论</span>
-              <span class="meta-pill">理论与数值</span>
-              <span class="meta-pill">#Machine Learning</span><span class="meta-pill">#机器学习</span><span class="meta-pill">#Transformer</span>
-              <span class="meta-pill">28 分钟读完</span>
-              <span class="meta-pill">8 张阅读卡</span>
-              <span class="meta-pill">Shikai Qiu、Andrew Gordon Wilson署名纽约大学；Lechao Xiao、J…</span>
-            </div>
+            <div class="detail-meta">Shikai Qiu、Lechao Xiao、Andrew Gordon Wilson、Jeffrey Pennington、Atish Agarwala · 预印本 · arXiv:2507.02119 · <a href="https://arxiv.org/abs/2507.02119" target="_blank" rel="noopener noreferrer">论文原文 ↗</a></div>
+            <p class="detail-summary">模型和训练token数同时增加时，整条训练损失曲线能否在适当归一化后保持共同形状，而不只是最终损失符合幂律？本文在有限规模算力分配梯子上观察collapse；学习率下降时，终点自归一化的曲线差异进一步低于未自归一化的跨seed相对噪声，称supercollapse。它提出标度诊断和噪声机制解释，没有由经验曲线证明任意神经网络都存在同一个严格普适极限。（第1–4、9页。）</p>
+
           </div>
         </div>
       </div>
@@ -115,34 +121,14 @@
     <main class="container detail-layout">
       <div class="detail-shell">
         <article id="detail-body" class="reading-flow"><section class="reading-card reading-card-section">
-  <div class="reading-card-topline">
-    <span class="reading-step">Card 01</span>
-    <span class="reading-step-note">作者信息</span>
-  </div>
-  <h2>作者信息</h2>
-  <div class="reading-card-content"><ul><li>Shikai Qiu、Andrew Gordon Wilson署名纽约大学；Lechao Xiao、Jeffrey Pennington、Atish Agarwala署名Google DeepMind。首页注明Qiu部分工作在DeepMind实习期间完成，并列Qiu与Agarwala为通讯联系人。第10页给明确贡献：Qiu承担多数实验、主导理论和写作；Xiao首先观察supercollapse并参与理论/实验设计/写作；Wilson指导Qiu并编辑；Pennington参与理论/设计/写作；Agarwala管理项目、证明部分定理并指导理论。不是按作者位置猜测分工。论文发表于ICML2025、PMLR267:50697–50720；本卡全文依据24物理页arXivv2。（第1、10页及官方PMLR记录。）</li></ul></div>
-</section>
-<section class="reading-card reading-card-section">
-  <div class="reading-card-topline">
-    <span class="reading-step">Card 02</span>
-    <span class="reading-step-note">研究问题</span>
-  </div>
   <h2>研究问题</h2>
   <div class="reading-card-content"><ul><li>模型和训练token数同时增加时，整条训练损失曲线能否在适当归一化后保持共同形状，而不只是最终损失符合幂律？本文在有限规模算力分配梯子上观察collapse；学习率下降时，终点自归一化的曲线差异进一步低于未自归一化的跨seed相对噪声，称supercollapse。它提出标度诊断和噪声机制解释，没有由经验曲线证明任意神经网络都存在同一个严格普适极限。（第1–4、9页。）</li><li>读者桥：每个模型的状态是训练权重，输入是同一任务的数据和按相对进度定义的学习率日程；优化信号是Adam或梯度更新，输出观测是随已处理token数变化的测试损失。比较对象是一组不同宽度/参数量模型及其训练长度，不是单条轨迹内部的神经元压缩。先减去拟合的不可约损失，再用同一次随机运行的最终可约损失归一化，才得到被比较的无量纲曲线。（第2–3、13–14页。）</li></ul></div>
 </section>
 <section class="reading-card reading-card-section">
-  <div class="reading-card-topline">
-    <span class="reading-step">Card 03</span>
-    <span class="reading-step-note">背景</span>
-  </div>
   <h2>背景</h2>
   <div class="reading-card-content"><ul><li>统计物理中的标度塌缩提供“不同规模是否沿相同形状演化”的语言，但本文曲线仍依赖任务、结构、优化器和日程。它没有测得统一临界指数、相变、重整化流或新的热力学普适类。末段将重整化群作为未来理解的类比，附录D列跨科学领域的例子；这些类比不能替代神经训练的有限规模验证。（第9、15页。）</li><li>已有神经scaling law约束最终损失与参数量/训练长度，µP则按宽度调整初始化和逐层学习率以便超参数迁移。本文连接二者：若训练长度只随参数量按不合适的幂律增长，未必整条曲线都一致；而以实际随机终点自归一化会消除共享时间噪声。因此“曲线看起来更一致”与“更准确预测任一模型原始损失”是不同的问题。（第3–6、9页。）</li></ul></div>
 </section>
 <section class="reading-card reading-card-section">
-  <div class="reading-card-topline">
-    <span class="reading-step">Card 04</span>
-    <span class="reading-step-note">模型与方法</span>
-  </div>
   <h2>模型与方法</h2>
   <div class="reading-card-content"><ul><li>主要Transformer为3个block、宽度768–2048、约10M–80M参数，使用µP、Adam、GeLU、RMSNorm、可学习位置嵌入，FFN宽度D而非常见4D。CIFAR-5M把32×32图像灰度化为1024词元、256灰度级词表，做下一像素预测；Lichess做字符级棋谱下一字符预测，非自然语言大模型。另有7层MLP对8维输入上的幂律Fourier特征目标做回归，宽度384–2048。（第2–3、13页。）</li><li>先用常学习率及5seed均值估计测试损失–算力Pareto前沿，按c=6tp FLOPs近似训练成本，再拟合最优训练长度t*(\(p\))∝\(p\)^\(\gamma\)。之后不同日程沿用这一长度，认为到常数倍程度合理；本文“compute-optimal”主要指训练长度分配，不是已联合优化所有超参数或证明任意日程全局最优。拟合前沿时还删除最小与最大模型的离群点。（第3、14–15页。）</li><li>为避免原文同时用L及装饰L造成混淆，本卡用R表示可约损失，其归一化为：</li></ul>
 
@@ -163,10 +149,6 @@
 <ul><li>$H$ 是二次损失Hessian，F是同初态无噪声平均损失，$\overline\Sigma$ 是梯度噪声协方差的seed期望，η是当前学习率。积分形式来自线性二次SDE；末式额外需要ηΣ慢变、相关稳定模的记忆已衰减及大τ。非线性损失再加小噪声和Hessian慢变近似；不能把最终1/4表达当作一般网络的精确恒等式。使用Adam/µP时，在P慢变、忽略其时间导数且暂取确定/随机轨迹同一P的近似下，改用坐标 $\widetilde w=P^{1/2}w$；积分传播核与二次型中的H同时换成 $\widetilde H=P^{-1/2}HP^{-1/2}$，协方差换成 $\widetilde\Sigma=P^{-1/2}\Sigma P^{-1/2}$。晚时慢变极限才写成 $\eta\operatorname{Tr}\overline{\widetilde\Sigma}/4$；逐层峰值学习率吸收到P，η仅是0–1日程倍率。真实Adam的两条轨迹P可不同，首阶漏项仍未建模。（第6–7、13、19–22页 Eqs.(11)–(14)、(72)–(79)及Limitations。）</li></ul></div>
 </section>
 <section class="reading-card reading-card-section">
-  <div class="reading-card-topline">
-    <span class="reading-step">Card 05</span>
-    <span class="reading-step-note">核心结果与证据</span>
-  </div>
   <h2>核心结果与证据</h2>
   <div class="reading-card-content"><ul><li>Figure1在CIFAR-5M下一像素Transformer梯子上显示：a的最终算力拟合为L0=3.132、\(b=0.191\)；b归一化曲线随宽度近重合；c的Δ在衰减阶段低于σ，在所示任务区间可覆盖后半程。d比较不同日程，每个日程有自己的共同曲线，并不是所有日程共享一条形状。Figure3常学习率时Δ与σ同量级；Figure2显示减错L0会破坏塌缩。拟合L0是数据分析估计，不是独立测定的真实Bayes熵。（第2–4页 Figures1–3。）</li><li>Figure4给诊断反例：MLP若用跨宽度固定学习率替代µP，归一化曲线显著分离；棋谱Transformer若把数据指数γ由估计1.02改为1.2，前沿仅稍变差但塌缩明显失效。两者支持该比较对这些错配敏感，未校准对所有配置的灵敏度/特异度，更不证明任何不塌缩都是训练不佳。另一个前沿拟合给CIFARγ≈0.96、\(\mathrm{MLP}\approx 1.04\)；任务不同不可混用。（第4、14–15页 Figures4、10。）</li><li>跨日程损失预测将当前轨迹的协方差插入近似，而非只靠初始配置盲预测。恒定学习率作参考、同峰值衰减作目标，作者保留δη·TrΣ′而舍去η·TrδΣ，以共享α=0.21拟合CIFAR实验，\(MLP\alpha=0.26\)。Figure6跨日程、模型与训练长度拟合良好；曲线用总步数1%半衰期EMA平滑，无报告独立预注册测试误差或统一概率预测区间。目标Σ′由固定2M词元测量，因此预测仍需要目标运行的额外信息。（第7、13、23页 Figures6、12。）</li><li>Figure7/14观察到固定日程下预条件噪声trace与可约损失之比大致只随相对进度变化，将它表示为h(\(x\))，组合得：</li></ul>
 
@@ -192,26 +174,14 @@
 </figure></div>
 </section>
 <section class="reading-card reading-card-section">
-  <div class="reading-card-topline">
-    <span class="reading-step">Card 06</span>
-    <span class="reading-step-note">有效性与局限</span>
-  </div>
   <h2>有效性与局限</h2>
   <div class="reading-card-content"><ul><li>自归一化会强制终点重合，并利用未来观测和时间相关性降低方差；需要比较整段训练而不是只看x=1。L0通过同一批前沿拟合，并没有独立噪声下限标定或未知终点外推。L0误差相对可约损失在大规模可变得显著；Figure2显示这种敏感性。主文不同拟合图出现3.132与3.134，属于拟合设置差异，不能把任一个当作精确理论常数。（第3、5页 Figures2、5。）</li><li>TheoremE.1的必要性使用正可约损失、可微内点前沿和包络切线；幂律前沿仅保证终点一阶共同斜率，不足以保证整条曲线完全塌缩。第17页特别指出，学习率有限步降为零时最优点可能在轨迹边界，切线论证不直接适用，而实测恰包含这类日程。两幂律精确抵消是可检查的模型结论，不能以它覆盖未满足内点条件的全部经验日程。（第15–17页 TheoremE.1及Remark。）</li><li>TheoremF.1的多项幂律需要正系数、主导指数平衡和非退化分配依赖；所得O(\(p\)⁻\(\epsilon\))用于固定x&gt;0，未建立包括最早x→0阶段的统一界。\(m\)≥3时塌缩可来自不同平衡，不唯一锁定算力最优；任意错误γ在单项主导的极限也可能趋于平凡1或x⁻μ曲线。应区分有限尺度有信息的双因素平衡与形式上的渐近塌缩。（第17–19页及Remarks。）</li><li>非线性近似先线性化权重扰动再二阶展开损失，不能直接认证为一般非线性SDE完整的所有同阶修正；附录保留实测随机轨迹协方差，亦不是解析闭合。慢变H/P与稳定模条件在实际finite-step训练、edge of stability及曲率重排中可能失效。Adam的P依赖梯度噪声，确定/随机轨迹P相同的假设不正确，作者承认可漏掉首阶额外项。因此成功拟合支持有效描述，不等于已严格推出真实Adam训练动力学。（第19–22页 AppendixG及Limitations。）</li><li>预条件噪声trace与“可约”交叉熵成比例的原因仍未解释；含不可约噪声的回归类比通常关联总损失。α也不是普适常数：Transformer0.21与MLP0.26不同。Figure13保留较小ηTrδΣ项反而常使拟合更差、α变得日程相关，这条不利结果不能省略。原图约3–10倍的项比值只属所测区间，不是舍项的统一严格误差上限。（第8、23–24页 Figures13–14。）</li><li>实验规模与数据有限，CIFAR与棋谱部分模型重复使用数据多个epoch；作者在所测范围未见明显过拟合，不能推出任意重复次数都无影响。CIFAR Figure1的seed控制初始化及顺序，棋谱/MLP主要只控制初始化，顺序固定；不能把全部σ解释为纯mini-batch噪声或同一种随机源。Section3.2换代码后批量/初始化/warmup亦不同，应按具体图配置复现。（第13–14页。）</li><li>另一个源内代数边界是第8页Eq.(20)→(21)：按同seed终点归一化定义，参考曲线在匹配流时间下通常还需除以映射后的终点值，除非另行保证映射终点为1。原Eq.(21)没有显式保留这个因子；本卡未复制它为归一化恒等式。若该因子和流时间映射都与模型尺寸无关，条件性跨尺寸塌缩仍可成立，但不能跳过终点分母直接认证。</li></ul></div>
 </section>
 <section class="reading-card reading-card-section">
-  <div class="reading-card-topline">
-    <span class="reading-step">Card 07</span>
-    <span class="reading-step-note">复现与资源</span>
-  </div>
   <h2>复现与资源</h2>
   <div class="reading-card-content"><ul><li>官方作者代码https://github.com/shikaiqiu/supercollapse与PMLR软件链接对应；本轮核验了资源身份，没有克隆运行或独立训练。\(v_{2}\) PDF SHA-256为 414a3e6ea7689eed5ace0f16f6546e973ac74a42a15c01f15f554ef7d14d949e，24物理页全部含参考文献和附录核读。重点视觉对照第2–3、6、8–9、17、22、24页，公式可约损失命名在本卡明确改作R，原始系数/约定不改。</li><li>复现需保留按5seed前沿拟合训练长度、各seed自己的最终损失、每日程独立L0拟合和不同随机化规则；若比较日程，要按梯度流时间匹配，并另外测量目标预条件协方差，不能只比较相同步数。µP逐层尺度、batch、RMSNorm、\(\mathrm{FFN}=D\)、warmup在附录A完整分任务列出。TRC资助声明不等于报告了具体TPU型号、完整总时长或统一算力成本，本卡不补造硬件基准。（第10、13–15页。）</li><li>封面Figure1取自正式PMLR论文，依据PMLR的CC BY4.0出版协议重用，署名Qiu等并链接原出版：https://proceedings.mlr.press/v267/qiu25j.html。源PDF第2页六面板与所读arXivv2相同区域逐像素一致；许可来源与arXiv nonexclusive分发许可分开，未把后者误作重用授权。本轮完成全文及理论条件检查，没有独立复现任何训练、噪声估计或曲线拟合。Evidence status: full-text verified; no independent reproduction performed.</li></ul></div>
 </section>
 <section class="reading-card reading-card-section">
-  <div class="reading-card-topline">
-    <span class="reading-step">Card 08</span>
-    <span class="reading-step-note">阅读指南</span>
-  </div>
   <h2>阅读指南</h2>
   <div class="reading-card-content"><ul><li>先读第3页Eq.(1)–(3)：减去什么、分母来自哪个seed、Δ与σ分别统计哪个变量。然后看第2页Figure1与第4页反例，确认日程内共同形状而非跨所有任务统一曲线。理论从第6页两幂律抵消进入，再读第9页终点噪声差；有兴趣才核读第15–19页前沿定理的内点/非退化条件。复现阅读顺序是附录A/C配置与前沿、AppendixG的Adam/P限制、最后Figure13的不利拟合。前置知识为幂律、方差、梯度流时间、线性SDE与Adam预条件。</li></ul></div>
 </section></article>

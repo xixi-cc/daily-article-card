@@ -3,10 +3,10 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>In-Context Learning with Representations: Contextual Generalization of Trained Transformers - physics+AI Collection 论文卡</title>
-    <meta name="description" content="Tong Yang、Yu Huang、Yingbin Liang 与 Yuejie Chi，来自 CMU、UPenn 与 OSU。论文发表于 NeurIPS 2024，分析一层多头 softmax Transformer 如何在带噪 nonlinear regression prompts 中学习 basis representations 并实施 ridge regression。arXiv:2408.10147v2。" />
+    <title>In-Context Learning with Representations: Contextual Generalization of Trained Transformers - 论文卡</title>
+    <meta name="description" content="已有 ICL 理论常假设 linear regression 或 prompt 中样本足以确定 task。本文问：当响应由 m 个未知 basis functions 的线性组合生成，而每个 prompt 只有 N 个带噪 examples、N 不足以直接确定 template 时，训练能否学到跨 prompts 共享的 representation？" />
     <link rel="canonical" href="https://xixi-cc.github.io/daily-article-card/collection-papers/2408.10147/" />
-    <script type="application/ld+json">{"@context": "https://schema.org", "@type": "Article", "headline": "In-Context Learning with Representations: Contextual Generalization of Trained Transformers", "description": "Tong Yang、Yu Huang、Yingbin Liang 与 Yuejie Chi，来自 CMU、UPenn 与 OSU。论文发表于 NeurIPS 2024，分析一层多头 softmax Transformer 如何在带噪 nonlinear regression prompts 中学习 basis representations 并实施 ridge regression。arXiv:2408.10147v2。", "url": "https://xixi-cc.github.io/daily-article-card/collection-papers/2408.10147/", "mainEntityOfPage": "https://xixi-cc.github.io/daily-article-card/collection-papers/2408.10147/", "inLanguage": "zh-CN", "author": {"@type": "Person", "name": "Xineng Cao", "alternateName": ["Xixi Cao", "曹溪能"], "url": "https://xixi-cc.github.io/"}, "isBasedOn": "https://arxiv.org/abs/2408.10147"}</script>
+    <script type="application/ld+json">{"@context": "https://schema.org", "@type": "Article", "headline": "In-Context Learning with Representations: Contextual Generalization of Trained Transformers", "description": "已有 ICL 理论常假设 linear regression 或 prompt 中样本足以确定 task。本文问：当响应由 m 个未知 basis functions 的线性组合生成，而每个 prompt 只有 N 个带噪 examples、N 不足以直接确定 template 时，训练能否学到跨 prompts 共享的 representation？", "url": "https://xixi-cc.github.io/daily-article-card/collection-papers/2408.10147/", "mainEntityOfPage": "https://xixi-cc.github.io/daily-article-card/collection-papers/2408.10147/", "inLanguage": "zh-CN", "author": {"@type": "Person", "name": "Xineng Cao", "alternateName": ["Xixi Cao", "曹溪能"], "url": "https://xixi-cc.github.io/"}, "isBasedOn": "https://arxiv.org/abs/2408.10147"}</script>
     <script>
       (function() {
         try {
@@ -30,6 +30,18 @@
     <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700;800&family=Noto+Sans+SC:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
     <script>document.documentElement.classList.add('math-pending');</script>
     <script>
+      window.fitInlineMath = function(root) {
+        (root || document).querySelectorAll('mjx-container:not([display="true"])').forEach(function(el) {
+          el.classList.remove('inline-math-overflow');
+          const content = el.closest('.reading-card-content, .detail-summary, .feed-card-body');
+          if(content && el.getBoundingClientRect().width > content.clientWidth) {
+            el.classList.add('inline-math-overflow');
+            el.tabIndex = 0;
+            el.setAttribute('aria-label', '长公式，可横向滑动阅读');
+          }
+        });
+      };
+      window.addEventListener('resize', function() { window.fitInlineMath(); });
       window.MathJax = {
         tex: {
           inlineMath: [['$', '$'], ['\\(', '\\)']],
@@ -49,6 +61,7 @@
             MathJax.startup.promise.then(function() {
               document.documentElement.classList.remove('math-pending');
               document.documentElement.dataset.mathReady = 'true';
+              window.requestAnimationFrame(function() { window.fitInlineMath(); });
             });
           }
         }
@@ -65,9 +78,9 @@
     <header class="header detail-page-header">
       <div class="container">
         <div class="detail-page-topbar">
-          <a class="back-link" href="../../collection.html">返回列表</a>
+          <a class="back-link" href="../../index.html">返回列表</a>
           <div class="detail-topbar-actions">
-            <span class="detail-site-name">physics+AI Collection 论文卡</span>
+            <span class="detail-site-name">论文卡</span>
             <button id="detail-favorite" class="detail-favorite-button" type="button" aria-pressed="false">☆ 收藏</button>
             <button class="theme-toggle" type="button" data-theme-toggle aria-label="当前主题：设备，点击切换主题" title="当前主题：设备">
   <span class="theme-toggle-icons" aria-hidden="true">
@@ -91,22 +104,15 @@
         <div class="detail-hero-grid">
           <div class="detail-hero-cover"><figure class="paper-figure-card paper-figure-card-detail">
   <img class="paper-figure-image" src="../../assets/collection-figures/2408.10147/figure-1-icl-transformer.webp" alt="Prompt 与 query matrices 分别进入多头 value、key、query 映射，经 softmax attention形成各 heads，最后由输出矩阵预测 query labels。" loading="lazy" onclick="window.openPaperFigureImage && window.openPaperFigureImage(this)" />
-  <figcaption class="paper-figure-caption">理论分析的一层多头 softmax Transformer 及其 prompt/query 数据流。</figcaption>
+  <figcaption class="paper-figure-caption">理论分析的一层多头 softmax Transformer 及其 prompt/query 数据流。 <a href="https://arxiv.org/abs/2408.10147" target="_blank" rel="noopener noreferrer">原文图源 ↗</a></figcaption>
 </figure></div>
           <div class="detail-hero-copy">
-            <p class="eyebrow">Collection 全文卡</p>
+            <p class="eyebrow">论文详情</p>
             <h1 class="detail-page-title">In-Context Learning with Representations: Contextual Generalization of Trained Transformers</h1>
             <p class="detail-page-title-zh">基于表示的上下文学习：训练后 Transformer 的上下文泛化</p>
-            <div class="detail-meta">Paper Collection · In-Context Learning · <a href="https://arxiv.org/abs/2408.10147" target="_blank" rel="noopener noreferrer">原文</a></div>
-            <p class="detail-summary">Tong Yang、Yu Huang、Yingbin Liang 与 Yuejie Chi，来自 CMU、UPenn 与 OSU。论文发表于 NeurIPS 2024，分析一层多头 softmax Transformer 如何在带噪 nonlinear regression prompts 中学习 basis representations 并实施 ridge regression。arXiv:2408.10147v2。</p>
-            <div class="detail-micro-meta">
-              <span class="meta-pill">AI 基础理论</span>
-              <span class="meta-pill">理论与实验</span>
-              <span class="meta-pill">#In-Context Learning</span><span class="meta-pill">#机器学习</span><span class="meta-pill">#语言模型</span>
-              <span class="meta-pill">10 分钟读完</span>
-              <span class="meta-pill">7 张阅读卡</span>
-              <span class="meta-pill">Tong Yang、Yu Huang、Yingbin Liang 与 Yuejie Chi，来自 CM…</span>
-            </div>
+            <div class="detail-meta">Tong Yang、Yu Huang、Yingbin Liang、Yuejie Chi · 预印本 · arXiv:2408.10147 · <a href="https://arxiv.org/abs/2408.10147" target="_blank" rel="noopener noreferrer">论文原文 ↗</a></div>
+            <p class="detail-summary">已有 ICL 理论常假设 linear regression 或 prompt 中样本足以确定 task。本文问：当响应由 \(m\) 个未知 basis functions 的线性组合生成，而每个 prompt 只有 \(N\) 个带噪 examples、\(N\) 不足以直接确定 template 时，训练能否学到跨 prompts 共享的 representation？</p>
+
           </div>
         </div>
       </div>
@@ -115,26 +121,10 @@
     <main class="container detail-layout">
       <div class="detail-shell">
         <article id="detail-body" class="reading-flow"><section class="reading-card reading-card-section">
-  <div class="reading-card-topline">
-    <span class="reading-step">Card 01</span>
-    <span class="reading-step-note">作者信息</span>
-  </div>
-  <h2>作者信息</h2>
-  <div class="reading-card-content"><ul><li>Tong Yang、Yu Huang、Yingbin Liang 与 Yuejie Chi，来自 CMU、UPenn 与 OSU。论文发表于 NeurIPS 2024，分析一层多头 softmax Transformer 如何在带噪 nonlinear regression prompts 中学习 basis representations 并实施 ridge regression。arXiv:2408.10147v2。</li></ul></div>
-</section>
-<section class="reading-card reading-card-section">
-  <div class="reading-card-topline">
-    <span class="reading-step">Card 02</span>
-    <span class="reading-step-note">研究问题</span>
-  </div>
   <h2>研究问题</h2>
   <div class="reading-card-content"><ul><li>已有 ICL 理论常假设 linear regression 或 prompt 中样本足以确定 task。本文问：当响应由 \(m\) 个未知 basis functions 的线性组合生成，而每个 prompt 只有 \(N\) 个带噪 examples、\(N\) 不足以直接确定 template 时，训练能否学到跨 prompts 共享的 representation？</li><li>Contextual generalization包含两层：对 prompt 内未标注 query generalize，以及对 pretraining 中未见的 task coefficient \(\lambda\) generalize。作者希望从 gradient descent dynamics 证明，而不只构造理想 weights。</li></ul></div>
 </section>
 <section class="reading-card reading-card-section">
-  <div class="reading-card-topline">
-    <span class="reading-step">Card 03</span>
-    <span class="reading-step-note">模型与方法</span>
-  </div>
   <h2>模型与方法</h2>
   <div class="reading-card-content"><ul><li>Task 输出 \(y_{k}=\lambda\)^\(T\)(\(f\)(\(v_{k}\))+\(\epsilon_{k}\))，\(\lambda\) 从 task distribution 采样，\(f\)(v) 是 \(m\)-dimensional basis representation，\(\epsilon\) 为 Gaussian noise。Prompt 拼接 \(N\) labeled examples 与 query positions。</li><li>一层 \(H\)-head softmax attention 分别从 prompt \(E^{P}\) 和 query \(E^{Q}\) 形成 value/key/query，再经 output matrix预测所有 query labels。Figure 1 展示矩阵流。训练对 many prompts 的 population/empirical squared loss 做 gradient descent。</li><li>在 basis covariance、task distribution、initialization、head 数和 sample size 条件下，作者建立 PL-like geometry/concentration，证明 loss 线性收敛到 global minimum；learned predictor 等价于在 \(f\)-space 中执行 ridge regression。</li></ul><figure class="evidence-figure">
   <button class="evidence-figure-image-button" type="button" aria-label="放大查看 Figure 1" onclick="window.openPaperFigureImage && window.openPaperFigureImage(this.querySelector('img'))">
@@ -148,34 +138,18 @@
 </figure></div>
 </section>
 <section class="reading-card reading-card-section">
-  <div class="reading-card-topline">
-    <span class="reading-step">Card 04</span>
-    <span class="reading-step-note">核心结果与证据</span>
-  </div>
   <h2>核心结果与证据</h2>
   <div class="reading-card-content"><ul><li>Theorem 1/2 给出一层多头 Transformer 的训练收敛与 prediction characterization：模型并非仅复制 labels，而是通过预训练 heads 学到共享 basis representation，再用 prompt进行正则化回归。误差取决于 \(N\)、\(m\)、噪声 \(\tau\) 与 conditioning。</li><li>Figure 2 的一层和四层实验显示 training/inference losses下降，并在 unseen examples 与 unseen tasks 上泛化；Figure 3 中 \(N\) 接近 \(m\) 时与 best ridge predictor 的 gap 改善，符合理论 scaling。</li><li>Figure 4 显示一层模型需要足够 \(H\) 保证理论/经验收敛，但 \(H\) 过大在固定设置下出现 instability 或更慢；四层实验表明深度可改变 head-width requirement，因此一层定理不能直接外推到深网络。</li></ul></div>
 </section>
 <section class="reading-card reading-card-section">
-  <div class="reading-card-topline">
-    <span class="reading-step">Card 05</span>
-    <span class="reading-step-note">有效性与局限</span>
-  </div>
   <h2>有效性与局限</h2>
   <div class="reading-card-content"><ul><li>Task family 已知落在固定 \(m\)-dimensional linear span，\(\lambda\)、noise 与 input distribution 满足强结构；自然语言 representations 非独立、basis 未知且任务不必线性。Ridge-regression 等价是该生成模型下的结果。</li><li>证明针对一层、特定 softmax parameterization、初始化与 overparameterized heads；宽度/sample lower bounds 可能保守。Population convergence 与有限训练数据之间靠 concentration，超出假设时无保证。</li><li>四层结果只是数值 extension，不构成深 Transformer theory。Unseen tasks来自同一 \(\lambda\) distribution，不代表语义上开放域 task transfer。本卡未独立复现。</li></ul></div>
 </section>
 <section class="reading-card reading-card-section">
-  <div class="reading-card-topline">
-    <span class="reading-step">Card 06</span>
-    <span class="reading-step-note">复现与资源</span>
-  </div>
   <h2>复现与资源</h2>
   <div class="reading-card-content"><ul><li>原文：https://arxiv.org/abs/2408.10147。官方 \(v_{2}\) PDF SHA-256：fdfb7d03fafed760589d03d4a9fec993e62e16642a06f91c1fd8b006e5b718b4。</li><li>复现需固定 \(f\) basis、\(\lambda\) distribution、\(\tau\)、\(N\)、\(m\)、\(H\)、初始化与 prompt/query splits；分别生成 unseen-example 和 unseen-task test sets。除 loss 外直接比较模型 prediction 与 closed-form ridge solution，并扫描 \(N\)/\(m\)、condition number、noise 和 heads，报告多 seeds。Evidence status: full-text verified; no independent reproduction performed.</li></ul></div>
 </section>
 <section class="reading-card reading-card-section">
-  <div class="reading-card-topline">
-    <span class="reading-step">Card 07</span>
-    <span class="reading-step-note">阅读指南</span>
-  </div>
   <h2>阅读指南</h2>
   <div class="reading-card-content"><ul><li>先读 Eq.1 的 task family 与 prompt matrices，再用 Figure 1 理解 head computation。Theorems 1–2 要连同 assumptions 和 ridge target一起读；Figures 2–5 用于检查 \(N\)/\(m\)、heads 与 depth 的经验边界。</li></ul></div>
 </section></article>
