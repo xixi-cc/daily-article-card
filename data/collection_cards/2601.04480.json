@@ -1,0 +1,497 @@
+{
+  "title_zh": "语言模型怎样决定换行：把字符数放到弯曲流形上计算",
+  "title_en": "When Models Manipulate Manifolds: The Geometry of a Counting Task",
+  "arxiv_id": "2601.04480",
+  "source_version": "v1",
+  "source_url": "https://arxiv.org/abs/2601.04480v1",
+  "pdf_url": "https://arxiv.org/pdf/2601.04480v1",
+  "source_pdf": "https://arxiv.org/pdf/2601.04480v1",
+  "source_pdf_sha256": "ece84694b46447c8c6394db8110177e345f6081112b7579134f3f3452fc529ba",
+  "curation_status": "full_text_verified",
+  "card_standard_version": "2.4",
+  "paper_profile": "ai_empirical",
+  "paper_profile_description": "特定自然任务的机制可解释性实证研究",
+  "style_reference": "physicist_daily_arxiv",
+  "independent_reproduction": false,
+  "sections": [
+    {
+      "title": "作者信息",
+      "paragraphs": [
+        "Wes Gurnee、Emmanuel Ameisen、Isaac Kauvar、Julius Tarng、Adam Pearce、Chris Olah、Joshua Batson，均来自Anthropic；Gurnee、Ameisen、Batson标注共同贡献，Batson为通讯作者。原研究于2025-10-21发表于Transformer Circuits，arXiv2601.04480v1是2026-01-08发布的46页档案版，不应把它写成2026年才首次出现的新实验。"
+      ]
+    },
+    {
+      "title": "摘要",
+      "paragraphs": [
+        "模型只接收token编号，没有每行的视觉边界，也没有直接附带的字符计数，却能在固定宽度文本中预测何时换行。本文以Claude 3.5 Haiku为对象，追踪从token长度、当前行字符数、前文行宽，到“下一token能否装下”的一条实际计算链。",
+        "它的价值不只是画出漂亮的表示曲线，而是把稀疏特征、注意力权重、低维几何、消融与干预连在一起，解释一个训练分布中自然存在的行为。"
+      ]
+    },
+    {
+      "title": "背景",
+      "paragraphs": [
+        "“一个概念对应一根方向”对某些标量变量太简单。若要表示1到150个字符，把150个值各放在正交方向上很费维度；若只沿一根射线靠幅度变化，又可能遇到分辨率、动态范围和噪声的困难。模型中的折中是一条嵌在少量维度里的弯曲曲线：变量只有一维，但表示它的线性子空间不是一维。",
+        "稀疏字典给出局部视角：若干特征分别在相邻字符区间激活，类似对曲线的局部坐标。几何视角则把它们组织成同一条连续的计数曲线。两种视角有重构误差，不能当作完全等价的数学同构。",
+        "这里“位置细胞”“边界细胞”“视觉错觉”是帮助理解的功能类比，不证明语言模型使用与生物脑相同的细胞机制，也不表示模型在主观上真的看到了文字。"
+      ]
+    },
+    {
+      "title": "模型与方法",
+      "paragraphs": [
+        "作者把散文先去掉换行，再按\\(k=15,20,\\ldots,150\\)的上限、在不超限的词边界重新换行，研究模型能否从前文推断隐含约束。附录性能测试使用200段散文及\\(k=20,40,\\ldots,140\\)；模型通常到第三行已能较好适应。主体稀疏特征来自在Haiku上训练的1000万特征Weakly Causal Crosscoder字典。",
+        "定义\\(c\\)为当前token结束时本行已用字符数，\\(w\\)为模型估计的行宽，\\(r=w-c\\)为剩余字符数，\\(\\ell\\)为拟输出token的字符长度。在理想化计数判据下，\\(\\ell>r\\)意味着需要先换行；这只是解释变量关系，不是声明模型逐项执行了精确整数算法。空格、零宽修饰token和多token词是需要单独处理的边界。",
+        "作者按字符数\\(c\\)分组取早期residual stream均值\\(\\mu_c\\)，再对这些均值做PCA。150个均值的前6个主成分解释95%的方差；这不等于6维解释了全部逐样本激活的95%。另外，线性回归对字符数的\\(R^2=0.985\\)并不推出真实表示是一条直线。",
+        "干预采用\\[\\begin{aligned}a_{\\mathrm{patch}}&=a_{\\mathrm{orig}}-\\mu_{\\mathrm{orig}}\\\\&\\quad+\\mu_{\\mathrm{target}}\\end{aligned}\\]，并比较全均值差与其6维投影的效果。关键示例在三个相邻早期层、最后两个token上保持计数一致地patch；不是只改一个任意神经元就完整控制所有文本。消融则比较计数主成分子空间与同维随机子空间。",
+        "数学记号\\(a\\)表示激活向量，\\(\\mu\\)表示相应条件均值，PCA只是分析坐标；QK分析对应attention的query–key匹配，OV分析对应value到输出的线性写入。不能把读出探针本身直接当成网络实际激活。"
+      ]
+    },
+    {
+      "title": "核心结果与证据",
+      "paragraphs": [
+        "计数曲线。十个相关稀疏特征通常有两三个同时活跃，重构出一条低维弯曲曲线；特征区间随数值增大而变宽。均值、探针与字典decoder的相似度都有“主峰—负相关—次峰”的振铃结构。作者用低秩近似与受约束粒子toy model解释：要同时保持近邻相似与远处可分，有限维嵌入可能产生这种起伏。它是特定几何目标的解释，不是全部神经网络的全局最优性定理。",
+        "边界匹配。前一行宽度与当前计数的表示并非简单相减；某些attention头把两组表示变换到带偏移的对齐关系。当\\(c\\)接近\\(w\\)而尚差少量字符时，对前一个换行符的匹配变强。多个边界头有不同偏移和感受区间，合起来更细致地估计\\(r\\)。[Fig15，PDF p12](https://arxiv.org/pdf/2601.04480v1#page=12)",
+        "多头协作。单个边界头的输出随\\(r\\)变化接近一条低维轨迹，几个头的总输出形成更有曲率的二维表示。这个\\(r\\)子空间的消融主要影响换行预测；在具体示例中改写\\(r\\)的表示会按预期改变换行与原词的相对概率。[Fig19，PDF p14](https://arxiv.org/pdf/2601.04480v1#page=14)",
+        "最后决策。在较晚层，剩余字符数与下一token长度占据近正交子空间，组合后的均值几何使“装得下/装不下”更容易线性区分。由三维均值几何得到的分类器在真实数据上AUC为0.91。作者使用真实下一个非换行token作为长度标签，这依赖“模型预计的token接近真实token”的近似；未解释所有多token词或多候选词情况。",
+        "计数如何生成。早期多个头把前一换行符当作注意力锚点，在不同token位置范围内估计字符数，再根据token长短修正。第0层输出主要像若干射线的和，第1层在已有表示上增加曲率、提高精度。五个关键第0层头的计数读出R²约0.93，前两层十一个头约0.97；这说明协作有用，不是证明任何可能架构都必须使用同样数量的头。[Fig24，PDF p18](https://arxiv.org/pdf/2601.04480v1#page=18)",
+        "本文的重要证据分成三层。第一，观察几何与相关特征；第二，消融与patch：删除计数或剩余字符子空间，比同维随机消融更影响换行位置的loss，定向改变均值表示也能改变具体输出；第三，依据机制构造新的输入干预，而不是只解释已有图。",
+        "字符对@@在git diff里常用作分隔符。一些计数头因此也把它当成潜在的计数起点。当在普通文本的指定位置插入@@而维持比较所需的长度条件时，相关头会转移注意力，换行预测被扰动。作者比较180种双字符插入，绝大多数只是中度影响；少数代码/分隔符相关字符对造成更大变化，注意力“分心”与换行概率下降相关。显式长度比较中也出现类似效应，并测试了选项顺序。",
+        "这比仅凭PCA图宣称“模型在数数”更强，但证据仍是特定模型、任务、文本与干预设计内的机制支持。均值patch可能同时改动相关变量，作者也承认子空间可能与其他特征叠加；随机消融和token类型对照缓解这一问题，却不是自动排除所有混杂。",
+        "没有独立重跑Haiku、训练字典或调用模型接口；本卡核验的是公开档案版、关键静态图及附录说明。"
+      ]
+    },
+    {
+      "title": "有效性与局限",
+      "paragraphs": [
+        "不要把一维变量、六维PCA子空间和六个独立物理自由度混为一谈；也不要把“均值方差解释率”写成完整模型信息压缩率。跨字典大小的特征相似性只在此案例中被观察，仍存在与行宽有关的feature splitting，不能提升为普适的唯一特征分解。",
+        "“twist”是对线性变换后几何对齐的描述，不要求QK矩阵真是保持距离的正交旋转。对称循环核的傅里叶构造说明某类低秩嵌入可线性实现位移；它需要相应核与谱子空间条件，不代表任意弯曲流形都有这种线性平移结构。受吸引/排斥toy model也会落入局部极小，并没有证明训练模型必然优化同一能量。",
+        "原文p18将\\(i\\)定义为剩余字符数、\\(j\\)定义为下一token长度，却把“break”条件写成\\(i-j\\ge0\\)。按前后文及附录I的定义，需要换行的是\\(j>i\\)；本卡保留变量定义并使用正确语义，不照抄这个方向相反的不等式。",
+        "作者尚未确定模型如何从多条历史行聚合出全局行宽，例如取最大值还是加权平均。对变宽文本、计数不确定性、多种候选词、多token词、特殊LaTeX/Markdown结构也没有完整机制解释。分析早期计数时，因为attention贡献约为MLP的4倍而主要聚焦attention，并不意味着MLP贡献严格为零。",
+        "主研究对象是闭源Haiku，公开Gemma/Qwen归因图是另一些探索入口，不等于本文已在这些模型上复现完整机制。作者把本工作视为深入案例与方法启发，而非可自动发现任意语义流形的通用算法。以上限制不抹去干预证据的价值，但决定了可以外推多远。"
+      ]
+    },
+    {
+      "title": "复现与资源",
+      "paragraphs": [
+        "档案PDF：[https://arxiv.org/pdf/2601.04480v1](https://arxiv.org/pdf/2601.04480v1)；版本页：[https://arxiv.org/abs/2601.04480v1](https://arxiv.org/abs/2601.04480v1)。原发布页：[https://transformer-circuits.pub/2025/linebreaks/index.html](https://transformer-circuits.pub/2025/linebreaks/index.html)，包含交互展示；本卡依据完整PDF核验，不声称已执行交互模拟或Colab。",
+        "图15(p12)展示identity、边界头QK、随机头QK的三组相似度，是边界匹配的原始证据；图19(p14)展示剩余字符子空间消融与具体patch；图24(p18)展示两层多头输出的协作。采用原图，保留所有科学面板、轴标与图例，注明裁切仅去除周围正文/空白，不重绘数据；来源为CC BY4.0论文。图6的表示曲线另可在[PDF p7对照](https://arxiv.org/pdf/2601.04480v1#page=7)。",
+        "实验描述、特征家族、toy model和更多头的分析分别位于附录C–N；公开扩展图入口在原文p26。若开展独立复现，应先确认目标模型权重、字典和所需激活的可获得性，不能把一个可访问网页等同于完整可运行实验环境。"
+      ]
+    },
+    {
+      "title": "阅读指南",
+      "paragraphs": [
+        "先看Fig6、7、8，建立“几何相关性→因果干预”的证据链；再看Fig15与19，理解计数怎样转成剩余空间；最后看Fig24及Appendix K，理解这些表示是如何由不同注意力头逐步构造的。若关心数学结构，再读Appendix G的循环矩阵与傅里叶联系，并保留其理想化条件。",
+        "对AI理论研究更可迁移的方法是：先从模型稳定完成的自然任务出发，用特征定位可能变量，再寻找低维几何，最后通过可控输入和内部干预验证解释。漂亮的流形只是起点，能否预测新的干预结果才是关键。",
+        "物理上的启发是“有效变量如何被编码并参与计算”，而不是把每条弯曲曲线都解释成相变、吸引子或重整化群。本文展示了一个具体成功案例：离散特征帮助发现机制，连续几何帮助简化机制，两者结合减少解释成本。"
+      ]
+    }
+  ],
+  "equation_refs": [
+    {
+      "label": "任务行宽设置",
+      "latex": "k=15,20,\\ldots,150",
+      "role": "本卡审阅中的原文定义、测量或条件",
+      "symbols": {
+        "c": "当前token结束时本行已用字符数",
+        "w": "模型估计的行宽",
+        "r": "剩余字符数w−c",
+        "ell": "拟输出token的字符长度",
+        "k": "重新换行时规定的行宽上限",
+        "a": "激活向量",
+        "mu": "相应条件均值",
+        "mu_c": "按已用字符数c分组的residual stream均值",
+        "orig/target": "原条件/目标条件",
+        "R^2": "相应线性读出的决定系数",
+        "i": "原文p18中的剩余字符数",
+        "j": "原文p18中的下一token字符长度",
+        "PCA": "主成分分析坐标；均值方差解释率不等于全部样本激活的解释率",
+        "QK": "注意力query–key匹配",
+        "OV": "value到输出的线性写入"
+      },
+      "evidence": "PDF任务设置及Appendix C–I",
+      "interpretation": "散文按规定上限在词边界换行。"
+    },
+    {
+      "label": "附录性能测试行宽",
+      "latex": "k=20,40,\\ldots,140",
+      "role": "本卡审阅中的原文定义、测量或条件",
+      "symbols": {
+        "c": "当前token结束时本行已用字符数",
+        "w": "模型估计的行宽",
+        "r": "剩余字符数w−c",
+        "ell": "拟输出token的字符长度",
+        "k": "重新换行时规定的行宽上限",
+        "a": "激活向量",
+        "mu": "相应条件均值",
+        "mu_c": "按已用字符数c分组的residual stream均值",
+        "orig/target": "原条件/目标条件",
+        "R^2": "相应线性读出的决定系数",
+        "i": "原文p18中的剩余字符数",
+        "j": "原文p18中的下一token字符长度",
+        "PCA": "主成分分析坐标；均值方差解释率不等于全部样本激活的解释率",
+        "QK": "注意力query–key匹配",
+        "OV": "value到输出的线性写入"
+      },
+      "evidence": "PDF附录性能测试，200段散文",
+      "interpretation": "此测试网格与主体任务范围分别保留。"
+    },
+    {
+      "label": "剩余字符数定义",
+      "latex": "r=w-c",
+      "role": "本卡审阅中的原文定义、测量或条件",
+      "symbols": {
+        "c": "当前token结束时本行已用字符数",
+        "w": "模型估计的行宽",
+        "r": "剩余字符数w−c",
+        "ell": "拟输出token的字符长度",
+        "k": "重新换行时规定的行宽上限",
+        "a": "激活向量",
+        "mu": "相应条件均值",
+        "mu_c": "按已用字符数c分组的residual stream均值",
+        "orig/target": "原条件/目标条件",
+        "R^2": "相应线性读出的决定系数",
+        "i": "原文p18中的剩余字符数",
+        "j": "原文p18中的下一token字符长度",
+        "PCA": "主成分分析坐标；均值方差解释率不等于全部样本激活的解释率",
+        "QK": "注意力query–key匹配",
+        "OV": "value到输出的线性写入"
+      },
+      "evidence": "PDF pp9–18与Appendix I",
+      "interpretation": "行宽估计减去已用字符数；不声称模型执行精确整数算法。"
+    },
+    {
+      "label": "理想化换行判据",
+      "latex": "\\ell>r",
+      "role": "本卡审阅中的原文定义、测量或条件",
+      "symbols": {
+        "c": "当前token结束时本行已用字符数",
+        "w": "模型估计的行宽",
+        "r": "剩余字符数w−c",
+        "ell": "拟输出token的字符长度",
+        "k": "重新换行时规定的行宽上限",
+        "a": "激活向量",
+        "mu": "相应条件均值",
+        "mu_c": "按已用字符数c分组的residual stream均值",
+        "orig/target": "原条件/目标条件",
+        "R^2": "相应线性读出的决定系数",
+        "i": "原文p18中的剩余字符数",
+        "j": "原文p18中的下一token字符长度",
+        "PCA": "主成分分析坐标；均值方差解释率不等于全部样本激活的解释率",
+        "QK": "注意力query–key匹配",
+        "OV": "value到输出的线性写入"
+      },
+      "evidence": "PDF p18及Appendix I；本卡审阅",
+      "interpretation": "下一token长度大于剩余空间时需要先换行；边界情况见正文。"
+    },
+    {
+      "label": "token字符长度",
+      "latex": "\\ell",
+      "role": "本卡审阅中的原文定义、测量或条件",
+      "symbols": {
+        "c": "当前token结束时本行已用字符数",
+        "w": "模型估计的行宽",
+        "r": "剩余字符数w−c",
+        "ell": "拟输出token的字符长度",
+        "k": "重新换行时规定的行宽上限",
+        "a": "激活向量",
+        "mu": "相应条件均值",
+        "mu_c": "按已用字符数c分组的residual stream均值",
+        "orig/target": "原条件/目标条件",
+        "R^2": "相应线性读出的决定系数",
+        "i": "原文p18中的剩余字符数",
+        "j": "原文p18中的下一token字符长度",
+        "PCA": "主成分分析坐标；均值方差解释率不等于全部样本激活的解释率",
+        "QK": "注意力query–key匹配",
+        "OV": "value到输出的线性写入"
+      },
+      "evidence": "PDF p18与Appendix I",
+      "interpretation": "下一token的字符长度；多token词与候选词边界见正文。"
+    },
+    {
+      "label": "字符数线性回归读出",
+      "latex": "R^2=0.985",
+      "role": "本卡审阅中的原文定义、测量或条件",
+      "symbols": {
+        "c": "当前token结束时本行已用字符数",
+        "w": "模型估计的行宽",
+        "r": "剩余字符数w−c",
+        "ell": "拟输出token的字符长度",
+        "k": "重新换行时规定的行宽上限",
+        "a": "激活向量",
+        "mu": "相应条件均值",
+        "mu_c": "按已用字符数c分组的residual stream均值",
+        "orig/target": "原条件/目标条件",
+        "R^2": "相应线性读出的决定系数",
+        "i": "原文p18中的剩余字符数",
+        "j": "原文p18中的下一token字符长度",
+        "PCA": "主成分分析坐标；均值方差解释率不等于全部样本激活的解释率",
+        "QK": "注意力query–key匹配",
+        "OV": "value到输出的线性写入"
+      },
+      "evidence": "PDF表示与探针分析，pp5–8",
+      "interpretation": "高读出决定系数不推出真实表示为直线。"
+    },
+    {
+      "label": "条件均值",
+      "latex": "\\mu_c",
+      "role": "本卡审阅中的原文定义、测量或条件",
+      "symbols": {
+        "c": "当前token结束时本行已用字符数",
+        "w": "模型估计的行宽",
+        "r": "剩余字符数w−c",
+        "ell": "拟输出token的字符长度",
+        "k": "重新换行时规定的行宽上限",
+        "a": "激活向量",
+        "mu": "相应条件均值",
+        "mu_c": "按已用字符数c分组的residual stream均值",
+        "orig/target": "原条件/目标条件",
+        "R^2": "相应线性读出的决定系数",
+        "i": "原文p18中的剩余字符数",
+        "j": "原文p18中的下一token字符长度",
+        "PCA": "主成分分析坐标；均值方差解释率不等于全部样本激活的解释率",
+        "QK": "注意力query–key匹配",
+        "OV": "value到输出的线性写入"
+      },
+      "evidence": "PDF均值PCA表示分析",
+      "interpretation": "按字符数分组的均值，不等同于逐样本激活。"
+    },
+    {
+      "label": "均值替换干预",
+      "latex": "\\begin{aligned}a_{\\mathrm{patch}}&=a_{\\mathrm{orig}}-\\mu_{\\mathrm{orig}}\\\\&\\quad+\\mu_{\\mathrm{target}}\\end{aligned}",
+      "role": "本卡审阅中的原文定义、测量或条件",
+      "symbols": {
+        "c": "当前token结束时本行已用字符数",
+        "w": "模型估计的行宽",
+        "r": "剩余字符数w−c",
+        "ell": "拟输出token的字符长度",
+        "k": "重新换行时规定的行宽上限",
+        "a": "激活向量",
+        "mu": "相应条件均值",
+        "mu_c": "按已用字符数c分组的residual stream均值",
+        "orig/target": "原条件/目标条件",
+        "R^2": "相应线性读出的决定系数",
+        "i": "原文p18中的剩余字符数",
+        "j": "原文p18中的下一token字符长度",
+        "PCA": "主成分分析坐标；均值方差解释率不等于全部样本激活的解释率",
+        "QK": "注意力query–key匹配",
+        "OV": "value到输出的线性写入"
+      },
+      "evidence": "PDF pp7–8 Fig7/8；方法与附录干预设置",
+      "interpretation": "替换原条件均值为目标条件均值；施加位置和计数一致性条件见正文。"
+    },
+    {
+      "label": "条件均值记号",
+      "latex": "\\mu",
+      "role": "本卡审阅中的原文定义、测量或条件",
+      "symbols": {
+        "c": "当前token结束时本行已用字符数",
+        "w": "模型估计的行宽",
+        "r": "剩余字符数w−c",
+        "ell": "拟输出token的字符长度",
+        "k": "重新换行时规定的行宽上限",
+        "a": "激活向量",
+        "mu": "相应条件均值",
+        "mu_c": "按已用字符数c分组的residual stream均值",
+        "orig/target": "原条件/目标条件",
+        "R^2": "相应线性读出的决定系数",
+        "i": "原文p18中的剩余字符数",
+        "j": "原文p18中的下一token字符长度",
+        "PCA": "主成分分析坐标；均值方差解释率不等于全部样本激活的解释率",
+        "QK": "注意力query–key匹配",
+        "OV": "value到输出的线性写入"
+      },
+      "evidence": "PDF均值替换与表示分析",
+      "interpretation": "对应条件的激活均值。"
+    },
+    {
+      "label": "原文方向相反的不等式",
+      "latex": "i-j\\ge0",
+      "role": "本卡审阅中的原文定义、测量或条件",
+      "symbols": {
+        "c": "当前token结束时本行已用字符数",
+        "w": "模型估计的行宽",
+        "r": "剩余字符数w−c",
+        "ell": "拟输出token的字符长度",
+        "k": "重新换行时规定的行宽上限",
+        "a": "激活向量",
+        "mu": "相应条件均值",
+        "mu_c": "按已用字符数c分组的residual stream均值",
+        "orig/target": "原条件/目标条件",
+        "R^2": "相应线性读出的决定系数",
+        "i": "原文p18中的剩余字符数",
+        "j": "原文p18中的下一token字符长度",
+        "PCA": "主成分分析坐标；均值方差解释率不等于全部样本激活的解释率",
+        "QK": "注意力query–key匹配",
+        "OV": "value到输出的线性写入"
+      },
+      "evidence": "PDF p18原式；本卡审阅",
+      "interpretation": "原文定义i为剩余空间、j为下一token长度，此原式方向相反，不是本卡采用的换行判据。"
+    },
+    {
+      "label": "按原变量定义的换行条件",
+      "latex": "j>i",
+      "role": "本卡审阅中的原文定义、测量或条件",
+      "symbols": {
+        "c": "当前token结束时本行已用字符数",
+        "w": "模型估计的行宽",
+        "r": "剩余字符数w−c",
+        "ell": "拟输出token的字符长度",
+        "k": "重新换行时规定的行宽上限",
+        "a": "激活向量",
+        "mu": "相应条件均值",
+        "mu_c": "按已用字符数c分组的residual stream均值",
+        "orig/target": "原条件/目标条件",
+        "R^2": "相应线性读出的决定系数",
+        "i": "原文p18中的剩余字符数",
+        "j": "原文p18中的下一token字符长度",
+        "PCA": "主成分分析坐标；均值方差解释率不等于全部样本激活的解释率",
+        "QK": "注意力query–key匹配",
+        "OV": "value到输出的线性写入"
+      },
+      "evidence": "PDF p18与Appendix I；本卡审阅",
+      "interpretation": "保留原变量定义并采用长度超过剩余空间的正确语义。"
+    }
+  ],
+  "figure_refs": [
+    {
+      "label": "Figure 15",
+      "asset_path": "assets/collection-figures/2601.04480/fig15.png",
+      "section": "核心结果与证据",
+      "role": "边界匹配",
+      "evidence": "https://arxiv.org/pdf/2601.04480v1#page=12; PDF physical p.12 Figure 15",
+      "alt_text": "三组热图从左到右为identity、边界头QK、随机头QK；横轴为上一行长度，纵轴为当前行长度，颜色表示余弦相似度。",
+      "caption": "三组热图从左到右为identity、边界头QK、随机头QK；横轴为上一行长度，纵轴为当前行长度，颜色表示余弦相似度。 Gurnee等，arXiv:2601.04480v1，PDF物理p.12 Figure 15，CC BY4.0；原PDF栅格化，仅裁掉周围正文/空白，完整保留科学面板、标题、轴标、图例及原英文图注，未重绘或增强。",
+      "interpretation": "边界匹配。前一行宽度与当前计数的表示并非简单相减；某些attention头把两组表示变换到带偏移的对齐关系。"
+    },
+    {
+      "label": "Figure 19",
+      "asset_path": "assets/collection-figures/2601.04480/fig19.png",
+      "section": "核心结果与证据",
+      "role": "剩余字符子空间干预",
+      "evidence": "https://arxiv.org/pdf/2601.04480v1#page=14; PDF physical p.14 Figure 19",
+      "alt_text": "左面板比较剩余字符子空间与随机子空间消融的loss变化，并区分下一token是否换行；右面板展示aluminum示例中patch剩余字符数后的换行/原词对数概率。",
+      "caption": "左面板比较剩余字符子空间与随机子空间消融的loss变化，并区分下一token是否换行；右面板展示aluminum示例中patch剩余字符数后的换行/原词对数概率。 Gurnee等，arXiv:2601.04480v1，PDF物理p.14 Figure 19，CC BY4.0；原PDF栅格化，仅裁掉周围正文/空白，完整保留科学面板、标题、轴标、图例及原英文图注，未重绘或增强。",
+      "interpretation": "这个r子空间的消融主要影响换行预测；在具体示例中改写r的表示会按预期改变换行与原词的相对概率。"
+    },
+    {
+      "label": "Figure 24",
+      "asset_path": "assets/collection-figures/2601.04480/fig24.png",
+      "section": "核心结果与证据",
+      "role": "两层多头输出协作",
+      "evidence": "https://arxiv.org/pdf/2601.04480v1#page=18; PDF physical p.18 Figure 24",
+      "alt_text": "左为第0层、右为第1层的多头平均注意力输出，在字符计数探针PCA坐标中显示；各头与关键头总和、两层标题及图例均保留。",
+      "caption": "左为第0层、右为第1层的多头平均注意力输出，在字符计数探针PCA坐标中显示；各头与关键头总和、两层标题及图例均保留。 Gurnee等，arXiv:2601.04480v1，PDF物理p.18 Figure 24，CC BY4.0；原PDF栅格化，仅裁掉周围正文/空白，完整保留科学面板、标题、轴标、图例及原英文图注，未重绘或增强。",
+      "interpretation": "第0层输出主要像若干射线的和，第1层在已有表示上增加曲率、提高精度。"
+    }
+  ],
+  "source_figure_links": [
+    {
+      "label": "Figure 15",
+      "physical_page": 12,
+      "url": "https://arxiv.org/pdf/2601.04480v1#page=12"
+    },
+    {
+      "label": "Figure 19",
+      "physical_page": 14,
+      "url": "https://arxiv.org/pdf/2601.04480v1#page=14"
+    },
+    {
+      "label": "Figure 24",
+      "physical_page": 18,
+      "url": "https://arxiv.org/pdf/2601.04480v1#page=18"
+    },
+    {
+      "label": "Figure 6",
+      "physical_page": 7,
+      "url": "https://arxiv.org/pdf/2601.04480v1#page=7"
+    }
+  ],
+  "evidence_refs": [
+    {
+      "section": "作者信息",
+      "evidence": "PDF p1、p46作者贡献/通讯信息及官方arXiv v1元数据；原研究2025-10-21发布，2026-01-08为档案版"
+    },
+    {
+      "section": "模型与方法",
+      "evidence": "PDF任务设置、均值PCA、探针与patch；pp5–8及Appendices C–I；均值解释率区别于逐样本激活"
+    },
+    {
+      "section": "核心结果与证据",
+      "evidence": "Fig15 p12边界QK；Fig19 p14消融/patch；Fig24 p18两层多头协作；@@输入干预及附录双字符对照"
+    },
+    {
+      "section": "有效性与局限",
+      "evidence": "PDF p18原不等式方向；Appendix I变量定义；Appendix G理想循环核条件及模型/任务/子空间混杂界限"
+    },
+    {
+      "section": "复现与资源",
+      "evidence": "完整46页档案及A–O附录；未执行超大交互网页、Colab或调用模型API"
+    },
+    {
+      "section": "fulltext_reading_boundary",
+      "evidence": "Full-text reading verified across46physical pages and appendices; no independent reproduction performed; no interactive simulation, dictionary-training or model-API execution claim"
+    }
+  ],
+  "cover": {
+    "mode": "source_figure",
+    "asset_path": "assets/collection-figures/2601.04480/fig15.png",
+    "label": "Figure 15",
+    "visual_type": "comparison",
+    "selection_rationale": "完整三面板同时比较identity、边界头QK与随机头QK，直接呈现边界匹配的带偏移对齐及对照；保留全图轴标/色条/标题/原图注，不截取单局部论证。",
+    "evidence": "https://arxiv.org/pdf/2601.04480v1#page=12; PDF physical p.12 Figure 15",
+    "alt_text": "三组热图从左到右为identity、边界头QK、随机头QK；横轴为上一行长度，纵轴为当前行长度，颜色表示余弦相似度。",
+    "caption": "字符计数与前一行宽度探针的三组相似度对照：identity、边界头QK、随机头QK。",
+    "attribution": "arXiv:2601.04480v1；PDF p.12 Figure15；CC BY4.0；仅裁掉周围正文/空白，完整三面板与原图注，未重绘。"
+  },
+  "provenance": {
+    "program": "Collection",
+    "catalog": "Paper Collection",
+    "catalog_record_id": "2601.04480",
+    "catalog_topic": "Physics of AI",
+    "collection_date": "2026-10-03",
+    "sampled_at": "2026-10-03T13:50:46.247437+00:00",
+    "selected_by": "editorial_curation",
+    "sampling_seed": "not_applicable"
+  },
+  "verified_metadata": {
+    "arxiv_id": "2601.04480",
+    "version": "v1",
+    "title": "When Models Manipulate Manifolds: The Geometry of a Counting Task",
+    "authors": [
+      "Wes Gurnee",
+      "Emmanuel Ameisen",
+      "Isaac Kauvar",
+      "Julius Tarng",
+      "Adam Pearce",
+      "Chris Olah",
+      "Joshua Batson"
+    ],
+    "affiliations": [
+      "Anthropic"
+    ],
+    "equal_contribution": [
+      "Wes Gurnee",
+      "Emmanuel Ameisen",
+      "Joshua Batson"
+    ],
+    "corresponding_authors": [
+      "Joshua Batson"
+    ],
+    "published": "2026-01-08",
+    "original_publication_date": "2025-10-21",
+    "original_publication_url": "https://transformer-circuits.pub/2025/linebreaks/index.html",
+    "abstract": "Language models can perceive visual properties of text despite receiving only sequences of tokens-we mechanistically investigate how Claude 3.5 Haiku accomplishes one such task: linebreaking in fixed-width text. We find that character counts are represented on low-dimensional curved manifolds discretized by sparse feature families, analogous to biological place cells. Accurate predictions emerge from a sequence of geometric transformations: token lengths are accumulated into character count manifolds, attention heads twist these manifolds to estimate distance to the line boundary, and the decision to break the line is enabled by arranging estimates orthogonally to create a linear decision boundary. We validate our findings through causal interventions and discover visual illusions--character sequences that hijack the counting mechanism. Our work demonstrates the rich sensory processing of early layers, the intricacy of attention algorithms, and the importance of combining feature-based and geometric views of interpretability.",
+    "pdf_pages": 46,
+    "license_url": "https://creativecommons.org/licenses/by/4.0/",
+    "source_pdf_sha256": "ece84694b46447c8c6394db8110177e345f6081112b7579134f3f3452fc529ba"
+  },
+  "classification": {
+    "category": "AI基础理论",
+    "tags": [
+      "Physics of AI",
+      "Mechanistic Interpretability",
+      "Representation Geometry",
+      "Claude 3.5 Haiku"
+    ]
+  }
+}

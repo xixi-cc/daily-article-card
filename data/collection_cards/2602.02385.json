@@ -1,0 +1,632 @@
+{
+  "title_zh": "Transformer 会把预测世界拆成几个部分吗？",
+  "subtitle_zh": "从联合信念到分因子表示：维数、正交性与预测代价",
+  "title_en": "Transformers learn factored representations",
+  "arxiv_id": "2602.02385",
+  "source_version": "v1",
+  "source_url": "https://arxiv.org/abs/2602.02385v1",
+  "pdf_url": "https://arxiv.org/pdf/2602.02385v1",
+  "source_pdf": "https://arxiv.org/pdf/2602.02385v1",
+  "source_pdf_sha256": "d0582aa1da73f8f2ed7bf33b18ca246ed2acede27fb6dff9689e64a5ddcdd8db",
+  "curation_status": "full_text_verified",
+  "card_standard_version": "2.4",
+  "paper_profile": "theory_numerics",
+  "paper_profile_description": "条件积态表示定理与小型序列模型的经验信念几何",
+  "style_reference": "physicist_daily_arxiv",
+  "independent_reproduction": false,
+  "sections": [
+    {
+      "title": "作者信息",
+      "paragraphs": [
+        "作者为Adam Shai、Loren Amdahl-Culleton、Casper L. Christensen、Henry R. Bigelow、Fernando E. Rosas、Alexander B. Boyd、Eric A. Alt、Kyle J. Ray和Paul M. Riechers。团队主要来自Astera Institute的Simplex，另有Sussex、Imperial College London、Oxford和Beyond Institute for Theoretical Science的研究者。工作延续了用已知随机过程的贝叶斯信念几何研究神经网络表示的路线。[p1、p9–10]",
+        "问题不是“能不能训练一个专门设计的解耦网络”，而是普通下一词预测是否会自行把不同潜在因素分开表示。作者构造可以精确计算隐状态信念的合成序列，让网络只看混合后的整数token，再检查其残差流究竟记录完整联合状态，还是分别记录各个部分。[p2–6]"
+      ]
+    },
+    {
+      "title": "摘要",
+      "paragraphs": [
+        "如果世界由若干条件独立的部分构成，预测者不必枚举所有联合隐状态的概率；分别保存各部分的信念，再组合起来即可。论文把这一点变成了关于表示几何的可检验假设：预测信念可以线性投影到各因素的直和坐标中，而小型Transformer在实验中确实趋向类似的低维表示。[p3–4]",
+        "主实验有五个三维潜在过程：完整联合信念的仿射空间为242维，分因子坐标只需10个自由度。训练后残差流约11个主成分解释95%方差，主要因素子空间的夹角指标也更接近正交。加入破坏条件独立性的观测噪声后，网络早期仍先压缩，较强噪声下再逐渐增加维数。[p5–8]",
+        "值得保留的结论是“在这些已知结构的序列上，出现了优先学习分因子信念的经验偏好”。理论证明的是这种表示何时足够，而不是梯度下降必然选择它；实验也没有直接证明真实语言模型把所有现实对象都放进独立、严格正交的子空间。"
+      ]
+    },
+    {
+      "title": "背景",
+      "paragraphs": [
+        "以两个二状态过程为例，每个过程的信念分别是\\([p,1-p]\\)和\\([q,1-q]\\)。联合信念为\\([pq,p(1-q),(1-p)q,(1-p)(1-q)]\\)，位于四状态概率单纯形中，但实际只有\\(p\\)、\\(q\\)两个自由度。把它画在联合坐标里是弯曲曲面；把两个边缘信念分开记录，则只需要二维坐标。[附录B，p14–17]",
+        "这不是凭空丢掉信息：在乘积态上，边缘分布能唯一重建联合分布。可是对一般相关的联合状态，只知道\\(p\\)、\\(q\\)不够，还需要记录相关性。因而“分开表示”可能带来线性坐标上的简洁，也可能舍弃预测必需的联合信息。论文把这个取舍放进可控制的训练数据中，而不只是在模型激活上事后寻找漂亮图案。",
+        "需要区分两种维数：乘积态流形本身的内禀维数已经是各因素自由度之和；所谓从指数到线性的节约，主要是相对于直接存储联合状态的线性坐标空间，并不是把一个真正需要指数个独立信息参数的分布无损压缩成线性个数。"
+      ]
+    },
+    {
+      "title": "模型与方法",
+      "paragraphs": [
+        "作者用广义隐马尔可夫模型描述序列。每个token x对应一个线性算子\\(T^{(x)}\\)，初始信念为行向量\\(\\eta^{(\\emptyset)}\\)，归一化向量记为1。对一个上下文\\(x_{1:\\ell}\\)，预测向量为",
+        "\\[\\begin{aligned}\\eta^{(x_{1:\\ell})}&=\\frac{\\eta^{(\\emptyset)}T^{(x_1)}\\cdots T^{(x_\\ell)}}{\\eta^{(\\emptyset)}T^{(x_1)}\\cdots T^{(x_\\ell)}\\mathbf1}.\\end{aligned}\\]",
+        "未来序列的概率由这个向量继续乘相应算子得到，因此具有同一预测向量的上下文对所有未来给出同样预测。普通HMM是其中的特例；GHMM坐标未必是非负隐状态概率。[p2、p11]",
+        "设有\\(N\\)个因素，第n个潜在空间维数为\\(d_n\\)。如果所有观测算子都能写成同一分解下的\\(T^{(x)}=\\bigotimes_n T_n^{(x)}\\)，而初始信念也是乘积态，那么每次贝叶斯更新后仍是乘积态：\\(\\eta=\\bigotimes_n\\eta_n\\)。把联合向量分别边缘化再放入直和坐标，可以保留全部预测信息，坐标自由度从\\(D_{\\mathrm{joint}}=\\prod_n d_n-1\\)变为\\(D_{\\mathrm{factored}}=\\sum_n(d_n-1)\\)。联合到边缘的映射是线性的，但由边缘重新相乘的逆映射一般是非线性的；它只在乘积态集合上可逆。[Proposition 2.2、Theorem 2.3；p3–4、p12–14]",
+        "“条件独立”也不要求因素在所有时刻完全无关。后一个因素的转移规则可以依赖前一个因素输出的子token，只要观测到整体token后，所对应的转移仍保持张量积结构。对这种链式过程，边缘信念随上下文可能相关，但给定上下文的联合信念仍可因子化；非乘积的初始稳态不能无条件忽略。[p6–7、p15–16]",
+        "主实验组合三个Mess3过程和两个Bloch Walk过程，每个潜在表示为三维。前者的信念是二维单纯形，后者使用Bloch平面的二维几何。五个子token组合成432个普通整数token，再加BOS，共433个词表项；输入没有显式因子标签。主Transformer为GPT-2风格、4层3头、残差维数120、MLP维数480，使用Adam、学习率\\(5\\times10^{-4}\\)、无权重衰减、长度8序列。另测试480维模型以及长度33、101的上下文。[p4–5、p18–24]"
+      ]
+    },
+    {
+      "title": "核心结果与证据",
+      "paragraphs": [
+        "第一，低维表示不只是事后线性探针的错觉。作者先用线性回归从激活恢复每个因素的预测向量，再对原生残差激活做PCA。Figure 2中，训练后的95%累计解释方差集中在约11维，明显更接近10维分因子预测，而非直接联合坐标的方差曲线。更宽、足以容纳完整联合表示的480维模型仍表现出相同倾向，因此不能简单归结为主模型120维的容量上限。[Figure 2，p5–6；Figure 10，p22]",
+        "第二，正交性有一个独立的夹角测量。对独立因素，作者固定其余四个因素的子序列，只改变一个因素，按固定上下文分别中心化后做PCA。取各因素候选子空间的正交基\\(Q_A\\)、\\(Q_B\\)，用",
+        "\\[\\begin{aligned}\\operatorname{overlap}(A,B)&=\\frac{\\lVert Q_A^{\\mathsf T}Q_B\\rVert_F^2}{\\min(d_A,d_B)}\\end{aligned}\\]",
+        "测量其主夹角的平均平方余弦。值为0才表示几何正交，值为1表示较小子空间被包含。Figure 3显示训练后各因素前两个主方向的交叠很低；高阶主方向则明显重叠。它支持主要因子子空间近似正交，不支持全部激活严格分离。[p6–7；附录H，p27–29]",
+        "第三，有依赖链也能出现分因子几何。Figure 9的链式生成器中，线性读出仍恢复各因素的信念形状，残差方差维数也接近分因子预测。不过独立因素的“只变一个”干预不再直接适用，论文另采用回归系数子空间识别；这两类证据的强度不能完全等同。[p19–22、p28]",
+        "第四，最有启发性的实验是主动破坏条件独立性。作者以概率\\(\\varepsilon\\)污染整个观测token。观察者不知道这次输出来自真实过程还是噪声，所以不同隐因素之间出现后验相关。严格只保存边缘信念会漏掉这类信息。Figure 4与Figure 12中，不同噪声水平下网络早期均先压缩到接近分因子的低维状态；较大\\(\\varepsilon\\)下，后续训练逐渐使用更多维度。它显示分因子近似常被先学到，但“先学简洁再补相关性”目前是训练轨迹上的经验规律，还不是稳定吸引子的动力学定理。[p7–8、p20、p24]",
+        "第五，分解甚至出现在词嵌入阶段。Figure 13显示训练500k步后词嵌入约12个显著奇异值，主成分能按不同子token身份组织点云。这12维与残差信念预测的10维不是同一个计数：三个三元子词表各有2个中心化自由度，两个四元子词表各有3个，总计12；而五个潜在信念各有2个自由度，总计10。[p6、p22、p25]",
+        "第六，RNN和LSTM也出现部分因子化，因而现象不专属于Transformer。32维RNN较接近10维预测；64维RNN和32维LSTM的方差曲线更平滑、有效维数更多。作者没有解决这些差别究竟来自结构还是训练动力学。[p8、p22–23]"
+      ]
+    },
+    {
+      "title": "有效性与局限",
+      "paragraphs": [
+        "首先，理论只构造了一个可以取为正交直和的表示，没有证明网络的欧氏残差坐标必须选择它。一般可逆线性换基能够改变夹角而保留信息；所以“存在无损分因子坐标”与“网络原生坐标近似正交”分别需要理论和实验支持。也没有关于优化必然收敛到该几何的定理。",
+        "其次，附录H.2.1把\\(A\\cap B=\\{0\\}\\)直接等同于A与B正交，这是错误的。两条不平行但夹角45°的直线交集只有零，却不正交。\\(\\dim(A+B)=\\dim(A)+\\dim(B)\\)说明直和，不说明正交；用95%方差阈值得到的有效维数更不能直接当作精确维数恒等式，方差权重不同也会影响相加结果。本卡因此不把维数可加当作正交性的证明，而依赖独立的主夹角指标。这个错误不自动推翻Figure 3另一条直接夹角证据。[p29]",
+        "第三，95%方差解释率是一个测量阈值，不是完整信息量或预测充分性的证书。剩余低方差方向仍可能携带重要相关信息，线性探针成功也不能单独证明网络在推理时实际使用该表示。本文没有通过全面因果替换、删除所有剩余方向等实验把“可线性读出”升级为唯一实现机制。[p24–29]",
+        "第四，主实验依赖五个已知合成过程、已知隐状态以及可计算的真实信念。真实文本中如何无监督找出对应因素仍是开放问题。本文不能据此宣称所有现实对象已经被LLM解耦，也不能把Bloch几何说成模型使用了物理量子计算。[p9、p18]",
+        "第五，有限维GHMM并不能无条件精确表示任意无限长度随机过程。文中的“任意序列分布均可表示”需允许足够大、甚至无限维的潜在空间，或限定有限时域/有限秩过程。Koopman与概率演化算子的线性性本身不保证有限维闭合。类似地，对一般GHMM的可能带负号坐标，不能直接套用概率向量的KL；相对熵需在实际经典分布或适当量子状态上定义。[p2、p11–14]",
+        "第六，积算子保持积态是精确命题，但任意相关初态都会收缩到积态需要额外混合条件，不能仅凭张量积结构保证。对Bloch等广义过程，归一化集合也不是普遍的概率单纯形；应保留原本的状态锥/球几何。[p12、p16、p19]",
+        "最后，主文将噪声描述为替换成均匀token，附录C.4 Eq33明确排除原token并用\\(|\\mathcal X|-1\\)归一化，复现时应以实际实现核对。CEV附录的特征值排序符号与通常按降序取主成分的惯例相反，不能据此直接断言代码也反向排序。Figure 13部分面板图注与位置也须按实际图核对。本卡完整阅读30页及官方仓库README，但没有独立训练、运行分析代码或验证全部超参稳健性。[p20、p24–25]"
+      ]
+    },
+    {
+      "title": "复现与资源",
+      "paragraphs": [
+        "版本化全文：[https://arxiv.org/pdf/2602.02385v1](https://arxiv.org/pdf/2602.02385v1) 元数据与版本：[https://arxiv.org/abs/2602.02385v1](https://arxiv.org/abs/2602.02385v1) 作者代码：[https://github.com/Astera-org/factored-reps](https://github.com/Astera-org/factored-reps) 仓库提供独立、链式、噪声扫描与不同架构的训练配置，以及信念几何、夹角和噪声分析入口。已核验入口及README，不把“代码可访问”写成“已复现”。 建议对照原图：[Figure 2（p5：信念读出与维数）](https://arxiv.org/pdf/2602.02385v1#page=5)、[Figure 3（p7：因素子空间夹角）](https://arxiv.org/pdf/2602.02385v1#page=7)、[Figure 4（p7：污染下先压缩后扩维）](https://arxiv.org/pdf/2602.02385v1#page=7)、[Figure 13（p25：词嵌入因子化）](https://arxiv.org/pdf/2602.02385v1#page=25)。原始图页已核对并在本地保留。该版本标注arXiv非独占分发许可，未核实可供网站重新托管原图的开放许可，因此公开卡使用文字封面与官方PDF图页链接，不重绘替代原图或把未经授权的裁图纳入公开包。"
+      ]
+    },
+    {
+      "title": "阅读指南",
+      "paragraphs": [
+        "先读附录B的两个二状态过程：亲自写出四个联合概率，再确认两个边缘概率为什么足够。接着读Proposition 2.2，理解积算子加积初态如何维持分解；然后对照Figure 2与3，把“低维”“能读出各因素”“近似正交”分成三个不同命题。最后看Figure 4，问哪些后验相关不能由边缘信念恢复，模型何时开始为这些相关性付出额外维度。",
+        "对于结构化表征学习，这篇最可迁移的不是“一个概念对应一根向量”，而是“一个可预测因素对应一个多维信念空间”。因素内部不正交可能恰恰编码相似预测，因素之间才可能分开。这为研究世界模型如何形成可组合的有效变量提供了一个可控实验平台，但尚未构成对真实世界对象、因果结构或重整化粗粒化的统一理论。"
+      ]
+    }
+  ],
+  "equation_refs": [
+    {
+      "label": "两个二状态因素联合信念",
+      "latex": "[pq,p(1-q),(1-p)q,(1-p)(1-q)]",
+      "role": "两个二状态因素联合信念",
+      "symbols": {
+        "eta": "上下文预测行向量，GHMM坐标不必非负",
+        "eta_empty": "初始信念行向量",
+        "T_x": "观测token对应的线性转移算子",
+        "1": "归一化列向量",
+        "N": "潜在因素数",
+        "d_n": "第n个潜在空间的表示维数",
+        "D_joint": "直接联合状态仿射坐标自由度",
+        "D_factored": "乘积态各边缘信念自由度之和",
+        "Q_A/Q_B": "候选因素子空间的正交基",
+        "d_A/d_B": "候选子空间维数",
+        "F": "Frobenius范数",
+        "epsilon": "整体观测token污染概率",
+        "p/q": "两个二状态过程边缘概率",
+        "A/B": "子空间；零交集只表示直和，不表示欧氏正交"
+      },
+      "evidence": "AppendixB pp14–17",
+      "interpretation": "只有p/q两个内禀自由度，四个联合坐标是曲面表示。"
+    },
+    {
+      "label": "第一因素边缘信念",
+      "latex": "[p,1-p]",
+      "role": "第一因素边缘信念",
+      "symbols": {
+        "eta": "上下文预测行向量，GHMM坐标不必非负",
+        "eta_empty": "初始信念行向量",
+        "T_x": "观测token对应的线性转移算子",
+        "1": "归一化列向量",
+        "N": "潜在因素数",
+        "d_n": "第n个潜在空间的表示维数",
+        "D_joint": "直接联合状态仿射坐标自由度",
+        "D_factored": "乘积态各边缘信念自由度之和",
+        "Q_A/Q_B": "候选因素子空间的正交基",
+        "d_A/d_B": "候选子空间维数",
+        "F": "Frobenius范数",
+        "epsilon": "整体观测token污染概率",
+        "p/q": "两个二状态过程边缘概率",
+        "A/B": "子空间；零交集只表示直和，不表示欧氏正交"
+      },
+      "evidence": "AppendixB pp14–17",
+      "interpretation": "在乘积态可与第二边缘唯一重建联合。"
+    },
+    {
+      "label": "第二因素边缘信念",
+      "latex": "[q,1-q]",
+      "role": "第二因素边缘信念",
+      "symbols": {
+        "eta": "上下文预测行向量，GHMM坐标不必非负",
+        "eta_empty": "初始信念行向量",
+        "T_x": "观测token对应的线性转移算子",
+        "1": "归一化列向量",
+        "N": "潜在因素数",
+        "d_n": "第n个潜在空间的表示维数",
+        "D_joint": "直接联合状态仿射坐标自由度",
+        "D_factored": "乘积态各边缘信念自由度之和",
+        "Q_A/Q_B": "候选因素子空间的正交基",
+        "d_A/d_B": "候选子空间维数",
+        "F": "Frobenius范数",
+        "epsilon": "整体观测token污染概率",
+        "p/q": "两个二状态过程边缘概率",
+        "A/B": "子空间；零交集只表示直和，不表示欧氏正交"
+      },
+      "evidence": "AppendixB pp14–17",
+      "interpretation": "一般相关态仅边缘不足以预测。"
+    },
+    {
+      "label": "初始信念",
+      "latex": "\\eta^{(\\emptyset)}",
+      "role": "初始信念",
+      "symbols": {
+        "eta": "上下文预测行向量，GHMM坐标不必非负",
+        "eta_empty": "初始信念行向量",
+        "T_x": "观测token对应的线性转移算子",
+        "1": "归一化列向量",
+        "N": "潜在因素数",
+        "d_n": "第n个潜在空间的表示维数",
+        "D_joint": "直接联合状态仿射坐标自由度",
+        "D_factored": "乘积态各边缘信念自由度之和",
+        "Q_A/Q_B": "候选因素子空间的正交基",
+        "d_A/d_B": "候选子空间维数",
+        "F": "Frobenius范数",
+        "epsilon": "整体观测token污染概率",
+        "p/q": "两个二状态过程边缘概率",
+        "A/B": "子空间；零交集只表示直和，不表示欧氏正交"
+      },
+      "evidence": "PDF pp2/11",
+      "interpretation": "需要乘积初态以保持分因子结构。"
+    },
+    {
+      "label": "观测算子",
+      "latex": "T^{(x)}",
+      "role": "观测算子",
+      "symbols": {
+        "eta": "上下文预测行向量，GHMM坐标不必非负",
+        "eta_empty": "初始信念行向量",
+        "T_x": "观测token对应的线性转移算子",
+        "1": "归一化列向量",
+        "N": "潜在因素数",
+        "d_n": "第n个潜在空间的表示维数",
+        "D_joint": "直接联合状态仿射坐标自由度",
+        "D_factored": "乘积态各边缘信念自由度之和",
+        "Q_A/Q_B": "候选因素子空间的正交基",
+        "d_A/d_B": "候选子空间维数",
+        "F": "Frobenius范数",
+        "epsilon": "整体观测token污染概率",
+        "p/q": "两个二状态过程边缘概率",
+        "A/B": "子空间；零交集只表示直和，不表示欧氏正交"
+      },
+      "evidence": "PDF pp2/11",
+      "interpretation": "token条件下线性映射。"
+    },
+    {
+      "label": "观测上下文",
+      "latex": "x_{1:\\ell}",
+      "role": "观测上下文",
+      "symbols": {
+        "eta": "上下文预测行向量，GHMM坐标不必非负",
+        "eta_empty": "初始信念行向量",
+        "T_x": "观测token对应的线性转移算子",
+        "1": "归一化列向量",
+        "N": "潜在因素数",
+        "d_n": "第n个潜在空间的表示维数",
+        "D_joint": "直接联合状态仿射坐标自由度",
+        "D_factored": "乘积态各边缘信念自由度之和",
+        "Q_A/Q_B": "候选因素子空间的正交基",
+        "d_A/d_B": "候选子空间维数",
+        "F": "Frobenius范数",
+        "epsilon": "整体观测token污染概率",
+        "p/q": "两个二状态过程边缘概率",
+        "A/B": "子空间；零交集只表示直和，不表示欧氏正交"
+      },
+      "evidence": "PDF pp2/11",
+      "interpretation": "未来概率由更新后的预测行向量给出。"
+    },
+    {
+      "label": "归一化预测向量",
+      "latex": "\\begin{aligned}\\eta^{(x_{1:\\ell})}&=\\frac{\\eta^{(\\emptyset)}T^{(x_1)}\\cdots T^{(x_\\ell)}}{\\eta^{(\\emptyset)}T^{(x_1)}\\cdots T^{(x_\\ell)}\\mathbf1}.\\end{aligned}",
+      "role": "归一化预测向量",
+      "symbols": {
+        "eta": "上下文预测行向量，GHMM坐标不必非负",
+        "eta_empty": "初始信念行向量",
+        "T_x": "观测token对应的线性转移算子",
+        "1": "归一化列向量",
+        "N": "潜在因素数",
+        "d_n": "第n个潜在空间的表示维数",
+        "D_joint": "直接联合状态仿射坐标自由度",
+        "D_factored": "乘积态各边缘信念自由度之和",
+        "Q_A/Q_B": "候选因素子空间的正交基",
+        "d_A/d_B": "候选子空间维数",
+        "F": "Frobenius范数",
+        "epsilon": "整体观测token污染概率",
+        "p/q": "两个二状态过程边缘概率",
+        "A/B": "子空间；零交集只表示直和，不表示欧氏正交"
+      },
+      "evidence": "PDF pp2/11",
+      "interpretation": "归一化分母为序列权重，未来继续乘算子；GHMM坐标未必为非负概率。"
+    },
+    {
+      "label": "分因子信念自由度",
+      "latex": "D_{\\mathrm{factored}}=\\sum_n(d_n-1)",
+      "role": "分因子信念自由度",
+      "symbols": {
+        "eta": "上下文预测行向量，GHMM坐标不必非负",
+        "eta_empty": "初始信念行向量",
+        "T_x": "观测token对应的线性转移算子",
+        "1": "归一化列向量",
+        "N": "潜在因素数",
+        "d_n": "第n个潜在空间的表示维数",
+        "D_joint": "直接联合状态仿射坐标自由度",
+        "D_factored": "乘积态各边缘信念自由度之和",
+        "Q_A/Q_B": "候选因素子空间的正交基",
+        "d_A/d_B": "候选子空间维数",
+        "F": "Frobenius范数",
+        "epsilon": "整体观测token污染概率",
+        "p/q": "两个二状态过程边缘概率",
+        "A/B": "子空间；零交集只表示直和，不表示欧氏正交"
+      },
+      "evidence": "Proposition2.2/Theorem2.3 pp3–4；A pp12–14",
+      "interpretation": "在乘积初态及同一张量分解的观测算子下保持预测信息。"
+    },
+    {
+      "label": "联合仿射坐标维数",
+      "latex": "D_{\\mathrm{joint}}=\\prod_n d_n-1",
+      "role": "联合仿射坐标维数",
+      "symbols": {
+        "eta": "上下文预测行向量，GHMM坐标不必非负",
+        "eta_empty": "初始信念行向量",
+        "T_x": "观测token对应的线性转移算子",
+        "1": "归一化列向量",
+        "N": "潜在因素数",
+        "d_n": "第n个潜在空间的表示维数",
+        "D_joint": "直接联合状态仿射坐标自由度",
+        "D_factored": "乘积态各边缘信念自由度之和",
+        "Q_A/Q_B": "候选因素子空间的正交基",
+        "d_A/d_B": "候选子空间维数",
+        "F": "Frobenius范数",
+        "epsilon": "整体观测token污染概率",
+        "p/q": "两个二状态过程边缘概率",
+        "A/B": "子空间；零交集只表示直和，不表示欧氏正交"
+      },
+      "evidence": "Proposition2.2/Theorem2.3 pp3–4；A pp12–14",
+      "interpretation": "指数坐标节约相对于直接联合线性存储，不是内禀指数信息被无损压缩。"
+    },
+    {
+      "label": "积观测算子条件",
+      "latex": "T^{(x)}=\\bigotimes_n T_n^{(x)}",
+      "role": "积观测算子条件",
+      "symbols": {
+        "eta": "上下文预测行向量，GHMM坐标不必非负",
+        "eta_empty": "初始信念行向量",
+        "T_x": "观测token对应的线性转移算子",
+        "1": "归一化列向量",
+        "N": "潜在因素数",
+        "d_n": "第n个潜在空间的表示维数",
+        "D_joint": "直接联合状态仿射坐标自由度",
+        "D_factored": "乘积态各边缘信念自由度之和",
+        "Q_A/Q_B": "候选因素子空间的正交基",
+        "d_A/d_B": "候选子空间维数",
+        "F": "Frobenius范数",
+        "epsilon": "整体观测token污染概率",
+        "p/q": "两个二状态过程边缘概率",
+        "A/B": "子空间；零交集只表示直和，不表示欧氏正交"
+      },
+      "evidence": "PDF pp3–4/12–14",
+      "interpretation": "同一分解及乘积初态；不由此证明训练必然采取正交坐标。"
+    },
+    {
+      "label": "联合预测积态",
+      "latex": "\\eta=\\bigotimes_n\\eta_n",
+      "role": "联合预测积态",
+      "symbols": {
+        "eta": "上下文预测行向量，GHMM坐标不必非负",
+        "eta_empty": "初始信念行向量",
+        "T_x": "观测token对应的线性转移算子",
+        "1": "归一化列向量",
+        "N": "潜在因素数",
+        "d_n": "第n个潜在空间的表示维数",
+        "D_joint": "直接联合状态仿射坐标自由度",
+        "D_factored": "乘积态各边缘信念自由度之和",
+        "Q_A/Q_B": "候选因素子空间的正交基",
+        "d_A/d_B": "候选子空间维数",
+        "F": "Frobenius范数",
+        "epsilon": "整体观测token污染概率",
+        "p/q": "两个二状态过程边缘概率",
+        "A/B": "子空间；零交集只表示直和，不表示欧氏正交"
+      },
+      "evidence": "PDF pp3–4/12–16",
+      "interpretation": "相关初态收缩到积态另需混合条件；链式边缘随上下文相关不妨碍条件积态。"
+    },
+    {
+      "label": "因素潜在空间维数",
+      "latex": "d_n",
+      "role": "因素潜在空间维数",
+      "symbols": {
+        "eta": "上下文预测行向量，GHMM坐标不必非负",
+        "eta_empty": "初始信念行向量",
+        "T_x": "观测token对应的线性转移算子",
+        "1": "归一化列向量",
+        "N": "潜在因素数",
+        "d_n": "第n个潜在空间的表示维数",
+        "D_joint": "直接联合状态仿射坐标自由度",
+        "D_factored": "乘积态各边缘信念自由度之和",
+        "Q_A/Q_B": "候选因素子空间的正交基",
+        "d_A/d_B": "候选子空间维数",
+        "F": "Frobenius范数",
+        "epsilon": "整体观测token污染概率",
+        "p/q": "两个二状态过程边缘概率",
+        "A/B": "子空间；零交集只表示直和，不表示欧氏正交"
+      },
+      "evidence": "PDF pp3–4",
+      "interpretation": "主实验每因素3维、归一化信念2个自由度。"
+    },
+    {
+      "label": "主学习率",
+      "latex": "5\\times10^{-4}",
+      "role": "主学习率",
+      "symbols": {
+        "eta": "上下文预测行向量，GHMM坐标不必非负",
+        "eta_empty": "初始信念行向量",
+        "T_x": "观测token对应的线性转移算子",
+        "1": "归一化列向量",
+        "N": "潜在因素数",
+        "d_n": "第n个潜在空间的表示维数",
+        "D_joint": "直接联合状态仿射坐标自由度",
+        "D_factored": "乘积态各边缘信念自由度之和",
+        "Q_A/Q_B": "候选因素子空间的正交基",
+        "d_A/d_B": "候选子空间维数",
+        "F": "Frobenius范数",
+        "epsilon": "整体观测token污染概率",
+        "p/q": "两个二状态过程边缘概率",
+        "A/B": "子空间；零交集只表示直和，不表示欧氏正交"
+      },
+      "evidence": "AppendixC pp18–24",
+      "interpretation": "Adam、无权重衰减及长度8序列。"
+    },
+    {
+      "label": "因素A候选正交基",
+      "latex": "Q_A",
+      "role": "因素A候选正交基",
+      "symbols": {
+        "eta": "上下文预测行向量，GHMM坐标不必非负",
+        "eta_empty": "初始信念行向量",
+        "T_x": "观测token对应的线性转移算子",
+        "1": "归一化列向量",
+        "N": "潜在因素数",
+        "d_n": "第n个潜在空间的表示维数",
+        "D_joint": "直接联合状态仿射坐标自由度",
+        "D_factored": "乘积态各边缘信念自由度之和",
+        "Q_A/Q_B": "候选因素子空间的正交基",
+        "d_A/d_B": "候选子空间维数",
+        "F": "Frobenius范数",
+        "epsilon": "整体观测token污染概率",
+        "p/q": "两个二状态过程边缘概率",
+        "A/B": "子空间；零交集只表示直和，不表示欧氏正交"
+      },
+      "evidence": "AppendixH pp27–29",
+      "interpretation": "固定其余因素、中心化后PCA识别的候选空间。"
+    },
+    {
+      "label": "因素B候选正交基",
+      "latex": "Q_B",
+      "role": "因素B候选正交基",
+      "symbols": {
+        "eta": "上下文预测行向量，GHMM坐标不必非负",
+        "eta_empty": "初始信念行向量",
+        "T_x": "观测token对应的线性转移算子",
+        "1": "归一化列向量",
+        "N": "潜在因素数",
+        "d_n": "第n个潜在空间的表示维数",
+        "D_joint": "直接联合状态仿射坐标自由度",
+        "D_factored": "乘积态各边缘信念自由度之和",
+        "Q_A/Q_B": "候选因素子空间的正交基",
+        "d_A/d_B": "候选子空间维数",
+        "F": "Frobenius范数",
+        "epsilon": "整体观测token污染概率",
+        "p/q": "两个二状态过程边缘概率",
+        "A/B": "子空间；零交集只表示直和，不表示欧氏正交"
+      },
+      "evidence": "AppendixH pp27–29",
+      "interpretation": "独立主夹角证据不依赖维数相加论证。"
+    },
+    {
+      "label": "独立主夹角交叠指标",
+      "latex": "\\begin{aligned}\\operatorname{overlap}(A,B)&=\\frac{\\lVert Q_A^{\\mathsf T}Q_B\\rVert_F^2}{\\min(d_A,d_B)}\\end{aligned}",
+      "role": "独立主夹角交叠指标",
+      "symbols": {
+        "eta": "上下文预测行向量，GHMM坐标不必非负",
+        "eta_empty": "初始信念行向量",
+        "T_x": "观测token对应的线性转移算子",
+        "1": "归一化列向量",
+        "N": "潜在因素数",
+        "d_n": "第n个潜在空间的表示维数",
+        "D_joint": "直接联合状态仿射坐标自由度",
+        "D_factored": "乘积态各边缘信念自由度之和",
+        "Q_A/Q_B": "候选因素子空间的正交基",
+        "d_A/d_B": "候选子空间维数",
+        "F": "Frobenius范数",
+        "epsilon": "整体观测token污染概率",
+        "p/q": "两个二状态过程边缘概率",
+        "A/B": "子空间；零交集只表示直和，不表示欧氏正交"
+      },
+      "evidence": "PDF pp6–7；AppendixH pp27–29",
+      "interpretation": "平均平方余弦0才正交、1为较小子空间被包含，主要低阶方向的实验结果不等于全部激活分离。"
+    },
+    {
+      "label": "维数可加与直和",
+      "latex": "\\dim(A+B)=\\dim(A)+\\dim(B)",
+      "role": "维数可加与直和",
+      "symbols": {
+        "eta": "上下文预测行向量，GHMM坐标不必非负",
+        "eta_empty": "初始信念行向量",
+        "T_x": "观测token对应的线性转移算子",
+        "1": "归一化列向量",
+        "N": "潜在因素数",
+        "d_n": "第n个潜在空间的表示维数",
+        "D_joint": "直接联合状态仿射坐标自由度",
+        "D_factored": "乘积态各边缘信念自由度之和",
+        "Q_A/Q_B": "候选因素子空间的正交基",
+        "d_A/d_B": "候选子空间维数",
+        "F": "Frobenius范数",
+        "epsilon": "整体观测token污染概率",
+        "p/q": "两个二状态过程边缘概率",
+        "A/B": "子空间；零交集只表示直和，不表示欧氏正交"
+      },
+      "evidence": "AppendixH.2.1 PDF p29；本卡审阅",
+      "interpretation": "零交集蕴含直和，不能推出正交；有效95%方差维数更不是精确维数。"
+    },
+    {
+      "label": "附录错误的零交集条件",
+      "latex": "A\\cap B=\\{0\\}",
+      "role": "附录错误的零交集条件",
+      "symbols": {
+        "eta": "上下文预测行向量，GHMM坐标不必非负",
+        "eta_empty": "初始信念行向量",
+        "T_x": "观测token对应的线性转移算子",
+        "1": "归一化列向量",
+        "N": "潜在因素数",
+        "d_n": "第n个潜在空间的表示维数",
+        "D_joint": "直接联合状态仿射坐标自由度",
+        "D_factored": "乘积态各边缘信念自由度之和",
+        "Q_A/Q_B": "候选因素子空间的正交基",
+        "d_A/d_B": "候选子空间维数",
+        "F": "Frobenius范数",
+        "epsilon": "整体观测token污染概率",
+        "p/q": "两个二状态过程边缘概率",
+        "A/B": "子空间；零交集只表示直和，不表示欧氏正交"
+      },
+      "evidence": "H.2.1 PDF p29；本卡审阅",
+      "interpretation": "45度两条直线零交集仍不正交，不把此条件作为正交证明。"
+    },
+    {
+      "label": "排除原token噪声归一化",
+      "latex": "|\\mathcal X|-1",
+      "role": "排除原token噪声归一化",
+      "symbols": {
+        "eta": "上下文预测行向量，GHMM坐标不必非负",
+        "eta_empty": "初始信念行向量",
+        "T_x": "观测token对应的线性转移算子",
+        "1": "归一化列向量",
+        "N": "潜在因素数",
+        "d_n": "第n个潜在空间的表示维数",
+        "D_joint": "直接联合状态仿射坐标自由度",
+        "D_factored": "乘积态各边缘信念自由度之和",
+        "Q_A/Q_B": "候选因素子空间的正交基",
+        "d_A/d_B": "候选子空间维数",
+        "F": "Frobenius范数",
+        "epsilon": "整体观测token污染概率",
+        "p/q": "两个二状态过程边缘概率",
+        "A/B": "子空间；零交集只表示直和，不表示欧氏正交"
+      },
+      "evidence": "AppendixC.4 Eq33 PDF p20",
+      "interpretation": "主文均匀替换与排除原token口径有别，需按实际实现核验。"
+    }
+  ],
+  "figure_refs": [],
+  "source_figure_links": [
+    {
+      "label": "Figure 2",
+      "physical_page": 5,
+      "url": "https://arxiv.org/pdf/2602.02385v1#page=5"
+    },
+    {
+      "label": "Figure 3",
+      "physical_page": 7,
+      "url": "https://arxiv.org/pdf/2602.02385v1#page=7"
+    },
+    {
+      "label": "Figure 4",
+      "physical_page": 7,
+      "url": "https://arxiv.org/pdf/2602.02385v1#page=7"
+    },
+    {
+      "label": "Figure 13",
+      "physical_page": 25,
+      "url": "https://arxiv.org/pdf/2602.02385v1#page=25"
+    }
+  ],
+  "evidence_refs": [
+    {
+      "section": "作者信息",
+      "evidence": "PDF pp1/9–10，官方版本元数据及九位作者"
+    },
+    {
+      "section": "模型与方法",
+      "evidence": "GHMM pp2–4/11–17；Proposition2.2/Theorem2.3及初态/观测分解条件，C实验配置pp18–24"
+    },
+    {
+      "section": "核心结果与证据",
+      "evidence": "Fig2 p5原生PCA；Fig3 p7独立主夹角；Fig4 p7与Fig12 p24噪声轨迹；Fig13 p25嵌入12维与信念10维区分"
+    },
+    {
+      "section": "有效性与局限",
+      "evidence": "H.2.1 p29零交集不等于正交；GHMM有限维与KL边界pp2/11–16；噪声Eq33 p20；代码未独立执行"
+    },
+    {
+      "section": "复现与资源",
+      "evidence": "官方仓库入口与README只读核验；arXiv非独占分发许可未确认图像重托管，公开仅官方PDF页链接"
+    },
+    {
+      "section": "fulltext_reading_boundary",
+      "evidence": "All30physical pages and appendices read; original key pages3/5/7/21/25/29 visually checked; official repository README verified read-only; no independent reproduction performed."
+    }
+  ],
+  "cover": {
+    "mode": "title_abstract",
+    "abstract_text": "值得保留的结论是“在这些已知结构的序列上，出现了优先学习分因子信念的经验偏好”。理论证明的是这种表示何时足够，而不是梯度下降必然选择它；实验也没有直接证明真实语言模型把所有现实对象都放进独立、严格正交的子空间。",
+    "selection_rationale": "版本为arXiv非独占分发许可，未核实网站重新托管原图的开放许可；采用文字封面与官方PDF图页链接，不上传裁图或生成替代图。"
+  },
+  "provenance": {
+    "program": "Collection",
+    "catalog": "Paper Collection",
+    "catalog_record_id": "2602.02385",
+    "catalog_topic": "Physics of AI",
+    "collection_date": "2026-10-03",
+    "sampled_at": "2026-10-03T15:23:06.664941+00:00",
+    "selected_by": "editorial_curation",
+    "sampling_seed": "not_applicable"
+  },
+  "verified_metadata": {
+    "arxiv_id": "2602.02385",
+    "version": "v1",
+    "title": "Transformers learn factored representations",
+    "authors": [
+      "Adam Shai",
+      "Loren Amdahl-Culleton",
+      "Casper L. Christensen",
+      "Henry R. Bigelow",
+      "Fernando E. Rosas",
+      "Alexander B. Boyd",
+      "Eric A. Alt",
+      "Kyle J. Ray",
+      "Paul M. Riechers"
+    ],
+    "affiliations": [
+      "Simplex, Astera Institute",
+      "University of Sussex",
+      "Imperial College London",
+      "University of Oxford",
+      "Beyond Institute for Theoretical Science"
+    ],
+    "published": "2026-02-02",
+    "abstract": "Transformers pretrained via next token prediction learn to factor their world into parts, representing these factors in orthogonal subspaces of the residual stream. We formalize two representational hypotheses: (1) a representation in the product space of all factors, whose dimension grows exponentially with the number of parts, or (2) a factored representation in orthogonal subspaces, whose dimension grows linearly. The factored representation is lossless when factors are conditionally independent, but sacrifices predictive fidelity otherwise, creating a tradeoff between dimensional efficiency and accuracy. We derive precise predictions about the geometric structure of activations for each, including the number of subspaces, their dimensionality, and the arrangement of context embeddings within them. We test between these hypotheses on transformers trained on synthetic processes with known latent structure. Models learn factored representations when factors are conditionally independent, and continue to favor them early in training even when noise or hidden dependencies undermine conditional independence, reflecting an inductive bias toward factoring at the cost of fidelity. This provides a principled explanation for why transformers decompose the world into parts, and suggests that interpretable low dimensional structure may persist even in models trained on complex data.",
+    "pdf_pages": 30,
+    "license_url": "https://arxiv.org/licenses/nonexclusive-distrib/1.0/",
+    "source_pdf_sha256": "d0582aa1da73f8f2ed7bf33b18ca246ed2acede27fb6dff9689e64a5ddcdd8db"
+  },
+  "classification": {
+    "category": "AI理论",
+    "tags": [
+      "Physics of AI",
+      "Factored Representations",
+      "Belief Geometry",
+      "Transformers",
+      "Synthetic Processes"
+    ]
+  }
+}

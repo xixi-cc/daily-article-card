@@ -1,0 +1,1148 @@
+{
+  "title_zh": "为什么月份围成圆，年份排成带？",
+  "subtitle_zh": "从语料共现的平移对称性，到傅里叶表征与低维鲁棒性",
+  "title_en": "Symmetry in language statistics shapes the geometry of model representations",
+  "arxiv_id": "2602.15029",
+  "source_version": "v3",
+  "source_url": "https://arxiv.org/abs/2602.15029v3",
+  "pdf_url": "https://arxiv.org/pdf/2602.15029v3",
+  "source_pdf": "https://arxiv.org/pdf/2602.15029v3",
+  "source_pdf_sha256": "ca9f4f479381e1295ca3c00e92f25da11e9d9a4eb49f0c116a39ff9953bb7653",
+  "curation_status": "full_text_verified",
+  "card_standard_version": "2.4",
+  "paper_profile": "theory_numerics",
+  "paper_profile_description": "有限循环矩阵与开放边界的谱理论、语言共现统计及表示几何实测",
+  "style_reference": "physicist_daily_arxiv",
+  "independent_reproduction": false,
+  "sections": [
+    {
+      "title": "作者信息",
+      "paragraphs": [
+        "Dhruva Karkada来自UC Berkeley，Daniel J. Korchinski来自EPFL，Andres Nava来自Johns Hopkins，Matthieu Wyart来自EPFL与Johns Hopkins，Yasaman Bahri来自Google DeepMind。论文把语言模型中反复出现的几何形状当作需要解释的对象：月份为何组成圆，年份为何构成带有波纹的曲线，地理坐标为何能够被线性探针读出？作者提出，至少其中一部分结构可以追溯到语料中的两点共现统计，而不必先假设模型执行了复杂的空间或时间推理。[p1–4]"
+      ]
+    },
+    {
+      "title": "摘要",
+      "paragraphs": [
+        "这篇工作的核心是“平移对称性选择傅里叶模态”。若两个词的归一化共现强度主要取决于它们在某个语义坐标上的间隔，而不是绝对位置，那么相关矩阵就接近卷积算子。矩阵分解型词嵌入会编码其谱模态：周期概念的低频正弦—余弦对形成圆，开放边界改变波数与相位，产生开口曲线；更高频分量叠加后形成波纹。[p3–6]",
+        "更有意思的是集体效应：月份之间的直接统计被置零后，其他季节性词仍可提供冗余信息，使中等维数的嵌入恢复月份顺序。论文因此把“几何形状从哪里来”和“为什么删掉部分直接证据后形状仍在”放在同一谱框架下解释。[p7–8]",
+        "理论的严格对象是带明确谱与对称性假设的词嵌入模型；Gemma等大模型提供的是几何对应的经验支持。原文部分连续极限振幅归一化及高维索引、误差界需要修正，不能原样引用为全部正确的定理。本卡保留有限矩阵层面的傅里叶机制，并明确这些边界。"
+      ]
+    },
+    {
+      "title": "背景",
+      "paragraphs": [
+        "一张PCA散点图里的圆，可能来自模型执行周期运算，也可能来自训练数据中周期性的相似关系。两种解释并不互斥，但后者更基础：先问哪些统计足以让表示出现圆，再问网络如何使用这个圆进行计算。[p1–3、p9]",
+        "月份是周期坐标，历史年份是有端点的时间坐标，美国州的位置则近似二维坐标。作者将它们分别视为周期一维、开放一维与不规则二维的语义集合。对月份来说，时间相差一个月的词对往往有相近的统计关系；对年份来说，共现强度通常随年代距离衰减。这个近似对称性，而非单个词的频率，决定了可预测的几何结构。",
+        "这里的“对称”不是说真实语言完全不区分January和July。战争、节日、多义词及分词方式都会打破对称。理论解释的是占主导的规则结构和这些偏离为何可见，不能把自然语料当成精确均匀晶格。"
+      ]
+    },
+    {
+      "title": "模型与方法",
+      "paragraphs": [
+        "设\\(P_{ij}\\)为同一上下文窗口内词i、j的共现概率，\\(P_i\\)为相应边缘概率。作者使用有界的归一化超额共现矩阵 \\[\\begin{aligned}M^*_{ij}&=\\frac{2(P_{ij}-P_iP_j)}{P_{ij}+P_iP_j}.\\end{aligned}\\]",
+        "它在独立情形为零，取值介于−2和2；接近独立时，与\\(\\mathrm{PMI}_{ij}=\\log[P_{ij}/(P_iP_j)]\\)的差从三阶开始。这个近似是局部展开，不代表强关联或极小共现概率下二者数值相同。[Eq1；附录B.4，p17–18]",
+        "词嵌入以矩阵分解得到。对称目标最小化\\(\\lVert WW^{\\mathsf T}-M^*\\rVert_F^2\\)，只能拟合\\(M^*\\)的正谱部分。允许词向量\\(W\\)与上下文向量\\(W^{\\prime}\\)不同，并采用满足平衡条件的初始化与梯度流分析时，可得到 \\[\\begin{aligned}W&=\\Phi_d|\\Lambda_d|^{1/2},\\\\WW^{\\mathsf T}&=\\Phi_d|\\Lambda_d|\\Phi_d^{\\mathsf T},\\end{aligned}\\] 其中\\(M^*=\\Phi\\Lambda\\Phi^{\\mathsf T}\\)，截取按特征值绝对值排序的模态。满秩时Gram矩阵是矩阵绝对值\\(|M^*|\\)，一般并非\\(M^*\\)。若不规定这种平衡选择，\\(W\\to WA\\)、\\(W^{\\prime}\\to W^{\\prime}A^{-\\mathsf T}\\)会保持预测矩阵不变，却改变\\(W\\)的欧氏几何。[附录B.1–B.3，p15–17]",
+        "为了直接预测某组词\\(S\\)的几何，需要其有效Gram子矩阵具有平移对称性\\(H_{ij}=C(\\operatorname{dist}(x_i,x_j))\\)，并在主定理中取足够大的嵌入维数。PCA的中心化对应\\(P=I-\\mathbf1\\mathbf1^{\\mathsf T}/|S|\\)，因此真正要对角化的是\\(PHP\\)。周期边界时常数向量本来就是特征向量，中心化只去掉零频；开放边界时中心化还会改变偶模态，不能直接照搬周期傅里叶级数。[p3–6、p28–33]"
+      ]
+    },
+    {
+      "title": "核心结果与证据",
+      "paragraphs": [
+        "第一，周期对称性给出精确的有限矩阵几何。设\\(N=|S|\\)，对某个非自共轭波数\\(k\\)，令\\(\\lambda_{k}\\)为\\(H\\)对应的离散特征值，即未归一化的离散傅里叶和，则一对PCA坐标可以写为 \\[\\begin{aligned}w_k(x_i)&=\\sqrt{\\frac{2\\lambda_k}{N}}\\\\&\\quad\\times\\bigl(\\cos(kx_i),\\sin(kx_i)\\bigr).\\end{aligned}\\] 这是固定有限矩阵的归一化约定；简并子空间内允许任意正交旋转。若第一对低频模态占主导，二维投影就是圆；保留更高谐波，任意两主成分之间就出现Lissajous曲线。该结论来自循环矩阵的谱结构，不需要额外训练一个圆形解码器。[Proposition1；附录E.2]",
+        "第二，开放边界使“圆”变成非整数波数的曲线。对指数核\\(C(|x-y|)=\\exp(-|x-y|/\\sigma)\\)，在区间[−1,1]上，积分算子可用Green函数关系转化为二阶微分方程。中心化后的奇模态为\\(\\sin(kx)\\)，偶模态为\\(\\cos(kx)-\\sin(k)/k\\)，波数分别满足 \\[\\begin{aligned}\\tan k&=-\\sigma k,\\\\\\tan k&=\\frac{k}{1+\\sigma(1+\\sigma)k^2}.\\end{aligned}\\] 对于使用积分dy的核算子，特征值为\\(\\lambda_{\\mathrm{int}}=2\\sigma/(1+\\sigma^2k^2)\\)。这里σ由统计拟合给出；波数及相对谱衰减因此可预测。积分算子与有限Gram矩阵的绝对尺度需要另行换算，不能把\\(\\lambda_{\\mathrm{int}}\\)直接当成离散特征值。[Proposition3；p31–33]",
+        "第三，线性坐标解码可以理解为截断傅里叶级数。在周期一维晶格上，用前\\(r\\)个非零低频模态线性预测坐标，就是用有限谐波逼近锯齿函数x。若\\(N\\)为奇数、\\(r=2R\\)且完整保留正弦—余弦对，原文给出总体最优相对误差 \\[\\begin{aligned}\\varepsilon^2_{\\min}&=\\frac{6}{N^2-1}\\\\&\\quad\\times\\sum_{n=R+1}^{(N-1)/2}\\csc^2\\!\\left(\\frac{\\pi n}{N}\\right).\\end{aligned}\\] 在\\(1\\ll R\\ll N\\)时，它按\\(1/R\\)衰减，对应一维约\\(1/r\\)的标度。推广到\\(D\\)维的规则低通选择时，作者给出\\(r^{-1/D}\\)型上界；这不是有限训练样本下的测试误差保证。[Proposition4；附录E.5]",
+        "第四，实测几何与理论有明显对应。作者用2023年11月英文Wikipedia构造2.72B token的语料、25,000词词表，采用最大窗口16及随距离递减的共现权重，再直接对\\(M^*\\)做谱分解得到词向量。Figure1比较理论、这些词嵌入与Gemma 2 2B隐藏表示；Figure2展示年份的Lissajous曲线及线性解码；Figure3展示48个美国本土州的低频地理模态。这里的浅层“训练”实际是矩阵对角化，不是另一次完整SGD word2vec训练。[p12–14]",
+        "第五，中等维数能够重建被删掉的直接关联。Figure4把月份子块设为\\(M^*_{SS}=0\\)，在25,000词的全局矩阵中取1,000维嵌入，仍得到大致正确的月份圆。只保留月份和一些季节性辅助词也能恢复顺序，而“one”到“seventeen”这类非季节性词不能同样恢复。这个干预支持几何由更大词群的冗余关联共同承载。[p7、p13、p23–24]",
+        "第六，集体模型解释这种鲁棒性。令潜在季节t调制词的出现概率\\(P(i\\mid t)=P(i)[1+g(t-t_i)]\\)，其中g是零均值的周期函数，并保证概率非负与归一化。条件独立采样给出 \\[\\begin{aligned}\\frac{P(i,j)}{P(i)P(j)}&=1+\\widetilde K(t_i-t_j),\\\\\\widetilde K(\\Delta)&=\\frac1T\\int g(u)g(u+\\Delta)\\,du.\\end{aligned}\\] 因此PMI成为只依赖相位差的循环核。当许多词共同承担该信号、保留模态组之间有随词数\\(N\\)增长的谱隙时，改变固定数量且幅度有界的矩阵元素仅产生相对小扰动。Davis–Kahan型控制保护的是整组特征子空间；简并正弦—余弦对内部仍可旋转。[p8]"
+      ]
+    },
+    {
+      "title": "有效性与局限",
+      "paragraphs": [
+        "首先，这不是“真实LLM必然按这个核训练”的定理。理论分析矩阵分解模型，实测大模型主要是Gemma 2 2B及EmbeddingGemma；观察到相似几何不能排除其他高阶统计和计算机制。论文也承认上下文会改变表示，其动态尚未被该理论覆盖。[p9、p13–14]",
+        "其次，模型匹配经过明确选择。静态月份PCA排除了兼有情态动词含义的May；LLM则用“The month of the year is x”等提示消歧。年份分词会造成末位数字相同的额外条纹，州名的词元长度会形成额外主成分，Figure3跳过了这一模态。地理核的参数10和20由视觉检查选择，各列色标也独立调整。因此图展示的是带这些处理条件的结构对应，不能称完全无参数、无选择的盲预测。[附录A.1–A.3]",
+        "第三，真实\\(M^*\\)并不半正定，正负谱的秩相近。作者在附录明确说明：用\\(M^*\\)子块拟合的指数核，与实际被Gram矩阵分解的\\(|M^*|\\)子块不是同一个对象，所以绝对振幅通常预测不准。更弱假设要求\\(|M^*|\\)的相应子块本身具有对称性，这涉及全词表的谱变换，而不只是目标词之间的直接统计。[p16–19]",
+        "第四，本版还有独立的归一化错误。E.2使用未归一化傅里叶和作为有限矩阵特征值，E.3 Eq68却额外乘\\(2/N\\)，之后继续使用同一有限矩阵坐标公式，得到的Gram整体小了\\(2/N\\)。E.4 Eq72的\\(\\sqrt N\\)尺度也与固定核矩阵的连续极限不一致。若\\(f_k\\)按区间均匀测度单位归一，正确换算为\\[\\begin{aligned}\\lambda_{\\mathrm{discrete}}&\\approx\\frac N2\\lambda_{\\mathrm{int}},\\\\w_{ik}&\\longrightarrow\\sqrt{\\frac{\\lambda_{\\mathrm{int}}}{2}}f_k(x_i)\\end{aligned}\\]。这些修正不改变圆、非整数波数及相对模态形状，但意味着原文绝对振幅表达式不能不加检查地照录。[p28–33；尺度换算为本卡复核]",
+        "第五，高维表述也有技术边界。偶数边长、\\(D\\ge2\\)时，E.1的半空间选取会漏掉Nyquist面上的某些共轭对，例如\\(N\\)轴长4时的\\((-2,1)\\)与\\((-2,-1)\\)，需改为逐对选择代表。E.5将非整数径向截止与整数坐标截止混用，有限维常数界需重新整理；其逆数上界还要求分母为正，不能套到任意小\\(r\\)和任意\\(D\\)。本卡只把一维精确尾和及合适渐近区的低通解码机制作为已核验表达。",
+        "第六，Figure4的实际操作是把指定共现\\(P_{ij}\\)替换为\\(P_iP_j\\)，从而将归一化矩阵子块置零；不是把原始共现概率设成零，也不是已经重做了“删除所有含两个月份句子”的语料实验。辅助词还利用月份表示的关联筛选，因此它是冗余重建的验证，不是没有月份信息的盲发现。[附录A.1.4、C.1]",
+        "最后，鲁棒性论证需要固定模态组、非零谱隙和受控扰动。它不保证任意大量删语料、广泛改变统计或改变LLM训练后几何都不变。Figure2的年份探针使用100次随机划分，报告均值与标准差；高维ridgeless回归出现测试误差双降峰，恰好说明“存在好的总体线性解码器”不等于“少量样本拟合就能稳定泛化”。本卡未独立运行训练或重做全语料统计。[p8、p12、p23]"
+      ]
+    },
+    {
+      "title": "复现与资源",
+      "paragraphs": [
+        "版本化全文：[https://arxiv.org/pdf/2602.15029v3](https://arxiv.org/pdf/2602.15029v3) 元数据与版本：[https://arxiv.org/abs/2602.15029v3](https://arxiv.org/abs/2602.15029v3) 官方代码：[https://github.com/dkarkada/symmetry-stats-repgeom](https://github.com/dkarkada/symmetry-stats-repgeom) 官方仓库包含Wikipedia预处理、共现统计、主图notebooks及LLM激活提取代码，代码为MIT许可；本次已核验仓库说明与文件目录，未执行其训练或全数据流程。",
+        "原图建议对照[Figure1（p2：理论、词嵌入和Gemma的月份/年份几何）](https://arxiv.org/pdf/2602.15029v3#page=2)、[Figure2（p5：Lissajous曲线与解码误差）](https://arxiv.org/pdf/2602.15029v3#page=5)、[Figure4（p7：直接共现消融后的重建）](https://arxiv.org/pdf/2602.15029v3#page=7)。图源均为Karkada、Korchinski、Nava、Wyart、Bahri本论文。论文许可为CC BY-SA 4.0：[https://creativecommons.org/licenses/by-sa/4.0/](https://creativecommons.org/licenses/by-sa/4.0/) 。所转载图及裁图保持此许可与原作者署名；仅裁去图外正文和空白，保留所有面板、坐标、图例与原英文图注，不重绘。中文评述与图中作者原始结果应区分阅读。"
+      ]
+    },
+    {
+      "title": "阅读指南",
+      "paragraphs": [
+        "先看Figure1，记住要解释的是几何而非先假定模型会计算时间。然后用一个循环矩阵的小例子理解：只依赖相位差的矩阵为何由正弦—余弦对对角化。再看Figure4，把“某一对词直接共现”与“很多词共同承载潜变量”分开。最后读开放边界推导，观察中心化和边界条件如何改变允许的波数。",
+        "对物理与AI研究，这篇最值得迁移的路线是：先识别数据统计的近似对称群，再预测可见的低频模态、谱隙和破缺方式，最后设计消融区分直接关联与集体冗余。它提供了比“PCA图看起来像圆”更强的可检验结构，同时提醒我们把表示的生成机制、表示的用途和大模型中的因果计算分成不同问题。"
+      ]
+    }
+  ],
+  "equation_refs": [
+    {
+      "label": "归一化超额共现",
+      "latex": "\\begin{aligned}M^*_{ij}&=\\frac{2(P_{ij}-P_iP_j)}{P_{ij}+P_iP_j}.\\end{aligned}",
+      "role": "归一化超额共现",
+      "symbols": {
+        "P_ij": "窗口内共现概率",
+        "P_i": "边缘概率",
+        "M*": "归一化超额共现矩阵",
+        "W": "词嵌入矩阵",
+        "H": "有效Gram子矩阵",
+        "N": "词集合大小",
+        "lambda_k": "未归一化离散傅里叶和的特征值",
+        "lambda_int": "使用积分dy的核算子特征值",
+        "r=2R": "完整保留的非零正弦—余弦模态数",
+        "sigma": "指数核尺度",
+        "k": "波数",
+        "P": "中心化投影",
+        "g": "零均值周期调制函数"
+      },
+      "evidence": "Eq1；附录B.4 pp17–18",
+      "interpretation": "独立时为零；与PMI的三阶差异是局部展开。"
+    },
+    {
+      "label": "模型定义与条件",
+      "latex": "P_{ij}",
+      "role": "模型定义与条件",
+      "symbols": {
+        "P_ij": "窗口内共现概率",
+        "P_i": "边缘概率",
+        "M*": "归一化超额共现矩阵",
+        "W": "词嵌入矩阵",
+        "H": "有效Gram子矩阵",
+        "N": "词集合大小",
+        "lambda_k": "未归一化离散傅里叶和的特征值",
+        "lambda_int": "使用积分dy的核算子特征值",
+        "r=2R": "完整保留的非零正弦—余弦模态数",
+        "sigma": "指数核尺度",
+        "k": "波数",
+        "P": "中心化投影",
+        "g": "零均值周期调制函数"
+      },
+      "evidence": "论文正文及附录B、E；页码见同段",
+      "interpretation": "保持正文所述模型、归一化约定与适用条件。"
+    },
+    {
+      "label": "模型定义与条件",
+      "latex": "P_i",
+      "role": "模型定义与条件",
+      "symbols": {
+        "P_ij": "窗口内共现概率",
+        "P_i": "边缘概率",
+        "M*": "归一化超额共现矩阵",
+        "W": "词嵌入矩阵",
+        "H": "有效Gram子矩阵",
+        "N": "词集合大小",
+        "lambda_k": "未归一化离散傅里叶和的特征值",
+        "lambda_int": "使用积分dy的核算子特征值",
+        "r=2R": "完整保留的非零正弦—余弦模态数",
+        "sigma": "指数核尺度",
+        "k": "波数",
+        "P": "中心化投影",
+        "g": "零均值周期调制函数"
+      },
+      "evidence": "论文正文及附录B、E；页码见同段",
+      "interpretation": "保持正文所述模型、归一化约定与适用条件。"
+    },
+    {
+      "label": "模型定义与条件",
+      "latex": "\\mathrm{PMI}_{ij}=\\log[P_{ij}/(P_iP_j)]",
+      "role": "模型定义与条件",
+      "symbols": {
+        "P_ij": "窗口内共现概率",
+        "P_i": "边缘概率",
+        "M*": "归一化超额共现矩阵",
+        "W": "词嵌入矩阵",
+        "H": "有效Gram子矩阵",
+        "N": "词集合大小",
+        "lambda_k": "未归一化离散傅里叶和的特征值",
+        "lambda_int": "使用积分dy的核算子特征值",
+        "r=2R": "完整保留的非零正弦—余弦模态数",
+        "sigma": "指数核尺度",
+        "k": "波数",
+        "P": "中心化投影",
+        "g": "零均值周期调制函数"
+      },
+      "evidence": "论文正文及附录B、E；页码见同段",
+      "interpretation": "保持正文所述模型、归一化约定与适用条件。"
+    },
+    {
+      "label": "平衡分解的Gram矩阵",
+      "latex": "\\begin{aligned}W&=\\Phi_d|\\Lambda_d|^{1/2},\\\\WW^{\\mathsf T}&=\\Phi_d|\\Lambda_d|\\Phi_d^{\\mathsf T},\\end{aligned}",
+      "role": "平衡分解的Gram矩阵",
+      "symbols": {
+        "P_ij": "窗口内共现概率",
+        "P_i": "边缘概率",
+        "M*": "归一化超额共现矩阵",
+        "W": "词嵌入矩阵",
+        "H": "有效Gram子矩阵",
+        "N": "词集合大小",
+        "lambda_k": "未归一化离散傅里叶和的特征值",
+        "lambda_int": "使用积分dy的核算子特征值",
+        "r=2R": "完整保留的非零正弦—余弦模态数",
+        "sigma": "指数核尺度",
+        "k": "波数",
+        "P": "中心化投影",
+        "g": "零均值周期调制函数"
+      },
+      "evidence": "附录B.1–B.3 pp15–17",
+      "interpretation": "满秩Gram为矩阵绝对值，不能直接等同原共现矩阵。"
+    },
+    {
+      "label": "模型定义与条件",
+      "latex": "\\lVert WW^{\\mathsf T}-M^*\\rVert_F^2",
+      "role": "模型定义与条件",
+      "symbols": {
+        "P_ij": "窗口内共现概率",
+        "P_i": "边缘概率",
+        "M*": "归一化超额共现矩阵",
+        "W": "词嵌入矩阵",
+        "H": "有效Gram子矩阵",
+        "N": "词集合大小",
+        "lambda_k": "未归一化离散傅里叶和的特征值",
+        "lambda_int": "使用积分dy的核算子特征值",
+        "r=2R": "完整保留的非零正弦—余弦模态数",
+        "sigma": "指数核尺度",
+        "k": "波数",
+        "P": "中心化投影",
+        "g": "零均值周期调制函数"
+      },
+      "evidence": "论文正文及附录B、E；页码见同段",
+      "interpretation": "保持正文所述模型、归一化约定与适用条件。"
+    },
+    {
+      "label": "模型定义与条件",
+      "latex": "W^{\\prime}\\to W^{\\prime}A^{-\\mathsf T}",
+      "role": "模型定义与条件",
+      "symbols": {
+        "P_ij": "窗口内共现概率",
+        "P_i": "边缘概率",
+        "M*": "归一化超额共现矩阵",
+        "W": "词嵌入矩阵",
+        "H": "有效Gram子矩阵",
+        "N": "词集合大小",
+        "lambda_k": "未归一化离散傅里叶和的特征值",
+        "lambda_int": "使用积分dy的核算子特征值",
+        "r=2R": "完整保留的非零正弦—余弦模态数",
+        "sigma": "指数核尺度",
+        "k": "波数",
+        "P": "中心化投影",
+        "g": "零均值周期调制函数"
+      },
+      "evidence": "论文正文及附录B、E；页码见同段",
+      "interpretation": "保持正文所述模型、归一化约定与适用条件。"
+    },
+    {
+      "label": "模型定义与条件",
+      "latex": "M^*=\\Phi\\Lambda\\Phi^{\\mathsf T}",
+      "role": "模型定义与条件",
+      "symbols": {
+        "P_ij": "窗口内共现概率",
+        "P_i": "边缘概率",
+        "M*": "归一化超额共现矩阵",
+        "W": "词嵌入矩阵",
+        "H": "有效Gram子矩阵",
+        "N": "词集合大小",
+        "lambda_k": "未归一化离散傅里叶和的特征值",
+        "lambda_int": "使用积分dy的核算子特征值",
+        "r=2R": "完整保留的非零正弦—余弦模态数",
+        "sigma": "指数核尺度",
+        "k": "波数",
+        "P": "中心化投影",
+        "g": "零均值周期调制函数"
+      },
+      "evidence": "论文正文及附录B、E；页码见同段",
+      "interpretation": "保持正文所述模型、归一化约定与适用条件。"
+    },
+    {
+      "label": "模型定义与条件",
+      "latex": "W\\to WA",
+      "role": "模型定义与条件",
+      "symbols": {
+        "P_ij": "窗口内共现概率",
+        "P_i": "边缘概率",
+        "M*": "归一化超额共现矩阵",
+        "W": "词嵌入矩阵",
+        "H": "有效Gram子矩阵",
+        "N": "词集合大小",
+        "lambda_k": "未归一化离散傅里叶和的特征值",
+        "lambda_int": "使用积分dy的核算子特征值",
+        "r=2R": "完整保留的非零正弦—余弦模态数",
+        "sigma": "指数核尺度",
+        "k": "波数",
+        "P": "中心化投影",
+        "g": "零均值周期调制函数"
+      },
+      "evidence": "论文正文及附录B、E；页码见同段",
+      "interpretation": "保持正文所述模型、归一化约定与适用条件。"
+    },
+    {
+      "label": "模型定义与条件",
+      "latex": "|M^*|",
+      "role": "模型定义与条件",
+      "symbols": {
+        "P_ij": "窗口内共现概率",
+        "P_i": "边缘概率",
+        "M*": "归一化超额共现矩阵",
+        "W": "词嵌入矩阵",
+        "H": "有效Gram子矩阵",
+        "N": "词集合大小",
+        "lambda_k": "未归一化离散傅里叶和的特征值",
+        "lambda_int": "使用积分dy的核算子特征值",
+        "r=2R": "完整保留的非零正弦—余弦模态数",
+        "sigma": "指数核尺度",
+        "k": "波数",
+        "P": "中心化投影",
+        "g": "零均值周期调制函数"
+      },
+      "evidence": "论文正文及附录B、E；页码见同段",
+      "interpretation": "保持正文所述模型、归一化约定与适用条件。"
+    },
+    {
+      "label": "模型定义与条件",
+      "latex": "M^*",
+      "role": "模型定义与条件",
+      "symbols": {
+        "P_ij": "窗口内共现概率",
+        "P_i": "边缘概率",
+        "M*": "归一化超额共现矩阵",
+        "W": "词嵌入矩阵",
+        "H": "有效Gram子矩阵",
+        "N": "词集合大小",
+        "lambda_k": "未归一化离散傅里叶和的特征值",
+        "lambda_int": "使用积分dy的核算子特征值",
+        "r=2R": "完整保留的非零正弦—余弦模态数",
+        "sigma": "指数核尺度",
+        "k": "波数",
+        "P": "中心化投影",
+        "g": "零均值周期调制函数"
+      },
+      "evidence": "论文正文及附录B、E；页码见同段",
+      "interpretation": "保持正文所述模型、归一化约定与适用条件。"
+    },
+    {
+      "label": "模型定义与条件",
+      "latex": "H_{ij}=C(\\operatorname{dist}(x_i,x_j))",
+      "role": "模型定义与条件",
+      "symbols": {
+        "P_ij": "窗口内共现概率",
+        "P_i": "边缘概率",
+        "M*": "归一化超额共现矩阵",
+        "W": "词嵌入矩阵",
+        "H": "有效Gram子矩阵",
+        "N": "词集合大小",
+        "lambda_k": "未归一化离散傅里叶和的特征值",
+        "lambda_int": "使用积分dy的核算子特征值",
+        "r=2R": "完整保留的非零正弦—余弦模态数",
+        "sigma": "指数核尺度",
+        "k": "波数",
+        "P": "中心化投影",
+        "g": "零均值周期调制函数"
+      },
+      "evidence": "论文正文及附录B、E；页码见同段",
+      "interpretation": "保持正文所述模型、归一化约定与适用条件。"
+    },
+    {
+      "label": "模型定义与条件",
+      "latex": "P=I-\\mathbf1\\mathbf1^{\\mathsf T}/|S|",
+      "role": "模型定义与条件",
+      "symbols": {
+        "P_ij": "窗口内共现概率",
+        "P_i": "边缘概率",
+        "M*": "归一化超额共现矩阵",
+        "W": "词嵌入矩阵",
+        "H": "有效Gram子矩阵",
+        "N": "词集合大小",
+        "lambda_k": "未归一化离散傅里叶和的特征值",
+        "lambda_int": "使用积分dy的核算子特征值",
+        "r=2R": "完整保留的非零正弦—余弦模态数",
+        "sigma": "指数核尺度",
+        "k": "波数",
+        "P": "中心化投影",
+        "g": "零均值周期调制函数"
+      },
+      "evidence": "论文正文及附录B、E；页码见同段",
+      "interpretation": "保持正文所述模型、归一化约定与适用条件。"
+    },
+    {
+      "label": "模型定义与条件",
+      "latex": "PHP",
+      "role": "模型定义与条件",
+      "symbols": {
+        "P_ij": "窗口内共现概率",
+        "P_i": "边缘概率",
+        "M*": "归一化超额共现矩阵",
+        "W": "词嵌入矩阵",
+        "H": "有效Gram子矩阵",
+        "N": "词集合大小",
+        "lambda_k": "未归一化离散傅里叶和的特征值",
+        "lambda_int": "使用积分dy的核算子特征值",
+        "r=2R": "完整保留的非零正弦—余弦模态数",
+        "sigma": "指数核尺度",
+        "k": "波数",
+        "P": "中心化投影",
+        "g": "零均值周期调制函数"
+      },
+      "evidence": "论文正文及附录B、E；页码见同段",
+      "interpretation": "保持正文所述模型、归一化约定与适用条件。"
+    },
+    {
+      "label": "有限循环矩阵的坐标",
+      "latex": "\\begin{aligned}w_k(x_i)&=\\sqrt{\\frac{2\\lambda_k}{N}}\\\\&\\quad\\times\\bigl(\\cos(kx_i),\\sin(kx_i)\\bigr).\\end{aligned}",
+      "role": "有限循环矩阵的坐标",
+      "symbols": {
+        "P_ij": "窗口内共现概率",
+        "P_i": "边缘概率",
+        "M*": "归一化超额共现矩阵",
+        "W": "词嵌入矩阵",
+        "H": "有效Gram子矩阵",
+        "N": "词集合大小",
+        "lambda_k": "未归一化离散傅里叶和的特征值",
+        "lambda_int": "使用积分dy的核算子特征值",
+        "r=2R": "完整保留的非零正弦—余弦模态数",
+        "sigma": "指数核尺度",
+        "k": "波数",
+        "P": "中心化投影",
+        "g": "零均值周期调制函数"
+      },
+      "evidence": "Proposition1；附录E.2",
+      "interpretation": "离散特征值使用未归一化傅里叶和；简并对内允许正交旋转。"
+    },
+    {
+      "label": "模型定义与条件",
+      "latex": "N=|S|",
+      "role": "模型定义与条件",
+      "symbols": {
+        "P_ij": "窗口内共现概率",
+        "P_i": "边缘概率",
+        "M*": "归一化超额共现矩阵",
+        "W": "词嵌入矩阵",
+        "H": "有效Gram子矩阵",
+        "N": "词集合大小",
+        "lambda_k": "未归一化离散傅里叶和的特征值",
+        "lambda_int": "使用积分dy的核算子特征值",
+        "r=2R": "完整保留的非零正弦—余弦模态数",
+        "sigma": "指数核尺度",
+        "k": "波数",
+        "P": "中心化投影",
+        "g": "零均值周期调制函数"
+      },
+      "evidence": "论文正文及附录B、E；页码见同段",
+      "interpretation": "保持正文所述模型、归一化约定与适用条件。"
+    },
+    {
+      "label": "开放边界波数条件",
+      "latex": "\\begin{aligned}\\tan k&=-\\sigma k,\\\\\\tan k&=\\frac{k}{1+\\sigma(1+\\sigma)k^2}.\\end{aligned}",
+      "role": "开放边界波数条件",
+      "symbols": {
+        "P_ij": "窗口内共现概率",
+        "P_i": "边缘概率",
+        "M*": "归一化超额共现矩阵",
+        "W": "词嵌入矩阵",
+        "H": "有效Gram子矩阵",
+        "N": "词集合大小",
+        "lambda_k": "未归一化离散傅里叶和的特征值",
+        "lambda_int": "使用积分dy的核算子特征值",
+        "r=2R": "完整保留的非零正弦—余弦模态数",
+        "sigma": "指数核尺度",
+        "k": "波数",
+        "P": "中心化投影",
+        "g": "零均值周期调制函数"
+      },
+      "evidence": "Proposition3 pp31–33",
+      "interpretation": "奇、偶中心化模态分别满足两个条件。"
+    },
+    {
+      "label": "模型定义与条件",
+      "latex": "C(|x-y|)=\\exp(-|x-y|/\\sigma)",
+      "role": "模型定义与条件",
+      "symbols": {
+        "P_ij": "窗口内共现概率",
+        "P_i": "边缘概率",
+        "M*": "归一化超额共现矩阵",
+        "W": "词嵌入矩阵",
+        "H": "有效Gram子矩阵",
+        "N": "词集合大小",
+        "lambda_k": "未归一化离散傅里叶和的特征值",
+        "lambda_int": "使用积分dy的核算子特征值",
+        "r=2R": "完整保留的非零正弦—余弦模态数",
+        "sigma": "指数核尺度",
+        "k": "波数",
+        "P": "中心化投影",
+        "g": "零均值周期调制函数"
+      },
+      "evidence": "论文正文及附录B、E；页码见同段",
+      "interpretation": "保持正文所述模型、归一化约定与适用条件。"
+    },
+    {
+      "label": "模型定义与条件",
+      "latex": "\\lambda_{\\mathrm{int}}=2\\sigma/(1+\\sigma^2k^2)",
+      "role": "模型定义与条件",
+      "symbols": {
+        "P_ij": "窗口内共现概率",
+        "P_i": "边缘概率",
+        "M*": "归一化超额共现矩阵",
+        "W": "词嵌入矩阵",
+        "H": "有效Gram子矩阵",
+        "N": "词集合大小",
+        "lambda_k": "未归一化离散傅里叶和的特征值",
+        "lambda_int": "使用积分dy的核算子特征值",
+        "r=2R": "完整保留的非零正弦—余弦模态数",
+        "sigma": "指数核尺度",
+        "k": "波数",
+        "P": "中心化投影",
+        "g": "零均值周期调制函数"
+      },
+      "evidence": "论文正文及附录B、E；页码见同段",
+      "interpretation": "保持正文所述模型、归一化约定与适用条件。"
+    },
+    {
+      "label": "模型定义与条件",
+      "latex": "\\cos(kx)-\\sin(k)/k",
+      "role": "模型定义与条件",
+      "symbols": {
+        "P_ij": "窗口内共现概率",
+        "P_i": "边缘概率",
+        "M*": "归一化超额共现矩阵",
+        "W": "词嵌入矩阵",
+        "H": "有效Gram子矩阵",
+        "N": "词集合大小",
+        "lambda_k": "未归一化离散傅里叶和的特征值",
+        "lambda_int": "使用积分dy的核算子特征值",
+        "r=2R": "完整保留的非零正弦—余弦模态数",
+        "sigma": "指数核尺度",
+        "k": "波数",
+        "P": "中心化投影",
+        "g": "零均值周期调制函数"
+      },
+      "evidence": "论文正文及附录B、E；页码见同段",
+      "interpretation": "保持正文所述模型、归一化约定与适用条件。"
+    },
+    {
+      "label": "模型定义与条件",
+      "latex": "\\sin(kx)",
+      "role": "模型定义与条件",
+      "symbols": {
+        "P_ij": "窗口内共现概率",
+        "P_i": "边缘概率",
+        "M*": "归一化超额共现矩阵",
+        "W": "词嵌入矩阵",
+        "H": "有效Gram子矩阵",
+        "N": "词集合大小",
+        "lambda_k": "未归一化离散傅里叶和的特征值",
+        "lambda_int": "使用积分dy的核算子特征值",
+        "r=2R": "完整保留的非零正弦—余弦模态数",
+        "sigma": "指数核尺度",
+        "k": "波数",
+        "P": "中心化投影",
+        "g": "零均值周期调制函数"
+      },
+      "evidence": "论文正文及附录B、E；页码见同段",
+      "interpretation": "保持正文所述模型、归一化约定与适用条件。"
+    },
+    {
+      "label": "一维精确解码尾和",
+      "latex": "\\begin{aligned}\\varepsilon^2_{\\min}&=\\frac{6}{N^2-1}\\\\&\\quad\\times\\sum_{n=R+1}^{(N-1)/2}\\csc^2\\!\\left(\\frac{\\pi n}{N}\\right).\\end{aligned}",
+      "role": "一维精确解码尾和",
+      "symbols": {
+        "P_ij": "窗口内共现概率",
+        "P_i": "边缘概率",
+        "M*": "归一化超额共现矩阵",
+        "W": "词嵌入矩阵",
+        "H": "有效Gram子矩阵",
+        "N": "词集合大小",
+        "lambda_k": "未归一化离散傅里叶和的特征值",
+        "lambda_int": "使用积分dy的核算子特征值",
+        "r=2R": "完整保留的非零正弦—余弦模态数",
+        "sigma": "指数核尺度",
+        "k": "波数",
+        "P": "中心化投影",
+        "g": "零均值周期调制函数"
+      },
+      "evidence": "Proposition4；附录E.5",
+      "interpretation": "奇数N，r=2R，完整保留共轭模态对；非有限样本泛化保证。"
+    },
+    {
+      "label": "模型定义与条件",
+      "latex": "r^{-1/D}",
+      "role": "模型定义与条件",
+      "symbols": {
+        "P_ij": "窗口内共现概率",
+        "P_i": "边缘概率",
+        "M*": "归一化超额共现矩阵",
+        "W": "词嵌入矩阵",
+        "H": "有效Gram子矩阵",
+        "N": "词集合大小",
+        "lambda_k": "未归一化离散傅里叶和的特征值",
+        "lambda_int": "使用积分dy的核算子特征值",
+        "r=2R": "完整保留的非零正弦—余弦模态数",
+        "sigma": "指数核尺度",
+        "k": "波数",
+        "P": "中心化投影",
+        "g": "零均值周期调制函数"
+      },
+      "evidence": "论文正文及附录B、E；页码见同段",
+      "interpretation": "保持正文所述模型、归一化约定与适用条件。"
+    },
+    {
+      "label": "模型定义与条件",
+      "latex": "1\\ll R\\ll N",
+      "role": "模型定义与条件",
+      "symbols": {
+        "P_ij": "窗口内共现概率",
+        "P_i": "边缘概率",
+        "M*": "归一化超额共现矩阵",
+        "W": "词嵌入矩阵",
+        "H": "有效Gram子矩阵",
+        "N": "词集合大小",
+        "lambda_k": "未归一化离散傅里叶和的特征值",
+        "lambda_int": "使用积分dy的核算子特征值",
+        "r=2R": "完整保留的非零正弦—余弦模态数",
+        "sigma": "指数核尺度",
+        "k": "波数",
+        "P": "中心化投影",
+        "g": "零均值周期调制函数"
+      },
+      "evidence": "论文正文及附录B、E；页码见同段",
+      "interpretation": "保持正文所述模型、归一化约定与适用条件。"
+    },
+    {
+      "label": "模型定义与条件",
+      "latex": "r=2R",
+      "role": "模型定义与条件",
+      "symbols": {
+        "P_ij": "窗口内共现概率",
+        "P_i": "边缘概率",
+        "M*": "归一化超额共现矩阵",
+        "W": "词嵌入矩阵",
+        "H": "有效Gram子矩阵",
+        "N": "词集合大小",
+        "lambda_k": "未归一化离散傅里叶和的特征值",
+        "lambda_int": "使用积分dy的核算子特征值",
+        "r=2R": "完整保留的非零正弦—余弦模态数",
+        "sigma": "指数核尺度",
+        "k": "波数",
+        "P": "中心化投影",
+        "g": "零均值周期调制函数"
+      },
+      "evidence": "论文正文及附录B、E；页码见同段",
+      "interpretation": "保持正文所述模型、归一化约定与适用条件。"
+    },
+    {
+      "label": "模型定义与条件",
+      "latex": "1/R",
+      "role": "模型定义与条件",
+      "symbols": {
+        "P_ij": "窗口内共现概率",
+        "P_i": "边缘概率",
+        "M*": "归一化超额共现矩阵",
+        "W": "词嵌入矩阵",
+        "H": "有效Gram子矩阵",
+        "N": "词集合大小",
+        "lambda_k": "未归一化离散傅里叶和的特征值",
+        "lambda_int": "使用积分dy的核算子特征值",
+        "r=2R": "完整保留的非零正弦—余弦模态数",
+        "sigma": "指数核尺度",
+        "k": "波数",
+        "P": "中心化投影",
+        "g": "零均值周期调制函数"
+      },
+      "evidence": "论文正文及附录B、E；页码见同段",
+      "interpretation": "保持正文所述模型、归一化约定与适用条件。"
+    },
+    {
+      "label": "模型定义与条件",
+      "latex": "1/r",
+      "role": "模型定义与条件",
+      "symbols": {
+        "P_ij": "窗口内共现概率",
+        "P_i": "边缘概率",
+        "M*": "归一化超额共现矩阵",
+        "W": "词嵌入矩阵",
+        "H": "有效Gram子矩阵",
+        "N": "词集合大小",
+        "lambda_k": "未归一化离散傅里叶和的特征值",
+        "lambda_int": "使用积分dy的核算子特征值",
+        "r=2R": "完整保留的非零正弦—余弦模态数",
+        "sigma": "指数核尺度",
+        "k": "波数",
+        "P": "中心化投影",
+        "g": "零均值周期调制函数"
+      },
+      "evidence": "论文正文及附录B、E；页码见同段",
+      "interpretation": "保持正文所述模型、归一化约定与适用条件。"
+    },
+    {
+      "label": "模型定义与条件",
+      "latex": "M^*",
+      "role": "模型定义与条件",
+      "symbols": {
+        "P_ij": "窗口内共现概率",
+        "P_i": "边缘概率",
+        "M*": "归一化超额共现矩阵",
+        "W": "词嵌入矩阵",
+        "H": "有效Gram子矩阵",
+        "N": "词集合大小",
+        "lambda_k": "未归一化离散傅里叶和的特征值",
+        "lambda_int": "使用积分dy的核算子特征值",
+        "r=2R": "完整保留的非零正弦—余弦模态数",
+        "sigma": "指数核尺度",
+        "k": "波数",
+        "P": "中心化投影",
+        "g": "零均值周期调制函数"
+      },
+      "evidence": "论文正文及附录B、E；页码见同段",
+      "interpretation": "保持正文所述模型、归一化约定与适用条件。"
+    },
+    {
+      "label": "模型定义与条件",
+      "latex": "M^*_{SS}=0",
+      "role": "模型定义与条件",
+      "symbols": {
+        "P_ij": "窗口内共现概率",
+        "P_i": "边缘概率",
+        "M*": "归一化超额共现矩阵",
+        "W": "词嵌入矩阵",
+        "H": "有效Gram子矩阵",
+        "N": "词集合大小",
+        "lambda_k": "未归一化离散傅里叶和的特征值",
+        "lambda_int": "使用积分dy的核算子特征值",
+        "r=2R": "完整保留的非零正弦—余弦模态数",
+        "sigma": "指数核尺度",
+        "k": "波数",
+        "P": "中心化投影",
+        "g": "零均值周期调制函数"
+      },
+      "evidence": "论文正文及附录B、E；页码见同段",
+      "interpretation": "保持正文所述模型、归一化约定与适用条件。"
+    },
+    {
+      "label": "集体季节核",
+      "latex": "\\begin{aligned}\\frac{P(i,j)}{P(i)P(j)}&=1+\\widetilde K(t_i-t_j),\\\\\\widetilde K(\\Delta)&=\\frac1T\\int g(u)g(u+\\Delta)\\,du.\\end{aligned}",
+      "role": "集体季节核",
+      "symbols": {
+        "P_ij": "窗口内共现概率",
+        "P_i": "边缘概率",
+        "M*": "归一化超额共现矩阵",
+        "W": "词嵌入矩阵",
+        "H": "有效Gram子矩阵",
+        "N": "词集合大小",
+        "lambda_k": "未归一化离散傅里叶和的特征值",
+        "lambda_int": "使用积分dy的核算子特征值",
+        "r=2R": "完整保留的非零正弦—余弦模态数",
+        "sigma": "指数核尺度",
+        "k": "波数",
+        "P": "中心化投影",
+        "g": "零均值周期调制函数"
+      },
+      "evidence": "p8",
+      "interpretation": "条件独立、有效概率及零均值周期调制；扰动保护整组子空间。"
+    },
+    {
+      "label": "模型定义与条件",
+      "latex": "P(i\\mid t)=P(i)[1+g(t-t_i)]",
+      "role": "模型定义与条件",
+      "symbols": {
+        "P_ij": "窗口内共现概率",
+        "P_i": "边缘概率",
+        "M*": "归一化超额共现矩阵",
+        "W": "词嵌入矩阵",
+        "H": "有效Gram子矩阵",
+        "N": "词集合大小",
+        "lambda_k": "未归一化离散傅里叶和的特征值",
+        "lambda_int": "使用积分dy的核算子特征值",
+        "r=2R": "完整保留的非零正弦—余弦模态数",
+        "sigma": "指数核尺度",
+        "k": "波数",
+        "P": "中心化投影",
+        "g": "零均值周期调制函数"
+      },
+      "evidence": "论文正文及附录B、E；页码见同段",
+      "interpretation": "保持正文所述模型、归一化约定与适用条件。"
+    },
+    {
+      "label": "模型定义与条件",
+      "latex": "|M^*|",
+      "role": "模型定义与条件",
+      "symbols": {
+        "P_ij": "窗口内共现概率",
+        "P_i": "边缘概率",
+        "M*": "归一化超额共现矩阵",
+        "W": "词嵌入矩阵",
+        "H": "有效Gram子矩阵",
+        "N": "词集合大小",
+        "lambda_k": "未归一化离散傅里叶和的特征值",
+        "lambda_int": "使用积分dy的核算子特征值",
+        "r=2R": "完整保留的非零正弦—余弦模态数",
+        "sigma": "指数核尺度",
+        "k": "波数",
+        "P": "中心化投影",
+        "g": "零均值周期调制函数"
+      },
+      "evidence": "论文正文及附录B、E；页码见同段",
+      "interpretation": "保持正文所述模型、归一化约定与适用条件。"
+    },
+    {
+      "label": "模型定义与条件",
+      "latex": "M^*",
+      "role": "模型定义与条件",
+      "symbols": {
+        "P_ij": "窗口内共现概率",
+        "P_i": "边缘概率",
+        "M*": "归一化超额共现矩阵",
+        "W": "词嵌入矩阵",
+        "H": "有效Gram子矩阵",
+        "N": "词集合大小",
+        "lambda_k": "未归一化离散傅里叶和的特征值",
+        "lambda_int": "使用积分dy的核算子特征值",
+        "r=2R": "完整保留的非零正弦—余弦模态数",
+        "sigma": "指数核尺度",
+        "k": "波数",
+        "P": "中心化投影",
+        "g": "零均值周期调制函数"
+      },
+      "evidence": "论文正文及附录B、E；页码见同段",
+      "interpretation": "保持正文所述模型、归一化约定与适用条件。"
+    },
+    {
+      "label": "连续与离散尺度换算",
+      "latex": "\\begin{aligned}\\lambda_{\\mathrm{discrete}}&\\approx\\frac N2\\lambda_{\\mathrm{int}},\\\\w_{ik}&\\longrightarrow\\sqrt{\\frac{\\lambda_{\\mathrm{int}}}{2}}f_k(x_i)\\end{aligned}",
+      "role": "连续与离散尺度换算",
+      "symbols": {
+        "P_ij": "窗口内共现概率",
+        "P_i": "边缘概率",
+        "M*": "归一化超额共现矩阵",
+        "W": "词嵌入矩阵",
+        "H": "有效Gram子矩阵",
+        "N": "词集合大小",
+        "lambda_k": "未归一化离散傅里叶和的特征值",
+        "lambda_int": "使用积分dy的核算子特征值",
+        "r=2R": "完整保留的非零正弦—余弦模态数",
+        "sigma": "指数核尺度",
+        "k": "波数",
+        "P": "中心化投影",
+        "g": "零均值周期调制函数"
+      },
+      "evidence": "附录E.2–E.4 pp28–33；本卡复核",
+      "interpretation": "f按区间均匀测度单位归一；修正绝对振幅而保留相对形状。"
+    },
+    {
+      "label": "模型定义与条件",
+      "latex": "2/N",
+      "role": "模型定义与条件",
+      "symbols": {
+        "P_ij": "窗口内共现概率",
+        "P_i": "边缘概率",
+        "M*": "归一化超额共现矩阵",
+        "W": "词嵌入矩阵",
+        "H": "有效Gram子矩阵",
+        "N": "词集合大小",
+        "lambda_k": "未归一化离散傅里叶和的特征值",
+        "lambda_int": "使用积分dy的核算子特征值",
+        "r=2R": "完整保留的非零正弦—余弦模态数",
+        "sigma": "指数核尺度",
+        "k": "波数",
+        "P": "中心化投影",
+        "g": "零均值周期调制函数"
+      },
+      "evidence": "论文正文及附录B、E；页码见同段",
+      "interpretation": "保持正文所述模型、归一化约定与适用条件。"
+    },
+    {
+      "label": "模型定义与条件",
+      "latex": "f_k",
+      "role": "模型定义与条件",
+      "symbols": {
+        "P_ij": "窗口内共现概率",
+        "P_i": "边缘概率",
+        "M*": "归一化超额共现矩阵",
+        "W": "词嵌入矩阵",
+        "H": "有效Gram子矩阵",
+        "N": "词集合大小",
+        "lambda_k": "未归一化离散傅里叶和的特征值",
+        "lambda_int": "使用积分dy的核算子特征值",
+        "r=2R": "完整保留的非零正弦—余弦模态数",
+        "sigma": "指数核尺度",
+        "k": "波数",
+        "P": "中心化投影",
+        "g": "零均值周期调制函数"
+      },
+      "evidence": "论文正文及附录B、E；页码见同段",
+      "interpretation": "保持正文所述模型、归一化约定与适用条件。"
+    },
+    {
+      "label": "模型定义与条件",
+      "latex": "\\sqrt N",
+      "role": "模型定义与条件",
+      "symbols": {
+        "P_ij": "窗口内共现概率",
+        "P_i": "边缘概率",
+        "M*": "归一化超额共现矩阵",
+        "W": "词嵌入矩阵",
+        "H": "有效Gram子矩阵",
+        "N": "词集合大小",
+        "lambda_k": "未归一化离散傅里叶和的特征值",
+        "lambda_int": "使用积分dy的核算子特征值",
+        "r=2R": "完整保留的非零正弦—余弦模态数",
+        "sigma": "指数核尺度",
+        "k": "波数",
+        "P": "中心化投影",
+        "g": "零均值周期调制函数"
+      },
+      "evidence": "论文正文及附录B、E；页码见同段",
+      "interpretation": "保持正文所述模型、归一化约定与适用条件。"
+    },
+    {
+      "label": "模型定义与条件",
+      "latex": "(-2,-1)",
+      "role": "模型定义与条件",
+      "symbols": {
+        "P_ij": "窗口内共现概率",
+        "P_i": "边缘概率",
+        "M*": "归一化超额共现矩阵",
+        "W": "词嵌入矩阵",
+        "H": "有效Gram子矩阵",
+        "N": "词集合大小",
+        "lambda_k": "未归一化离散傅里叶和的特征值",
+        "lambda_int": "使用积分dy的核算子特征值",
+        "r=2R": "完整保留的非零正弦—余弦模态数",
+        "sigma": "指数核尺度",
+        "k": "波数",
+        "P": "中心化投影",
+        "g": "零均值周期调制函数"
+      },
+      "evidence": "论文正文及附录B、E；页码见同段",
+      "interpretation": "保持正文所述模型、归一化约定与适用条件。"
+    },
+    {
+      "label": "模型定义与条件",
+      "latex": "(-2,1)",
+      "role": "模型定义与条件",
+      "symbols": {
+        "P_ij": "窗口内共现概率",
+        "P_i": "边缘概率",
+        "M*": "归一化超额共现矩阵",
+        "W": "词嵌入矩阵",
+        "H": "有效Gram子矩阵",
+        "N": "词集合大小",
+        "lambda_k": "未归一化离散傅里叶和的特征值",
+        "lambda_int": "使用积分dy的核算子特征值",
+        "r=2R": "完整保留的非零正弦—余弦模态数",
+        "sigma": "指数核尺度",
+        "k": "波数",
+        "P": "中心化投影",
+        "g": "零均值周期调制函数"
+      },
+      "evidence": "论文正文及附录B、E；页码见同段",
+      "interpretation": "保持正文所述模型、归一化约定与适用条件。"
+    },
+    {
+      "label": "模型定义与条件",
+      "latex": "D\\ge2",
+      "role": "模型定义与条件",
+      "symbols": {
+        "P_ij": "窗口内共现概率",
+        "P_i": "边缘概率",
+        "M*": "归一化超额共现矩阵",
+        "W": "词嵌入矩阵",
+        "H": "有效Gram子矩阵",
+        "N": "词集合大小",
+        "lambda_k": "未归一化离散傅里叶和的特征值",
+        "lambda_int": "使用积分dy的核算子特征值",
+        "r=2R": "完整保留的非零正弦—余弦模态数",
+        "sigma": "指数核尺度",
+        "k": "波数",
+        "P": "中心化投影",
+        "g": "零均值周期调制函数"
+      },
+      "evidence": "论文正文及附录B、E；页码见同段",
+      "interpretation": "保持正文所述模型、归一化约定与适用条件。"
+    },
+    {
+      "label": "模型定义与条件",
+      "latex": "P_iP_j",
+      "role": "模型定义与条件",
+      "symbols": {
+        "P_ij": "窗口内共现概率",
+        "P_i": "边缘概率",
+        "M*": "归一化超额共现矩阵",
+        "W": "词嵌入矩阵",
+        "H": "有效Gram子矩阵",
+        "N": "词集合大小",
+        "lambda_k": "未归一化离散傅里叶和的特征值",
+        "lambda_int": "使用积分dy的核算子特征值",
+        "r=2R": "完整保留的非零正弦—余弦模态数",
+        "sigma": "指数核尺度",
+        "k": "波数",
+        "P": "中心化投影",
+        "g": "零均值周期调制函数"
+      },
+      "evidence": "论文正文及附录B、E；页码见同段",
+      "interpretation": "保持正文所述模型、归一化约定与适用条件。"
+    },
+    {
+      "label": "模型定义与条件",
+      "latex": "P_{ij}",
+      "role": "模型定义与条件",
+      "symbols": {
+        "P_ij": "窗口内共现概率",
+        "P_i": "边缘概率",
+        "M*": "归一化超额共现矩阵",
+        "W": "词嵌入矩阵",
+        "H": "有效Gram子矩阵",
+        "N": "词集合大小",
+        "lambda_k": "未归一化离散傅里叶和的特征值",
+        "lambda_int": "使用积分dy的核算子特征值",
+        "r=2R": "完整保留的非零正弦—余弦模态数",
+        "sigma": "指数核尺度",
+        "k": "波数",
+        "P": "中心化投影",
+        "g": "零均值周期调制函数"
+      },
+      "evidence": "论文正文及附录B、E；页码见同段",
+      "interpretation": "保持正文所述模型、归一化约定与适用条件。"
+    }
+  ],
+  "figure_refs": [
+    {
+      "label": "Figure 1",
+      "asset_path": "assets/collection-figures/2602.15029/fig1.png",
+      "section": "核心结果与证据",
+      "role": "理论与表示几何比较",
+      "evidence": "https://arxiv.org/pdf/2602.15029v3#page=2; Figure 1, physical p2",
+      "alt_text": "月份与年份；理论、词嵌入、Gemma 2 2B三行的全部面板、坐标、图例和英文原图注。",
+      "caption": "月份与年份；理论、词嵌入、Gemma 2 2B三行的全部面板、坐标、图例和英文原图注。 Karkada、Korchinski、Nava、Wyart、Bahri；arXiv:2602.15029v3，Figure 1，PDF物理p2；CC BY-SA 4.0；原PDF栅格化，仅裁去图外正文与空白，未重绘或增强。",
+      "interpretation": "比较须结合静态词嵌入与提示消歧、分词影响等条件。",
+      "license": "CC BY-SA 4.0",
+      "license_url": "https://creativecommons.org/licenses/by-sa/4.0/"
+    },
+    {
+      "label": "Figure 2",
+      "asset_path": "assets/collection-figures/2602.15029/fig2.png",
+      "section": "核心结果与证据",
+      "role": "年份模态与线性解码",
+      "evidence": "https://arxiv.org/pdf/2602.15029v3#page=5; Figure 2, physical p5",
+      "alt_text": "左侧全部主成分组合与年份曲线，右侧解码误差及双降；完整面板、坐标、图例和英文原图注。",
+      "caption": "左侧全部主成分组合与年份曲线，右侧解码误差及双降；完整面板、坐标、图例和英文原图注。 Karkada、Korchinski、Nava、Wyart、Bahri；arXiv:2602.15029v3，Figure 2，PDF物理p5；CC BY-SA 4.0；原PDF栅格化，仅裁去图外正文与空白，未重绘或增强。",
+      "interpretation": "总体最优解码器不保证有限样本ridgeless拟合稳定泛化。",
+      "license": "CC BY-SA 4.0",
+      "license_url": "https://creativecommons.org/licenses/by-sa/4.0/"
+    },
+    {
+      "label": "Figure 4",
+      "asset_path": "assets/collection-figures/2602.15029/fig4.png",
+      "section": "核心结果与证据",
+      "role": "直接统计消融与冗余重建",
+      "evidence": "https://arxiv.org/pdf/2602.15029v3#page=7; Figure 4, physical p7",
+      "alt_text": "两组共现矩阵、月份几何与Gram矩阵，共六面板；保留坐标、图例和英文原图注。",
+      "caption": "两组共现矩阵、月份几何与Gram矩阵，共六面板；保留坐标、图例和英文原图注。 Karkada、Korchinski、Nava、Wyart、Bahri；arXiv:2602.15029v3，Figure 4，PDF物理p7；CC BY-SA 4.0；原PDF栅格化，仅裁去图外正文与空白，未重绘或增强。",
+      "interpretation": "指定P_ij替换为P_iP_j；辅助词使用目标月份关联筛选。",
+      "license": "CC BY-SA 4.0",
+      "license_url": "https://creativecommons.org/licenses/by-sa/4.0/"
+    }
+  ],
+  "source_figure_links": [
+    {
+      "label": "Figure 1",
+      "physical_page": 2,
+      "url": "https://arxiv.org/pdf/2602.15029v3#page=2"
+    },
+    {
+      "label": "Figure 2",
+      "physical_page": 5,
+      "url": "https://arxiv.org/pdf/2602.15029v3#page=5"
+    },
+    {
+      "label": "Figure 4",
+      "physical_page": 7,
+      "url": "https://arxiv.org/pdf/2602.15029v3#page=7"
+    }
+  ],
+  "evidence_refs": [
+    {
+      "section": "作者信息",
+      "evidence": "PDF p1；官方arXiv v3元数据"
+    },
+    {
+      "section": "模型与方法",
+      "evidence": "Eq1；附录B.1–B.4 pp15–18；附录E pp28–33"
+    },
+    {
+      "section": "核心结果与证据",
+      "evidence": "Proposition1/3/4；Figures1/2/4，物理p2/5/7；附录A/C/E"
+    },
+    {
+      "section": "有效性与局限",
+      "evidence": "附录A.1–A.3、B、E；Eq68及Eq72尺度换算为本卡复核"
+    },
+    {
+      "section": "复现与资源",
+      "evidence": "官方PDF v3、代码仓库MIT许可、论文图CC BY-SA 4.0"
+    },
+    {
+      "section": "fulltext_reading_boundary",
+      "evidence": "All 36 physical pages and 17 figures read; source figures and appendices inspected; narrow normalization and indexing checks performed; no independent reproduction performed."
+    }
+  ],
+  "cover": {
+    "mode": "source_figure",
+    "asset_path": "assets/collection-figures/2602.15029/fig1.png",
+    "label": "Figure 1",
+    "visual_type": "comparison",
+    "selection_rationale": "完整比较月份与年份的理论、词嵌入及Gemma三行几何，保留全部面板、坐标、图例和英文原图注。",
+    "evidence": "https://arxiv.org/pdf/2602.15029v3#page=2; Figure 1, physical p2",
+    "alt_text": "月份与年份；理论、词嵌入、Gemma 2 2B三行的全部面板、坐标、图例和英文原图注。",
+    "caption": "月份与年份；理论、词嵌入、Gemma 2 2B三行的全部面板、坐标、图例和英文原图注。",
+    "attribution": "arXiv:2602.15029v3，Figure1 PDF p2；CC BY-SA 4.0 https://creativecommons.org/licenses/by-sa/4.0/；仅裁去图外正文与空白，保留全部面板及英文原图注。"
+  },
+  "provenance": {
+    "program": "Collection",
+    "catalog": "Paper Collection",
+    "catalog_record_id": "2602.15029",
+    "catalog_topic": "Physics of AI",
+    "collection_date": "2026-10-03",
+    "sampled_at": "2026-10-03T17:07:47.303141+00:00",
+    "selected_by": "editorial_curation",
+    "sampling_seed": "not_applicable"
+  },
+  "verified_metadata": {
+    "arxiv_id": "2602.15029",
+    "version": "v3",
+    "title": "Symmetry in language statistics shapes the geometry of model representations",
+    "authors": [
+      "Dhruva Karkada",
+      "Daniel J. Korchinski",
+      "Andres Nava",
+      "Matthieu Wyart",
+      "Yasaman Bahri"
+    ],
+    "affiliations": [
+      "UC Berkeley",
+      "EPFL",
+      "Johns Hopkins",
+      "Google DeepMind"
+    ],
+    "published": "2026-06-29",
+    "abstract": "The internal representations learned by language models consistently exhibit striking geometric structure: calendar months organize into a circle, historical years form a smooth one-dimensional manifold, and cities' latitudes and longitudes can be decoded using a linear probe. To explain this neural code, we first show that language statistics exhibit translation symmetry (for example, the frequency with which any two months co-occur in text depends only on the time interval between them). We prove that this symmetry governs these geometric structures in high-dimensional word embedding models, and we analytically derive the manifold geometry of word representations. These predictions empirically match large text embedding models and large language models. Moreover, the representational geometry persists at moderate embedding dimension even when the relevant statistics are perturbed (e.g., by removing all sentences in which two months co-occur). We prove that this robustness emerges naturally when the co-occurrence statistics are controlled by an underlying latent variable. Our results indicate that these representational manifolds originate in the statistical symmetries of natural language.",
+    "pdf_pages": 36,
+    "license_url": "https://creativecommons.org/licenses/by-sa/4.0/",
+    "source_pdf_sha256": "ca9f4f479381e1295ca3c00e92f25da11e9d9a4eb49f0c116a39ff9953bb7653"
+  },
+  "classification": {
+    "category": "AI理论",
+    "tags": [
+      "Physics of AI",
+      "Fourier Modes",
+      "Translation Symmetry",
+      "Representation Geometry",
+      "Collective Redundancy"
+    ]
+  }
+}

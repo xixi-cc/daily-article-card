@@ -225,8 +225,25 @@ def classify_card(
     if not tags:
         tags = ["跨学科"]
 
+    # A curator may classify a reviewed paper explicitly; descriptive words such
+    # as "representation" also occur in pure mathematical physics.
+    explicit = card.get("classification")
+    category = _infer_domain(categories, text, profile)
+    allowed_categories = {
+        "机器人与具身智能", "生物与神经", "AI for Science",
+        "凝聚态与复杂系统", "AI 基础理论", "AI 方法与系统",
+        "统计与数学物理", "物理与复杂系统", "跨学科",
+    }
+    if isinstance(explicit, Mapping) and explicit.get("category") in allowed_categories:
+        category = str(explicit["category"])
+        explicit_tags = explicit.get("tags")
+        if isinstance(explicit_tags, list) and explicit_tags and all(
+            isinstance(tag, str) and tag.strip() for tag in explicit_tags
+        ):
+            tags = _ordered_unique(explicit_tags)[:6]
+
     return {
-        "category": _infer_domain(categories, text, profile),
+        "category": category,
         "research_type": PROFILE_LABELS.get(profile, "理论"),
         "tags": tags,
         "arxiv_categories": categories,

@@ -1,0 +1,289 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Attention Sinks Are Provably Necessary in Softmax Transformers: Evidence from Trigger-Conditional Tasks - physics+AI Collection 论文卡</title>
+    <meta name="description" content="在单层、单头的因果softmax注意力模型中，作者构造一个任务：只有遇到trigger时输出此前非BOS向量的平均，否则输出零。若要求整个输入支持集上的误差任意小，则模型以高概率必须在每一个非trigger位置几乎把全部注意力交给BOS。[Theorem1，p5；附录\(D\)] 对固定深度的单头纯注意力层复合，结论减弱为：在trigger不位于第二个位置的输入上，至少有一层、一个非BOS非trigger位置出现近乎完全的BOS注意力。另一方面，带已知长度缩放的ReLU注意力存在零误差、零BOS权重的显式解。[Theorems2–3，p5–6] 这是一项有内容的架构必要性结果，但不是“所有softmax Transformer都必须有sink”。正式证明不包含多头之间的有符号抵消、残差、MLP或LayerNorm。本卡还给出多头反例，解释为什么不能把实验中经常出现sink，升级为多头模型的数学必然性。" />
+    <link rel="canonical" href="https://xixi-cc.github.io/daily-article-card/collection-papers/2603.11487/" />
+    <script type="application/ld+json">{"@context": "https://schema.org", "@type": "Article", "headline": "Attention Sinks Are Provably Necessary in Softmax Transformers: Evidence from Trigger-Conditional Tasks", "description": "在单层、单头的因果softmax注意力模型中，作者构造一个任务：只有遇到trigger时输出此前非BOS向量的平均，否则输出零。若要求整个输入支持集上的误差任意小，则模型以高概率必须在每一个非trigger位置几乎把全部注意力交给BOS。[Theorem1，p5；附录\\(D\\)] 对固定深度的单头纯注意力层复合，结论减弱为：在trigger不位于第二个位置的输入上，至少有一层、一个非BOS非trigger位置出现近乎完全的BOS注意力。另一方面，带已知长度缩放的ReLU注意力存在零误差、零BOS权重的显式解。[Theorems2–3，p5–6] 这是一项有内容的架构必要性结果，但不是“所有softmax Transformer都必须有sink”。正式证明不包含多头之间的有符号抵消、残差、MLP或LayerNorm。本卡还给出多头反例，解释为什么不能把实验中经常出现sink，升级为多头模型的数学必然性。", "url": "https://xixi-cc.github.io/daily-article-card/collection-papers/2603.11487/", "mainEntityOfPage": "https://xixi-cc.github.io/daily-article-card/collection-papers/2603.11487/", "inLanguage": "zh-CN", "author": {"@type": "Person", "name": "Xineng Cao", "alternateName": ["Xixi Cao", "曹溪能"], "url": "https://xixi-cc.github.io/"}, "isBasedOn": "https://arxiv.org/abs/2603.11487v5"}</script>
+    <script>
+      (function() {
+        try {
+          var themePreference = window.localStorage.getItem('color-theme') || 'system';
+          var systemUsesDarkTheme = window.matchMedia('(prefers-color-scheme: dark)').matches;
+          var resolvedTheme = themePreference === 'system'
+            ? (systemUsesDarkTheme ? 'dark' : 'light')
+            : themePreference;
+          document.documentElement.dataset.theme = resolvedTheme;
+          document.documentElement.dataset.themePreference = themePreference;
+          document.documentElement.style.colorScheme = resolvedTheme;
+        } catch (error) {
+          document.documentElement.dataset.theme = 'light';
+          document.documentElement.dataset.themePreference = 'system';
+        }
+      })();
+    </script>
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='18' fill='%23111827'/%3E%3Ctext x='50%25' y='55%25' text-anchor='middle' dominant-baseline='middle' font-size='30' font-family='Arial, sans-serif' fill='white'%3EV%3C/text%3E%3C/svg%3E" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700;800&family=Noto+Sans+SC:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <script>document.documentElement.classList.add('math-pending');</script>
+    <script>
+      window.MathJax = {
+        tex: {
+          inlineMath: [['$', '$'], ['\\(', '\\)']],
+          displayMath: [['$$', '$$'], ['\\[', '\\]']],
+          processEscapes: true
+        },
+        options: {
+          skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+        },
+        chtml: {
+          scale: 1,
+          displayAlign: 'center'
+        },
+        startup: {
+          ready: function() {
+            MathJax.startup.defaultReady();
+            MathJax.startup.promise.then(function() {
+              document.documentElement.classList.remove('math-pending');
+              document.documentElement.dataset.mathReady = 'true';
+            });
+          }
+        }
+      };
+    </script>
+    <script defer src="../../assets/vendor/mathjax/tex-chtml.js"></script>
+    <link rel="stylesheet" href="../../assets/style.css" />
+  </head>
+  <body class="detail-page" data-paper-id="2603.11487" data-paper-program="collection">
+    <div class="page-noise"></div>
+    <div class="page-blur page-blur-a"></div>
+    <div class="page-blur page-blur-b"></div>
+
+    <header class="header detail-page-header">
+      <div class="container">
+        <div class="detail-page-topbar">
+          <a class="back-link" href="../../collection.html">返回列表</a>
+          <div class="detail-topbar-actions">
+            <span class="detail-site-name">physics+AI Collection 论文卡</span>
+            <button id="detail-favorite" class="detail-favorite-button" type="button" aria-pressed="false">☆ 收藏</button>
+            <button class="theme-toggle" type="button" data-theme-toggle aria-label="当前主题：设备，点击切换主题" title="当前主题：设备">
+  <span class="theme-toggle-icons" aria-hidden="true">
+    <svg class="theme-toggle-icon theme-toggle-icon-light" viewBox="0 0 24 24" fill="none">
+      <circle cx="12" cy="12" r="3.5" stroke="currentColor" stroke-width="1.8"/>
+      <path d="M12 2.5v2M12 19.5v2M2.5 12h2M19.5 12h2M5.3 5.3l1.4 1.4M17.3 17.3l1.4 1.4M18.7 5.3l-1.4 1.4M6.7 17.3l-1.4 1.4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+    </svg>
+    <svg class="theme-toggle-icon theme-toggle-icon-dark" viewBox="0 0 24 24" fill="none">
+      <path d="M20 15.2A8.1 8.1 0 0 1 8.8 4a8.2 8.2 0 1 0 11.2 11.2z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>
+    </svg>
+    <svg class="theme-toggle-icon theme-toggle-icon-system" viewBox="0 0 24 24" fill="none">
+      <rect x="3" y="4" width="18" height="13" rx="2.5" stroke="currentColor" stroke-width="1.8"/>
+      <path d="M8 21h8M12 17v4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+    </svg>
+  </span>
+  <span class="theme-toggle-label" data-theme-toggle-label>设备</span>
+</button>
+          </div>
+        </div>
+
+        <div class="detail-hero-grid">
+          <div class="detail-hero-cover"><figure class="paper-figure-card paper-figure-card-detail">
+  <img class="paper-figure-image" src="../../assets/collection-figures/2603.11487/fig3.png" alt="完整四panel、坐标、色条与英文原图注；作者v5原版实验图。" loading="lazy" onclick="window.openPaperFigureImage && window.openPaperFigureImage(this)" />
+  <figcaption class="paper-figure-caption">完整四panel、坐标、色条与英文原图注；作者v5原版实验图。 来源：Yuval Ran-Milo；arXiv:2603.11487v5；Figure3 PDF \(p_{4}\)；CC BY 4.0 https://creativecommons.org/licenses/by/4.0/；作者版本，完整四panel及英文图注。</figcaption>
+</figure></div>
+          <div class="detail-hero-copy">
+            <p class="eyebrow">Collection 全文卡</p>
+            <h1 class="detail-page-title">Attention Sinks Are Provably Necessary in Softmax Transformers: Evidence from Trigger-Conditional Tasks</h1>
+            <p class="detail-page-title-zh">一个注意力头要“什么都不做”，为什么会盯住BOS？</p>
+            <div class="detail-meta">Paper Collection · Physics of AI · <a href="https://arxiv.org/abs/2603.11487v5" target="_blank" rel="noopener noreferrer">原文</a></div>
+            <p class="detail-summary">在单层、单头的因果softmax注意力模型中，作者构造一个任务：只有遇到trigger时输出此前非BOS向量的平均，否则输出零。若要求整个输入支持集上的误差任意小，则模型以高概率必须在每一个非trigger位置几乎把全部注意力交给BOS。[Theorem1，\(p_{5}\)；附录\(D\)] 对固定深度的单头纯注意力层复合，结论减弱为：在trigger不位于第二个位置的输入上，至少有一层、一个非BOS非trigger位置出现近乎完全的BOS注意力。另一方面，带已知长度缩放的ReLU注意力存在零误差、零BOS权重的显式解。[Theorems2–3，\(p_{5}\)–6] 这是一项有内容的架构必要性结果，但不是“所有softmax Transformer都必须有sink”。正式证明不包含多头之间的有符号抵消、残差、MLP或LayerNorm。本卡还给出多头反例，解释为什么不能把实验中经常出现sink，升级为多头模型的数学必然性。</p>
+            <div class="detail-micro-meta">
+              <span class="meta-pill">AI 基础理论</span>
+              <span class="meta-pill">理论与数值</span>
+              <span class="meta-pill">#Physics of AI</span><span class="meta-pill">#Transformer</span><span class="meta-pill">#语言模型</span>
+              <span class="meta-pill">23 分钟读完</span>
+              <span class="meta-pill">8 张阅读卡</span>
+              <span class="meta-pill">Yuval Ran-Milo来自Tel Aviv University。论文研究attention s…</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <main class="container detail-layout">
+      <div class="detail-shell">
+        <article id="detail-body" class="reading-flow"><section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 01</span>
+    <span class="reading-step-note">作者信息</span>
+  </div>
+  <h2>作者信息</h2>
+  <div class="reading-card-content"><ul><li>Yuval Ran-Milo来自Tel Aviv University。论文研究attention sink的一个功能性解释：某些注意力头只在特殊输入上工作，其他时候应该不向后续计算贡献任何内容，但softmax又必须把总权重分配出去。于是，一个内容稳定、value接近零的BOS位置可能充当“关闭状态”的接收点。[\(p_{1}\)–3]</li><li>作者将这个直觉转化为表达能力问题：不问训练过程会不会偏好sink，而问在规定的架构和误差标准下，所有成功实现某个任务的模型是否都必须有sink。这个问题与优化动力学解释互补；必要性若成立，说明仅仅更换优化器不能消除该架构中的约束。</li></ul></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 02</span>
+    <span class="reading-step-note">摘要</span>
+  </div>
+  <h2>摘要</h2>
+  <div class="reading-card-content"><ul><li>在单层、单头的因果softmax注意力模型中，作者构造一个任务：只有遇到trigger时输出此前非BOS向量的平均，否则输出零。若要求整个输入支持集上的误差任意小，则模型以高概率必须在每一个非trigger位置几乎把全部注意力交给BOS。[Theorem1，\(p_{5}\)；附录\(D\)]</li><li>对固定深度的单头纯注意力层复合，结论减弱为：在trigger不位于第二个位置的输入上，至少有一层、一个非BOS非trigger位置出现近乎完全的BOS注意力。另一方面，带已知长度缩放的ReLU注意力存在零误差、零BOS权重的显式解。[Theorems2–3，\(p_{5}\)–6]</li><li>这是一项有内容的架构必要性结果，但不是“所有softmax Transformer都必须有sink”。正式证明不包含多头之间的有符号抵消、残差、MLP或LayerNorm。本卡还给出多头反例，解释为什么不能把实验中经常出现sink，升级为多头模型的数学必然性。</li></ul></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 03</span>
+    <span class="reading-step-note">背景</span>
+  </div>
+  <h2>背景</h2>
+  <div class="reading-card-content"><ul><li>设单头输出为\(\sum_k\alpha_{ik}Vx^{(k)}\)。softmax保证\(\alpha_{ik}&gt;0\)且\(\sum_k\alpha_{ik}=1\)。一个未经归一化的门可以让所有权重都为零；softmax不行，它必须把一份总质量放到某些value上。</li><li>不过，“权重和为一”本身还不足以证明sink必需。不同value可以抵消，\(V\)也可以学会压缩输入，多个头之间还可以相减。因此真正的证明要排除这些其他实现，而不能只诉诸概率单纯形的图像。本研究依靠的是同一个value映射既要在非trigger位置输出零，又必须在trigger处保留任意变化的内容。[\(p_{11}\)–17]</li><li>论文用真实模型中的apostrophe head、active–dormant head作为动机：有触发信息时聚合内容，没有时关注BOS。这些案例说明合成任务有现实参照，但它们不是本文定理已覆盖真实LLM的证明。</li></ul></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 04</span>
+    <span class="reading-step-note">模型与方法</span>
+  </div>
+  <h2>模型与方法</h2>
+  <div class="reading-card-content"><ul><li>序列长度\(L\ge4\)，向量维数\(n\ge5\)。每个token的前三个坐标分别标记BOS、trigger、普通token，其余坐标为独立连续随机内容。BOS是\(e_1\)且没有随机内容；唯一trigger的位置\(j\)从2到\(L\)选择。目标为</li></ul>
+<div class="display-math">\[\begin{aligned}y^{(i)}&amp;=0,\quad i\ne j,\\y^{(j)}&amp;=\frac1{j-1}\sum_{k=2}^j x^{(k)}.\end{aligned}\]</div>
+<p> 平均不包括BOS，但包括trigger自身；这一点容易被“此前token平均”的文字表述掩盖。[§3.2，\(p_{3}\)–4]</p>
+<ul><li>单层模型可将query/key合并为\(B\)、value/output合并为\(V\)：</li></ul>
+<div class="display-math">\[\begin{aligned}\alpha_{ik}&amp;=\frac{\exp[(x^{(i)})^{\mathsf T}Bx^{(k)}]}{\sum_{\ell\le i}\exp[(x^{(i)})^{\mathsf T}Bx^{(\ell)}]},\\f(x)^{(i)}&amp;=\sum_{k\le i}\alpha_{ik}Vx^{(k)}.\end{aligned}\]</div>
+<p> 理论没有额外位置编码、偏置输出、残差支路或MLP，三种位置类型由输入指标坐标提供。多层形式是这些单头层的直接复合。[§3.4]</p>
+<ul><li>使用的损失不是训练平均MSE，而是</li></ul>
+<div class="display-math">\[\begin{aligned}\mathcal L(f)&amp;=\sup_{(x,y)\in\operatorname{support}(\mathcal D)}\\&amp;\quad\max_i\lVert y^{(i)}-f(x)^{(i)}\rVert_2.\end{aligned}\]</div>
+<p> 这要求每一个支持集内的输入都准确，是一个很强的表达能力标准。实验内容来自\(U(-1,1)\)，支持集有界，因而这个标准可以非平凡地满足。原文只要求内容密度有界；对无界支持的分布，存在性需要额外检查，详见局限部分。</p></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 05</span>
+    <span class="reading-step-note">核心结果与证据</span>
+  </div>
+  <h2>核心结果与证据</h2>
+  <div class="reading-card-content"><ul><li>第一，BOS的value必须接近零。在位置1，因果注意力只有BOS可看，输出就是\(Ve_1\)；该位置的目标为零，因此\(\lVert Ve_1\rVert_2\le\eta\)，其中\(\eta=\mathcal L(f)\)。这直接找到一个可以接收注意力、又不输出内容的稳定位置。[Lemma1，\(p_{15}\)–16]</li><li>第二，若非trigger位置仍给普通内容显著权重，该内容的value就必须被压小。单层模型中，保持query和现有key不变、增加key，只会增大softmax分母。作者因此把长序列缩短到含BOS和一两个普通token的前缀，逐项控制输出：</li></ul>
+<div class="display-math">\[\begin{aligned}\lVert\alpha_{ii}Vx^{(i)}\rVert_2&amp;\le2\eta,\\\lVert\alpha_{hi}Vx^{(i)}\rVert_2&amp;\le4\eta,\quad i&lt;h.\end{aligned}\]</div>
+<p> 这里的单调性依赖同一层中query/key保持不变，不能不加证明地搬到一般深层网络。[Lemmas2–5，\(p_{16}\)]</p>
+<ul><li>第三，压小value会与trigger任务冲突。假设违反sink条件的输入有固定的正概率，则某个普通token在这些输入上获得至少\(\gamma_0&gt;0\)的权重，于是\(\lVert Vx\rVert_2\le4\eta/\gamma_0\)。利用独立内容坐标和有界密度，正概率集合中能找到一对token，只在某个内容坐标上相差固定的非零量。[Lemma7，\(p_{17}\)]</li><li>把这两个token分别放到位置2，固定位置3为trigger。两个目标平均值应相差它们差值的一半，但模型能输出的差异只剩一条固定trigger value方向和\(O(\eta)\)的小项。投影到该方向的正交补后，trigger项消失；至少有一个内容坐标的目标差异仍不为零，从而产生矛盾。\(n\ge5\)提供了至少两个内容方向，保证不能都藏到同一条trigger value线上。[Theorem4证明，\(p_{11}\)–12]</li><li>第四，这种约束也适用于trigger之后。作者先证明非trigger query不能持续给trigger value大权重，再把trigger移动到序列尾部。独立同分布内容保证这种重排保持相应分布；删除trigger key不会减少剩余普通内容权重，因此一个post-trigger反例会变成pre-trigger反例。[Theorem5，\(p_{12}\)–14]</li><li>所以单层结论是：对任意\(\epsilon,\delta&gt;0\)，只要统一误差小于足够小的η，就有</li></ul>
+<div class="display-math">\[\begin{aligned}\Pr\!\left[\forall i\ne j:\ \alpha_{i1}\ge1-\epsilon\right]\\\ge1-\delta.\end{aligned}\]</div>
+<p> 这不是“训练后平均BOS占比很大”的经验陈述，而是在指定模型类中排除所有低误差、无sink实现的必要性结论。</p>
+<ul><li>第五，固定深度时可用位置2的路径乘积避开复杂深层key变化。将\(D\)层纯注意力展开，输出仍可写成</li></ul>
+<div class="display-math">\[\begin{aligned}f(x)^{(i)}&amp;=\sum_{k\le i}b_{ik}(x)V_{\mathrm{tot}}x^{(k)},\\V_{\mathrm{tot}}&amp;=V_D\cdots V_1,\\b_{ik}&amp;\ge0,\quad\sum_k b_{ik}=1.\end{aligned}\]</div>
+<p> 尤其</p>
+<div class="display-math">\[\begin{aligned}b_{22}&amp;=\prod_{d=1}^D\alpha_{22}^{(d)}.\end{aligned}\]</div>
+<p> 如果每一层都不给BOS近乎全部权重，则每一层\(\alpha_{22}^{(d)}\ge\epsilon\)，从而\(b_{22}\ge\epsilon^D\)。非trigger位置2的零输出再次迫使\(V_{\mathrm{tot}}\)压小普通内容，之后重复trigger处的投影矛盾。[附录E、Lemmas8–11]</p>
+<ul><li>这里η必须允许依赖固定的\(D\)。证明包含\(\epsilon^{-D}\)，不能把原文简写的量词读成对任意增长深度都存在同一个误差门槛。</li><li>第六，ReLU能真正关闭所有权重。取score</li></ul>
+<div class="display-math">\[\begin{aligned}s_{ik}&amp;=x_2^{(i)}(x_2^{(k)}+x_3^{(k)}),\\\alpha_{ik}&amp;=\frac{\operatorname{ReLU}(s_{ik})}{\max(i-1,1)},\quad V=I.\end{aligned}\]</div>
+<p> 非trigger query的\(x_2^{(i)}=0\)，全部权重为零；trigger query对所有非BOS前缀token给出\(\frac1{j-1}\)，正好得到目标平均，且BOS权重始终为零。[附录F，\(p_{15}\)]</p>
+<ul><li>这个对照显式使用了已知位置数\(i\)−1的除法。它证明的是带这种长度缩放的非归一化ReLU实现，而不是未经任何缩放的ReLU自然就能计算平均。</li></ul><figure class="evidence-figure">
+  <button class="evidence-figure-image-button" type="button" aria-label="放大查看 Figure 3" onclick="window.openPaperFigureImage && window.openPaperFigureImage(this.querySelector('img'))">
+    <img class="paper-figure-image evidence-figure-image" src="../../assets/collection-figures/2603.11487/fig3.png" alt="完整四panel、坐标、色条与英文原图注；作者v5原版实验图。" loading="lazy" />
+  </button>
+  <figcaption>
+    <strong>Figure 3</strong> · 完整四panel、坐标、色条与英文原图注；作者v5原版实验图。 Yuval Ran-Milo；arXiv:2603.11487v5；Figure 3；PDF物理p4；CC BY 4.0；原PDF栅格化，仅裁去图外内容，未重绘或增强。
+    <span class="evidence-figure-reading">物理解读：单头实验在1000个样本、固定trigger位置8上展示均值和标准差；并非连续支持集sup误差证书。</span>
+    <span class="evidence-figure-source">来源：https://arxiv.org/pdf/2603.11487v5#page=4; Figure 3, physical \(p_{4}\)</span>
+  </figcaption>
+</figure>
+<figure class="evidence-figure">
+  <button class="evidence-figure-image-button" type="button" aria-label="放大查看 Figure 4" onclick="window.openPaperFigureImage && window.openPaperFigureImage(this.querySelector('img'))">
+    <img class="paper-figure-image evidence-figure-image" src="../../assets/collection-figures/2603.11487/fig4.png" alt="完整四panel、坐标、色条与英文原图注；作者v5原版实验图。" loading="lazy" />
+  </button>
+  <figcaption>
+    <strong>Figure 4</strong> · 完整四panel、坐标、色条与英文原图注；作者v5原版实验图。 Yuval Ran-Milo；arXiv:2603.11487v5；Figure 4；PDF物理p5；CC BY 4.0；原PDF栅格化，仅裁去图外内容，未重绘或增强。
+    <span class="evidence-figure-reading">物理解读：两层两头softmax的代表性输入；观察到sink不能推出所有多头成功解都必需sink。</span>
+    <span class="evidence-figure-source">来源：https://arxiv.org/pdf/2603.11487v5#page=5; Figure 4, physical \(p_{5}\)</span>
+  </figcaption>
+</figure>
+<figure class="evidence-figure">
+  <button class="evidence-figure-image-button" type="button" aria-label="放大查看 Figure 5" onclick="window.openPaperFigureImage && window.openPaperFigureImage(this.querySelector('img'))">
+    <img class="paper-figure-image evidence-figure-image" src="../../assets/collection-figures/2603.11487/fig5.png" alt="完整四panel、坐标、色条与英文原图注；作者v5原版实验图。" loading="lazy" />
+  </button>
+  <figcaption>
+    <strong>Figure 5</strong> · 完整四panel、坐标、色条与英文原图注；作者v5原版实验图。 Yuval Ran-Milo；arXiv:2603.11487v5；Figure 5；PDF物理p6；CC BY 4.0；原PDF栅格化，仅裁去图外内容，未重绘或增强。
+    <span class="evidence-figure-reading">物理解读：两层两头ReLU的代表性输入，采用论文规定的长度缩放；不能省略缩放条件。</span>
+    <span class="evidence-figure-source">来源：https://arxiv.org/pdf/2603.11487v5#page=6; Figure 5, physical \(p_{6}\)</span>
+  </figcaption>
+</figure></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 06</span>
+    <span class="reading-step-note">有效性与局限</span>
+  </div>
+  <h2>有效性与局限</h2>
+  <div class="reading-card-content"><ul><li>最重要的边界是多头。以下为本卡复核的反例，不是原文实验。设\(R=\operatorname{diag}(0,1,\ldots,1)\)，用两个头的正、负value输出相减，并让它们的score分别为</li></ul>
+<div class="display-math">\[\begin{aligned}s_{ik}^{(A)}&amp;=-T x_2^{(i)}x_1^{(k)},\\s_{ik}^{(B)}&amp;=+T x_2^{(i)}x_1^{(k)}.\end{aligned}\]</div>
+<p> 非trigger位置两个头都均匀关注前缀，输出完全抵消；\(i\ge2\)时BOS权重仅\(1/i\)，没有近乎完全的非trigger sink。trigger位置的总输出为</p>
+<div class="display-math">\[\begin{aligned}\biggl[\frac1{j-1+e^{-T}}-\frac1{j-1+e^T}\biggr]\\\times\sum_{k=2}^j x^{(k)},\end{aligned}\]</div>
+<p> 在有界输入上随\(T\to\infty\)一致趋近所需平均。第二个头会在trigger处看BOS，但正式必要性结论要求的是非trigger位置。这已经阻止了把单头定理原样扩展为多头定理。</p>
+<ul><li>还可以在固定\(L\)下用\(L\)个头得到有限参数的精确解：选择不同\(b_h\in(0,1]\)，score为\(\log(b_h)x_2^{(i)}x_1^{(k)}\)，用有符号输出系数\(c_h\)满足</li></ul>
+<div class="display-math">\[\begin{aligned}\sum_h c_h&amp;=0,\\\sum_h\frac{c_h}{m+b_h}&amp;=\frac1m,\\m&amp;=1,\ldots,L-1.\end{aligned}\]</div>
+<p> 该线性系统可解。非trigger均匀输出相消，trigger精确平均，所有非BOS query的每个头都有\(\alpha_{i1}\le\tfrac12\)。反例利用的是普通输出投影允许有正负系数，并不推翻论文正式分析的单头模型；它说明架构范围不可省略。</p>
+<ul><li>第二，有界密度不等于有界输入。高斯分布密度有界，但支持集无界。在位置2让内容沿某个方向无限增长，有限单头softmax要么在非trigger处保留导致无限误差的value，要么压掉这个内容方向、进而无法在trigger处输出无限增长的目标。因此高斯内容下，脚注“任意η都有低统一误差解”的存在性说法不成立；必要性蕴含可以成为空命题。读者应优先使用有界支持的非空版本。[脚注10–11；无界支持反例为本卡复核]</li><li>第三，脚注9向一般归一化机制的推广也需要重写。若把softmax所有权重乘以\(c_0&lt;1\)，再把value除以\(c_0\)，模型函数不变，但单个权重至多\(c_0\)，不可能满足原样的\(\alpha_{i1}\ge1-\epsilon\)阈值。推广至少需要采用相对总质量的sink定义及相应有界性条件，不能只要求权重和有正下界。</li><li>第四，实验支持的是观察到的实现，不是完整的最坏情况证书。单头实验在1,000个测试样本、固定trigger位置8上展示均值与标准差；多头图主要是单个代表性输入。训练采用\(n=16\)、\(L=16\)、batch128和Adam，按批次误差小于\(10^{-2}\)停止，并未验证整个连续支持集的sup误差。多头与残差实验的成功不自动证明该架构的所有成功解都必需sink。[§4、附录A/\(C\)]</li><li>最后，论文没有实测这些定理能够改善真实LLM的量化、长上下文性能或安全性。它们提供的是解释和设计约束，不是直接部署收益。优化过程仍决定具体哪个头、哪一层形成sink，必要性与学习偏好并不互相排斥。</li></ul></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 07</span>
+    <span class="reading-step-note">复现与资源</span>
+  </div>
+  <h2>复现与资源</h2>
+  <div class="reading-card-content"><ul><li>论文：<a href="https://arxiv.org/abs/2603.11487v5" target="_blank" rel="noopener noreferrer">https://arxiv.org/abs/2603.11487v5</a> 全文：<a href="https://arxiv.org/pdf/2603.11487v5" target="_blank" rel="noopener noreferrer">https://arxiv.org/pdf/2603.11487v5</a> 作者代码：<a href="https://github.com/YuvMilo/sinks-are-provably-necessary" target="_blank" rel="noopener noreferrer">https://github.com/YuvMilo/sinks-are-provably-necessary</a> 论文许可：CC BY 4.0，<a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener noreferrer">https://creativecommons.org/licenses/by/4.0/</a></li><li>本卡实际阅读21页全文和8幅图，复核单头证明及上述适用边界，并检查作者仓库说明；未训练模型或执行独立数值复现。所用<a href="https://arxiv.org/pdf/2603.11487v5#page=4" target="_blank" rel="noopener noreferrer">Figure3</a>、<a href="https://arxiv.org/pdf/2603.11487v5#page=5" target="_blank" rel="noopener noreferrer">Figure4</a>、<a href="https://arxiv.org/pdf/2603.11487v5#page=6" target="_blank" rel="noopener noreferrer">Figure5</a>为本文自身实验图，保留完整panel、坐标、色条及英文图注，裁切只去除图外内容。不将第三方再授权图或原版边缘已经截断的Figure8作为完整原图交付。</li></ul></div>
+</section>
+<section class="reading-card reading-card-section">
+  <div class="reading-card-topline">
+    <span class="reading-step">Card 08</span>
+    <span class="reading-step-note">阅读指南</span>
+  </div>
+  <h2>阅读指南</h2>
+  <div class="reading-card-content"><ul><li>先看<a href="https://arxiv.org/pdf/2603.11487v5#page=4" target="_blank" rel="noopener noreferrer">Figure3</a>：单头softmax在非trigger处集中到BOS，ReLU则直接给出零权重。然后读任务定义，特别确认平均包括trigger自身、误差是sup而非MSE。再读Lemmas1–5，理解“BOS value接近零”和“有权重的普通value必须被压小”两步如何连接。</li><li>之后读Theorem4的投影矛盾和多层位置2的乘积公式。这两处是论文真正有价值的证明结构。最后回到多头实验，同时检查本卡的抵消反例：观察到某种实现，与证明不存在其他实现，是两件不同的事。</li><li>对模型设计，这项工作的启发是把“关闭一个计算单元”本身作为可表示性问题。单个凸组合、带符号的多头相加、显式gate，拥有不同的零输出机制。讨论sink是否必要之前，先说明允许哪些机制、在哪个输入域上要求多小的误差，结论才有可检验的含义。</li></ul></div>
+</section></article>
+        <aside id="detail-toc" class="detail-toc hidden" aria-label="内容目录">
+          <p class="detail-toc-title">阅读目录</p>
+          <nav id="detail-toc-nav" class="detail-toc-nav"></nav>
+        </aside>
+      </div>
+      <nav class="paper-nav"><a class="paper-nav-link paper-nav-prev" href="../../collection-papers/2604.16288/"><span class="paper-nav-label">← 上一篇</span><span class="paper-nav-title">Phase transitions in Doi-Onsager, Noisy Transformer, and other multimodal models</span></a>
+      <a class="paper-nav-link paper-nav-next" href="../../collection-papers/2604.12151/"><span class="paper-nav-label">下一篇 →</span><span class="paper-nav-title">Distinct mechanisms underlying in-context learning in transformers</span></a></nav>
+      <section id="comments" class="comments-panel" aria-labelledby="comments-title">
+        <div class="comments-heading">
+          <div>
+            <p class="eyebrow">Discussion</p>
+            <h2 id="comments-title">评论与讨论</h2>
+          </div>
+          <a href="https://github.com/xixi-cc/xixi-research-comments/discussions" target="_blank" rel="noopener noreferrer">在 GitHub 查看</a>
+        </div>
+        <p class="comments-note">评论公开保存在 GitHub Discussions；阅读无需登录，发表评论需要 GitHub 账号。</p>
+        <script src="https://giscus.app/client.js"
+                data-repo="xixi-cc/xixi-research-comments"
+                data-repo-id="R_kgDOUIl8MQ"
+                data-category="Announcements"
+                data-category-id="DIC_kwDOUIl8Mc4DEftB"
+                data-mapping="specific"
+                data-term="collection:2603.11487"
+                data-strict="1"
+                data-reactions-enabled="1"
+                data-emit-metadata="0"
+                data-input-position="top"
+                data-theme="preferred_color_scheme"
+                data-lang="zh-CN"
+                data-loading="lazy"
+                crossorigin="anonymous"
+                async></script>
+        <noscript><p>请启用 JavaScript，或直接前往 GitHub Discussions 参与讨论。</p></noscript>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <div class="container">
+        <p>内容来自 <a href="https://arxiv.org" target="_blank" rel="noopener noreferrer">arXiv.org</a>；原创解读采用 CC BY-NC 4.0。<a href="../../rights.html">许可与引用</a></p>
+      </div>
+    </footer>
+
+    <script src="../../assets/theme.js"></script>
+    <script src="../../assets/media.js"></script>
+    <script src="../../assets/paper.js"></script>
+    <!-- Cloudflare Web Analytics -->
+<script type="module" src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon='{"token":"73522e5dee9b42b0be84b4847e4dd502"}'></script>
+<!-- End Cloudflare Web Analytics -->
+  </body>
+</html>

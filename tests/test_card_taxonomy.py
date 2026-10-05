@@ -80,5 +80,30 @@ class CardTaxonomyTests(unittest.TestCase):
         self.assertEqual(classify_card(card)["category"], "AI 基础理论")
 
 
+    def test_reviewed_physics_classification_survives_representation_keyword(self) -> None:
+        card = {
+            "paper_profile": "theory",
+            "title_en": "Cluster representation and correlations",
+            "verified_metadata": {"categories": ["math.PR"]},
+            "classification": {
+                "category": "统计与数学物理",
+                "tags": ["随机过程", "Ising结构"],
+            },
+        }
+        result = classify_card(card)
+        self.assertEqual(result["category"], "统计与数学物理")
+        self.assertEqual(result["tags"], ["随机过程", "Ising结构"])
+        self.assertEqual(result["research_type"], "理论")
+
+    def test_invalid_classification_falls_back_to_existing_inference(self) -> None:
+        card = {
+            "title_en": "A theory of Transformers",
+            "verified_metadata": {"categories": ["cs.LG"]},
+            "classification": {"category": "not a category", "tags": ["untrusted"]},
+        }
+        self.assertEqual(classify_card(card)["category"], "AI 基础理论")
+        self.assertNotIn("untrusted", classify_card(card)["tags"])
+
+
 if __name__ == "__main__":
     unittest.main()

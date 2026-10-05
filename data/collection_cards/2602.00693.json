@@ -1,0 +1,992 @@
+{
+  "title_zh": "初始化怎样把 ReLU 网络分进不同的训练区域",
+  "subtitle_zh": "缩放对称性、网络流与参数空间中的拓扑障碍",
+  "title_en": "Topology and Geometry of the Learning Space of ReLU Networks: Connectivity and Singularities",
+  "arxiv_id": "2602.00693",
+  "source_version": "v1",
+  "source_url": "https://arxiv.org/abs/2602.00693v1",
+  "pdf_url": "https://arxiv.org/pdf/2602.00693v1",
+  "source_pdf": "https://arxiv.org/pdf/2602.00693v1",
+  "source_pdf_sha256": "6407db9728b4468d832994e970b63ab26dc5d90322597ec2beaca6f7483a0cb3",
+  "curation_status": "full_text_verified",
+  "card_standard_version": "2.4",
+  "paper_profile": "theory_numerics",
+  "paper_profile_description": "一般DAG齐次网络的结构定理及小型分类数值实验",
+  "style_reference": "physicist_daily_arxiv",
+  "independent_reproduction": false,
+  "sections": [
+    {
+      "title": "作者信息",
+      "paragraphs": [
+        "Marco Nurisso、Pierrick Leroy为共同第一作者，与Francesco Vaccarino同属都灵理工大学数学科学系；Giovanni Petri来自东北大学伦敦校区网络科学研究所。论文研究一般有向无环图上的ReLU网络：问题不是某个数据集的损失是否容易优化，而是网络结构与初始化是否已经决定了训练能够到达哪些参数区域。这是一篇把齐次网络的已知守恒律推广为图论与拓扑判据的理论工作，并用小型分类网络演示其含义。[p1–4]"
+      ]
+    },
+    {
+      "title": "摘要",
+      "paragraphs": [
+        "ReLU允许把一个隐藏神经元的输入权重乘正数\\(\\alpha\\)、输出权重除以\\(\\alpha\\)，而保持网络函数不变。对于只通过网络输出依赖参数的损失，欧氏梯度流与这种缩放方向正交，于是每个隐藏神经元的“输入平方和减输出平方和”保持不变。所有守恒条件一起把训练限制在一个二次代数集合上；在一般网络中，这些约束通过共享的边互相耦合。[p4–5]",
+        "论文最有价值的结果是把这个集合的连通性转成非负网络流的可行性，把约束Jacobian的降秩转成隐藏子图与输入、输出的隔离。这样，“训练空间是否断开”“何时可以严格删除整个子网”变成了可检查的结构问题。必须同时记住：这些是齐次网络、未正则化连续梯度流的结论，不是所有优化器的普遍定律；连通也不保证梯度流找到全局最优。[p6–10]"
+      ]
+    },
+    {
+      "title": "背景",
+      "paragraphs": [
+        "把所有权重看作一个大向量时，环境空间是连通的欧氏空间。但真实训练并不一定能自由穿过它：对称性带来的守恒量会把轨迹限制在低维集合中。即使两个参数实现同样低的损失，如果它们分处不同连通分支，一条遵守守恒律的连续轨迹也无法从一个走到另一个。这是一种先于具体数据和损失细节的可达性障碍。[p5–7]",
+        "最直观的例子是一个隐藏节点只有一条输出边，权重为\\(a\\)。设其输入权重向量为\\(w\\)，守恒量\\(c=\\lVert w\\rVert^2-a^2\\)。如果\\(c<0\\)，就有\\(a^2=\\lVert w\\rVert^2+|c|\\)，因此\\(a\\)永远不能经过零，正、负输出权重位于两个分支。如果任务要求改变该输出的符号，初始化就可能把训练放进错误区域。这里说的是特定分支与任务组合造成的障碍，不能仅凭“集合不连通”就断言每次训练都会失败。[p6–7，Figure 2]"
+      ]
+    },
+    {
+      "title": "模型与方法",
+      "paragraphs": [
+        "网络结构是有向无环图\\(G=(V,E)\\)，每条边有实权重\\(\\theta_e\\)，隐藏节点采用ReLU或满足相同正齐次条件的激活。输入和输出节点组成边界\\(\\partial V\\)，隐藏节点集合记为\\(\\widetilde V\\)。每个隐藏节点须处于从输入到输出的路径上；偏置可表示为来自固定输入1的额外边。研究的梯度流为\\(\\dot\\theta=-g(\\theta)\\)，其中损失不包含显式参数正则项。[p3–4]",
+        "令\\(\\widetilde B\\)为去掉输入、输出节点行的有向关联矩阵，边进入节点取+1，离开取−1。逐元素乘法记为\\(\\odot\\)，\\(\\theta^{\\odot2}\\)表示逐元素平方。对称性给出\\(\\widetilde B(\\theta\\odot g)=0\\)，于是",
+        "\\[\\begin{aligned}c&=\\widetilde B\\theta^{\\odot2},\\\\\\frac{d}{dt}(\\widetilde B\\theta^{\\odot2})&=-2\\widetilde B(\\theta\\odot g)=0,\\\\H_G(c)&=\\{\\theta:\\widetilde B\\theta^{\\odot2}=c\\}.\\end{aligned}\\]",
+        "单个节点的约束就是\\(c_v=\\sum_{u\\to v}\\theta_{uv}^2-\\sum_{v\\to w}\\theta_{vw}^2\\)。把\\(x_e=\\theta_e^2\\)看作非负流量，\\(c_v\\)就是节点净吸收量；输入、输出边界不受这些平衡方程约束。作者先证明任意\\(c\\)都有非负流量解，再利用“删去一条边后是否仍有解”刻画连通性。[p5–6；附录A.3–A.4，p15–21]",
+        "精确的删边判据为：\\(H_G(c)\\)连通，当且仅当对每一条边\\(e\\)，\\(H_{G-e}(c)\\)都非空。删边等价于询问该坐标是否能为零；若某条权重永远不能为零，其正负符号就分隔出不同区域。没有入度1或出度1的隐藏瓶颈时，任意单边删除仍保留所需路径，因此集合连通。[Proposition 4、Corollary 1，p6–7]",
+        "一般瓶颈的条件不能只看一个\\(c_v\\)。对出瓶颈，要检查那些通向输出必经该瓶颈的纯祖先集合，并对其中向前封闭的子集\\(T\\)要求\\(\\sum_{v\\in T}c_v\\ge0\\)；入瓶颈有反向条件\\(\\sum_{v\\in T}c_v\\le0\\)。直观上，这是删除唯一通路以后，余下子图的流入、流出能否同时满足各节点的需求。集合定义包含所检查的瓶颈；不要把这个条件简化成对所有任意子集求和。[Theorem 1，p6–7；附录A.4]"
+      ]
+    },
+    {
+      "title": "核心结果与证据",
+      "paragraphs": [
+        "第一，初始化能固定某些权重的符号，从而阻碍特定函数的学习。Figure 2的三隐藏节点DAG展示了两种平衡配置：一个允许关键输出边改符号，另一个不允许。附录还在求和任务、二分类MNIST和预训练ViT特征的分类头上测试同类初始化。这些实验支持所构造的拓扑障碍，不等于证明通常随机初始化的大模型普遍遭遇它。[p7、p28–29]",
+        "第二，约束Jacobian的秩有直接的图解释。对\\(H_G(c)\\)的定义方程求导得到\\(J_G(\\theta)=2\\widetilde B\\operatorname{diag}(\\theta)\\)。把所有输入、输出合并为一个边界节点，忽略边方向，再删除零权重边，所得图记为\\(G^{\\prime}_{\\mathrm{nz}}\\)。则",
+        "\\(\\operatorname{rank}J_G(\\theta)=|\\widetilde V|+1-\\operatorname{CC}(G^{\\prime}_{\\mathrm{nz}})\\)。",
+        "CC表示连通分量数。秩每下降一，就多出一个与整个边界隔离的隐藏连通分量。因此这里的奇异点，是约束集合的降秩参数配置；它并不是所有函数不可辨识性或贝叶斯奇异学习理论中奇异性的总称。对于一般DAG，降秩数统计的是隔离分量数，也不总等于被删除的神经元数。[Theorem 2，p8；附录A.5，p22–23]",
+        "第三，严格自发断开整个隐藏模块不是普通梯度流的常态。如果\\(W\\)已与边界隔离，内部没有输入信号，通向输出的反向通路也被截断，所有跨越其边界的零权重都保持为零。要存在这种配置，还必须满足\\(\\sum_{v\\in W}c_v=0\\)；对具有联合连续密度的常规随机初始化，这类精确等式以概率零成立。论文进一步提出有限时间Jacobian秩不变；其附录采用Hessian推导，在ReLU折点处需补充论证，详见下一节。有限时间不可达不排除满足特殊平衡条件时在无限时间极限趋近奇异集合。[Propositions 5–7，p8–9]",
+        "第四，显式正则化能改变原来的守恒量，让训练向可剪枝结构移动。作者采用核范数\\(R_{\\mathrm{nuc}}(\\theta)=\\lVert J_G(\\theta)\\rVert_*\\)，即Jacobian所有奇异值之和，作为秩的连续替代目标。它不是处处光滑函数，尤其在希望到达的降秩点不能直接称为光滑正则项。[p9]",
+        "本卡补充一个有助理解的特例：在没有隐藏层间边的浅层网络中，\\(J\\)的不同行作用在互不重叠的边参数上，因此\\[\\lVert J\\rVert_*=2\\sum_v\\sqrt{\\sum_{e\\,\\mathrm{incident\\ to}\\,v}\\theta_e^2}\\]。此时它恰好表现为对每个神经元全部入、出边做分组L2惩罚，再对神经元求和。这解释了浅层例子中“整组一起归零”的倾向；一般DAG行之间共享边，不能照搬这个分离表达式。",
+        "第五，数值结果是近似剪枝证据。Breast Cancer实验使用20隐藏单元浅层网络及若干三层10单元MLP；小步长SGD为10⁻³，训练5000 epochs，按10⁻³阈值把奇异值判作零。核范数与L1都能删去大量神经元，L2和未正则化通常较少。ViT特征和FaceNet特征上的分类头也出现约80%–95%的神经元稀疏性，但这不是对ViT或FaceNet主干的剪枝结果，更没有给出同等幅度的实际推理加速。[Figure 3、5、10–11；p25–30]"
+      ]
+    },
+    {
+      "title": "有效性与局限",
+      "paragraphs": [
+        "首先，\\(H_G(c)\\)连通只消除了这一类拓扑障碍，不保证损失无坏驻点，也不保证训练在任意两个点之间可控地移动。不同参数还可能因神经元置换等原因实现同一函数，所以\\(H_G(c)\\)不等于无冗余的函数空间。[p5–7]",
+        "其次，连续流与离散训练要分开。对遵守缩放正交关系的一步普通梯度下降，直接展开可得\\(c_{k+1}-c_k=\\eta^2\\widetilde B g_k^{\\odot2}\\)；因此有限步长会累积偏离，不能把连续守恒律无条件套到SGD、Adam或带正则项的训练。正则化实验恰恰利用了原约束不再严格固定这一点。[p10、p27；离散展开为本卡复核]",
+        "第三，附录A.7利用\\(\\dot J=JH\\)及有序指数证明秩不变，但经典Hessian未必在ReLU折点存在。更稳妥的适用表述应要求有限时间参数轨迹有界、输出损失导数局部有界，并处理广义梯度。对一个与边界隔离的隐藏子图，每条穿过该子图的输入—输出路径至少跨越两条割边；在有界邻域中，割边梯度可由割边权重范数线性控制，令\\(h\\)为割边权重平方和，可得\\(|\\dot h|\\le2Kh\\)；对Clarke梯度的极限与凸组合该界仍成立。Grönwall因此排除了在解存在的有限时间内从非零割边整体到达零，也保证零割边集合不自行复活。这个补充论证修复了常用光滑输出损失下的结论，不应把原文Hessian写法称为已经覆盖全部非光滑情形的完整证明。[p23–24；补充解释为本卡审阅]",
+        "第四，“概率零”需要连续初始化分布，不能仅凭各参数独立就成立；含有零原子或人为平衡的初始化不满足该推论。核范数也是非光滑的凸秩替代，不能因作者使用“differentiable pruning”一词就称整个目标处处可微。",
+        "第五，Figure 2的示例在p7给出\\(c=(\\theta_e^2-6,1,3)\\)，其和应为\\(\\theta_e^2-2\\)，正文中写成\\(\\theta_e^2-4\\)是算术笔误；后续给出的正初始化阈值\\(\\sqrt2\\)和1、\\(\\sqrt3\\)的示例与修正后的和一致，不应据此推翻一般连通性定理。",
+        "第六，严格隔离子图的删除确实不改变函数，但阈值判零不等于严格隔离。Figure 3图注称50次独立训练，附录A.8方法段称每种架构选30次收敛至低损失的运行；本版本存在运行数量口径不一致，而且结果是对成功收敛运行筛选后的统计，不是无条件成功率。Figure 12面板标题与图注对L1、核范数的左右对应也不一致，比较时须说明这一问题。[p8、25、31]",
+        "最后，L1与核范数都优于独立随机删边零模型，只能说明删边存在结构性相关，不能证明两种正则化共享同一机制。实验规模有限，核范数计算开销未形成大模型端到端实用性证据；本卡没有独立训练复现。[p2、p31–32]"
+      ]
+    },
+    {
+      "title": "复现与资源",
+      "paragraphs": [
+        "[版本化全文](https://arxiv.org/pdf/2602.00693v1) [元数据与版本](https://arxiv.org/abs/2602.00693v1) [ICLR正式收录入口](https://proceedings.iclr.cc/paper_files/paper/2026/hash/c50f8180ef34060ec59b75d6e1220f7a-Abstract-Conference.html) 原图采用[Figure 1（p3：结构、缩放与平衡约束）](https://arxiv.org/pdf/2602.00693v1#page=3)、[Figure 2（p6：连通性与瓶颈示例）](https://arxiv.org/pdf/2602.00693v1#page=6)及[Figure 3（p8：奇异子网与剪枝）](https://arxiv.org/pdf/2602.00693v1#page=8)。来源为Nurisso等本论文，CC BY 4.0：[https://creativecommons.org/licenses/by/4.0/](https://creativecommons.org/licenses/by/4.0/) 。只裁去图外正文，保留所有面板、坐标、图例与原英文图注，不重绘或增强；Figure 3运行次数口径冲突见本卡限制说明。 附录A.2–A.7给出证明，A.8–A.10给出实验设置与更多结果；均已核对。官方补充包可从ICLR入口下载，包含实现与connectedness、singularity两个Notebook，没有额外PDF或TeX证明。已只读检查两个Notebook的代码单元及核心模块，未执行。requirements含作者机器的本地构建路径，因此不能当作经过验证的一键复现环境。",
+        "补充代码还有需要核对的实验口径：singularity Notebook用\\(\\widetilde B\\operatorname{diag}(\\theta)\\)而非公式中的\\(2\\widetilde B\\operatorname{diag}(\\theta)\\)计算核范数和奇异值，秩不受常数影响，但正则强度及判零阈值的数值尺度需要对应调整；模块把skip连接设为固定单位权重，此类实现不能直接视为所有边均可训练的缩放对称网络。连通性Notebook中的ForWard是外部依赖，不能把它误写为本文另有一个已验证的独立项目仓库。"
+      ]
+    },
+    {
+      "title": "阅读指南",
+      "paragraphs": [
+        "先用Figure 1理解“函数不变的缩放方向为什么产生梯度流守恒量”，再用Figure 2检查一个负平衡的单输出神经元为何不能改符号。随后读Proposition 4：把高维连通性问题变成删边后的非负流可行性。最后读Theorem 2与附录A.5，建立Jacobian降秩和隔离子图之间的对应，再回到剪枝实验判断哪些是严格定理、哪些只是阈值数值结果。",
+        "对物理视角而言，最值得保留的变量是网络图、节点平衡\\(c\\)与割边，而不是某一组训练曲线。它提供了一个清楚的“对称性→守恒量→受限状态空间→可达性障碍”链条；但它不是热力学相变或重整化群结论，也不能把瓶颈导致的分支断开直接称为普遍训练相变。"
+      ]
+    }
+  ],
+  "equation_refs": [
+    {
+      "label": "固定符号的下界",
+      "latex": "a^2=\\lVert w\\rVert^2+|c|",
+      "role": "固定符号的下界",
+      "symbols": {
+        "G=(V,E)": "网络DAG、节点及边集",
+        "theta": "全部实边权重",
+        "Btilde": "删去输入/输出行的关联矩阵，入边+1出边−1",
+        "c": "隐藏节点平衡向量",
+        "g": "仅经输出依赖参数的损失梯度或适用广义梯度",
+        "Vtilde": "隐藏节点集合",
+        "HG(c)": "满足平方权重守恒量的参数集合",
+        "CC": "把边界合并、删零边后的无向图连通分量数",
+        "J": "约束Jacobian，不是模型输出Jacobian",
+        "W": "与边界隔离的隐藏子图",
+        "eta": "普通GD步长",
+        "h": "割边权重平方和",
+        "K": "有界邻域中的局部梯度控制常数"
+      },
+      "evidence": "PDF pp6–7",
+      "interpretation": "条件为c<0；不据此宣称所有训练失败。"
+    },
+    {
+      "label": "单输出节点平衡",
+      "latex": "c=\\lVert w\\rVert^2-a^2",
+      "role": "单输出节点平衡",
+      "symbols": {
+        "G=(V,E)": "网络DAG、节点及边集",
+        "theta": "全部实边权重",
+        "Btilde": "删去输入/输出行的关联矩阵，入边+1出边−1",
+        "c": "隐藏节点平衡向量",
+        "g": "仅经输出依赖参数的损失梯度或适用广义梯度",
+        "Vtilde": "隐藏节点集合",
+        "HG(c)": "满足平方权重守恒量的参数集合",
+        "CC": "把边界合并、删零边后的无向图连通分量数",
+        "J": "约束Jacobian，不是模型输出Jacobian",
+        "W": "与边界隔离的隐藏子图",
+        "eta": "普通GD步长",
+        "h": "割边权重平方和",
+        "K": "有界邻域中的局部梯度控制常数"
+      },
+      "evidence": "PDF pp6–7 Figure2",
+      "interpretation": "负平衡阻止唯一输出边经过零。"
+    },
+    {
+      "label": "负节点平衡",
+      "latex": "c<0",
+      "role": "负节点平衡",
+      "symbols": {
+        "G=(V,E)": "网络DAG、节点及边集",
+        "theta": "全部实边权重",
+        "Btilde": "删去输入/输出行的关联矩阵，入边+1出边−1",
+        "c": "隐藏节点平衡向量",
+        "g": "仅经输出依赖参数的损失梯度或适用广义梯度",
+        "Vtilde": "隐藏节点集合",
+        "HG(c)": "满足平方权重守恒量的参数集合",
+        "CC": "把边界合并、删零边后的无向图连通分量数",
+        "J": "约束Jacobian，不是模型输出Jacobian",
+        "W": "与边界隔离的隐藏子图",
+        "eta": "普通GD步长",
+        "h": "割边权重平方和",
+        "K": "有界邻域中的局部梯度控制常数"
+      },
+      "evidence": "PDF pp6–7",
+      "interpretation": "唯一输出边不能穿零。"
+    },
+    {
+      "label": "连续梯度流",
+      "latex": "\\dot\\theta=-g(\\theta)",
+      "role": "连续梯度流",
+      "symbols": {
+        "G=(V,E)": "网络DAG、节点及边集",
+        "theta": "全部实边权重",
+        "Btilde": "删去输入/输出行的关联矩阵，入边+1出边−1",
+        "c": "隐藏节点平衡向量",
+        "g": "仅经输出依赖参数的损失梯度或适用广义梯度",
+        "Vtilde": "隐藏节点集合",
+        "HG(c)": "满足平方权重守恒量的参数集合",
+        "CC": "把边界合并、删零边后的无向图连通分量数",
+        "J": "约束Jacobian，不是模型输出Jacobian",
+        "W": "与边界隔离的隐藏子图",
+        "eta": "普通GD步长",
+        "h": "割边权重平方和",
+        "K": "有界邻域中的局部梯度控制常数"
+      },
+      "evidence": "PDF pp3–4",
+      "interpretation": "损失无显式参数正则项。"
+    },
+    {
+      "label": "网络DAG",
+      "latex": "G=(V,E)",
+      "role": "网络DAG",
+      "symbols": {
+        "G=(V,E)": "网络DAG、节点及边集",
+        "theta": "全部实边权重",
+        "Btilde": "删去输入/输出行的关联矩阵，入边+1出边−1",
+        "c": "隐藏节点平衡向量",
+        "g": "仅经输出依赖参数的损失梯度或适用广义梯度",
+        "Vtilde": "隐藏节点集合",
+        "HG(c)": "满足平方权重守恒量的参数集合",
+        "CC": "把边界合并、删零边后的无向图连通分量数",
+        "J": "约束Jacobian，不是模型输出Jacobian",
+        "W": "与边界隔离的隐藏子图",
+        "eta": "普通GD步长",
+        "h": "割边权重平方和",
+        "K": "有界邻域中的局部梯度控制常数"
+      },
+      "evidence": "PDF pp3–4",
+      "interpretation": "边实权重、每个隐藏节点处于输入输出路径。"
+    },
+    {
+      "label": "输入输出边界",
+      "latex": "\\partial V",
+      "role": "输入输出边界",
+      "symbols": {
+        "G=(V,E)": "网络DAG、节点及边集",
+        "theta": "全部实边权重",
+        "Btilde": "删去输入/输出行的关联矩阵，入边+1出边−1",
+        "c": "隐藏节点平衡向量",
+        "g": "仅经输出依赖参数的损失梯度或适用广义梯度",
+        "Vtilde": "隐藏节点集合",
+        "HG(c)": "满足平方权重守恒量的参数集合",
+        "CC": "把边界合并、删零边后的无向图连通分量数",
+        "J": "约束Jacobian，不是模型输出Jacobian",
+        "W": "与边界隔离的隐藏子图",
+        "eta": "普通GD步长",
+        "h": "割边权重平方和",
+        "K": "有界邻域中的局部梯度控制常数"
+      },
+      "evidence": "PDF p3",
+      "interpretation": "这些节点不受隐藏节点守恒约束。"
+    },
+    {
+      "label": "隐藏节点集合",
+      "latex": "\\widetilde V",
+      "role": "隐藏节点集合",
+      "symbols": {
+        "G=(V,E)": "网络DAG、节点及边集",
+        "theta": "全部实边权重",
+        "Btilde": "删去输入/输出行的关联矩阵，入边+1出边−1",
+        "c": "隐藏节点平衡向量",
+        "g": "仅经输出依赖参数的损失梯度或适用广义梯度",
+        "Vtilde": "隐藏节点集合",
+        "HG(c)": "满足平方权重守恒量的参数集合",
+        "CC": "把边界合并、删零边后的无向图连通分量数",
+        "J": "约束Jacobian，不是模型输出Jacobian",
+        "W": "与边界隔离的隐藏子图",
+        "eta": "普通GD步长",
+        "h": "割边权重平方和",
+        "K": "有界邻域中的局部梯度控制常数"
+      },
+      "evidence": "PDF p3",
+      "interpretation": "每个隐藏节点需在输入输出路径上。"
+    },
+    {
+      "label": "缩放正交关系",
+      "latex": "\\widetilde B(\\theta\\odot g)=0",
+      "role": "缩放正交关系",
+      "symbols": {
+        "G=(V,E)": "网络DAG、节点及边集",
+        "theta": "全部实边权重",
+        "Btilde": "删去输入/输出行的关联矩阵，入边+1出边−1",
+        "c": "隐藏节点平衡向量",
+        "g": "仅经输出依赖参数的损失梯度或适用广义梯度",
+        "Vtilde": "隐藏节点集合",
+        "HG(c)": "满足平方权重守恒量的参数集合",
+        "CC": "把边界合并、删零边后的无向图连通分量数",
+        "J": "约束Jacobian，不是模型输出Jacobian",
+        "W": "与边界隔离的隐藏子图",
+        "eta": "普通GD步长",
+        "h": "割边权重平方和",
+        "K": "有界邻域中的局部梯度控制常数"
+      },
+      "evidence": "PDF pp4–5",
+      "interpretation": "正齐次激活与仅经网络输出依赖的损失。"
+    },
+    {
+      "label": "逐元素平方",
+      "latex": "\\theta^{\\odot2}",
+      "role": "逐元素平方",
+      "symbols": {
+        "G=(V,E)": "网络DAG、节点及边集",
+        "theta": "全部实边权重",
+        "Btilde": "删去输入/输出行的关联矩阵，入边+1出边−1",
+        "c": "隐藏节点平衡向量",
+        "g": "仅经输出依赖参数的损失梯度或适用广义梯度",
+        "Vtilde": "隐藏节点集合",
+        "HG(c)": "满足平方权重守恒量的参数集合",
+        "CC": "把边界合并、删零边后的无向图连通分量数",
+        "J": "约束Jacobian，不是模型输出Jacobian",
+        "W": "与边界隔离的隐藏子图",
+        "eta": "普通GD步长",
+        "h": "割边权重平方和",
+        "K": "有界邻域中的局部梯度控制常数"
+      },
+      "evidence": "PDF pp4–6",
+      "interpretation": "不是矩阵乘积。"
+    },
+    {
+      "label": "逐元素乘法",
+      "latex": "\\odot",
+      "role": "逐元素乘法",
+      "symbols": {
+        "G=(V,E)": "网络DAG、节点及边集",
+        "theta": "全部实边权重",
+        "Btilde": "删去输入/输出行的关联矩阵，入边+1出边−1",
+        "c": "隐藏节点平衡向量",
+        "g": "仅经输出依赖参数的损失梯度或适用广义梯度",
+        "Vtilde": "隐藏节点集合",
+        "HG(c)": "满足平方权重守恒量的参数集合",
+        "CC": "把边界合并、删零边后的无向图连通分量数",
+        "J": "约束Jacobian，不是模型输出Jacobian",
+        "W": "与边界隔离的隐藏子图",
+        "eta": "普通GD步长",
+        "h": "割边权重平方和",
+        "K": "有界邻域中的局部梯度控制常数"
+      },
+      "evidence": "PDF p5",
+      "interpretation": "对应边参数逐元素。"
+    },
+    {
+      "label": "平衡、守恒与受限集合",
+      "latex": "\\begin{aligned}c&=\\widetilde B\\theta^{\\odot2},\\\\\\frac{d}{dt}(\\widetilde B\\theta^{\\odot2})&=-2\\widetilde B(\\theta\\odot g)=0,\\\\H_G(c)&=\\{\\theta:\\widetilde B\\theta^{\\odot2}=c\\}.\\end{aligned}",
+      "role": "平衡、守恒与受限集合",
+      "symbols": {
+        "G=(V,E)": "网络DAG、节点及边集",
+        "theta": "全部实边权重",
+        "Btilde": "删去输入/输出行的关联矩阵，入边+1出边−1",
+        "c": "隐藏节点平衡向量",
+        "g": "仅经输出依赖参数的损失梯度或适用广义梯度",
+        "Vtilde": "隐藏节点集合",
+        "HG(c)": "满足平方权重守恒量的参数集合",
+        "CC": "把边界合并、删零边后的无向图连通分量数",
+        "J": "约束Jacobian，不是模型输出Jacobian",
+        "W": "与边界隔离的隐藏子图",
+        "eta": "普通GD步长",
+        "h": "割边权重平方和",
+        "K": "有界邻域中的局部梯度控制常数"
+      },
+      "evidence": "PDF pp4–6；附录A.2–A.4",
+      "interpretation": "三式共用欧氏、未正则化连续梯度流及正齐次激活条件；逐元素平方不是矩阵平方。"
+    },
+    {
+      "label": "节点净吸收量",
+      "latex": "c_v=\\sum_{u\\to v}\\theta_{uv}^2-\\sum_{v\\to w}\\theta_{vw}^2",
+      "role": "节点净吸收量",
+      "symbols": {
+        "G=(V,E)": "网络DAG、节点及边集",
+        "theta": "全部实边权重",
+        "Btilde": "删去输入/输出行的关联矩阵，入边+1出边−1",
+        "c": "隐藏节点平衡向量",
+        "g": "仅经输出依赖参数的损失梯度或适用广义梯度",
+        "Vtilde": "隐藏节点集合",
+        "HG(c)": "满足平方权重守恒量的参数集合",
+        "CC": "把边界合并、删零边后的无向图连通分量数",
+        "J": "约束Jacobian，不是模型输出Jacobian",
+        "W": "与边界隔离的隐藏子图",
+        "eta": "普通GD步长",
+        "h": "割边权重平方和",
+        "K": "有界邻域中的局部梯度控制常数"
+      },
+      "evidence": "PDF pp4–6",
+      "interpretation": "输入输出不受隐藏节点平衡方程约束。"
+    },
+    {
+      "label": "非负流坐标",
+      "latex": "x_e=\\theta_e^2",
+      "role": "非负流坐标",
+      "symbols": {
+        "G=(V,E)": "网络DAG、节点及边集",
+        "theta": "全部实边权重",
+        "Btilde": "删去输入/输出行的关联矩阵，入边+1出边−1",
+        "c": "隐藏节点平衡向量",
+        "g": "仅经输出依赖参数的损失梯度或适用广义梯度",
+        "Vtilde": "隐藏节点集合",
+        "HG(c)": "满足平方权重守恒量的参数集合",
+        "CC": "把边界合并、删零边后的无向图连通分量数",
+        "J": "约束Jacobian，不是模型输出Jacobian",
+        "W": "与边界隔离的隐藏子图",
+        "eta": "普通GD步长",
+        "h": "割边权重平方和",
+        "K": "有界邻域中的局部梯度控制常数"
+      },
+      "evidence": "PDF pp5–6",
+      "interpretation": "逐元素平方，每个隐藏节点净吸收为c_v。"
+    },
+    {
+      "label": "删边可行集合",
+      "latex": "H_{G-e}(c)",
+      "role": "删边可行集合",
+      "symbols": {
+        "G=(V,E)": "网络DAG、节点及边集",
+        "theta": "全部实边权重",
+        "Btilde": "删去输入/输出行的关联矩阵，入边+1出边−1",
+        "c": "隐藏节点平衡向量",
+        "g": "仅经输出依赖参数的损失梯度或适用广义梯度",
+        "Vtilde": "隐藏节点集合",
+        "HG(c)": "满足平方权重守恒量的参数集合",
+        "CC": "把边界合并、删零边后的无向图连通分量数",
+        "J": "约束Jacobian，不是模型输出Jacobian",
+        "W": "与边界隔离的隐藏子图",
+        "eta": "普通GD步长",
+        "h": "割边权重平方和",
+        "K": "有界邻域中的局部梯度控制常数"
+      },
+      "evidence": "Proposition4 PDF pp6–7",
+      "interpretation": "每条边单独删除后均须非空。"
+    },
+    {
+      "label": "受限参数集合",
+      "latex": "H_G(c)",
+      "role": "受限参数集合",
+      "symbols": {
+        "G=(V,E)": "网络DAG、节点及边集",
+        "theta": "全部实边权重",
+        "Btilde": "删去输入/输出行的关联矩阵，入边+1出边−1",
+        "c": "隐藏节点平衡向量",
+        "g": "仅经输出依赖参数的损失梯度或适用广义梯度",
+        "Vtilde": "隐藏节点集合",
+        "HG(c)": "满足平方权重守恒量的参数集合",
+        "CC": "把边界合并、删零边后的无向图连通分量数",
+        "J": "约束Jacobian，不是模型输出Jacobian",
+        "W": "与边界隔离的隐藏子图",
+        "eta": "普通GD步长",
+        "h": "割边权重平方和",
+        "K": "有界邻域中的局部梯度控制常数"
+      },
+      "evidence": "PDF pp5–7",
+      "interpretation": "不是无冗余函数空间，连通不保证全局优化。"
+    },
+    {
+      "label": "出瓶颈条件",
+      "latex": "\\sum_{v\\in T}c_v\\ge0",
+      "role": "出瓶颈条件",
+      "symbols": {
+        "G=(V,E)": "网络DAG、节点及边集",
+        "theta": "全部实边权重",
+        "Btilde": "删去输入/输出行的关联矩阵，入边+1出边−1",
+        "c": "隐藏节点平衡向量",
+        "g": "仅经输出依赖参数的损失梯度或适用广义梯度",
+        "Vtilde": "隐藏节点集合",
+        "HG(c)": "满足平方权重守恒量的参数集合",
+        "CC": "把边界合并、删零边后的无向图连通分量数",
+        "J": "约束Jacobian，不是模型输出Jacobian",
+        "W": "与边界隔离的隐藏子图",
+        "eta": "普通GD步长",
+        "h": "割边权重平方和",
+        "K": "有界邻域中的局部梯度控制常数"
+      },
+      "evidence": "Theorem1 pp6–7；A.4",
+      "interpretation": "T为规定纯祖先内向前封闭子集，非任意节点子集。"
+    },
+    {
+      "label": "入瓶颈条件",
+      "latex": "\\sum_{v\\in T}c_v\\le0",
+      "role": "入瓶颈条件",
+      "symbols": {
+        "G=(V,E)": "网络DAG、节点及边集",
+        "theta": "全部实边权重",
+        "Btilde": "删去输入/输出行的关联矩阵，入边+1出边−1",
+        "c": "隐藏节点平衡向量",
+        "g": "仅经输出依赖参数的损失梯度或适用广义梯度",
+        "Vtilde": "隐藏节点集合",
+        "HG(c)": "满足平方权重守恒量的参数集合",
+        "CC": "把边界合并、删零边后的无向图连通分量数",
+        "J": "约束Jacobian，不是模型输出Jacobian",
+        "W": "与边界隔离的隐藏子图",
+        "eta": "普通GD步长",
+        "h": "割边权重平方和",
+        "K": "有界邻域中的局部梯度控制常数"
+      },
+      "evidence": "Theorem1 pp6–7；A.4",
+      "interpretation": "反向闭包与对应纯后代集合条件。"
+    },
+    {
+      "label": "约束Jacobian",
+      "latex": "J_G(\\theta)=2\\widetilde B\\operatorname{diag}(\\theta)",
+      "role": "约束Jacobian",
+      "symbols": {
+        "G=(V,E)": "网络DAG、节点及边集",
+        "theta": "全部实边权重",
+        "Btilde": "删去输入/输出行的关联矩阵，入边+1出边−1",
+        "c": "隐藏节点平衡向量",
+        "g": "仅经输出依赖参数的损失梯度或适用广义梯度",
+        "Vtilde": "隐藏节点集合",
+        "HG(c)": "满足平方权重守恒量的参数集合",
+        "CC": "把边界合并、删零边后的无向图连通分量数",
+        "J": "约束Jacobian，不是模型输出Jacobian",
+        "W": "与边界隔离的隐藏子图",
+        "eta": "普通GD步长",
+        "h": "割边权重平方和",
+        "K": "有界邻域中的局部梯度控制常数"
+      },
+      "evidence": "PDF p8 Eq4",
+      "interpretation": "不是模型输出的Jacobian；补充代码常数尺度不同须区分。"
+    },
+    {
+      "label": "非零边边界合并图",
+      "latex": "G^{\\prime}_{\\mathrm{nz}}",
+      "role": "非零边边界合并图",
+      "symbols": {
+        "G=(V,E)": "网络DAG、节点及边集",
+        "theta": "全部实边权重",
+        "Btilde": "删去输入/输出行的关联矩阵，入边+1出边−1",
+        "c": "隐藏节点平衡向量",
+        "g": "仅经输出依赖参数的损失梯度或适用广义梯度",
+        "Vtilde": "隐藏节点集合",
+        "HG(c)": "满足平方权重守恒量的参数集合",
+        "CC": "把边界合并、删零边后的无向图连通分量数",
+        "J": "约束Jacobian，不是模型输出Jacobian",
+        "W": "与边界隔离的隐藏子图",
+        "eta": "普通GD步长",
+        "h": "割边权重平方和",
+        "K": "有界邻域中的局部梯度控制常数"
+      },
+      "evidence": "Theorem2 p8",
+      "interpretation": "忽略方向、删零边、合并输入输出。"
+    },
+    {
+      "label": "受限参数集合",
+      "latex": "H_G(c)",
+      "role": "受限参数集合",
+      "symbols": {
+        "G=(V,E)": "网络DAG、节点及边集",
+        "theta": "全部实边权重",
+        "Btilde": "删去输入/输出行的关联矩阵，入边+1出边−1",
+        "c": "隐藏节点平衡向量",
+        "g": "仅经输出依赖参数的损失梯度或适用广义梯度",
+        "Vtilde": "隐藏节点集合",
+        "HG(c)": "满足平方权重守恒量的参数集合",
+        "CC": "把边界合并、删零边后的无向图连通分量数",
+        "J": "约束Jacobian，不是模型输出Jacobian",
+        "W": "与边界隔离的隐藏子图",
+        "eta": "普通GD步长",
+        "h": "割边权重平方和",
+        "K": "有界邻域中的局部梯度控制常数"
+      },
+      "evidence": "PDF pp5–7",
+      "interpretation": "不是无冗余函数空间，连通不保证全局优化。"
+    },
+    {
+      "label": "秩与隔离分量",
+      "latex": "\\operatorname{rank}J_G(\\theta)=|\\widetilde V|+1-\\operatorname{CC}(G^{\\prime}_{\\mathrm{nz}})",
+      "role": "秩与隔离分量",
+      "symbols": {
+        "G=(V,E)": "网络DAG、节点及边集",
+        "theta": "全部实边权重",
+        "Btilde": "删去输入/输出行的关联矩阵，入边+1出边−1",
+        "c": "隐藏节点平衡向量",
+        "g": "仅经输出依赖参数的损失梯度或适用广义梯度",
+        "Vtilde": "隐藏节点集合",
+        "HG(c)": "满足平方权重守恒量的参数集合",
+        "CC": "把边界合并、删零边后的无向图连通分量数",
+        "J": "约束Jacobian，不是模型输出Jacobian",
+        "W": "与边界隔离的隐藏子图",
+        "eta": "普通GD步长",
+        "h": "割边权重平方和",
+        "K": "有界邻域中的局部梯度控制常数"
+      },
+      "evidence": "Theorem2 PDF p8；A.5 pp22–23",
+      "interpretation": "合并全部边界、忽略方向、删零边；降秩数统计隔离分量。"
+    },
+    {
+      "label": "隔离模块必要平衡",
+      "latex": "\\sum_{v\\in W}c_v=0",
+      "role": "隔离模块必要平衡",
+      "symbols": {
+        "G=(V,E)": "网络DAG、节点及边集",
+        "theta": "全部实边权重",
+        "Btilde": "删去输入/输出行的关联矩阵，入边+1出边−1",
+        "c": "隐藏节点平衡向量",
+        "g": "仅经输出依赖参数的损失梯度或适用广义梯度",
+        "Vtilde": "隐藏节点集合",
+        "HG(c)": "满足平方权重守恒量的参数集合",
+        "CC": "把边界合并、删零边后的无向图连通分量数",
+        "J": "约束Jacobian，不是模型输出Jacobian",
+        "W": "与边界隔离的隐藏子图",
+        "eta": "普通GD步长",
+        "h": "割边权重平方和",
+        "K": "有界邻域中的局部梯度控制常数"
+      },
+      "evidence": "Propositions5–7 pp8–9",
+      "interpretation": "概率零推论需要联合连续密度。"
+    },
+    {
+      "label": "核范数秩替代",
+      "latex": "R_{\\mathrm{nuc}}(\\theta)=\\lVert J_G(\\theta)\\rVert_*",
+      "role": "核范数秩替代",
+      "symbols": {
+        "G=(V,E)": "网络DAG、节点及边集",
+        "theta": "全部实边权重",
+        "Btilde": "删去输入/输出行的关联矩阵，入边+1出边−1",
+        "c": "隐藏节点平衡向量",
+        "g": "仅经输出依赖参数的损失梯度或适用广义梯度",
+        "Vtilde": "隐藏节点集合",
+        "HG(c)": "满足平方权重守恒量的参数集合",
+        "CC": "把边界合并、删零边后的无向图连通分量数",
+        "J": "约束Jacobian，不是模型输出Jacobian",
+        "W": "与边界隔离的隐藏子图",
+        "eta": "普通GD步长",
+        "h": "割边权重平方和",
+        "K": "有界邻域中的局部梯度控制常数"
+      },
+      "evidence": "PDF p9",
+      "interpretation": "非处处光滑，降秩点尤其需要非光滑处理。"
+    },
+    {
+      "label": "浅层分组惩罚特例",
+      "latex": "\\lVert J\\rVert_*=2\\sum_v\\sqrt{\\sum_{e\\,\\mathrm{incident\\ to}\\,v}\\theta_e^2}",
+      "role": "浅层分组惩罚特例",
+      "symbols": {
+        "G=(V,E)": "网络DAG、节点及边集",
+        "theta": "全部实边权重",
+        "Btilde": "删去输入/输出行的关联矩阵，入边+1出边−1",
+        "c": "隐藏节点平衡向量",
+        "g": "仅经输出依赖参数的损失梯度或适用广义梯度",
+        "Vtilde": "隐藏节点集合",
+        "HG(c)": "满足平方权重守恒量的参数集合",
+        "CC": "把边界合并、删零边后的无向图连通分量数",
+        "J": "约束Jacobian，不是模型输出Jacobian",
+        "W": "与边界隔离的隐藏子图",
+        "eta": "普通GD步长",
+        "h": "割边权重平方和",
+        "K": "有界邻域中的局部梯度控制常数"
+      },
+      "evidence": "本卡审阅浅层Jacobian互不重叠行；PDF p9核范数",
+      "interpretation": "仅无隐藏层间边时可分离，一般DAG不能照搬。"
+    },
+    {
+      "label": "受限参数集合",
+      "latex": "H_G(c)",
+      "role": "受限参数集合",
+      "symbols": {
+        "G=(V,E)": "网络DAG、节点及边集",
+        "theta": "全部实边权重",
+        "Btilde": "删去输入/输出行的关联矩阵，入边+1出边−1",
+        "c": "隐藏节点平衡向量",
+        "g": "仅经输出依赖参数的损失梯度或适用广义梯度",
+        "Vtilde": "隐藏节点集合",
+        "HG(c)": "满足平方权重守恒量的参数集合",
+        "CC": "把边界合并、删零边后的无向图连通分量数",
+        "J": "约束Jacobian，不是模型输出Jacobian",
+        "W": "与边界隔离的隐藏子图",
+        "eta": "普通GD步长",
+        "h": "割边权重平方和",
+        "K": "有界邻域中的局部梯度控制常数"
+      },
+      "evidence": "PDF pp5–7",
+      "interpretation": "不是无冗余函数空间，连通不保证全局优化。"
+    },
+    {
+      "label": "离散步的平衡漂移",
+      "latex": "c_{k+1}-c_k=\\eta^2\\widetilde B g_k^{\\odot2}",
+      "role": "离散步的平衡漂移",
+      "symbols": {
+        "G=(V,E)": "网络DAG、节点及边集",
+        "theta": "全部实边权重",
+        "Btilde": "删去输入/输出行的关联矩阵，入边+1出边−1",
+        "c": "隐藏节点平衡向量",
+        "g": "仅经输出依赖参数的损失梯度或适用广义梯度",
+        "Vtilde": "隐藏节点集合",
+        "HG(c)": "满足平方权重守恒量的参数集合",
+        "CC": "把边界合并、删零边后的无向图连通分量数",
+        "J": "约束Jacobian，不是模型输出Jacobian",
+        "W": "与边界隔离的隐藏子图",
+        "eta": "普通GD步长",
+        "h": "割边权重平方和",
+        "K": "有界邻域中的局部梯度控制常数"
+      },
+      "evidence": "本卡复核普通GD一步展开；PDF pp10/27连续与离散边界",
+      "interpretation": "仅当缩放正交一阶项为零时剩下二阶项；不推广到Adam。"
+    },
+    {
+      "label": "割边Grönwall修补",
+      "latex": "|\\dot h|\\le2Kh",
+      "role": "割边Grönwall修补",
+      "symbols": {
+        "G=(V,E)": "网络DAG、节点及边集",
+        "theta": "全部实边权重",
+        "Btilde": "删去输入/输出行的关联矩阵，入边+1出边−1",
+        "c": "隐藏节点平衡向量",
+        "g": "仅经输出依赖参数的损失梯度或适用广义梯度",
+        "Vtilde": "隐藏节点集合",
+        "HG(c)": "满足平方权重守恒量的参数集合",
+        "CC": "把边界合并、删零边后的无向图连通分量数",
+        "J": "约束Jacobian，不是模型输出Jacobian",
+        "W": "与边界隔离的隐藏子图",
+        "eta": "普通GD步长",
+        "h": "割边权重平方和",
+        "K": "有界邻域中的局部梯度控制常数"
+      },
+      "evidence": "本卡审阅；原A.7 pp23–24",
+      "interpretation": "有界轨迹及输出损失导数局部有界，广义梯度下控制割边范数。"
+    },
+    {
+      "label": "原附录Hessian路径",
+      "latex": "\\dot J=JH",
+      "role": "原附录Hessian路径",
+      "symbols": {
+        "G=(V,E)": "网络DAG、节点及边集",
+        "theta": "全部实边权重",
+        "Btilde": "删去输入/输出行的关联矩阵，入边+1出边−1",
+        "c": "隐藏节点平衡向量",
+        "g": "仅经输出依赖参数的损失梯度或适用广义梯度",
+        "Vtilde": "隐藏节点集合",
+        "HG(c)": "满足平方权重守恒量的参数集合",
+        "CC": "把边界合并、删零边后的无向图连通分量数",
+        "J": "约束Jacobian，不是模型输出Jacobian",
+        "W": "与边界隔离的隐藏子图",
+        "eta": "普通GD步长",
+        "h": "割边权重平方和",
+        "K": "有界邻域中的局部梯度控制常数"
+      },
+      "evidence": "A.7 pp23–24",
+      "interpretation": "ReLU折点经典Hessian缺口明确保留。"
+    },
+    {
+      "label": "原示例平衡配置",
+      "latex": "c=(\\theta_e^2-6,1,3)",
+      "role": "原示例平衡配置",
+      "symbols": {
+        "G=(V,E)": "网络DAG、节点及边集",
+        "theta": "全部实边权重",
+        "Btilde": "删去输入/输出行的关联矩阵，入边+1出边−1",
+        "c": "隐藏节点平衡向量",
+        "g": "仅经输出依赖参数的损失梯度或适用广义梯度",
+        "Vtilde": "隐藏节点集合",
+        "HG(c)": "满足平方权重守恒量的参数集合",
+        "CC": "把边界合并、删零边后的无向图连通分量数",
+        "J": "约束Jacobian，不是模型输出Jacobian",
+        "W": "与边界隔离的隐藏子图",
+        "eta": "普通GD步长",
+        "h": "割边权重平方和",
+        "K": "有界邻域中的局部梯度控制常数"
+      },
+      "evidence": "PDF p7 Figure2正文",
+      "interpretation": "三分量和为theta_e²−2，保持修订后阈值一致。"
+    },
+    {
+      "label": "修正后的平衡和",
+      "latex": "\\theta_e^2-2",
+      "role": "修正后的平衡和",
+      "symbols": {
+        "G=(V,E)": "网络DAG、节点及边集",
+        "theta": "全部实边权重",
+        "Btilde": "删去输入/输出行的关联矩阵，入边+1出边−1",
+        "c": "隐藏节点平衡向量",
+        "g": "仅经输出依赖参数的损失梯度或适用广义梯度",
+        "Vtilde": "隐藏节点集合",
+        "HG(c)": "满足平方权重守恒量的参数集合",
+        "CC": "把边界合并、删零边后的无向图连通分量数",
+        "J": "约束Jacobian，不是模型输出Jacobian",
+        "W": "与边界隔离的隐藏子图",
+        "eta": "普通GD步长",
+        "h": "割边权重平方和",
+        "K": "有界邻域中的局部梯度控制常数"
+      },
+      "evidence": "本卡审阅PDF p7算术",
+      "interpretation": "不由算术笔误否定一般连通性定理。"
+    },
+    {
+      "label": "原正文算术笔误",
+      "latex": "\\theta_e^2-4",
+      "role": "原正文算术笔误",
+      "symbols": {
+        "G=(V,E)": "网络DAG、节点及边集",
+        "theta": "全部实边权重",
+        "Btilde": "删去输入/输出行的关联矩阵，入边+1出边−1",
+        "c": "隐藏节点平衡向量",
+        "g": "仅经输出依赖参数的损失梯度或适用广义梯度",
+        "Vtilde": "隐藏节点集合",
+        "HG(c)": "满足平方权重守恒量的参数集合",
+        "CC": "把边界合并、删零边后的无向图连通分量数",
+        "J": "约束Jacobian，不是模型输出Jacobian",
+        "W": "与边界隔离的隐藏子图",
+        "eta": "普通GD步长",
+        "h": "割边权重平方和",
+        "K": "有界邻域中的局部梯度控制常数"
+      },
+      "evidence": "PDF p7",
+      "interpretation": "原式按三分量正确相加应为theta_e²−2。"
+    },
+    {
+      "label": "修正示例阈值",
+      "latex": "\\sqrt2",
+      "role": "修正示例阈值",
+      "symbols": {
+        "G=(V,E)": "网络DAG、节点及边集",
+        "theta": "全部实边权重",
+        "Btilde": "删去输入/输出行的关联矩阵，入边+1出边−1",
+        "c": "隐藏节点平衡向量",
+        "g": "仅经输出依赖参数的损失梯度或适用广义梯度",
+        "Vtilde": "隐藏节点集合",
+        "HG(c)": "满足平方权重守恒量的参数集合",
+        "CC": "把边界合并、删零边后的无向图连通分量数",
+        "J": "约束Jacobian，不是模型输出Jacobian",
+        "W": "与边界隔离的隐藏子图",
+        "eta": "普通GD步长",
+        "h": "割边权重平方和",
+        "K": "有界邻域中的局部梯度控制常数"
+      },
+      "evidence": "PDF p7",
+      "interpretation": "与正确三分量和一致。"
+    },
+    {
+      "label": "示例初始化",
+      "latex": "\\sqrt3",
+      "role": "示例初始化",
+      "symbols": {
+        "G=(V,E)": "网络DAG、节点及边集",
+        "theta": "全部实边权重",
+        "Btilde": "删去输入/输出行的关联矩阵，入边+1出边−1",
+        "c": "隐藏节点平衡向量",
+        "g": "仅经输出依赖参数的损失梯度或适用广义梯度",
+        "Vtilde": "隐藏节点集合",
+        "HG(c)": "满足平方权重守恒量的参数集合",
+        "CC": "把边界合并、删零边后的无向图连通分量数",
+        "J": "约束Jacobian，不是模型输出Jacobian",
+        "W": "与边界隔离的隐藏子图",
+        "eta": "普通GD步长",
+        "h": "割边权重平方和",
+        "K": "有界邻域中的局部梯度控制常数"
+      },
+      "evidence": "PDF p7 Figure2",
+      "interpretation": "与连通/断开两个配置比较。"
+    },
+    {
+      "label": "理论Jacobian尺度",
+      "latex": "2\\widetilde B\\operatorname{diag}(\\theta)",
+      "role": "理论Jacobian尺度",
+      "symbols": {
+        "G=(V,E)": "网络DAG、节点及边集",
+        "theta": "全部实边权重",
+        "Btilde": "删去输入/输出行的关联矩阵，入边+1出边−1",
+        "c": "隐藏节点平衡向量",
+        "g": "仅经输出依赖参数的损失梯度或适用广义梯度",
+        "Vtilde": "隐藏节点集合",
+        "HG(c)": "满足平方权重守恒量的参数集合",
+        "CC": "把边界合并、删零边后的无向图连通分量数",
+        "J": "约束Jacobian，不是模型输出Jacobian",
+        "W": "与边界隔离的隐藏子图",
+        "eta": "普通GD步长",
+        "h": "割边权重平方和",
+        "K": "有界邻域中的局部梯度控制常数"
+      },
+      "evidence": "PDF p8与官方补充代码",
+      "interpretation": "常数2影响数值尺度而不影响秩。"
+    },
+    {
+      "label": "补充代码尺度",
+      "latex": "\\widetilde B\\operatorname{diag}(\\theta)",
+      "role": "补充代码尺度",
+      "symbols": {
+        "G=(V,E)": "网络DAG、节点及边集",
+        "theta": "全部实边权重",
+        "Btilde": "删去输入/输出行的关联矩阵，入边+1出边−1",
+        "c": "隐藏节点平衡向量",
+        "g": "仅经输出依赖参数的损失梯度或适用广义梯度",
+        "Vtilde": "隐藏节点集合",
+        "HG(c)": "满足平方权重守恒量的参数集合",
+        "CC": "把边界合并、删零边后的无向图连通分量数",
+        "J": "约束Jacobian，不是模型输出Jacobian",
+        "W": "与边界隔离的隐藏子图",
+        "eta": "普通GD步长",
+        "h": "割边权重平方和",
+        "K": "有界邻域中的局部梯度控制常数"
+      },
+      "evidence": "官方singularity Notebook",
+      "interpretation": "代码缺少理论Jacobian前面的常数2；秩不变但阈值与正则尺度须对应。"
+    }
+  ],
+  "figure_refs": [
+    {
+      "label": "Figure 1",
+      "asset_path": "assets/collection-figures/2602.00693/fig1.png",
+      "section": "核心结果与证据",
+      "role": "缩放对称性与平衡约束",
+      "evidence": "https://arxiv.org/pdf/2602.00693v1#page=3; Figure1, PDF physical p.3",
+      "alt_text": "五个面板展示网络DAG、删去边界行的关联矩阵、缩放对称性、节点守恒量和受限代数集合。",
+      "caption": "五个面板展示网络DAG、删去边界行的关联矩阵、缩放对称性、节点守恒量和受限代数集合。 Nurisso等，arXiv:2602.00693v1，PDF物理p.3 Figure1，CC BY4.0；原PDF栅格化，仅裁图外正文/空白，保留全部面板、标题、坐标、图例和原英文图注，未重绘或增强。",
+      "interpretation": "函数保持不变的缩放方向与损失梯度正交，节点平方权重平衡固定。"
+    },
+    {
+      "label": "Figure 2",
+      "asset_path": "assets/collection-figures/2602.00693/fig2.png",
+      "section": "核心结果与证据",
+      "role": "连通性与瓶颈",
+      "evidence": "https://arxiv.org/pdf/2602.00693v1#page=6; Figure2, PDF physical p.6",
+      "alt_text": "完整a、b、c及d.1/d.2面板：瓶颈、删边可行性、平衡条件、三隐藏节点网络和两种训练区域。",
+      "caption": "完整a、b、c及d.1/d.2面板：瓶颈、删边可行性、平衡条件、三隐藏节点网络和两种训练区域。 Nurisso等，arXiv:2602.00693v1，PDF物理p.6 Figure2，CC BY4.0；原PDF栅格化，仅裁图外正文/空白，保留全部面板、标题、坐标、图例和原英文图注，未重绘或增强。",
+      "interpretation": "删去每条边后非负流仍可行等价于集合连通；特定负平衡配置固定输出符号。"
+    },
+    {
+      "label": "Figure 3",
+      "asset_path": "assets/collection-figures/2602.00693/fig3.png",
+      "section": "核心结果与证据",
+      "role": "奇异隔离子网与剪枝",
+      "evidence": "https://arxiv.org/pdf/2602.00693v1#page=8; Figure3, PDF physical p.8",
+      "alt_text": "四面板展示隔离隐藏模块、含奇异点的受限集合、零奇异值比例及剪枝后测试损失。",
+      "caption": "四面板展示隔离隐藏模块、含奇异点的受限集合、零奇异值比例及剪枝后测试损失。 Nurisso等，arXiv:2602.00693v1，PDF物理p.8 Figure3，CC BY4.0；原PDF栅格化，仅裁图外正文/空白，保留全部面板、标题、坐标、图例和原英文图注，未重绘或增强。",
+      "interpretation": "严格隔离对应Jacobian降秩；数值判零与运行次数口径需区分，图注50次与方法30次冲突保留。"
+    }
+  ],
+  "source_figure_links": [
+    {
+      "label": "Figure1",
+      "physical_page": 3,
+      "url": "https://arxiv.org/pdf/2602.00693v1#page=3"
+    },
+    {
+      "label": "Figure2",
+      "physical_page": 6,
+      "url": "https://arxiv.org/pdf/2602.00693v1#page=6"
+    },
+    {
+      "label": "Figure3",
+      "physical_page": 8,
+      "url": "https://arxiv.org/pdf/2602.00693v1#page=8"
+    }
+  ],
+  "evidence_refs": [
+    {
+      "section": "作者信息",
+      "evidence": "PDF p1作者及共同第一作者，官方arXiv元数据"
+    },
+    {
+      "section": "模型与方法",
+      "evidence": "PDF pp3–7，A.2–A.4 pp15–21，完整限定及网络图假设"
+    },
+    {
+      "section": "核心结果与证据",
+      "evidence": "Figures1/2/3 pp3/6/8；Theorem2，A.5，核范数及A.8–A.10数值结果"
+    },
+    {
+      "section": "有效性与局限",
+      "evidence": "A.7 Hessian缺口与本卡割边Grönwall补充；p7算术勘误；p8/25运行口径及p31 Figure12标注冲突"
+    },
+    {
+      "section": "复现与资源",
+      "evidence": "官方ICLR补充ZIP只读核验，两个Notebook和核心module.py；无额外PDF/TeX证明，未执行代码"
+    },
+    {
+      "section": "fulltext_reading_boundary",
+      "evidence": "All32physical pages and AppendixA.2–A.10 read; official supplemental notebook cells and module read-only inspected; no independent reproduction performed."
+    }
+  ],
+  "cover": {
+    "mode": "source_figure",
+    "asset_path": "assets/collection-figures/2602.00693/fig2.png",
+    "label": "Figure 2",
+    "visual_type": "comparison",
+    "selection_rationale": "完整图同时呈现瓶颈、删边可行性、平衡符号和两种训练区域，直接解释初始化导致的可达性障碍。",
+    "evidence": "https://arxiv.org/pdf/2602.00693v1#page=6; Figure2, PDF physical p.6",
+    "alt_text": "完整a、b、c及d.1/d.2面板：瓶颈、删边可行性、平衡条件、三隐藏节点网络和两种训练区域。",
+    "caption": "瓶颈与节点平衡怎样决定参数区域能否连通；两种初始化的训练轨迹对照。",
+    "attribution": "arXiv:2602.00693v1，PDF p.6 Figure2，CC BY4.0；仅裁图外正文/空白，完整面板及原图注，未重绘。"
+  },
+  "provenance": {
+    "program": "Collection",
+    "catalog": "Paper Collection",
+    "catalog_record_id": "2602.00693",
+    "catalog_topic": "Physics of AI",
+    "collection_date": "2026-10-03",
+    "sampled_at": "2026-10-03T14:42:29.145799+00:00",
+    "selected_by": "editorial_curation",
+    "sampling_seed": "not_applicable"
+  },
+  "verified_metadata": {
+    "arxiv_id": "2602.00693",
+    "version": "v1",
+    "title": "Topology and Geometry of the Learning Space of ReLU Networks: Connectivity and Singularities",
+    "authors": [
+      "Marco Nurisso",
+      "Pierrick Leroy",
+      "Giovanni Petri",
+      "Francesco Vaccarino"
+    ],
+    "affiliations": [
+      "Politecnico di Torino, Department of Mathematical Sciences",
+      "Northeastern University London, Network Science Institute"
+    ],
+    "equal_contribution": [
+      "Marco Nurisso",
+      "Pierrick Leroy"
+    ],
+    "published": "2026-01-31",
+    "venue": "ICLR 2026",
+    "abstract": "Understanding the properties of the parameter space in feed-forward ReLU networks is critical for effectively analyzing and guiding training dynamics. After initialization, training under gradient flow decisively restricts the parameter space to an algebraic variety that emerges from the homogeneous nature of the ReLU activation function. In this study, we examine two key challenges associated with feed-forward ReLU networks built on general directed acyclic graph (DAG) architectures: the (dis)connectedness of the parameter space and the existence of singularities within it. We extend previous results by providing a thorough characterization of connectedness, highlighting the roles of bottleneck nodes and balance conditions associated with specific subsets of the network. Our findings clearly demonstrate that singularities are intricately connected to the topology of the underlying DAG and its induced sub-networks. We discuss the reachability of these singularities and establish a principled connection with differentiable pruning. We validate our theory with simple numerical experiments.",
+    "pdf_pages": 32,
+    "license_url": "https://creativecommons.org/licenses/by/4.0/",
+    "source_pdf_sha256": "6407db9728b4468d832994e970b63ab26dc5d90322597ec2beaca6f7483a0cb3"
+  },
+  "classification": {
+    "category": "AI理论",
+    "tags": [
+      "Physics of AI",
+      "ReLU Networks",
+      "Topology",
+      "Gradient Flow",
+      "Structured Pruning"
+    ]
+  }
+}

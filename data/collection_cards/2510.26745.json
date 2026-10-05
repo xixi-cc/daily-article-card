@@ -1,0 +1,697 @@
+{
+  "title_zh": "从查表到几何记忆：模型如何把局部边关系变成可读取的全局结构",
+  "title_en": "Deep sequence models tend to memorize geometrically; it is unclear why",
+  "arxiv_id": "2510.26745",
+  "source_version": "v3",
+  "source_url": "https://arxiv.org/abs/2510.26745v3",
+  "pdf_url": "https://arxiv.org/pdf/2510.26745v3",
+  "source_pdf": "https://arxiv.org/pdf/2510.26745v3",
+  "source_pdf_sha256": "53f3f588e0519699b179a35c843dae072615a49d30cd8c5461228e9f2451eed0",
+  "curation_status": "full_text_verified",
+  "card_standard_version": "2.4",
+  "paper_profile": "ai_empirical",
+  "paper_profile_description": "机制实验与部分动力学分析",
+  "style_reference": "physicist_daily_arxiv",
+  "independent_reproduction": false,
+  "sections": [
+    {
+      "title": "作者信息",
+      "paragraphs": [
+        "Shahriar Noroozizadeh来自卡内基梅隆大学，部分工作完成于Google Research实习期间；Vaishnavh Nagarajan、Elan Rosenfeld、Sanjiv Kumar来自Google Research。前两位为通讯作者。本文以arXiv:2510.26745v3为阅读版本，页眉注明ICML 2026。本卡已审读69页全文与关键原图，没有独立重跑模型训练。（p1）"
+      ]
+    },
+    {
+      "title": "摘要",
+      "paragraphs": [
+        "若模型只见过图中一条条局部边，它会把它们存成可以逐项查询的表，还是会让所有节点的向量形成一个含有全局关系的几何结构？本文把这两种形式称为关联记忆与几何记忆，认为第二种形式能把原本需要多次组合查询的任务转成更容易读取的空间关系。",
+        "承重证据来自一个固定图的参数内记忆任务：所有边都在训练中出现，但部分完整路径从未作为路径答案出现。Transformer和Mamba在这些留出路径上仍能作出非平凡选择；即使去掉后续路径token的损失，只监督第一个关键选择，也能成功。节点嵌入的相似度与谱投影显示全局结构不仅来自路径监督，纯局部边监督也可能产生它。（p8–16）",
+        "文章进一步用两层、绑定权重的Node2Vec式模型分析交叉熵训练中的谱偏向。但它没有完整解释深层Transformer为何在两种记忆之间作选择。标题中的“不清楚为什么”是实质边界，不能改写成已经建立普遍的记忆涌现定理。"
+      ]
+    },
+    {
+      "title": "背景",
+      "paragraphs": [
+        "“参数内记忆”（in-weights）是通过训练把一张固定图存入权重；“上下文内推理”（in-context）则是每次在提示中提供一张新图。两者的训练信息、计算分配和测试分布不同，不能把本文的前者成功当作后者也已解决。",
+        "在关联式示意中，节点先被映射为近正交的键，边关系主要存于中间矩阵：",
+        "\\[f(u)[v]=\\Phi(u)^\\top W_{\\rm assoc}\\Phi(v),\\qquad W_{\\rm assoc}\\approx\\sum_{(a,b)\\in E}\\Phi(a)\\Phi(b)^\\top.\\]",
+        "在几何式示意中，节点向量本身有结构：",
+        "\\[f(u)[v]\\approx\\Phi_{\\rm geom}(u)^\\top\\Phi_{\\rm geom}(v).\\]",
+        "作者也允许带对角正负权重、需要读出探针的更一般因子化。这些是分析用的抽象，而非已证明能唯一分解任意网络的两类模块。（p5、9–11）",
+        "这里所谓“新全局信息”并不是凭空获取训练数据之外的事实，而是把分散在全部局部边中的关系经过计算，变成更容易读出的表示。完整训练图本来已决定多跳关系；变化的是表示方式及读取难度。"
+      ]
+    },
+    {
+      "title": "模型与方法",
+      "paragraphs": [
+        "主要任务使用路径星形图\\(G_{d,\\ell}\\)：一个中心连接d条互不相交、长度参数为ℓ的支路。节点用独立数值token表示。训练包括全部边的相邻token对，以及75%支路的路径监督；测试使用其余支路。测试节点和测试路径的单条边并非从未见过，留出的是整条路径及相应路径答案。（p8–9、43）",
+        "大图实验使用从零训练的decoder-only Transformer，典型配置12层、宽度384、8头；最大设置使用宽度784。Mamba作为另一架构验证。稳定的大图方案混合正反两个方向的边、交错训练边与路径，并在提示后插入PAUSE token。暂停token没有中间答案标签，但确实增加推理计算空间；不应概括成“没有额外计算”。（p43–45、59–61）",
+        "观测量分为三类：完整路径exact-match、第一个关键token正确率，以及嵌入中的几何证据。三维投影只是辅助；作者同时检查跨节点余弦关系、图谱方向上的投影及几何margin，因为UMAP等降维本身可能让局部结构看起来更全局。（p45–46）",
+        "两层机制模型直接学习节点嵌入矩阵\\(V\\in\\mathbb R^{n\\times m}\\)，绑定输入输出权重，概率为",
+        "\\[P(V)=\\operatorname{row\\_softmax}(VV^\\top).\\]",
+        "把每个节点的邻居均匀作为目标，最大化",
+        "\\[J(V)=\\sum_i\\frac1{d_i}\\sum_{j\\in{\\rm nbr}(i)}\\log P_{ij}(V).\\]",
+        "令A为邻接矩阵、\\(D_g=\\operatorname{diag}(d_i)\\)，则该模型精确的一步梯度更新为",
+        "\\[\\Delta V=\\eta C(V)V,\\qquad C(V)=(D_g^{-1}A-P)+(D_g^{-1}A-P)^\\top.\\]",
+        "这是这篇文章的清晰动力学入口，适用于所定义的两层目标，不能直接把深层Transformer或AdamW训练写成同一个方程。（p65 Eq1–3，p69推导）"
+      ]
+    },
+    {
+      "title": "核心结果与证据",
+      "paragraphs": [
+        "第一，局部知识存入权重后，留出路径的关键选择可以被学到。在\\(G_{5000,5}\\)、\\(G_{10000,6}\\)两个设置上，Transformer仅监督关键token的实验报告100%；\\(G_{10000,10}\\)为57.16%，该设置随机分支选择基线为0.01%。这些是该实验的关键token指标，不是全路径指标；后者在最大设置另报40%。Mamba也有对应正结果。（p9 Fig3，p42 Fig12，p47 Fig14）",
+        "第二，全局几何不必来自显式多跳监督。纯边记忆训练后，同一支路的叶节点与首跳节点也比不同支路更相近；微型路径星、网格、环和不规则图在多种架构中出现结构化嵌入。Fig1适合展示现象，但全局性判断还依赖余弦热图等证据，不能只看三维图。（p4 Fig1、p10 Fig4、p12 Fig5、p50–55）",
+        "第三，作者排除了几种简单解释。冻结嵌入、仅训练中间层可以拟合局部关联，说明这些架构并非完全表达不了查表解；足够宽的微型模型在合适学习率下可两步完成这类关联记忆，而几何形成更慢。小图上去掉dropout和weight decay后仍可能形成几何。但这只排除所检验的简单容量或正则化解释，不表示初始化、权重绑定、softmax或优化器的所有归纳偏好都被排除。（p13–14、44、53–58）",
+        "第四，两层模型自然偏向少数图谱方向，即使嵌入宽度m=100大于小图节点数，也无需先施加低秩瓶颈。Fig7比较嵌入投影与图谱本身，Fig8追踪嵌入与更新系数矩阵：",
+        "\\[C(V_\\infty)V_\\infty=0\\]",
+        "是有限收敛时必须满足的驻点条件；观察到的现象是V集中到某些Fiedler-like方向，同时C对这些方向的作用趋小。C本身不必变成零矩阵。这是实验支持的自稳定图景，不是已经证明的全局收敛律。（p15–18，p65–68）",
+        "第五，几何并不一定表现为“邻居向量最接近”。解绑权重或添加中间层后，负特征方向可能造成相邻节点远离、隔一个节点又靠近的锯齿形。它可对应二分结构，而非随机噪声；加入自环会改变谱及自预测代价，并在实验中减弱这种形态。两层绑定模型的\\(VV^\\top\\)必须半正定，本来就无法表示负特征值；这个结构性限制与正特征方向内部额外出现的低秩偏向要分开。（p19，p56–58）"
+      ]
+    },
+    {
+      "title": "有效性与局限",
+      "paragraphs": [
+        "- 这是固定合成图、数值token、从零训练的模型实验，不是自然语言事实推理或大规模预训练模型的已验证定律。文章p24明确承认相关机制论证主要是经验与非正式分析。",
+        "- “关联式组合需要指数时间”在本文是动机和经验困难，作者p22 Remark2及p62明确把当前参数内任务与严格困难性结果的连接留作开放问题。不能称实验推翻了既有复杂性下界。",
+        "- 正反边增强、PAUSE计算、训练时长和初始化影响结果；最大的路径设置也非全成功。两阶段先记边后只微调路径的实验只报告瞬时峰值，随后会明显退化，不能把峰值当稳定部署性能。（p59–61）",
+        "- 附录F的谱图景需要额外经验假设：row-softmax前后近似共用特征方向、近对称概率矩阵、近均匀度数等。正交初始化的Gram矩阵接近cI也还需c足够大才让P接近I。这些条件没有被证明对一般深层Transformer或所有初始化成立；保留/衰减哪些模态、收敛速度及何时需要early stopping仍未完整解决。（p65–68）",
+        "- 非规则图上的\\(D_g^{-1}A+(D_g^{-1}A)^\\top-2I\\)不能直接视为标准对称归一化负Laplacian；常向量也不一定是零特征向量。涉及“顶模退化”或Fiedler方向时应依原文实际矩阵与实验读，不把规则图直觉当一般谱定理。",
+        "- 附录E的“复杂度相同”是特定稀疏图、位精度、绑定约束和范数度量下的非正式比较，不排除其他复杂度机制。p63 Proposition3的二分图构造还有明确问题：若同侧两个节点共享邻居，其邻接指示向量内积不为零；p64 incidence构造对不同节点可表示边，但对角项等于节点度数，不能忽略自预测logit。因此本卡不把它们转述为一般精确关联表示定理。这些辅助论证问题不抹去已报告的嵌入与任务消融现象。",
+        "- 本文尚不能从一个网络中唯一分离两种记忆比例，也没有证明让几何更强就必然提升准确检索。因子化可能牺牲逐项精确性、引入虚假关联；对知识编辑、遗忘和现实检索的影响仍是研究问题。所列准确率没有在本卡被升级为跨训练种子的统计保证。"
+      ]
+    },
+    {
+      "title": "复现与资源",
+      "paragraphs": [
+        "固定版本：https://arxiv.org/abs/2510.26745v3；PDF：https://arxiv.org/pdf/2510.26745v3；作者代码：https://github.com/shahriarnz14/geometric_memory。",
+        "最小复核顺序是先复核固定图的train/test拆分、双向边与PAUSE设置，再分别测全路径/关键token准确率、余弦热图及谱投影。只复现3D投影不够证明全局几何；只看训练edge拟合也不等于留出路径推理成功。",
+        "本卡保留原图出处、页码和CC BY 4.0署名许可，未重新生成论文结果图；已核验全文与原图，未独立重跑训练。方法和消融均来自固定v3的附录，不把代码链接存在当成复现成功。"
+      ]
+    },
+    {
+      "title": "阅读指南",
+      "paragraphs": [
+        "先看Fig1与Fig3，建立“看起来有几何”与“真的帮助读取”的区别；再读p45–46的测量标准和p59–61的反向边/PAUSE/训练顺序消融。最后读p65的精确更新式，再把它与p66–68的经验假设分开。",
+        "对统计物理与AI机制研究，值得带走的是一个可控问题：同样局部监督下，哪些表示模态被保留、哪些衰减，更新矩阵的零空间如何与表示子空间相互适应？它提供研究类比和可测观测量，但没有直接建立热力学相变、重整化群或一般世界模型理论。"
+      ]
+    }
+  ],
+  "equation_refs": [
+    {
+      "label": "关联式记忆示意",
+      "latex": "f(u)[v]=\\Phi(u)^\\top W_{\\rm assoc}\\Phi(v),\\qquad W_{\\rm assoc}\\approx\\sum_{(a,b)\\in E}\\Phi(a)\\Phi(b)^\\top.",
+      "role": "分析用近似因子化",
+      "symbols": {
+        "u,v,a,b": "图节点，按各式作为输入、目标或边端点",
+        "E": "固定训练图的边集合",
+        "Phi": "节点的关联式嵌入",
+        "Phi_geom": "具有图结构的节点嵌入",
+        "W_assoc": "关联式中间矩阵；近似表达是示意而非一般表示定理",
+        "G_d_ell": "路径星形固定图，d条支路，长度参数ell",
+        "d": "路径星形图支路数；d_i是第i节点度数",
+        "ell": "路径星形图长度参数",
+        "V": "n×m的可训练节点嵌入矩阵",
+        "n": "图节点数",
+        "m": "嵌入宽度",
+        "P": "对VV^T逐行softmax得到的邻居预测概率",
+        "J": "每节点均匀邻居目标的对数似然和",
+        "i,j": "输入节点及目标邻居索引",
+        "nbr(i)": "节点i的邻居集合",
+        "A": "训练图邻接矩阵",
+        "D_g": "节点度数对角矩阵",
+        "eta": "两层模型一步梯度上升的学习率",
+        "C": "由目标与预测概率差及其转置构成的对称更新系数矩阵",
+        "Delta V": "所定义两层绑定权重目标的一步嵌入更新",
+        "V_infty": "存在有限收敛时的嵌入极限",
+        "I": "节点空间单位矩阵",
+        "e_i": "Fig8对应图谱的单位特征方向"
+      },
+      "evidence": "p5、p9–11",
+      "interpretation": "不是任意深层模型的唯一精确模块分解。"
+    },
+    {
+      "label": "几何式记忆示意",
+      "latex": "f(u)[v]\\approx\\Phi_{\\rm geom}(u)^\\top\\Phi_{\\rm geom}(v).",
+      "role": "分析用近似因子化",
+      "symbols": {
+        "u,v,a,b": "图节点，按各式作为输入、目标或边端点",
+        "E": "固定训练图的边集合",
+        "Phi": "节点的关联式嵌入",
+        "Phi_geom": "具有图结构的节点嵌入",
+        "W_assoc": "关联式中间矩阵；近似表达是示意而非一般表示定理",
+        "G_d_ell": "路径星形固定图，d条支路，长度参数ell",
+        "d": "路径星形图支路数；d_i是第i节点度数",
+        "ell": "路径星形图长度参数",
+        "V": "n×m的可训练节点嵌入矩阵",
+        "n": "图节点数",
+        "m": "嵌入宽度",
+        "P": "对VV^T逐行softmax得到的邻居预测概率",
+        "J": "每节点均匀邻居目标的对数似然和",
+        "i,j": "输入节点及目标邻居索引",
+        "nbr(i)": "节点i的邻居集合",
+        "A": "训练图邻接矩阵",
+        "D_g": "节点度数对角矩阵",
+        "eta": "两层模型一步梯度上升的学习率",
+        "C": "由目标与预测概率差及其转置构成的对称更新系数矩阵",
+        "Delta V": "所定义两层绑定权重目标的一步嵌入更新",
+        "V_infty": "存在有限收敛时的嵌入极限",
+        "I": "节点空间单位矩阵",
+        "e_i": "Fig8对应图谱的单位特征方向"
+      },
+      "evidence": "p5、p9–11",
+      "interpretation": "通过嵌入内积读出关系；更一般因子化仍可含正负权重和探针。"
+    },
+    {
+      "label": "模型与方法内联数学3",
+      "latex": "G_{d,\\ell}",
+      "role": "原文正文使用的模型、量或适用条件",
+      "symbols": {
+        "u,v,a,b": "图节点，按各式作为输入、目标或边端点",
+        "E": "固定训练图的边集合",
+        "Phi": "节点的关联式嵌入",
+        "Phi_geom": "具有图结构的节点嵌入",
+        "W_assoc": "关联式中间矩阵；近似表达是示意而非一般表示定理",
+        "G_d_ell": "路径星形固定图，d条支路，长度参数ell",
+        "d": "路径星形图支路数；d_i是第i节点度数",
+        "ell": "路径星形图长度参数",
+        "V": "n×m的可训练节点嵌入矩阵",
+        "n": "图节点数",
+        "m": "嵌入宽度",
+        "P": "对VV^T逐行softmax得到的邻居预测概率",
+        "J": "每节点均匀邻居目标的对数似然和",
+        "i,j": "输入节点及目标邻居索引",
+        "nbr(i)": "节点i的邻居集合",
+        "A": "训练图邻接矩阵",
+        "D_g": "节点度数对角矩阵",
+        "eta": "两层模型一步梯度上升的学习率",
+        "C": "由目标与预测概率差及其转置构成的对称更新系数矩阵",
+        "Delta V": "所定义两层绑定权重目标的一步嵌入更新",
+        "V_infty": "存在有限收敛时的嵌入极限",
+        "I": "节点空间单位矩阵",
+        "e_i": "Fig8对应图谱的单位特征方向"
+      },
+      "evidence": "p8–9、43–46、65 Eq1–3",
+      "interpretation": "保留正文条件和指标区分，不提升为一般深层模型定理。"
+    },
+    {
+      "label": "模型与方法内联数学4",
+      "latex": "V\\in\\mathbb R^{n\\times m}",
+      "role": "原文正文使用的模型、量或适用条件",
+      "symbols": {
+        "u,v,a,b": "图节点，按各式作为输入、目标或边端点",
+        "E": "固定训练图的边集合",
+        "Phi": "节点的关联式嵌入",
+        "Phi_geom": "具有图结构的节点嵌入",
+        "W_assoc": "关联式中间矩阵；近似表达是示意而非一般表示定理",
+        "G_d_ell": "路径星形固定图，d条支路，长度参数ell",
+        "d": "路径星形图支路数；d_i是第i节点度数",
+        "ell": "路径星形图长度参数",
+        "V": "n×m的可训练节点嵌入矩阵",
+        "n": "图节点数",
+        "m": "嵌入宽度",
+        "P": "对VV^T逐行softmax得到的邻居预测概率",
+        "J": "每节点均匀邻居目标的对数似然和",
+        "i,j": "输入节点及目标邻居索引",
+        "nbr(i)": "节点i的邻居集合",
+        "A": "训练图邻接矩阵",
+        "D_g": "节点度数对角矩阵",
+        "eta": "两层模型一步梯度上升的学习率",
+        "C": "由目标与预测概率差及其转置构成的对称更新系数矩阵",
+        "Delta V": "所定义两层绑定权重目标的一步嵌入更新",
+        "V_infty": "存在有限收敛时的嵌入极限",
+        "I": "节点空间单位矩阵",
+        "e_i": "Fig8对应图谱的单位特征方向"
+      },
+      "evidence": "p8–9、43–46、65 Eq1–3",
+      "interpretation": "保留正文条件和指标区分，不提升为一般深层模型定理。"
+    },
+    {
+      "label": "两层邻居预测概率",
+      "latex": "P(V)=\\operatorname{row\\_softmax}(VV^\\top).",
+      "role": "定义",
+      "symbols": {
+        "u,v,a,b": "图节点，按各式作为输入、目标或边端点",
+        "E": "固定训练图的边集合",
+        "Phi": "节点的关联式嵌入",
+        "Phi_geom": "具有图结构的节点嵌入",
+        "W_assoc": "关联式中间矩阵；近似表达是示意而非一般表示定理",
+        "G_d_ell": "路径星形固定图，d条支路，长度参数ell",
+        "d": "路径星形图支路数；d_i是第i节点度数",
+        "ell": "路径星形图长度参数",
+        "V": "n×m的可训练节点嵌入矩阵",
+        "n": "图节点数",
+        "m": "嵌入宽度",
+        "P": "对VV^T逐行softmax得到的邻居预测概率",
+        "J": "每节点均匀邻居目标的对数似然和",
+        "i,j": "输入节点及目标邻居索引",
+        "nbr(i)": "节点i的邻居集合",
+        "A": "训练图邻接矩阵",
+        "D_g": "节点度数对角矩阵",
+        "eta": "两层模型一步梯度上升的学习率",
+        "C": "由目标与预测概率差及其转置构成的对称更新系数矩阵",
+        "Delta V": "所定义两层绑定权重目标的一步嵌入更新",
+        "V_infty": "存在有限收敛时的嵌入极限",
+        "I": "节点空间单位矩阵",
+        "e_i": "Fig8对应图谱的单位特征方向"
+      },
+      "evidence": "p65 Eq1",
+      "interpretation": "两层输入输出权重绑定模型；不是深层Transformer的一般概率式。"
+    },
+    {
+      "label": "均匀邻居对数似然",
+      "latex": "J(V)=\\sum_i\\frac1{d_i}\\sum_{j\\in{\\rm nbr}(i)}\\log P_{ij}(V).",
+      "role": "模型目标定义",
+      "symbols": {
+        "u,v,a,b": "图节点，按各式作为输入、目标或边端点",
+        "E": "固定训练图的边集合",
+        "Phi": "节点的关联式嵌入",
+        "Phi_geom": "具有图结构的节点嵌入",
+        "W_assoc": "关联式中间矩阵；近似表达是示意而非一般表示定理",
+        "G_d_ell": "路径星形固定图，d条支路，长度参数ell",
+        "d": "路径星形图支路数；d_i是第i节点度数",
+        "ell": "路径星形图长度参数",
+        "V": "n×m的可训练节点嵌入矩阵",
+        "n": "图节点数",
+        "m": "嵌入宽度",
+        "P": "对VV^T逐行softmax得到的邻居预测概率",
+        "J": "每节点均匀邻居目标的对数似然和",
+        "i,j": "输入节点及目标邻居索引",
+        "nbr(i)": "节点i的邻居集合",
+        "A": "训练图邻接矩阵",
+        "D_g": "节点度数对角矩阵",
+        "eta": "两层模型一步梯度上升的学习率",
+        "C": "由目标与预测概率差及其转置构成的对称更新系数矩阵",
+        "Delta V": "所定义两层绑定权重目标的一步嵌入更新",
+        "V_infty": "存在有限收敛时的嵌入极限",
+        "I": "节点空间单位矩阵",
+        "e_i": "Fig8对应图谱的单位特征方向"
+      },
+      "evidence": "p65 Eq2",
+      "interpretation": "全部局部邻居监督，每输入节点按度数归一化。"
+    },
+    {
+      "label": "模型与方法内联数学7",
+      "latex": "D_g=\\operatorname{diag}(d_i)",
+      "role": "原文正文使用的模型、量或适用条件",
+      "symbols": {
+        "u,v,a,b": "图节点，按各式作为输入、目标或边端点",
+        "E": "固定训练图的边集合",
+        "Phi": "节点的关联式嵌入",
+        "Phi_geom": "具有图结构的节点嵌入",
+        "W_assoc": "关联式中间矩阵；近似表达是示意而非一般表示定理",
+        "G_d_ell": "路径星形固定图，d条支路，长度参数ell",
+        "d": "路径星形图支路数；d_i是第i节点度数",
+        "ell": "路径星形图长度参数",
+        "V": "n×m的可训练节点嵌入矩阵",
+        "n": "图节点数",
+        "m": "嵌入宽度",
+        "P": "对VV^T逐行softmax得到的邻居预测概率",
+        "J": "每节点均匀邻居目标的对数似然和",
+        "i,j": "输入节点及目标邻居索引",
+        "nbr(i)": "节点i的邻居集合",
+        "A": "训练图邻接矩阵",
+        "D_g": "节点度数对角矩阵",
+        "eta": "两层模型一步梯度上升的学习率",
+        "C": "由目标与预测概率差及其转置构成的对称更新系数矩阵",
+        "Delta V": "所定义两层绑定权重目标的一步嵌入更新",
+        "V_infty": "存在有限收敛时的嵌入极限",
+        "I": "节点空间单位矩阵",
+        "e_i": "Fig8对应图谱的单位特征方向"
+      },
+      "evidence": "p8–9、43–46、65 Eq1–3",
+      "interpretation": "保留正文条件和指标区分，不提升为一般深层模型定理。"
+    },
+    {
+      "label": "绑定权重精确梯度更新",
+      "latex": "\\Delta V=\\eta C(V)V,\\qquad C(V)=(D_g^{-1}A-P)+(D_g^{-1}A-P)^\\top.",
+      "role": "该两层模型的精确一步更新",
+      "symbols": {
+        "u,v,a,b": "图节点，按各式作为输入、目标或边端点",
+        "E": "固定训练图的边集合",
+        "Phi": "节点的关联式嵌入",
+        "Phi_geom": "具有图结构的节点嵌入",
+        "W_assoc": "关联式中间矩阵；近似表达是示意而非一般表示定理",
+        "G_d_ell": "路径星形固定图，d条支路，长度参数ell",
+        "d": "路径星形图支路数；d_i是第i节点度数",
+        "ell": "路径星形图长度参数",
+        "V": "n×m的可训练节点嵌入矩阵",
+        "n": "图节点数",
+        "m": "嵌入宽度",
+        "P": "对VV^T逐行softmax得到的邻居预测概率",
+        "J": "每节点均匀邻居目标的对数似然和",
+        "i,j": "输入节点及目标邻居索引",
+        "nbr(i)": "节点i的邻居集合",
+        "A": "训练图邻接矩阵",
+        "D_g": "节点度数对角矩阵",
+        "eta": "两层模型一步梯度上升的学习率",
+        "C": "由目标与预测概率差及其转置构成的对称更新系数矩阵",
+        "Delta V": "所定义两层绑定权重目标的一步嵌入更新",
+        "V_infty": "存在有限收敛时的嵌入极限",
+        "I": "节点空间单位矩阵",
+        "e_i": "Fig8对应图谱的单位特征方向"
+      },
+      "evidence": "p65 Eq3；p69推导",
+      "interpretation": "模型特定的梯度上升动力学，不直接等同Transformer或AdamW。"
+    },
+    {
+      "label": "核心结果与证据内联数学9",
+      "latex": "G_{5000,5}",
+      "role": "原文正文使用的模型、量或适用条件",
+      "symbols": {
+        "u,v,a,b": "图节点，按各式作为输入、目标或边端点",
+        "E": "固定训练图的边集合",
+        "Phi": "节点的关联式嵌入",
+        "Phi_geom": "具有图结构的节点嵌入",
+        "W_assoc": "关联式中间矩阵；近似表达是示意而非一般表示定理",
+        "G_d_ell": "路径星形固定图，d条支路，长度参数ell",
+        "d": "路径星形图支路数；d_i是第i节点度数",
+        "ell": "路径星形图长度参数",
+        "V": "n×m的可训练节点嵌入矩阵",
+        "n": "图节点数",
+        "m": "嵌入宽度",
+        "P": "对VV^T逐行softmax得到的邻居预测概率",
+        "J": "每节点均匀邻居目标的对数似然和",
+        "i,j": "输入节点及目标邻居索引",
+        "nbr(i)": "节点i的邻居集合",
+        "A": "训练图邻接矩阵",
+        "D_g": "节点度数对角矩阵",
+        "eta": "两层模型一步梯度上升的学习率",
+        "C": "由目标与预测概率差及其转置构成的对称更新系数矩阵",
+        "Delta V": "所定义两层绑定权重目标的一步嵌入更新",
+        "V_infty": "存在有限收敛时的嵌入极限",
+        "I": "节点空间单位矩阵",
+        "e_i": "Fig8对应图谱的单位特征方向"
+      },
+      "evidence": "p9 Fig3、p15–19、42 Fig12、47 Fig14",
+      "interpretation": "保留正文条件和指标区分，不提升为一般深层模型定理。"
+    },
+    {
+      "label": "核心结果与证据内联数学10",
+      "latex": "G_{10000,6}",
+      "role": "原文正文使用的模型、量或适用条件",
+      "symbols": {
+        "u,v,a,b": "图节点，按各式作为输入、目标或边端点",
+        "E": "固定训练图的边集合",
+        "Phi": "节点的关联式嵌入",
+        "Phi_geom": "具有图结构的节点嵌入",
+        "W_assoc": "关联式中间矩阵；近似表达是示意而非一般表示定理",
+        "G_d_ell": "路径星形固定图，d条支路，长度参数ell",
+        "d": "路径星形图支路数；d_i是第i节点度数",
+        "ell": "路径星形图长度参数",
+        "V": "n×m的可训练节点嵌入矩阵",
+        "n": "图节点数",
+        "m": "嵌入宽度",
+        "P": "对VV^T逐行softmax得到的邻居预测概率",
+        "J": "每节点均匀邻居目标的对数似然和",
+        "i,j": "输入节点及目标邻居索引",
+        "nbr(i)": "节点i的邻居集合",
+        "A": "训练图邻接矩阵",
+        "D_g": "节点度数对角矩阵",
+        "eta": "两层模型一步梯度上升的学习率",
+        "C": "由目标与预测概率差及其转置构成的对称更新系数矩阵",
+        "Delta V": "所定义两层绑定权重目标的一步嵌入更新",
+        "V_infty": "存在有限收敛时的嵌入极限",
+        "I": "节点空间单位矩阵",
+        "e_i": "Fig8对应图谱的单位特征方向"
+      },
+      "evidence": "p9 Fig3、p15–19、42 Fig12、47 Fig14",
+      "interpretation": "保留正文条件和指标区分，不提升为一般深层模型定理。"
+    },
+    {
+      "label": "核心结果与证据内联数学11",
+      "latex": "G_{10000,10}",
+      "role": "原文正文使用的模型、量或适用条件",
+      "symbols": {
+        "u,v,a,b": "图节点，按各式作为输入、目标或边端点",
+        "E": "固定训练图的边集合",
+        "Phi": "节点的关联式嵌入",
+        "Phi_geom": "具有图结构的节点嵌入",
+        "W_assoc": "关联式中间矩阵；近似表达是示意而非一般表示定理",
+        "G_d_ell": "路径星形固定图，d条支路，长度参数ell",
+        "d": "路径星形图支路数；d_i是第i节点度数",
+        "ell": "路径星形图长度参数",
+        "V": "n×m的可训练节点嵌入矩阵",
+        "n": "图节点数",
+        "m": "嵌入宽度",
+        "P": "对VV^T逐行softmax得到的邻居预测概率",
+        "J": "每节点均匀邻居目标的对数似然和",
+        "i,j": "输入节点及目标邻居索引",
+        "nbr(i)": "节点i的邻居集合",
+        "A": "训练图邻接矩阵",
+        "D_g": "节点度数对角矩阵",
+        "eta": "两层模型一步梯度上升的学习率",
+        "C": "由目标与预测概率差及其转置构成的对称更新系数矩阵",
+        "Delta V": "所定义两层绑定权重目标的一步嵌入更新",
+        "V_infty": "存在有限收敛时的嵌入极限",
+        "I": "节点空间单位矩阵",
+        "e_i": "Fig8对应图谱的单位特征方向"
+      },
+      "evidence": "p9 Fig3、p15–19、42 Fig12、47 Fig14",
+      "interpretation": "保留正文条件和指标区分，不提升为一般深层模型定理。"
+    },
+    {
+      "label": "有限收敛的驻点条件",
+      "latex": "C(V_\\infty)V_\\infty=0",
+      "role": "有限收敛时必要条件",
+      "symbols": {
+        "u,v,a,b": "图节点，按各式作为输入、目标或边端点",
+        "E": "固定训练图的边集合",
+        "Phi": "节点的关联式嵌入",
+        "Phi_geom": "具有图结构的节点嵌入",
+        "W_assoc": "关联式中间矩阵；近似表达是示意而非一般表示定理",
+        "G_d_ell": "路径星形固定图，d条支路，长度参数ell",
+        "d": "路径星形图支路数；d_i是第i节点度数",
+        "ell": "路径星形图长度参数",
+        "V": "n×m的可训练节点嵌入矩阵",
+        "n": "图节点数",
+        "m": "嵌入宽度",
+        "P": "对VV^T逐行softmax得到的邻居预测概率",
+        "J": "每节点均匀邻居目标的对数似然和",
+        "i,j": "输入节点及目标邻居索引",
+        "nbr(i)": "节点i的邻居集合",
+        "A": "训练图邻接矩阵",
+        "D_g": "节点度数对角矩阵",
+        "eta": "两层模型一步梯度上升的学习率",
+        "C": "由目标与预测概率差及其转置构成的对称更新系数矩阵",
+        "Delta V": "所定义两层绑定权重目标的一步嵌入更新",
+        "V_infty": "存在有限收敛时的嵌入极限",
+        "I": "节点空间单位矩阵",
+        "e_i": "Fig8对应图谱的单位特征方向"
+      },
+      "evidence": "p15–18；p65–68",
+      "interpretation": "C作用于V趋零，不要求C自身为零；非一般全局收敛定理。"
+    },
+    {
+      "label": "核心结果与证据内联数学13",
+      "latex": "VV^\\top",
+      "role": "原文正文使用的模型、量或适用条件",
+      "symbols": {
+        "u,v,a,b": "图节点，按各式作为输入、目标或边端点",
+        "E": "固定训练图的边集合",
+        "Phi": "节点的关联式嵌入",
+        "Phi_geom": "具有图结构的节点嵌入",
+        "W_assoc": "关联式中间矩阵；近似表达是示意而非一般表示定理",
+        "G_d_ell": "路径星形固定图，d条支路，长度参数ell",
+        "d": "路径星形图支路数；d_i是第i节点度数",
+        "ell": "路径星形图长度参数",
+        "V": "n×m的可训练节点嵌入矩阵",
+        "n": "图节点数",
+        "m": "嵌入宽度",
+        "P": "对VV^T逐行softmax得到的邻居预测概率",
+        "J": "每节点均匀邻居目标的对数似然和",
+        "i,j": "输入节点及目标邻居索引",
+        "nbr(i)": "节点i的邻居集合",
+        "A": "训练图邻接矩阵",
+        "D_g": "节点度数对角矩阵",
+        "eta": "两层模型一步梯度上升的学习率",
+        "C": "由目标与预测概率差及其转置构成的对称更新系数矩阵",
+        "Delta V": "所定义两层绑定权重目标的一步嵌入更新",
+        "V_infty": "存在有限收敛时的嵌入极限",
+        "I": "节点空间单位矩阵",
+        "e_i": "Fig8对应图谱的单位特征方向"
+      },
+      "evidence": "p9 Fig3、p15–19、42 Fig12、47 Fig14",
+      "interpretation": "保留正文条件和指标区分，不提升为一般深层模型定理。"
+    },
+    {
+      "label": "有效性与局限内联数学14",
+      "latex": "D_g^{-1}A+(D_g^{-1}A)^\\top-2I",
+      "role": "原文正文使用的模型、量或适用条件",
+      "symbols": {
+        "u,v,a,b": "图节点，按各式作为输入、目标或边端点",
+        "E": "固定训练图的边集合",
+        "Phi": "节点的关联式嵌入",
+        "Phi_geom": "具有图结构的节点嵌入",
+        "W_assoc": "关联式中间矩阵；近似表达是示意而非一般表示定理",
+        "G_d_ell": "路径星形固定图，d条支路，长度参数ell",
+        "d": "路径星形图支路数；d_i是第i节点度数",
+        "ell": "路径星形图长度参数",
+        "V": "n×m的可训练节点嵌入矩阵",
+        "n": "图节点数",
+        "m": "嵌入宽度",
+        "P": "对VV^T逐行softmax得到的邻居预测概率",
+        "J": "每节点均匀邻居目标的对数似然和",
+        "i,j": "输入节点及目标邻居索引",
+        "nbr(i)": "节点i的邻居集合",
+        "A": "训练图邻接矩阵",
+        "D_g": "节点度数对角矩阵",
+        "eta": "两层模型一步梯度上升的学习率",
+        "C": "由目标与预测概率差及其转置构成的对称更新系数矩阵",
+        "Delta V": "所定义两层绑定权重目标的一步嵌入更新",
+        "V_infty": "存在有限收敛时的嵌入极限",
+        "I": "节点空间单位矩阵",
+        "e_i": "Fig8对应图谱的单位特征方向"
+      },
+      "evidence": "p65–68 非规则图/谱分析边界",
+      "interpretation": "保留正文条件和指标区分，不提升为一般深层模型定理。"
+    }
+  ],
+  "figure_refs": [
+    {
+      "label": "Figure 1",
+      "asset_path": "assets/collection-figures/2510.26745/fig1.png",
+      "section": "背景",
+      "role": "全文审读后选定的承重原图，保留图号、页码、署名和许可。",
+      "evidence": "PDF physical p.4 Figure 1; https://arxiv.org/pdf/2510.26745v3#page=4",
+      "alt_text": "完整四行分别为路径星、网格、环与不规则图；三列比较冻结嵌入的Transformer、可训练嵌入的Transformer和Node2Vec。结构化投影提供几何现象的视觉入口，三维图本身不能独立确认全局性。",
+      "caption": "完整四行分别为路径星、网格、环与不规则图；三列比较冻结嵌入的Transformer、可训练嵌入的Transformer和Node2Vec。结构化投影提供几何现象的视觉入口，三维图本身不能独立确认全局性。 来源：Noroozizadeh 等，arXiv:2510.26745v3，PDF物理p.4，Figure 1，CC BY 4.0；从原PDF栅格化，完整图面板、轴标、图例保留，未重绘。",
+      "interpretation": "Fig1适合展示现象，但全局性判断还依赖余弦热图等证据，不能只看三维图。"
+    },
+    {
+      "label": "Figure 3",
+      "asset_path": "assets/collection-figures/2510.26745/fig3.png",
+      "section": "核心结果与证据",
+      "role": "全文审读后选定的承重原图，保留图号、页码、署名和许可。",
+      "evidence": "PDF physical p.9 Figure 3; https://arxiv.org/pdf/2510.26745v3#page=9",
+      "alt_text": "横轴为三个路径星设置，纵轴为最难的第一个token准确率（百分比，图中保留原刻度）；黄色柱为100%、100%、57.16%，虚线随机水平分别0.02%、0.01%、0.01%。这是仅监督关键token的指标，不能当作全路径exact-match。",
+      "caption": "横轴为三个路径星设置，纵轴为最难的第一个token准确率（百分比，图中保留原刻度）；黄色柱为100%、100%、57.16%，虚线随机水平分别0.02%、0.01%、0.01%。这是仅监督关键token的指标，不能当作全路径exact-match。 来源：Noroozizadeh 等，arXiv:2510.26745v3，PDF物理p.9，Figure 3，CC BY 4.0；从原PDF栅格化，完整图面板、轴标、图例保留，未重绘。",
+      "interpretation": "测试节点和测试路径的单条边并非从未见过，留出的是整条路径及相应路径答案。"
+    },
+    {
+      "label": "Figure 8",
+      "asset_path": "assets/collection-figures/2510.26745/fig8.png",
+      "section": "核心结果与证据",
+      "role": "全文审读后选定的承重原图，保留图号、页码、署名和许可。",
+      "evidence": "PDF physical p.18 Figure 8; https://arxiv.org/pdf/2510.26745v3#page=18",
+      "alt_text": "四行依次为路径星、网格、环和不规则图。左列为图的Fiedler-like方向；中列随epoch跟踪嵌入的图谱投影，右列跟踪更新系数矩阵作用于对应方向的范数。橙色方向的嵌入投影保留而更新作用趋小；图示支持经验自稳定图景，不是一般收敛证明。",
+      "caption": "四行依次为路径星、网格、环和不规则图。左列为图的Fiedler-like方向；中列随epoch跟踪嵌入的图谱投影，右列跟踪更新系数矩阵作用于对应方向的范数。橙色方向的嵌入投影保留而更新作用趋小；图示支持经验自稳定图景，不是一般收敛证明。 来源：Noroozizadeh 等，arXiv:2510.26745v3，PDF物理p.18，Figure 8，CC BY 4.0；从原PDF栅格化，完整图面板、轴标、图例保留，未重绘。",
+      "interpretation": "这是实验支持的自稳定图景，不是已经证明的全局收敛律。"
+    }
+  ],
+  "evidence_refs": [
+    {
+      "section": "作者信息",
+      "evidence": "p1作者、单位、通讯作者、ICML2026页眉；固定v3，69物理页"
+    },
+    {
+      "section": "背景",
+      "evidence": "p5、9–11关联/几何抽象；p24非正式机制边界"
+    },
+    {
+      "section": "模型与方法",
+      "evidence": "p8–9、43路径星任务：全部边监督、75%路径支路训练及留出路径"
+    },
+    {
+      "section": "模型与方法",
+      "evidence": "p43–46、59–61架构、双向边、PAUSE额外计算和几何观测"
+    },
+    {
+      "section": "模型与方法",
+      "evidence": "p65 Eq1–3、p69绑定权重Node2Vec目标精确梯度"
+    },
+    {
+      "section": "核心结果与证据",
+      "evidence": "p9 Fig3、p42 Fig12、p47 Fig14关键token/全路径指标区分"
+    },
+    {
+      "section": "核心结果与证据",
+      "evidence": "p4 Fig1、p10 Fig4、p12 Fig5、p50–55纯边监督几何证据"
+    },
+    {
+      "section": "核心结果与证据",
+      "evidence": "p13–14、44、53–58容量、冻结嵌入、正则化等消融"
+    },
+    {
+      "section": "核心结果与证据",
+      "evidence": "p15–19 Fig7–8；p65–68模型特定谱偏向、自稳定经验图景"
+    },
+    {
+      "section": "有效性与局限",
+      "evidence": "p22 Remark2、p24、p62复杂性和机制尚未解决"
+    },
+    {
+      "section": "有效性与局限",
+      "evidence": "p59–61峰值后退化；p65–68谱分析所需经验条件"
+    },
+    {
+      "section": "有效性与局限",
+      "evidence": "p63 Proposition3、p64 incidence构造；共有邻居和对角度数为审读者校核"
+    },
+    {
+      "section": "复现与资源",
+      "evidence": "p1/固定版本作者代码链接；全文69页和原图已审，未独立训练"
+    },
+    {
+      "section": "fulltext_reading_boundary",
+      "evidence": "full-text verified across69pages; no independent reproduction performed; no full-paper formal proof certification"
+    }
+  ],
+  "cover": {
+    "mode": "source_figure",
+    "asset_path": "assets/collection-figures/2510.26745/fig1-cover-path-star.png",
+    "label": "Figure 1（路径星比较行）",
+    "visual_type": "comparison",
+    "selection_rationale": "全文审读后选Fig1作为现象入口；封面保留路径星首行的三种记忆比较、列标题和完整选定面板，正文保留完整四行原图。相比准确率曲线，原图直接呈现关联记忆与几何记忆的结构差异；投影不独立证明全局性。",
+    "evidence": "PDF physical p.4 Figure1 complete Path-Star row; full figure retained in body",
+    "alt_text": "同一路径星图：冻结嵌入Transformer、学习嵌入Transformer和Node2Vec的原图比较；三维投影是现象入口，不独立证明全局几何。",
+    "caption": "同一路径星图的关联式与几何式记忆比较；三维投影不独立证明全局结构。",
+    "attribution": "arXiv:2510.26745v3；PDF physical p.4 Figure1路径星首行；CC BY4.0；选定原图面板仅栅格化、未重绘。"
+  },
+  "provenance": {
+    "program": "Collection",
+    "catalog": "Remaining user-authorized Paper Collection candidate list",
+    "catalog_record_id": "2510.26745",
+    "catalog_topic": "Physics of AI",
+    "collection_date": "2026-10-03",
+    "sampled_at": "2026-10-03T11:14:02.216748+00:00",
+    "selected_by": "user_authorized_private_editorial_curation",
+    "sampling_seed": "not_applicable_explicit_remaining_candidate",
+    "intake_kind": "existing_collection_candidate",
+    "review_date": "2026-10-03"
+  },
+  "verified_metadata": {
+    "arxiv_id": "2510.26745",
+    "version": "v3",
+    "title": "Deep sequence models tend to memorize geometrically; it is unclear why",
+    "authors": [
+      "Shahriar Noroozizadeh",
+      "Vaishnavh Nagarajan",
+      "Elan Rosenfeld",
+      "Sanjiv Kumar"
+    ],
+    "affiliations": [
+      "Carnegie Mellon University",
+      "Google Research"
+    ],
+    "corresponding_authors": [
+      "Shahriar Noroozizadeh",
+      "Vaishnavh Nagarajan"
+    ],
+    "published": "2025-10-30",
+    "updated": "2026-05-18",
+    "abstract": "Deep sequence models are said to store atomic facts predominantly in the form of associative memory: a brute-force lookup of co-occurring entities. We identify a dramatically different form of storage of atomic facts that we term as geometric memory. Here, the model has synthesized embeddings encoding novel global relationships between all entities, including ones that do not co-occur in training. Such storage is powerful: for instance, we show how it transforms a hard reasoning task involving an $\\ell$-fold composition into an easy-to-learn $1$-step navigation task. From this phenomenon, we extract fundamental aspects of neural embedding geometries that are hard to explain. We argue that the rise of such a geometry, as against a lookup of local associations, cannot be straightforwardly attributed to typical supervisory, architectural, or optimizational pressures. Counterintuitively, a geometry is learned even when it is more complex than the brute-force lookup. Then, by analyzing a connection to Node2Vec, we demonstrate how the geometry stems from a spectral bias that -- in contrast to prevailing theories -- indeed arises naturally despite the lack of various pressures. This analysis also points out to practitioners a visible headroom to make Transformer memory more strongly geometric. We hope the geometric view of parametric memory encourages revisiting the default intuitions that guide researchers in areas like knowledge acquisition, capacity, discovery, and unlearning.",
+    "pdf_pages": 69,
+    "license_url": "http://creativecommons.org/licenses/by/4.0/",
+    "source_pdf_sha256": "53f3f588e0519699b179a35c843dae072615a49d30cd8c5461228e9f2451eed0",
+    "conference_header": "ICML 2026 / PMLR306",
+    "doi": null
+  },
+  "classification": {
+    "category": "AI 理论与机制",
+    "tags": [
+      "Physics of AI",
+      "Geometric Memory",
+      "Node2Vec",
+      "谱偏向"
+    ]
+  }
+}

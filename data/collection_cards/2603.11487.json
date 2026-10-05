@@ -1,0 +1,1279 @@
+{
+  "title_zh": "一个注意力头要“什么都不做”，为什么会盯住BOS？",
+  "subtitle_zh": "触发式平均任务中的必要性证明，以及多头抵消为何越过定理边界",
+  "title_en": "Attention Sinks Are Provably Necessary in Softmax Transformers: Evidence from Trigger-Conditional Tasks",
+  "arxiv_id": "2603.11487",
+  "source_version": "v5",
+  "source_url": "https://arxiv.org/abs/2603.11487v5",
+  "pdf_url": "https://arxiv.org/pdf/2603.11487v5",
+  "source_pdf": "https://arxiv.org/pdf/2603.11487v5",
+  "source_pdf_sha256": "65ebb68042620c292c8efd66730045aeea45880763c10f08e122c25af3c7b99b",
+  "curation_status": "full_text_verified",
+  "card_standard_version": "2.4",
+  "paper_profile": "theory_numerics",
+  "paper_profile_description": "单头attention-only必要性证明、固定深度路径乘积及有界域ReLU对照；多头抵消与无界支持边界单独标明。",
+  "style_reference": "physicist_daily_arxiv",
+  "independent_reproduction": false,
+  "sections": [
+    {
+      "title": "作者信息",
+      "paragraphs": [
+        "Yuval Ran-Milo来自Tel Aviv University。论文研究attention sink的一个功能性解释：某些注意力头只在特殊输入上工作，其他时候应该不向后续计算贡献任何内容，但softmax又必须把总权重分配出去。于是，一个内容稳定、value接近零的BOS位置可能充当“关闭状态”的接收点。[p1–3]",
+        "作者将这个直觉转化为表达能力问题：不问训练过程会不会偏好sink，而问在规定的架构和误差标准下，所有成功实现某个任务的模型是否都必须有sink。这个问题与优化动力学解释互补；必要性若成立，说明仅仅更换优化器不能消除该架构中的约束。"
+      ]
+    },
+    {
+      "title": "摘要",
+      "paragraphs": [
+        "在单层、单头的因果softmax注意力模型中，作者构造一个任务：只有遇到trigger时输出此前非BOS向量的平均，否则输出零。若要求整个输入支持集上的误差任意小，则模型以高概率必须在每一个非trigger位置几乎把全部注意力交给BOS。[Theorem1，p5；附录\\(D\\)]",
+        "对固定深度的单头纯注意力层复合，结论减弱为：在trigger不位于第二个位置的输入上，至少有一层、一个非BOS非trigger位置出现近乎完全的BOS注意力。另一方面，带已知长度缩放的ReLU注意力存在零误差、零BOS权重的显式解。[Theorems2–3，p5–6]",
+        "这是一项有内容的架构必要性结果，但不是“所有softmax Transformer都必须有sink”。正式证明不包含多头之间的有符号抵消、残差、MLP或LayerNorm。本卡还给出多头反例，解释为什么不能把实验中经常出现sink，升级为多头模型的数学必然性。"
+      ]
+    },
+    {
+      "title": "背景",
+      "paragraphs": [
+        "设单头输出为\\(\\sum_k\\alpha_{ik}Vx^{(k)}\\)。softmax保证\\(\\alpha_{ik}>0\\)且\\(\\sum_k\\alpha_{ik}=1\\)。一个未经归一化的门可以让所有权重都为零；softmax不行，它必须把一份总质量放到某些value上。",
+        "不过，“权重和为一”本身还不足以证明sink必需。不同value可以抵消，\\(V\\)也可以学会压缩输入，多个头之间还可以相减。因此真正的证明要排除这些其他实现，而不能只诉诸概率单纯形的图像。本研究依靠的是同一个value映射既要在非trigger位置输出零，又必须在trigger处保留任意变化的内容。[p11–17]",
+        "论文用真实模型中的apostrophe head、active–dormant head作为动机：有触发信息时聚合内容，没有时关注BOS。这些案例说明合成任务有现实参照，但它们不是本文定理已覆盖真实LLM的证明。"
+      ]
+    },
+    {
+      "title": "模型与方法",
+      "paragraphs": [
+        "序列长度\\(L\\ge4\\)，向量维数\\(n\\ge5\\)。每个token的前三个坐标分别标记BOS、trigger、普通token，其余坐标为独立连续随机内容。BOS是\\(e_1\\)且没有随机内容；唯一trigger的位置\\(j\\)从2到\\(L\\)选择。目标为 \\[\\begin{aligned}y^{(i)}&=0,\\quad i\\ne j,\\\\y^{(j)}&=\\frac1{j-1}\\sum_{k=2}^j x^{(k)}.\\end{aligned}\\] 平均不包括BOS，但包括trigger自身；这一点容易被“此前token平均”的文字表述掩盖。[§3.2，p3–4]",
+        "单层模型可将query/key合并为\\(B\\)、value/output合并为\\(V\\)： \\[\\begin{aligned}\\alpha_{ik}&=\\frac{\\exp[(x^{(i)})^{\\mathsf T}Bx^{(k)}]}{\\sum_{\\ell\\le i}\\exp[(x^{(i)})^{\\mathsf T}Bx^{(\\ell)}]},\\\\f(x)^{(i)}&=\\sum_{k\\le i}\\alpha_{ik}Vx^{(k)}.\\end{aligned}\\] 理论没有额外位置编码、偏置输出、残差支路或MLP，三种位置类型由输入指标坐标提供。多层形式是这些单头层的直接复合。[§3.4]",
+        "使用的损失不是训练平均MSE，而是 \\[\\begin{aligned}\\mathcal L(f)&=\\sup_{(x,y)\\in\\operatorname{support}(\\mathcal D)}\\\\&\\quad\\max_i\\lVert y^{(i)}-f(x)^{(i)}\\rVert_2.\\end{aligned}\\] 这要求每一个支持集内的输入都准确，是一个很强的表达能力标准。实验内容来自\\(U(-1,1)\\)，支持集有界，因而这个标准可以非平凡地满足。原文只要求内容密度有界；对无界支持的分布，存在性需要额外检查，详见局限部分。"
+      ]
+    },
+    {
+      "title": "核心结果与证据",
+      "paragraphs": [
+        "第一，BOS的value必须接近零。在位置1，因果注意力只有BOS可看，输出就是\\(Ve_1\\)；该位置的目标为零，因此\\(\\lVert Ve_1\\rVert_2\\le\\eta\\)，其中\\(\\eta=\\mathcal L(f)\\)。这直接找到一个可以接收注意力、又不输出内容的稳定位置。[Lemma1，p15–16]",
+        "第二，若非trigger位置仍给普通内容显著权重，该内容的value就必须被压小。单层模型中，保持query和现有key不变、增加key，只会增大softmax分母。作者因此把长序列缩短到含BOS和一两个普通token的前缀，逐项控制输出： \\[\\begin{aligned}\\lVert\\alpha_{ii}Vx^{(i)}\\rVert_2&\\le2\\eta,\\\\\\lVert\\alpha_{hi}Vx^{(i)}\\rVert_2&\\le4\\eta,\\quad i<h.\\end{aligned}\\] 这里的单调性依赖同一层中query/key保持不变，不能不加证明地搬到一般深层网络。[Lemmas2–5，p16]",
+        "第三，压小value会与trigger任务冲突。假设违反sink条件的输入有固定的正概率，则某个普通token在这些输入上获得至少\\(\\gamma_0>0\\)的权重，于是\\(\\lVert Vx\\rVert_2\\le4\\eta/\\gamma_0\\)。利用独立内容坐标和有界密度，正概率集合中能找到一对token，只在某个内容坐标上相差固定的非零量。[Lemma7，p17]",
+        "把这两个token分别放到位置2，固定位置3为trigger。两个目标平均值应相差它们差值的一半，但模型能输出的差异只剩一条固定trigger value方向和\\(O(\\eta)\\)的小项。投影到该方向的正交补后，trigger项消失；至少有一个内容坐标的目标差异仍不为零，从而产生矛盾。\\(n\\ge5\\)提供了至少两个内容方向，保证不能都藏到同一条trigger value线上。[Theorem4证明，p11–12]",
+        "第四，这种约束也适用于trigger之后。作者先证明非trigger query不能持续给trigger value大权重，再把trigger移动到序列尾部。独立同分布内容保证这种重排保持相应分布；删除trigger key不会减少剩余普通内容权重，因此一个post-trigger反例会变成pre-trigger反例。[Theorem5，p12–14]",
+        "所以单层结论是：对任意\\(\\epsilon,\\delta>0\\)，只要统一误差小于足够小的η，就有 \\[\\begin{aligned}\\Pr\\!\\left[\\forall i\\ne j:\\ \\alpha_{i1}\\ge1-\\epsilon\\right]\\\\\\ge1-\\delta.\\end{aligned}\\] 这不是“训练后平均BOS占比很大”的经验陈述，而是在指定模型类中排除所有低误差、无sink实现的必要性结论。",
+        "第五，固定深度时可用位置2的路径乘积避开复杂深层key变化。将\\(D\\)层纯注意力展开，输出仍可写成 \\[\\begin{aligned}f(x)^{(i)}&=\\sum_{k\\le i}b_{ik}(x)V_{\\mathrm{tot}}x^{(k)},\\\\V_{\\mathrm{tot}}&=V_D\\cdots V_1,\\\\b_{ik}&\\ge0,\\quad\\sum_k b_{ik}=1.\\end{aligned}\\] 尤其 \\[\\begin{aligned}b_{22}&=\\prod_{d=1}^D\\alpha_{22}^{(d)}.\\end{aligned}\\] 如果每一层都不给BOS近乎全部权重，则每一层\\(\\alpha_{22}^{(d)}\\ge\\epsilon\\)，从而\\(b_{22}\\ge\\epsilon^D\\)。非trigger位置2的零输出再次迫使\\(V_{\\mathrm{tot}}\\)压小普通内容，之后重复trigger处的投影矛盾。[附录E、Lemmas8–11]",
+        "这里η必须允许依赖固定的\\(D\\)。证明包含\\(\\epsilon^{-D}\\)，不能把原文简写的量词读成对任意增长深度都存在同一个误差门槛。",
+        "第六，ReLU能真正关闭所有权重。取score \\[\\begin{aligned}s_{ik}&=x_2^{(i)}(x_2^{(k)}+x_3^{(k)}),\\\\\\alpha_{ik}&=\\frac{\\operatorname{ReLU}(s_{ik})}{\\max(i-1,1)},\\quad V=I.\\end{aligned}\\] 非trigger query的\\(x_2^{(i)}=0\\)，全部权重为零；trigger query对所有非BOS前缀token给出\\(\\frac1{j-1}\\)，正好得到目标平均，且BOS权重始终为零。[附录F，p15]",
+        "这个对照显式使用了已知位置数\\(i\\)−1的除法。它证明的是带这种长度缩放的非归一化ReLU实现，而不是未经任何缩放的ReLU自然就能计算平均。"
+      ]
+    },
+    {
+      "title": "有效性与局限",
+      "paragraphs": [
+        "最重要的边界是多头。以下为本卡复核的反例，不是原文实验。设\\(R=\\operatorname{diag}(0,1,\\ldots,1)\\)，用两个头的正、负value输出相减，并让它们的score分别为 \\[\\begin{aligned}s_{ik}^{(A)}&=-T x_2^{(i)}x_1^{(k)},\\\\s_{ik}^{(B)}&=+T x_2^{(i)}x_1^{(k)}.\\end{aligned}\\] 非trigger位置两个头都均匀关注前缀，输出完全抵消；\\(i\\ge2\\)时BOS权重仅\\(1/i\\)，没有近乎完全的非trigger sink。trigger位置的总输出为 \\[\\begin{aligned}\\biggl[\\frac1{j-1+e^{-T}}-\\frac1{j-1+e^T}\\biggr]\\\\\\times\\sum_{k=2}^j x^{(k)},\\end{aligned}\\] 在有界输入上随\\(T\\to\\infty\\)一致趋近所需平均。第二个头会在trigger处看BOS，但正式必要性结论要求的是非trigger位置。这已经阻止了把单头定理原样扩展为多头定理。",
+        "还可以在固定\\(L\\)下用\\(L\\)个头得到有限参数的精确解：选择不同\\(b_h\\in(0,1]\\)，score为\\(\\log(b_h)x_2^{(i)}x_1^{(k)}\\)，用有符号输出系数\\(c_h\\)满足 \\[\\begin{aligned}\\sum_h c_h&=0,\\\\\\sum_h\\frac{c_h}{m+b_h}&=\\frac1m,\\\\m&=1,\\ldots,L-1.\\end{aligned}\\] 该线性系统可解。非trigger均匀输出相消，trigger精确平均，所有非BOS query的每个头都有\\(\\alpha_{i1}\\le\\tfrac12\\)。反例利用的是普通输出投影允许有正负系数，并不推翻论文正式分析的单头模型；它说明架构范围不可省略。",
+        "第二，有界密度不等于有界输入。高斯分布密度有界，但支持集无界。在位置2让内容沿某个方向无限增长，有限单头softmax要么在非trigger处保留导致无限误差的value，要么压掉这个内容方向、进而无法在trigger处输出无限增长的目标。因此高斯内容下，脚注“任意η都有低统一误差解”的存在性说法不成立；必要性蕴含可以成为空命题。读者应优先使用有界支持的非空版本。[脚注10–11；无界支持反例为本卡复核]",
+        "第三，脚注9向一般归一化机制的推广也需要重写。若把softmax所有权重乘以\\(c_0<1\\)，再把value除以\\(c_0\\)，模型函数不变，但单个权重至多\\(c_0\\)，不可能满足原样的\\(\\alpha_{i1}\\ge1-\\epsilon\\)阈值。推广至少需要采用相对总质量的sink定义及相应有界性条件，不能只要求权重和有正下界。",
+        "第四，实验支持的是观察到的实现，不是完整的最坏情况证书。单头实验在1,000个测试样本、固定trigger位置8上展示均值与标准差；多头图主要是单个代表性输入。训练采用\\(n=16\\)、\\(L=16\\)、batch128和Adam，按批次误差小于\\(10^{-2}\\)停止，并未验证整个连续支持集的sup误差。多头与残差实验的成功不自动证明该架构的所有成功解都必需sink。[§4、附录A/C]",
+        "最后，论文没有实测这些定理能够改善真实LLM的量化、长上下文性能或安全性。它们提供的是解释和设计约束，不是直接部署收益。优化过程仍决定具体哪个头、哪一层形成sink，必要性与学习偏好并不互相排斥。"
+      ]
+    },
+    {
+      "title": "复现与资源",
+      "paragraphs": [
+        "论文：[https://arxiv.org/abs/2603.11487v5](https://arxiv.org/abs/2603.11487v5) 全文：[https://arxiv.org/pdf/2603.11487v5](https://arxiv.org/pdf/2603.11487v5) 作者代码：[https://github.com/YuvMilo/sinks-are-provably-necessary](https://github.com/YuvMilo/sinks-are-provably-necessary) 论文许可：CC BY 4.0，[https://creativecommons.org/licenses/by/4.0/](https://creativecommons.org/licenses/by/4.0/)",
+        "本卡实际阅读21页全文和8幅图，复核单头证明及上述适用边界，并检查作者仓库说明；未训练模型或执行独立数值复现。所用[Figure3](https://arxiv.org/pdf/2603.11487v5#page=4)、[Figure4](https://arxiv.org/pdf/2603.11487v5#page=5)、[Figure5](https://arxiv.org/pdf/2603.11487v5#page=6)为本文自身实验图，保留完整panel、坐标、色条及英文图注，裁切只去除图外内容。不将第三方再授权图或原版边缘已经截断的Figure8作为完整原图交付。"
+      ]
+    },
+    {
+      "title": "阅读指南",
+      "paragraphs": [
+        "先看[Figure3](https://arxiv.org/pdf/2603.11487v5#page=4)：单头softmax在非trigger处集中到BOS，ReLU则直接给出零权重。然后读任务定义，特别确认平均包括trigger自身、误差是sup而非MSE。再读Lemmas1–5，理解“BOS value接近零”和“有权重的普通value必须被压小”两步如何连接。",
+        "之后读Theorem4的投影矛盾和多层位置2的乘积公式。这两处是论文真正有价值的证明结构。最后回到多头实验，同时检查本卡的抵消反例：观察到某种实现，与证明不存在其他实现，是两件不同的事。",
+        "对模型设计，这项工作的启发是把“关闭一个计算单元”本身作为可表示性问题。单个凸组合、带符号的多头相加、显式gate，拥有不同的零输出机制。讨论sink是否必要之前，先说明允许哪些机制、在哪个输入域上要求多小的误差，结论才有可检验的含义。"
+      ]
+    }
+  ],
+  "equation_refs": [
+    {
+      "label": "任务、定理或明确标注的边界公式",
+      "latex": "\\sum_k\\alpha_{ik}Vx^{(k)}",
+      "role": "任务、定理或明确标注的边界公式",
+      "symbols": {
+        "L": "序列长度",
+        "n": "输入向量维数",
+        "j": "唯一trigger位置",
+        "D": "固定的注意力层数",
+        "B": "合并query/key映射",
+        "V": "合并value/output映射",
+        "alpha": "单头因果注意力权重",
+        "eta": "整个输入支持集上的最坏误差",
+        "epsilon": "接近完全BOS注意力的容许差",
+        "delta": "概率容许差",
+        "b_ik": "多层展开后的有效路径权重",
+        "V_tot": "按层顺序相乘的value映射",
+        "b_h": "多头反例中的不同BOS缩放参数",
+        "c_h": "多头反例的有符号输出系数"
+      },
+      "evidence": "arXiv:2603.11487v5 正文及附录D–F；多头反例为本卡复核",
+      "interpretation": "单头、固定深度、attention-only与最坏误差条件不可省略；多头抵消反例不属于单头正式定理。"
+    },
+    {
+      "label": "任务、定理或明确标注的边界公式",
+      "latex": "\\sum_k\\alpha_{ik}=1",
+      "role": "任务、定理或明确标注的边界公式",
+      "symbols": {
+        "L": "序列长度",
+        "n": "输入向量维数",
+        "j": "唯一trigger位置",
+        "D": "固定的注意力层数",
+        "B": "合并query/key映射",
+        "V": "合并value/output映射",
+        "alpha": "单头因果注意力权重",
+        "eta": "整个输入支持集上的最坏误差",
+        "epsilon": "接近完全BOS注意力的容许差",
+        "delta": "概率容许差",
+        "b_ik": "多层展开后的有效路径权重",
+        "V_tot": "按层顺序相乘的value映射",
+        "b_h": "多头反例中的不同BOS缩放参数",
+        "c_h": "多头反例的有符号输出系数"
+      },
+      "evidence": "arXiv:2603.11487v5 正文及附录D–F；多头反例为本卡复核",
+      "interpretation": "单头、固定深度、attention-only与最坏误差条件不可省略；多头抵消反例不属于单头正式定理。"
+    },
+    {
+      "label": "任务、定理或明确标注的边界公式",
+      "latex": "\\alpha_{ik}>0",
+      "role": "任务、定理或明确标注的边界公式",
+      "symbols": {
+        "L": "序列长度",
+        "n": "输入向量维数",
+        "j": "唯一trigger位置",
+        "D": "固定的注意力层数",
+        "B": "合并query/key映射",
+        "V": "合并value/output映射",
+        "alpha": "单头因果注意力权重",
+        "eta": "整个输入支持集上的最坏误差",
+        "epsilon": "接近完全BOS注意力的容许差",
+        "delta": "概率容许差",
+        "b_ik": "多层展开后的有效路径权重",
+        "V_tot": "按层顺序相乘的value映射",
+        "b_h": "多头反例中的不同BOS缩放参数",
+        "c_h": "多头反例的有符号输出系数"
+      },
+      "evidence": "arXiv:2603.11487v5 正文及附录D–F；多头反例为本卡复核",
+      "interpretation": "单头、固定深度、attention-only与最坏误差条件不可省略；多头抵消反例不属于单头正式定理。"
+    },
+    {
+      "label": "触发式平均任务",
+      "latex": "\\begin{aligned}y^{(i)}&=0,\\quad i\\ne j,\\\\y^{(j)}&=\\frac1{j-1}\\sum_{k=2}^j x^{(k)}.\\end{aligned}",
+      "role": "触发式平均任务",
+      "symbols": {
+        "L": "序列长度",
+        "n": "输入向量维数",
+        "j": "唯一trigger位置",
+        "D": "固定的注意力层数",
+        "B": "合并query/key映射",
+        "V": "合并value/output映射",
+        "alpha": "单头因果注意力权重",
+        "eta": "整个输入支持集上的最坏误差",
+        "epsilon": "接近完全BOS注意力的容许差",
+        "delta": "概率容许差",
+        "b_ik": "多层展开后的有效路径权重",
+        "V_tot": "按层顺序相乘的value映射",
+        "b_h": "多头反例中的不同BOS缩放参数",
+        "c_h": "多头反例的有符号输出系数"
+      },
+      "evidence": "§3.2 p3–4",
+      "interpretation": "平均不含BOS但包含trigger自身。"
+    },
+    {
+      "label": "任务、定理或明确标注的边界公式",
+      "latex": "L\\ge4",
+      "role": "任务、定理或明确标注的边界公式",
+      "symbols": {
+        "L": "序列长度",
+        "n": "输入向量维数",
+        "j": "唯一trigger位置",
+        "D": "固定的注意力层数",
+        "B": "合并query/key映射",
+        "V": "合并value/output映射",
+        "alpha": "单头因果注意力权重",
+        "eta": "整个输入支持集上的最坏误差",
+        "epsilon": "接近完全BOS注意力的容许差",
+        "delta": "概率容许差",
+        "b_ik": "多层展开后的有效路径权重",
+        "V_tot": "按层顺序相乘的value映射",
+        "b_h": "多头反例中的不同BOS缩放参数",
+        "c_h": "多头反例的有符号输出系数"
+      },
+      "evidence": "arXiv:2603.11487v5 正文及附录D–F；多头反例为本卡复核",
+      "interpretation": "单头、固定深度、attention-only与最坏误差条件不可省略；多头抵消反例不属于单头正式定理。"
+    },
+    {
+      "label": "任务、定理或明确标注的边界公式",
+      "latex": "n\\ge5",
+      "role": "任务、定理或明确标注的边界公式",
+      "symbols": {
+        "L": "序列长度",
+        "n": "输入向量维数",
+        "j": "唯一trigger位置",
+        "D": "固定的注意力层数",
+        "B": "合并query/key映射",
+        "V": "合并value/output映射",
+        "alpha": "单头因果注意力权重",
+        "eta": "整个输入支持集上的最坏误差",
+        "epsilon": "接近完全BOS注意力的容许差",
+        "delta": "概率容许差",
+        "b_ik": "多层展开后的有效路径权重",
+        "V_tot": "按层顺序相乘的value映射",
+        "b_h": "多头反例中的不同BOS缩放参数",
+        "c_h": "多头反例的有符号输出系数"
+      },
+      "evidence": "arXiv:2603.11487v5 正文及附录D–F；多头反例为本卡复核",
+      "interpretation": "单头、固定深度、attention-only与最坏误差条件不可省略；多头抵消反例不属于单头正式定理。"
+    },
+    {
+      "label": "任务、定理或明确标注的边界公式",
+      "latex": "e_1",
+      "role": "任务、定理或明确标注的边界公式",
+      "symbols": {
+        "L": "序列长度",
+        "n": "输入向量维数",
+        "j": "唯一trigger位置",
+        "D": "固定的注意力层数",
+        "B": "合并query/key映射",
+        "V": "合并value/output映射",
+        "alpha": "单头因果注意力权重",
+        "eta": "整个输入支持集上的最坏误差",
+        "epsilon": "接近完全BOS注意力的容许差",
+        "delta": "概率容许差",
+        "b_ik": "多层展开后的有效路径权重",
+        "V_tot": "按层顺序相乘的value映射",
+        "b_h": "多头反例中的不同BOS缩放参数",
+        "c_h": "多头反例的有符号输出系数"
+      },
+      "evidence": "arXiv:2603.11487v5 正文及附录D–F；多头反例为本卡复核",
+      "interpretation": "单头、固定深度、attention-only与最坏误差条件不可省略；多头抵消反例不属于单头正式定理。"
+    },
+    {
+      "label": "单头因果softmax模型",
+      "latex": "\\begin{aligned}\\alpha_{ik}&=\\frac{\\exp[(x^{(i)})^{\\mathsf T}Bx^{(k)}]}{\\sum_{\\ell\\le i}\\exp[(x^{(i)})^{\\mathsf T}Bx^{(\\ell)}]},\\\\f(x)^{(i)}&=\\sum_{k\\le i}\\alpha_{ik}Vx^{(k)}.\\end{aligned}",
+      "role": "单头因果softmax模型",
+      "symbols": {
+        "L": "序列长度",
+        "n": "输入向量维数",
+        "j": "唯一trigger位置",
+        "D": "固定的注意力层数",
+        "B": "合并query/key映射",
+        "V": "合并value/output映射",
+        "alpha": "单头因果注意力权重",
+        "eta": "整个输入支持集上的最坏误差",
+        "epsilon": "接近完全BOS注意力的容许差",
+        "delta": "概率容许差",
+        "b_ik": "多层展开后的有效路径权重",
+        "V_tot": "按层顺序相乘的value映射",
+        "b_h": "多头反例中的不同BOS缩放参数",
+        "c_h": "多头反例的有符号输出系数"
+      },
+      "evidence": "§3.4 p4",
+      "interpretation": "没有额外位置编码、输出偏置、残差或MLP。"
+    },
+    {
+      "label": "支持集最坏误差",
+      "latex": "\\begin{aligned}\\mathcal L(f)&=\\sup_{(x,y)\\in\\operatorname{support}(\\mathcal D)}\\\\&\\quad\\max_i\\lVert y^{(i)}-f(x)^{(i)}\\rVert_2.\\end{aligned}",
+      "role": "支持集最坏误差",
+      "symbols": {
+        "L": "序列长度",
+        "n": "输入向量维数",
+        "j": "唯一trigger位置",
+        "D": "固定的注意力层数",
+        "B": "合并query/key映射",
+        "V": "合并value/output映射",
+        "alpha": "单头因果注意力权重",
+        "eta": "整个输入支持集上的最坏误差",
+        "epsilon": "接近完全BOS注意力的容许差",
+        "delta": "概率容许差",
+        "b_ik": "多层展开后的有效路径权重",
+        "V_tot": "按层顺序相乘的value映射",
+        "b_h": "多头反例中的不同BOS缩放参数",
+        "c_h": "多头反例的有符号输出系数"
+      },
+      "evidence": "§3.2.3 p4",
+      "interpretation": "不是训练平均MSE；无界支持时需要检查非空适用性。"
+    },
+    {
+      "label": "任务、定理或明确标注的边界公式",
+      "latex": "U(-1,1)",
+      "role": "任务、定理或明确标注的边界公式",
+      "symbols": {
+        "L": "序列长度",
+        "n": "输入向量维数",
+        "j": "唯一trigger位置",
+        "D": "固定的注意力层数",
+        "B": "合并query/key映射",
+        "V": "合并value/output映射",
+        "alpha": "单头因果注意力权重",
+        "eta": "整个输入支持集上的最坏误差",
+        "epsilon": "接近完全BOS注意力的容许差",
+        "delta": "概率容许差",
+        "b_ik": "多层展开后的有效路径权重",
+        "V_tot": "按层顺序相乘的value映射",
+        "b_h": "多头反例中的不同BOS缩放参数",
+        "c_h": "多头反例的有符号输出系数"
+      },
+      "evidence": "arXiv:2603.11487v5 正文及附录D–F；多头反例为本卡复核",
+      "interpretation": "单头、固定深度、attention-only与最坏误差条件不可省略；多头抵消反例不属于单头正式定理。"
+    },
+    {
+      "label": "任务、定理或明确标注的边界公式",
+      "latex": "\\lVert Ve_1\\rVert_2\\le\\eta",
+      "role": "任务、定理或明确标注的边界公式",
+      "symbols": {
+        "L": "序列长度",
+        "n": "输入向量维数",
+        "j": "唯一trigger位置",
+        "D": "固定的注意力层数",
+        "B": "合并query/key映射",
+        "V": "合并value/output映射",
+        "alpha": "单头因果注意力权重",
+        "eta": "整个输入支持集上的最坏误差",
+        "epsilon": "接近完全BOS注意力的容许差",
+        "delta": "概率容许差",
+        "b_ik": "多层展开后的有效路径权重",
+        "V_tot": "按层顺序相乘的value映射",
+        "b_h": "多头反例中的不同BOS缩放参数",
+        "c_h": "多头反例的有符号输出系数"
+      },
+      "evidence": "arXiv:2603.11487v5 正文及附录D–F；多头反例为本卡复核",
+      "interpretation": "单头、固定深度、attention-only与最坏误差条件不可省略；多头抵消反例不属于单头正式定理。"
+    },
+    {
+      "label": "任务、定理或明确标注的边界公式",
+      "latex": "\\eta=\\mathcal L(f)",
+      "role": "任务、定理或明确标注的边界公式",
+      "symbols": {
+        "L": "序列长度",
+        "n": "输入向量维数",
+        "j": "唯一trigger位置",
+        "D": "固定的注意力层数",
+        "B": "合并query/key映射",
+        "V": "合并value/output映射",
+        "alpha": "单头因果注意力权重",
+        "eta": "整个输入支持集上的最坏误差",
+        "epsilon": "接近完全BOS注意力的容许差",
+        "delta": "概率容许差",
+        "b_ik": "多层展开后的有效路径权重",
+        "V_tot": "按层顺序相乘的value映射",
+        "b_h": "多头反例中的不同BOS缩放参数",
+        "c_h": "多头反例的有符号输出系数"
+      },
+      "evidence": "arXiv:2603.11487v5 正文及附录D–F；多头反例为本卡复核",
+      "interpretation": "单头、固定深度、attention-only与最坏误差条件不可省略；多头抵消反例不属于单头正式定理。"
+    },
+    {
+      "label": "任务、定理或明确标注的边界公式",
+      "latex": "Ve_1",
+      "role": "任务、定理或明确标注的边界公式",
+      "symbols": {
+        "L": "序列长度",
+        "n": "输入向量维数",
+        "j": "唯一trigger位置",
+        "D": "固定的注意力层数",
+        "B": "合并query/key映射",
+        "V": "合并value/output映射",
+        "alpha": "单头因果注意力权重",
+        "eta": "整个输入支持集上的最坏误差",
+        "epsilon": "接近完全BOS注意力的容许差",
+        "delta": "概率容许差",
+        "b_ik": "多层展开后的有效路径权重",
+        "V_tot": "按层顺序相乘的value映射",
+        "b_h": "多头反例中的不同BOS缩放参数",
+        "c_h": "多头反例的有符号输出系数"
+      },
+      "evidence": "arXiv:2603.11487v5 正文及附录D–F；多头反例为本卡复核",
+      "interpretation": "单头、固定深度、attention-only与最坏误差条件不可省略；多头抵消反例不属于单头正式定理。"
+    },
+    {
+      "label": "单层前缀控制",
+      "latex": "\\begin{aligned}\\lVert\\alpha_{ii}Vx^{(i)}\\rVert_2&\\le2\\eta,\\\\\\lVert\\alpha_{hi}Vx^{(i)}\\rVert_2&\\le4\\eta,\\quad i<h.\\end{aligned}",
+      "role": "单层前缀控制",
+      "symbols": {
+        "L": "序列长度",
+        "n": "输入向量维数",
+        "j": "唯一trigger位置",
+        "D": "固定的注意力层数",
+        "B": "合并query/key映射",
+        "V": "合并value/output映射",
+        "alpha": "单头因果注意力权重",
+        "eta": "整个输入支持集上的最坏误差",
+        "epsilon": "接近完全BOS注意力的容许差",
+        "delta": "概率容许差",
+        "b_ik": "多层展开后的有效路径权重",
+        "V_tot": "按层顺序相乘的value映射",
+        "b_h": "多头反例中的不同BOS缩放参数",
+        "c_h": "多头反例的有符号输出系数"
+      },
+      "evidence": "Lemmas2–5 p16",
+      "interpretation": "单层query/key保持不变，不能无证明搬到深层hidden key。"
+    },
+    {
+      "label": "任务、定理或明确标注的边界公式",
+      "latex": "\\lVert Vx\\rVert_2\\le4\\eta/\\gamma_0",
+      "role": "任务、定理或明确标注的边界公式",
+      "symbols": {
+        "L": "序列长度",
+        "n": "输入向量维数",
+        "j": "唯一trigger位置",
+        "D": "固定的注意力层数",
+        "B": "合并query/key映射",
+        "V": "合并value/output映射",
+        "alpha": "单头因果注意力权重",
+        "eta": "整个输入支持集上的最坏误差",
+        "epsilon": "接近完全BOS注意力的容许差",
+        "delta": "概率容许差",
+        "b_ik": "多层展开后的有效路径权重",
+        "V_tot": "按层顺序相乘的value映射",
+        "b_h": "多头反例中的不同BOS缩放参数",
+        "c_h": "多头反例的有符号输出系数"
+      },
+      "evidence": "arXiv:2603.11487v5 正文及附录D–F；多头反例为本卡复核",
+      "interpretation": "单头、固定深度、attention-only与最坏误差条件不可省略；多头抵消反例不属于单头正式定理。"
+    },
+    {
+      "label": "任务、定理或明确标注的边界公式",
+      "latex": "\\gamma_0>0",
+      "role": "任务、定理或明确标注的边界公式",
+      "symbols": {
+        "L": "序列长度",
+        "n": "输入向量维数",
+        "j": "唯一trigger位置",
+        "D": "固定的注意力层数",
+        "B": "合并query/key映射",
+        "V": "合并value/output映射",
+        "alpha": "单头因果注意力权重",
+        "eta": "整个输入支持集上的最坏误差",
+        "epsilon": "接近完全BOS注意力的容许差",
+        "delta": "概率容许差",
+        "b_ik": "多层展开后的有效路径权重",
+        "V_tot": "按层顺序相乘的value映射",
+        "b_h": "多头反例中的不同BOS缩放参数",
+        "c_h": "多头反例的有符号输出系数"
+      },
+      "evidence": "arXiv:2603.11487v5 正文及附录D–F；多头反例为本卡复核",
+      "interpretation": "单头、固定深度、attention-only与最坏误差条件不可省略；多头抵消反例不属于单头正式定理。"
+    },
+    {
+      "label": "任务、定理或明确标注的边界公式",
+      "latex": "O(\\eta)",
+      "role": "任务、定理或明确标注的边界公式",
+      "symbols": {
+        "L": "序列长度",
+        "n": "输入向量维数",
+        "j": "唯一trigger位置",
+        "D": "固定的注意力层数",
+        "B": "合并query/key映射",
+        "V": "合并value/output映射",
+        "alpha": "单头因果注意力权重",
+        "eta": "整个输入支持集上的最坏误差",
+        "epsilon": "接近完全BOS注意力的容许差",
+        "delta": "概率容许差",
+        "b_ik": "多层展开后的有效路径权重",
+        "V_tot": "按层顺序相乘的value映射",
+        "b_h": "多头反例中的不同BOS缩放参数",
+        "c_h": "多头反例的有符号输出系数"
+      },
+      "evidence": "arXiv:2603.11487v5 正文及附录D–F；多头反例为本卡复核",
+      "interpretation": "单头、固定深度、attention-only与最坏误差条件不可省略；多头抵消反例不属于单头正式定理。"
+    },
+    {
+      "label": "任务、定理或明确标注的边界公式",
+      "latex": "n\\ge5",
+      "role": "任务、定理或明确标注的边界公式",
+      "symbols": {
+        "L": "序列长度",
+        "n": "输入向量维数",
+        "j": "唯一trigger位置",
+        "D": "固定的注意力层数",
+        "B": "合并query/key映射",
+        "V": "合并value/output映射",
+        "alpha": "单头因果注意力权重",
+        "eta": "整个输入支持集上的最坏误差",
+        "epsilon": "接近完全BOS注意力的容许差",
+        "delta": "概率容许差",
+        "b_ik": "多层展开后的有效路径权重",
+        "V_tot": "按层顺序相乘的value映射",
+        "b_h": "多头反例中的不同BOS缩放参数",
+        "c_h": "多头反例的有符号输出系数"
+      },
+      "evidence": "arXiv:2603.11487v5 正文及附录D–F；多头反例为本卡复核",
+      "interpretation": "单头、固定深度、attention-only与最坏误差条件不可省略；多头抵消反例不属于单头正式定理。"
+    },
+    {
+      "label": "单层必要性",
+      "latex": "\\begin{aligned}\\Pr\\!\\left[\\forall i\\ne j:\\ \\alpha_{i1}\\ge1-\\epsilon\\right]\\\\\\ge1-\\delta.\\end{aligned}",
+      "role": "单层必要性",
+      "symbols": {
+        "L": "序列长度",
+        "n": "输入向量维数",
+        "j": "唯一trigger位置",
+        "D": "固定的注意力层数",
+        "B": "合并query/key映射",
+        "V": "合并value/output映射",
+        "alpha": "单头因果注意力权重",
+        "eta": "整个输入支持集上的最坏误差",
+        "epsilon": "接近完全BOS注意力的容许差",
+        "delta": "概率容许差",
+        "b_ik": "多层展开后的有效路径权重",
+        "V_tot": "按层顺序相乘的value映射",
+        "b_h": "多头反例中的不同BOS缩放参数",
+        "c_h": "多头反例的有符号输出系数"
+      },
+      "evidence": "Theorem1 p5；附录D",
+      "interpretation": "任意epsilon、delta下，误差须小于相应的足够小门槛。"
+    },
+    {
+      "label": "任务、定理或明确标注的边界公式",
+      "latex": "\\epsilon,\\delta>0",
+      "role": "任务、定理或明确标注的边界公式",
+      "symbols": {
+        "L": "序列长度",
+        "n": "输入向量维数",
+        "j": "唯一trigger位置",
+        "D": "固定的注意力层数",
+        "B": "合并query/key映射",
+        "V": "合并value/output映射",
+        "alpha": "单头因果注意力权重",
+        "eta": "整个输入支持集上的最坏误差",
+        "epsilon": "接近完全BOS注意力的容许差",
+        "delta": "概率容许差",
+        "b_ik": "多层展开后的有效路径权重",
+        "V_tot": "按层顺序相乘的value映射",
+        "b_h": "多头反例中的不同BOS缩放参数",
+        "c_h": "多头反例的有符号输出系数"
+      },
+      "evidence": "arXiv:2603.11487v5 正文及附录D–F；多头反例为本卡复核",
+      "interpretation": "单头、固定深度、attention-only与最坏误差条件不可省略；多头抵消反例不属于单头正式定理。"
+    },
+    {
+      "label": "多层有效路径权重",
+      "latex": "\\begin{aligned}f(x)^{(i)}&=\\sum_{k\\le i}b_{ik}(x)V_{\\mathrm{tot}}x^{(k)},\\\\V_{\\mathrm{tot}}&=V_D\\cdots V_1,\\\\b_{ik}&\\ge0,\\quad\\sum_k b_{ik}=1.\\end{aligned}",
+      "role": "多层有效路径权重",
+      "symbols": {
+        "L": "序列长度",
+        "n": "输入向量维数",
+        "j": "唯一trigger位置",
+        "D": "固定的注意力层数",
+        "B": "合并query/key映射",
+        "V": "合并value/output映射",
+        "alpha": "单头因果注意力权重",
+        "eta": "整个输入支持集上的最坏误差",
+        "epsilon": "接近完全BOS注意力的容许差",
+        "delta": "概率容许差",
+        "b_ik": "多层展开后的有效路径权重",
+        "V_tot": "按层顺序相乘的value映射",
+        "b_h": "多头反例中的不同BOS缩放参数",
+        "c_h": "多头反例的有符号输出系数"
+      },
+      "evidence": "附录E Lemmas8–11",
+      "interpretation": "b_ik是有效路径权重，区别于多头反例参数b_h。"
+    },
+    {
+      "label": "位置2路径乘积",
+      "latex": "\\begin{aligned}b_{22}&=\\prod_{d=1}^D\\alpha_{22}^{(d)}.\\end{aligned}",
+      "role": "位置2路径乘积",
+      "symbols": {
+        "L": "序列长度",
+        "n": "输入向量维数",
+        "j": "唯一trigger位置",
+        "D": "固定的注意力层数",
+        "B": "合并query/key映射",
+        "V": "合并value/output映射",
+        "alpha": "单头因果注意力权重",
+        "eta": "整个输入支持集上的最坏误差",
+        "epsilon": "接近完全BOS注意力的容许差",
+        "delta": "概率容许差",
+        "b_ik": "多层展开后的有效路径权重",
+        "V_tot": "按层顺序相乘的value映射",
+        "b_h": "多头反例中的不同BOS缩放参数",
+        "c_h": "多头反例的有符号输出系数"
+      },
+      "evidence": "附录E",
+      "interpretation": "固定深度D；每层alpha_22至少epsilon则b_22至少epsilon^D。"
+    },
+    {
+      "label": "任务、定理或明确标注的边界公式",
+      "latex": "\\alpha_{22}^{(d)}\\ge\\epsilon",
+      "role": "任务、定理或明确标注的边界公式",
+      "symbols": {
+        "L": "序列长度",
+        "n": "输入向量维数",
+        "j": "唯一trigger位置",
+        "D": "固定的注意力层数",
+        "B": "合并query/key映射",
+        "V": "合并value/output映射",
+        "alpha": "单头因果注意力权重",
+        "eta": "整个输入支持集上的最坏误差",
+        "epsilon": "接近完全BOS注意力的容许差",
+        "delta": "概率容许差",
+        "b_ik": "多层展开后的有效路径权重",
+        "V_tot": "按层顺序相乘的value映射",
+        "b_h": "多头反例中的不同BOS缩放参数",
+        "c_h": "多头反例的有符号输出系数"
+      },
+      "evidence": "arXiv:2603.11487v5 正文及附录D–F；多头反例为本卡复核",
+      "interpretation": "单头、固定深度、attention-only与最坏误差条件不可省略；多头抵消反例不属于单头正式定理。"
+    },
+    {
+      "label": "任务、定理或明确标注的边界公式",
+      "latex": "b_{22}\\ge\\epsilon^D",
+      "role": "任务、定理或明确标注的边界公式",
+      "symbols": {
+        "L": "序列长度",
+        "n": "输入向量维数",
+        "j": "唯一trigger位置",
+        "D": "固定的注意力层数",
+        "B": "合并query/key映射",
+        "V": "合并value/output映射",
+        "alpha": "单头因果注意力权重",
+        "eta": "整个输入支持集上的最坏误差",
+        "epsilon": "接近完全BOS注意力的容许差",
+        "delta": "概率容许差",
+        "b_ik": "多层展开后的有效路径权重",
+        "V_tot": "按层顺序相乘的value映射",
+        "b_h": "多头反例中的不同BOS缩放参数",
+        "c_h": "多头反例的有符号输出系数"
+      },
+      "evidence": "arXiv:2603.11487v5 正文及附录D–F；多头反例为本卡复核",
+      "interpretation": "单头、固定深度、attention-only与最坏误差条件不可省略；多头抵消反例不属于单头正式定理。"
+    },
+    {
+      "label": "任务、定理或明确标注的边界公式",
+      "latex": "V_{\\mathrm{tot}}",
+      "role": "任务、定理或明确标注的边界公式",
+      "symbols": {
+        "L": "序列长度",
+        "n": "输入向量维数",
+        "j": "唯一trigger位置",
+        "D": "固定的注意力层数",
+        "B": "合并query/key映射",
+        "V": "合并value/output映射",
+        "alpha": "单头因果注意力权重",
+        "eta": "整个输入支持集上的最坏误差",
+        "epsilon": "接近完全BOS注意力的容许差",
+        "delta": "概率容许差",
+        "b_ik": "多层展开后的有效路径权重",
+        "V_tot": "按层顺序相乘的value映射",
+        "b_h": "多头反例中的不同BOS缩放参数",
+        "c_h": "多头反例的有符号输出系数"
+      },
+      "evidence": "arXiv:2603.11487v5 正文及附录D–F；多头反例为本卡复核",
+      "interpretation": "单头、固定深度、attention-only与最坏误差条件不可省略；多头抵消反例不属于单头正式定理。"
+    },
+    {
+      "label": "任务、定理或明确标注的边界公式",
+      "latex": "\\epsilon^{-D}",
+      "role": "任务、定理或明确标注的边界公式",
+      "symbols": {
+        "L": "序列长度",
+        "n": "输入向量维数",
+        "j": "唯一trigger位置",
+        "D": "固定的注意力层数",
+        "B": "合并query/key映射",
+        "V": "合并value/output映射",
+        "alpha": "单头因果注意力权重",
+        "eta": "整个输入支持集上的最坏误差",
+        "epsilon": "接近完全BOS注意力的容许差",
+        "delta": "概率容许差",
+        "b_ik": "多层展开后的有效路径权重",
+        "V_tot": "按层顺序相乘的value映射",
+        "b_h": "多头反例中的不同BOS缩放参数",
+        "c_h": "多头反例的有符号输出系数"
+      },
+      "evidence": "arXiv:2603.11487v5 正文及附录D–F；多头反例为本卡复核",
+      "interpretation": "单头、固定深度、attention-only与最坏误差条件不可省略；多头抵消反例不属于单头正式定理。"
+    },
+    {
+      "label": "带长度缩放的ReLU显式解",
+      "latex": "\\begin{aligned}s_{ik}&=x_2^{(i)}(x_2^{(k)}+x_3^{(k)}),\\\\\\alpha_{ik}&=\\frac{\\operatorname{ReLU}(s_{ik})}{\\max(i-1,1)},\\quad V=I.\\end{aligned}",
+      "role": "带长度缩放的ReLU显式解",
+      "symbols": {
+        "L": "序列长度",
+        "n": "输入向量维数",
+        "j": "唯一trigger位置",
+        "D": "固定的注意力层数",
+        "B": "合并query/key映射",
+        "V": "合并value/output映射",
+        "alpha": "单头因果注意力权重",
+        "eta": "整个输入支持集上的最坏误差",
+        "epsilon": "接近完全BOS注意力的容许差",
+        "delta": "概率容许差",
+        "b_ik": "多层展开后的有效路径权重",
+        "V_tot": "按层顺序相乘的value映射",
+        "b_h": "多头反例中的不同BOS缩放参数",
+        "c_h": "多头反例的有符号输出系数"
+      },
+      "evidence": "附录F p15",
+      "interpretation": "已知长度缩放不可省略。"
+    },
+    {
+      "label": "任务、定理或明确标注的边界公式",
+      "latex": "x_2^{(i)}=0",
+      "role": "任务、定理或明确标注的边界公式",
+      "symbols": {
+        "L": "序列长度",
+        "n": "输入向量维数",
+        "j": "唯一trigger位置",
+        "D": "固定的注意力层数",
+        "B": "合并query/key映射",
+        "V": "合并value/output映射",
+        "alpha": "单头因果注意力权重",
+        "eta": "整个输入支持集上的最坏误差",
+        "epsilon": "接近完全BOS注意力的容许差",
+        "delta": "概率容许差",
+        "b_ik": "多层展开后的有效路径权重",
+        "V_tot": "按层顺序相乘的value映射",
+        "b_h": "多头反例中的不同BOS缩放参数",
+        "c_h": "多头反例的有符号输出系数"
+      },
+      "evidence": "arXiv:2603.11487v5 正文及附录D–F；多头反例为本卡复核",
+      "interpretation": "单头、固定深度、attention-only与最坏误差条件不可省略；多头抵消反例不属于单头正式定理。"
+    },
+    {
+      "label": "任务、定理或明确标注的边界公式",
+      "latex": "\\frac1{j-1}",
+      "role": "任务、定理或明确标注的边界公式",
+      "symbols": {
+        "L": "序列长度",
+        "n": "输入向量维数",
+        "j": "唯一trigger位置",
+        "D": "固定的注意力层数",
+        "B": "合并query/key映射",
+        "V": "合并value/output映射",
+        "alpha": "单头因果注意力权重",
+        "eta": "整个输入支持集上的最坏误差",
+        "epsilon": "接近完全BOS注意力的容许差",
+        "delta": "概率容许差",
+        "b_ik": "多层展开后的有效路径权重",
+        "V_tot": "按层顺序相乘的value映射",
+        "b_h": "多头反例中的不同BOS缩放参数",
+        "c_h": "多头反例的有符号输出系数"
+      },
+      "evidence": "arXiv:2603.11487v5 正文及附录D–F；多头反例为本卡复核",
+      "interpretation": "单头、固定深度、attention-only与最坏误差条件不可省略；多头抵消反例不属于单头正式定理。"
+    },
+    {
+      "label": "两头有符号抵消反例",
+      "latex": "\\begin{aligned}s_{ik}^{(A)}&=-T x_2^{(i)}x_1^{(k)},\\\\s_{ik}^{(B)}&=+T x_2^{(i)}x_1^{(k)}.\\end{aligned}",
+      "role": "两头有符号抵消反例",
+      "symbols": {
+        "L": "序列长度",
+        "n": "输入向量维数",
+        "j": "唯一trigger位置",
+        "D": "固定的注意力层数",
+        "B": "合并query/key映射",
+        "V": "合并value/output映射",
+        "alpha": "单头因果注意力权重",
+        "eta": "整个输入支持集上的最坏误差",
+        "epsilon": "接近完全BOS注意力的容许差",
+        "delta": "概率容许差",
+        "b_ik": "多层展开后的有效路径权重",
+        "V_tot": "按层顺序相乘的value映射",
+        "b_h": "多头反例中的不同BOS缩放参数",
+        "c_h": "多头反例的有符号输出系数"
+      },
+      "evidence": "本卡复核，非原文实验",
+      "interpretation": "非trigger两头uniform输出完全抵消。"
+    },
+    {
+      "label": "两头trigger输出",
+      "latex": "\\begin{aligned}\\biggl[\\frac1{j-1+e^{-T}}-\\frac1{j-1+e^T}\\biggr]\\\\\\times\\sum_{k=2}^j x^{(k)},\\end{aligned}",
+      "role": "两头trigger输出",
+      "symbols": {
+        "L": "序列长度",
+        "n": "输入向量维数",
+        "j": "唯一trigger位置",
+        "D": "固定的注意力层数",
+        "B": "合并query/key映射",
+        "V": "合并value/output映射",
+        "alpha": "单头因果注意力权重",
+        "eta": "整个输入支持集上的最坏误差",
+        "epsilon": "接近完全BOS注意力的容许差",
+        "delta": "概率容许差",
+        "b_ik": "多层展开后的有效路径权重",
+        "V_tot": "按层顺序相乘的value映射",
+        "b_h": "多头反例中的不同BOS缩放参数",
+        "c_h": "多头反例的有符号输出系数"
+      },
+      "evidence": "本卡复核，非原文实验",
+      "interpretation": "在有界输入上随T趋于无穷一致趋近平均。"
+    },
+    {
+      "label": "任务、定理或明确标注的边界公式",
+      "latex": "R=\\operatorname{diag}(0,1,\\ldots,1)",
+      "role": "任务、定理或明确标注的边界公式",
+      "symbols": {
+        "L": "序列长度",
+        "n": "输入向量维数",
+        "j": "唯一trigger位置",
+        "D": "固定的注意力层数",
+        "B": "合并query/key映射",
+        "V": "合并value/output映射",
+        "alpha": "单头因果注意力权重",
+        "eta": "整个输入支持集上的最坏误差",
+        "epsilon": "接近完全BOS注意力的容许差",
+        "delta": "概率容许差",
+        "b_ik": "多层展开后的有效路径权重",
+        "V_tot": "按层顺序相乘的value映射",
+        "b_h": "多头反例中的不同BOS缩放参数",
+        "c_h": "多头反例的有符号输出系数"
+      },
+      "evidence": "arXiv:2603.11487v5 正文及附录D–F；多头反例为本卡复核",
+      "interpretation": "单头、固定深度、attention-only与最坏误差条件不可省略；多头抵消反例不属于单头正式定理。"
+    },
+    {
+      "label": "任务、定理或明确标注的边界公式",
+      "latex": "i\\ge2",
+      "role": "任务、定理或明确标注的边界公式",
+      "symbols": {
+        "L": "序列长度",
+        "n": "输入向量维数",
+        "j": "唯一trigger位置",
+        "D": "固定的注意力层数",
+        "B": "合并query/key映射",
+        "V": "合并value/output映射",
+        "alpha": "单头因果注意力权重",
+        "eta": "整个输入支持集上的最坏误差",
+        "epsilon": "接近完全BOS注意力的容许差",
+        "delta": "概率容许差",
+        "b_ik": "多层展开后的有效路径权重",
+        "V_tot": "按层顺序相乘的value映射",
+        "b_h": "多头反例中的不同BOS缩放参数",
+        "c_h": "多头反例的有符号输出系数"
+      },
+      "evidence": "arXiv:2603.11487v5 正文及附录D–F；多头反例为本卡复核",
+      "interpretation": "单头、固定深度、attention-only与最坏误差条件不可省略；多头抵消反例不属于单头正式定理。"
+    },
+    {
+      "label": "任务、定理或明确标注的边界公式",
+      "latex": "1/i",
+      "role": "任务、定理或明确标注的边界公式",
+      "symbols": {
+        "L": "序列长度",
+        "n": "输入向量维数",
+        "j": "唯一trigger位置",
+        "D": "固定的注意力层数",
+        "B": "合并query/key映射",
+        "V": "合并value/output映射",
+        "alpha": "单头因果注意力权重",
+        "eta": "整个输入支持集上的最坏误差",
+        "epsilon": "接近完全BOS注意力的容许差",
+        "delta": "概率容许差",
+        "b_ik": "多层展开后的有效路径权重",
+        "V_tot": "按层顺序相乘的value映射",
+        "b_h": "多头反例中的不同BOS缩放参数",
+        "c_h": "多头反例的有符号输出系数"
+      },
+      "evidence": "arXiv:2603.11487v5 正文及附录D–F；多头反例为本卡复核",
+      "interpretation": "单头、固定深度、attention-only与最坏误差条件不可省略；多头抵消反例不属于单头正式定理。"
+    },
+    {
+      "label": "任务、定理或明确标注的边界公式",
+      "latex": "T\\to\\infty",
+      "role": "任务、定理或明确标注的边界公式",
+      "symbols": {
+        "L": "序列长度",
+        "n": "输入向量维数",
+        "j": "唯一trigger位置",
+        "D": "固定的注意力层数",
+        "B": "合并query/key映射",
+        "V": "合并value/output映射",
+        "alpha": "单头因果注意力权重",
+        "eta": "整个输入支持集上的最坏误差",
+        "epsilon": "接近完全BOS注意力的容许差",
+        "delta": "概率容许差",
+        "b_ik": "多层展开后的有效路径权重",
+        "V_tot": "按层顺序相乘的value映射",
+        "b_h": "多头反例中的不同BOS缩放参数",
+        "c_h": "多头反例的有符号输出系数"
+      },
+      "evidence": "arXiv:2603.11487v5 正文及附录D–F；多头反例为本卡复核",
+      "interpretation": "单头、固定深度、attention-only与最坏误差条件不可省略；多头抵消反例不属于单头正式定理。"
+    },
+    {
+      "label": "固定L的多头精确解",
+      "latex": "\\begin{aligned}\\sum_h c_h&=0,\\\\\\sum_h\\frac{c_h}{m+b_h}&=\\frac1m,\\\\m&=1,\\ldots,L-1.\\end{aligned}",
+      "role": "固定L的多头精确解",
+      "symbols": {
+        "L": "序列长度",
+        "n": "输入向量维数",
+        "j": "唯一trigger位置",
+        "D": "固定的注意力层数",
+        "B": "合并query/key映射",
+        "V": "合并value/output映射",
+        "alpha": "单头因果注意力权重",
+        "eta": "整个输入支持集上的最坏误差",
+        "epsilon": "接近完全BOS注意力的容许差",
+        "delta": "概率容许差",
+        "b_ik": "多层展开后的有效路径权重",
+        "V_tot": "按层顺序相乘的value映射",
+        "b_h": "多头反例中的不同BOS缩放参数",
+        "c_h": "多头反例的有符号输出系数"
+      },
+      "evidence": "本卡复核，非原文实验",
+      "interpretation": "有符号c_h不可解释为概率权重；不能推广单头必要性。"
+    },
+    {
+      "label": "任务、定理或明确标注的边界公式",
+      "latex": "\\log(b_h)x_2^{(i)}x_1^{(k)}",
+      "role": "任务、定理或明确标注的边界公式",
+      "symbols": {
+        "L": "序列长度",
+        "n": "输入向量维数",
+        "j": "唯一trigger位置",
+        "D": "固定的注意力层数",
+        "B": "合并query/key映射",
+        "V": "合并value/output映射",
+        "alpha": "单头因果注意力权重",
+        "eta": "整个输入支持集上的最坏误差",
+        "epsilon": "接近完全BOS注意力的容许差",
+        "delta": "概率容许差",
+        "b_ik": "多层展开后的有效路径权重",
+        "V_tot": "按层顺序相乘的value映射",
+        "b_h": "多头反例中的不同BOS缩放参数",
+        "c_h": "多头反例的有符号输出系数"
+      },
+      "evidence": "arXiv:2603.11487v5 正文及附录D–F；多头反例为本卡复核",
+      "interpretation": "单头、固定深度、attention-only与最坏误差条件不可省略；多头抵消反例不属于单头正式定理。"
+    },
+    {
+      "label": "任务、定理或明确标注的边界公式",
+      "latex": "b_h\\in(0,1]",
+      "role": "任务、定理或明确标注的边界公式",
+      "symbols": {
+        "L": "序列长度",
+        "n": "输入向量维数",
+        "j": "唯一trigger位置",
+        "D": "固定的注意力层数",
+        "B": "合并query/key映射",
+        "V": "合并value/output映射",
+        "alpha": "单头因果注意力权重",
+        "eta": "整个输入支持集上的最坏误差",
+        "epsilon": "接近完全BOS注意力的容许差",
+        "delta": "概率容许差",
+        "b_ik": "多层展开后的有效路径权重",
+        "V_tot": "按层顺序相乘的value映射",
+        "b_h": "多头反例中的不同BOS缩放参数",
+        "c_h": "多头反例的有符号输出系数"
+      },
+      "evidence": "arXiv:2603.11487v5 正文及附录D–F；多头反例为本卡复核",
+      "interpretation": "单头、固定深度、attention-only与最坏误差条件不可省略；多头抵消反例不属于单头正式定理。"
+    },
+    {
+      "label": "任务、定理或明确标注的边界公式",
+      "latex": "\\alpha_{i1}\\le\\tfrac12",
+      "role": "任务、定理或明确标注的边界公式",
+      "symbols": {
+        "L": "序列长度",
+        "n": "输入向量维数",
+        "j": "唯一trigger位置",
+        "D": "固定的注意力层数",
+        "B": "合并query/key映射",
+        "V": "合并value/output映射",
+        "alpha": "单头因果注意力权重",
+        "eta": "整个输入支持集上的最坏误差",
+        "epsilon": "接近完全BOS注意力的容许差",
+        "delta": "概率容许差",
+        "b_ik": "多层展开后的有效路径权重",
+        "V_tot": "按层顺序相乘的value映射",
+        "b_h": "多头反例中的不同BOS缩放参数",
+        "c_h": "多头反例的有符号输出系数"
+      },
+      "evidence": "arXiv:2603.11487v5 正文及附录D–F；多头反例为本卡复核",
+      "interpretation": "单头、固定深度、attention-only与最坏误差条件不可省略；多头抵消反例不属于单头正式定理。"
+    },
+    {
+      "label": "任务、定理或明确标注的边界公式",
+      "latex": "c_h",
+      "role": "任务、定理或明确标注的边界公式",
+      "symbols": {
+        "L": "序列长度",
+        "n": "输入向量维数",
+        "j": "唯一trigger位置",
+        "D": "固定的注意力层数",
+        "B": "合并query/key映射",
+        "V": "合并value/output映射",
+        "alpha": "单头因果注意力权重",
+        "eta": "整个输入支持集上的最坏误差",
+        "epsilon": "接近完全BOS注意力的容许差",
+        "delta": "概率容许差",
+        "b_ik": "多层展开后的有效路径权重",
+        "V_tot": "按层顺序相乘的value映射",
+        "b_h": "多头反例中的不同BOS缩放参数",
+        "c_h": "多头反例的有符号输出系数"
+      },
+      "evidence": "arXiv:2603.11487v5 正文及附录D–F；多头反例为本卡复核",
+      "interpretation": "单头、固定深度、attention-only与最坏误差条件不可省略；多头抵消反例不属于单头正式定理。"
+    },
+    {
+      "label": "任务、定理或明确标注的边界公式",
+      "latex": "\\alpha_{i1}\\ge1-\\epsilon",
+      "role": "任务、定理或明确标注的边界公式",
+      "symbols": {
+        "L": "序列长度",
+        "n": "输入向量维数",
+        "j": "唯一trigger位置",
+        "D": "固定的注意力层数",
+        "B": "合并query/key映射",
+        "V": "合并value/output映射",
+        "alpha": "单头因果注意力权重",
+        "eta": "整个输入支持集上的最坏误差",
+        "epsilon": "接近完全BOS注意力的容许差",
+        "delta": "概率容许差",
+        "b_ik": "多层展开后的有效路径权重",
+        "V_tot": "按层顺序相乘的value映射",
+        "b_h": "多头反例中的不同BOS缩放参数",
+        "c_h": "多头反例的有符号输出系数"
+      },
+      "evidence": "arXiv:2603.11487v5 正文及附录D–F；多头反例为本卡复核",
+      "interpretation": "单头、固定深度、attention-only与最坏误差条件不可省略；多头抵消反例不属于单头正式定理。"
+    },
+    {
+      "label": "任务、定理或明确标注的边界公式",
+      "latex": "c_0<1",
+      "role": "任务、定理或明确标注的边界公式",
+      "symbols": {
+        "L": "序列长度",
+        "n": "输入向量维数",
+        "j": "唯一trigger位置",
+        "D": "固定的注意力层数",
+        "B": "合并query/key映射",
+        "V": "合并value/output映射",
+        "alpha": "单头因果注意力权重",
+        "eta": "整个输入支持集上的最坏误差",
+        "epsilon": "接近完全BOS注意力的容许差",
+        "delta": "概率容许差",
+        "b_ik": "多层展开后的有效路径权重",
+        "V_tot": "按层顺序相乘的value映射",
+        "b_h": "多头反例中的不同BOS缩放参数",
+        "c_h": "多头反例的有符号输出系数"
+      },
+      "evidence": "arXiv:2603.11487v5 正文及附录D–F；多头反例为本卡复核",
+      "interpretation": "单头、固定深度、attention-only与最坏误差条件不可省略；多头抵消反例不属于单头正式定理。"
+    },
+    {
+      "label": "任务、定理或明确标注的边界公式",
+      "latex": "c_0",
+      "role": "任务、定理或明确标注的边界公式",
+      "symbols": {
+        "L": "序列长度",
+        "n": "输入向量维数",
+        "j": "唯一trigger位置",
+        "D": "固定的注意力层数",
+        "B": "合并query/key映射",
+        "V": "合并value/output映射",
+        "alpha": "单头因果注意力权重",
+        "eta": "整个输入支持集上的最坏误差",
+        "epsilon": "接近完全BOS注意力的容许差",
+        "delta": "概率容许差",
+        "b_ik": "多层展开后的有效路径权重",
+        "V_tot": "按层顺序相乘的value映射",
+        "b_h": "多头反例中的不同BOS缩放参数",
+        "c_h": "多头反例的有符号输出系数"
+      },
+      "evidence": "arXiv:2603.11487v5 正文及附录D–F；多头反例为本卡复核",
+      "interpretation": "单头、固定深度、attention-only与最坏误差条件不可省略；多头抵消反例不属于单头正式定理。"
+    },
+    {
+      "label": "任务、定理或明确标注的边界公式",
+      "latex": "10^{-2}",
+      "role": "任务、定理或明确标注的边界公式",
+      "symbols": {
+        "L": "序列长度",
+        "n": "输入向量维数",
+        "j": "唯一trigger位置",
+        "D": "固定的注意力层数",
+        "B": "合并query/key映射",
+        "V": "合并value/output映射",
+        "alpha": "单头因果注意力权重",
+        "eta": "整个输入支持集上的最坏误差",
+        "epsilon": "接近完全BOS注意力的容许差",
+        "delta": "概率容许差",
+        "b_ik": "多层展开后的有效路径权重",
+        "V_tot": "按层顺序相乘的value映射",
+        "b_h": "多头反例中的不同BOS缩放参数",
+        "c_h": "多头反例的有符号输出系数"
+      },
+      "evidence": "arXiv:2603.11487v5 正文及附录D–F；多头反例为本卡复核",
+      "interpretation": "单头、固定深度、attention-only与最坏误差条件不可省略；多头抵消反例不属于单头正式定理。"
+    },
+    {
+      "label": "任务、定理或明确标注的边界公式",
+      "latex": "n=16",
+      "role": "任务、定理或明确标注的边界公式",
+      "symbols": {
+        "L": "序列长度",
+        "n": "输入向量维数",
+        "j": "唯一trigger位置",
+        "D": "固定的注意力层数",
+        "B": "合并query/key映射",
+        "V": "合并value/output映射",
+        "alpha": "单头因果注意力权重",
+        "eta": "整个输入支持集上的最坏误差",
+        "epsilon": "接近完全BOS注意力的容许差",
+        "delta": "概率容许差",
+        "b_ik": "多层展开后的有效路径权重",
+        "V_tot": "按层顺序相乘的value映射",
+        "b_h": "多头反例中的不同BOS缩放参数",
+        "c_h": "多头反例的有符号输出系数"
+      },
+      "evidence": "arXiv:2603.11487v5 正文及附录D–F；多头反例为本卡复核",
+      "interpretation": "单头、固定深度、attention-only与最坏误差条件不可省略；多头抵消反例不属于单头正式定理。"
+    },
+    {
+      "label": "任务、定理或明确标注的边界公式",
+      "latex": "L=16",
+      "role": "任务、定理或明确标注的边界公式",
+      "symbols": {
+        "L": "序列长度",
+        "n": "输入向量维数",
+        "j": "唯一trigger位置",
+        "D": "固定的注意力层数",
+        "B": "合并query/key映射",
+        "V": "合并value/output映射",
+        "alpha": "单头因果注意力权重",
+        "eta": "整个输入支持集上的最坏误差",
+        "epsilon": "接近完全BOS注意力的容许差",
+        "delta": "概率容许差",
+        "b_ik": "多层展开后的有效路径权重",
+        "V_tot": "按层顺序相乘的value映射",
+        "b_h": "多头反例中的不同BOS缩放参数",
+        "c_h": "多头反例的有符号输出系数"
+      },
+      "evidence": "arXiv:2603.11487v5 正文及附录D–F；多头反例为本卡复核",
+      "interpretation": "单头、固定深度、attention-only与最坏误差条件不可省略；多头抵消反例不属于单头正式定理。"
+    }
+  ],
+  "figure_refs": [
+    {
+      "label": "Figure 3",
+      "asset_path": "assets/collection-figures/2603.11487/fig3.png",
+      "section": "核心结果与证据",
+      "role": "单头softmax与ReLU对照",
+      "evidence": "https://arxiv.org/pdf/2603.11487v5#page=4; Figure 3, physical p4",
+      "alt_text": "完整四panel、坐标、色条与英文原图注；作者v5原版实验图。",
+      "caption": "完整四panel、坐标、色条与英文原图注；作者v5原版实验图。 Yuval Ran-Milo；arXiv:2603.11487v5；Figure 3；PDF物理p4；CC BY 4.0；原PDF栅格化，仅裁去图外内容，未重绘或增强。",
+      "interpretation": "单头实验在1000个样本、固定trigger位置8上展示均值和标准差；并非连续支持集sup误差证书。",
+      "license": "CC BY4.0",
+      "license_url": "https://creativecommons.org/licenses/by/4.0/"
+    },
+    {
+      "label": "Figure 4",
+      "asset_path": "assets/collection-figures/2603.11487/fig4.png",
+      "section": "核心结果与证据",
+      "role": "多层多头softmax观察",
+      "evidence": "https://arxiv.org/pdf/2603.11487v5#page=5; Figure 4, physical p5",
+      "alt_text": "完整四panel、坐标、色条与英文原图注；作者v5原版实验图。",
+      "caption": "完整四panel、坐标、色条与英文原图注；作者v5原版实验图。 Yuval Ran-Milo；arXiv:2603.11487v5；Figure 4；PDF物理p5；CC BY 4.0；原PDF栅格化，仅裁去图外内容，未重绘或增强。",
+      "interpretation": "两层两头softmax的代表性输入；观察到sink不能推出所有多头成功解都必需sink。",
+      "license": "CC BY4.0",
+      "license_url": "https://creativecommons.org/licenses/by/4.0/"
+    },
+    {
+      "label": "Figure 5",
+      "asset_path": "assets/collection-figures/2603.11487/fig5.png",
+      "section": "核心结果与证据",
+      "role": "多层多头ReLU对照",
+      "evidence": "https://arxiv.org/pdf/2603.11487v5#page=6; Figure 5, physical p6",
+      "alt_text": "完整四panel、坐标、色条与英文原图注；作者v5原版实验图。",
+      "caption": "完整四panel、坐标、色条与英文原图注；作者v5原版实验图。 Yuval Ran-Milo；arXiv:2603.11487v5；Figure 5；PDF物理p6；CC BY 4.0；原PDF栅格化，仅裁去图外内容，未重绘或增强。",
+      "interpretation": "两层两头ReLU的代表性输入，采用论文规定的长度缩放；不能省略缩放条件。",
+      "license": "CC BY4.0",
+      "license_url": "https://creativecommons.org/licenses/by/4.0/"
+    }
+  ],
+  "source_figure_links": [
+    {
+      "label": "Figure 3",
+      "physical_page": 4,
+      "url": "https://arxiv.org/pdf/2603.11487v5#page=4"
+    },
+    {
+      "label": "Figure 4",
+      "physical_page": 5,
+      "url": "https://arxiv.org/pdf/2603.11487v5#page=5"
+    },
+    {
+      "label": "Figure 5",
+      "physical_page": 6,
+      "url": "https://arxiv.org/pdf/2603.11487v5#page=6"
+    }
+  ],
+  "evidence_refs": [
+    {
+      "section": "作者信息",
+      "evidence": "PDF p1；arXiv v5官方元数据"
+    },
+    {
+      "section": "模型与方法",
+      "evidence": "§3 pp3–4；平均包括trigger自身；最坏支持集sup误差；单头无residual/MLP/LayerNorm"
+    },
+    {
+      "section": "核心结果与证据",
+      "evidence": "Theorems1–3 pp5–6；附录D–F pp11–17；固定D的位置2路径乘积；Figure3/p4、Figure4/p5、Figure5/p6"
+    },
+    {
+      "section": "有效性与局限",
+      "evidence": "脚注9–11；有符号多头抵消与无界支持反例为本卡复核，区别于原文；实验不是sup误差证书"
+    },
+    {
+      "section": "复现与资源",
+      "evidence": "作者GitHub README及全文v5；CC BY4.0原图；未执行独立数值复现"
+    },
+    {
+      "section": "fulltext_reading_boundary",
+      "evidence": "All 21 physical pages and 8 figures read including appendices and references; formal single-head theorem scope and card-reviewed counterexamples distinguished; no independent reproduction performed."
+    }
+  ],
+  "cover": {
+    "mode": "source_figure",
+    "asset_path": "assets/collection-figures/2603.11487/fig3.png",
+    "label": "Figure 3",
+    "visual_type": "comparison",
+    "selection_rationale": "完整四panel比较单头softmax与ReLU的均值及标准差，保留色条、坐标和英文图注。",
+    "evidence": "https://arxiv.org/pdf/2603.11487v5#page=4; Figure 3, physical p4",
+    "alt_text": "完整四panel、坐标、色条与英文原图注；作者v5原版实验图。",
+    "caption": "完整四panel、坐标、色条与英文原图注；作者v5原版实验图。",
+    "attribution": "arXiv:2603.11487v5；Figure3 PDF p4；CC BY 4.0 https://creativecommons.org/licenses/by/4.0/；作者版本，完整四panel及英文图注。"
+  },
+  "provenance": {
+    "program": "Collection",
+    "catalog": "Paper Collection",
+    "catalog_record_id": "2603.11487",
+    "catalog_topic": "Physics of AI",
+    "collection_date": "2026-10-03",
+    "sampled_at": "2026-10-03T19:03:01.516805+00:00",
+    "selected_by": "editorial_curation",
+    "sampling_seed": "not_applicable"
+  },
+  "verified_metadata": {
+    "arxiv_id": "2603.11487",
+    "version": "v5",
+    "title": "Attention Sinks Are Provably Necessary in Softmax Transformers: Evidence from Trigger-Conditional Tasks",
+    "authors": [
+      "Yuval Ran-Milo"
+    ],
+    "affiliations": [
+      "Tel Aviv University"
+    ],
+    "published": "2026-04-17",
+    "abstract": "Transformers often display an attention sink: probability mass concentrates on a fixed, content-agnostic position. Are sinks a byproduct of the optimization/training regime? Or are they sometimes functionally necessary in softmax Transformers? We prove that, in some settings, it is the latter: computing a simple trigger-conditional behavior necessarily induces a sink in softmax self-attention models. Our results formalize a familiar intuition: normalization over a probability simplex must force attention to collapse onto a stable anchor to realize a default state (e.g., when the model needs to ignore the input). We instantiate this with a concrete task: when a designated trigger token appears, the model must return the average of all preceding token representations, and otherwise output zero, a task which mirrors the functionality of attention heads in the wild (Barbero et al., 2025; Guo et al., 2024). We also prove that non-normalized ReLU attention can solve the same task without any sink, confirming that the normalization constraint is the fundamental driver of sink behavior. Experiments validate our predictions and demonstrate they extend beyond the theoretically analyzed setting: softmax models develop strong sinks while ReLU attention eliminates them in both single-head and multi-head variants.",
+    "pdf_pages": 21,
+    "license_url": "https://creativecommons.org/licenses/by/4.0/",
+    "source_pdf_sha256": "65ebb68042620c292c8efd66730045aeea45880763c10f08e122c25af3c7b99b"
+  },
+  "classification": {
+    "category": "AI理论",
+    "tags": [
+      "Physics of AI",
+      "Attention Sink",
+      "Softmax",
+      "Single Head",
+      "Expressivity"
+    ]
+  }
+}
