@@ -41,7 +41,8 @@ class ReaderPresentationTests(unittest.TestCase):
         collection = {**base, "program": "Collection", "detail_path": "collection-papers/1234.56789/", "paper_image_path": "assets/test.webp", "collection_date": "2026-08-01"}
         result = merge_reader_lists([daily], [collection])
         self.assertEqual(len(result), 1)
-        self.assertEqual(result[0]["grade"], "S")
+        # The rating must follow the existing selected detail, just as its cover does.
+        self.assertEqual(result[0]["grade"], "")
         self.assertEqual(result[0]["collection_date"], "2026-09-01")
         self.assertEqual(result[0]["source_records"][1]["grade"], "")
         self.assertEqual(result[0]["favorite_keys"], ["daily:1234.56789", "collection:1234.56789"])

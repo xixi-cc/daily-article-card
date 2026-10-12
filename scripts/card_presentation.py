@@ -137,12 +137,6 @@ def reader_metadata(card: dict, identifier: str = "") -> dict:
 def presentation_fields(card: dict, record: dict) -> dict:
     metadata = card.get("verified_metadata") or {}
     provenance = card.get("provenance") or {}
-    selection = card.get("selection_record") or {}
-    grade = selection.get("grade", "")
-    # Private Collection editorial grades are independently attributed.
-    if grade not in ("S", "A", "B"):
-        assessment = card.get("editorial_assessment") or {}
-        grade = assessment.get("grade", "") if isinstance(assessment, dict) else ""
     bibliography = reader_metadata(card, str(record.get("arxiv_id") or record.get("card_id") or ""))
     published = date_value(metadata.get("publication_date") or metadata.get("original_publication_date") or bibliography["citation_publication_year"] or metadata.get("published"))
     collected = date_value(record.get("date")) if record.get("program") == "Daily" else date_value(provenance.get("collection_date") or provenance.get("sampled_at"))
@@ -151,7 +145,8 @@ def presentation_fields(card: dict, record: dict) -> dict:
         "work_id": str(metadata.get("arxiv_id") or record.get("arxiv_id") or record.get("card_id") or ""),
         "published": published,
         "collection_date": collected if len(collected) == 10 else "",
-        "grade": grade if grade in ("S", "A", "B") else "",
+        # Formal ratings are attached from the controller's separate dataset.
+        "grade": "",
         "preview_text": chinese_preview(card, str(record.get("preview_text", ""))),
     }
 
@@ -177,7 +172,7 @@ def merge_reader_lists(daily: list[dict], collection: list[dict]) -> list[dict]:
             if better_image and item.get("paper_image_path"):
                 # Open the matching reviewed detail/cover, not a different
                 # version's text-only page behind the image used in the list.
-                for field in ("paper_image_path", "paper_image_full_path", "cover_mode", "cover_alt_text", "detail_path", "cover_path", "title", "title_zh", "preview_text", "reader_cover_revision", "authors", "reading_minutes", "section_count"):
+                for field in ("paper_image_path", "paper_image_full_path", "cover_mode", "cover_alt_text", "detail_path", "cover_path", "title", "title_zh", "preview_text", "reader_cover_revision", "authors", "reading_minutes", "section_count", "grade", "formal_grade"):
                     current[field] = item.get(field, "")
             if not current.get("published"):
                 current["published"] = item.get("published", "")

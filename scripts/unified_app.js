@@ -764,12 +764,27 @@ if (!window.PaperImageViewer) {
     const meta = document.createElement('div');
     meta.className = 'feed-card-meta';
 
-    [...new Set([...(item.tags || []).slice(0, 3), item.grade].filter(Boolean))].forEach(value => {
+    [...new Set((item.tags || []).slice(0, 3))].forEach(value => {
       const tag = document.createElement('span');
       tag.className = 'feed-chip feed-chip-tag';
       tag.textContent = value;
       meta.appendChild(tag);
     });
+    const grade = document.createElement('span');
+    grade.className = 'feed-chip feed-chip-grade';
+    grade.textContent = item.formal_grade
+      ? `正式评级 ${item.formal_grade.grade} · ${item.formal_grade.score} / 40`
+      : '未评级';
+    meta.appendChild(grade);
+    if(item.formal_grade){
+      const source = document.createElement('span');
+      source.className = 'feed-chip feed-chip-grade-source';
+      source.textContent = `原评审：${item.formal_grade.source_program} · ${item.formal_grade.source_version}`;
+      if(item.program === 'Daily' && item.formal_grade.source_program === 'Collection'){
+        source.textContent += '（复用评审；不代表 Daily 准入）';
+      }
+      meta.appendChild(source);
+    }
 
     const bodyTitle = document.createElement('div');
     bodyTitle.className = 'feed-card-title';
@@ -899,7 +914,8 @@ if (!window.PaperImageViewer) {
     const tokens = state.q.trim().toLowerCase().split(/\s+/).filter(Boolean).map(value => value.replace(/[-_]/g, ''));
     return DATA.filter(item => {
       if(state.tag && !item.tags.includes(state.tag) && !item.originalTags.includes(state.tag)) return false;
-      if(state.grade !== 'all' && item.grade !== state.grade) return false;
+      const grade = item.formal_grade?.grade || 'ungraded';
+      if(state.grade !== 'all' && grade !== state.grade) return false;
       const haystack = buildSearchText(item).replace(/[-_]/g, '');
       return tokens.every(token => haystack.includes(token));
     });
@@ -912,7 +928,7 @@ if (!window.PaperImageViewer) {
       mode: ['daily', 'published', 'category'].includes(params.get('mode')) ? params.get('mode') : 'daily',
       page: Number.isSafeInteger(page) && page > 0 ? page : 1,
       tag: params.get('tag') || '',
-      grade: ['S', 'A', 'B'].includes(params.get('grade')) ? params.get('grade') : 'all',
+      grade: ['S', 'A', 'B', 'ungraded'].includes(params.get('grade')) ? params.get('grade') : 'all',
       q: params.get('q') || ''
     };
     // Preserve even a retired tag in a shared link, so it produces an honest
@@ -1160,7 +1176,7 @@ if (!window.PaperImageViewer) {
       DATA = records.filter(item => item && typeof item === 'object' && typeof item.detail_path === 'string' && item.detail_path)
         .map(item => {
           const originalTags = Array.isArray(item.tags) ? item.tags.filter(tag => typeof tag === 'string' && tag) : [];
-          return {...item, originalTags, tags: readerTags(originalTags)};
+          return {...item, grade: item.formal_grade?.grade || '', originalTags, tags: readerTags(originalTags)};
         });
       const selectedTag = new URL(window.location.href).searchParams.get('tag') || '';
       tagFilterEl.replaceChildren(new Option('全部标签', ''));

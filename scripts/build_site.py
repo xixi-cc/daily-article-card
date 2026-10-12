@@ -39,6 +39,11 @@ except ModuleNotFoundError:
     from card_presentation import presentation_fields, merge_reader_lists
 
 try:
+    from scripts.formal_grades import load_formal_grades, attach_formal_grades, render_formal_grade
+except ModuleNotFoundError:
+    from formal_grades import load_formal_grades, attach_formal_grades, render_formal_grade
+
+try:
     from PIL import Image
     HAS_PIL = True
 except ImportError:
@@ -1036,6 +1041,7 @@ def build_list_data(records: List[Dict[str, object]], thumb_map: Dict[str, str] 
             "collection_date": record.get("collection_date", ""),
             "published": record.get("published", ""),
             "grade": record.get("grade", ""),
+            "formal_grade": record.get("formal_grade"),
             "card_id": record.get("card_id", ""),
             "work_id": record.get("work_id", ""),
             "authors": record.get("authors", ""),
@@ -1276,8 +1282,8 @@ def generate_index_html(program: str = "Daily") -> str:
       <label for="browse-mode">排序
         <select id="browse-mode"><option value="daily">Daily</option><option value="published">最新发表</option><option value="category">按类别</option></select>
       </label>
-      <label for="grade-filter">论文等级
-        <select id="grade-filter"><option value="all">全部</option><option value="S">S 级</option><option value="A">A 级</option><option value="B">B 级</option></select>
+      <label for="grade-filter">正式评级
+        <select id="grade-filter"><option value="all">全部</option><option value="S">S 级</option><option value="A">A 级</option><option value="B">B 级</option><option value="ungraded">未评级</option></select>
       </label>
     </div>
   </div>
@@ -1377,7 +1383,7 @@ def generate_paper_html(record: Dict[str, object], prev_record: Dict[str, object
             {f'<p class="detail-page-title-zh">{render_math_text(record["title_zh"])}</p>' if record.get("title_zh") else ''}
             <div class="detail-meta">{meta_html}</div>
             <p class="detail-summary">{render_math_text(record["preview_text"])}</p>
-
+            {render_formal_grade(record)}
           </div>
         </div>
       </div>
@@ -3477,6 +3483,8 @@ def main() -> int:
     site_records = build_site_records(records, paper_image_manifest)
     attach_daily_metadata(site_records)
     collection_records = build_collection_records(paper_image_manifest)
+    formal_grades = load_formal_grades(PROJECT_ROOT / "data" / "formal_grades.json")
+    attach_formal_grades([*site_records, *collection_records], formal_grades)
     apply_reader_cover_overrides([*site_records, *collection_records])
 
     # 为首页列表数据使用缩略图路径
