@@ -79,7 +79,7 @@ def render_formal_grade(record: dict) -> str:
       <table><caption>八轴评分（每轴 5 分，满分 40 分）</caption><tbody>{rows}</tbody></table>
       <p>评级理由：{text(assessment.get("rationale"))}</p>
       <p>评审边界：{text(assessment.get("review_boundary"))}</p>
-      <p>关键贡献已确认：{text({True: "是", False: "否"}.get(assessment.get("load_bearing_contribution_confirmed"), "未提供"))}</p>
+      <p>S级贡献门槛确认：{text({True: "是", False: "否"}.get(assessment.get("load_bearing_contribution_confirmed"), "未提供")) if assessment.get("grade") == "S" else "不适用（当前评级非S）"}</p>
       <details class="formal-grade-evidence"><summary>评审记录</summary>
         <p>Registry 序号：{text(assessment.get("registry_seq"))}</p>
         <p>原文 PDF SHA-256：<code>{text(assessment.get("source_pdf_sha256"))}</code></p>
