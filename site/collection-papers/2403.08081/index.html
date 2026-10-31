@@ -112,7 +112,20 @@
             <p class="detail-page-title-zh">自注意力下一词预测的机制</p>
             <div class="detail-meta">Yingcong Li、Yixiao Huang、M. Emrullah Ildiz、Ankit Singh Rawat、Samet Oymak · 预印本 · arXiv:2403.08081 · <a href="https://arxiv.org/abs/2403.08081" target="_blank" rel="noopener noreferrer">论文原文 ↗</a></div>
             <p class="detail-summary">给定训练序列及其 next-token labels，一个 self-attention layer 究竟学到什么关系？作者不把注意力图直接当解释，而是问训练权重的发散方向与有限残差是否分别对应可验证的算法步骤。</p>
-            <p class="formal-grade-status">正式评级：未评级</p>
+            <details class="formal-grade">
+      <summary>正式评级：A · 30 / 40</summary>
+      <p>评审版本：v1 · 原评审来源：Collection</p>
+
+      <table><caption>八轴评分（每轴 5 分，满分 40 分）</caption><tbody><tr><th scope="row">基本理论洞见</th><td>5 / 5</td></tr><tr><th scope="row">数学深度与严谨性</th><td>4 / 5</td></tr><tr><th scope="row">物理内容与可解释性</th><td>1 / 5</td></tr><tr><th scope="row">现代AI基础与机制相关性</th><td>5 / 5</td></tr><tr><th scope="row">普适性与状态变量</th><td>3 / 5</td></tr><tr><th scope="row">理论表述与建模原创性</th><td>4 / 5</td></tr><tr><th scope="row">研究方向契合度</th><td>4 / 5</td></tr><tr><th scope="row">长期科学价值</th><td>4 / 5</td></tr></tbody></table>
+      <p>评级理由：标签诱导图与强连通分量提供 hard retrieval 和 soft composition 的分析框架；退化情况下无条件发散不成立，证明步长及线性读出假设须保留。</p>
+      <p>评审边界：基于论文来源的评审；未独立复现。</p>
+      <p>S级贡献门槛确认：不适用（当前评级非S）</p>
+      <details class="formal-grade-evidence"><summary>评审记录</summary>
+        <p>Registry 序号：4207</p>
+        <p>原文 PDF SHA-256：<code>e69c945c154b39c534cb1e81b318798d3e8059baaf4d89a23ba84f3cd9c2285a</code></p>
+        <p>评审 SHA-256：<code>2b500cf61b252891c9098e8c9b7a8b8a4c60cc56764eb0898c5ad3f666656272</code></p>
+      </details>
+    </details>
           </div>
         </div>
       </div>
@@ -126,11 +139,11 @@
 </section>
 <section class="reading-card reading-card-section">
   <h2>模型与方法</h2>
-  <div class="reading-card-content"><ul><li>模型是一层 self-attention 加固定/一般 linear classifier，以 sequence 最后 token 作为 query，使用 next-token likelihood 或一般单调 loss 训练 attention matrix W。作者按最后 token \(k\) 为训练样本构造一组 directed token-priority graphs G^(\(k\))：若某 token 在带标签样本中应压过另一 token，就形成有向 priority relation；互相可达的 tokens 属于同一 SCC。</li><li>Graph-SVM 在不同 SCC 之间施加 \(margin\ge 1\)，在 SCC 内施加 score \(difference=0\)。权重空间分为 cyclic subspace \(S_{\mathrm{fin}}\) 与其正交补：GD 的归一化方向收敛到最小范数 \(W^{s}vm\)，编码 SCC 的拓扑次序；投影到 \(S_{\mathrm{fin}}\) 的有限部分收敛到 \(W^{f}in\)，编码同一 SCC 内的 soft allocation。</li><li>论文分别分析 convex log-likelihood setting、regularization path 与 acyclic datasets；数值实验随机生成 vocab/embeddings/sequences，追踪 W 与 \(W^{s}vm\) 的 correlation 及有限投影误差，并扩展到大 vocabulary \(K=10000\)。</li></ul></div>
+  <div class="reading-card-content"><ul><li>模型是一层 self-attention 加固定/一般 linear classifier，以 sequence 最后 token 作为 query，使用 next-token likelihood 或一般单调 loss 训练 attention matrix W。作者按最后 token \(k\) 为训练样本构造一组 directed token-priority graphs G^(\(k\))：若某 token 在带标签样本中应压过另一 token，就形成有向 priority relation；互相可达的 tokens 属于同一 SCC。</li><li>Graph-SVM 在不同 SCC 之间施加 \(margin\ge 1\)，在 SCC 内施加 score \(difference=0\)。权重空间分为 cyclic subspace \(S_{\mathrm{fin}}\) 与其正交补：作者将非退化情形下的 GD 方向关联到最小范数 \(W^{s}vm\)，以编码 SCC 拓扑次序，并将有限投影关联到 \(W^{f}in\) 的 soft allocation；该渐近结论的条件见下文。</li><li>论文分别分析 convex log-likelihood setting、regularization path 与 acyclic datasets；数值实验随机生成 vocab/embeddings/sequences，追踪 W 与 \(W^{s}vm\) 的 correlation 及有限投影误差，并扩展到大 vocabulary \(K=10000\)。</li></ul></div>
 </section>
 <section class="reading-card reading-card-section">
   <h2>核心结果与证据</h2>
-  <div class="reading-card-content"><ul><li>Figure 1 总结测试时算法：由 last input token 选择关联的 TPG，attention 对 context 中最高 priority SCC 做近似硬检索，再在入选 token 间 soft composition 得到 next-token distribution。</li><li>Theorem 2 在 full-row-rank embedding、可分图约束、特定 classifier 与 log loss 等假设下给出全局结果：||W(\(\tau\))|| 发散，归一化方向趋于 \(W^{s}vm\)/||\(W^{s}vm\)||，而 \(\Pi_{\mathrm{Sfin}}\) W(\(\tau\)) 趋于唯一有限最优 \(W^{f}in\)。由此 W(\(\tau\))≈\(C\)(\(\tau\))\(W_{\mathrm{hard}}\)+\(W_{\mathrm{soft}}\)，\(C\)→∞。</li><li>Figure 4 的 100 个随机实例中，4000 iterations 后方向 correlation 约 0.987，finite-component distance 小于 0.01。附录在 \(K=10000\)、\(n=16\)、\(T=64\)、\(d=128\) 下报告平均 correlation 0.987、soft error 0.025；这是合成设定对理论 decomposition 的数值核查。</li></ul><figure class="evidence-figure">
+  <div class="reading-card-content"><ul><li>Figure 1 总结测试时算法：由 last input token 选择关联的 TPG，attention 对 context 中最高 priority SCC 做近似硬检索，再在入选 token 间 soft composition 得到 next-token distribution。</li><li>Theorem 2 声称在 full-row-rank embedding、特定 classifier 与 log loss 等假设下，||W(\(\tau\))|| 发散、归一化方向趋于 \(W^{s}vm\)/||\(W^{s}vm\)||，有限投影趋于 \(W^{f}in\)。该无条件表述需限定：若仅有一个 token 且标签就是该 token，损失与梯度恒为零、\(W^{s}vm=0\)，范数不发散；附录证明还使用 \(W^{s}vm\ne 0\) 及步长 \(\eta\le 1\)/\(L\)。非退化情形的 hard/soft 分解应连同这些条件阅读。</li><li>Figure 4 的 100 个随机实例使用归一化梯度下降，4000 iterations 后方向 correlation 约 0.987，finite-component distance 小于 0.01。附录 \(K=10000\)、\(n=16\)、\(T=64\)、\(d=128\) 的实验以 mask 提取 token 概率；\(K\)&gt;\(d\) 超出正文 full-row-rank 假设，是条件外的数值探查。</li></ul><figure class="evidence-figure">
   <button class="evidence-figure-image-button" type="button" aria-label="放大查看 Figure 1" onclick="window.openPaperFigureImage && window.openPaperFigureImage(this.querySelector('img'))">
     <img class="paper-figure-image evidence-figure-image" src="../../assets/collection-figures/2403.08081/figure-1-hard-soft-retrieval.webp" alt="按 priority levels 选择 context token 并形成 next-token convex combination 的流程。" loading="lazy" />
   </button>
