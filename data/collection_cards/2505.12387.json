@@ -36,9 +36,9 @@
     "asset_path": "assets/collection-figures/2505.12387/figure-3-universal-alignment.webp",
     "label": "Figure 3",
     "visual_type": "data_plot",
-    "evidence": "paper.pdf p. 6, Figure 3",
+    "evidence": "paper.pdf p. 7, Figure 3",
     "alt_text": "两张独立训练网络的表征对齐度随迭代迅速升高；同层对齐为蓝色、跨层为黄绿色，虚线为输入对齐基线。",
-    "caption": "Figure 3 的表征对齐曲线：随机变换 MNIST 上独立训练的深层网络达到高于输入基线的同层和跨层对齐，支持论文的通用表征实验陈述。",
+    "caption": "Figure 3 的随机变换 MNIST 实验显示有限模型的同层和跨层对齐高于输入基线；tanh 跨层曲线后期下降，不能据此称完全对齐。",
     "selection_rationale": "Figure 3 直接把本文从熵力与梯度平衡推到通用表征的核心可观测量画出来，并同时保留同层、跨层和输入基线，便于区分理论命题与实验支持。"
   },
   "figure_refs": [
@@ -47,7 +47,7 @@
       "asset_path": "assets/collection-figures/2505.12387/figure-3-universal-alignment.webp",
       "section": "核心结果与证据",
       "role": "show representation-alignment trajectories for independently trained deep networks",
-      "evidence": "paper.pdf p. 6, Figure 3; MinerU image 2d98751f5bcaf27505659e2bf45ac625db8a1f1fbcd0b9daa13ed46a959638a6.jpg",
+      "evidence": "paper.pdf p. 7, Figure 3; MinerU image 2d98751f5bcaf27505659e2bf45ac625db8a1f1fbcd0b9daa13ed46a959638a6.jpg",
       "alt_text": "对齐度在早期迭代跃升到约 0.8 以上；黑色虚线输入基线约为 0.5。",
       "caption": "MinerU 提取的是 Figure 3 的一个绘图面板；完整原图另含线性和 tanh 网络的并列比较。",
       "interpretation": "This is controlled MNIST evidence for the proposed alignment mechanism. It is not a measurement that all layers, architectures, modalities, or biological representations are perfectly aligned."
@@ -56,7 +56,7 @@
   "equation_refs": [
     {
       "label": "First-order entropic loss",
-      "latex": "F_{\\eta,\\gamma}(\\theta)=\\mathbb E_x\\ell(x,\\theta)+\\gamma\\lVert\\theta\\rVert_2^2+\\frac14\\mathbb E_B\\lVert\\Lambda\\mathbb E_{x\\in B}\\nabla\\ell(x,\\theta)\\rVert_2^2+O(\\lVert\\Lambda\\rVert^2)",
+      "latex": "F_{\\eta,\\gamma}(\\theta)=\\mathbb E_x\\ell(x,\\theta)+\\gamma\\lVert\\theta\\rVert_2^2+\\frac14\\mathbb E_B\\lVert\\sqrt{\\Lambda}\\mathbb E_{x\\in B}\\nabla\\ell(x,\\theta)\\rVert_2^2+O(\\lVert\\Lambda\\rVert^2)",
       "role": "separate empirical loss, weight regularization, and the effective entropy term induced by finite-step stochastic learning",
       "symbols": {"theta": "parameters", "eta or Lambda": "scalar or matrix learning rate", "gamma": "weight-decay coefficient", "B": "minibatch"},
       "evidence": "paper.pdf p. 3, Eq. (3)",
@@ -95,15 +95,15 @@
     },
     {
       "title": "模型与方法",
-      "content": "作者从单样本损失与 L2 正则出发，用矩阵学习率 Lambda 推导一阶和二阶的有效损失。Eq. (3) 的一阶项与 minibatch 平均梯度的二阶矩有关，被解释为有效熵 S(theta)；梯度流于是包含 -eta(nabla L+gamma theta+nabla S)。接着以 K-invariance 和 A-exponential symmetry 形式化参数对称性，证明在鲁棒不变性的条件下，除范数保持变换外的连续对称性被熵项破坏，而正交离散对称性保留。最后在深线性、ReLU、tanh、ViT 和两层回归模型上考察梯度平衡、表示对齐与 sharpness。","paragraphs":["作者从单样本损失与 L2 正则出发，用矩阵学习率 Lambda 推导一阶和二阶的有效损失。Eq. (3) 的一阶项与 minibatch 平均梯度的二阶矩有关，被解释为有效熵 S(theta)；梯度流于是包含 -eta(nabla L+gamma theta+nabla S)。接着以 K-invariance 和 A-exponential symmetry 形式化参数对称性，证明在鲁棒不变性的条件下，除范数保持变换外的连续对称性被熵项破坏，而正交离散对称性保留。最后在深线性、ReLU、tanh、ViT 和两层回归模型上考察梯度平衡、表示对齐与 sharpness。"]
+      "content": "作者从单样本损失与 L2 正则出发，用矩阵学习率 Lambda 推导一阶和二阶的有效损失。Eq. (3) 的一阶项与 minibatch 平均梯度的二阶矩有关，被解释为有效熵 S(theta)；梯度流于是包含 -eta(nabla L+gamma theta+nabla S)。接着以 K-invariance 和 A-exponential symmetry 形式化参数对称性，证明在鲁棒不变性的条件下，稳健连续对称性必须保持范数；满足条件的正交变换可为连续或离散对称性。最后在深线性、ReLU、tanh、ViT 和两层回归模型上考察梯度平衡、表示对齐与 sharpness。","paragraphs":["作者从单样本损失与 L2 正则出发，用矩阵学习率 Lambda 推导一阶和二阶的有效损失。Eq. (3) 的一阶项与 minibatch 平均梯度的二阶矩有关，被解释为有效熵 S(theta)；梯度流于是包含 -eta(nabla L+gamma theta+nabla S)。接着以 K-invariance 和 A-exponential symmetry 形式化参数对称性，证明在鲁棒不变性的条件下，稳健连续对称性必须保持范数；满足条件的正交变换可为连续或离散对称性。最后在深线性、ReLU、tanh、ViT 和两层回归模型上考察梯度平衡、表示对齐与 sharpness。"]
     },
     {
       "title": "核心结果与证据",
-      "content": "理论上，Theorem 1 给出 entropic loss 的离散更新近似，Theorem 2--3 说明熵项选择性破坏连续而保留正交离散对称性。对具有指数缩放对称的网络，Master Balance Theorem 及其层/神经元版本要求梯度二阶矩与权重项满足平衡，作者将其比作非平衡学习中的 equipartition。对于 embedded deep linear network，Theorem 8 在给定全局最小、宽度和 eta→0+ 等条件下证明任意两网络任意隐藏层可相差一个旋转与尺度而完全对齐。Figure 3（第 6 页）显示随机变换 MNIST 上独立训练的 6 层线性/tanh 网络同层和跨层对齐迅速超过输入基线；Figure 4 还给出 ImageNet 预训练 ViT 的正对齐。Sharpness 部分则用两层线性回归和 Figure 5--6 把 label-noise/feature 不平衡与 edge of stability 边界联系起来。","paragraphs":["理论上，Theorem 1 给出 entropic loss 的离散更新近似，Theorem 2--3 说明熵项选择性破坏连续而保留正交离散对称性。对具有指数缩放对称的网络，Master Balance Theorem 及其层/神经元版本要求梯度二阶矩与权重项满足平衡，作者将其比作非平衡学习中的 equipartition。对于 embedded deep linear network，Theorem 8 在给定全局最小、宽度和 eta→0+ 等条件下证明任意两网络任意隐藏层可相差一个旋转与尺度而完全对齐。Figure 3（第 6 页）显示随机变换 MNIST 上独立训练的 6 层线性/tanh 网络同层和跨层对齐迅速超过输入基线；Figure 4 还给出 ImageNet 预训练 ViT 的正对齐。Sharpness 部分则用两层线性回归和 Figure 5--6 把 label-noise/feature 不平衡与 edge of stability 边界联系起来。"]
+      "content": "理论上，Theorem 1 给出 entropic loss 的离散更新近似，Theorem 2--3 限制稳健对称性并保留满足条件的正交对称性。对具有指数缩放对称的网络，Master Balance Theorem 及其层/神经元版本要求梯度二阶矩与权重项满足平衡，作者将其比作非平衡学习中的 equipartition。对于 embedded deep linear network，Theorem 8 在给定全局最小、宽度和 eta→0+ 等条件下证明任意两网络任意隐藏层可相差一个旋转与尺度而完全对齐。Figure 3（第 7 页）显示随机变换 MNIST 上独立训练的 6 层线性/tanh 网络同层和跨层对齐迅速超过输入基线；Figure 4 还给出 ImageNet 预训练 ViT 的正对齐。Sharpness 部分则用两层线性回归和 Figure 5--6 把 label-noise/feature 不平衡与 edge of stability 边界联系起来。","paragraphs":["理论上，Theorem 1 给出 entropic loss 的离散更新近似，Theorem 2--3 限制稳健对称性并保留满足条件的正交对称性。对具有指数缩放对称的网络，Master Balance Theorem 及其层/神经元版本要求梯度二阶矩与权重项满足平衡，作者将其比作非平衡学习中的 equipartition。对于 embedded deep linear network，Theorem 8 在给定全局最小、宽度和 eta→0+ 等条件下证明任意两网络任意隐藏层可相差一个旋转与尺度而完全对齐。Figure 3（第 7 页）显示随机变换 MNIST 上独立训练的 6 层线性/tanh 网络同层和跨层对齐迅速超过输入基线；Figure 4 还给出 ImageNet 预训练 ViT 的正对齐。Sharpness 部分则用两层线性回归和 Figure 5--6 把 label-noise/feature 不平衡与 edge of stability 边界联系起来。"]
     },
     {
       "title": "有效性与局限",
-      "content": "论文的强处是把“熵力”落实为可写下的有效损失展开、对称性定理和可测的梯度平衡，而非仅将热力学作修辞。其最强的“完美 Platonic representation”结论却是嵌入式深线性网络、特定全局最小和极限条件下的定理；非线性和 ViT 图像是支持性的实证关联。有效损失有学习率展开、光滑性和 minibatch 期望等前提，高阶项在锐化的后期可能主导，论文也明说一阶解释不足。因而不能把 Figure 3 的高对齐直接升级为所有网络、所有数据视图或生物表征的精确普适定律；大模型实验也不替代定理的条件核验。","paragraphs":["论文的强处是把“熵力”落实为可写下的有效损失展开、对称性定理和可测的梯度平衡，而非仅将热力学作修辞。其最强的“完美 Platonic representation”结论却是嵌入式深线性网络、特定全局最小和极限条件下的定理；非线性和 ViT 图像是支持性的实证关联。有效损失有学习率展开、光滑性和 minibatch 期望等前提，高阶项在锐化的后期可能主导，论文也明说一阶解释不足。因而不能把 Figure 3 的高对齐直接升级为所有网络、所有数据视图或生物表征的精确普适定律；大模型实验也不替代定理的条件核验。"]
+      "content": "论文的强处是把“熵力”落实为可写下的有效损失展开、对称性定理和可测的梯度平衡，而非仅将热力学作修辞。其最强的“完美 Platonic representation”结论却是嵌入式深线性网络、特定全局最小和极限条件下的定理；Eq. (14) 允许任意尺度因子，因此未归一化 Gram 核一般只成比例而非自动相等；定理关于有效损失的全局极小，不证明任意初始化的 SGD 轨道收敛。非线性和 ViT 图像是支持性的实证关联。有效损失有学习率展开、光滑性和 minibatch 期望等前提，高阶项在锐化的后期可能主导，论文也明说一阶解释不足。因而不能把 Figure 3 的高对齐直接升级为所有网络、所有数据视图或生物表征的精确普适定律；大模型实验也不替代定理的条件核验。","paragraphs":["论文的强处是把“熵力”落实为可写下的有效损失展开、对称性定理和可测的梯度平衡，而非仅将热力学作修辞。其最强的“完美 Platonic representation”结论却是嵌入式深线性网络、特定全局最小和极限条件下的定理；Eq. (14) 允许任意尺度因子，因此未归一化 Gram 核一般只成比例而非自动相等；定理关于有效损失的全局极小，不证明任意初始化的 SGD 轨道收敛。非线性和 ViT 图像是支持性的实证关联。有效损失有学习率展开、光滑性和 minibatch 期望等前提，高阶项在锐化的后期可能主导，论文也明说一阶解释不足。因而不能把 Figure 3 的高对齐直接升级为所有网络、所有数据视图或生物表征的精确普适定律；大模型实验也不替代定理的条件核验。"]
     },
     {
       "title": "复现与资源",
