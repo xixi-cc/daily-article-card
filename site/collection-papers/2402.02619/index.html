@@ -112,7 +112,20 @@
             <p class="detail-page-title-zh">理解 Transformer 中的加法与减法</p>
             <div class="detail-meta">Philip Quirke、Clement Neo、Fazl Barez · 预印本 · arXiv:2402.02619 · <a href="https://arxiv.org/abs/2402.02619" target="_blank" rel="noopener noreferrer">论文原文 ↗</a></div>
             <p class="detail-summary">一个低损失 Transformer 在多位加减法中究竟实现了什么算法？仅凭线性 probes 或 attention patterns，容易把相关节点误认为完整机制；长 carry/borrow cascades 提供了可系统攻击候选算法的边界案例。</p>
-            <p class="formal-grade-status">正式评级：未评级</p>
+            <details class="formal-grade">
+      <summary>正式评级：A · 32 / 40</summary>
+      <p>评审版本：v11 · 原评审来源：Collection</p>
+
+      <table><caption>八轴评分（每轴 5 分，满分 40 分）</caption><tbody><tr><th scope="row">基本理论洞见</th><td>4 / 5</td></tr><tr><th scope="row">数学深度与严谨性</th><td>4 / 5</td></tr><tr><th scope="row">物理内容与可解释性</th><td>4 / 5</td></tr><tr><th scope="row">现代AI基础与机制相关性</th><td>5 / 5</td></tr><tr><th scope="row">普适性与状态变量</th><td>3 / 5</td></tr><tr><th scope="row">理论表述与建模原创性</th><td>4 / 5</td></tr><tr><th scope="row">研究方向契合度</th><td>4 / 5</td></tr><tr><th scope="row">长期科学价值</th><td>4 / 5</td></tr></tbody></table>
+      <p>评级理由：三态进借位算法与电路干预解释受控算术模型；不同模型的共同骨架及因果证据范围须区分。</p>
+      <p>评审边界：基于论文来源的评审；未独立复现。</p>
+      <p>S级贡献门槛确认：不适用（当前评级非S）</p>
+      <details class="formal-grade-evidence"><summary>评审记录</summary>
+        <p>Registry 序号：4269</p>
+        <p>原文 PDF SHA-256：<code>97cbdbf07a562031617089ccd2fe1f86af5de1012788307f3ec06a6d7ae116d1</code></p>
+        <p>评审 SHA-256：<code>ecccd025bfd82e58d6946f3716bf55cc957d3bad89ad3825b996cc9ab9351480</code></p>
+      </details>
+    </details>
           </div>
         </div>
       </div>
@@ -126,12 +139,12 @@
 </section>
 <section class="reading-card reading-card-section">
   <h2>模型与方法</h2>
-  <div class="reading-card-content"><ul><li>从头训练 2–3 层、3–4 头、约千万参数的小 Transformer，任务覆盖 5–15 位 addition、subtraction 或 mixed arithmetic。早期模型暴露长 carry/borrow failures 后，训练分布加入对应 edge cases；多数模型在单 GPU 一小时内达到 &gt;99.999% accuracy。</li><li>不先假定小学从右向左算法，而是从 internals 定义 SA/SC/ST 等 single-digit quantities 和 SV/MV 等多位不确定 carry/borrow。TriAdd 从当前位向左逐步消除 U，形成符合 autoregressive causal order 的 left-to-right exact algorithm。</li><li>对 46 个模型做节点映射，29 个高准确模型形成 family-level circuit skeleton；代表模型再用 activation patching、edge/path patching、matched controls 与 alternative-mechanism ablations 检验 resolved-carry subtask。</li></ul><figure class="evidence-figure">
+  <div class="reading-card-content"><ul><li>从头训练 2–3 层、3–4 头、约千万参数的小 Transformer，任务覆盖 5–15 位 addition、subtraction 或 mixed arithmetic。早期模型暴露长 carry/borrow failures 后，训练分布加入对应 edge cases；多数模型在单 GPU 一小时内达到 &gt;99.999% accuracy。</li><li>不先假定小学从右向左算法，而是从 internals 定义 SA/SC/ST 等 single-digit quantities 和 SV/MV 等多位不确定 carry/borrow。TriAdd 从高位开始沿输入从左到右结合更低位信息，逐步消除 U，形成符合 autoregressive causal order 的 left-to-right exact algorithm。</li><li>46 个模型中 29 个达到高准确门槛；正文报告其中 27 个准确的 addition 与 mixed 模型具有共同的 family-level circuit skeleton；代表模型再用 activation patching、edge/path patching、matched controls 与 alternative-mechanism ablations 检验 resolved-carry subtask。</li></ul><figure class="evidence-figure">
   <button class="evidence-figure-image-button" type="button" aria-label="放大查看 Figure 1" onclick="window.openPaperFigureImage && window.openPaperFigureImage(this.querySelector('img'))">
-    <img class="paper-figure-image evidence-figure-image" src="../../assets/collection-figures/2402.02619/figure-1-addition-algorithm.webp" alt="single-digit ST/SA 与 multidigit SV 节点从左到右生成加法答案。" loading="lazy" />
+    <img class="paper-figure-image evidence-figure-image" src="../../assets/collection-figures/2402.02619/figure-1-addition-algorithm.webp" alt="single-digit ST/SA 与 multidigit SV 的组合，从高位开始结合更低位信息。" loading="lazy" />
   </button>
   <figcaption>
-    <strong>Figure 1</strong> · 不确定 carry 状态沿输出位置逐步解析。
+    <strong>Figure 1</strong> · 不确定 carry 状态在输入处理期间逐步解析。
     <span class="evidence-figure-reading">物理解读：The diagram specifies a sound algorithm inferred from the model family; causal confirmation is deeper for selected representative models.</span>
     <span class="evidence-figure-source">来源：paper.pdf \(p\). 1, Figure 1</span>
   </figcaption>
@@ -139,7 +152,7 @@
 </section>
 <section class="reading-card reading-card-section">
   <h2>核心结果与证据</h2>
-  <div class="reading-card-content"><ul><li>Figure 1 展示 addition 算法：各位先把 carry 状态分类为 0、1 或 uncertain U，后续 token 逐步用更低位信息把 U 解为确定 SV，再计算 answer digit。对应 subtraction 用 cascading borrow MV 决定符号和 digits。</li><li>29 个 &gt;99.999% 模型共享 sub-task/circuit skeleton，但具体 heads/MLPs 的分配可随 seed、depth 和 operation 改变。worked examples 中，patching 对 resolved-carry nodes/paths 给出 causal effects，matched controls 排除若干仅相关解释。</li><li>mixed models 的部分节点对 addition 与 subtraction 呈 polysemantic；从 addition weights 初始化和从 scratch 训练都可形成共同 skeleton。论文把结论限定为该受控模型家族，而非声称所有语言模型采用同一算术算法。</li></ul></div>
+  <div class="reading-card-content"><ul><li>Figure 1 展示 addition 算法：各位先把 carry 状态分类为 0、1 或 uncertain U，后续 token 逐步用更低位信息把 U 解为确定 SV，再计算 answer digit。对应 subtraction 用 cascading borrow MV 决定符号和 digits。</li><li>正文报告 27 个准确的 addition 与 mixed 模型共享 sub-task/circuit skeleton；全部 46 个模型中 29 个满足高准确门槛（表 1 标题与正文的骨架分母表述并不一致），但具体 heads/MLPs 的分配可随 seed、depth 和 operation 改变。worked examples 中，patching 对 resolved-carry nodes/paths 给出 causal effects，matched controls 排除若干仅相关解释。</li><li>mixed models 的部分节点对 addition 与 subtraction 呈 polysemantic；从 addition weights 初始化和从 scratch 训练都可形成共同 skeleton。论文把结论限定为该受控模型家族，而非声称所有语言模型采用同一算术算法。</li></ul></div>
 </section>
 <section class="reading-card reading-card-section">
   <h2>有效性与局限</h2>
