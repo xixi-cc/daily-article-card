@@ -112,7 +112,20 @@
             <p class="detail-page-title-zh">利用符号梯度对神经网络分类器作闭式解释</p>
             <div class="detail-meta">Sebastian Johann Wetzel · 预印本 · arXiv:2401.04978 · <a href="https://arxiv.org/abs/2401.04978" target="_blank" rel="noopener noreferrer">论文原文 ↗</a></div>
             <p class="detail-summary">分类器的 sigmoid/logit 只需在 decision boundary 两侧给出正确符号，因此同一分类概念可由无数单调变换表达。直接对网络输出做 symbolic regression 往往只复制不可读变换，或找到另一个同样能分类但并非网络实际采用的概念。</p>
-            <p class="formal-grade-status">正式评级：未评级</p>
+            <details class="formal-grade">
+      <summary>正式评级：A · 29 / 40</summary>
+      <p>评审版本：v2 · 原评审来源：Collection</p>
+
+      <table><caption>八轴评分（每轴 5 分，满分 40 分）</caption><tbody><tr><th scope="row">基本理论洞见</th><td>4 / 5</td></tr><tr><th scope="row">数学深度与严谨性</th><td>2 / 5</td></tr><tr><th scope="row">物理内容与可解释性</th><td>3 / 5</td></tr><tr><th scope="row">现代AI基础与机制相关性</th><td>4 / 5</td></tr><tr><th scope="row">普适性与状态变量</th><td>3 / 5</td></tr><tr><th scope="row">理论表述与建模原创性</th><td>4 / 5</td></tr><tr><th scope="row">研究方向契合度</th><td>5 / 5</td></tr><tr><th scope="row">长期科学价值</th><td>4 / 5</td></tr></tbody></table>
+      <p>评级理由：梯度匹配与符号搜索提供受限的分类器解释方法；论文所写等价类包含关系存在明确反例。</p>
+      <p>评审边界：基于论文来源的评审；未独立复现。</p>
+      <p>S级贡献门槛确认：不适用（当前评级非S）</p>
+      <details class="formal-grade-evidence"><summary>评审记录</summary>
+        <p>Registry 序号：4277</p>
+        <p>原文 PDF SHA-256：<code>e8a5732719a6d9f9bf2b21c6f1bc813f1bc8e06f980d66b9551353911c73bbbf</code></p>
+        <p>评审 SHA-256：<code>f64590b29209fefdf877dfa0e680453a7b202ee28fa5c3bc93bac661099d54e6</code></p>
+      </details>
+    </details>
           </div>
         </div>
       </div>
@@ -126,7 +139,7 @@
 </section>
 <section class="reading-card reading-card-section">
   <h2>模型与方法</h2>
-  <div class="reading-card-content"><ul><li>去掉最终 sigmoid 得到 latent model \(f\)。若 \(f\)(\(x\))=phi(\(g\)(\(x\))) 且 phi 可逆可微，则 \(f\) 与目标闭式概念 \(g\) 的梯度处处平行；归一化梯度消去未知尺度 phi'(\(g\))。作者据此把信息等价类写成具有相同 normalized gradient field 的 \(C_{1}\) functions。</li><li>解释流程先训练 binary classifier，再对输入采样并用自动微分计算 normalized nabla \(f\)；随后用 genetic symbolic regression 搜索表达式 \(T\)，使其 normalized gradients 匹配网络。symbolic search space、可用算子、复杂度和上下文先验共同定义‘human-readable’。Figure 1 概括 neural function equivalence class 与 symbolic space 的交点。</li><li>实验用 2–6 个变量的合成 decision functions，并与直接 symbolic classification 比较；沿 error-complexity Pareto front 选择拐点附近候选，再以 correlation、functional form 与 classification behavior 检查。</li></ul><figure class="evidence-figure">
+  <div class="reading-card-content"><ul><li>去掉最终 sigmoid 得到 latent model \(f\)。若 \(f\)(\(x\))=phi(\(g\)(\(x\)))，链式法则给出 nabla \(f=phi\)'(\(g\)) nabla \(g\)；仅在导数非零处才能归一化，方向还取决于导数的符号。作者将信息等价类与同向 normalized gradient field 等同，但该命题在所列假设下不成立，见局限。</li><li>解释流程先训练 binary classifier，再对输入采样并用自动微分计算 normalized nabla \(f\)；随后用 genetic symbolic regression 搜索表达式 \(T\)，使其 normalized gradients 匹配网络。symbolic search space、可用算子、复杂度和上下文先验共同定义‘human-readable’。Figure 1 概括 neural function equivalence class 与 symbolic space 的交点。</li><li>实验用 2–6 个变量的合成 decision functions，并与直接 symbolic classification 比较；沿 error-complexity Pareto front 选择拐点附近候选，再以 correlation、functional form 与 classification behavior 检查。</li></ul><figure class="evidence-figure">
   <button class="evidence-figure-image-button" type="button" aria-label="放大查看 Figure 1" onclick="window.openPaperFigureImage && window.openPaperFigureImage(this.querySelector('img'))">
     <img class="paper-figure-image evidence-figure-image" src="../../assets/collection-figures/2401.04978/figure-1-symbolic-gradient-framework.webp" alt="网络函数所在等价曲面与 symbolic expression 空间相交于可读且信息等价的函数。" loading="lazy" />
   </button>
@@ -139,11 +152,11 @@
 </section>
 <section class="reading-card reading-card-section">
   <h2>核心结果与证据</h2>
-  <div class="reading-card-content"><ul><li>理论上，正的可逆标量变换只改变梯度大小而不改变方向，因此 normalized gradient field 可把 classifier latent score 嵌入同一 concept equivalence class。该构造解释了为什么复制 logits 不等于找到最简 decision concept。</li><li>六个主要合成实验中，文中报告四个恢复 exact functional form，两个得到良好 symbolic approximation；直接 symbolic classification 只找到六个中的三个。Figure 2 用椭圆 decision boundary 展示网络输出与真实 \(g\) 非线性相关，而 gradient-based symbolic model 可恢复 \(g\)。</li><li>额外实验允许多个 high-level concepts 同时解决分类：直接 symbolic classification 选择一种可行边界，而本文方法揭示网络实际学习了两种特征的组合。这支持‘interpret trained model’与‘重新找一个分类规则’的区分，但证据仍来自低维合成任务。</li></ul></div>
+  <div class="reading-card-content"><ul><li>在 phi' 严格为正且相关梯度非零的区域，标量变换只改变梯度大小而不改变方向，因此局部 normalized-gradient 匹配可识别共同方向。该构造解释了为什么复制 logits 不等于找到最简 decision concept。</li><li>六个主要合成实验中，文中报告四个恢复 exact functional form，两个得到良好 symbolic approximation；直接 symbolic classification 只找到六个中的三个。Figure 2 用椭圆 decision boundary 展示网络输出与真实 \(g\) 非线性相关，而 gradient-based symbolic model 可恢复 \(g\)。</li><li>额外实验允许多个 high-level concepts 同时解决分类：直接 symbolic classification 选择一种可行边界，而本文方法揭示网络实际学习了两种特征的组合。这支持‘interpret trained model’与‘重新找一个分类规则’的区分，但证据仍来自低维合成任务。</li></ul></div>
 </section>
 <section class="reading-card reading-card-section">
   <h2>有效性与局限</h2>
-  <div class="reading-card-content"><ul><li>等价性依赖 \(C_{1}\) smoothness、相关区域内非退化梯度及合适的可逆单调关系；normalized gradient 在梯度接近零时数值不稳，方向符号和采样覆盖也需处理。复杂决策边界可能需要分片或多输出推广。</li><li>symbolic search 只能返回预先给定算子、变量与复杂度预算中的表达式；找不到式子不证明网络无可解释概念，找到相关式也需验证全域而非训练点。genetic search 随机性与 Pareto 拐点选择影响结果。</li><li>实验维度仅 2–6、边界人工生成且结构较短，尚未证明可扩展到高维图像、文本或大型隐藏层。‘任意单 neuron’是框架适用范围，实际可恢复性仍取决于输入坐标和候选语言；本卡未独立复现。</li></ul></div>
+  <div class="reading-card-content"><ul><li>原文式 (2) 允许任意可逆 \(C_{1}\) 的 phi，式 (4) 却只允许梯度同向：在 \(D\)=[−1,1] 取 \(g(x)=x\)、phi(\(t\))=−\(t\)、\(f\)(\(x\))=−\(x\)，即属前者而不属后者。即便 phi 递增可逆，phi(\(t\))=t³ 也在零点导数为零，使两梯度的零点条件不一致。故原文所声称的包含及等价关系在所列假设下不成立；附加方向与非退化条件可排除这些反例，但不足以自动证明逆向命题。normalized gradient 在梯度近零时也不稳定，单靠梯度方向不能确定输出偏置或分类阈值。复杂决策边界可能需要分片或多输出推广。</li><li>symbolic search 只能返回预先给定算子、变量与复杂度预算中的表达式；找不到式子不证明网络无可解释概念，找到相关式也需验证全域而非训练点。genetic search 随机性与 Pareto 拐点选择影响结果。</li><li>实验维度仅 2–6、边界人工生成且结构较短，尚未证明可扩展到高维图像、文本或大型隐藏层。‘任意单 neuron’是框架适用范围，实际可恢复性仍取决于输入坐标和候选语言；本卡未独立复现。</li></ul></div>
 </section>
 <section class="reading-card reading-card-section">
   <h2>复现与资源</h2>
