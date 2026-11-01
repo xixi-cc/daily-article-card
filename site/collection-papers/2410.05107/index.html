@@ -112,7 +112,20 @@
             <p class="detail-page-title-zh">超表示：从神经网络群体中学习</p>
             <div class="detail-meta">Konstantin Schürholt · 预印本 · arXiv:2410.05107 · <a href="https://arxiv.org/abs/2410.05107" target="_blank" rel="noopener noreferrer">论文原文 ↗</a></div>
             <p class="detail-summary">神经网络权重直接决定模型行为，也编码训练阶段、性能与超参数，但存在维度高、神经元排列对称、跨架构形状不一致等困难。论文的中心问题是：能否从一组已训练模型中学习通用、任务无关的权重表征？</p>
-            <p class="formal-grade-status">正式评级：未评级</p>
+            <details class="formal-grade">
+      <summary>正式评级：A · 33 / 40</summary>
+      <p>评审版本：v1 · 原评审来源：Collection</p>
+
+      <table><caption>八轴评分（每轴 5 分，满分 40 分）</caption><tbody><tr><th scope="row">基本理论洞见</th><td>4 / 5</td></tr><tr><th scope="row">数学深度与严谨性</th><td>3 / 5</td></tr><tr><th scope="row">物理内容与可解释性</th><td>3 / 5</td></tr><tr><th scope="row">现代AI基础与机制相关性</th><td>5 / 5</td></tr><tr><th scope="row">普适性与状态变量</th><td>4 / 5</td></tr><tr><th scope="row">理论表述与建模原创性</th><td>5 / 5</td></tr><tr><th scope="row">研究方向契合度</th><td>5 / 5</td></tr><tr><th scope="row">长期科学价值</th><td>4 / 5</td></tr></tbody></table>
+      <p>评级理由：模型群体上的自监督表示与权重生成形成系统研究路线；泛化依赖 zoo、架构和采样条件。</p>
+      <p>评审边界：基于论文来源的评审；未独立复现。</p>
+      <p>S级贡献门槛确认：不适用（当前评级非S）</p>
+      <details class="formal-grade-evidence"><summary>评审记录</summary>
+        <p>Registry 序号：4273</p>
+        <p>原文 PDF SHA-256：<code>87e556a9cdc8de39b65ac77f19a30b89e901ff373e92b811c6222ae4d34e15d1</code></p>
+        <p>评审 SHA-256：<code>99066e84622b5ee919a449464a54f7cbbf42442aa4d48411e905fb61609440ff</code></p>
+      </details>
+    </details>
           </div>
         </div>
       </div>
@@ -126,7 +139,7 @@
 </section>
 <section class="reading-card reading-card-section">
   <h2>模型与方法</h2>
-  <div class="reading-card-content"><ul><li>作者先构建 model zoo：用受控超参数、随机种子和训练轨迹形成神经网络群体。对权重做排列对齐、归一化和适合序列建模的 tokenization，再以自监督 autoencoding/contrastive 目标训练 hyper-representation encoder。</li><li>判别评估用线性探针从 embedding 预测 accuracy、epoch、optimizer 或超参数；生成评估则在潜空间采样，经 decoder 还原权重并 fine-tune。后续章节引入置换增强、layer-wise/token-based 表示，以跨模型尺寸、架构和任务扩展。</li><li>Figure 1.2 将论文贡献分成 weight-space 分析、model zoo、判别式 hyper-representation、生成式 hyper-representation 和可扩展表示五个环节。</li></ul><figure class="evidence-figure">
+  <div class="reading-card-content"><ul><li>作者先构建 model zoo：用受控超参数、随机种子和训练轨迹形成神经网络群体。不同章节分别采用权重规范化、排列对齐或置换增强，再以自监督 autoencoding/contrastive 目标训练 hyper-representation；SANE 另使用分块 tokenization 和提示采样。</li><li>判别评估用线性探针从 embedding 预测 accuracy、epoch、optimizer 或超参数；生成评估则在潜空间采样，经 decoder 还原权重并 fine-tune。后续章节引入置换增强、layer-wise/token-based 表示，以跨模型尺寸、架构和任务扩展。</li><li>Figure 1.2 将论文贡献分成 weight-space 分析、model zoo、判别式 hyper-representation、生成式 hyper-representation 和可扩展表示五个环节。</li></ul><figure class="evidence-figure">
   <button class="evidence-figure-image-button" type="button" aria-label="放大查看 Figure 1.2" onclick="window.openPaperFigureImage && window.openPaperFigureImage(this.querySelector('img'))">
     <img class="paper-figure-image evidence-figure-image" src="../../assets/collection-figures/2410.05107/figure-1-2-hyper-representations.webp" alt="五个面板概括 weight spaces、model zoos、hyper-representations、model generation 与 scaling。" loading="lazy" />
   </button>
@@ -139,7 +152,7 @@
 </section>
 <section class="reading-card reading-card-section">
   <h2>核心结果与证据</h2>
-  <div class="reading-card-content"><ul><li>系列实验表明，受训模型在权重空间并非无结构云团：对齐与合适表示后，hyper-representation 可预测性能、训练进度和生成因素，并优于直接在原始展平权重上操作的若干基线。</li><li>在潜空间选择具有目标属性的区域并解码，可生成可训练权重；这些初始化在 fine-tuning 和 transfer learning 中具竞争力。可扩展方法进一步跨越部分网络宽度、架构和任务，但不是任意模型之间的完全统一。</li><li>博士论文的贡献是多年论文集合和框架综合；不同章节的数据集、架构与评价协议并不完全相同，不能把所有结果理解为一个单一端到端系统上的统一 benchmark。</li></ul></div>
+  <div class="reading-card-content"><ul><li>系列实验表明，受训模型在权重空间并非无结构云团：在所测设置中 hyper-representation 可预测性能、训练进度和生成因素，并优于直接展平权重的若干基线；SANE 的 ResNet-18 属性预测与权重统计基线在部分指标上相近。</li><li>在潜空间选择具有目标属性的区域并解码，可生成可训练权重；这些初始化在 fine-tuning 和 transfer learning 中具竞争力。可扩展方法进一步跨越部分网络宽度、架构和任务，但不是任意模型之间的完全统一。</li><li>博士论文的贡献是多年论文集合和框架综合；不同章节的数据集、架构与评价协议并不完全相同，不能把所有结果理解为一个单一端到端系统上的统一 benchmark。</li></ul></div>
 </section>
 <section class="reading-card reading-card-section">
   <h2>有效性与局限</h2>
