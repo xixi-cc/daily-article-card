@@ -112,7 +112,20 @@
             <p class="detail-page-title-zh">漂移与依赖：基于回放的持续学习的逐层信息论界</p>
             <div class="detail-meta">Tieliang Gong、Zhongbo Zhang、Wen Wen、Yong-Jin Liu · 预印本 · arXiv:2608.11690 · <a href="https://arxiv.org/abs/2608.11690" target="_blank" rel="noopener noreferrer">论文原文 ↗</a></div>
             <p class="detail-summary">回放把旧任务总体替换为有限 buffer，并在后续更新中反复使用同一批样本，因此同时产生 representation drift 与 data–optimizer dependence。以往整模型单一复杂度项无法指出哪一层最值得稳定。本文在每个深度切开网络，把两条误差通道分离，并寻找漂移与下游放大之间的内部最优层。</p>
-            <p class="formal-grade-status">正式评级：未评级</p>
+            <details class="formal-grade">
+      <summary>正式评级：A · 29 / 40</summary>
+      <p>评审版本：v1 · 原评审来源：Collection</p>
+      <p class="formal-grade-note">复用 Collection 正式评审；该评级不代表 Daily 准入判定。</p>
+      <table><caption>八轴评分（每轴 5 分，满分 40 分）</caption><tbody><tr><th scope="row">基本理论洞见</th><td>4 / 5</td></tr><tr><th scope="row">数学深度与严谨性</th><td>3 / 5</td></tr><tr><th scope="row">物理内容与可解释性</th><td>1 / 5</td></tr><tr><th scope="row">现代AI基础与机制相关性</th><td>5 / 5</td></tr><tr><th scope="row">普适性与状态变量</th><td>4 / 5</td></tr><tr><th scope="row">理论表述与建模原创性</th><td>4 / 5</td></tr><tr><th scope="row">研究方向契合度</th><td>4 / 5</td></tr><tr><th scope="row">长期科学价值</th><td>4 / 5</td></tr></tbody></table>
+      <p>评级理由：逐层分离回放表示漂移与优化依赖；实测 funnel 使用经验代理，对齐与遗忘的关联随方法变化。</p>
+      <p>评审边界：基于论文来源的评审；未独立复现。</p>
+      <p>S级贡献门槛确认：不适用（当前评级非S）</p>
+      <details class="formal-grade-evidence"><summary>评审记录</summary>
+        <p>Registry 序号：4242</p>
+        <p>原文 PDF SHA-256：<code>c41f2e420c0b6468480e75107d72bc3fd47a6fec09c10bcc77fa3d7724dd17a8</code></p>
+        <p>评审 SHA-256：<code>e542c95f73a524965742d7c8917df132f15b8f5aaae669dd6ffe97ab214862e9</code></p>
+      </details>
+    </details>
           </div>
         </div>
       </div>
@@ -126,11 +139,11 @@
 </section>
 <section class="reading-card reading-card-section">
   <h2>模型与方法</h2>
-  <div class="reading-card-content"><ul><li>在第 $\ell$ 层比较旧任务的总体 representation–label 分布与由有限 replay buffer 诱导的经验代理，得到层依赖 drift。</li><li>主界把期望 generalization gap 拆为 replay-induced representation drift 与 optimization dependence；后者再分成 stability、plasticity、interaction 和 residual coupling。</li><li>有效样本项由旧任务数、每任务 memory $m$ 与当前样本数 $n$ 共同决定；正文写为 $N_{\rm eff}=(T-1)/m+1/n$ 对应的 prefactor 结构，而不是把 replay 次数当独立样本。</li><li>用 Wasserstein relaxation 处理总体分布与经验分布 support 不重合的问题；层目标是 drift $D_\ell$ 与上游/下游敏感度 $\bar\rho_\ell$ 的乘积。</li><li>对 SGLD 优化给出 trajectory-level log-determinant information budget，并由 Hessian 加权的旧/新任务梯度对齐构造可在线计算的 forgetting diagnostic。</li></ul></div>
+  <div class="reading-card-content"><ul><li>在第 $\ell$ 层比较旧任务的总体 representation–label 分布与由有限 replay buffer 诱导的经验代理，得到层依赖 drift。</li><li>主界把期望 generalization gap 拆为 replay-induced representation drift 与 optimization dependence；后者再分成 stability、plasticity、interaction 和 residual coupling。</li><li>有效样本项由旧任务数、每任务 memory $m$ 与当前样本数 $n$ 共同决定：$N_{\rm eff}=[(T-1)/m+1/n]^{-1}$；该定义对应文中未归一化的回放—当前任务目标，不把 replay 次数当独立样本。</li><li>用 Wasserstein relaxation 处理总体分布与经验分布 support 不重合的问题；层目标是 drift $D_\ell$ 与上游/下游敏感度 $\bar\rho_\ell$ 的乘积。</li><li>对 SGLD 优化给出 trajectory-level log-determinant information budget，并由 Hessian 加权的旧/新任务梯度对齐构造可在线计算的 forgetting diagnostic。</li></ul></div>
 </section>
 <section class="reading-card reading-card-section">
   <h2>核心结果与证据</h2>
-  <div class="reading-card-content"><ul><li>边界分析表明输入层的 representation proxy channel 与深层 amplification 的主导关系不同，最小化 $D_\ell\bar\rho_\ell$ 可直接选择要稳定的层，而不是默认冻结最浅或最深层。</li><li>Controlled Gaussian 四层网络中，drift 先降后升、敏感度下降，乘积呈内部凸形，最小值集中在第 2 层；两个端点从未被选中。</li><li>ResNet-10/18/26/34、两种 replay 方法与两个 benchmark 共 12 个组合均出现 drift 的“浴缸形”，12/12 的最小点严格位于网络内部。</li><li>随着网络加深，经验最优稳定层系统性向更深位置移动，支持该准则是相对深度权衡而非固定层规则。</li><li>SGLD 展开把每步 curvature-aware gradient interaction 汇总到 log-det budget；实验中 alignment statistic 与 task-wise forgetting 同步变化，作为监控信号，而非直接声称因果干预。</li><li>有限记忆极限与全数据边界可退化到熟悉的互信息/平均稳定性形式，为分解提供一致性检查。</li></ul></div>
+  <div class="reading-card-content"><ul><li>边界分析表明输入层的 representation proxy channel 与深层 amplification 的主导关系不同，最小化 $D_\ell\bar\rho_\ell$ 可直接选择要稳定的层，而不是默认冻结最浅或最深层。</li><li>Controlled Gaussian 四层网络中，drift 先降后升、敏感度下降，乘积呈内部凸形，最小值集中在第 2 层；两个端点从未被选中。</li><li>ResNet-10/18/26/34、两种 replay 方法与两个 benchmark 共 12 个组合均出现 drift 的“浴缸形”，12/12 的最小点严格位于网络内部。</li><li>随着网络加深，经验最优稳定层系统性向更深位置移动，支持该准则是相对深度权衡而非固定层规则。</li><li>SGLD 展开把每步 curvature-aware gradient interaction 汇总到 log-det budget；曲率加权 alignment 与遗忘在 ER/DER++ 上呈强负相关，但 iCaRL 未呈相同规律，不能据相关性声称因果干预。</li><li>有限记忆极限与全数据边界可退化到熟悉的互信息/平均稳定性形式，为分解提供一致性检查。</li></ul></div>
 </section>
 <section class="reading-card reading-card-section">
   <h2>有效性与局限</h2>
@@ -138,7 +151,7 @@
 </section>
 <section class="reading-card reading-card-section">
   <h2>复现与资源</h2>
-  <div class="reading-card-content"><ul><li>原文 PDF：https://arxiv.org/pdf/2608.11690。</li><li>未在论文文本中发现专属代码链接。</li><li>复现应逐层保存总体/回放 representation，分别画 $D_\ell$、$\bar\rho_\ell$ 与其乘积，并对 12 个 method–dataset–depth 单元报告内部 minimizer；在线诊断需同步记录曲率加权 gradient alignment 和旧任务 accuracy drop。</li></ul></div>
+  <div class="reading-card-content"><ul><li>原文 PDF：https://arxiv.org/pdf/2608.11690。</li><li>未在论文文本中发现专属代码链接。</li><li>复现应逐层保存总体/回放 representation，分别画 $D_\ell$、$\bar\rho_\ell$ 与其乘积，并对 12 个 method–dataset–depth 单元报告内部 minimizer；在线诊断需同步记录曲率加权 gradient alignment 和旧任务 accuracy drop。 深网的内部 funnel 使用分布内 Jacobian 敏感度经验代理，并非认证的全局 Lipschitz 上界最小值。</li></ul></div>
 </section>
 <section class="reading-card reading-card-section">
   <h2>阅读指南</h2>

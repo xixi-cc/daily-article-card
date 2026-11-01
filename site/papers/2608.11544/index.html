@@ -112,7 +112,20 @@
             <p class="detail-page-title-zh">通过 CVaR 惩罚 Wasserstein 梯度流微调极端事件生成模型</p>
             <div class="detail-meta">Thejani Gamage、Hyemin Gu、Zhizhen Zhang、Ziyu Chen、Markos Katsoulakis、Luc Rey-Bellet · 预印本 · arXiv:2608.11544 · <a href="https://arxiv.org/abs/2608.11544" target="_blank" rel="noopener noreferrer">论文原文 ↗</a></div>
             <p class="detail-summary">Lipschitz generator 从轻尾 source 出发通常保留尾型，且 finite data 尾部稀少会让 KL particle flow 过早速度归零。CVaR-GPA 不预估 tail index，而在 Lipschitz-regularized KL 的 Wasserstein gradient flow 中加入目标/模型 CVaR discrepancy，为欠采样极端区恢复 transport velocity。</p>
-            <p class="formal-grade-status">正式评级：未评级</p>
+            <details class="formal-grade">
+      <summary>正式评级：A · 28 / 40</summary>
+      <p>评审版本：v1 · 原评审来源：Collection</p>
+      <p class="formal-grade-note">复用 Collection 正式评审；该评级不代表 Daily 准入判定。</p>
+      <table><caption>八轴评分（每轴 5 分，满分 40 分）</caption><tbody><tr><th scope="row">基本理论洞见</th><td>3 / 5</td></tr><tr><th scope="row">数学深度与严谨性</th><td>3 / 5</td></tr><tr><th scope="row">物理内容与可解释性</th><td>2 / 5</td></tr><tr><th scope="row">现代AI基础与机制相关性</th><td>4 / 5</td></tr><tr><th scope="row">普适性与状态变量</th><td>3 / 5</td></tr><tr><th scope="row">理论表述与建模原创性</th><td>4 / 5</td></tr><tr><th scope="row">研究方向契合度</th><td>5 / 5</td></tr><tr><th scope="row">长期科学价值</th><td>4 / 5</td></tr></tbody></table>
+      <p>评级理由：CVaR 粒子流改善部分有限样本尾部指标；非 Lipschitz 不单独保证渐近尾型改变，理论须满足风险有限矩条件。</p>
+      <p>评审边界：基于论文来源的评审；未独立复现。</p>
+      <p>S级贡献门槛确认：不适用（当前评级非S）</p>
+      <details class="formal-grade-evidence"><summary>评审记录</summary>
+        <p>Registry 序号：4243</p>
+        <p>原文 PDF SHA-256：<code>496f9f0026d38dabc0c759b76bed90b7ea53b42666a0655deda38a103646294f</code></p>
+        <p>评审 SHA-256：<code>20e7ba30a0c1428fd39953b5ab162431c7aaed1f13c06a07d27ef981f7af3032</code></p>
+      </details>
+    </details>
           </div>
         </div>
       </div>
@@ -126,7 +139,7 @@
 </section>
 <section class="reading-card reading-card-section">
   <h2>模型与方法</h2>
-  <div class="reading-card-content"><ul><li>输入可为任意 pretrained generator 的输出样本，无需访问网络内部；把样本作为 interacting particles 继续 transport。</li><li>基础 loss 是 variational Lipschitz-regularized KL，在仅有限一阶矩等弱条件下可由 samples 估计。</li><li>风险函数 $g$ 默认径向；用 Rockafellar–Uryasev representation 推导 CVaR 对 empirical measures 的 first-variation subgradient，避免 density formula 在离散经验测度失效。</li><li>所得 Wasserstein velocity 有界但非 Lipschitz；这正允许跨越标准 Lipschitz map 的 tail-preservation 障碍。</li><li>用 particle kinetic energy 作为停止条件，使 flow depth 由 target data 决定；比较 Lip-KL-GPA baseline。</li></ul></div>
+  <div class="reading-card-content"><ul><li>输入可为任意 pretrained generator 的输出样本，无需访问网络内部；把样本作为 interacting particles 继续 transport。</li><li>基础 loss 是 variational Lipschitz-regularized KL；总体 CVaR 理论还要求目标和模型的风险函数具有有限期望，模型测度需有限一阶矩。径向风险下 Cauchy 总体不满足该矩条件，但有限经验测度可计算。</li><li>风险函数 $g$ 默认径向；用 Rockafellar–Uryasev representation 推导 CVaR 对 empirical measures 的 first-variation subgradient，避免 density formula 在离散经验测度失效。</li><li>所得 Wasserstein velocity 可有界但非 Lipschitz；非 Lipschitz 本身不足以证明渐近尾型改变。若有限时间内存在时间可积的统一空间速度上界，粒子位移有界，轻尾只被有限平移夹住；文中的尾部改善限于所测有限样本范围。</li><li>用 particle kinetic energy 作为停止条件，使 flow depth 由 target data 决定；比较 Lip-KL-GPA baseline。</li></ul></div>
 </section>
 <section class="reading-card reading-card-section">
   <h2>核心结果与证据</h2>
@@ -134,7 +147,7 @@
 </section>
 <section class="reading-card reading-card-section">
   <h2>有效性与局限</h2>
-  <div class="reading-card-content"><ul><li>CVaR 强度/level 错配会损害轻尾维度，图 5 已给负结果。</li><li>径向 $g$ 对各向异性尾不最优；per-coordinate/adaptive risk 是未来方向。</li><li>粒子/critic 近似与 non-Lipschitz velocity 带来数值稳定和有限样本误差。</li><li>能量停止阈值是额外超参数，不保证统计最优 stopping。</li><li>实验优于强 Lip-KL baseline，但未与所有最新 tail generator 在统一预算完整比较。</li></ul></div>
+  <div class="reading-card-content"><ul><li>CVaR 强度/level 错配会损害轻尾维度，图 5 已给负结果。</li><li>径向 $g$ 对各向异性尾不最优；per-coordinate/adaptive risk 是未来方向。</li><li>粒子/critic 近似与 non-Lipschitz velocity 带来数值稳定和有限样本误差。 逐时有界未必给出时间可积统一界；实际适用性需核查流的具体条件。</li><li>能量停止阈值是额外超参数，不保证统计最优 stopping。</li><li>实验优于强 Lip-KL baseline，但未与所有最新 tail generator 在统一预算完整比较。</li></ul></div>
 </section>
 <section class="reading-card reading-card-section">
   <h2>复现与资源</h2>
