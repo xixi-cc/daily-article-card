@@ -112,7 +112,20 @@
             <p class="detail-page-title-zh">基于表示的上下文学习：训练后 Transformer 的上下文泛化</p>
             <div class="detail-meta">Tong Yang、Yu Huang、Yingbin Liang、Yuejie Chi · 预印本 · arXiv:2408.10147 · <a href="https://arxiv.org/abs/2408.10147" target="_blank" rel="noopener noreferrer">论文原文 ↗</a></div>
             <p class="detail-summary">已有 ICL 理论常假设 linear regression 或 prompt 中样本足以确定 task。本文问：当响应由 \(m\) 个未知 basis functions 的线性组合生成，而每个 prompt 只有 \(N\) 个带噪 examples、\(N\) 不足以直接确定 template 时，训练能否学到跨 prompts 共享的 representation？</p>
-            <p class="formal-grade-status">正式评级：未评级</p>
+            <details class="formal-grade">
+      <summary>正式评级：A · 31 / 40</summary>
+      <p>评审版本：v2 · 原评审来源：Collection</p>
+
+      <table><caption>八轴评分（每轴 5 分，满分 40 分）</caption><tbody><tr><th scope="row">基本理论洞见</th><td>4 / 5</td></tr><tr><th scope="row">数学深度与严谨性</th><td>4 / 5</td></tr><tr><th scope="row">物理内容与可解释性</th><td>1 / 5</td></tr><tr><th scope="row">现代AI基础与机制相关性</th><td>5 / 5</td></tr><tr><th scope="row">普适性与状态变量</th><td>4 / 5</td></tr><tr><th scope="row">理论表述与建模原创性</th><td>4 / 5</td></tr><tr><th scope="row">研究方向契合度</th><td>5 / 5</td></tr><tr><th scope="row">长期科学价值</th><td>4 / 5</td></tr></tbody></table>
+      <p>评级理由：受控多头模型的总体训练与上下文 ridge 预测建立联系；定理依赖固定词典和架构条件。</p>
+      <p>评审边界：基于论文来源的评审；未独立复现。</p>
+      <p>S级贡献门槛确认：不适用（当前评级非S）</p>
+      <details class="formal-grade-evidence"><summary>评审记录</summary>
+        <p>Registry 序号：4263</p>
+        <p>原文 PDF SHA-256：<code>fdfb7d03fafed760589d03d4a9fec993e62e16642a06f91c1fd8b006e5b718b4</code></p>
+        <p>评审 SHA-256：<code>70c5e26e22b22eb87f40162b30dc529695212ce0f008e2093fc9088d94276dbe</code></p>
+      </details>
+    </details>
           </div>
         </div>
       </div>
@@ -122,11 +135,11 @@
       <div class="detail-shell">
         <article id="detail-body" class="reading-flow"><section class="reading-card reading-card-section">
   <h2>研究问题</h2>
-  <div class="reading-card-content"><ul><li>已有 ICL 理论常假设 linear regression 或 prompt 中样本足以确定 task。本文问：当响应由 \(m\) 个未知 basis functions 的线性组合生成，而每个 prompt 只有 \(N\) 个带噪 examples、\(N\) 不足以直接确定 template 时，训练能否学到跨 prompts 共享的 representation？</li><li>Contextual generalization包含两层：对 prompt 内未标注 query generalize，以及对 pretraining 中未见的 task coefficient \(\lambda\) generalize。作者希望从 gradient descent dynamics 证明，而不只构造理想 weights。</li></ul></div>
+  <div class="reading-card-content"><ul><li>已有 ICL 理论常假设 linear regression 或 prompt 中样本足以确定 task。本文问：当响应由 \(m\) 个未知 basis functions 的线性组合生成，而每个 prompt 只有 \(N\) 个带噪 examples、\(N\) 不足以直接确定 template 时，训练能否学到跨 prompts 共享的 representation？</li><li>Contextual generalization包含两层：对固定词典中 prompt 未标注的 query generalize，以及对 pretraining 中未见的 task coefficient \(\lambda\) generalize；前者不等于泛化到全新词典外输入。作者希望从 gradient descent dynamics 证明，而不只构造理想 weights。</li></ul></div>
 </section>
 <section class="reading-card reading-card-section">
   <h2>模型与方法</h2>
-  <div class="reading-card-content"><ul><li>Task 输出 \(y_{k}=\lambda\)^\(T\)(\(f\)(\(v_{k}\))+\(\epsilon_{k}\))，\(\lambda\) 从 task distribution 采样，\(f\)(v) 是 \(m\)-dimensional basis representation，\(\epsilon\) 为 Gaussian noise。Prompt 拼接 \(N\) labeled examples 与 query positions。</li><li>一层 \(H\)-head softmax attention 分别从 prompt \(E^{P}\) 和 query \(E^{Q}\) 形成 value/key/query，再经 output matrix预测所有 query labels。Figure 1 展示矩阵流。训练对 many prompts 的 population/empirical squared loss 做 gradient descent。</li><li>在 basis covariance、task distribution、initialization、head 数和 sample size 条件下，作者建立 PL-like geometry/concentration，证明 loss 线性收敛到 global minimum；learned predictor 等价于在 \(f\)-space 中执行 ridge regression。</li></ul><figure class="evidence-figure">
+  <div class="reading-card-content"><ul><li>Task 输出 \(y_{k}=\lambda\)^\(T\)(\(f\)(\(v_{k}\))+\(\epsilon_{k}\))，\(\lambda\) 从 task distribution 采样，\(f\)(v) 是 \(m\)-dimensional basis representation，\(\epsilon\) 为 Gaussian noise。Prompt 拼接 \(N\) labeled examples 与 query positions。</li><li>一层 \(H\)-head softmax attention 分别从 prompt \(E^{P}\) 和 query \(E^{Q}\) 形成 value/key/query，再经 output matrix预测所有 query labels。Figure 1 展示矩阵流。理论分析对 prompt 分布定义的 population squared loss 做 full gradient descent。</li><li>在 basis covariance、task distribution、initialization、head 数和 prompt 长度等条件下，作者证明 population loss 线性收敛至全局最小值；充分训练后的预测以高概率逼近 \(f\)-space 中的 ridge regression。</li></ul><figure class="evidence-figure">
   <button class="evidence-figure-image-button" type="button" aria-label="放大查看 Figure 1" onclick="window.openPaperFigureImage && window.openPaperFigureImage(this.querySelector('img'))">
     <img class="paper-figure-image evidence-figure-image" src="../../assets/collection-figures/2408.10147/figure-1-icl-transformer.webp" alt="Prompt 和 query blocks 经 value-key-query heads 与 output projection 得到多 query predictions。" loading="lazy" />
   </button>
@@ -139,11 +152,11 @@
 </section>
 <section class="reading-card reading-card-section">
   <h2>核心结果与证据</h2>
-  <div class="reading-card-content"><ul><li>Theorem 1/2 给出一层多头 Transformer 的训练收敛与 prediction characterization：模型并非仅复制 labels，而是通过预训练 heads 学到共享 basis representation，再用 prompt进行正则化回归。误差取决于 \(N\)、\(m\)、噪声 \(\tau\) 与 conditioning。</li><li>Figure 2 的一层和四层实验显示 training/inference losses下降，并在 unseen examples 与 unseen tasks 上泛化；Figure 3 中 \(N\) 接近 \(m\) 时与 best ridge predictor 的 gap 改善，符合理论 scaling。</li><li>Figure 4 显示一层模型需要足够 \(H\) 保证理论/经验收敛，但 \(H\) 过大在固定设置下出现 instability 或更慢；四层实验表明深度可改变 head-width requirement，因此一层定理不能直接外推到深网络。</li></ul></div>
+  <div class="reading-card-content"><ul><li>Theorem 1/2 给出一层多头 Transformer 的训练收敛与 prediction characterization：在固定词典与共享 basis 的设定下，充分训练后的预测逼近基于该表示的正则化回归；这不证明模型在整个输入空间恢复了 basis。误差取决于 \(N\)、\(m\)、噪声 \(\tau\) 与 conditioning。</li><li>Figure 2 的一层和四层实验显示 training/inference losses下降，并在 unseen examples 与 unseen tasks 上泛化；Figure 3 中 \(N\) 接近 \(m\) 时与 best ridge predictor 的 gap 改善，符合理论 scaling。</li><li>Figure 4 显示一层模型需要足够 \(H\) 保证理论/经验收敛，但 \(H\) 过大在固定设置下出现 instability 或更慢；四层实验表明深度可改变 head-width requirement，因此一层定理不能直接外推到深网络。</li></ul></div>
 </section>
 <section class="reading-card reading-card-section">
   <h2>有效性与局限</h2>
-  <div class="reading-card-content"><ul><li>Task family 已知落在固定 \(m\)-dimensional linear span，\(\lambda\)、noise 与 input distribution 满足强结构；自然语言 representations 非独立、basis 未知且任务不必线性。Ridge-regression 等价是该生成模型下的结果。</li><li>证明针对一层、特定 softmax parameterization、初始化与 overparameterized heads；宽度/sample lower bounds 可能保守。Population convergence 与有限训练数据之间靠 concentration，超出假设时无保证。</li><li>四层结果只是数值 extension，不构成深 Transformer theory。Unseen tasks来自同一 \(\lambda\) distribution，不代表语义上开放域 task transfer。本卡未独立复现。</li></ul></div>
+  <div class="reading-card-content"><ul><li>Task family 已知落在固定 \(m\)-dimensional linear span，\(\lambda\)、noise 与 input distribution 满足强结构；自然语言 representations 非独立、basis 未知且任务不必线性。Ridge-regression 等价是该生成模型下的结果。</li><li>证明针对一层、特定 softmax parameterization、初始化与 overparameterized heads；宽度/sample lower bounds 可能保守。收敛定理使用 population loss 和全梯度，不直接给出有限训练 prompt 数下的收敛保证；推断误差的概率界涉及 prompt 噪声。</li><li>四层结果只是数值 extension，不构成深 Transformer theory。推断定理允许有界的 \(\lambda\) 位于训练分布支持之外；数值实验也测试分布偏移，但共享 basis 与其他假设仍在，不代表语义上开放域 task transfer。本卡未独立复现。</li></ul></div>
 </section>
 <section class="reading-card reading-card-section">
   <h2>复现与资源</h2>
