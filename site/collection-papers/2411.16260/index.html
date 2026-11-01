@@ -112,7 +112,20 @@
             <p class="detail-page-title-zh">解析大语言模型中的算术：代数结构的作用</p>
             <div class="detail-meta">Fu-Chieh Chang、You-Chen Lin、Pei-Yuan Wu · 预印本 · arXiv:2411.16260 · <a href="https://arxiv.org/abs/2411.16260" target="_blank" rel="noopener noreferrer">论文原文 ↗</a></div>
             <p class="detail-summary">模型在未见算式上答对，可能只是记住 token 组合或做数值插值，并不代表学会交换律 a+\(b=b\)+a、单位元 a+\(0=a\)。怎样设计训练/测试集合，排除这些平凡捷径？</p>
-            <p class="formal-grade-status">正式评级：未评级</p>
+            <details class="formal-grade">
+      <summary>正式评级：B · 27 / 40</summary>
+      <p>评审版本：v3 · 原评审来源：Collection</p>
+
+      <table><caption>八轴评分（每轴 5 分，满分 40 分）</caption><tbody><tr><th scope="row">基本理论洞见</th><td>3 / 5</td></tr><tr><th scope="row">数学深度与严谨性</th><td>3 / 5</td></tr><tr><th scope="row">物理内容与可解释性</th><td>2 / 5</td></tr><tr><th scope="row">现代AI基础与机制相关性</th><td>4 / 5</td></tr><tr><th scope="row">普适性与状态变量</th><td>3 / 5</td></tr><tr><th scope="row">理论表述与建模原创性</th><td>4 / 5</td></tr><tr><th scope="row">研究方向契合度</th><td>4 / 5</td></tr><tr><th scope="row">长期科学价值</th><td>4 / 5</td></tr></tbody></table>
+      <p>评级理由：受控符号任务和参数构造研究排列与单位元不变量；结果依赖训练分割、模型和规模，未证明一般 LLM 算术机制。</p>
+      <p>评审边界：基于论文来源的评审；未独立复现。</p>
+      <p>S级贡献门槛确认：不适用（当前评级非S）</p>
+      <details class="formal-grade-evidence"><summary>评审记录</summary>
+        <p>Registry 序号：4292</p>
+        <p>原文 PDF SHA-256：<code>20495f3c4b751fb1a778d5b863de82f98163e464691a1364c820ea9387a044e6</code></p>
+        <p>评审 SHA-256：<code>aa5688adc44e297ad73b52e37103e6b14142f152b3cd82beab7d60352bbe2495</code></p>
+      </details>
+    </details>
           </div>
         </div>
       </div>
@@ -126,11 +139,11 @@
 </section>
 <section class="reading-card reading-card-section">
   <h2>模型与方法</h2>
-  <div class="reading-card-content"><ul><li>作者在有限循环群 \(Z_{n}\) 上生成多项加法序列，并构造符号不同的运算 ⊕ 与不满足目标性质的对照 ⊖。训练/测试共享 token 集，但把某些排列或含单位元位置组合系统留出，保证测试需要结构泛化。</li><li>为排除纯数值计算与 token memorization，输出 label 和运算符可重新映射，训练集只暴露受控组合。Figure 1 列出三种运算的训练/测试例子，Figure 2 定义各层 hidden states 与 attention 变量。</li><li>定义层级指标 \(S_{\mathrm{com}}\) 与 \(S_{\mathrm{ide}}\)，比较交换置换或插入单位元前后的隐藏表示相似性；在 \(Z_{7}\)、\(Z_{11}\)、\(Z_{13}\) 和不同训练规模 \(K\) 上记录训练/测试 accuracy 与指标沿层变化。</li></ul></div>
+  <div class="reading-card-content"><ul><li>作者在有限循环群 \(Z_{n}\) 上生成加法序列，并对每个输入多重集随机指定群外标签，构造对排列和插入 z₀ 不变的 ⊕ 规则；它不是已证明与模加同构的封闭群运算。对照还包括 ⊖、⊳、⊲。测试保留某些排列或插零形式，相同多重集或无零基式已出现在训练中。</li><li>为排除纯数值计算与 token memorization，输出 label 和运算符可重新映射，训练集只暴露受控组合。Figure 1 列出三种运算的训练/测试例子，Figure 2 定义各层 hidden states 与 attention 变量。</li><li>层级指标 \(S_{\mathrm{com}}\) 比较不同操作符下置换样本隐藏状态的逐坐标标准差和；\(S_{\mathrm{ide}}\) 比较插零前后隐藏状态距离和。Figure 4 展示 + 相对于 ⊖、⊳、⊲ 的指标差，不直接比较 ⊕。</li></ul></div>
 </section>
 <section class="reading-card reading-card-section">
   <h2>核心结果与证据</h2>
-  <div class="reading-card-content"><ul><li>训练过程出现分阶段泛化：训练 accuracy 可先升高，而交换律/单位元留出测试在更多步后才突增。Figure 3 显示 \(Z_{7}\) 的时间曲线以及不同群阶随 \(K\) 的最终准确率；更大训练集通常提高结构泛化。</li><li>对满足性质的 + 运算，深层 hidden states 的 \(S_{\mathrm{com}}\) 和 \(S_{\mathrm{ide}}\) 增强；对重新标记但同构的 ⊕ 也可出现相应信号，而对非交换/无单位元对照 ⊖ 不应呈相同模式。Figure 4 用层级热图展示差异。</li><li>结果支持模型能从数据诱导部分代数不变量，而不只回忆见过的字符串；但“学习群结构”是基于两条性质和有限受控任务的结论，不代表形成完整抽象代数推理系统。</li></ul><figure class="evidence-figure">
+  <div class="reading-card-content"><ul><li>Figure 3 上排的 \(Z_{7}\)、\(K=3000\) 设置中训练准确率达到 100%，但 + 与 ⊕ 的交换性测试仍不高；下排随训练规模增大，交换性约在 \(K=10000\)–20000 才超过 99%，单位元测试在更小 \(K\) 达高准确率。训练规模的比较不能写成同一设置内最终均突增。</li><li>Figure 4 比较 + 与 ⊖、⊳、⊲ 的隐藏状态统计：训练规模增加时 + 的置换标准差与插零距离相对对照减小。图中未直接比较 ⊕，该相关性不能确认训练模型采用作者的手工参数构造。</li><li>结果支持模型能从数据诱导部分代数不变量，而不只回忆见过的字符串；但“学习群结构”是基于两条性质和有限受控任务的结论，不代表形成完整抽象代数推理系统。</li></ul><figure class="evidence-figure">
   <button class="evidence-figure-image-button" type="button" aria-label="放大查看 Figure 3" onclick="window.openPaperFigureImage && window.openPaperFigureImage(this.querySelector('img'))">
     <img class="paper-figure-image evidence-figure-image" src="../../assets/collection-figures/2411.16260/figure-3-algebra-generalization.webp" alt="多个训练/测试属性曲线以及三个有限群上的 K 扫描。" loading="lazy" />
   </button>
@@ -143,7 +156,7 @@
 </section>
 <section class="reading-card reading-card-section">
   <h2>有效性与局限</h2>
-  <div class="reading-card-content"><ul><li>任务使用很小的有限群、固定表达格式和从头训练模型，结构信号可能依赖 tokenizer 与位置模板。对更复杂群、非阿贝尔运算、组合嵌套和自然语言问题的泛化未知。</li><li>留出设计降低记忆捷径，却难以穷尽所有统计线索；例如特定 token 频率、序列长度或输出映射仍可能帮助分类。需要随机化符号、长度和 group isomorphism 做更严格 out-of-distribution tests。</li><li>\(S_{\mathrm{com}}\)/\(S_{\mathrm{ide}}\) 是研究者定义的表征相似度，相关增强不证明这些方向因果实现运算；需 activation patching 或 direction ablation。本卡未独立复现。</li></ul></div>
+  <div class="reading-card-content"><ul><li>任务使用很小的有限群、固定表达格式和从头训练模型，结构信号可能依赖 tokenizer 与位置模板。对更复杂群、非阿贝尔运算、组合嵌套和自然语言问题的泛化未知。</li><li>留出设计降低记忆捷径，却难以穷尽所有统计线索；例如特定 token 频率、序列长度或输出映射仍可能帮助分类。需要随机化符号、长度和 group isomorphism 做更严格 out-of-distribution tests。</li><li>\(S_{\mathrm{com}}\)/\(S_{\mathrm{ide}}\) 是研究者定义的跨操作符隐藏状态统计差，相关变化不证明因果实现运算；论文的参数构造是存在性结果，不证明训练必然学到该构造。本卡未独立复现。</li></ul></div>
 </section>
 <section class="reading-card reading-card-section">
   <h2>复现与资源</h2>
