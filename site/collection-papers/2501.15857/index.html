@@ -112,7 +112,20 @@
             <p class="detail-page-title-zh">Transformer 能否连接训练数据中分散的知识进行推理？</p>
             <div class="detail-meta">Yutong Yin、Zhaoran Wang · 预印本 · arXiv:2501.15857 · <a href="https://arxiv.org/abs/2501.15857" target="_blank" rel="noopener noreferrer">论文原文 ↗</a></div>
             <p class="detail-summary">语言模型可能在不同文档见到 \(A\to B\) 与 \(B\to C\)，却从未见完整 \(A\to B\to C\)。测试时给少量 demonstrations，它能否组合分散知识，而非回忆完整链或只做局部 next-token continuation？</p>
-            <p class="formal-grade-status">正式评级：未评级</p>
+            <details class="formal-grade">
+      <summary>正式评级：A · 28 / 40</summary>
+      <p>评审版本：v8 · 原评审来源：Collection</p>
+
+      <table><caption>八轴评分（每轴 5 分，满分 40 分）</caption><tbody><tr><th scope="row">基本理论洞见</th><td>4 / 5</td></tr><tr><th scope="row">数学深度与严谨性</th><td>3 / 5</td></tr><tr><th scope="row">物理内容与可解释性</th><td>1 / 5</td></tr><tr><th scope="row">现代AI基础与机制相关性</th><td>5 / 5</td></tr><tr><th scope="row">普适性与状态变量</th><td>3 / 5</td></tr><tr><th scope="row">理论表述与建模原创性</th><td>4 / 5</td></tr><tr><th scope="row">研究方向契合度</th><td>4 / 5</td></tr><tr><th scope="row">长期科学价值</th><td>4 / 5</td></tr></tbody></table>
+      <p>评级理由：合成任务检验碎片知识组合；示例提供完整顺序，构造存在性不保证训练收敛，测试损失定义与定理数值存在不一致。</p>
+      <p>评审边界：基于论文来源的评审；未独立复现。</p>
+      <p>S级贡献门槛确认：不适用（当前评级非S）</p>
+      <details class="formal-grade-evidence"><summary>评审记录</summary>
+        <p>Registry 序号：4218</p>
+        <p>原文 PDF SHA-256：<code>7827f9b8033215a92b39baa22aeca5048786146a2d609dc1ba5c479ca067bb23</code></p>
+        <p>评审 SHA-256：<code>64b683e25186f169948d573e73ac4f9b3d61c24477b16e25875366de4e2712bf</code></p>
+      </details>
+    </details>
           </div>
         </div>
       </div>
@@ -126,7 +139,7 @@
 </section>
 <section class="reading-card reading-card-section">
   <h2>模型与方法</h2>
-  <div class="reading-card-content"><ul><li>先采样有向 causal structure 与节点 value transformations。训练数据只含长度≤\(M\) 的 fragmented child chains，并混入 noise vertices；测试要求生成更长 chained sequence，确保完整推理链未在训练中出现。</li><li>Few-shot examples 提供任务格式，随后 query 要预测按因果父子顺序变换的 vertices/values。Figure 1 展示结构、训练碎片、测试长链与 downstream preprocessing 的全流程。</li><li>评价拆为 whole-chain accuracy、vertex-order accuracy、value accuracy 等；扫描 \(N\)、\(M\)、模型架构与 shots。Attention weight 和 hidden-state probes 检查模型是否关注 parent vertices。</li></ul><figure class="evidence-figure">
+  <div class="reading-card-content"><ul><li>先采样有向 causal structure 与节点 value transformations。训练数据只含长度≤\(M\) 的 fragmented child chains，并混入 noise vertices；测试要求生成更长 chained sequence，确保完整推理链未在训练中出现。</li><li>Few-shot examples 给出完整顶点顺序及对应值，随后 query 要预测按因果父子顺序变换的 vertices/values；这些示例提供的顺序信息是任务条件的一部分。Figure 1 展示结构、训练碎片、测试长链与 downstream preprocessing 的全流程。</li><li>评价拆为 whole-chain accuracy、vertex-order accuracy、value accuracy 等；扫描 \(N\)、\(M\)、模型架构与 shots。Attention weight 和 hidden-state probes 检查模型是否关注 parent vertices。</li></ul><figure class="evidence-figure">
   <button class="evidence-figure-image-button" type="button" aria-label="放大查看 Figure 1" onclick="window.openPaperFigureImage && window.openPaperFigureImage(this.querySelector('img'))">
     <img class="paper-figure-image evidence-figure-image" src="../../assets/collection-figures/2501.15857/figure-1-ftct.webp" alt="因果结构、短训练链、长测试链和 few-shot prompts 的流程图。" loading="lazy" />
   </button>
@@ -143,7 +156,7 @@
 </section>
 <section class="reading-card reading-card-section">
   <h2>有效性与局限</h2>
-  <div class="reading-card-content"><ul><li>FTCT 是人工图与符号序列，训练/测试生成器共享规则；自然知识的歧义、矛盾、实体链接和开放世界缺失未覆盖。Few-shot examples 可能直接教会输出算法格式。</li><li>保证完整长链未出现并不排除模型从局部频率或位置模板利用捷径；需换图同构、符号重映射、长度外推和 adversarial noise 控制。</li><li>probe 可解码 parent information 不证明模型用它产生答案，attention weight 也非因果证据；需要 activation/path patching。标题问题只能在所测规模和任务上条件回答。本卡未独立复现。</li></ul></div>
+  <div class="reading-card-content"><ul><li>原文 Eq. (1) 将测试损失定义为正确事件概率的负值，完美正确时为 −1；Theorem 5.4 写测试损失为 0，与该定义存在未解释的不一致。FTCT 是人工图与符号序列，训练/测试生成器共享规则；自然知识的歧义、矛盾、实体链接和开放世界缺失未覆盖。Few-shot examples 可能直接教会输出算法格式。</li><li>保证完整长链未出现并不排除模型从局部频率或位置模板利用捷径；需换图同构、符号重映射、长度外推和 adversarial noise 控制。</li><li>probe 可解码 parent information 不证明模型用它产生答案，attention weight 也非因果证据；需要 activation/path patching。标题问题只能在所测规模和任务上条件回答。本卡未独立复现。</li></ul></div>
 </section>
 <section class="reading-card reading-card-section">
   <h2>复现与资源</h2>
