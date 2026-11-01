@@ -112,7 +112,20 @@
             <p class="detail-page-title-zh">理解大型视觉语言模型中的知识如何演化</p>
             <div class="detail-meta">Sudong Wang、Yunjian Zhang、Yao Zhu、Jianing Li、Zizhe Wang、Yanwei Liu、Xiangyang Ji · 预印本 · arXiv:2504.02862 · <a href="https://arxiv.org/abs/2504.02862" target="_blank" rel="noopener noreferrer">论文原文 ↗</a></div>
             <p class="detail-summary">视觉知识在 LVLM 的语言后端中如何逐层转化为词汇预测？最终答案只给终点，无法区分信息何时形成、稳定或发生突变。</p>
-            <p class="formal-grade-status">正式评级：未评级</p>
+            <details class="formal-grade">
+      <summary>正式评级：B · 25 / 40</summary>
+      <p>评审版本：v2 · 原评审来源：Collection</p>
+
+      <table><caption>八轴评分（每轴 5 分，满分 40 分）</caption><tbody><tr><th scope="row">基本理论洞见</th><td>3 / 5</td></tr><tr><th scope="row">数学深度与严谨性</th><td>2 / 5</td></tr><tr><th scope="row">物理内容与可解释性</th><td>2 / 5</td></tr><tr><th scope="row">现代AI基础与机制相关性</th><td>4 / 5</td></tr><tr><th scope="row">普适性与状态变量</th><td>3 / 5</td></tr><tr><th scope="row">理论表述与建模原创性</th><td>3 / 5</td></tr><tr><th scope="row">研究方向契合度</th><td>4 / 5</td></tr><tr><th scope="row">长期科学价值</th><td>4 / 5</td></tr></tbody></table>
+      <p>评级理由：逐层读出和有限跳层示例揭示所测视觉语言模型的输出变化；阶段解释及泛化仍受模型和证据范围限制。</p>
+      <p>评审边界：基于论文来源的评审；未独立复现。</p>
+      <p>S级贡献门槛确认：不适用（当前评级非S）</p>
+      <details class="formal-grade-evidence"><summary>评审记录</summary>
+        <p>Registry 序号：4289</p>
+        <p>原文 PDF SHA-256：<code>e4bab7c1319388c57837c6a4c2d85ea9cb7d460bd09a0e8fe343b1b47cc47567</code></p>
+        <p>评审 SHA-256：<code>9db980005405b0437e1a4f8ee50ddf6cfd32101d3e17717d3f6976f052952939</code></p>
+      </details>
+    </details>
           </div>
         </div>
       </div>
@@ -126,7 +139,7 @@
 </section>
 <section class="reading-card reading-card-section">
   <h2>模型与方法</h2>
-  <div class="reading-card-content"><ul><li>在各 transformer blocks 后接共享/校准 output head 做 early exit，记录正确 token 概率与排名；用分布距离比较全词表预测，并分析 hidden feature 相似性/方向。</li><li>跨问题、图像、模型和任务聚合层级轨迹，依据变化率定位 critical 与 mutation layers；将阶段划分与回答正确性和视觉/语言信息关联。</li></ul><figure class="evidence-figure">
+  <div class="reading-card-content"><ul><li>在各 transformer blocks 后使用同一最终 language head 做 early-exit 读出，记录目标 token 概率；比较全词表预测的 JS 散度，并以 \(t\)-SNE 展示隐藏特征。本次未见中间层独立校准的报告。</li><li>主要在 LLaVA-1.5 的 32 层 Vicuna 后端，结合 AMBER、MSCOCO 图像描述和单词视觉问答示例观察层级轨迹；另有纯文本 LLaMA 示例，不构成跨视觉语言模型的系统聚合。</li></ul><figure class="evidence-figure">
   <button class="evidence-figure-image-button" type="button" aria-label="放大查看 Figure 1" onclick="window.openPaperFigureImage && window.openPaperFigureImage(this.querySelector('img'))">
     <img class="paper-figure-image evidence-figure-image" src="../../assets/collection-figures/2504.02862/figure-1-knowledge-evolution.webp" alt="多模态 token 逐层经过 transformer，以 early-exit 输出头分析单 token 概率、全词表分布和 hidden features。" loading="lazy" />
   </button>
@@ -143,7 +156,7 @@
 </section>
 <section class="reading-card reading-card-section">
   <h2>有效性与局限</h2>
-  <div class="reading-card-content"><ul><li>只含 11 页的经验研究，模型/任务覆盖和层阈值细节限制普适性；不同 LVLM connector、语言模型深度与 prompting 会改变阶段位置。</li><li>线性输出或相似度探针可能把可解码信息误认成计算完成，需要 layer intervention、activation patching 与反事实视觉输入。</li><li>论文给出的图形、相关性或有限规模干预只支持其明示范围；跨数据、架构、模型规模与训练制度时需要重新验证。本卡未独立复现，不能把受控实验直接提升为普适机制。</li><li>对结论做强审计时，应设置能产生相似表面指标的替代机制、匹配参数量与计算预算、报告失败案例和置信区间，并检查阈值、归一化、样本选择及评价器是否预先偏向作者假说。</li><li>若论文声称发现机制，还应要求前向预测新的干预结果，而不只事后解释已有曲线；至少应在未用于选择假说的数据、不同随机种子和合理替代基线上保持。</li><li>此外应明确负结果的含义：未观察到效应可能来自统计功效、测量误差或实现差异，不能自动当作理论反证；观察到效应也需排除共同原因。</li></ul></div>
+  <div class="reading-card-content"><ul><li>只含 11 页的经验研究，模型/任务覆盖和层阈值细节限制普适性；不同 LVLM connector、语言模型深度与 prompting 会改变阶段位置。</li><li>最终输出头的中间层读出及降维可视化可能把可解码信息误认成计算完成。Figure 5 已展示三种跳层干预及少量例子，但没有总体减幻觉或压缩性能统计；仍需更系统的干预与反事实视觉输入。</li><li>论文给出的图形、相关性或有限规模干预只支持其明示范围；跨数据、架构、模型规模与训练制度时需要重新验证。本卡未独立复现，不能把受控实验直接提升为普适机制。</li><li>对结论做强审计时，应设置能产生相似表面指标的替代机制、匹配参数量与计算预算、报告失败案例和置信区间，并检查阈值、归一化、样本选择及评价器是否预先偏向作者假说。</li><li>若论文声称发现机制，还应要求前向预测新的干预结果，而不只事后解释已有曲线；至少应在未用于选择假说的数据、不同随机种子和合理替代基线上保持。</li><li>此外应明确负结果的含义：未观察到效应可能来自统计功效、测量误差或实现差异，不能自动当作理论反证；观察到效应也需排除共同原因。</li></ul></div>
 </section>
 <section class="reading-card reading-card-section">
   <h2>复现与资源</h2>

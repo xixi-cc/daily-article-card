@@ -112,7 +112,20 @@
             <p class="detail-page-title-zh">解密上下文线性回归：多头 Softmax 注意力的训练动力学与机制解释</p>
             <div class="detail-meta">Jianliang He、Xintian Pan、Siyu Chen、Zhuoran Yang · 预印本 · arXiv:2503.12734 · <a href="https://arxiv.org/abs/2503.12734" target="_blank" rel="noopener noreferrer">论文原文 ↗</a></div>
             <p class="detail-summary">从随机初始化训练的 softmax 多头注意力为何形成对角齐次 KQ、末项且零和的 OV，以及正负 heads？这些结构实际实现哪种回归算法。</p>
-            <p class="formal-grade-status">正式评级：未评级</p>
+            <details class="formal-grade">
+      <summary>正式评级：A · 33 / 40</summary>
+      <p>评审版本：v2 · 原评审来源：Collection</p>
+
+      <table><caption>八轴评分（每轴 5 分，满分 40 分）</caption><tbody><tr><th scope="row">基本理论洞见</th><td>4 / 5</td></tr><tr><th scope="row">数学深度与严谨性</th><td>4 / 5</td></tr><tr><th scope="row">物理内容与可解释性</th><td>3 / 5</td></tr><tr><th scope="row">现代AI基础与机制相关性</th><td>5 / 5</td></tr><tr><th scope="row">普适性与状态变量</th><td>4 / 5</td></tr><tr><th scope="row">理论表述与建模原创性</th><td>4 / 5</td></tr><tr><th scope="row">研究方向契合度</th><td>5 / 5</td></tr><tr><th scope="row">长期科学价值</th><td>4 / 5</td></tr></tbody></table>
+      <p>评级理由：在受控线性回归任务中，多头 softmax 注意力的结构化预测器与一步中心化梯度下降相联系；理论和数值证据各有适用条件。</p>
+      <p>评审边界：基于论文来源的评审；未独立复现。</p>
+      <p>S级贡献门槛确认：不适用（当前评级非S）</p>
+      <details class="formal-grade-evidence"><summary>评审记录</summary>
+        <p>Registry 序号：4290</p>
+        <p>原文 PDF SHA-256：<code>073d2b64b558977a5b127022fbbcb3e777e52e2c66ed2998c4373630af477d46</code></p>
+        <p>评审 SHA-256：<code>793414bc1bc5c455bb4abd1496dbd63d2fb605f6ecf2b30f77479669a5be59ea</code></p>
+      </details>
+    </details>
           </div>
         </div>
       </div>
@@ -126,7 +139,7 @@
 </section>
 <section class="reading-card reading-card-section">
   <h2>模型与方法</h2>
-  <div class="reading-card-content"><ul><li>在各向同性高斯线性回归上训练多头单层 softmax attention，追踪 KQ/OV 和 attention maps；在结构化参数流形上分析梯度动力学与最终 predictor。</li><li>扩展到非各向同性协变量，解释为 preconditioned gradient descent；多任务设置扫描 heads/tasks，分析 superposition 与泛化。</li></ul><figure class="evidence-figure">
+  <div class="reading-card-content"><ul><li>在各向同性高斯线性回归上，从随机初始化训练多头单层 softmax attention 并数值追踪 KQ/OV；理论分析另从预设结构化参数流形及近似 population loss 出发，不能视为完整随机初始化模型收敛的证明。</li><li>扩展到非各向同性协变量，解释为 preconditioned gradient descent；多任务设置扫描 heads/tasks，分析 superposition 与泛化。</li></ul><figure class="evidence-figure">
   <button class="evidence-figure-image-button" type="button" aria-label="放大查看 Figure 1" onclick="window.openPaperFigureImage && window.openPaperFigureImage(this.querySelector('img'))">
     <img class="paper-figure-image evidence-figure-image" src="../../assets/collection-figures/2503.12734/figure-1-softmax-head-patterns.webp" alt="两头 softmax attention 的 KQ 热图及正负头参数在训练中的对称演化。" loading="lazy" />
   </button>
@@ -139,7 +152,7 @@
 </section>
 <section class="reading-card reading-card-section">
   <h2>核心结果与证据</h2>
-  <div class="reading-card-content"><ul><li>Figure 1 显示两个 heads 学出符号相反但尺度齐次的 KQ/OV 结构，训练中沿对称方向增长。聚合后近似 debiased gradient-descent predictor。</li><li>多头优于单头并在条件下接近 Bayes 最优至比例因子；softmax 相较线性 transformer 更容易泛化到训练外长序列。</li><li>非各向同性时学到预条件，任务数与 heads 的关系触发 superposition；这些结论依赖分布、初始化与理论参数区域。</li><li>正负 heads 的单独输出可有较大偏差，但组合后抵消有限 context 引入的系统误差；这解释为何只解释单头会遗漏聚合算法。</li></ul></div>
+  <div class="reading-card-content"><ul><li>Figure 1 显示两个 heads 学出符号相反但尺度齐次的 KQ/OV 结构，训练中沿对称方向增长。聚合后近似 debiased gradient-descent predictor。</li><li>在所测设置中多头优于单头；Bayes 风险的比例界依赖明确的渐近与噪声条件。长度外推比较限于论文使用固定训练长度归一化的线性 attention 对照。</li><li>非各向同性时学到预条件，任务数与 heads 的关系触发 superposition；这些结论依赖分布、初始化与理论参数区域。</li><li>在结构条件下，正负 heads 的聚合预测器在小参数极限近似一步中心化 GD；极限中相应 OV 系数可发散，不能据此声称有限权重上达到最小值。</li></ul></div>
 </section>
 <section class="reading-card reading-card-section">
   <h2>有效性与局限</h2>
