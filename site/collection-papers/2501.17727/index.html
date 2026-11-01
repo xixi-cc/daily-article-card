@@ -112,7 +112,20 @@
             <p class="detail-page-title-zh">自动可解释性指标无法区分训练过与随机 Transformer</p>
             <div class="detail-meta">Thomas Heap、Tim Lawson、Lucy Farnik、Laurence Aitchison · 预印本 · arXiv:2501.17727 · <a href="https://arxiv.org/abs/2501.17727" target="_blank" rel="noopener noreferrer">论文原文 ↗</a></div>
             <p class="detail-summary">SAE 的高重构质量、稀疏度或自动生成解释分数，是否真的说明它找到了训练塑造、对模型计算有意义的特征？一个必要的 sanity check 是这些指标能否区分正常训练模型与随机权重模型。</p>
-            <p class="formal-grade-status">正式评级：未评级</p>
+            <details class="formal-grade">
+      <summary>正式评级：A · 31 / 40</summary>
+      <p>评审版本：v2 · 原评审来源：Collection</p>
+
+      <table><caption>八轴评分（每轴 5 分，满分 40 分）</caption><tbody><tr><th scope="row">基本理论洞见</th><td>4 / 5</td></tr><tr><th scope="row">数学深度与严谨性</th><td>3 / 5</td></tr><tr><th scope="row">物理内容与可解释性</th><td>3 / 5</td></tr><tr><th scope="row">现代AI基础与机制相关性</th><td>5 / 5</td></tr><tr><th scope="row">普适性与状态变量</th><td>3 / 5</td></tr><tr><th scope="row">理论表述与建模原创性</th><td>4 / 5</td></tr><tr><th scope="row">研究方向契合度</th><td>5 / 5</td></tr><tr><th scope="row">长期科学价值</th><td>4 / 5</td></tr></tbody></table>
+      <p>评级理由：所测随机权重模型可产生与训练模型相近的部分 SAE 自动解释指标；这限制聚合分数的解释，并非否定训练模型特征。</p>
+      <p>评审边界：基于论文来源的评审；未独立复现。</p>
+      <p>S级贡献门槛确认：不适用（当前评级非S）</p>
+      <details class="formal-grade-evidence"><summary>评审记录</summary>
+        <p>Registry 序号：4293</p>
+        <p>原文 PDF SHA-256：<code>981e27c85d85ffeb1e29f8919615e6e16aba3ecdd4e5f6c1981f5bd2c015fa0a</code></p>
+        <p>评审 SHA-256：<code>ed0da436996d1c76a71f10d33018f5297c0bd7171c995e70e1330ad3b1f6a3f2</code></p>
+      </details>
+    </details>
           </div>
         </div>
       </div>
@@ -126,7 +139,7 @@
 </section>
 <section class="reading-card reading-card-section">
   <h2>模型与方法</h2>
-  <div class="reading-card-content"><ul><li>在 70M 到 6.9B 的 Pythia residual stream 上逐层训练 SAE，主要使用 RedPajama 数据和统一训练预算；比较 trained、step-0、重新随机化（含/不含 embedding）及随机输入控制。</li><li>评价包括 fuzzing/detection 自动解释 AUROC、重构余弦、explained variance、\(L_{1}\)、CE loss recovered 等，并提出激活 token-ID 分布熵作为特征抽象程度的粗略补充指标；附录扩展到数据量、超参数和随机种子。</li></ul><figure class="evidence-figure">
+  <div class="reading-card-content"><ul><li>在 70M 到 6.9B 的 Pythia residual stream 上按模型规模选择层训练 SAE（1B 隔层、6.9B 每四层），主要使用 RedPajama 数据和统一训练预算；比较 trained、step-0、重新随机化（含/不含 embedding）及随机输入控制。</li><li>评价包括 fuzzing/detection 自动解释 AUROC、重构余弦、explained variance 和 \(L_{1}\) 等，并提出激活 token-ID 分布熵作为特征抽象程度的粗略补充指标。CE loss score 仅对训练模型有意义：随机变体无论使用原激活还是重构激活，语言模型 loss 均很差；附录扩展数据量、超参数和随机种子。</li></ul><figure class="evidence-figure">
   <button class="evidence-figure-image-button" type="button" aria-label="放大查看 Figure 1" onclick="window.openPaperFigureImage && window.openPaperFigureImage(this.querySelector('img'))">
     <img class="paper-figure-image evidence-figure-image" src="../../assets/collection-figures/2501.17727/figure-1-fuzz-roc.webp" alt="Pythia-6.9B 各层的 fuzzing ROC 曲线，训练模型与多种随机化模型高度重合，随机输入控制接近对角线。" loading="lazy" />
   </button>
@@ -147,7 +160,7 @@
 </section>
 <section class="reading-card reading-card-section">
   <h2>复现与资源</h2>
-  <div class="reading-card-content"><ul><li>原文：https://arxiv.org/abs/2501.17727。复现需保存具体 Pythia revision、随机化规则、SAE expansion/\(k\)、训练 token 数、抽样 latent、解释模型与 prompt、ROC 实现及全部 seeds。</li><li>最关键的复现表应把 trained、step-0、norm-matched rerandomized 与 per-token Gaussian control 并列，并报告置信区间，而不只给平均 auto-interp 分数。</li><li>官方 \(v_{2}\) PDF 共 81 页，SHA-256：981e27c85d85ffeb1e29f8919615e6e16aba3ecdd4e5f6c1981f5bd2c015fa0a。Evidence status: full-text verified; no independent reproduction performed.</li></ul></div>
+  <div class="reading-card-content"><ul><li>原文：https://arxiv.org/abs/2501.17727。复现需保存具体 Pythia revision、随机化规则、SAE expansion/\(k\)、训练 token 数、抽样 latent、解释模型与 prompt、ROC 实现及全部 seeds。</li><li>最关键的复现表应把 trained、step-0、逐权重矩阵均值和方差匹配的 rerandomized 与 per-token Gaussian control 并列，并报告置信区间，而不只给平均 auto-interp 分数。</li><li>官方 \(v_{2}\) PDF 共 81 页，SHA-256：981e27c85d85ffeb1e29f8919615e6e16aba3ecdd4e5f6c1981f5bd2c015fa0a。Evidence status: full-text verified; no independent reproduction performed.</li></ul></div>
 </section>
 <section class="reading-card reading-card-section">
   <h2>阅读指南</h2>
