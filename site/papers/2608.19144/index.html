@@ -112,7 +112,20 @@
             <p class="detail-page-title-zh">桥图模型：生成建模中的耦合、投影与流守恒动力学</p>
             <div class="detail-meta">Tiantian Zhang · 预印本 · arXiv:2608.19144 · <a href="https://arxiv.org/abs/2608.19144" target="_blank" rel="noopener noreferrer">论文原文 ↗</a></div>
             <p class="detail-summary">连续时间生成模型常由 endpoint-conditioned bridge 构造，但生成时需要的是只观察当前状态和时间、非预见的 Markov decoder。</p>
-            <p class="formal-grade-status">正式评级：未评级</p>
+            <details class="formal-grade">
+      <summary>正式评级：A · 31 / 40</summary>
+      <p>评审版本：v1 · 原评审来源：Collection</p>
+      <p class="formal-grade-note">复用 Collection 正式评审；该评级不代表 Daily 准入判定。</p>
+      <table><caption>八轴评分（每轴 5 分，满分 40 分）</caption><tbody><tr><th scope="row">基本理论洞见</th><td>4 / 5</td></tr><tr><th scope="row">数学深度与严谨性</th><td>4 / 5</td></tr><tr><th scope="row">物理内容与可解释性</th><td>3 / 5</td></tr><tr><th scope="row">现代AI基础与机制相关性</th><td>5 / 5</td></tr><tr><th scope="row">普适性与状态变量</th><td>4 / 5</td></tr><tr><th scope="row">理论表述与建模原创性</th><td>4 / 5</td></tr><tr><th scope="row">研究方向契合度</th><td>4 / 5</td></tr><tr><th scope="row">长期科学价值</th><td>3 / 5</td></tr></tbody></table>
+      <p>评级理由：将桥构造与 Markov 投影误差组织为生成设计诊断；终点界依赖超额拟合误差，实验为有限规模 pilot。</p>
+      <p>评审边界：基于论文来源的评审；未独立复现。</p>
+      <p>S级贡献门槛确认：不适用（当前评级非S）</p>
+      <details class="formal-grade-evidence"><summary>评审记录</summary>
+        <p>Registry 序号：4239</p>
+        <p>原文 PDF SHA-256：<code>42e607514e5e68e3a8c44360b6868594c12f271d6112ba0d7b61b0baf5edbd7a</code></p>
+        <p>评审 SHA-256：<code>dff8beb478b40b3d11f9605df75da391008ff39bcafa4031665065603c8d50fd</code></p>
+      </details>
+    </details>
           </div>
         </div>
       </div>
@@ -134,11 +147,11 @@
 </section>
 <section class="reading-card reading-card-section">
   <h2>核心结果与证据</h2>
-  <div class="reading-card-content"><ul><li>图 2：$n=1000$ 的一次合成实验中 independent gap 4.877、minibatch-OT gap 0.038；$n\in\{500,1000\}$ 的 5-seed 复核显示 OT 约降低两个数量级。</li><li>表 2（三个 latent seeds，\(mean\pm SD\)）：在 bridge、architecture、optimizer 和 sampling budget 相同时，minibatch OT 约把 gap 减半、velocity-regression error 降 67%–69%、terminal latent MMD 降 45%–51%；但 1NN statistic 仍远离理想 0.5，说明生成分布并未解决。</li><li>表 3/4：feature proxy 在 coupling 排序上与固定条件下 pixel-space training loss、FID（Fashion-MNIST 还包括 KID）方向一致。作者明确 proxy 不是 pixel-space certified lower bound，跨 dataset 的绝对值也不可比较。结论是预训练 diagnostic 的 pilot 支持，而不是普适性能定理。</li></ul></div>
+  <div class="reading-card-content"><ul><li>图 2：$n=1000$ 的一次合成实验中 independent gap 4.877、minibatch-OT gap 0.038；$n\in\{500,1000\}$ 的 5-seed 复核显示 OT 约降低两个数量级。</li><li>表 2（三个 latent seeds，\(mean\pm SD\)）：在 bridge、architecture、optimizer 和 sampling budget 相同时，minibatch OT 约把 gap 减半、velocity-regression error 降 67%–69%、terminal latent MMD 降 45%–51%；但 1NN statistic 仍远离理想 0.5，说明生成分布并未解决。</li><li>表 3/4：feature proxy 在 coupling 排序上与固定条件下 pixel-space training loss、FID（Fashion-MNIST 还包括 KID）方向一致。作者明确 proxy 不是 pixel-space certified lower bound，跨 dataset 的绝对值也不可比较。结论是预训练 diagnostic 的 pilot 支持，而不是普适性能定理。 表 3 的 Brownian 桥仅有训练前 proxy；表 4 的实际下游训练仅比较 straight bridge 的两种耦合，CIFAR KID 未改善。</li></ul></div>
 </section>
 <section class="reading-card reading-card-section">
   <h2>有效性与局限</h2>
-  <div class="reading-card-content"><ul><li>Markovization gap 只隔离 bridge compression；低 gap 不保证有限网络可逼近、不保证 optimizer 收敛，也不控制 discretization 和 perceptual quality。</li><li>真实数据 proxy 依赖 PCA/feature normalization、kNN 和有限样本；CIFAR/Fashion pixel pilots 是受控单次运行，规模远小于现代生成模型。</li><li>论文是 work in progress；现场页未提供作者代码仓库，表中结果尚无外部独立复现。Poisson/electrostatic field-line 扩展主要是形式统一。</li></ul></div>
+  <div class="reading-card-content"><ul><li>Markovization gap 只隔离 bridge compression；低 gap 不保证有限网络可逼近、不保证 optimizer 收敛，也不控制 discretization 和 perceptual quality。 文中 $W_2$ 界控制 $L_{FM}-G$ 的超额拟合误差；减小 gap $G$ 本身不保证终点误差界减小。</li><li>真实数据 proxy 依赖 PCA/feature normalization、kNN 和有限样本；CIFAR/Fashion pixel pilots 是受控单次运行，规模远小于现代生成模型。</li><li>论文是 work in progress；现场页未提供作者代码仓库，表中结果尚无外部独立复现。Poisson/electrostatic field-line 扩展主要是形式统一。</li></ul></div>
 </section>
 <section class="reading-card reading-card-section">
   <h2>复现与资源</h2>
