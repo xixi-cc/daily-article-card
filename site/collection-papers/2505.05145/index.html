@@ -112,7 +112,20 @@
             <p class="detail-page-title-zh">通过激活子空间理解加法的上下文学习</p>
             <div class="detail-meta">Xinyan Hu、Kayo Yin、Michael I. Jordan、Jacob Steinhardt、Lijie Chen · 预印本 · arXiv:2505.05145 · <a href="https://arxiv.org/abs/2505.05145" target="_blank" rel="noopener noreferrer">论文原文 ↗</a></div>
             <p class="detail-summary">少样本 ICL 必须从示例对中提取任务规则、聚合该规则并作用于新查询；已有 function-vector 工作能显示这种向量可恢复行为，却较少说明它在大模型一次前向传播中的细粒度表示。论文以 $y=x+k$ 的 add-\(k\) 任务追问：任务信息存在哪些 attention heads、以什么低维坐标表示、又从哪类 token 汇集到最后输出？</p>
-            <p class="formal-grade-status">正式评级：未评级</p>
+            <details class="formal-grade">
+      <summary>正式评级：A · 33 / 40</summary>
+      <p>评审版本：v3 · 原评审来源：Collection</p>
+
+      <table><caption>八轴评分（每轴 5 分，满分 40 分）</caption><tbody><tr><th scope="row">基本理论洞见</th><td>4 / 5</td></tr><tr><th scope="row">数学深度与严谨性</th><td>3 / 5</td></tr><tr><th scope="row">物理内容与可解释性</th><td>3 / 5</td></tr><tr><th scope="row">现代AI基础与机制相关性</th><td>5 / 5</td></tr><tr><th scope="row">普适性与状态变量</th><td>4 / 5</td></tr><tr><th scope="row">理论表述与建模原创性</th><td>5 / 5</td></tr><tr><th scope="row">研究方向契合度</th><td>5 / 5</td></tr><tr><th scope="row">长期科学价值</th><td>4 / 5</td></tr></tbody></table>
+      <p>评级理由：受控 add-k 任务的干预和低维子空间分析定位部分任务信号；机制解释依赖模型、提示和干预基线。</p>
+      <p>评审边界：基于论文来源的评审；未独立复现。</p>
+      <p>S级贡献门槛确认：不适用（当前评级非S）</p>
+      <details class="formal-grade-evidence"><summary>评审记录</summary>
+        <p>Registry 序号：4298</p>
+        <p>原文 PDF SHA-256：<code>9bb3b4d49dd28b6205d315c0c0a1f768f2b56727e80385521433f040040137ed</code></p>
+        <p>评审 SHA-256：<code>3f1c636633603128912f9d6ca1561d8f6e8476631a566ac81867511a45c15d75</code></p>
+      </details>
+    </details>
           </div>
         </div>
       </div>
@@ -134,7 +147,7 @@
 </section>
 <section class="reading-card reading-card-section">
   <h2>核心结果与证据</h2>
-  <div class="reading-card-content"><ul><li>Figure 1（\(p\). 2）概括主链条：1024 个 attention heads 中仅三个 $(15,2)$、$(15,1)$、$(13,6)$ 对 add-\(k\) 的 task signal 关键；每个 head 的 128 维激活可局域到 6 维，再分成 4 维 unit-digit 与 2 维 tens/magnitude 子空间。图是作者对 Llama-3-8B-instruct 的机制示意，具体可检验的效果须由随后 ablation 与 intervention 数据支持。</li><li>稀疏优化得到 33 个 significant heads；其无权重和在同样设置下 intervention accuracy 为 0.85，而按先前 AIE 规则取 top 33 只有 0.31（\(p\). 5）。对 33 个 head 的 mean-ablation 再定位为三主 head：三者合成函数向量的 accuracy 为 0.79、两者 0.61、单 head 0.21；在原 five-shot prompt 中 mean-ablate 三者，clean accuracy 从 0.87 降至 0.43，而随机三 significant heads 大多保持至少 0.86（\(p\). 6）。这是特定干预协议下的必要性/充分性证据。</li><li>每个主 head 的 6 个 PCA 方向解释 30 个 task vector 变异的 97%，投影后的函数向量 accuracy 仍为 0.76，对比投影前 0.79（\(p\). 7）。四个周期方向对应 periods 2、5、10，另两个低频方向编码较粗粒度数值；子空间投影的保留/移除实验用于检验 units 与 tens 信息。对 mixed-\(k\) prompt，信号在 $y_i$ token 最强，并且不同示例的信号多为负相关，作者将此解释为后示例倾向修正早示例噪声的 self-correction（pp. 8--9）。</li></ul><figure class="evidence-figure">
+  <div class="reading-card-content"><ul><li>Figure 1（\(p\). 2）概括主链条：1024 个 attention heads 中仅三个 $(15,2)$、$(15,1)$、$(13,6)$ 对 add-\(k\) 的 task signal 关键；每个 head 的 128 维激活可局域到 6 维，再分成 4 维 unit-digit 与 2 维 tens/magnitude 子空间。图是作者对 Llama-3-8B-instruct 的机制示意，具体可检验的效果须由随后 ablation 与 intervention 数据支持。</li><li>稀疏优化得到 33 个 significant heads；其无权重和在同样设置下 intervention accuracy 为 0.85，而按先前 AIE 规则取 top 33 只有 0.31（\(p\). 5）。对 33 个 head 的 mean-ablation 再定位为三主 head：保留三者的任务信号、其余 30 个显著头使用跨任务均值时 accuracy 为 0.79；相同基线下两头为 0.61、未放大单头为 0.21（Table 1 的单头放大实验是另一组结果）；在原 five-shot prompt 中 mean-ablate 三者，clean accuracy 从 0.87 降至 0.43，而随机三 significant heads 大多保持至少 0.86（\(p\). 6）。这是特定干预协议下的必要性/充分性证据。</li><li>每个主 head 的 6 个 PCA 方向解释 30 个 task vector 变异的 97%，投影后的函数向量 accuracy 仍为 0.76，对比投影前 0.79（\(p\). 7）。四个周期方向对应 periods 2、5、10，另两个低频方向编码较粗粒度数值；子空间投影的保留/移除实验用于检验 units 与 tens 信息。对 mixed-\(k\) prompt，信号在 $y_i$ token 最强，并且不同示例的信号多为负相关，作者将此解释为后示例倾向修正早示例噪声的 self-correction（pp. 8--9）。</li></ul><figure class="evidence-figure">
   <button class="evidence-figure-image-button" type="button" aria-label="放大查看 Figure 1" onclick="window.openPaperFigureImage && window.openPaperFigureImage(this.querySelector('img'))">
     <img class="paper-figure-image evidence-figure-image" src="../../assets/collection-figures/2505.05145/figure-1-icl-addition-mechanism.webp" alt="三条橙色 attention head 路径从演示 token 指向最后 token，旁边是三 head、六维表示、4+2 维数字分解和 self-correction 的标注。" loading="lazy" />
   </button>
