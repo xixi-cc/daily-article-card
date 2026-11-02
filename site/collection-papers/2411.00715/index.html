@@ -112,7 +112,20 @@
             <p class="detail-page-title-zh">B-cosification：把深度神经网络转化为内在可解释模型</p>
             <div class="detail-meta">Shreyash Arya、Sukrut Rao、Moritz Böhle、Bernt Schiele · 预印本 · arXiv:2411.00715 · <a href="https://arxiv.org/abs/2411.00715" target="_blank" rel="noopener noreferrer">论文原文 ↗</a></div>
             <p class="detail-summary">B-cos 网络把输入对输出的贡献编码在模型本身，可生成内在解释，但从头训练大型架构成本高，且可能损失已有模型或 CLIP 的能力。能否把现有 checkpoint 低成本转换，而不重新完成全部预训练？</p>
-            <p class="formal-grade-status">正式评级：未评级</p>
+            <details class="formal-grade">
+      <summary>正式评级：A · 30 / 40</summary>
+      <p>评审版本：v2 · 原评审来源：Collection</p>
+
+      <table><caption>八轴评分（每轴 5 分，满分 40 分）</caption><tbody><tr><th scope="row">基本理论洞见</th><td>4 / 5</td></tr><tr><th scope="row">数学深度与严谨性</th><td>3 / 5</td></tr><tr><th scope="row">物理内容与可解释性</th><td>3 / 5</td></tr><tr><th scope="row">现代AI基础与机制相关性</th><td>4 / 5</td></tr><tr><th scope="row">普适性与状态变量</th><td>4 / 5</td></tr><tr><th scope="row">理论表述与建模原创性</th><td>4 / 5</td></tr><tr><th scope="row">研究方向契合度</th><td>4 / 5</td></tr><tr><th scope="row">长期科学价值</th><td>4 / 5</td></tr></tbody></table>
+      <p>评级理由：预训练视觉模型经改写与额外微调可转为 B-cos 形式；准确率、零样本能力和定位表现依模型及数据而变化。</p>
+      <p>评审边界：基于论文来源的评审；未独立复现。</p>
+      <p>S级贡献门槛确认：不适用（当前评级非S）</p>
+      <details class="formal-grade-evidence"><summary>评审记录</summary>
+        <p>Registry 序号：4300</p>
+        <p>原文 PDF SHA-256：<code>58103406da9624e1fa0510f8a9450d3ab67093e24a3040b8ef37b859d03b6434</code></p>
+        <p>评审 SHA-256：<code>23e1fdca2c81ebd685b1393e5eeccecdafdc5b43c188a4015bdca9a1ce3c2241</code></p>
+      </details>
+    </details>
           </div>
         </div>
       </div>
@@ -126,11 +139,11 @@
 </section>
 <section class="reading-card reading-card-section">
   <h2>模型与方法</h2>
-  <div class="reading-card-content"><ul><li>第一步把 conventional layers 改写为 functionally equivalent B-cos 形式，处理 bias、normalization、激活和 B 参数；第二步用逐渐增大 B、减小 bias 等 schedule fine-tune，使模型形成动态线性 summary W(\(x\))。</li><li>监督分类实验覆盖 DenseNet、ResNet、ViT 等 ImageNet checkpoint；解释质量用 Grid Pointing Game localization 和与 post-hoc methods 的比较。CLIP 版本还检查零样本分类能否保留。</li><li>Figure 1 左侧比较从头训练 B-cos 与 B-cosified 模型的准确率曲线，右侧展示不同阶段解释图；Figure 2 专门展示 CLIP 转换后的细粒度可视解释。</li></ul></div>
+  <div class="reading-card-content"><ul><li>第一步用 \(B=1\) 并保留 bias 等方式，将 conventional layers 改写为函数等价的初态；第二步采用立即设 \(B=2\)、将 bias 置零后再 fine-tune，得到 B-cos 动态线性形式。逐渐改变 B 或衰减 bias 是比较过的备选策略，最终转换会改变函数。</li><li>监督分类实验覆盖 DenseNet、ResNet、ViT 等 ImageNet checkpoint；解释质量用 Grid Pointing Game localization 和与 post-hoc methods 的比较。CLIP 版本还检查零样本分类能否保留。</li><li>Figure 1 左侧比较从头训练 B-cos 与 B-cosified 模型的准确率曲线，右侧展示不同阶段解释图；Figure 2 专门展示 CLIP 转换后的细粒度可视解释。</li></ul></div>
 </section>
 <section class="reading-card reading-card-section">
   <h2>核心结果与证据</h2>
-  <div class="reading-card-content"><ul><li>B-cosified DenseNet-121 和 ViT-S 达到原 B-cos 精度的速度分别约快 4.7× 与 9.0×，并保持与标准预训练模型接近的分类精度。这个 speedup 相对于从头训练 B-cos，不是相对于零成本 post-hoc explanation。</li><li>动态 W(\(x\))\(x\) 的 Grid Pointing Game localization 显著优于未转换 checkpoint，并接近从头训练 B-cos；Figure 4 显示其相对若干 post-hoc 方法也有优势。CLIP 转换在保持零样本能力的同时给出更细致解释。</li><li>解释图是模型内在贡献 summary，但 localization benchmark 只检验与目标区域重合，不直接验证解释的因果忠实性或人类可理解性。</li></ul><figure class="evidence-figure">
+  <div class="reading-card-content"><ul><li>Figure 1 报告 B-cosified DenseNet-121 和 ViT-S 达到从头训练 B-cos 精度分别约快 4.7× 与 9.0×；Table 4 对 DenseNet 报 5.0×。比较从已有预训练 checkpoint 开始，不包含原预训练成本，且不同架构的最终精度表现不完全一致。</li><li>动态 W(\(x\))\(x\) 的 Grid Pointing Game localization 显著优于未转换 checkpoint，并接近从头训练 B-cos；Figure 4 显示其相对若干 post-hoc 方法也有优势。CLIP 转换后零样本能力部分保留但并非无损：Figure 5 中 natural 数据原 CLIP、ImageNet 转换和 CC3M 转换分别为 51.5、47.2、44.7。图注称始终优于 Text2Concept，但 specialized 类的 ImageNet 转换 34.3 低于后者 34.9。</li><li>解释图是模型内在贡献 summary，但 localization benchmark 只检验与目标区域重合，不直接验证解释的因果忠实性或人类可理解性。</li></ul><figure class="evidence-figure">
   <button class="evidence-figure-image-button" type="button" aria-label="放大查看 Figure 1" onclick="window.openPaperFigureImage && window.openPaperFigureImage(this.querySelector('img'))">
     <img class="paper-figure-image evidence-figure-image" src="../../assets/collection-figures/2411.00715/figure-1-bcosification.webp" alt="两种模型训练曲线和多张图像的 B-cos contribution maps。" loading="lazy" />
   </button>
@@ -143,7 +156,7 @@
 </section>
 <section class="reading-card reading-card-section">
   <h2>有效性与局限</h2>
-  <div class="reading-card-content"><ul><li>B-cosification 仍需数据和 fine-tuning，转换成本随模型与数据规模变化；若只有闭源 API 或无原训练分布就难以应用。超参数 schedule、bias 去除与 B 增长可能影响稳定性。</li><li>Grid Pointing Game 容易受物体面积和背景偏差影响，彩色解释图的视觉细节不是充分的 faithfulness 证据。应加入删除/插入、反事实、参数随机化和 human-grounded tests。</li><li>CLIP 结果覆盖有限架构与 benchmark；生成模型、检测/分割和域外数据的能力保持尚未充分验证。本卡未独立复现。</li></ul></div>
+  <div class="reading-card-content"><ul><li>B-cosification 仍需数据和 fine-tuning，转换成本随模型与数据规模变化；若只有闭源 API 或无原训练分布就难以应用。B 值和 bias 去除策略可能影响性能与稳定性。</li><li>Grid Pointing Game 容易受物体面积和背景偏差影响，彩色解释图的视觉细节不是充分的 faithfulness 证据。应加入删除/插入、反事实、参数随机化和 human-grounded tests。</li><li>CLIP 结果覆盖有限架构与 benchmark；生成模型、检测/分割和域外数据的能力保持尚未充分验证。本卡未独立复现。</li></ul></div>
 </section>
 <section class="reading-card reading-card-section">
   <h2>复现与资源</h2>
