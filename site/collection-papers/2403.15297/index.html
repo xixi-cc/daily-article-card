@@ -112,7 +112,20 @@
             <p class="detail-page-title-zh">用于理性推理的球神经网络</p>
             <div class="detail-meta">Tiansi Dong、Mateja Jamnik、Pietro Liò · 预印本 · arXiv:2403.15297 · <a href="https://arxiv.org/abs/2403.15297" target="_blank" rel="noopener noreferrer">论文原文 ↗</a></div>
             <p class="detail-summary">传统 neural representation 以 vectors 和 similarity 为基本对象；经典 syllogism 则依赖集合包含、相离、相交与反例构造。本文问：把计算单元从点向量扩展为带中心与半径的 spheres，能否在连续优化框架内显式表达 Euler diagrams，并以构造/检查模型来判定结论有效性？</p>
-            <p class="formal-grade-status">正式评级：未评级</p>
+            <details class="formal-grade">
+      <summary>正式评级：B · 26 / 40</summary>
+      <p>评审版本：v4 · 原评审来源：Collection</p>
+
+      <table><caption>八轴评分（每轴 5 分，满分 40 分）</caption><tbody><tr><th scope="row">基本理论洞见</th><td>3 / 5</td></tr><tr><th scope="row">数学深度与严谨性</th><td>3 / 5</td></tr><tr><th scope="row">物理内容与可解释性</th><td>3 / 5</td></tr><tr><th scope="row">现代AI基础与机制相关性</th><td>3 / 5</td></tr><tr><th scope="row">普适性与状态变量</th><td>3 / 5</td></tr><tr><th scope="row">理论表述与建模原创性</th><td>4 / 5</td></tr><tr><th scope="row">研究方向契合度</th><td>4 / 5</td></tr><tr><th scope="row">长期科学价值</th><td>3 / 5</td></tr></tbody></table>
+      <p>评级理由：球几何与预设规则构造特定三段论的模型与反例；理论及实验范围限定，原文部分数值不一致。</p>
+      <p>评审边界：基于论文来源的评审；未独立复现。</p>
+      <p>S级贡献门槛确认：不适用（当前评级非S）</p>
+      <details class="formal-grade-evidence"><summary>评审记录</summary>
+        <p>Registry 序号：4303</p>
+        <p>原文 PDF SHA-256：<code>acee2fc70c5c753edb50765161f46dd9603673f6ef9b726cc7415e998c97516b</code></p>
+        <p>评审 SHA-256：<code>3bbf3cd69d34c01893a099bef49754030425a430f2abde67f4d022bb2ccdd3d3</code></p>
+      </details>
+    </details>
           </div>
         </div>
       </div>
@@ -139,11 +152,11 @@
 </section>
 <section class="reading-card reading-card-section">
   <h2>核心结果与证据</h2>
-  <div class="reading-card-content"><ul><li>Figure 2 展示完整流程：symbolic statements 被 spatialized 为目标 sphere relations，经 neuro-symbolic transition map 和 blackboard 反复构造，最后 inspection 输出 valid/invalid。该图也暴露方法不是普通端到端 learned classifier，而是连续几何实现的显式规则系统。</li><li>Experiment 10.1 报告在 256 个 atomic syllogistic deductions 中正确识别全部 24 个 valid cases，并为 invalid cases 构造 counterexamples。Experiment 10.2 在 chain length 3–12 的 1200 candidates 上报告 SphNN 对 240 个 valid chains 达到 100%；gpt-3.5-turbo 从 atomic 最大 80% 降至 12-term 的 51.67%，gpt-4o 在 89.17%–95.83% 之间。</li><li>Experiment 10.3 把 consistency feedback 写入 prompt 后，作者报告 gpt-3.5-turbo 的 atomic satisfiability accuracy 从 47.27% 到 56.64%，gpt-4o 从 77.39% 到 80.01%。这些比较来自特定 prompts、模型快照与作者生成集，不能视为对所有 LLM reasoning 的一般排名。</li></ul></div>
+  <div class="reading-card-content"><ul><li>Figure 2 展示完整流程：symbolic statements 被 spatialized 为目标 sphere relations，经 neuro-symbolic transition map 和 blackboard 反复构造，最后 inspection 输出 valid/invalid。该图也暴露方法不是普通端到端 learned classifier，而是连续几何实现的显式规则系统。</li><li>Experiment 10.1 报告在 256 个 atomic syllogistic deductions 中正确识别全部 24 个 valid cases，并为 invalid cases 构造 counterexamples。Experiment 10.2 对 chain length 3–12 的 1200 题（240 valid、960 invalid）报告无时限全部判断正确；12 项限时 15 秒时，正文报告 76.67%，Table 4 的计数则为 94/120（约 78.33%），两者不一致。该专用求解器与通用语言模型的比较限于作者设定的任务和评测条件。</li><li>Experiment 10.3 比较有无 checker 反馈时判断与解释均正确的题数：gpt-3.5-turbo 从 121/256 增至 145/256，gpt-4o 从 198/256 增至 205/256；原表中 gpt-4o 两个百分比与计数存在细小算术出入。这是联合指标，比较依赖特定 prompts、模型快照、最多 10 次反馈和作者生成集。</li></ul></div>
 </section>
 <section class="reading-card reading-card-section">
   <h2>有效性与局限</h2>
-  <div class="reading-card-content"><ul><li>SphNN 的‘neural’主要指可微几何函数和 KAN-like wiring；大量 symbolic relation types、transition map、restart/control logic 由设计者给定。结果证明算法在这一形式系统内正确，不说明它从自然数据自主发现逻辑规则。</li><li>评测集中在 categorical syllogisms 与作者构造 chains；100% 结论依赖形式化、enumeration 与实现一致，未覆盖歧义自然语言、量词作用域、常识、噪声 premises 或开放世界。121 页版本结构庞大，Figure 2 的提取方向已为卡片旋转以便阅读，但内容未改。</li><li>与 ChatGPT 的数字受 API 版本、sampling、prompt 与 scoring protocol 影响；SphNN 更慢且任务专用，两者计算目标不同。‘LLM 是否推理’是哲学/操作定义问题，本文证据只支持其 syllogism checker 方案。本卡未独立复现代码或枚举证明。</li></ul></div>
+  <div class="reading-card-content"><ul><li>SphNN 的‘neural’主要指可微几何函数和 KAN-like wiring；大量 symbolic relation types、transition map、restart/control logic 由设计者给定。作者提出并论证算法在这一形式系统内正确；其证明及实现未在此独立认证，不说明它从自然数据自主发现逻辑规则。</li><li>评测集中在 categorical syllogisms 与作者构造 chains；100% 结论依赖形式化、enumeration 与实现一致，未覆盖歧义自然语言、量词作用域、常识、噪声 premises 或开放世界。121 页版本结构庞大，Figure 2 的提取方向已为卡片旋转以便阅读，但内容未改。</li><li>与 ChatGPT 的数字受 API 版本、sampling、prompt 与 scoring protocol 影响；SphNN 更慢且任务专用，两者计算目标不同。‘LLM 是否推理’是哲学/操作定义问题，本文证据只支持其 syllogism checker 方案。本卡未独立复现代码或枚举证明。</li></ul></div>
 </section>
 <section class="reading-card reading-card-section">
   <h2>复现与资源</h2>
