@@ -112,7 +112,20 @@
             <p class="detail-page-title-zh">剖析深度学习不同区间中的 SGD 噪声效应</p>
             <div class="detail-meta">Antonio Sclocchi、Mario Geiger、Matthieu Wyart · 预印本 · arXiv:2301.13703 · <a href="https://arxiv.org/abs/2301.13703" target="_blank" rel="noopener noreferrer">论文原文 ↗</a></div>
             <p class="detail-summary">“SGD 噪声有利于泛化”并非无条件成立：网络可处于 \(\alpha\)≫1 的 lazy regime 或 \(\alpha\)≪1 的 feature-learning regime，比较还会受训练预算和何时停止影响。作者问：以有效温度 \(T=\eta\)/B 表示 minibatch 噪声时，\(T\) 在哪些训练区间改善或损害测试误差？噪声何时开始真正改变最终模型？</p>
-            <p class="formal-grade-status">正式评级：未评级</p>
+            <details class="formal-grade">
+      <summary>正式评级：A · 32 / 40</summary>
+      <p>评审版本：v2 · 原评审来源：Collection</p>
+
+      <table><caption>八轴评分（每轴 5 分，满分 40 分）</caption><tbody><tr><th scope="row">基本理论洞见</th><td>4 / 5</td></tr><tr><th scope="row">数学深度与严谨性</th><td>4 / 5</td></tr><tr><th scope="row">物理内容与可解释性</th><td>3 / 5</td></tr><tr><th scope="row">现代AI基础与机制相关性</th><td>5 / 5</td></tr><tr><th scope="row">普适性与状态变量</th><td>4 / 5</td></tr><tr><th scope="row">理论表述与建模原创性</th><td>4 / 5</td></tr><tr><th scope="row">研究方向契合度</th><td>4 / 5</td></tr><tr><th scope="row">长期科学价值</th><td>4 / 5</td></tr></tbody></table>
+      <p>评级理由：研究SGD噪声、数据量和停止动力学的条件标度；效果依模型、训练区间及假设而变化。</p>
+      <p>评审边界：基于论文来源的评审；未独立复现。</p>
+      <p>S级贡献门槛确认：不适用（当前评级非S）</p>
+      <details class="formal-grade-evidence"><summary>评审记录</summary>
+        <p>Registry 序号：4327</p>
+        <p>原文 PDF SHA-256：<code>3c3306d373f9e770abac96eafef3195ac0318e1106dfd0551571ce509f2fa0df</code></p>
+        <p>评审 SHA-256：<code>495092e639a60e9f368d50d175e25287b14ae14897bf258a78748087d4cabfcf</code></p>
+      </details>
+    </details>
           </div>
         </div>
       </div>
@@ -126,11 +139,11 @@
 </section>
 <section class="reading-card reading-card-section">
   <h2>模型与方法</h2>
-  <div class="reading-card-content"><ul><li>作者用带可调输出/初始化尺度 \(\alpha\) 的全连接网络和 CNN，分别在 parity-MNIST 与 CIFAR-10 二分类上训练 hinge loss；扫描 \(\alpha\)、SGD 温度 \(T=\eta\)/B 和训练集大小 P，训练到所有样本被拟合。\(\alpha\) 大时参数相对变化小、接近 kernel/lazy regime，\(\alpha\) 小时发生 feature learning。</li><li>观测量包括 test error、相对总权重变化 Δw、达到零训练误差的连续时间 \(t\)*=\(\eta\)×steps，以及输入梯度在真实判别方向与正交方向的分量。经验标度写成 \(\Delta w\sim T\)^δP^\(\gamma\)、\(t\)*∼\(TP^{b}\)，噪声起效温度写成 \(T_{c}\sim P^{-a}\)。</li><li>perceptron 对照令标签 \(y=sign(x₁)\)，并控制 decision boundary 附近的样本密度指数 \(\chi\)。此时 w₁ 是信息 signal，w⊥ 是噪声分量，可直接检查数据最小 margin、训练时长和指数如何随 \(\chi\) 改变。</li></ul></div>
+  <div class="reading-card-content"><ul><li>作者用全连接网络和 CNN，在 parity-MNIST 与 CIFAR-10 二分类上训练 hinge loss；定义 \(F(w,x)=f(w,x)\)−\(f\)(w₀,\(x\))，以 \(\alpha\) 调节输出缩放和等效 margin，并扫描 SGD 温度 \(T=\eta\)/B 及训练集大小 P。\(\alpha\) 大时接近 kernel/lazy 区，\(\alpha\) 小时出现 feature learning；\(\alpha\) 不应笼统理解为所有权重的初始化标准差。</li><li>观测量包括 test error、相对总权重变化 Δw 和达到零训练误差的连续时间 \(t\)*=\(\eta\)×steps。作者在所测高噪声范围研究 \(\Delta w\sim T\)^δP^\(\gamma\) 与 \(t\)*∼\(TP^{b}\)；feature 区低温和高温存在交叉，CNN 的某些测试误差阈值并不容易明确提取。</li><li>perceptron 对照令标签 \(y=sign(x₁)\)，并控制 decision boundary 附近的样本密度指数 \(\chi\)。此时 w₁ 是信息 signal，w⊥ 是噪声分量，可直接检查数据最小 margin、训练时长和指数如何随 \(\chi\) 改变。</li></ul></div>
 </section>
 <section class="reading-card reading-card-section">
   <h2>核心结果与证据</h2>
-  <div class="reading-card-content"><ul><li>Figure 1 的 \(\alpha,T\) phase diagrams 显示效应依赖区间：在 lazy regime 增大 \(T\) 可让网络离开 lazy 状态并降低误差；在本来已进行 feature learning 的小 \(\alpha\) 区，继续加噪可能提高误差。减小 \(\alpha\) 和增大 \(T\) 都能增大参数运动，却可能对性能产生相反影响，因此不能把“离开 lazy”当成充分解释。</li><li>在 lazy MNIST 与 CIFAR 实验中，横轴按 \(TP^{0.5}\) 重标后 \(T_{c}\) 附近的数据塌缩，提示 \(T_{c}\sim P^{-0.5}\)。更一般地，\(T_{c}\) 是模型依赖的 P 幂律；lazy regime 由 \(\Delta w=\mathrm{O}(1)\) 与 \(\Delta w\sim T\)^δP^\(\gamma\) 推出 \(a=\gamma\)/\(\delta\)，feature regime 则由低温 P 标度与高温 \(T\)、P 标度交叉确定。拟合指数误差约 ±0.2。</li><li>训练曲线显示改变 P 主要推迟最后训练误差归零，而早期动力学相近。perceptron 中 ||w⊥|| 随 \(T\) 增长且基本不依赖 P，w₁ 和 \(t\)* 必须随靠近边界的最难样本增长；改变边界附近密度 \(\chi\) 会改变标度指数，支持“后期 stopping + margin statistics”机制而非单一 flat-minimum 解释。</li></ul><figure class="evidence-figure">
+  <div class="reading-card-content"><ul><li>Figure 1 显示噪声效应依赖区间和模型：所测全连接网络在足够高但仍收敛的 \(T\) 下可改善；CNN 的部分设置先恶化，在较大 P 的范围才出现后续改善。feature-learning 区继续加噪也可能提高误差，因此参数运动增加不是性能改善的充分解释。</li><li>在 lazy MNIST 与 CIFAR 实验中，横轴按 \(TP^{0.5}\) 重标后 \(T_{c}\) 附近的数据塌缩，提示 \(T_{c}\sim P^{-0.5}\)。更一般地，\(T_{c}\) 是模型依赖的 P 幂律；lazy regime 由 \(\Delta w=\mathrm{O}(1)\) 与 \(\Delta w\sim T\)^δP^\(\gamma\) 推出 \(a=\gamma\)/\(\delta\)，feature regime 则由低温 P 标度与高温 \(T\)、P 标度交叉确定。拟合指数误差约 ±0.2。</li><li>训练曲线显示改变 P 主要推迟最后训练误差归零，而早期动力学相近。perceptron 中 ||w⊥|| 随 \(T\) 增长且基本不依赖 P，w₁ 和 \(t\)* 必须随靠近边界的最难样本增长；改变边界附近密度 \(\chi\) 会改变标度指数，支持“后期 stopping + margin statistics”机制而非单一 flat-minimum 解释。</li></ul><figure class="evidence-figure">
   <button class="evidence-figure-image-button" type="button" aria-label="放大查看 Figure 1(a)" onclick="window.openPaperFigureImage && window.openPaperFigureImage(this.querySelector('img'))">
     <img class="paper-figure-image evidence-figure-image" src="../../assets/collection-figures/2301.13703/figure-1-sgd-phase-diagram.webp" alt="横轴 α、纵轴 T 的 MNIST 测试误差相图。" loading="lazy" />
   </button>
@@ -143,7 +156,7 @@
 </section>
 <section class="reading-card reading-card-section">
   <h2>有效性与局限</h2>
-  <div class="reading-card-content"><ul><li>实验使用 hinge loss 并训练到首次零 loss；cross-entropy、固定 epochs、weight decay、momentum/Adam、data augmentation 或 learning-rate schedule 会改变 stopping 与有效温度。\(T=\eta\)/B 的连续温度近似要求 batch/step-size 区间受控，Figure 1 黑点区域还包含不收敛运行。</li><li>MNIST/CIFAR 是特定二分类子任务，网络深度与参数化有限；标度区间和指数由有限 P、\(T\) 拟合，作者也强调非普适性。perceptron 解释能分解 signal/noise，但它没有 feature learning，不能证明深网中所有 SGD 效应均由同一机制产生。</li></ul></div>
+  <div class="reading-card-content"><ul><li>主要实验使用 hinge loss 并训练到零 loss；附录 E 在所测 early stopping 设置下也观察到相近的交叉熵幂律，但其他 stopping、优化器和日程可能改变尺度。\(T=\eta\)/B 的近似依赖具体范围，Figure 1 黑点包括不收敛运行。</li><li>MNIST/CIFAR 是特定二分类子任务，网络深度与参数化有限；标度区间和指数由有限 P、\(T\) 拟合，作者也强调非普适性。perceptron 解释能分解 signal/noise，但它没有 feature learning，不能证明深网中所有 SGD 效应均由同一机制产生。</li></ul></div>
 </section>
 <section class="reading-card reading-card-section">
   <h2>复现与资源</h2>
