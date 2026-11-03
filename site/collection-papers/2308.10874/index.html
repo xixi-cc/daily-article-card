@@ -112,7 +112,20 @@
             <p class="detail-page-title-zh">将 Transformer 动力学分析为嵌入空间中的运动</p>
             <div class="detail-meta">Sumeet S. Singh · 预印本 · arXiv:2308.10874 · <a href="https://arxiv.org/abs/2308.10874" target="_blank" rel="noopener noreferrer">论文原文 ↗</a></div>
             <p class="detail-summary">Transformer 的 residual-stream 向量如何随层移动，并最终把上下文映射到下一个 token？作者希望用过滤、聚合、向量相似度和位置偏置这些操作，给出从架构到语言行为的系统级叙述。</p>
-            <p class="formal-grade-status">正式评级：未评级</p>
+            <details class="formal-grade">
+      <summary>正式评级：B · 22 / 40</summary>
+      <p>评审版本：v2 · 原评审来源：Collection</p>
+
+      <table><caption>八轴评分（每轴 5 分，满分 40 分）</caption><tbody><tr><th scope="row">基本理论洞见</th><td>3 / 5</td></tr><tr><th scope="row">数学深度与严谨性</th><td>2 / 5</td></tr><tr><th scope="row">物理内容与可解释性</th><td>1 / 5</td></tr><tr><th scope="row">现代AI基础与机制相关性</th><td>4 / 5</td></tr><tr><th scope="row">普适性与状态变量</th><td>2 / 5</td></tr><tr><th scope="row">理论表述与建模原创性</th><td>3 / 5</td></tr><tr><th scope="row">研究方向契合度</th><td>4 / 5</td></tr><tr><th scope="row">长期科学价值</th><td>3 / 5</td></tr></tbody></table>
+      <p>评级理由：以嵌入空间路径描述 Transformer 并作探索性组合实验；强语义与上下文学习主张未由证据确立。</p>
+      <p>评审边界：基于论文来源的评审；未独立复现。</p>
+      <p>S级贡献门槛确认：不适用（当前评级非S）</p>
+      <details class="formal-grade-evidence"><summary>评审记录</summary>
+        <p>Registry 序号：4329</p>
+        <p>原文 PDF SHA-256：<code>81528bf7fc9f8e8aa456e18eacb9a59135685e07281efc7701b5eff2433647fd</code></p>
+        <p>评审 SHA-256：<code>d085d0f05da9d5ce01040f658553e30c170bcb2681069b2ba15f8a01fa40aac2</code></p>
+      </details>
+    </details>
           </div>
         </div>
       </div>
@@ -126,7 +139,7 @@
 </section>
 <section class="reading-card reading-card-section">
   <h2>模型与方法</h2>
-  <div class="reading-card-content"><ul><li>作者把 layer norm、\(Q\)/\(K\)/V-output 投影与前馈层视为逐位置的静态 filters，把 attention 视为唯一显式跨位置的 cluster-and-aggregate：query-key 相似度和相对位置 bias 形成权重，value features 被加权汇总。</li><li>Figure 4 将 Transformer 画成 filters 与 soft clustering 的交替组合。沿某个位置追踪从 token embedding 到顶层 context vector 的近邻、相似度图和 attention/position-bias maps，构成 encoding walk；自回归时每个 context vector 邻近的 token 决定下一步。</li><li>实证使用约 15 个模型（文中示例含 \(T_{5}\)-small、Flan-\(T_{5}\) 系列、Falcon-7B 等）观察 embedding 的 UMAP、相似度图、位置核与层间近邻。concept-space 部分把语义片段预聚合成向量，测试分层组合后还能否保持下一 token 或下一概念预测。</li></ul><figure class="evidence-figure">
+  <div class="reading-card-content"><ul><li>作者把 layer norm、\(Q\)/\(K\)/V-output 投影与前馈层视为逐位置的静态 filters，把 attention 视为唯一显式跨位置的 cluster-and-aggregate：query-key 相似度和相对位置 bias 形成权重，value features 被加权汇总。</li><li>Figure 4 将 Transformer 描述为逐位置变换与加权聚合。作者用词嵌入近邻解释某些层间表示；在绑定词嵌入及点积 logits 的设置下，这是一种投影视角。输出概率取决于所有 logits 的 softmax 和解码策略，不必总选择最近邻；其他模型输出头亦可能不同。</li><li>实证使用约 15 个模型（文中示例含 \(T_{5}\)-small、Flan-\(T_{5}\) 系列、Falcon-7B 等）观察 embedding 的 UMAP、相似度图、位置核与层间近邻。concept-space 部分把语义片段预聚合成向量，测试分层组合后还能否保持下一 token 或下一概念预测。</li></ul><figure class="evidence-figure">
   <button class="evidence-figure-image-button" type="button" aria-label="放大查看 Figure 4" onclick="window.openPaperFigureImage && window.openPaperFigureImage(this.querySelector('img'))">
     <img class="paper-figure-image evidence-figure-image" src="../../assets/collection-figures/2308.10874/figure-4-filter-cluster.webp" alt="过滤、相似度聚类和加权聚合构成的通用序列模型图。" loading="lazy" />
   </button>
@@ -139,7 +152,7 @@
 </section>
 <section class="reading-card reading-card-section">
   <h2>核心结果与证据</h2>
-  <div class="reading-card-content"><ul><li>相似度图显示格式分隔符、数字和括号等高共现结构形成不同带状/块状模式；Flan-\(T_{5}\) attention map 中相对位置 bias 的量级足以显著改变 softmax 前分数。作者据此把 attention 描述为“带位置偏置的关联聚合”。</li><li>encoding-walk 示例显示部分位置的层间表示长期停留在原 token 邻域，另一些 decoder 位置逐层移动到预测 token 邻域。这是对真实模型激活的描述性证据，但 nearest-token 投影会丢失 residual stream 中不与词嵌入基对齐的成分。</li><li>concept composition 的两个测试最高约 85% 与 95% 以上，但未达到若理论严格成立应有的 100% 以上基准。作者因此承认 concept-space theory 未被证明，最多提示 Transformer 可能部分支持复合概念映射。</li></ul></div>
+  <div class="reading-card-content"><ul><li>相似度图显示格式分隔符、数字和括号等高共现结构形成不同带状/块状模式；Flan-\(T_{5}\) attention map 中相对位置 bias 的量级足以显著改变 softmax 前分数。作者据此把 attention 描述为“带位置偏置的关联聚合”。</li><li>encoding-walk 示例显示部分位置的层间表示长期停留在原 token 邻域，另一些 decoder 位置逐层移动到预测 token 邻域。这是对真实模型激活的描述性证据，但 nearest-token 投影会丢失 residual stream 中不与词嵌入基对齐的成分。</li><li>HellaSwag 的概念分段实验报告相对于各模型完整输入基线的归一化得分，两个测试的最佳设置约为 85% 与 96%；并非绝对准确率。部分方案经过组合搜索，未达到作者所设 1.0 目标不能逻辑上排除所有可能的概念编码。</li></ul></div>
 </section>
 <section class="reading-card reading-card-section">
   <h2>有效性与局限</h2>
@@ -147,7 +160,7 @@
 </section>
 <section class="reading-card reading-card-section">
   <h2>复现与资源</h2>
-  <div class="reading-card-content"><ul><li>原文：https://arxiv.org/abs/2308.10874。官方 PDF SHA-256：81528bf7fc9f8e8aa456e18eacb9a59135685e07281efc7701b5eff2433647fd。论文附录给出样例、额外模型图和 concept-composition 结果；首页未给出稳定代码仓库。</li><li>复现需固定每个模型/修订、tokenizer、层与位置、是否 layer/\(L_{2}\) normalize、相似度定义、position bias 和聚合规则；应加入随机分段、线性 probe、激活 patching 与基变换稳健性对照。Evidence status: full-text verified; no independent reproduction performed.</li></ul></div>
+  <div class="reading-card-content"><ul><li>原文：https://arxiv.org/abs/2308.10874。官方 PDF SHA-256：81528bf7fc9f8e8aa456e18eacb9a59135685e07281efc7701b5eff2433647fd。论文第14页脚注给出两个代码仓库链接；本卡未验证当前可用性或运行结果。</li><li>复现需固定每个模型/修订、tokenizer、层与位置、是否 layer/\(L_{2}\) normalize、相似度定义、position bias 和聚合规则；应加入随机分段、线性 probe、激活 patching 与基变换稳健性对照。Evidence status: full-text verified; no independent reproduction performed.</li></ul></div>
 </section>
 <section class="reading-card reading-card-section">
   <h2>阅读指南</h2>
