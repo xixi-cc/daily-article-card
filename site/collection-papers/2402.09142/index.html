@@ -112,7 +112,20 @@
             <p class="detail-page-title-zh">表征何时对齐：表征学习动力学中的普适性</p>
             <div class="detail-meta">Loek van Rossem、Andrew M. Saxe · 预印本 · arXiv:2402.09142 · <a href="https://arxiv.org/abs/2402.09142" target="_blank" rel="noopener noreferrer">论文原文 ↗</a></div>
             <p class="detail-summary">不同深度、连接方式和 activation 的网络常学到定性相似的 representational geometry。若 encoder \(h_{\mathrm{phi}}\) 与 decoder \(y_{\mathrm{psi}}\) 只假定为足够光滑、表达能力不受参数化强约束，gradient descent 是否诱导一个与 architecture details 无关的低维有效理论？</p>
-            <p class="formal-grade-status">正式评级：未评级</p>
+            <details class="formal-grade">
+      <summary>正式评级：A · 31 / 40</summary>
+      <p>评审版本：v2 · 原评审来源：Collection</p>
+
+      <table><caption>八轴评分（每轴 5 分，满分 40 分）</caption><tbody><tr><th scope="row">基本理论洞见</th><td>4 / 5</td></tr><tr><th scope="row">数学深度与严谨性</th><td>3 / 5</td></tr><tr><th scope="row">物理内容与可解释性</th><td>3 / 5</td></tr><tr><th scope="row">现代AI基础与机制相关性</th><td>4 / 5</td></tr><tr><th scope="row">普适性与状态变量</th><td>4 / 5</td></tr><tr><th scope="row">理论表述与建模原创性</th><td>4 / 5</td></tr><tr><th scope="row">研究方向契合度</th><td>5 / 5</td></tr><tr><th scope="row">长期科学价值</th><td>4 / 5</td></tr></tbody></table>
+      <p>评级理由：提出局部两点表征学习的可检验有效动力学；闭合依赖有效梯度流、无旋转及局部线性条件。</p>
+      <p>评审边界：基于论文来源的评审；未独立复现。</p>
+      <p>S级贡献门槛确认：不适用（当前评级非S）</p>
+      <details class="formal-grade-evidence"><summary>评审记录</summary>
+        <p>Registry 序号：4318</p>
+        <p>原文 PDF SHA-256：<code>19eb6fa3e9ba5ad169d6f5d12cf52046416f1a2e3ad570c0370c8a142ff78e3c</code></p>
+        <p>评审 SHA-256：<code>e9366fe8b559dc9d689cba0d31f6fad536cfb2a089a4a641180a41d392ad73b6</code></p>
+      </details>
+    </details>
           </div>
         </div>
       </div>
@@ -126,7 +139,7 @@
 </section>
 <section class="reading-card reading-card-section">
   <h2>模型与方法</h2>
-  <div class="reading-card-content"><ul><li>模型把网络拆为 arbitrary smooth encoder \(h_{\mathrm{phi}}\):\(x\to h\) 与 decoder \(y_{\mathrm{psi}}\):\(h\to y\)，以 squared loss 训练。围绕两输入中点做局部线性化，把参数更新投影到 effective Jacobians \(D_{h}\) 与 \(D_{y}\)。</li><li>两点问题闭合为三个变量：||dh||^2 是 hidden representational distance，||dy||^2 是 prediction difference，w 衡量 predicted difference 与 target difference 的 alignment/error coupling；architecture 被压缩为有效时间尺度 \(tau_{h}\)、\(tau_{y}\)。Figure 1 给出 \(X\to H\to Y\) 的几何。</li><li>理论曲线只拟合两个 effective rates，然后与不同 connectivity、depth、width、ReLU/leaky-ReLU/tanh 等网络比较；还测试 MNIST 0/1 点对、XOR 多点结构和 orthogonal features，并扫描 initialization scale。</li></ul><figure class="evidence-figure">
+  <div class="reading-card-content"><ul><li>模型把网络拆为光滑 encoder 与 decoder，以 squared loss 训练。围绕两输入中点做局部线性化；作者直接假设局域 Jacobian 和输出均值按各自有效速率作梯度下降，这不必等同于实际网络参数梯度流诱导的动力学。</li><li>对两点表征相对方向不旋转的解，动力学闭合为三个变量：||dh||² 是隐藏表征距离的平方，||dy||² 是预测差的平方，w 衡量输出差与目标差的耦合；局部有效模型使用两个时间尺度。Figure 1 给出 \(X\to H\to Y\) 的几何。</li><li>理论曲线只拟合两个 effective rates，然后与不同 connectivity、depth、width、ReLU/leaky-ReLU/tanh 等网络比较；还测试 MNIST 0/1 点对、XOR 多点结构和 orthogonal features，并扫描 initialization scale。</li></ul><figure class="evidence-figure">
   <button class="evidence-figure-image-button" type="button" aria-label="放大查看 Figure 1" onclick="window.openPaperFigureImage && window.openPaperFigureImage(this.querySelector('img'))">
     <img class="paper-figure-image evidence-figure-image" src="../../assets/collection-figures/2402.09142/figure-1-effective-geometry.webp" alt="X、H、Y 空间中的两点及 dh、dy、w arrows。" loading="lazy" />
   </button>
@@ -143,11 +156,11 @@
 </section>
 <section class="reading-card reading-card-section">
   <h2>有效性与局限</h2>
-  <div class="reading-card-content"><ul><li>推导以两点局部线性化和各向同性/自由参数变化近似为核心；architecture-specific inductive biases 被吸收到两个 rates 或直接忽略。理论无法预测这些 rates，而是从 trajectory 拟合。</li><li>对更大 datasets 没有清晰可扩展闭式路径；XOR/orthogonal-feature tests 仍很小。深度不足、bottleneck、convolutional locality、attention、normalization 和 optimizer details 都可能破坏 universality。</li><li>Representation alignment 用 pairwise Euclidean geometry 衡量，不能覆盖 topology、class-conditional manifolds 或 causal features。与 brain representations 的潜在联系仅属动机；本卡未独立复现实验。</li></ul></div>
+  <div class="reading-card-content"><ul><li>结果依赖两点局部线性化、对局域变量的有效梯度流假设以及表征差方向不旋转；这些条件并非仅由高表达能力保证。具体架构的归纳偏置被压缩到有效速率或忽略，速率从轨迹拟合而非理论预言。</li><li>对更大数据集尚无清晰闭合路径；XOR/orthogonal-feature tests 仍很小。Figure 2 的一个卷积变体在所测两点、小初始化条件下符合趋势，更一般卷积结构、attention、normalization 或不同优化器的适用性仍需检验。</li><li>Representation alignment 用 pairwise Euclidean geometry 衡量，不能覆盖 topology、class-conditional manifolds 或 causal features。与 brain representations 的潜在联系仅属动机；本卡未独立复现实验。</li></ul></div>
 </section>
 <section class="reading-card reading-card-section">
   <h2>复现与资源</h2>
-  <div class="reading-card-content"><ul><li>原文：https://arxiv.org/abs/2402.09142。官方 PDF SHA-256：19eb6fa3e9ba5ad169d6f5d12cf52046416f1a2e3ad570c0370c8a142ff78e3c。正文与附录给出三变量 ODE、fixed points、architectures 和训练设置。</li><li>复现先用两固定样本训练多种网络，逐步保存同一 hidden layer 的 \(h\)(\(x_{1}\)),\(h\)(\(x_{2}\)) 与 outputs，计算 ||dh||^2、||dy||^2、w；只在一组 trial 拟合 \(tau_{h}\),\(tau_{y}\)，再在新 initial scales/architectures 上预测。需报告偏离案例而非只选可对齐曲线。Evidence status: full-text verified; no independent reproduction performed.</li></ul></div>
+  <div class="reading-card-content"><ul><li>原文：https://arxiv.org/abs/2402.09142。官方 PDF SHA-256：19eb6fa3e9ba5ad169d6f5d12cf52046416f1a2e3ad570c0370c8a142ff78e3c。正文与附录给出三变量 ODE、fixed points、architectures 和训练设置。</li><li>复现可先用两固定样本训练多种网络，记录同一 hidden layer 的 \(h\)(\(x_{1}\)), \(h\)(\(x_{2}\)) 与 outputs，计算 ||dh||²、||dy||²、w。作为额外泛化测试，可在一组 trial 拟合有效速率并检验新初始化或架构；不能预设不同架构共享速率。报告偏离案例。Evidence status: full-text verified; no independent reproduction performed.</li></ul></div>
 </section>
 <section class="reading-card reading-card-section">
   <h2>阅读指南</h2>
