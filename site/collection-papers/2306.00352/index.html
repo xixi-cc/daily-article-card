@@ -103,8 +103,8 @@
 
         <div class="detail-hero-grid">
           <div class="detail-hero-cover"><figure class="paper-figure-card paper-figure-card-detail">
-  <img class="paper-figure-image" src="../../assets/collection-figures/2306.00352/figure-2-image-training.webp" alt="CIFAR-100 训练中 ECDSep、SGD、Adam 与 AdamW 的训练损失、SWA 测试准确率和测试准确率三联曲线。" loading="lazy" onclick="window.openPaperFigureImage && window.openPaperFigureImage(this)" />
-  <figcaption class="paper-figure-caption">Figure 2 比较四种优化器在 300 个 epoch 内的损失与准确率。 <a href="https://arxiv.org/abs/2306.00352" target="_blank" rel="noopener noreferrer">原文图源 ↗</a></figcaption>
+  <img class="paper-figure-image" src="../../assets/collection-figures/2306.00352/figure-2-image-training.webp" alt="CIFAR-100 上 ECDSep 不同 η 值的训练损失、SWA 测试准确率与测试准确率。" loading="lazy" onclick="window.openPaperFigureImage && window.openPaperFigureImage(this)" />
+  <figcaption class="paper-figure-caption">不同 \(\eta\) 下的 ECDSep 训练与测试曲线；训练损失更低不保证测试准确率更高。 <a href="https://arxiv.org/abs/2306.00352" target="_blank" rel="noopener noreferrer">原文图源 ↗</a></figcaption>
 </figure></div>
           <div class="detail-hero-copy">
             <p class="eyebrow">论文详情</p>
@@ -112,7 +112,20 @@
             <p class="detail-page-title-zh">改进机器学习的能量守恒下降：理论与实践</p>
             <div class="detail-meta">G. Bruno De Luca、Alice Gatti、Eva Silverstein · 预印本 · arXiv:2306.00352 · <a href="https://arxiv.org/abs/2306.00352" target="_blank" rel="noopener noreferrer">论文原文 ↗</a></div>
             <p class="detail-summary">能否通过一个具有受控平衡分布的物理动力系统，把轨迹更多地分配到低损失区域，同时在非凸、高维且无对称性的任务上形成可用的一阶优化器？</p>
-            <p class="formal-grade-status">正式评级：未评级</p>
+            <details class="formal-grade">
+      <summary>正式评级：A · 30 / 40</summary>
+      <p>评审版本：v1 · 原评审来源：Collection</p>
+
+      <table><caption>八轴评分（每轴 5 分，满分 40 分）</caption><tbody><tr><th scope="row">基本理论洞见</th><td>4 / 5</td></tr><tr><th scope="row">数学深度与严谨性</th><td>4 / 5</td></tr><tr><th scope="row">物理内容与可解释性</th><td>4 / 5</td></tr><tr><th scope="row">现代AI基础与机制相关性</th><td>4 / 5</td></tr><tr><th scope="row">普适性与状态变量</th><td>3 / 5</td></tr><tr><th scope="row">理论表述与建模原创性</th><td>4 / 5</td></tr><tr><th scope="row">研究方向契合度</th><td>4 / 5</td></tr><tr><th scope="row">长期科学价值</th><td>3 / 5</td></tr></tbody></table>
+      <p>评级理由：以能量守恒构造探索优化动力学并给出多任务实验；平衡分布和实际训练效果依赖额外条件。</p>
+      <p>评审边界：基于论文来源的评审；未独立复现。</p>
+      <p>S级贡献门槛确认：不适用（当前评级非S）</p>
+      <details class="formal-grade-evidence"><summary>评审记录</summary>
+        <p>Registry 序号：4321</p>
+        <p>原文 PDF SHA-256：<code>57ad6f2f81ce0aeae7e0a818049f35dabde8501883c448d40b55c68a9b869f06</code></p>
+        <p>评审 SHA-256：<code>13deae2ef3e83f7179d39a049d6fdf8a1d77c4e1d07397ddf14f06bff9a87b04</code></p>
+      </details>
+    </details>
           </div>
         </div>
       </div>
@@ -126,24 +139,24 @@
 </section>
 <section class="reading-card reading-card-section">
   <h2>模型与方法</h2>
-  <div class="reading-card-content"><ul><li>ECD 在扩展相空间中引入位置、速度与状态相关质量/势能，使连续动力学守恒总能量；通过选择与目标损失 F 相关的体积因子，使长时采样分布偏向低 F。ECDSep 使用可分离的速度更新、随机正交混合与辛式离散更新。</li><li>批训练时，算法根据当前批损失与梯度更新内部能量变量，并以参数 \(\nu\)、时间步长 Δt、指数 \(\eta\)、目标能量 \(F_{0}\) 等控制探索与收敛。随机混合承担打破可积结构、促进遍历的作用；分离形式则让每步只需梯度和逐坐标代数运算，而无需显式 Hessian。</li><li>实验分别调节各优化器超参数，并在合成函数、CIFAR-100、TinyImageNet、ImageNet-1K 微调、OGB 图任务和 GLUE/BERT 上比较。图像任务还采用 stochastic weight averaging；因此表中的结果是完整训练协议的组合效果，不能只归因于单一更新公式。</li></ul></div>
+  <div class="reading-card-content"><ul><li>ECD 在扩展相空间引入位置与动量，构造依赖损失的 Hamiltonian 因子并守恒连续动力学中的能量 E。积分动量得到能量壳的位置边缘测度；只有满足归一化及充分混合等条件，才能将其解释为长时轨迹分布。</li><li>ECDSep 使用可分离的辛式离散更新，并随机扰动、归一化动量方向以保持动量范数；小批量切换时仅在新能量壳可达时重标度。\(\eta\)、时间步长、\(\nu\) 与损失偏移 \(F_{0}\) 控制动力学与数值行为；主实验设 \(F_{0}=0\)。有限步及随机批次不能自动保证连续目标测度。</li><li>实验分别调节各优化器超参数，并在合成函数、CIFAR-100、TinyImageNet、ImageNet-1K 微调、OGB 图任务和 GLUE/BERT 上比较。图像任务还采用 stochastic weight averaging；因此表中的结果是完整训练协议的组合效果，不能只归因于单一更新公式。</li></ul></div>
 </section>
 <section class="reading-card reading-card-section">
   <h2>核心结果与证据</h2>
-  <div class="reading-card-content"><ul><li>在 Zakharov 与正则化 Ackley 示例中，ECDSep 能沿低损失区域探索并在局部极小值存在时继续移动；Figure 1 展示其与 GDM、Adam/BBI 的代表性轨迹。</li><li>图像实验中，表 2 报告 CIFAR-100 平均准确率 82.57、TinyImageNet 66.44，分别略高于该表的 SGD 82.50、64.83；ImageNet-1K 仅做 10 个 epoch 微调，各法约 70.5，不能据此宣称普遍优势。GLUE 表 4 的跨任务平均值接近 Adam/AdamW。</li><li>论文报告整个实验约 11,658 GPU 小时、估算排放 683.34 kgCO2e；广任务覆盖的代价是多数设置重复次数少，证据更适合说明竞争力而非稳定排名。</li></ul><figure class="evidence-figure">
+  <div class="reading-card-content"><ul><li>在 Zakharov 与正则化 Ackley 示例中，ECDSep 能沿低损失区域探索并在局部极小值存在时继续移动；Figure 1 展示其与 GDM、Adam/BBI 的代表性轨迹。</li><li>图像实验中，表 2 报告 CIFAR-100 平均准确率 82.57、TinyImageNet 66.44，分别略高于该表的 SGD 82.50、64.83；ImageNet-1K 仅做 10 个 epoch 微调，各法约 70.5，不能据此宣称普遍优势。GLUE 表 4 的跨任务平均值接近 Adam/AdamW。</li><li>论文报告整个实验约 11,658 GPU 小时、估算排放 683.34 kgCO2e；广任务覆盖的代价是多数设置重复次数少，证据更适合说明竞争力而非稳定排名。</li><li>结果并非处处优胜：Table 3 的 ogbn-proteins ROC-AUC 中 ECDSep 为 74.67，AdamW 为 77.44。Figure 2 扫描的是同一 ECDSep 的不同 \(\eta\)，而非不同优化器。</li></ul><figure class="evidence-figure">
   <button class="evidence-figure-image-button" type="button" aria-label="放大查看 Figure 2" onclick="window.openPaperFigureImage && window.openPaperFigureImage(this.querySelector('img'))">
-    <img class="paper-figure-image evidence-figure-image" src="../../assets/collection-figures/2306.00352/figure-2-image-training.webp" alt="四种优化器的训练损失、SWA 测试准确率和测试准确率曲线。" loading="lazy" />
+    <img class="paper-figure-image evidence-figure-image" src="../../assets/collection-figures/2306.00352/figure-2-image-training.webp" alt="不同 η 的 ECDSep 训练损失、SWA 测试准确率与测试准确率曲线。" loading="lazy" />
   </button>
   <figcaption>
-    <strong>Figure 2</strong> · ECDSep 在该 CIFAR-100 设置中与 SGD 结果接近并优于所示 Adam 变体。
-    <span class="evidence-figure-reading">物理解读：This is one tuned training setting with limited repeats, not a universal optimizer ranking.</span>
+    <strong>Figure 2</strong> · 同一优化方法的 \(\eta\) 扫描：训练损失下降与测试准确率的变化不必一致。
+    <span class="evidence-figure-reading">物理解读：This compares eta values within ECDSep, not four optimizers; optimizer comparisons are in Table 2.</span>
     <span class="evidence-figure-source">来源：paper.pdf \(p\). 12, Figure 2</span>
   </figcaption>
 </figure></div>
 </section>
 <section class="reading-card reading-card-section">
   <h2>有效性与局限</h2>
-  <div class="reading-card-content"><ul><li>实验主要是过参数化模型且统计量低：图像完整训练仅少量重复，部分图/语言任务为三次平均，合成图展示典型轨迹。不同算法采用各自搜索空间，仍缺少统一计算预算、wall-clock 与置信区间。</li><li>理论控制针对连续、遍历/混沌动力学及其理想分布；实际实现是离散、随机批量并依赖有限时间混合。辛更新可减小能量漂移，但不能证明神经网络实验已经达到理论平衡分布，也未独立验证泛化机制。</li><li>参数 \(F_{0}\) 必须低于当前可达损失并影响有效温度与动力学尺度；\(\nu\) 和 Δt 又共同决定数值稳定性。作者给出调参指南，但尚未证明这些规则跨架构迁移，额外状态与随机正交操作的实际吞吐成本也没有系统纳入比较。</li></ul></div>
+  <div class="reading-card-content"><ul><li>实验主要是过参数化模型且统计量低：图像完整训练仅少量重复，部分图/语言任务为三次平均，合成图展示典型轨迹。不同算法采用各自搜索空间，仍缺少统一计算预算、wall-clock 与置信区间。</li><li>理论控制针对连续、遍历/混沌动力学及其理想分布；实际实现是离散、随机批量并依赖有限时间混合。辛更新可减小能量漂移，但不能证明神经网络实验已经达到理论平衡分布，也未独立验证泛化机制。</li><li>\(F_{0}\) 是低于目标损失的偏移参数，不是守恒能量 E；它与 \(\eta\) 影响理想测度和动力学尺度。正则化 \(s=1\) 限制可访问损失区域；随机混合和小批离散更新未证明全局收敛或自动达到目标测度。</li></ul></div>
 </section>
 <section class="reading-card reading-card-section">
   <h2>复现与资源</h2>
