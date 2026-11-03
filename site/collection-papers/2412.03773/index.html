@@ -112,7 +112,20 @@
             <p class="detail-page-title-zh">没有黑箱的模加：压缩执行数值积分的 MLP 解释</p>
             <div class="detail-meta">Chun Hei Yip、Rajashree Agrawal、Lawrence Chan、Jason Gross · 预印本 · arXiv:2412.03773 · <a href="https://arxiv.org/abs/2412.03773" target="_blank" rel="noopener noreferrer">论文原文 ↗</a></div>
             <p class="detail-summary">已有 grokking/modular addition 解释常指出模型使用 Fourier features，但仍需检查数百神经元和大量权重。能否把这些离散 neuron observations 压成短解析算法，并定量说明有限宽度网络为何近似该算法？</p>
-            <p class="formal-grade-status">正式评级：未评级</p>
+            <details class="formal-grade">
+      <summary>正式评级：A · 31 / 40</summary>
+      <p>评审版本：v1 · 原评审来源：Collection</p>
+
+      <table><caption>八轴评分（每轴 5 分，满分 40 分）</caption><tbody><tr><th scope="row">基本理论洞见</th><td>4 / 5</td></tr><tr><th scope="row">数学深度与严谨性</th><td>4 / 5</td></tr><tr><th scope="row">物理内容与可解释性</th><td>2 / 5</td></tr><tr><th scope="row">现代AI基础与机制相关性</th><td>5 / 5</td></tr><tr><th scope="row">普适性与状态变量</th><td>3 / 5</td></tr><tr><th scope="row">理论表述与建模原创性</th><td>4 / 5</td></tr><tr><th scope="row">研究方向契合度</th><td>5 / 5</td></tr><tr><th scope="row">长期科学价值</th><td>4 / 5</td></tr></tbody></table>
+      <p>评级理由：用数值求积解释受控模加模型的神经元和，并给出分量误差界；跨任务和架构适用性尚未确立。</p>
+      <p>评审边界：基于论文来源的评审；未独立复现。</p>
+      <p>S级贡献门槛确认：不适用（当前评级非S）</p>
+      <details class="formal-grade-evidence"><summary>评审记录</summary>
+        <p>Registry 序号：4316</p>
+        <p>原文 PDF SHA-256：<code>be2b1bf24a5968f2f54bb6692c15479d426eac5d8674d1a993970234ed98b763</code></p>
+        <p>评审 SHA-256：<code>962512a86354eaebd743500b7ecd02a2c7b1937f2cdd1a14e96fd79ab492095d</code></p>
+      </details>
+    </details>
           </div>
         </div>
       </div>
@@ -139,11 +152,11 @@
 </section>
 <section class="reading-card reading-card-section">
   <h2>核心结果与证据</h2>
-  <div class="reading-card-content"><ul><li>主线模型中多数 neuron 的 pre-activation 和 logit map 都由一个 Fourier component 解释，输入/输出相位关系拟合 R²&gt;0.99，且相位间隔近似均匀。</li><li>Figure 2 显示实际 neuron 权重形成的矩形和近似某个周期积分；Figures 5–6 把导数界、矩形重叠和数值误差联系起来。压缩后的解析式可解释 modular addition logits，而无需把每个 neuron 当黑箱。</li><li>贡献是从经验 feature observation 到可检查算法与误差界；结果针对特定训练模型和结构，不能自动证明所有 seed 或更深网络选择同一数值积分实现。</li></ul></div>
+  <div class="reading-card-content"><ul><li>主线模型中多数 neuron 的 pre-activation 和 logit map 主要由单个 Fourier component 解释；Figure 3 对主模型频率 \(k=12\) 的输入/输出相位关系给出 R²&gt;0.99，且相位间隔近似均匀。</li><li>Figure 2 显示实际 neuron 权重形成的矩形和近似某个周期积分；Figures 5–6 把导数界、矩形重叠和数值误差联系起来。压缩后的解析式可解释 modular addition logits，而无需把每个 neuron 当黑箱。</li><li>作者还检查同设置的 151 个不同 seed 模型：100 个满足文中频率匹配条件，其中 78 个的所有关键频率相位拟合 R²&gt;0.9；这支持该设置内的部分重复性，但不保证所有 seed 或更深网络采用同一实现。</li></ul></div>
 </section>
 <section class="reading-card reading-card-section">
   <h2>有效性与局限</h2>
-  <div class="reading-card-content"><ul><li>解释依赖 Fourier purity、相位均匀性和特定 neuron 配对；失败 seed、不同宽度、激活、正则化或训练超参数可能产生混合频率和不同算法。</li><li>无限宽积分是压缩近似，有限网络误差界可能较松；高准确率也可在局部偏离解析式。需要对每个输入/logit 的 worst-case error 而非只看平均图。</li><li>modular addition 是高度对称合成任务，Fourier basis 几乎由群结构预设；真实语言/视觉 MLP 不一定有同样可积表示。本卡未独立重推或复现。</li></ul></div>
+  <div class="reading-card-content"><ul><li>解释依赖 Fourier purity、相位均匀性和特定 neuron 配对；失败 seed、不同宽度、激活、正则化或训练超参数可能产生混合频率和不同算法。</li><li>有限求和的求积与相位近似误差界在所分析分量和归一化下成立，主模型 Table 1 的实际误差为 0.03–0.05、界为 0.48–0.70；这不是完整网络所有 logit 的逐点相对误差或分类错误率保证。主频近似之外，论文还讨论次频分量对特定方向振幅的补偿。</li><li>modular addition 是高度对称合成任务，Fourier basis 几乎由群结构预设；真实语言/视觉 MLP 不一定有同样可积表示。本卡未独立重推或复现。</li></ul></div>
 </section>
 <section class="reading-card reading-card-section">
   <h2>复现与资源</h2>
