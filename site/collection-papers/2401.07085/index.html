@@ -112,7 +112,20 @@
             <p class="detail-page-title-zh">线性网络中特征学习的三种机制</p>
             <div class="detail-meta">Yizhou Xu、Liu Ziyin · 预印本 · arXiv:2401.07085 · <a href="https://arxiv.org/abs/2401.07085" target="_blank" rel="noopener noreferrer">论文原文 ↗</a></div>
             <p class="detail-summary">无限宽 NTK 极限把训练近似为固定 kernel，但实际有限宽网络会改变内部表示。能否找到一个从任意初始化都可精确求解、同时包含 kernel phase 与 feature-learning phase 的最小模型，并把‘特征学习’分解为可观测的原型机制？</p>
-            <p class="formal-grade-status">正式评级：未评级</p>
+            <details class="formal-grade">
+      <summary>正式评级：A · 30 / 40</summary>
+      <p>评审版本：v3 · 原评审来源：Collection</p>
+
+      <table><caption>八轴评分（每轴 5 分，满分 40 分）</caption><tbody><tr><th scope="row">基本理论洞见</th><td>4 / 5</td></tr><tr><th scope="row">数学深度与严谨性</th><td>3 / 5</td></tr><tr><th scope="row">物理内容与可解释性</th><td>2 / 5</td></tr><tr><th scope="row">现代AI基础与机制相关性</th><td>5 / 5</td></tr><tr><th scope="row">普适性与状态变量</th><td>3 / 5</td></tr><tr><th scope="row">理论表述与建模原创性</th><td>4 / 5</td></tr><tr><th scope="row">研究方向契合度</th><td>5 / 5</td></tr><tr><th scope="row">长期科学价值</th><td>4 / 5</td></tr></tbody></table>
+      <p>评级理由：有限宽线性模型解析学习动力学并比较三类机制；恢复公式存在初值不一致且解析适用范围受限。</p>
+      <p>评审边界：基于论文来源的评审；未独立复现。</p>
+      <p>S级贡献门槛确认：不适用（当前评级非S）</p>
+      <details class="formal-grade-evidence"><summary>评审记录</summary>
+        <p>Registry 序号：4323</p>
+        <p>原文 PDF SHA-256：<code>9c41a540abcba066020f28b53c77c2589abc1fde2426fdc24ed0d3e4244ae13a</code></p>
+        <p>评审 SHA-256：<code>db321712bd2d7df6a5cef7581fd9461c4a3f99fdc2b3105b4f8acdeef1db8865</code></p>
+      </details>
+    </details>
           </div>
         </div>
       </div>
@@ -126,24 +139,24 @@
 </section>
 <section class="reading-card reading-card-section">
   <h2>模型与方法</h2>
-  <div class="reading-card-content"><ul><li>核心模型是一隐层 linear network，数据位于一维子空间，但允许任意有限 hidden width 与 arbitrary initialization。两层参数分别以 \(eta_{u}\)、\(eta_{w}\) 做 gradient flow，输出由 gamma 缩放；通过 \(p_{i}\)、\(q_{i}\) 变量变换，作者给出权重和 NTK 随时间的 exact solution。</li><li>用相邻两层权重的 normalized product zeta 衡量 alignment。根据初始几何与尺度，feature learning 可表现为：原本不对齐的层逐渐 alignment；近乎正交的层发生 disalignment；或两层相对方向变化小但范数重新分配，即 rescaling。kernel phase 中对应变化在尺度极限下消失。</li><li>随后对各超参数写幂律 scaling exponents，导出 finite/infinite width phase diagrams。实验覆盖 linear、ReLU、sigmoid、swish、leaky-ReLU，两层与更深 FCN，MNIST、CIFAR-10 和 ResNet-18；用相对权重位移、alignment 和 accuracy 检验定性外推。</li></ul></div>
+  <div class="reading-card-content"><ul><li>核心模型是一隐层线性网络，数据位于一维子空间，允许任意有限 hidden width 和初始化。两层参数以不同学习率作 gradient flow；作者经 \(p_{i}\)、\(q_{i}\) 变量变换给出解析轨迹，但原文式 (7) 的权重恢复式存在初值一致性问题，需进一步澄清。</li><li>作者以 normalized product \(\zeta\) 衡量层间 alignment，并讨论 alignment、disalignment 与 rescaling。其所谓 near-orthogonal initialization 的示例中两层向量实际近乎平行（\(\zeta(0)\approx 1\)），名称不表示两层向量彼此垂直；rescaling 指方向变化小而幅值变化。</li><li>随后对各超参数写幂律 scaling exponents，导出 finite/infinite width phase diagrams。实验覆盖 linear、ReLU、sigmoid、swish、leaky-ReLU，两层与更深 FCN，MNIST、CIFAR-10 和 ResNet-18；用相对权重位移、alignment 和 accuracy 检验定性外推。</li></ul></div>
 </section>
 <section class="reading-card reading-card-section">
   <h2>核心结果与证据</h2>
-  <div class="reading-card-content"><ul><li>exact solution 给出从任意初值到收敛的特征与 kernel 演化时间尺度，并说明 phase 由 gamma、width、layerwise rates 与 initialization 的组合决定。有限宽也可通过其他尺度趋于极限进入 kernel phase；大宽度本身不唯一决定 lazy behavior。</li><li>Figure 1 中，线性模型解析曲线与数值点吻合：feature-learning scaling 下 zeta 显著趋近 alignment 或离开 near-orthogonal initialization，而 kernel scaling 基本冻结。多种 nonlinear activations 出现相同定性方向。</li><li>MNIST 深层 FCN 延续 layer alignment/disalignment；CIFAR-10 的 phase engineering 显示，把 Kaiming setting 调到 feature-learning phase 时最佳 test accuracy 约提高 5%，把 Xavier 调到 kernel phase 时约下降 10%。这些结果支持机制可迁移，但并非 exact theory 对真实数据性能的定量预测。</li></ul><figure class="evidence-figure">
+  <div class="reading-card-content"><ul><li>作者解析一维子空间线性模型的训练动力学，并以尺度路径讨论宽度、输出缩放、分层学习率与初始化的共同作用。原文 Theorem 1 的式 (7) 在简单非退化初值下与初值不一致，权重恢复表达仍需澄清；这一本地问题本身不能证明所有轨迹和后续结论错误。</li><li>Figure 1 中，线性模型解析曲线与数值点吻合：feature-learning scaling 下 zeta 显著趋近 alignment 或离开 near-orthogonal initialization，而 kernel scaling 基本冻结。多种 nonlinear activations 出现相同定性方向。</li><li>MNIST 深层 FCN 延续 layer alignment/disalignment；CIFAR-10 的 phase engineering 显示，把 Kaiming setting 调到 feature-learning phase 时最佳 test accuracy 约提高 5%，把 Xavier 调到 kernel phase 时约下降 10%。这些结果支持机制可迁移，但并非 exact theory 对真实数据性能的定量预测。</li></ul><figure class="evidence-figure">
   <button class="evidence-figure-image-button" type="button" aria-label="放大查看 Figure 1" onclick="window.openPaperFigureImage && window.openPaperFigureImage(this.querySelector('img'))">
-    <img class="paper-figure-image evidence-figure-image" src="../../assets/collection-figures/2401.07085/figure-1-alignment-mechanisms.webp" alt="上排从未对齐初值趋向 alignment，下排从 near-orthogonal 初值发生 disalignment；kernel curves 基本不变。" loading="lazy" />
+    <img class="paper-figure-image evidence-figure-image" src="../../assets/collection-figures/2401.07085/figure-1-alignment-mechanisms.webp" alt="上排从未对齐初值趋向 alignment；下排从论文称作 near-orthogonal initialization、但两层向量近乎平行的初值发生 disalignment。" loading="lazy" />
   </button>
   <figcaption>
     <strong>Figure 1</strong> · 层间方向变化是 feature learning 的两个可解析原型。
-    <span class="evidence-figure-reading">物理解读：Exact agreement applies to the linear model; nonlinear activations supply qualitative empirical corroboration.</span>
+    <span class="evidence-figure-reading">物理解读：The plotted linear curves are compared with simulations; the printed weight recovery formula has an unresolved initial-condition inconsistency.</span>
     <span class="evidence-figure-source">来源：paper.pdf \(p\). 5, Figure 1</span>
   </figcaption>
 </figure></div>
 </section>
 <section class="reading-card reading-card-section">
   <h2>有效性与局限</h2>
-  <div class="reading-card-content"><ul><li>严格可解部分是一隐层线性网络且训练数据位于一维子空间；非线性、深层和高维数据结果是经验上的定性相似，不能把 exact formulas 原样用于 ResNet。附录消融扩大范围，但未消除模型差异。</li><li>alignment 指标压缩了表示几何：层对齐可能与 generalization 相关，却不是 feature quality 的完备度量；disalignment 或大权重范数也不必在所有任务中有害。性能差异同时受具体 kernel、优化时间和 hyperparameters 影响。</li><li>phase diagram 依赖预设的渐近幂律路径；同一有限模型在有限数值下可能处于 crossover，而非清晰相。训练 loss/最终解与路径机制需区分，作者的主要结论针对 dynamics；本卡未独立复现。</li></ul></div>
+  <div class="reading-card-content"><ul><li>解析模型限于一隐层线性网络和一维数据子空间。原文式 (7) 的权重恢复式存在初值不一致，尚需作者澄清；非线性、深层和高维实验仅提供定性比较，不能将解析式直接用于 ResNet。</li><li>alignment 指标压缩了表示几何：层对齐可能与 generalization 相关，却不是 feature quality 的完备度量；disalignment 或大权重范数也不必在所有任务中有害。性能差异同时受具体 kernel、优化时间和 hyperparameters 影响。</li><li>phase diagram 依赖预设的渐近幂律路径；同一有限模型在有限数值下可能处于 crossover，而非清晰相。训练 loss/最终解与路径机制需区分，作者的主要结论针对 dynamics；本卡未独立复现。</li></ul></div>
 </section>
 <section class="reading-card reading-card-section">
   <h2>复现与资源</h2>
