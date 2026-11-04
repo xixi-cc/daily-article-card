@@ -44,7 +44,7 @@
     {
       "title": "作者信息",
       "paragraphs": [
-        "作者：Jiechen Jackie Zhang、O. Deniz Akyildiz；arXiv:2608.02844v1。全文 39 页。论文把若干 persistent-particle stochastic optimisers纳入同一 mean-field framework，并给出理论、去模糊和 energy-based model 实验。"
+        "作者：Jiechen Jackie Zhang、O. Deniz Akyildiz；arXiv:2608.02844v1。全文 38 页。论文把若干 persistent-particle stochastic optimisers纳入同一 mean-field framework，并给出理论、去模糊和 energy-based model 实验。"
       ]
     },
     {
@@ -63,29 +63,30 @@
     {
       "title": "模型与方法",
       "paragraphs": [
-        "一般系统包含 optimiser state \\(\\vartheta_t\\) 与 sampler state \\(Z_t=(X_t,V_t)\\)：optimiser drift 由粒子 law \\(\\nu_t\\) 下的期望 \\(G_{\\nu_t}(\\vartheta_t)\\) 驱动，sampler 则由 \\(\\Psi_t(\\vartheta_t,Z_t)\\) 与 Brownian noise 演化。用 \\(N\\) 个独立噪声、共同 optimiser 的 interacting system 近似 \\(\\nu_t\\)。",
+        "一般系统包含 optimiser state \\(\\vartheta_t\\) 与 sampler state \\(Z_t\\)：optimiser 漂移为 \\(\\Psi_t(\\vartheta_t,G_{\\nu_t}(\\vartheta_t))\\)，sampler 则按当前参数决定的漂移 \\(b_\\theta\\) 与扩散 \\(\\sigma_\\theta\\) 演化。\\(N\\) 个粒子使用独立噪声并共享 optimiser，因此一般相互作用而非独立。",
         "框架覆盖 PGD、proximal MYPGD、implicit diffusion，并构造 momentum MFPO 与 higher-order Langevin variants。离散实现使用 splitting/OBABO 类 scheme。"
       ]
     },
     {
       "title": "核心结果与证据",
       "paragraphs": [
-        "Theorem 2 在 well-posedness 与 twisted joint contractivity A3 下给出 mean-field law 到 stationary pair 的 exponential Wasserstein contraction。A3 是 optimiser–sampler 联合强单调条件，单独的 objective convexity 或 sampler dissipativity 并不足够。",
-        "Theorems 3–4 给出 continuous-time interacting system 的非渐近 parameter error：transient 以 \\(e^{-\\rho t}\\) 衰减，particle interaction 项按 \\(N^{-1/2}\\) 缩放；time discretisation error 需另加，不能由该定理消失。",
-        "去模糊实验中 higher-order Langevin 方案报告更优 MSE/SSIM 和更清晰重建。EBM rings/beads/lattice 使用 \\(N=10{,}000\\) particles、25 independent runs，momentum method 更快达到较低 Fisher divergence；这些是特定调参下的数值结果。"
+        "Theorem 2 在 well-posedness 与联合收缩 A3 下给出两解间的指数收缩；进一步假设 A2 的 stationary pair 才能得到向该平稳对的收敛。单独的 objective convexity 或 sampler dissipativity 不足以推出 A3。",
+        "Theorem 3 的连续时间有限粒子相互作用误差比较同步耦合的独立 mean-field 副本的经验测度；Theorem 4 在 A1–A5 及其初值条件下给出参数期望误差的指数暂态与 \\(N^{-1/2}\\) 项。论文没有证明实验离散算法的步长稳定性或收敛率。",
+        "去模糊实验中 higher-order Langevin 方案报告更优 MSE/SSIM 和更清晰重建。EBM rings/beads/lattice 使用 \\(N=10{,}000\\) particles、25 independent runs，momentum method 更快达到较低 Fisher divergence；这些是特定调参下的数值结果。 比较限定于论文所测设置及外迭代/作者所称梯度反传次数，不能推成墙钟时间或总算力相同。"
       ]
     },
     {
       "title": "有效性与局限",
       "paragraphs": [
         "统一 mean-field 描述和显式 finite-particle bound 是主要理论贡献，多个采样器/优化器实例增加可迁移性。实验同时检查 image quality 与 distribution-level Fisher divergence，而非只报 objective。",
-        "理论依赖 global joint contractivity、uniform moment/variance bounds 与 stationary pair，深网和多峰 EBM 中可能不成立。实验规模有限，higher-order 方法有额外状态、friction 与 step-size 调参；图像更锐利不证明普遍更快或更省计算。"
+        "理论依赖 global joint contractivity、uniform moment/variance bounds 与 stationary pair，深网和多峰 EBM 中可能不成立。实验规模有限，higher-order 方法有额外状态、friction 与 step-size 调参；图像更锐利不证明普遍更快或更省计算。",
+        "去模糊示例的 TV 先验在全文给出的全空间归一化条件及离散梯度边界上仍有疑点：若采用保留常量零模的通常差分，归一化积分发散；原文未明确消除该零模。附录对一次齐次情形的归一化缩放符号与变量替换不一致；具体边界实现待核。此问题涉及该示例的正规先验和 MMLE 解释，不直接推翻条件性一般定理。"
       ]
     },
     {
       "title": "复现与资源",
       "paragraphs": [
-        "原文：https://arxiv.org/abs/2608.02844。全文 39 页，PDF SHA-256：0a0b564bed92870219d8c0d6e26adddd88d4a9292c4b866147e44720e0b31b47。",
+        "原文：https://arxiv.org/abs/2608.02844。全文 38 页，PDF SHA-256：0a0b564bed92870219d8c0d6e26adddd88d4a9292c4b866147e44720e0b31b47。",
         "复现需固定 particle count、initial law、Brownian seeds、energy/gradient estimator、friction、mass/higher-order coefficients、splitting scheme、step size、deblurring operator/noise、Fisher-divergence estimator 和 25-run aggregation。",
         "Evidence status: full-text verified; no independent reproduction performed."
       ]
@@ -93,7 +94,7 @@
     {
       "title": "阅读指南",
       "paragraphs": [
-        "先读 Eqs. (3)–(4) 和 Figure 0 的 general system，再看 Theorems 2–4 的 A3–A5。随后用 Figure 2 理解粒子输出，再看 Figures 1、3–4 的 MSE/SSIM 与 EBM diagnostics；最后检查 Appendix 的 counterexample 和 discretisation assumptions。"
+        "先读 Eqs. (3)–(4) 的 general system，再看 Theorems 2–4 的 A3–A5。随后用 Figure 2 理解粒子输出，再看 Figures 1、3–4 的 MSE/SSIM 与 EBM diagnostics；最后检查 Appendix 的 counterexample 和 discretisation assumptions。"
       ]
     }
   ],
@@ -122,7 +123,7 @@
   "equation_refs": [
     {
       "label": "Coupled mean-field optimiser",
-      "latex": "d\\vartheta_t=-G_{\\nu_t}(\\vartheta_t)\\,dt,\\qquad dZ_t=\\Psi_t(\\vartheta_t,Z_t)\\,dt+\\Sigma\\,dB_t",
+      "latex": "d\\vartheta_t=\\Psi_t(\\vartheta_t,G_{\\nu_t}(\\vartheta_t))\\,dt,\\qquad dZ_t=b_{\\Pi_\\theta(\\vartheta_t)}(Z_t)\\,dt+\\sigma_{\\Pi_\\theta(\\vartheta_t)}(Z_t)\\,dB_t",
       "role": "joint optimiser-sampler dynamics",
       "symbols": {
         "nu_t": "law of sampler state",
@@ -133,14 +134,19 @@
     },
     {
       "label": "Finite-particle parameter bound",
-      "latex": "\\mathbb E\\Vert\\vartheta_t^N-\\vartheta^\\star\\Vert\\lesssim e^{-\\rho t}\\,\\mathcal W_2(\\mu_0,\\mu^\\star)+C N^{-1/2}",
+      "latex": "\\mathbb E\\Vert\\theta_t^N-\\theta_\\star\\Vert\\leq\\sqrt\\kappa\\,e^{-\\rho t}d_0+\\frac{L_\\Psi}{\\rho}\\sqrt{\\frac{\\kappa V_F}{N}}(1-e^{-\\rho t})",
       "role": "transient plus interaction error",
       "symbols": {
         "rho": "joint contraction rate",
-        "N": "particle count"
+        "N": "particle count",
+        "theta": "parameter component of optimiser state",
+        "d_0": "initial distance from stationary mean-field solution",
+        "kappa": "condition number",
+        "V_F": "variance bound",
+        "L_Psi": "optimiser gradient-input Lipschitz constant"
       },
       "evidence": "paper.pdf pp. 8–9, Theorem 4",
-      "interpretation": "Continuous-time error separates exponentially decaying initialization bias from Monte Carlo interaction error."
+      "interpretation": "Under A1–A5 and the stated deterministic optimiser and i.i.d. particle initial conditions, this continuous-time bound separates the transient and interaction error."
     }
   ],
   "evidence_refs": [

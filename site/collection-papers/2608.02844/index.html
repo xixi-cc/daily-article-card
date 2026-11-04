@@ -112,7 +112,20 @@
             <p class="detail-page-title-zh">基于粒子的广义随机优化</p>
             <div class="detail-meta">Jiechen Jackie Zhang、O. Deniz Akyildiz · 预印本 · arXiv:2608.02844 · <a href="https://arxiv.org/abs/2608.02844" target="_blank" rel="noopener noreferrer">论文原文 ↗</a></div>
             <p class="detail-summary">目标梯度常写成依赖参数的期望 \(\nabla\ell(\theta)=\int F(\theta,x)\pi_\theta(dx)\)，而 \(\pi_\theta\) 只能由 MCMC 采样。论文问：能否让 optimiser 与 sampler 同时连续演化，以 persistent particles 替代每步重启内层链，并仍得到收敛和有限粒子误差？</p>
-            <p class="formal-grade-status">正式评级：未评级</p>
+            <details class="formal-grade">
+      <summary>正式评级：A · 30 / 40</summary>
+      <p>评审版本：v1 · 原评审来源：Collection</p>
+
+      <table><caption>八轴评分（每轴 5 分，满分 40 分）</caption><tbody><tr><th scope="row">基本理论洞见</th><td>4 / 5</td></tr><tr><th scope="row">数学深度与严谨性</th><td>4 / 5</td></tr><tr><th scope="row">物理内容与可解释性</th><td>2 / 5</td></tr><tr><th scope="row">现代AI基础与机制相关性</th><td>4 / 5</td></tr><tr><th scope="row">普适性与状态变量</th><td>4 / 5</td></tr><tr><th scope="row">理论表述与建模原创性</th><td>4 / 5</td></tr><tr><th scope="row">研究方向契合度</th><td>4 / 5</td></tr><tr><th scope="row">长期科学价值</th><td>4 / 5</td></tr></tbody></table>
+      <p>评级理由：以联合优化与采样动力学研究条件性收缩和有限粒子误差；离散保证及应用先验条件仍受限制。</p>
+      <p>评审边界：基于论文来源的评审；未独立复现。</p>
+      <p>S级贡献门槛确认：不适用（当前评级非S）</p>
+      <details class="formal-grade-evidence"><summary>评审记录</summary>
+        <p>Registry 序号：4332</p>
+        <p>原文 PDF SHA-256：<code>0a0b564bed92870219d8c0d6e26adddd88d4a9292c4b866147e44720e0b31b47</code></p>
+        <p>评审 SHA-256：<code>a0b9990230afc98c5fd6fac9ded3c5cd8ea0cc747c3a4ff99efc9843ea7e462d</code></p>
+      </details>
+    </details>
           </div>
         </div>
       </div>
@@ -130,11 +143,11 @@
 </section>
 <section class="reading-card reading-card-section">
   <h2>模型与方法</h2>
-  <div class="reading-card-content"><ul><li>一般系统包含 optimiser state \(\vartheta_t\) 与 sampler state \(Z_t=(X_t,V_t)\)：optimiser drift 由粒子 law \(\nu_t\) 下的期望 \(G_{\nu_t}(\vartheta_t)\) 驱动，sampler 则由 \(\Psi_t(\vartheta_t,Z_t)\) 与 Brownian noise 演化。用 \(N\) 个独立噪声、共同 optimiser 的 interacting system 近似 \(\nu_t\)。</li><li>框架覆盖 PGD、proximal MYPGD、implicit diffusion，并构造 momentum MFPO 与 higher-order Langevin variants。离散实现使用 splitting/OBABO 类 scheme。</li></ul></div>
+  <div class="reading-card-content"><ul><li>一般系统包含 optimiser state \(\vartheta_t\) 与 sampler state \(Z_t\)：optimiser 漂移为 \(\Psi_t(\vartheta_t,G_{\nu_t}(\vartheta_t))\)，sampler 则按当前参数决定的漂移 \(b_\theta\) 与扩散 \(\sigma_\theta\) 演化。\(N\) 个粒子使用独立噪声并共享 optimiser，因此一般相互作用而非独立。</li><li>框架覆盖 PGD、proximal MYPGD、implicit diffusion，并构造 momentum MFPO 与 higher-order Langevin variants。离散实现使用 splitting/OBABO 类 scheme。</li></ul></div>
 </section>
 <section class="reading-card reading-card-section">
   <h2>核心结果与证据</h2>
-  <div class="reading-card-content"><ul><li>Theorem 2 在 well-posedness 与 twisted joint contractivity \(A_{3}\) 下给出 mean-field law 到 stationary pair 的 exponential Wasserstein contraction。\(A_{3}\) 是 optimiser–sampler 联合强单调条件，单独的 objective convexity 或 sampler dissipativity 并不足够。</li><li>Theorems 3–4 给出 continuous-time interacting system 的非渐近 parameter error：transient 以 \(e^{-\rho t}\) 衰减，particle interaction 项按 \(N^{-1/2}\) 缩放；time discretisation error 需另加，不能由该定理消失。</li><li>去模糊实验中 higher-order Langevin 方案报告更优 MSE/SSIM 和更清晰重建。EBM rings/beads/lattice 使用 \(N=10{,}000\) particles、25 independent runs，momentum method 更快达到较低 Fisher divergence；这些是特定调参下的数值结果。</li></ul><figure class="evidence-figure">
+  <div class="reading-card-content"><ul><li>Theorem 2 在 well-posedness 与联合收缩 \(A_{3}\) 下给出两解间的指数收缩；进一步假设 \(A_{2}\) 的 stationary pair 才能得到向该平稳对的收敛。单独的 objective convexity 或 sampler dissipativity 不足以推出 \(A_{3}\)。</li><li>Theorem 3 的连续时间有限粒子相互作用误差比较同步耦合的独立 mean-field 副本的经验测度；Theorem 4 在 \(A_{1}\)–\(A_{5}\) 及其初值条件下给出参数期望误差的指数暂态与 \(N^{-1/2}\) 项。论文没有证明实验离散算法的步长稳定性或收敛率。</li><li>去模糊实验中 higher-order Langevin 方案报告更优 MSE/SSIM 和更清晰重建。EBM rings/beads/lattice 使用 \(N=10{,}000\) particles、25 independent runs，momentum method 更快达到较低 Fisher divergence；这些是特定调参下的数值结果。 比较限定于论文所测设置及外迭代/作者所称梯度反传次数，不能推成墙钟时间或总算力相同。</li></ul><figure class="evidence-figure">
   <button class="evidence-figure-image-button" type="button" aria-label="放大查看 Figure 2" onclick="window.openPaperFigureImage && window.openPaperFigureImage(this.querySelector('img'))">
     <img class="paper-figure-image evidence-figure-image" src="../../assets/collection-figures/2608.02844/figure-2-deblurring.webp" alt="原图、模糊观测和两种 particle reconstruction。" loading="lazy" />
   </button>
@@ -147,15 +160,15 @@
 </section>
 <section class="reading-card reading-card-section">
   <h2>有效性与局限</h2>
-  <div class="reading-card-content"><ul><li>统一 mean-field 描述和显式 finite-particle bound 是主要理论贡献，多个采样器/优化器实例增加可迁移性。实验同时检查 image quality 与 distribution-level Fisher divergence，而非只报 objective。</li><li>理论依赖 global joint contractivity、uniform moment/variance bounds 与 stationary pair，深网和多峰 EBM 中可能不成立。实验规模有限，higher-order 方法有额外状态、friction 与 step-size 调参；图像更锐利不证明普遍更快或更省计算。</li></ul></div>
+  <div class="reading-card-content"><ul><li>统一 mean-field 描述和显式 finite-particle bound 是主要理论贡献，多个采样器/优化器实例增加可迁移性。实验同时检查 image quality 与 distribution-level Fisher divergence，而非只报 objective。</li><li>理论依赖 global joint contractivity、uniform moment/variance bounds 与 stationary pair，深网和多峰 EBM 中可能不成立。实验规模有限，higher-order 方法有额外状态、friction 与 step-size 调参；图像更锐利不证明普遍更快或更省计算。</li><li>去模糊示例的 TV 先验在全文给出的全空间归一化条件及离散梯度边界上仍有疑点：若采用保留常量零模的通常差分，归一化积分发散；原文未明确消除该零模。附录对一次齐次情形的归一化缩放符号与变量替换不一致；具体边界实现待核。此问题涉及该示例的正规先验和 MMLE 解释，不直接推翻条件性一般定理。</li></ul></div>
 </section>
 <section class="reading-card reading-card-section">
   <h2>复现与资源</h2>
-  <div class="reading-card-content"><ul><li>原文：https://arxiv.org/abs/2608.02844。全文 39 页，PDF SHA-256：0a0b564bed92870219d8c0d6e26adddd88d4a9292c4b866147e44720e0b31b47。</li><li>复现需固定 particle count、initial law、Brownian seeds、energy/gradient estimator、friction、mass/higher-order coefficients、splitting scheme、step size、deblurring operator/noise、Fisher-divergence estimator 和 25-run aggregation。</li><li>Evidence status: full-text verified; no independent reproduction performed.</li></ul></div>
+  <div class="reading-card-content"><ul><li>原文：https://arxiv.org/abs/2608.02844。全文 38 页，PDF SHA-256：0a0b564bed92870219d8c0d6e26adddd88d4a9292c4b866147e44720e0b31b47。</li><li>复现需固定 particle count、initial law、Brownian seeds、energy/gradient estimator、friction、mass/higher-order coefficients、splitting scheme、step size、deblurring operator/noise、Fisher-divergence estimator 和 25-run aggregation。</li><li>Evidence status: full-text verified; no independent reproduction performed.</li></ul></div>
 </section>
 <section class="reading-card reading-card-section">
   <h2>阅读指南</h2>
-  <div class="reading-card-content"><ul><li>先读 Eqs. (3)–(4) 和 Figure 0 的 general system，再看 Theorems 2–4 的 \(A_{3}\)–\(A_{5}\)。随后用 Figure 2 理解粒子输出，再看 Figures 1、3–4 的 MSE/SSIM 与 EBM diagnostics；最后检查 Appendix 的 counterexample 和 discretisation assumptions。</li></ul></div>
+  <div class="reading-card-content"><ul><li>先读 Eqs. (3)–(4) 的 general system，再看 Theorems 2–4 的 \(A_{3}\)–\(A_{5}\)。随后用 Figure 2 理解粒子输出，再看 Figures 1、3–4 的 MSE/SSIM 与 EBM diagnostics；最后检查 Appendix 的 counterexample 和 discretisation assumptions。</li></ul></div>
 </section></article>
         <aside id="detail-toc" class="detail-toc hidden" aria-label="内容目录">
           <p class="detail-toc-title">阅读目录</p>
