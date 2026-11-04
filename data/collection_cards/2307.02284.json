@@ -48,7 +48,7 @@
     {
       "title": "作者信息",
       "paragraphs": [
-        "作者：Keiichi Tamai、Tsuyoshi Okubo、Truong Vinh Truong Duy、Naotake Natori、Synge Todo；arXiv:2307.02284v3。全文 16 页。"
+        "作者：Keiichi Tamai、Tsuyoshi Okubo、Truong Vinh Truong Duy、Naotake Natori、Synge Todo；arXiv:2307.02284v3。全文 15 页。"
       ]
     },
     {
@@ -60,36 +60,36 @@
     {
       "title": "背景",
       "paragraphs": [
-        "网络初始化后前向动力学是确定的：若两个 preactivations 在某层完全相同，之后永远不能分离，因此 \\(\\rho=0\\) 是吸收态。权重方差 \\(\\sigma_w\\) 和偏置方差 \\(\\sigma_b\\) 控制 ordered 与 chaotic 两相；最大 Lyapunov 指数的变号给出稳定性边界。",
+        "网络初始化后前向动力学是确定的：若两个 preactivations 在某层完全相同，之后永远不能分离，因此严格相同的状态构成吸收态；\\(\\rho=1-c\\) 是均场相关系数定义，不能无条件把有限宽 Pearson 系数为一等同于向量逐分量相同。权重和偏置标准差参数 \\(\\sigma_w,\\sigma_b\\) 控制 ordered 与 chaotic 两相；最大 Lyapunov 指数的变号给出稳定性边界。",
         "把层号 \\(l\\) 当作时间，输入或通道的空间坐标当作真实空间，order parameter \\(\\rho\\) 描述两信号的去相关程度。全连接网络是 mean-field 极限；卷积局域性和有限通道涨落则允许 directed-percolation 型传播。"
       ]
     },
     {
       "title": "模型与方法",
       "paragraphs": [
-        "对无限宽 MLP，作者用 covariance mean-field recursion 推导 fixed point 与 correlation depth。取 \\(\\rho^{(l)}=1-c^{(l)}\\)，在临界点附近得到吸收相变缩放：\\(\\beta=1\\)、\\(\\nu_\\parallel=1\\)，而激活函数差异进入非普适 metric factors \\(\\kappa,\\gamma\\)。",
-        "有限宽时 leading non-Gaussian correction 为 \\(O(n^{-1})\\)，作者提出 \\(\\rho(l;n)\\simeq n^{-1}f(l/n)\\)。CNN 中局部耦合加入扩散项与 multiplicative noise，数值检验一维和二维 directed percolation 的已知临界指数。"
+        "对无限宽 MLP，作者用 covariance mean-field recursion 推导 fixed point 与 correlation depth。取 \\(\\rho^{(l)}=1-c^{(l)}\\)，在文中 \\(K^*=0\\) 的激活类别及临界点附近得到吸收相变缩放：\\(\\beta=1\\)、\\(\\nu_\\parallel=1\\)，而激活函数差异进入非普适 metric factors \\(\\kappa,\\gamma\\)。 ReLU 类的指数不同。",
+        "有限宽时 leading non-Gaussian correction 为 \\(O(n^{-1})\\)，作者提出 \\(\\rho(l;n)\\simeq n^{-1}f(l/n)\\)。CNN 的有限通道数值与吸收态类比启发含扩散和 multiplicative noise 的现象学描述，数值检验一维和二维 directed percolation 的已知临界指数。"
       ]
     },
     {
       "title": "核心结果与证据",
       "paragraphs": [
         "Figure 1 把四层证据放在一张图：\\((\\sigma_w,\\sigma_b)\\) 相图、有限宽最大 Lyapunov 指数、order parameter 随深度衰减，以及 tanh/erf/sin 经 metric factors 重标度后的 data collapse。以 \\(\\sigma_b=0.3\\) 为例，tanh 临界点约 \\(\\sigma_{w,c}=1.39558\\)。",
-        "MLP 的临界衰减为 \\(\\rho(l)\\sim(\\kappa l)^{-1}\\)。有限宽拟合表明要接近无限宽流，需要 \\(n\\gtrsim\\mu L\\)；增大 \\(\\kappa\\) 可用较浅网络获得临界记忆，却通常伴随更大的宽度成本 \\(\\mu\\)。",
+        "MLP 的临界衰减为 \\(\\rho(l)\\sim(\\kappa l)^{-1}\\)。该模型内的有限宽现象学拟合表明要接近无限宽流，需要 \\(n\\gtrsim\\mu L\\)；增大 \\(\\kappa\\) 可用较浅网络获得临界记忆，却通常伴随更大的宽度成本 \\(\\mu\\)。",
         "有限通道 CNN 的 collapse 与 directed percolation 相符：一维使用 \\(\\beta\\approx0.27649,\\nu_\\parallel\\approx1.73385\\)，二维使用 \\(\\beta\\approx0.58,\\nu_\\parallel\\approx1.29\\)。这支持 universality 的结构解释，但仍是特定随机网络上的数值证据。"
       ]
     },
     {
       "title": "有效性与局限",
       "paragraphs": [
-        "临界边界只是必要而非充分条件。作者的 NTK 分析表明 \\(\\kappa L\\) 太小会使 kernel 近 rank-1，太大则使 test kernel 近似与输入无关；两者都损害训练或泛化。合适窗口还依赖数据的 cosine-distance 分布，不能由一个普适常数确定。",
+        "在所述无限宽、MSE 小学习率 NTK 情境中，临界初始化仍不足以保证泛化；它对一般深网是否必要尚未证明。作者的 NTK 分析表明 \\(\\kappa L\\) 太小会使 kernel 近 rank-1，太大则使 test kernel 近似与输入无关；两者都损害训练或泛化。合适窗口还依赖数据的 cosine-distance 分布，不能由一个普适常数确定。",
         "理论以随机初始化、特定参数化和简化 MLP/CNN 为主；finite-width correction 的 metric factor \\(\\mu\\) 由拟合得到，尚无闭式推导。训练后的 feature learning、残差连接、normalization 与现代大模型可能改变或破坏吸收态结构。"
       ]
     },
     {
       "title": "复现与资源",
       "paragraphs": [
-        "原文：https://arxiv.org/abs/2307.02284。全文 16 页，PDF SHA-256：7419ddc22aa2fd0a4c710d64274d5d0a84f9abf49a0e89a474a0ea9c7ed7c223。",
+        "原文：https://arxiv.org/abs/2307.02284。全文 15 页，PDF SHA-256：7419ddc22aa2fd0a4c710d64274d5d0a84f9abf49a0e89a474a0ea9c7ed7c223。",
         "复现应固定激活函数、\\(\\sigma_w,\\sigma_b\\)、宽度/通道、深度、卷积维数与 kernel、输入 cosine distance、独立初始化次数和临界点拟合区间；data collapse 必须同时报告未重标度曲线。",
         "Evidence status: full-text verified; no independent reproduction performed."
       ]

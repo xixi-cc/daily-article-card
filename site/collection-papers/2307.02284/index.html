@@ -112,7 +112,20 @@
             <p class="detail-page-title-zh">人工深度神经网络中吸收相变的普适缩放律</p>
             <div class="detail-meta">Keiichi Tamai、Tsuyoshi Okubo、Truong Vinh Truong Duy、Naotake Natori、Synge Todo · 预印本 · arXiv:2307.02284 · <a href="https://arxiv.org/abs/2307.02284" target="_blank" rel="noopener noreferrer">论文原文 ↗</a></div>
             <p class="detail-summary">深网在 edge of chaos 附近出现发散的相关深度，但“临界初始化有利”并没有说明有限宽度、网络深度与泛化怎样共同缩放。论文问：两个输入信号在逐层传播时合并成同一状态，能否严格类比非平衡统计物理中的吸收相变，并由 universality class 给出超越具体激活函数的定量规律？</p>
-            <p class="formal-grade-status">正式评级：未评级</p>
+            <details class="formal-grade">
+      <summary>正式评级：S · 35 / 40</summary>
+      <p>评审版本：v3 · 原评审来源：Collection</p>
+
+      <table><caption>八轴评分（每轴 5 分，满分 40 分）</caption><tbody><tr><th scope="row">基本理论洞见</th><td>4 / 5</td></tr><tr><th scope="row">数学深度与严谨性</th><td>4 / 5</td></tr><tr><th scope="row">物理内容与可解释性</th><td>5 / 5</td></tr><tr><th scope="row">现代AI基础与机制相关性</th><td>5 / 5</td></tr><tr><th scope="row">普适性与状态变量</th><td>4 / 5</td></tr><tr><th scope="row">理论表述与建模原创性</th><td>4 / 5</td></tr><tr><th scope="row">研究方向契合度</th><td>5 / 5</td></tr><tr><th scope="row">长期科学价值</th><td>4 / 5</td></tr></tbody></table>
+      <p>评级理由：将随机深网信号合并联系到吸收相变，并以均场、NTK 和有限网络数值研究标度；推广受架构与极限条件限制。</p>
+      <p>评审边界：基于论文来源的评审；未独立复现。</p>
+      <p>S级贡献门槛确认：是</p>
+      <details class="formal-grade-evidence"><summary>评审记录</summary>
+        <p>Registry 序号：4336</p>
+        <p>原文 PDF SHA-256：<code>7419ddc22aa2fd0a4c710d64274d5d0a84f9abf49a0e89a474a0ea9c7ed7c223</code></p>
+        <p>评审 SHA-256：<code>9f168c8fe471ce6ac803bbc99f74e8d3825ec6ab8ab4621ceb3a4e67d56e5576</code></p>
+      </details>
+    </details>
           </div>
         </div>
       </div>
@@ -126,15 +139,15 @@
 </section>
 <section class="reading-card reading-card-section">
   <h2>背景</h2>
-  <div class="reading-card-content"><ul><li>网络初始化后前向动力学是确定的：若两个 preactivations 在某层完全相同，之后永远不能分离，因此 \(\rho=0\) 是吸收态。权重方差 \(\sigma_w\) 和偏置方差 \(\sigma_b\) 控制 ordered 与 chaotic 两相；最大 Lyapunov 指数的变号给出稳定性边界。</li><li>把层号 \(l\) 当作时间，输入或通道的空间坐标当作真实空间，order parameter \(\rho\) 描述两信号的去相关程度。全连接网络是 mean-field 极限；卷积局域性和有限通道涨落则允许 directed-percolation 型传播。</li></ul></div>
+  <div class="reading-card-content"><ul><li>网络初始化后前向动力学是确定的：若两个 preactivations 在某层完全相同，之后永远不能分离，因此严格相同的状态构成吸收态；\(\rho=1-c\) 是均场相关系数定义，不能无条件把有限宽 Pearson 系数为一等同于向量逐分量相同。权重和偏置标准差参数 \(\sigma_w,\sigma_b\) 控制 ordered 与 chaotic 两相；最大 Lyapunov 指数的变号给出稳定性边界。</li><li>把层号 \(l\) 当作时间，输入或通道的空间坐标当作真实空间，order parameter \(\rho\) 描述两信号的去相关程度。全连接网络是 mean-field 极限；卷积局域性和有限通道涨落则允许 directed-percolation 型传播。</li></ul></div>
 </section>
 <section class="reading-card reading-card-section">
   <h2>模型与方法</h2>
-  <div class="reading-card-content"><ul><li>对无限宽 MLP，作者用 covariance mean-field recursion 推导 fixed point 与 correlation depth。取 \(\rho^{(l)}=1-c^{(l)}\)，在临界点附近得到吸收相变缩放：\(\beta=1\)、\(\nu_\parallel=1\)，而激活函数差异进入非普适 metric factors \(\kappa,\gamma\)。</li><li>有限宽时 leading non-Gaussian correction 为 \(O(n^{-1})\)，作者提出 \(\rho(l;n)\simeq n^{-1}f(l/n)\)。CNN 中局部耦合加入扩散项与 multiplicative noise，数值检验一维和二维 directed percolation 的已知临界指数。</li></ul></div>
+  <div class="reading-card-content"><ul><li>对无限宽 MLP，作者用 covariance mean-field recursion 推导 fixed point 与 correlation depth。取 \(\rho^{(l)}=1-c^{(l)}\)，在文中 \(K^*=0\) 的激活类别及临界点附近得到吸收相变缩放：\(\beta=1\)、\(\nu_\parallel=1\)，而激活函数差异进入非普适 metric factors \(\kappa,\gamma\)。 ReLU 类的指数不同。</li><li>有限宽时 leading non-Gaussian correction 为 \(O(n^{-1})\)，作者提出 \(\rho(l;n)\simeq n^{-1}f(l/n)\)。CNN 的有限通道数值与吸收态类比启发含扩散和 multiplicative noise 的现象学描述，数值检验一维和二维 directed percolation 的已知临界指数。</li></ul></div>
 </section>
 <section class="reading-card reading-card-section">
   <h2>核心结果与证据</h2>
-  <div class="reading-card-content"><ul><li>Figure 1 把四层证据放在一张图：\((\sigma_w,\sigma_b)\) 相图、有限宽最大 Lyapunov 指数、order parameter 随深度衰减，以及 tanh/erf/sin 经 metric factors 重标度后的 data collapse。以 \(\sigma_b=0.3\) 为例，tanh 临界点约 \(\sigma_{w,c}=1.39558\)。</li><li>MLP 的临界衰减为 \(\rho(l)\sim(\kappa l)^{-1}\)。有限宽拟合表明要接近无限宽流，需要 \(n\gtrsim\mu L\)；增大 \(\kappa\) 可用较浅网络获得临界记忆，却通常伴随更大的宽度成本 \(\mu\)。</li><li>有限通道 CNN 的 collapse 与 directed percolation 相符：一维使用 \(\beta\approx0.27649,\nu_\parallel\approx1.73385\)，二维使用 \(\beta\approx0.58,\nu_\parallel\approx1.29\)。这支持 universality 的结构解释，但仍是特定随机网络上的数值证据。</li></ul><figure class="evidence-figure">
+  <div class="reading-card-content"><ul><li>Figure 1 把四层证据放在一张图：\((\sigma_w,\sigma_b)\) 相图、有限宽最大 Lyapunov 指数、order parameter 随深度衰减，以及 tanh/erf/sin 经 metric factors 重标度后的 data collapse。以 \(\sigma_b=0.3\) 为例，tanh 临界点约 \(\sigma_{w,c}=1.39558\)。</li><li>MLP 的临界衰减为 \(\rho(l)\sim(\kappa l)^{-1}\)。该模型内的有限宽现象学拟合表明要接近无限宽流，需要 \(n\gtrsim\mu L\)；增大 \(\kappa\) 可用较浅网络获得临界记忆，却通常伴随更大的宽度成本 \(\mu\)。</li><li>有限通道 CNN 的 collapse 与 directed percolation 相符：一维使用 \(\beta\approx0.27649,\nu_\parallel\approx1.73385\)，二维使用 \(\beta\approx0.58,\nu_\parallel\approx1.29\)。这支持 universality 的结构解释，但仍是特定随机网络上的数值证据。</li></ul><figure class="evidence-figure">
   <button class="evidence-figure-image-button" type="button" aria-label="放大查看 Figure 1" onclick="window.openPaperFigureImage && window.openPaperFigureImage(this.querySelector('img'))">
     <img class="paper-figure-image evidence-figure-image" src="../../assets/collection-figures/2307.02284/figure-1-absorbing-transition.webp" alt="相边界、Lyapunov 指数、序参量与重标度结果。" loading="lazy" />
   </button>
@@ -147,11 +160,11 @@
 </section>
 <section class="reading-card reading-card-section">
   <h2>有效性与局限</h2>
-  <div class="reading-card-content"><ul><li>临界边界只是必要而非充分条件。作者的 NTK 分析表明 \(\kappa L\) 太小会使 kernel 近 rank-1，太大则使 test kernel 近似与输入无关；两者都损害训练或泛化。合适窗口还依赖数据的 cosine-distance 分布，不能由一个普适常数确定。</li><li>理论以随机初始化、特定参数化和简化 MLP/CNN 为主；finite-width correction 的 metric factor \(\mu\) 由拟合得到，尚无闭式推导。训练后的 feature learning、残差连接、normalization 与现代大模型可能改变或破坏吸收态结构。</li></ul></div>
+  <div class="reading-card-content"><ul><li>在所述无限宽、MSE 小学习率 NTK 情境中，临界初始化仍不足以保证泛化；它对一般深网是否必要尚未证明。作者的 NTK 分析表明 \(\kappa L\) 太小会使 kernel 近 rank-1，太大则使 test kernel 近似与输入无关；两者都损害训练或泛化。合适窗口还依赖数据的 cosine-distance 分布，不能由一个普适常数确定。</li><li>理论以随机初始化、特定参数化和简化 MLP/CNN 为主；finite-width correction 的 metric factor \(\mu\) 由拟合得到，尚无闭式推导。训练后的 feature learning、残差连接、normalization 与现代大模型可能改变或破坏吸收态结构。</li></ul></div>
 </section>
 <section class="reading-card reading-card-section">
   <h2>复现与资源</h2>
-  <div class="reading-card-content"><ul><li>原文：https://arxiv.org/abs/2307.02284。全文 16 页，PDF SHA-256：7419ddc22aa2fd0a4c710d64274d5d0a84f9abf49a0e89a474a0ea9c7ed7c223。</li><li>复现应固定激活函数、\(\sigma_w,\sigma_b\)、宽度/通道、深度、卷积维数与 kernel、输入 cosine distance、独立初始化次数和临界点拟合区间；data collapse 必须同时报告未重标度曲线。</li><li>Evidence status: full-text verified; no independent reproduction performed.</li></ul></div>
+  <div class="reading-card-content"><ul><li>原文：https://arxiv.org/abs/2307.02284。全文 15 页，PDF SHA-256：7419ddc22aa2fd0a4c710d64274d5d0a84f9abf49a0e89a474a0ea9c7ed7c223。</li><li>复现应固定激活函数、\(\sigma_w,\sigma_b\)、宽度/通道、深度、卷积维数与 kernel、输入 cosine distance、独立初始化次数和临界点拟合区间；data collapse 必须同时报告未重标度曲线。</li><li>Evidence status: full-text verified; no independent reproduction performed.</li></ul></div>
 </section>
 <section class="reading-card reading-card-section">
   <h2>阅读指南</h2>
